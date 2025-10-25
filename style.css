@@ -1,0 +1,1879 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    line-height: 1.4;
+}
+
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    background: rgba(30, 30, 30, 0.35);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-header {
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Кнопка сворачивания сайдбара */
+.sidebar-toggle {
+    background: rgba(42, 42, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e0e0e0;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-toggle svg {
+    display: block;
+}
+
+/* переключение иконок по состоянию .collapsed */
+.sidebar:not(.collapsed) .icon-expand { display: none; }
+.sidebar.collapsed .icon-collapse { display: none; }
+
+/* анимации при наведении/нажатии */
+.sidebar-toggle:hover {
+    transform: translateY(-1px);
+    background: rgba(100, 100, 100, 0.25);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.sidebar-toggle:active {
+    transform: scale(0.96);
+    background: rgba(120, 120, 120, 0.35);
+}
+
+/* Свернутый сайдбар */
+.sidebar.collapsed {
+    width: 40px;
+    padding: 10px;
+}
+
+.sidebar.collapsed #search-history {
+    display: none;
+}
+
+.sidebar-header h2 {
+    font-size: 18px;
+    color: #e0e0e0;
+}
+
+#search-history {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    background-color: #252525;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.history-item:hover {
+    background-color: #333;
+}
+
+.history-item-query {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #3498db;
+}
+
+.history-item-time {
+    font-size: 12px;
+    color: #777;
+}
+
+.container {
+    flex: 1;
+    padding: 20px;
+    background: rgba(26, 26, 26, 0.35);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+.header {
+    display: none;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #3498db;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #aaa;
+}
+
+.search-container {
+    margin-bottom: 12px; /* было 30, приблизили поле к карточкам */
+}
+
+.results-header {
+    margin: 6px 0;
+    padding: 0;
+    border: none;
+    grid-column: 1 / -1;
+}
+
+.results-header .results-count {
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* Три столбца карточек вместо двух */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Сделать вопрос визуально узким и не менять на hover */
+.result-question, .question {
+    max-width: 95%;
+    letter-spacing: 0.1px;
+}
+
+.result-item:hover .question, .result-item:hover .result-question {
+    max-width: 95%;
+}
+
+.input-group {
+    display: flex;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+#search-input {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #444;
+    border-radius: 50px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+    padding-right: 50px;
+    background-color: #252525;
+    color: #e0e0e0;
+}
+
+#search-input:focus {
+    border-color: #3498db;
+}
+
+#search-input::placeholder {
+    color: #777;
+}
+
+.mic-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(52, 152, 219, 0.1);
+    border: 2px solid #3498db;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mic-button:hover {
+    background-color: rgba(52, 152, 219, 0.2);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mic-button svg {
+    fill: #3498db;
+    width: 28px;
+    height: 28px;
+}
+
+.mic-button.listening svg {
+    fill: #e74c3c;
+}
+
+#status-indicator {
+    text-align: center;
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* Стили для подсказки о горячих клавишах */
+.hotkey-hint {
+    position: absolute;
+    right: 65px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 12px;
+    background-color: #252525;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #444;
+}
+
+.results-container {
+    padding: 10px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.results-header {
+    margin: 6px 0;
+    padding: 0;
+    border: none;
+    grid-column: 1 / -1;
+}
+
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+.result-question, .question {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    background-color: #2c3e50;
+    padding: 8px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #3498db;
+    line-height: 1.2;
+}
+
+.result-answer, .answer {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 1.2;
+    background-color: #000000;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #27ae60;
+}
+
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: 18px;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Добавляем отступ для заголовка истории */
+.sidebar-title {
+    margin-right: 12px;
+}
+
+/* Анимация вращения для кнопки сайдбара при клике */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.sidebar-toggle.spinning {
+    animation: spin 0.5s linear;
+}
+
+.results-header {
+    margin: 6px 0;
+    padding: 0;
+    border: none;
+    grid-column: 1 / -1;
+}
+
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+.result-question, .question {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    background-color: #2c3e50;
+    padding: 8px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #3498db;
+    line-height: 1.2;
+}
+
+.result-answer, .answer {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 1.2;
+    background-color: #000000;
+    padding: 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #27ae60;
+}
+
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: 18px;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Compact global line-height */
+body {
+    line-height: 1.0;
+}
+
+/* Grid gaps: minimal spacing horizontally and vertically */
+#results-list {
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Minimize external spacing of cards, rely on grid gap */
+.result-item {
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+/* Question styling: tighter line spacing */
+.result-question, .question {
+    line-height: 1.0;
+}
+
+/* Answer: compact white text on black background, tighter line spacing */
+.result-answer, .answer {
+    color: #ffffff;
+    background-color: #000000;
+    line-height: 1.0;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Ensure hover does not change font sizes or wrapping */
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: inherit;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: inherit;
+    white-space: normal;
+}
+
+/* Remove conflicting nowrap rule and unify styling */
+.result-item:hover .answer, .result-item:hover .result-answer {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+/* Normalize any later conflicting block to compact dark style */
+/* This block previously set light colors and larger line-height; unify to compact dark */
+.result-answer, .answer {
+    color: #ffffff;
+    line-height: 1.0;
+    background-color: #000000;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Removed conflicting nowrap on hover to keep multi-line answers intact */
+/* .result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: nowrap;
+} */
+
+.answer::before, .result-answer::before {
+    content: "- ";
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.result-category, .result-subcategory {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Стили для активного состояния микрофона */
+.listening #status-indicator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.listening #search-input {
+    border-color: #e74c3c;
+}
+
+/* Анимация пульсации для активного микрофона */
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.mic-button.listening {
+    animation: pulse 1.5s infinite;
+    background-color: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+/* Эффект нажатия для кнопки микрофона */
+.mic-button.pressed {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+
+/* Стили для сообщения об отсутствии результатов */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Предотвращаем изменение ширины и переносов текста на hover */
+.result-item {
+    display: block;
+}
+
+.result-item .question, .result-item .answer,
+.result-item .result-question, .result-item .result-answer {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Фиксируем компоновку и предотвращаем перекрытия соседних карточек */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.result-item {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Уточняем transform-origin для аккуратной анимации */
+.result-item {
+    transform-origin: center top;
+}
+/* Сделать вопрос визуально «уже» изначально */
+.result-question, .question {
+    max-width: 95%;
+    letter-spacing: 0.1px; /* визуально компактнее */
+}
+/* На hover ширина вопроса не меняется */
+.result-item:hover .question, .result-item:hover .result-question {
+    max-width: 95%;
+}
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Compact global line-height */
+body {
+    line-height: 1.0;
+}
+
+/* Grid gaps: minimal spacing horizontally and vertically */
+#results-list {
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Minimize external spacing of cards, rely on grid gap */
+.result-item {
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+/* Question styling: tighter line spacing */
+.result-question, .question {
+    line-height: 1.0;
+}
+
+/* Answer: compact white text on black background, tighter line spacing */
+.result-answer, .answer {
+    color: #ffffff;
+    background-color: #000000;
+    line-height: 1.0;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Ensure hover does not change font sizes or wrapping */
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: inherit;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: inherit;
+    white-space: normal;
+}
+
+/* Remove conflicting nowrap rule and unify styling */
+.result-item:hover .answer, .result-item:hover .result-answer {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+/* Normalize any later conflicting block to compact dark style */
+/* This block previously set light colors and larger line-height; unify to compact dark */
+.result-answer, .answer {
+    color: #ffffff;
+    line-height: 1.0;
+    background-color: #000000;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Removed conflicting nowrap on hover to keep multi-line answers intact */
+/* .result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: nowrap;
+} */
+
+.answer::before, .result-answer::before {
+    content: "- ";
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.result-category, .result-subcategory {
+    background-color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Стили для активного состояния микрофона */
+.listening #status-indicator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.listening #search-input {
+    border-color: #e74c3c;
+}
+
+/* Анимация пульсации для активного микрофона */
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.mic-button.listening {
+    animation: pulse 1.5s infinite;
+    background-color: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+/* Эффект нажатия для кнопки микрофона */
+.mic-button.pressed {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+
+/* Стили для сообщения об отсутствии результатов */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Предотвращаем изменение ширины и переносов текста на hover */
+.result-item {
+    display: block;
+}
+
+.result-item .question, .result-item .answer,
+.result-item .result-question, .result-item .result-answer {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Фиксируем компоновку и предотвращаем перекрытия соседних карточек */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.result-item {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Уточняем transform-origin для аккуратной анимации */
+.result-item {
+    transform-origin: center top;
+}
+/* Сделать вопрос визуально «уже» изначально */
+.result-question, .question {
+    max-width: 95%;
+    letter-spacing: 0.1px; /* визуально компактнее */
+}
+/* На hover ширина вопроса не меняется */
+.result-item:hover .question, .result-item:hover .result-question {
+    max-width: 95%;
+}
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Compact global line-height */
+body {
+    line-height: 1.0;
+}
+
+/* Grid gaps: minimal spacing horizontally and vertically */
+#results-list {
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Minimize external spacing of cards, rely on grid gap */
+.result-item {
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+/* Question styling: tighter line spacing */
+.result-question, .question {
+    line-height: 1.0;
+}
+
+/* Answer: compact white text on black background, tighter line spacing */
+.result-answer, .answer {
+    color: #ffffff;
+    background-color: #000000;
+    line-height: 1.0;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Ensure hover does not change font sizes or wrapping */
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: inherit;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: inherit;
+    white-space: normal;
+}
+
+/* Remove conflicting nowrap rule and unify styling */
+.result-item:hover .answer, .result-item:hover .result-answer {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+/* Normalize any later conflicting block to compact dark style */
+/* This block previously set light colors and larger line-height; unify to compact dark */
+.result-answer, .answer {
+    color: #ffffff;
+    line-height: 1.0;
+    background-color: #000000;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Removed conflicting nowrap on hover to keep multi-line answers intact */
+/* .result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: nowrap;
+} */
+
+.answer::before, .result-answer::before {
+    content: "- ";
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.result-category, .result-subcategory {
+    background-color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Стили для активного состояния микрофона */
+.listening #status-indicator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.listening #search-input {
+    border-color: #e74c3c;
+}
+
+/* Анимация пульсации для активного микрофона */
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.mic-button.listening {
+    animation: pulse 1.5s infinite;
+    background-color: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+/* Эффект нажатия для кнопки микрофона */
+.mic-button.pressed {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+
+/* Стили для сообщения об отсутствии результатов */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Предотвращаем изменение ширины и переносов текста на hover */
+.result-item {
+    display: block;
+}
+
+.result-item .question, .result-item .answer,
+.result-item .result-question, .result-item .result-answer {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Фиксируем компоновку и предотвращаем перекрытия соседних карточек */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.result-item {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Уточняем transform-origin для аккуратной анимации */
+.result-item {
+    transform-origin: center top;
+}
+/* Сделать вопрос визуально «уже» изначально */
+.result-question, .question {
+    max-width: 95%;
+    letter-spacing: 0.1px; /* визуально компактнее */
+}
+/* На hover ширина вопроса не меняется */
+.result-item:hover .question, .result-item:hover .result-question {
+    max-width: 95%;
+}
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Compact global line-height */
+body {
+    line-height: 1.0;
+}
+
+/* Grid gaps: minimal spacing horizontally and vertically */
+#results-list {
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Minimize external spacing of cards, rely on grid gap */
+.result-item {
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+/* Question styling: tighter line spacing */
+.result-question, .question {
+    line-height: 1.0;
+}
+
+/* Answer: compact white text on black background, tighter line spacing */
+.result-answer, .answer {
+    color: #ffffff;
+    background-color: #000000;
+    line-height: 1.0;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Ensure hover does not change font sizes or wrapping */
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: inherit;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: inherit;
+    white-space: normal;
+}
+
+/* Remove conflicting nowrap rule and unify styling */
+.result-item:hover .answer, .result-item:hover .result-answer {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+/* Normalize any later conflicting block to compact dark style */
+/* This block previously set light colors and larger line-height; unify to compact dark */
+.result-answer, .answer {
+    color: #ffffff;
+    line-height: 1.0;
+    background-color: #000000;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Removed conflicting nowrap on hover to keep multi-line answers intact */
+/* .result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: nowrap;
+} */
+
+.answer::before, .result-answer::before {
+    content: "- ";
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.result-category, .result-subcategory {
+    background-color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Стили для активного состояния микрофона */
+.listening #status-indicator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.listening #search-input {
+    border-color: #e74c3c;
+}
+
+/* Анимация пульсации для активного микрофона */
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.mic-button.listening {
+    animation: pulse 1.5s infinite;
+    background-color: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+/* Эффект нажатия для кнопки микрофона */
+.mic-button.pressed {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+
+/* Стили для сообщения об отсутствии результатов */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Предотвращаем изменение ширины и переносов текста на hover */
+.result-item {
+    display: block;
+}
+
+.result-item .question, .result-item .answer,
+.result-item .result-question, .result-item .result-answer {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Фиксируем компоновку и предотвращаем перекрытия соседних карточек */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.result-item {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Уточняем transform-origin для аккуратной анимации */
+.result-item {
+    transform-origin: center top;
+}
+/* Сделать вопрос визуально «уже» изначально */
+.result-question, .question {
+    max-width: 95%;
+    letter-spacing: 0.1px; /* визуально компактнее */
+}
+/* На hover ширина вопроса не меняется */
+.result-item:hover .question, .result-item:hover .result-question {
+    max-width: 95%;
+}
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Compact global line-height */
+body {
+    line-height: 1.0;
+}
+
+/* Grid gaps: minimal spacing horizontally and vertically */
+#results-list {
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Minimize external spacing of cards, rely on grid gap */
+.result-item {
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+/* Question styling: tighter line spacing */
+.result-question, .question {
+    line-height: 1.0;
+}
+
+/* Answer: compact white text on black background, tighter line spacing */
+.result-answer, .answer {
+    color: #ffffff;
+    background-color: #000000;
+    line-height: 1.0;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Ensure hover does not change font sizes or wrapping */
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: inherit;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: inherit;
+    white-space: normal;
+}
+
+/* Remove conflicting nowrap rule and unify styling */
+.result-item:hover .answer, .result-item:hover .result-answer {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+/* Normalize any later conflicting block to compact dark style */
+/* This block previously set light colors and larger line-height; unify to compact dark */
+.result-answer, .answer {
+    color: #ffffff;
+    line-height: 1.0;
+    background-color: #000000;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Removed conflicting nowrap on hover to keep multi-line answers intact */
+/* .result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: nowrap;
+} */
+
+.answer::before, .result-answer::before {
+    content: "- ";
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.result-category, .result-subcategory {
+    background-color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Стили для активного состояния микрофона */
+.listening #status-indicator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.listening #search-input {
+    border-color: #e74c3c;
+}
+
+/* Анимация пульсации для активного микрофона */
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.mic-button.listening {
+    animation: pulse 1.5s infinite;
+    background-color: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+/* Эффект нажатия для кнопки микрофона */
+.mic-button.pressed {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+
+/* Стили для сообщения об отсутствии результатов */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Предотвращаем изменение ширины и переносов текста на hover */
+.result-item {
+    display: block;
+}
+
+.result-item .question, .result-item .answer,
+.result-item .result-question, .result-item .result-answer {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Фиксируем компоновку и предотвращаем перекрытия соседних карточек */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.result-item {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Уточняем transform-origin для аккуратной анимации */
+.result-item {
+    transform-origin: center top;
+}
+/* Сделать вопрос визуально «уже» изначально */
+.result-question, .question {
+    max-width: 95%;
+    letter-spacing: 0.1px; /* визуально компактнее */
+}
+/* На hover ширина вопроса не меняется */
+.result-item:hover .question, .result-item:hover .result-question {
+    max-width: 95%;
+}
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.search-results-container {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.search-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
+    padding: 5px 10px;
+    background-color: #222;
+    border-radius: 4px;
+    grid-column: 1 / -1;
+}
+
+.search-time {
+    font-weight: bold;
+}
+
+.search-query {
+    color: #3498db;
+    font-style: italic;
+}
+
+.result-item {
+    background-color: #252525;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    border-left: 3px solid #3498db;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+
+
+
+
+/* Compact global line-height */
+body {
+    line-height: 1.0;
+}
+
+/* Grid gaps: minimal spacing horizontally and vertically */
+#results-list {
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+/* Minimize external spacing of cards, rely on grid gap */
+.result-item {
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+/* Question styling: tighter line spacing */
+.result-question, .question {
+    line-height: 1.0;
+}
+
+/* Answer: compact white text on black background, tighter line spacing */
+.result-answer, .answer {
+    color: #ffffff;
+    background-color: #000000;
+    line-height: 1.0;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Ensure hover does not change font sizes or wrapping */
+.result-item:hover .question, .result-item:hover .result-question {
+    font-size: inherit;
+    white-space: normal;
+}
+
+.result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: inherit;
+    white-space: normal;
+}
+
+/* Remove conflicting nowrap rule and unify styling */
+.result-item:hover .answer, .result-item:hover .result-answer {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+/* Normalize any later conflicting block to compact dark style */
+/* This block previously set light colors and larger line-height; unify to compact dark */
+.result-answer, .answer {
+    color: #ffffff;
+    line-height: 1.0;
+    background-color: #000000;
+    padding: 6px;
+    border-radius: 5px;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+    border-left: 3px solid #27ae60;
+}
+
+/* Removed conflicting nowrap on hover to keep multi-line answers intact */
+/* .result-item:hover .answer, .result-item:hover .result-answer {
+    font-size: 16px;
+    white-space: nowrap;
+} */
+
+.answer::before, .result-answer::before {
+    content: "- ";
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.result-category, .result-subcategory {
+    background-color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Стили для активного состояния микрофона */
+.listening #status-indicator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.listening #search-input {
+    border-color: #e74c3c;
+}
+
+/* Анимация пульсации для активного микрофона */
+@keyframes pulse {
+    0% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.1); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.mic-button.listening {
+    animation: pulse 1.5s infinite;
+    background-color: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+/* Эффект нажатия для кнопки микрофона */
+.mic-button.pressed {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+
+/* Стили для сообщения об отсутствии результатов */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Предотвращаем изменение ширины и переносов текста на hover */
+.result-item {
+    display: block;
+}
+
+.result-item .question, .result-item .answer,
+.result-item .result-question, .result-item .result-answer {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Фиксируем компоновку и предотвращаем перекрытия соседних карточек */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.result-item {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Уточняем transform-origin для аккуратной анимации */
+.result-item {
+    transform-origin: center top;
+}

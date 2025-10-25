@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Голосовой помощник QA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">История</h2>
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-expanded="true" aria-label="Свернуть историю" title="Свернуть/развернуть историю">
+                    <!-- Иконка свернуть (минус) для раскрытого состояния -->
+                    <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path d="M5 12h14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <!-- Иконка развернуть (плюс) для свернутого состояния -->
+                    <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path d="M5 12h14M12 5v14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <div id="search-history">
+                <!-- История поиска будет добавлена здесь динамически -->
+            </div>
+        </div>
+        
+        <div class="container">
+
+            <div class="search-container">
+                <div class="input-group">
+                    <input type="text" id="search-input" placeholder="Введите запрос или нажмите на микрофон (Alt+M)...">
+                    <button id="mic-button" class="mic-button" title="Активировать микрофон (Alt+M)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
+                        </svg>
+                    </button>
+                    <span class="hotkey-hint">Alt+M</span>
+                </div>
+                <!-- Убрали индикатор статуса для сокращения места -->
+            </div>
+
+            <div class="results-container">
+                <div id="results-list">
+                    <!-- Результаты поиска будут добавлены здесь динамически -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" type="module"></script>
+    <script src="ui-manager.js" type="module"></script>
+    <script src="data-event-handler.js" type="module"></script>
+    <script type="module">
+        import { initUI } from './ui-manager.js';
+        
+        // Инициализируем UI после загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initUI();
+        });
+    </script>
+</body>
+</html>
