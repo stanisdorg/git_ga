@@ -91,31 +91,11 @@ export function initDropdownNavigation() {
         }
     });
     
-    // Создаем контейнер для кнопки сброса фильтров
-    const resetButtonContainer = document.createElement('div');
-    resetButtonContainer.className = 'reset-button-container';
-    
-    // Создаем кнопку сброса фильтров
-    const resetButton = document.createElement('button');
-    resetButton.id = 'reset-filters';
-    resetButton.className = 'reset-button';
-    resetButton.textContent = 'Сбросить фильтры';
-    
-    // Добавляем обработчик клика по кнопке сброса
-    resetButton.addEventListener('click', function() {
-        categorySelect.value = 'all';
-        subcategorySelect.innerHTML = '';
-        subcategorySelect.appendChild(allSubcategoryOption);
-        subcategorySelect.disabled = true;
-        showAllQuestions();
-    });
-    
-    resetButtonContainer.appendChild(resetButton);
+    // Кнопка сброса фильтров удалена по требованиям — оставляем навигацию без неё
     
     // Добавляем элементы в контейнер навигации
     navigationContainer.appendChild(categorySelect);
     navigationContainer.appendChild(subcategorySelect);
-    navigationContainer.appendChild(resetButtonContainer);
     
     // Вставляем контейнер навигации перед контейнером поиска
     container.insertBefore(navigationContainer, searchContainer);

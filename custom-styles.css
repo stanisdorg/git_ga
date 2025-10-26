@@ -1,0 +1,37 @@
+/* Кастомные стили для решения проблемы отображения */
+
+/* Стили для span элементов на карточках - ОЧЕНЬ заметные изменения */
+span.category-badge, 
+span.subcategory-badge, 
+span.result-category, 
+span.result-subcategory,
+.category-badge,
+.subcategory-badge,
+.result-category,
+.result-subcategory {
+    display: inline-block !important;
+    padding: 1px 4px !important;
+    border-radius: 5px !important;
+    font-size: 9px !important;
+    margin-right: 4px !important;
+    opacity: 0.4 !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid #333333 !important;
+    text-transform: lowercase !important;
+}
+
+/* Перемещение кнопки вправо - ОЧЕНЬ заметные изменения */
+.mic-button {
+    position: absolute !important;
+    right: 0 !important;
+    margin-right: 0 !important;
+    float: right !important;
+    background-color: #333333 !important;
+}
+
+/* Автоматическая загрузка карточек через CSS */
+#results-list {
+    display: block !important;
+    visibility: visible !important;
+}

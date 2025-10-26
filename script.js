@@ -10,6 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     
+    // Автоматическая загрузка всех карточек
+    setTimeout(() => {
+        if (typeof showAllQuestions === 'function') {
+            showAllQuestions();
+        }
+    }, 300);
+    
     // Массив для хранения истории поиска
     let searchHistoryArray = [];
     
@@ -19,10 +26,26 @@ document.addEventListener('DOMContentLoaded', function() {
             // Спин-анимация кнопки (имитация обновления)
             sidebarToggle.classList.add('spinning');
             setTimeout(() => sidebarToggle.classList.remove('spinning'), 500);
-            // Переключаем состояние сайдбара
-            const collapsed = sidebar.classList.toggle('collapsed');
-            sidebarToggle.setAttribute('aria-expanded', (!collapsed).toString());
-            sidebarToggle.setAttribute('aria-label', collapsed ? 'Развернуть историю' : 'Свернуть историю');
+            
+            // Явно переключаем класс и состояние
+            const nowCollapsed = sidebar.classList.contains('collapsed');
+            if (nowCollapsed) {
+                sidebar.classList.remove('collapsed');
+                // Возвращаем отображение истории
+                if (searchHistory) {
+                    searchHistory.style.display = 'flex';
+                }
+                sidebarToggle.setAttribute('aria-expanded', 'true');
+                sidebarToggle.setAttribute('aria-label', 'Свернуть историю');
+            } else {
+                sidebar.classList.add('collapsed');
+                // Скрываем историю
+                if (searchHistory) {
+                    searchHistory.style.display = 'none';
+                }
+                sidebarToggle.setAttribute('aria-expanded', 'false');
+                sidebarToggle.setAttribute('aria-label', 'Развернуть историю');
+            }
         });
     }
     

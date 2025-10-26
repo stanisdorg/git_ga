@@ -13,6 +13,12 @@ export function initTabsNavigation() {
     const navigationContainer = document.createElement('div');
     navigationContainer.className = 'tabs-navigation';
     
+    // Автоматическая загрузка всех карточек при открытии страницы
+    setTimeout(() => showAllQuestions(), 100);
+    
+    // Автоматически загружаем все карточки при открытии страницы
+    setTimeout(() => showAllQuestions(), 100);
+    
     // Создаем контейнер для табов
     const tabsContainer = document.createElement('div');
     tabsContainer.className = 'tabs-container';
@@ -116,46 +122,10 @@ export function initTabsNavigation() {
         }
     });
     
-    // Создаем контейнер для кнопки сброса фильтров
-    const resetButtonContainer = document.createElement('div');
-    resetButtonContainer.className = 'reset-button-container';
-    
-    // Создаем кнопку сброса фильтров
-    const resetButton = document.createElement('button');
-    resetButton.id = 'reset-filters';
-    resetButton.className = 'reset-button';
-    // Заменяем текст на иконку (красная квадратная кнопка со скруглениями, внутри круг со стрелкой)
-    resetButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <circle cx="12" cy="12" r="8" fill="none" stroke="white" stroke-width="2" />
-            <path d="M10 8l4 4-4 4" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-    `;
-    resetButton.title = 'Сбросить фильтры';
-    
-    // Добавляем обработчик клика по кнопке сброса
-    resetButton.addEventListener('click', function() {
-        // Удаляем класс active у всех табов
-        const tabs = tabsContainer.querySelectorAll('.tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        
-        // Добавляем класс active табу "Все вопросы"
-        allTab.classList.add('active');
-        
-        // Скрываем контейнер подкатегорий
-        subcategoriesContainer.style.display = 'none';
-        
-        // Отображаем все вопросы
-        showAllQuestions();
-    });
-    
-    resetButtonContainer.appendChild(resetButton);
-    
-    // Создаем верхнюю строку навигации: табы + кнопка сброса в одну линию
+    // Создаем верхнюю строку навигации: только табы без кнопки сброса
     const tabsHeader = document.createElement('div');
     tabsHeader.className = 'tabs-header';
     tabsHeader.appendChild(tabsContainer);
-    tabsHeader.appendChild(resetButtonContainer);
     
     // Добавляем элементы в контейнер навигации
     // navigationContainer.appendChild(tabsContainer);

@@ -31,20 +31,28 @@ function addStyles() {
     const stylesheet = document.createElement('style');
     stylesheet.id = 'ui-variant-styles';
     
-    // Добавляем общие стили и стили для табов и карточек
+    // Добавляем общие стили с измененными параметрами для span элементов
     stylesheet.textContent = `
         /* Общие стили */
-        .category-badge, .subcategory-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-right: 8px;
+        .category-badge, .subcategory-badge, .result-category, .result-subcategory {
+            display: inline-block !important;
+            padding: 1px 4px !important;
+            border-radius: 5px !important;
+            font-size: 9px !important;
+            margin-right: 4px !important;
+            opacity: 0.4 !important;
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border: 1px solid #333333 !important;
+            text-transform: lowercase !important;
         }
         
-        .category-badge {
-            background-color: #4CAF50;
-            color: white;
+        .mic-button {
+            position: absolute !important;
+            right: 0 !important;
+            margin-right: 0 !important;
+            float: right !important;
+            background-color: #333333 !important;
         }
         
         .subcategory-badge {
