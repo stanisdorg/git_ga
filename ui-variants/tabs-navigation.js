@@ -160,10 +160,10 @@ function displayQuestions(questions, title) {
     const resultsList = document.getElementById('results-list');
     resultsList.innerHTML = '';
     
-    // Добавляем только счетчик, без заголовка h2
+    // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
-    resultsHeader.innerHTML = `<p class="results-count">Найдено вопросов: ${questions.length}</p>`;
+    resultsHeader.innerHTML = `<h2>${title}</h2><p>Найдено вопросов: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
     
     // Добавляем вопросы
@@ -179,52 +179,6 @@ function displayQuestions(questions, title) {
                 <span class="subcategory-badge">${item.subcategory}</span>
             </div>
         `;
-        
-        // Определяем, является ли карточка левой или правой в сетке
-        const itemIndex = resultsList.querySelectorAll('.result-item').length;
-        const isLeftCard = itemIndex % 2 === 0;
-        
-        // Устанавливаем точку трансформации в зависимости от положения карточки
-        if (isLeftCard) {
-            resultItem.style.transformOrigin = 'left center';
-        } else {
-            // Устанавливаем точку трансформации для аккуратной вертикальной анимации
-            resultItem.style.transformOrigin = 'center top';
-        }
-        
-        // Добавляем обработчики событий для эффекта при наведении
-        resultItem.addEventListener('mouseenter', function() {
-            // Увеличиваем только текущую карточку по вертикали
-            this.style.transform = 'scaleY(1.15)';
-            this.style.zIndex = '100';
-            this.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.4)';
-            
-            // Соседние карточки: только горизонтальное смещение, без вертикального масштабирования
-            document.querySelectorAll('.result-item').forEach(item => {
-                if (item !== this) {
-                    const itemIsLeftCard = Array.from(resultsList.querySelectorAll('.result-item')).indexOf(item) % 2 === 0;
-                    if (itemIsLeftCard) {
-                        item.style.transform = 'scale(0.95) translateX(-8px)';
-                    } else {
-                        item.style.transform = 'scale(0.95) translateX(8px)';
-                    }
-                }
-            });
-        });
-        
-        resultItem.addEventListener('mouseleave', function() {
-            // Возвращаем текущую карточку в исходное состояние
-            this.style.transform = 'scale(0.95)';
-            this.style.zIndex = '1';
-            this.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
-            
-            // Возвращаем остальные карточки в исходное состояние
-            document.querySelectorAll('.result-item').forEach(item => {
-                if (item !== this) {
-                    item.style.transform = 'scale(0.95)';
-                }
-            });
-        });
         
         resultsList.appendChild(resultItem);
     });

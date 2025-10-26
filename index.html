@@ -27,20 +27,14 @@
             border: 1px solid #333333 !important;
         }
         
-        .mic-button {
-            position: absolute !important;
-            right: 0 !important;
-            margin-right: 0 !important;
-            float: right !important;
-            background-color: #333333 !important;
-        }
+        /* Стили кнопки микрофона перенесены в custom-styles.css */
     </style>
 </head>
 <body>
     <div class="app-wrapper">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2 class="sidebar-title">История</h2>
+                <h2 class="sidebar-title"></h2>
                 <button id="sidebar-toggle" class="sidebar-toggle" aria-expanded="true" aria-label="Свернуть историю" title="Свернуть/развернуть историю">
                     <!-- Иконка свернуть (минус) для раскрытого состояния -->
                     <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -62,7 +56,7 @@
             <div class="search-container">
                 <div class="input-group">
                     <input type="text" id="search-input" placeholder="Введите запрос или нажмите на микрофон (Alt+M)...">
-                    <button id="mic-button" class="mic-button" title="Активировать микрофон (Alt+M)">
+                    <button id="mic-button" class="mic-button" title="Активировать микрофон">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
                             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
                             <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>

@@ -145,45 +145,7 @@ function displayQuestions(questions, title) {
             </div>
         `;
         
-        // Определяем, является ли карточка левой или правой в сетке
-        const itemIndex = resultsList.querySelectorAll('.result-item').length;
-        const isLeftCard = itemIndex % 2 === 0;
-        
-        // Устанавливаем точку трансформации в зависимости от положения карточки
-        if (isLeftCard) {
-            resultItem.style.transformOrigin = 'left center';
-        } else {
-            resultItem.style.transformOrigin = 'center top';
-        }
-        
-        // Добавляем обработчики событий для эффекта при наведении
-        resultItem.addEventListener('mouseenter', function() {
-            // Увеличиваем только по вертикали, чтобы сохранить ширину
-            this.style.transform = 'scaleX(0.95) scaleY(1.15)';
-            
-            // Соседние карточки отталкиваем на ±8px
-            const items = document.querySelectorAll('.result-item');
-            items.forEach(item => {
-                if (item !== this) {
-                    const idx = Array.from(resultsList.querySelectorAll('.result-item')).indexOf(item);
-                    if (idx % 2 === 0) {
-                        item.style.transform = 'scale(0.95) translateX(-8px)';
-                    } else {
-                        item.style.transform = 'scale(0.95) translateX(8px)';
-                    }
-                }
-            });
-        });
 
-        resultItem.addEventListener('mouseleave', function() {
-            this.style.transform = 'scale(0.95)';
-            const items = document.querySelectorAll('.result-item');
-            items.forEach(item => {
-                if (item !== this) {
-                    item.style.transform = 'scale(0.95)';
-                }
-            });
-        });
         
         resultsList.appendChild(resultItem);
     });

@@ -21,30 +21,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let searchHistoryArray = [];
     
     // Тоггл боковой панели (сворачивание истории поиска)
-    if (sidebarToggle && sidebar) {
+    if (sidebarToggle && sidebar && searchHistory) {
         sidebarToggle.addEventListener('click', () => {
-            // Спин-анимация кнопки (имитация обновления)
-            sidebarToggle.classList.add('spinning');
-            setTimeout(() => sidebarToggle.classList.remove('spinning'), 500);
+            sidebar.classList.toggle('collapsed');
+            const isCollapsed = sidebar.classList.contains('collapsed');
             
-            // Явно переключаем класс и состояние
-            const nowCollapsed = sidebar.classList.contains('collapsed');
-            if (nowCollapsed) {
-                sidebar.classList.remove('collapsed');
-                // Возвращаем отображение истории
-                if (searchHistory) {
-                    searchHistory.style.display = 'flex';
-                }
-                sidebarToggle.setAttribute('aria-expanded', 'true');
-                sidebarToggle.setAttribute('aria-label', 'Свернуть историю');
-            } else {
-                sidebar.classList.add('collapsed');
-                // Скрываем историю
-                if (searchHistory) {
-                    searchHistory.style.display = 'none';
-                }
+            if (isCollapsed) {
                 sidebarToggle.setAttribute('aria-expanded', 'false');
                 sidebarToggle.setAttribute('aria-label', 'Развернуть историю');
+            } else {
+                sidebarToggle.setAttribute('aria-expanded', 'true');
+                sidebarToggle.setAttribute('aria-label', 'Свернуть историю');
             }
         });
     }
@@ -124,13 +111,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Обработчик горячих клавиш
         document.addEventListener('keydown', function(event) {
-            // Alt+M для активации микрофона
             if (event.altKey && event.key === 'm') {
-                event.preventDefault(); // Предотвращаем стандартное действие браузера
+                event.preventDefault();
                 toggleSpeechRecognition();
-                // Добавляем визуальный эффект нажатия на кнопку
-                micButton.classList.add('pressed');
-                setTimeout(() => micButton.classList.remove('pressed'), 200);
             }
         });
         
@@ -252,22 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // Эффект при наведении: подсветка карточки и столбца
-            resultItem.style.transformOrigin = 'center top';
-            resultItem.addEventListener('mouseenter', function() {
-                this.classList.add('column-hover');
-                const index = Array.from(resultsList.children).indexOf(resultItem);
-                const col = index % 3; // предполагаем 3 колонки
-                Array.from(resultsList.children).forEach((child, i) => {
-                    if (i % 3 === col && child !== resultItem) {
-                        child.classList.add('column-hover');
-                    }
-                });
-            });
-            resultItem.addEventListener('mouseleave', function() {
-                this.classList.remove('column-hover');
-                Array.from(resultsList.children).forEach(child => child.classList.remove('column-hover'));
-            });
+            // Hover effects are now handled by CSS
             
             resultsList.appendChild(resultItem);
         });
