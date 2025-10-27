@@ -129,7 +129,7 @@ function addStyles() {
         }
         
         .tab.active {
-            background-color: #3498db;
+            background-color: #a0a0a0;
             color: white;
         }
         
@@ -154,7 +154,7 @@ function addStyles() {
         }
         
         .subcategory-card.active {
-            background-color: #3498db;
+            background-color: #a0a0a0;
             color: white;
         }
     `;

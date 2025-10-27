@@ -39,3 +39,24 @@ body {
         padding: 10px;
     }
 }
+
+.mic-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.mic-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.mic-button.active {
+    background-color: #ff4d4d !important;
+}
+
+.mic-button.active svg {
+    fill: white !important;
+}

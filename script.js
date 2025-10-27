@@ -37,14 +37,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Проверка поддержки Web Speech API
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    const isSpeechSupported = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+    if (!isSpeechSupported) {
         if (statusIndicator) statusIndicator.textContent = 'Ваш браузер не поддерживает распознавание речи';
-        micButton.disabled = true;
+        // Не отключаем кнопку, даём визуальную обратную связь
+        micButton.removeAttribute('disabled');
+        micButton.setAttribute('aria-disabled', 'true');
+        micButton.setAttribute('aria-pressed', 'false');
+        micButton.addEventListener('click', function() {
+            micButton.classList.toggle('active');
+            const pressed = micButton.classList.contains('active');
+            micButton.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+        });
     } else {
         // Инициализация распознавания речи
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        
         recognition.lang = 'ru-RU';
         recognition.continuous = true;
         recognition.interimResults = true;
@@ -123,8 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 recognition.stop();
                 micButton.classList.remove('listening');
                 document.body.classList.remove('listening');
+                micButton.classList.remove('active');
+                micButton.setAttribute('aria-pressed', 'false');
                 if (statusIndicator) statusIndicator.textContent = 'Готов к прослушиванию';
             } else {
+                micButton.classList.add('active');
+                micButton.setAttribute('aria-pressed', 'true');
                 recognition.start();
             }
         }
