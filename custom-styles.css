@@ -54,8 +54,9 @@
     height: 40px;
     border-bottom: 1px solid var(--color-border);
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start; /* переносим кнопки влево */
     align-items: center;
+    position: relative; /* для абсолютного позиционирования toggle справа */
 }
 
 /* Кнопка сворачивания/разворачивания */
@@ -375,38 +376,53 @@
         --sidebar-width: 200px;
     }
 }
-/* Кнопки истории слева от ввода */
+/* Кнопки режима в сайдбаре */
+.sidebar-mode-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 0; /* без внутреннего отступа, чтобы прижать к левому краю хедера */
+    margin: 0;  /* убираем смещение вниз */
+}
+
 .history-button,
-.library-button {
+.transcription-button {
     width: 36px;
     height: 36px;
-    border: 1px solid var(--color-border);
-    background: var(--color-card);
+    border: 1px solid #d0d0d0; /* светло-серая обводка */
+    background: #202020; /* слегка светлее для выделения на темном фоне */
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     color: var(--color-text);
-    font-size: 12px;
-    padding: 0 8px;
+    padding: 0;
 }
 
 .history-button:hover,
-.library-button:hover {
-    background: #2a2a2a;
+.transcription-button:hover {
+    background: #2a2a2a; /* легкое подсветление при наведении */
 }
 
-.library-button.active {
+.transcription-button.active {
     outline: 2px solid #888;
 }
 
-/* Элементы библиотеки в сайдбаре */
-#library-history {
+/* Цвет и размер иконок внутри кнопок */
+.history-button svg,
+.transcription-button svg {
+    stroke: var(--color-text);
+    width: 18px;
+    height: 18px;
+}
+
+/* Элементы транскрипции в сайдбаре */
+#transcription-history {
     padding: var(--grid-gap);
 }
 
-.library-item {
+.transcription-item {
     background: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: 6px;
@@ -414,29 +430,29 @@
     margin-bottom: 8px;
 }
 
-.library-item-text {
+.transcription-item-text {
     margin-bottom: 6px;
 }
 
-.library-word {
+.transcription-word {
     display: inline;
     padding: 0 2px;
     border-radius: 3px;
     cursor: pointer;
 }
 
-.library-word.selected {
+.transcription-word.selected {
     background: #3a3a3a;
     border: 1px solid #555;
 }
 
-.library-item-actions {
+.transcription-item-actions {
     display: flex;
     gap: 6px;
     margin-bottom: 4px;
 }
 
-.library-item-actions button {
+.transcription-item-actions button {
     background: #2a2a2a;
     color: var(--color-text);
     border: 1px solid #444;
@@ -446,6 +462,6 @@
     cursor: pointer;
 }
 
-.library-item-actions button:hover {
+.transcription-item-actions button:hover {
     background: #333;
 }

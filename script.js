@@ -9,40 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchHistory = document.getElementById('search-history');
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
-    const inputGroup = document.querySelector('.input-group');
-    
-    // Добавляем кнопки слева от поля ввода и создаем контейнер голосовой истории
-    let historyButton = document.getElementById('history-button');
-    let libraryButton = document.getElementById('library-button');
-    let libraryHistory = document.getElementById('library-history');
-    
-    if (inputGroup) {
-        if (!historyButton) {
-            historyButton = document.createElement('button');
-            historyButton.id = 'history-button';
-            historyButton.className = 'history-button';
-            historyButton.title = 'История';
-            historyButton.setAttribute('aria-label', 'История');
-            historyButton.textContent = 'История';
-            inputGroup.prepend(historyButton);
-        }
-        if (!libraryButton) {
-            libraryButton = document.createElement('button');
-            libraryButton.id = 'library-button';
-            libraryButton.className = 'library-button';
-            libraryButton.title = 'Библиотека';
-            libraryButton.setAttribute('aria-label', 'Библиотека');
-            libraryButton.textContent = 'Библиотека';
-            inputGroup.prepend(libraryButton);
-        }
-    }
-    
-    if (sidebar && !libraryHistory) {
-        libraryHistory = document.createElement('div');
-        libraryHistory.id = 'library-history';
-        libraryHistory.style.display = 'none';
-        sidebar.appendChild(libraryHistory);
-    }
+    // Элементы режимов (кнопки в сайдбаре)
+    const historyButton = document.getElementById('history-button');
+    const transcriptionButton = document.getElementById('transcription-button');
+    const transcriptionHistory = document.getElementById('transcription-history');
     
     // Автоматическая загрузка всех карточек
     setTimeout(() => {
@@ -53,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Массив для хранения истории поиска
     let searchHistoryArray = [];
-    let libraryHistoryArray = [];
-    let libraryMode = false; // активен ли режим «Библиотека»
+    let transcriptionHistoryArray = [];
+    let transcriptionMode = false; // активен ли режим «transcription»
     let pressHoldActive = false;
     const selectedKeywordsById = new Map();
     
@@ -76,22 +46,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Кнопка показа/скрытия истории
     if (historyButton) {
         historyButton.addEventListener('click', () => {
-            if (!searchHistory || !libraryHistory) return;
+            if (!searchHistory || !transcriptionHistory) return;
             // Показать обычную историю
             searchHistory.style.display = 'block';
-            libraryHistory.style.display = 'none';
-            libraryMode = false;
-            libraryButton.classList.toggle('active', false);
+            transcriptionHistory.style.display = 'none';
+            transcriptionMode = false;
+            if (transcriptionButton) transcriptionButton.classList.toggle('active', false);
         });
     }
-    if (libraryButton) {
-        libraryButton.addEventListener('click', () => {
-            if (!searchHistory || !libraryHistory) return;
-            // Показать библиотеку и активировать режим
+    if (transcriptionButton) {
+        transcriptionButton.addEventListener('click', () => {
+            if (!searchHistory || !transcriptionHistory) return;
+            // Показать транскрипцию и активировать режим
             searchHistory.style.display = 'none';
-            libraryHistory.style.display = 'block';
-            libraryMode = true;
-            libraryButton.classList.toggle('active', true);
+            transcriptionHistory.style.display = 'block';
+            transcriptionMode = true;
+            transcriptionButton.classList.toggle('active', true);
         });
     }
     
@@ -130,18 +100,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Если есть финальный результат, выполняем поиск
+            // Если есть финальный результат
             if (finalTranscript !== '') {
                 searchInput.value = finalTranscript;
-                if (statusIndicator) statusIndicator.textContent = 'Поиск: ' + finalTranscript;
+                if (statusIndicator) statusIndicator.textContent = 'Получено: ' + finalTranscript;
                 
-                // Выполнение поиска по распознанному тексту
-                performSearch(finalTranscript);
-                
-                // Сохранение в нужное хранилище
-                if (pressHoldActive || libraryMode) {
-                    addToLibraryHistory(finalTranscript);
+                // В режиме транскрипции/удержания: фиксируем строку, не ищем и не пишем в историю
+                if (pressHoldActive || transcriptionMode) {
+                    addToTranscriptionHistory(finalTranscript);
                 } else {
+                    // Обычный режим: выполняем поиск и записываем в историю
+                    performSearch(finalTranscript);
                     addToSearchHistory(finalTranscript);
                 }
             } else if (interimTranscript !== '') {
@@ -234,17 +203,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Отобразить все карточки на старте
     displaySearchResults(uniqueQaData, '');
     
-    // Обработчик нажатия Enter в поле поиска
+    // Обработчик нажатия Enter в поле поиска — всегда выполняет поиск и пишет в историю
     searchInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             const query = this.value.trim();
             if (query) {
-                if (libraryMode) {
-                    addToLibraryHistory(query);
-                } else {
-                    performSearch(query);
-                    addToSearchHistory(query);
-                }
+                performSearch(query);
+                addToSearchHistory(query);
             }
         }
     });
@@ -293,39 +258,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Функции для библиотеки
-    function addToLibraryHistory(text) {
+    // Функции для транскрипции
+    function addToTranscriptionHistory(text) {
         if (!text.trim()) return;
         const item = {
             text,
             timestamp: new Date().toLocaleTimeString(),
             id: Date.now()
         };
-        libraryHistoryArray.unshift(item);
-        renderLibraryHistory();
+        transcriptionHistoryArray.unshift(item);
+        renderTranscriptionHistory();
     }
     
-    function renderLibraryHistory() {
-        if (!libraryHistory) return;
-        libraryHistory.innerHTML = '';
-        libraryHistoryArray.forEach(item => {
+    function renderTranscriptionHistory() {
+        if (!transcriptionHistory) return;
+        transcriptionHistory.innerHTML = '';
+        transcriptionHistoryArray.forEach(item => {
             const el = document.createElement('div');
-            el.className = 'library-item';
+            el.className = 'transcription-item';
             el.dataset.id = item.id;
             // Построить слова
             const words = item.text.split(/\s+/);
-            const wordsHtml = words.map((w, idx) => `<span class="library-word" data-index="${idx}">${escapeHtml(w)}</span>`).join(' ');
+            const wordsHtml = words.map((w, idx) => `<span class="transcription-word" data-index="${idx}">${escapeHtml(w)}</span>`).join(' ');
             el.innerHTML = `
-                <div class="library-item-text">${wordsHtml}</div>
-                <div class="library-item-actions">
-                    <button class="library-search">Искать по выбранным</button>
-                    <button class="library-edit">Редактировать</button>
-                    <button class="library-delete">Удалить</button>
+                <div class="transcription-item-text">${wordsHtml}</div>
+                <div class="transcription-item-actions">
+                    <button class="transcription-edit">Редактировать</button>
+                    <button class="transcription-delete">Удалить</button>
                 </div>
-                <div class="library-item-time">${item.timestamp}</div>
+                <div class="transcription-item-time">${item.timestamp}</div>
             `;
             // Обработчик клика по словам
-            el.querySelectorAll('.library-word').forEach(span => {
+            el.querySelectorAll('.transcription-word').forEach(span => {
                 span.addEventListener('click', () => {
                     const selected = span.classList.toggle('selected');
                     const id = item.id;
@@ -337,42 +301,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         set.delete(word);
                     }
                     selectedKeywordsById.set(id, set);
+                    // Обновляем поле поиска выбранными словами
+                    const keywords = Array.from(set);
+                    searchInput.value = keywords.join(' ');
                 });
             });
-            // Кнопка поиска
-            el.querySelector('.library-search').addEventListener('click', () => {
-                const id = item.id;
-                const set = selectedKeywordsById.get(id) || new Set();
-                const keywords = Array.from(set);
-                if (keywords.length === 0) return;
-                searchLibraryByKeywords(keywords);
-            });
             // Кнопка редактирования
-            el.querySelector('.library-edit').addEventListener('click', () => {
+            el.querySelector('.transcription-edit').addEventListener('click', () => {
                 const updated = prompt('Изменить текст записи:', item.text);
                 if (updated !== null) {
                     item.text = updated;
-                    renderLibraryHistory();
+                    renderTranscriptionHistory();
                 }
             });
             // Кнопка удаления
-            el.querySelector('.library-delete').addEventListener('click', () => {
-                libraryHistoryArray = libraryHistoryArray.filter(x => x.id !== item.id);
+            el.querySelector('.transcription-delete').addEventListener('click', () => {
+                transcriptionHistoryArray = transcriptionHistoryArray.filter(x => x.id !== item.id);
                 selectedKeywordsById.delete(item.id);
-                renderLibraryHistory();
+                renderTranscriptionHistory();
             });
-            libraryHistory.appendChild(el);
+            transcriptionHistory.appendChild(el);
         });
     }
     
-    function searchLibraryByKeywords(keywords) {
-        const lower = keywords.map(k => k.toLowerCase());
-        const filtered = uniqueQaData.filter(item => {
-            const hay = `${item.question} ${item.answer}`.toLowerCase();
-            return lower.some(k => hay.includes(k));
-        });
-        displaySearchResults(filtered, keywords.join(', '));
-    }
+    // Поиск выполняется через поле ввода, здесь дополнительная функция не требуется
     
     function escapeHtml(str) {
         return str
