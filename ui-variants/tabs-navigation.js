@@ -35,7 +35,7 @@ export function initTabsNavigation() {
         const tab = document.createElement('div');
         tab.className = 'tab';
         tab.dataset.category = category.id;
-        tab.textContent = category.name;
+        tab.textContent = category.displayName || category.name;
         tabsContainer.appendChild(tab);
     });
     
@@ -163,7 +163,8 @@ function displayQuestions(questions, title) {
     // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
-    resultsHeader.innerHTML = `<h2>${title}</h2><p>Найдено вопросов: ${questions.length}</p>`;
+    // Без заголовка категории — только счётчик
+    resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
     
     // Добавляем вопросы
@@ -174,10 +175,6 @@ function displayQuestions(questions, title) {
         resultItem.innerHTML = `
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
-            <div class="category-info">
-                <span class="category-badge">${item.category}</span>
-                <span class="subcategory-badge">${item.subcategory}</span>
-            </div>
         `;
         
         resultsList.appendChild(resultItem);

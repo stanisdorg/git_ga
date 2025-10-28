@@ -43,6 +43,7 @@ const categories = [
     {
         id: 5,
         name: "Поведенческие вопросы",
+        displayName: "Поведенческие",
         subcategories: [
             { id: 501, name: "Работа в команде" },
             { id: 502, name: "Решение конфликтов" },

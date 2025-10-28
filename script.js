@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Информация о поиске
         const resultsHeader = document.createElement('div');
         resultsHeader.className = 'results-header';
-        resultsHeader.innerHTML = `<p class="results-count">Найдено вопросов: ${filteredData.length}</p>`;
+        resultsHeader.innerHTML = `<p class="results-count">Найдено: ${filteredData.length}</p>`;
         resultsList.appendChild(resultsHeader);
         
         // Добавляем результаты
@@ -241,10 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
             resultItem.innerHTML = `
                 <div class="question">${item.question}</div>
                 <div class="answer">${item.answer}</div>
-                <div class="result-meta">
-                    <span class="result-category">Категория: ${item.category}</span>
-                    <span class="result-subcategory">Подкатегория: ${item.subcategory}</span>
-                </div>
             `;
             
             // Hover effects are now handled by CSS

@@ -33,7 +33,7 @@ export function initSidebarNavigation() {
     categories.forEach(category => {
         const categoryItem = document.createElement('div');
         categoryItem.className = 'category-item';
-        categoryItem.textContent = category.name;
+        categoryItem.textContent = category.displayName || category.name;
         categoryItem.dataset.categoryId = category.id;
         categoriesList.appendChild(categoryItem);
         
@@ -143,7 +143,8 @@ function displayQuestions(questions, title) {
     // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
-    resultsHeader.innerHTML = `<h2>${title}</h2><p>Найдено вопросов: ${questions.length}</p>`;
+    // Без заголовка категории — только счётчик
+    resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
     
     // Добавляем вопросы
@@ -154,10 +155,6 @@ function displayQuestions(questions, title) {
         resultItem.innerHTML = `
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
-            <div class="category-info">
-                <span class="category-badge">${item.category}</span>
-                <span class="subcategory-badge">${item.subcategory}</span>
-            </div>
         `;
         
         resultsList.appendChild(resultItem);

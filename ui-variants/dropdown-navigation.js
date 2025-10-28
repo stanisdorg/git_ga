@@ -28,7 +28,7 @@ export function initDropdownNavigation() {
     categories.forEach(category => {
         const option = document.createElement('option');
         option.value = category.id;
-        option.textContent = category.name;
+        option.textContent = category.displayName || category.name;
         categorySelect.appendChild(option);
     });
     
@@ -128,7 +128,8 @@ function displayQuestions(questions, title) {
     // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
-    resultsHeader.innerHTML = `<h2>${title}</h2><p>Найдено вопросов: ${questions.length}</p>`;
+    // Без заголовка категории — только счётчик
+    resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
     
     // Добавляем вопросы
@@ -139,10 +140,6 @@ function displayQuestions(questions, title) {
         resultItem.innerHTML = `
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
-            <div class="category-info">
-                <span class="category-badge">${item.category}</span>
-                <span class="subcategory-badge">${item.subcategory}</span>
-            </div>
         `;
         
 
