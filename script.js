@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         displaySearchResults(filteredData, query);
     }
     
-    // Функция отображения результатов поиска
+    // Функция для отображения результатов поиска
     function displaySearchResults(filteredData, query) {
         const resultsList = document.getElementById('results-list');
         resultsList.innerHTML = '';
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Информация о поиске
         const resultsHeader = document.createElement('div');
         resultsHeader.className = 'results-header';
-        resultsHeader.innerHTML = `<p class="results-count">Найдено: ${filteredData.length}</p>`;
+        resultsHeader.innerHTML = `<span>Найдено: ${filteredData.length}</span>`;
         resultsList.appendChild(resultsHeader);
         
         // Добавляем результаты

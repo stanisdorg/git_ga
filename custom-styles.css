@@ -50,7 +50,8 @@
 
 /* Заголовок боковой панели */
 .sidebar-header {
-    padding: 16px;
+    padding: 0 16px;
+    height: 40px;
     border-bottom: 1px solid var(--color-border);
     display: flex;
     justify-content: flex-end;
@@ -95,6 +96,10 @@
 }
 
 /* Категории */
+.categories-container {
+    margin-top: var(--grid-gap);
+}
+
 .category-item {
     padding: 8px 12px;
     cursor: pointer;
@@ -159,7 +164,7 @@
 }
 
 .sidebar.collapsed + .container {
-    left: var(--sidebar-width);
+    left: 40px;
 }
 
 /* Контейнер результатов */
@@ -170,6 +175,12 @@
     padding: var(--grid-gap);
     max-width: none;
     margin: 0;
+}
+
+/* Результаты поиска */
+.results-header {
+    margin: 0;
+    gap: 4px;
 }
 
 /* Карточка результата */
@@ -184,8 +195,7 @@
 
 .result-item:hover {
     background: #313131;
-    border-color: #888 !important;
-    box-shadow: 0 0 0 1px #888 inset;
+    border-color: #444 !important;
 }
 
 /* Вопрос */
@@ -200,6 +210,12 @@
     padding: 4px;
     border: 1px solid #444 !important;
     transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Стили для микрофона */
+#mic-button {
+    margin-right: 8px;
+}
 }
 
 .result-item:hover .question {
@@ -253,8 +269,11 @@
 
 /* Поле поиска */
 .search-container {
-    margin-bottom: 4px !important;
-    padding: 0 var(--grid-gap);
+    padding: 16px var(--grid-gap);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .input-group {
