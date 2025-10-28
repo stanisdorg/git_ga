@@ -9,6 +9,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchHistory = document.getElementById('search-history');
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
+    const inputGroup = document.querySelector('.input-group');
+    
+    // Добавляем кнопки слева от поля ввода и создаем контейнер голосовой истории
+    let historyButton = document.getElementById('history-button');
+    let libraryButton = document.getElementById('library-button');
+    let libraryHistory = document.getElementById('library-history');
+    
+    if (inputGroup) {
+        if (!historyButton) {
+            historyButton = document.createElement('button');
+            historyButton.id = 'history-button';
+            historyButton.className = 'history-button';
+            historyButton.title = 'История';
+            historyButton.setAttribute('aria-label', 'История');
+            historyButton.textContent = 'История';
+            inputGroup.prepend(historyButton);
+        }
+        if (!libraryButton) {
+            libraryButton = document.createElement('button');
+            libraryButton.id = 'library-button';
+            libraryButton.className = 'library-button';
+            libraryButton.title = 'Библиотека';
+            libraryButton.setAttribute('aria-label', 'Библиотека');
+            libraryButton.textContent = 'Библиотека';
+            inputGroup.prepend(libraryButton);
+        }
+    }
+    
+    if (sidebar && !libraryHistory) {
+        libraryHistory = document.createElement('div');
+        libraryHistory.id = 'library-history';
+        libraryHistory.style.display = 'none';
+        sidebar.appendChild(libraryHistory);
+    }
     
     // Автоматическая загрузка всех карточек
     setTimeout(() => {
@@ -19,6 +53,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Массив для хранения истории поиска
     let searchHistoryArray = [];
+    let libraryHistoryArray = [];
+    let libraryMode = false; // активен ли режим «Библиотека»
+    let pressHoldActive = false;
+    const selectedKeywordsById = new Map();
     
     // Тоггл боковой панели (сворачивание истории поиска)
     if (sidebarToggle && sidebar && searchHistory) {
@@ -33,6 +71,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 sidebarToggle.setAttribute('aria-expanded', 'true');
                 sidebarToggle.setAttribute('aria-label', 'Свернуть историю');
             }
+        });
+    }
+    // Кнопка показа/скрытия истории
+    if (historyButton) {
+        historyButton.addEventListener('click', () => {
+            if (!searchHistory || !libraryHistory) return;
+            // Показать обычную историю
+            searchHistory.style.display = 'block';
+            libraryHistory.style.display = 'none';
+            libraryMode = false;
+            libraryButton.classList.toggle('active', false);
+        });
+    }
+    if (libraryButton) {
+        libraryButton.addEventListener('click', () => {
+            if (!searchHistory || !libraryHistory) return;
+            // Показать библиотеку и активировать режим
+            searchHistory.style.display = 'none';
+            libraryHistory.style.display = 'block';
+            libraryMode = true;
+            libraryButton.classList.toggle('active', true);
         });
     }
     
@@ -79,8 +138,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Выполнение поиска по распознанному тексту
                 performSearch(finalTranscript);
                 
-                // Добавление запроса в историю
-                addToSearchHistory(finalTranscript);
+                // Сохранение в нужное хранилище
+                if (pressHoldActive || libraryMode) {
+                    addToLibraryHistory(finalTranscript);
+                } else {
+                    addToSearchHistory(finalTranscript);
+                }
             } else if (interimTranscript !== '') {
                 // Показываем промежуточный результат
                 searchInput.value = interimTranscript;
@@ -114,8 +177,29 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        // Обработчик нажатия на кнопку микрофона
+        // Обработчик нажатия на кнопку микрофона (клик — обычный режим)
         micButton.addEventListener('click', toggleSpeechRecognition);
+        // Режим зажатой кнопки: удержание — слушаем, отпуск — останавливаем
+        micButton.addEventListener('mousedown', () => {
+            pressHoldActive = true;
+            micButton.classList.add('active');
+            micButton.setAttribute('aria-pressed', 'true');
+            recognition.start();
+        });
+        micButton.addEventListener('mouseup', () => {
+            pressHoldActive = false;
+            recognition.stop();
+            micButton.classList.remove('active');
+            micButton.setAttribute('aria-pressed', 'false');
+        });
+        micButton.addEventListener('mouseleave', () => {
+            if (pressHoldActive) {
+                pressHoldActive = false;
+                recognition.stop();
+                micButton.classList.remove('active');
+                micButton.setAttribute('aria-pressed', 'false');
+            }
+        });
         
         // Обработчик горячих клавиш
         document.addEventListener('keydown', function(event) {
@@ -155,8 +239,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.key === 'Enter') {
             const query = this.value.trim();
             if (query) {
-                performSearch(query);
-                addToSearchHistory(query);
+                if (libraryMode) {
+                    addToLibraryHistory(query);
+                } else {
+                    performSearch(query);
+                    addToSearchHistory(query);
+                }
             }
         }
     });
@@ -203,6 +291,96 @@ document.addEventListener('DOMContentLoaded', function() {
             
             searchHistory.appendChild(historyElement);
         });
+    }
+    
+    // Функции для библиотеки
+    function addToLibraryHistory(text) {
+        if (!text.trim()) return;
+        const item = {
+            text,
+            timestamp: new Date().toLocaleTimeString(),
+            id: Date.now()
+        };
+        libraryHistoryArray.unshift(item);
+        renderLibraryHistory();
+    }
+    
+    function renderLibraryHistory() {
+        if (!libraryHistory) return;
+        libraryHistory.innerHTML = '';
+        libraryHistoryArray.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'library-item';
+            el.dataset.id = item.id;
+            // Построить слова
+            const words = item.text.split(/\s+/);
+            const wordsHtml = words.map((w, idx) => `<span class="library-word" data-index="${idx}">${escapeHtml(w)}</span>`).join(' ');
+            el.innerHTML = `
+                <div class="library-item-text">${wordsHtml}</div>
+                <div class="library-item-actions">
+                    <button class="library-search">Искать по выбранным</button>
+                    <button class="library-edit">Редактировать</button>
+                    <button class="library-delete">Удалить</button>
+                </div>
+                <div class="library-item-time">${item.timestamp}</div>
+            `;
+            // Обработчик клика по словам
+            el.querySelectorAll('.library-word').forEach(span => {
+                span.addEventListener('click', () => {
+                    const selected = span.classList.toggle('selected');
+                    const id = item.id;
+                    const word = span.textContent.trim();
+                    const set = selectedKeywordsById.get(id) || new Set();
+                    if (selected) {
+                        set.add(word);
+                    } else {
+                        set.delete(word);
+                    }
+                    selectedKeywordsById.set(id, set);
+                });
+            });
+            // Кнопка поиска
+            el.querySelector('.library-search').addEventListener('click', () => {
+                const id = item.id;
+                const set = selectedKeywordsById.get(id) || new Set();
+                const keywords = Array.from(set);
+                if (keywords.length === 0) return;
+                searchLibraryByKeywords(keywords);
+            });
+            // Кнопка редактирования
+            el.querySelector('.library-edit').addEventListener('click', () => {
+                const updated = prompt('Изменить текст записи:', item.text);
+                if (updated !== null) {
+                    item.text = updated;
+                    renderLibraryHistory();
+                }
+            });
+            // Кнопка удаления
+            el.querySelector('.library-delete').addEventListener('click', () => {
+                libraryHistoryArray = libraryHistoryArray.filter(x => x.id !== item.id);
+                selectedKeywordsById.delete(item.id);
+                renderLibraryHistory();
+            });
+            libraryHistory.appendChild(el);
+        });
+    }
+    
+    function searchLibraryByKeywords(keywords) {
+        const lower = keywords.map(k => k.toLowerCase());
+        const filtered = uniqueQaData.filter(item => {
+            const hay = `${item.question} ${item.answer}`.toLowerCase();
+            return lower.some(k => hay.includes(k));
+        });
+        displaySearchResults(filtered, keywords.join(', '));
+    }
+    
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
     
     // Функция выполнения поиска
