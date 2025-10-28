@@ -24,7 +24,7 @@
     background: var(--color-card);
     border-right: 1px solid var(--color-border);
     position: fixed;
-    top: 0;
+    top: 10px;
     bottom: 0;
     left: 0;
     display: flex;
@@ -97,6 +97,7 @@
 
 /* Категории */
 .categories-container {
+    padding: 0 var(--grid-gap);
     margin-top: var(--grid-gap);
 }
 
@@ -153,7 +154,7 @@
 /* Основной контент */
 .container {
     flex: 1;
-    padding: 0 var(--grid-gap);
+    padding: 10px 0 0 0;
     position: fixed;
     left: var(--sidebar-width);
     right: 0;
@@ -216,7 +217,7 @@
 #mic-button {
     margin-right: 8px;
 }
-}
+
 
 .result-item:hover .question {
     border-color: #888 !important;
@@ -264,22 +265,38 @@
     color: var(--color-badge-text) !important;
     font-size: 9px !important;
     font-weight: 400 !important;
-    text-transform: lowercase !important;
+    text-transform: none !important;
+    margin: 0 !important;
 }
 
 /* Поле поиска */
 .search-container {
-    padding: 16px var(--grid-gap);
+    padding: 0 var(--grid-gap) !important;
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 0 !important;
+}
+
+.input-group {
+    flex: 1;
 }
 
 .input-group {
     position: relative;
     display: flex;
     align-items: center;
+    padding: 0 !important;
+}
+
+/* Выравнивание навигации категорий по краям карточек */
+.tabs-navigation {
+    padding: 0 var(--grid-gap) !important;
+    margin-bottom: 0 !important;
+}
+
+.tabs-header {
+    margin-bottom: 0 !important;
 }
 
 #search-input {
