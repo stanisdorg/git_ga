@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Проверка поддержки Web Speech API
-    const isSpeechSupported = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+    const preferElectronSTT = typeof window.sttBridge !== 'undefined';
+    const isSpeechSupported = !preferElectronSTT && (('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window));
     if (!isSpeechSupported) {
         if (statusIndicator) statusIndicator.textContent = 'Ваш браузер не поддерживает распознавание речи';
         // Не отключаем кнопку, даём визуальную обратную связь
@@ -443,6 +444,23 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.addEventListener('input', function() {
         performSearch(this.value);
     });
+
+    // Поддержка событий Electron STT для живого обновления
+    if (preferElectronSTT) {
+        let finalText = '';
+        let interim = '';
+        window.addEventListener('electron-stt-partial', (e) => {
+            interim = (e.detail || '').trim();
+            renderTranscriptionCombined(finalText, interim);
+        });
+        window.addEventListener('electron-stt-final', (e) => {
+            const t = (e.detail || '').trim();
+            if (t) finalText = (finalText ? finalText + ' ' : '') + t;
+            interim = '';
+            transcriptionText = finalText;
+            renderTranscriptionCombined(finalText, interim);
+        });
+    }
 
     // Отобразить все карточки на старте
     displaySearchResults(uniqueQaData, '');
