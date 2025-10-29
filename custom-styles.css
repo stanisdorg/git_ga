@@ -81,7 +81,7 @@
 }
 
 .sidebar-toggle svg {
-    stroke: var(--color-text);
+    stroke: #999999; /* серый цвет иконок */
 }
 
 .sidebar-toggle .icon-expand {
@@ -432,6 +432,15 @@
 
 .transcription-item-text {
     margin-bottom: 6px;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    background: #2a2a2a;
+    border-radius: 4px;
+    padding: 4px;
+    border: 1px solid #444 !important;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .transcription-word {
@@ -442,8 +451,8 @@
 }
 
 .transcription-word.selected {
-    background: #3a3a3a;
-    border: 1px solid #555;
+    background: #666666; /* серое выделение выбранных слов */
+    border: 1px solid #999999;
 }
 
 .transcription-item-actions {

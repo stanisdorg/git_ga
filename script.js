@@ -282,11 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const wordsHtml = words.map((w, idx) => `<span class="transcription-word" data-index="${idx}">${escapeHtml(w)}</span>`).join(' ');
             el.innerHTML = `
                 <div class="transcription-item-text">${wordsHtml}</div>
-                <div class="transcription-item-actions">
-                    <button class="transcription-edit">Редактировать</button>
-                    <button class="transcription-delete">Удалить</button>
-                </div>
-                <div class="transcription-item-time">${item.timestamp}</div>
             `;
             // Обработчик клика по словам
             el.querySelectorAll('.transcription-word').forEach(span => {
@@ -305,20 +300,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const keywords = Array.from(set);
                     searchInput.value = keywords.join(' ');
                 });
-            });
-            // Кнопка редактирования
-            el.querySelector('.transcription-edit').addEventListener('click', () => {
-                const updated = prompt('Изменить текст записи:', item.text);
-                if (updated !== null) {
-                    item.text = updated;
-                    renderTranscriptionHistory();
-                }
-            });
-            // Кнопка удаления
-            el.querySelector('.transcription-delete').addEventListener('click', () => {
-                transcriptionHistoryArray = transcriptionHistoryArray.filter(x => x.id !== item.id);
-                selectedKeywordsById.delete(item.id);
-                renderTranscriptionHistory();
             });
             transcriptionHistory.appendChild(el);
         });
