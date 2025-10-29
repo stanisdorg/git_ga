@@ -63,16 +63,16 @@
 .sidebar-toggle {
     background: none;
     border: none;
-    padding: 8px;
+    padding: 2px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 6px;
     position: absolute;
     z-index: 1001;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     right: 0;
 }
 
@@ -291,6 +291,24 @@
     gap: 8px;
 }
 
+/* Кнопка сброса поиска слева от поля */
+#reset-search.reset-search-button {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #c0c0c0;
+    cursor: pointer;
+}
+
+#reset-search:hover {
+    background: #2a2a2a;
+}
+
 /* Выравнивание навигации категорий по краям карточек */
 .tabs-navigation {
     padding: 0 var(--grid-gap) !important;
@@ -340,14 +358,65 @@
     overflow: hidden;
 }
 
+/* Кнопка захвата звука экрана размещается левее микрофона */
+#screen-audio-button {
+    right: 56px !important; /* чтобы не накладывался на mic */
+    z-index: 2;
+}
+
+.screen-audio-button.listening {
+    background: rgba(76, 175, 255, 0.25) !important;
+    box-shadow: 0 0 0 0 rgba(76, 175, 255, 0.6);
+    animation: screen-audio-pulse 1.2s ease-out infinite;
+}
+
+.screen-audio-button.listening svg {
+    fill: #ffffff !important;
+}
+
+@keyframes screen-audio-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 255, 0.6); }
+    70% { box-shadow: 0 0 0 12px rgba(76, 175, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 255, 0); }
+}
+
+/* Небольшие визуализаторы рядом с кнопками */
+.audio-visualizer {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 14px;
+    width: 220px;
+}
+
+#mic-visualizer { right: 120px !important; }
+#screen-visualizer { right: 360px !important; }
+
 .mic-button:active {
     background: var(--color-button-active);
 }
 
 .mic-button svg {
-    fill: var(--color-text);
+    fill: #c0c0c0; /* светло-серый по умолчанию */
     width: 24px;
     height: 24px;
+}
+
+/* Визуализация состояния прослушивания */
+.mic-button.listening {
+    background: rgba(255, 77, 77, 0.25) !important;
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.6);
+    animation: mic-pulse 1.2s ease-out infinite;
+}
+
+.mic-button.listening svg {
+    fill: #ffffff !important;
+}
+
+@keyframes mic-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.6); }
+    70% { box-shadow: 0 0 0 12px rgba(255, 77, 77, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
 }
 
 /* Адаптивная верстка */
@@ -412,14 +481,32 @@
 /* Цвет и размер иконок внутри кнопок */
 .history-button svg,
 .transcription-button svg {
-    stroke: var(--color-text);
+    stroke: #c0c0c0; /* светло-серый */
     width: 18px;
     height: 18px;
+}
+
+/* Заставляем currentColor быть светло-серым для inline SVG с stroke="currentColor" */
+.history-button,
+.transcription-button {
+    color: #c0c0c0;
+}
+
+/* Кнопка сворачивания сайдбара — SVG внутри использует currentColor */
+.sidebar-toggle {
+    color: #c0c0c0;
+}
+.sidebar-toggle svg {
+    stroke: #c0c0c0;
+    width: 28px;
+    height: 28px;
 }
 
 /* Элементы транскрипции в сайдбаре */
 #transcription-history {
     padding: var(--grid-gap);
+    flex: 1;               /* занимает доступную высоту сайдбара */
+    overflow-y: auto;      /* прокрутка при переполнении */
 }
 
 .transcription-item {
@@ -439,7 +526,7 @@
     background: #2a2a2a;
     border-radius: 4px;
     padding: 4px;
-    border: 1px solid #444 !important;
+    border: none !important; /* убираем лишнюю обводку */
     transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 

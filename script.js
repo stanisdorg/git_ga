@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchHistory = document.getElementById('search-history');
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
+    const screenAudioButton = document.getElementById('screen-audio-button');
+    const micVisualizer = document.getElementById('mic-visualizer');
+    const screenVisualizer = document.getElementById('screen-visualizer');
     // Элементы режимов (кнопки в сайдбаре)
     const historyButton = document.getElementById('history-button');
     const transcriptionButton = document.getElementById('transcription-button');
@@ -23,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Массив для хранения истории поиска
     let searchHistoryArray = [];
-    let transcriptionHistoryArray = [];
+    // Единый текст транскрипции вместо разбивки на блоки
+    let transcriptionText = '';
     let transcriptionMode = false; // активен ли режим «transcription»
     let pressHoldActive = false;
     const selectedKeywordsById = new Map();
@@ -85,7 +89,48 @@ document.addEventListener('DOMContentLoaded', function() {
         recognition.lang = 'ru-RU';
         recognition.continuous = true;
         recognition.interimResults = true;
+
+        // Визуализация микрофона отдельным потоком getUserMedia
+        let micVizStream = null;
+        let micAudioContext = null;
+        let micAnalyser = null;
+        let micDataArray = null;
+        let micVizRAF = null;
+
+        async function startMicVisualizer() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+                micVizStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = micAudioContext.createMediaStreamSource(micVizStream);
+                micAnalyser = micAudioContext.createAnalyser();
+                micAnalyser.fftSize = 1024;
+                micAnalyser.smoothingTimeConstant = 0.85;
+                source.connect(micAnalyser);
+                const bufferLength = micAnalyser.frequencyBinCount;
+                micDataArray = new Uint8Array(bufferLength);
+                visualizeCanvas(micAnalyser, micDataArray, micVisualizer, (id) => micVizRAF = id);
+            } catch (e) {
+                console.warn('Mic visualizer not started:', e);
+            }
+        }
+
+        function stopMicVisualizer() {
+            try { if (micVizRAF) cancelAnimationFrame(micVizRAF); } catch(_){}
+            try { if (micAudioContext) micAudioContext.close(); } catch(_){}
+            if (micVizStream) {
+                micVizStream.getTracks().forEach(t => t.stop());
+            }
+            micVizStream = null;
+            micAudioContext = null;
+            micAnalyser = null;
+            micDataArray = null;
+            clearCanvas(micVisualizer);
+        }
         
+        // Живое обновление транскрипции: финальный и промежуточный хвост
+        let transcriptionFinalText = '';
+        let transcriptionInterim = '';
         // Обработка результатов распознавания
         recognition.onresult = function(event) {
             let finalTranscript = '';
@@ -100,22 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Если есть финальный результат
+            // Финальный текст накапливаем, промежуточный показываем без задержек
             if (finalTranscript !== '') {
-                searchInput.value = finalTranscript;
+                transcriptionFinalText = (transcriptionFinalText ? (transcriptionFinalText + ' ') : '') + finalTranscript.trim();
+                transcriptionInterim = '';
+                renderTranscriptionCombined(transcriptionFinalText, transcriptionInterim);
                 if (statusIndicator) statusIndicator.textContent = 'Получено: ' + finalTranscript;
-                
-                // В режиме транскрипции/удержания: фиксируем строку, не ищем и не пишем в историю
-                if (pressHoldActive || transcriptionMode) {
-                    addToTranscriptionHistory(finalTranscript);
-                } else {
-                    // Обычный режим: выполняем поиск и записываем в историю
-                    performSearch(finalTranscript);
-                    addToSearchHistory(finalTranscript);
-                }
             } else if (interimTranscript !== '') {
-                // Показываем промежуточный результат
-                searchInput.value = interimTranscript;
+                transcriptionInterim = interimTranscript.trim();
+                renderTranscriptionCombined(transcriptionFinalText, transcriptionInterim);
                 if (statusIndicator) statusIndicator.textContent = 'Слушаю: ' + interimTranscript;
             }
         };
@@ -124,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (statusIndicator) statusIndicator.textContent = 'Слушаю...';
             micButton.classList.add('listening');
             document.body.classList.add('listening');
+            startMicVisualizer();
         };
         
         recognition.onend = function() {
@@ -133,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 if (statusIndicator) statusIndicator.textContent = 'Готов к прослушиванию';
             }
+            stopMicVisualizer();
         };
         
         recognition.onerror = function(event) {
@@ -146,22 +186,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
         
-        // Обработчик нажатия на кнопку микрофона (клик — обычный режим)
-        micButton.addEventListener('click', toggleSpeechRecognition);
-        // Режим зажатой кнопки: удержание — слушаем, отпуск — останавливаем
-        micButton.addEventListener('mousedown', () => {
-            pressHoldActive = true;
-            micButton.classList.add('active');
-            micButton.setAttribute('aria-pressed', 'true');
-            recognition.start();
+        // Логика короткого клика (переключение) vs долгого удержания (на время удержания)
+        let holdTimer = null;
+        let holdStartTime = 0;
+        const HOLD_THRESHOLD_MS = 250;
+
+        micButton.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return; // только ЛКМ
+            holdStartTime = Date.now();
+            holdTimer = setTimeout(() => {
+                // Долгое удержание: включаем прослушивание на время удержания
+                pressHoldActive = true;
+                micButton.classList.add('active');
+                micButton.setAttribute('aria-pressed', 'true');
+                recognition.start();
+            }, HOLD_THRESHOLD_MS);
         });
-        micButton.addEventListener('mouseup', () => {
-            pressHoldActive = false;
-            recognition.stop();
-            micButton.classList.remove('active');
-            micButton.setAttribute('aria-pressed', 'false');
+
+        micButton.addEventListener('mouseup', (e) => {
+            if (e.button !== 0) return;
+            const duration = Date.now() - holdStartTime;
+            clearTimeout(holdTimer);
+            holdTimer = null;
+            if (pressHoldActive) {
+                // Завершаем режим удержания
+                pressHoldActive = false;
+                recognition.stop();
+                micButton.classList.remove('active');
+                micButton.setAttribute('aria-pressed', 'false');
+            } else if (duration < HOLD_THRESHOLD_MS) {
+                // Короткий клик: переключение режима прослушивания
+                toggleSpeechRecognition();
+            }
         });
+
         micButton.addEventListener('mouseleave', () => {
+            clearTimeout(holdTimer);
+            holdTimer = null;
             if (pressHoldActive) {
                 pressHoldActive = false;
                 recognition.stop();
@@ -190,9 +251,192 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 micButton.classList.add('active');
                 micButton.setAttribute('aria-pressed', 'true');
+                // очищаем поле поиска перед новым поиском, чтобы не тянуть старый запрос
+                if (searchInput) {
+                    searchInput.value = '';
+                    performSearch('');
+                }
                 recognition.start();
             }
         }
+    }
+
+    // Захват звука экрана (getDisplayMedia + MediaRecorder)
+    let screenMediaRecorder = null;
+    let screenChunks = [];
+    let screenStream = null;
+    let screenAudioContext = null;
+    let screenAnalyser = null;
+    let screenDataArray = null;
+    let screenVizRAF = null;
+
+    async function startScreenAudioCapture() {
+        try {
+            // Просим пользователя выбрать экран/окно со звуком
+            screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,  // видео нужно, чтобы в браузере можно было включить «звук вкладки»
+                audio: true
+            });
+            if (!screenStream.getAudioTracks().length) {
+                throw new Error('Аудиодорожка не предоставлена системой');
+            }
+            screenChunks = [];
+            screenMediaRecorder = new MediaRecorder(screenStream, { mimeType: 'audio/webm' });
+            let hasData = false;
+            screenMediaRecorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) {
+                    hasData = true;
+                    screenChunks.push(e.data);
+                }
+            };
+            screenMediaRecorder.onstop = () => {
+                if (hasData && screenChunks.length > 0) {
+                    const blob = new Blob(screenChunks, { type: 'audio/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `screen-audio-${Date.now()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, 0);
+                }
+            };
+            screenMediaRecorder.start(250);
+            if (screenAudioButton) screenAudioButton.classList.add('listening');
+            screenAudioButton.setAttribute('aria-pressed', 'true');
+
+            // Визуализация системного аудио
+            try {
+                screenAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = screenAudioContext.createMediaStreamSource(screenStream);
+                screenAnalyser = screenAudioContext.createAnalyser();
+                screenAnalyser.fftSize = 1024;
+                screenAnalyser.smoothingTimeConstant = 0.85;
+                source.connect(screenAnalyser);
+                const bufferLength = screenAnalyser.frequencyBinCount;
+                screenDataArray = new Uint8Array(bufferLength);
+                visualizeCanvas(screenAnalyser, screenDataArray, screenVisualizer, (id) => screenVizRAF = id);
+            } catch (e) {
+                console.warn('Screen visualizer not started:', e);
+            }
+        } catch (err) {
+            console.error('Не удалось начать захват звука экрана:', err);
+            alert('Не удалось начать захват звука экрана. Выберите вкладку и включите "Поделиться звуком вкладки".');
+            stopScreenAudioCapture();
+        }
+    }
+
+    function stopScreenAudioCapture() {
+        try {
+            if (screenMediaRecorder && screenMediaRecorder.state !== 'inactive') {
+                screenMediaRecorder.stop();
+            }
+        } catch (_) {}
+        if (screenStream) {
+            screenStream.getTracks().forEach(t => t.stop());
+            screenStream = null;
+        }
+        if (screenAudioButton) screenAudioButton.classList.remove('listening');
+        if (screenAudioButton) screenAudioButton.setAttribute('aria-pressed', 'false');
+        try { if (screenVizRAF) cancelAnimationFrame(screenVizRAF); } catch(_){}
+        try { if (screenAudioContext) screenAudioContext.close(); } catch(_){}
+        screenAnalyser = null;
+        screenDataArray = null;
+        clearCanvas(screenVisualizer);
+    }
+
+    if (screenAudioButton && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        screenAudioButton.addEventListener('click', async () => {
+            if (screenMediaRecorder && screenMediaRecorder.state === 'recording') {
+                stopScreenAudioCapture();
+            } else {
+                await startScreenAudioCapture();
+            }
+        });
+    }
+
+    // Кнопка сброса поиска и горячая клавиша Ctrl+Я
+    const resetSearchBtn = document.getElementById('reset-search');
+    function resetSearch() {
+        if (searchInput) searchInput.value = '';
+        performSearch('');
+        // Сбрасываем выбранные слова
+        selectedKeywordsById.set('global', new Set());
+        // Перерисуем транскрипцию, чтобы снять подсветку
+        if (typeof renderTranscriptionCombined === 'function') {
+            // У нас нет доступа к внутренним переменным final/interim здесь, поэтому просто ререндерим из накопленного текста
+            renderTranscriptionCombined(transcriptionText, '');
+        } else if (typeof renderTranscription === 'function') {
+            renderTranscription();
+        }
+    }
+    if (resetSearchBtn) {
+        resetSearchBtn.addEventListener('click', resetSearch);
+    }
+    document.addEventListener('keydown', (e) => {
+        const key = e.key ? e.key.toLowerCase() : '';
+        const active = document.activeElement;
+        const isEditable = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+        const isSearchFocused = active && active.id === 'search-input';
+        // Сброс по Ctrl+Я (русская раскладка) или Ctrl+Z (undo) — ограничиваем: либо фокус в поиске, либо нет редактируемого элемента
+        if (e.ctrlKey && (key === 'я' || key === 'z') && (isSearchFocused || !isEditable)) {
+            e.preventDefault();
+            resetSearch();
+        }
+    });
+
+    // Сохранение выбранного текста из транскрипции по Enter
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && transcriptionMode) {
+            const set = selectedKeywordsById.get('global');
+            if (set && set.size > 0) {
+                const query = Array.from(set).join(' ');
+                addToSearchHistory(query);
+                performSearch(query);
+                if (searchInput) searchInput.value = query;
+                e.preventDefault();
+            }
+        }
+    });
+
+    // Универсальная отрисовка в канвас (анализатор -> амплитуда/простая волна)
+    function visualizeCanvas(analyser, dataArray, canvasEl, setRAF) {
+        if (!canvasEl || !analyser) return;
+        const ctx = canvasEl.getContext('2d');
+        const width = canvasEl.width = canvasEl.clientWidth;
+        const height = canvasEl.height = canvasEl.clientHeight;
+
+        function draw() {
+            const rafId = requestAnimationFrame(draw);
+            if (setRAF) setRAF(rafId);
+            analyser.getByteTimeDomainData(dataArray);
+            ctx.clearRect(0, 0, width, height);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#ff4d4d';
+            ctx.beginPath();
+            const sliceWidth = width * 1.0 / dataArray.length;
+            let x = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = (dataArray[i] - 128) / 128.0; // -1..1
+                const y = (height / 2) + v * (height / 2) * 5.0; // чувствительность x5
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+                x += sliceWidth;
+            }
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+        }
+        draw();
+    }
+
+    function clearCanvas(canvasEl) {
+        if (!canvasEl) return;
+        const ctx = canvasEl.getContext('2d');
+        ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
     }
     
     // Обработчик ввода текста в поле поиска
@@ -258,51 +502,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Функции для транскрипции
-    function addToTranscriptionHistory(text) {
+    // Функции для транскрипции: единое поле без разбиения на блоки
+    function appendToTranscription(text) {
         if (!text.trim()) return;
-        const item = {
-            text,
-            timestamp: new Date().toLocaleTimeString(),
-            id: Date.now()
-        };
-        transcriptionHistoryArray.unshift(item);
-        renderTranscriptionHistory();
+        transcriptionText = (transcriptionText ? (transcriptionText + ' ') : '') + text.trim();
+        renderTranscriptionCombined(transcriptionText, '');
     }
-    
-    function renderTranscriptionHistory() {
+
+    function renderTranscriptionCombined(finalText, interimText) {
         if (!transcriptionHistory) return;
         transcriptionHistory.innerHTML = '';
-        transcriptionHistoryArray.forEach(item => {
-            const el = document.createElement('div');
-            el.className = 'transcription-item';
-            el.dataset.id = item.id;
-            // Построить слова
-            const words = item.text.split(/\s+/);
-            const wordsHtml = words.map((w, idx) => `<span class="transcription-word" data-index="${idx}">${escapeHtml(w)}</span>`).join(' ');
-            el.innerHTML = `
-                <div class="transcription-item-text">${wordsHtml}</div>
-            `;
-            // Обработчик клика по словам
-            el.querySelectorAll('.transcription-word').forEach(span => {
-                span.addEventListener('click', () => {
-                    const selected = span.classList.toggle('selected');
-                    const id = item.id;
-                    const word = span.textContent.trim();
-                    const set = selectedKeywordsById.get(id) || new Set();
-                    if (selected) {
-                        set.add(word);
-                    } else {
-                        set.delete(word);
-                    }
-                    selectedKeywordsById.set(id, set);
-                    // Обновляем поле поиска выбранными словами
-                    const keywords = Array.from(set);
-                    searchInput.value = keywords.join(' ');
-                });
+        const wrapper = document.createElement('div');
+        wrapper.className = 'transcription-item';
+        const combined = (finalText + ' ' + (interimText || '')).trim();
+        const words = combined.split(/\s+/).filter(Boolean);
+        const selectedSet = selectedKeywordsById.get('global') || new Set();
+        const wordsHtml = words.map((w, idx) => {
+            const isSelected = selectedSet.has(w);
+            const cls = 'transcription-word' + (isSelected ? ' selected' : '');
+            return `<span class="${cls}" data-index="${idx}">${escapeHtml(w)}</span>`;
+        }).join(' ');
+        wrapper.innerHTML = `<div class="transcription-item-text">${wordsHtml}</div>`;
+        wrapper.querySelectorAll('.transcription-word').forEach(span => {
+            span.addEventListener('click', () => {
+                const selected = span.classList.toggle('selected');
+                const word = span.textContent.trim();
+                // Глобальный набор выбранных слов по всей транскрипции
+                const set = selectedKeywordsById.get('global') || new Set();
+                if (selected) {
+                    set.add(word);
+                } else {
+                    set.delete(word);
+                }
+                selectedKeywordsById.set('global', set);
+                const keywords = Array.from(set);
+                searchInput.value = keywords.join(' ');
+                performSearch(searchInput.value);
             });
-            transcriptionHistory.appendChild(el);
         });
+        transcriptionHistory.appendChild(wrapper);
+        // Автопрокрутка вниз при добавлении нового текста
+        transcriptionHistory.scrollTop = transcriptionHistory.scrollHeight;
     }
     
     // Поиск выполняется через поле ввода, здесь дополнительная функция не требуется
