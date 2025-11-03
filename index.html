@@ -6,6 +6,11 @@
     <title>Голосовой помощник QA</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="custom-styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
     <style>
         /* Встроенные стили для гарантированного применения */
         span.category-badge, 
@@ -114,6 +119,15 @@
     <script src="data-event-handler.js" type="module"></script>
     <script type="module">
         import { initUI } from './ui-manager.js';
+        
+        // Регистрация Service Worker для PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker зарегистрирован'))
+                    .catch(err => console.log('Ошибка регистрации Service Worker:', err));
+            });
+        }
         
         // Инициализируем UI после загрузки страницы
         document.addEventListener('DOMContentLoaded', function() {
