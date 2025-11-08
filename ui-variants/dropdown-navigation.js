@@ -1,8 +1,8 @@
 // Вариант 2: Выпадающие списки для категорий и подкатегорий
 
-// Импортируем категории и данные
-import { categories } from '../categories.js';
+// Импортируем данные и генератор категорий
 import { uniqueQaData } from '../all-data.js';
+import { buildCategoriesFromData } from '../computed-categories.js';
 
 // Функция для инициализации навигации с выпадающими списками
 export function initDropdownNavigation() {
@@ -136,14 +136,53 @@ function displayQuestions(questions, title) {
     questions.forEach(item => {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
-        
+
+        const favorites = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+        const isFav = favorites.includes(item.question);
+        const favClass = isFav ? 'fav-active' : '';
+
         resultItem.innerHTML = `
+            <div class="question-row">
+                <span class="category-badge">${item.category || ''}</span>
+                <span class="subcategory-badge">${item.subcategory || ''}</span>
+                <button class="fav-btn ${favClass}" title="В избранное">★</button>
+                ${location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? '<button class="edit-btn" title="Редактировать">✎</button>' : ''}
+            </div>
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
         `;
-        
 
-        
+        const favBtn = resultItem.querySelector('.fav-btn');
+        favBtn.addEventListener('click', () => {
+            const current = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+            if (current.has(item.question)) {
+                current.delete(item.question);
+                favBtn.classList.remove('fav-active');
+            } else {
+                current.add(item.question);
+                favBtn.classList.add('fav-active');
+            }
+            localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
+        });
+
+        const editBtn = resultItem.querySelector('.edit-btn');
+        if (editBtn) {
+            editBtn.addEventListener('click', () => {
+                const newCategory = prompt('Новая категория:', item.category || '');
+                const newSubcategory = prompt('Новая подкатегория:', item.subcategory || '');
+                if (newCategory) {
+                    const overrides = JSON.parse(localStorage.getItem('qaAdminOverrides') || '{}');
+                    overrides[item.question] = { category: newCategory, subcategory: newSubcategory || '' };
+                    localStorage.setItem('qaAdminOverrides', JSON.stringify(overrides));
+                    item.category = newCategory;
+                    item.subcategory = newSubcategory || '';
+                    resultItem.querySelector('.category-badge').textContent = item.category || '';
+                    resultItem.querySelector('.subcategory-badge').textContent = item.subcategory || '';
+                }
+            });
+        }
+
         resultsList.appendChild(resultItem);
     });
 }
+    const categories = buildCategoriesFromData(uniqueQaData);

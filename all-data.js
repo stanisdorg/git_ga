@@ -360,6 +360,48 @@ function removeDuplicates(data) {
 // Удаляем дубликаты из статических данных
 let uniqueQaData = [];
 
+// Применение локальных админ-правок (overrides) и новых карточек к данным
+function applyAdminOverridesAndNewItems() {
+    try {
+        const overrides = JSON.parse(localStorage.getItem('qaAdminOverrides') || '{}');
+        // Поддерживаем оба ключа для новых карточек, чтобы избежать рассинхрона
+        const adminNewItems = JSON.parse(localStorage.getItem('qaAdminNewItems') || '[]');
+        const legacyNewItems = JSON.parse(localStorage.getItem('qaNewItems') || '[]');
+        const newItems = Array.isArray(adminNewItems) && adminNewItems.length ? adminNewItems : legacyNewItems;
+
+        // Применяем overrides к существующим элементам
+        uniqueQaData = uniqueQaData.map(item => {
+            const ov = overrides[item.question];
+            if (ov) {
+                // Если в override есть новые вопрос/ответ — применяем их тоже
+                return {
+                    ...item,
+                    category: ov.category ?? item.category,
+                    subcategory: ov.subcategory ?? item.subcategory,
+                    question: ov.question ?? item.question,
+                    answer: ov.answer ?? item.answer
+                };
+            }
+            return item;
+        });
+
+        // Добавляем новые элементы из админки
+        if (Array.isArray(newItems) && newItems.length) {
+            uniqueQaData = [...uniqueQaData, ...newItems];
+        }
+
+        // Удаляем дубликаты по вопросу
+        const seen = new Set();
+        uniqueQaData = uniqueQaData.filter(item => {
+            if (seen.has(item.question)) return false;
+            seen.add(item.question);
+            return true;
+        });
+    } catch (e) {
+        console.warn('Не удалось применить локальные админ-данные:', e);
+    }
+}
+
 // Асинхронная функция для загрузки данных из JSON файлов
 async function initializeData() {
     try {
@@ -370,7 +412,10 @@ async function initializeData() {
         if (jsonData && jsonData.length > 0) {
             uniqueQaData = jsonData;
             
-            console.log(`Всего загружено ${uniqueQaData.length} уникальных вопросов (только из JSON)`);
+            // Применяем локальные overrides и новые карточки
+            applyAdminOverridesAndNewItems();
+
+            console.log(`Всего загружено ${uniqueQaData.length} уникальных вопросов (с учетом локальных правок)`);
             
             // Вызываем событие, чтобы уведомить о загрузке данных
             document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
@@ -382,6 +427,22 @@ async function initializeData() {
 
 // Запускаем загрузку данных при загрузке страницы
 window.addEventListener('DOMContentLoaded', initializeData);
+
+// Принудительная перезагрузка данных после успешного сохранения
+window.addEventListener('forceReloadData', () => {
+    console.log('Получен сигнал принудительной перезагрузки данных');
+    initializeData();
+});
+
+// Слушаем события админ-панели и пересобираем данные
+window.addEventListener('adminItemAdded', () => {
+    applyAdminOverridesAndNewItems();
+    document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
+});
+window.addEventListener('adminOverridesChanged', () => {
+    applyAdminOverridesAndNewItems();
+    document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
+});
 
 // Экспортируем данные для использования в других файлах
 export { uniqueQaData };

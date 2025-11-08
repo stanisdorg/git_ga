@@ -1,5 +1,6 @@
 // Импортируем данные из отдельного файла
 import { uniqueQaData } from './all-data.js';
+let transcriptionMode = false; // глобальное состояние режима транскрипции
 
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
@@ -9,13 +10,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchHistory = document.getElementById('search-history');
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
-    const screenAudioButton = document.getElementById('screen-audio-button');
     const micVisualizer = document.getElementById('mic-visualizer');
-    const screenVisualizer = document.getElementById('screen-visualizer');
     // Элементы режимов (кнопки в сайдбаре)
     const historyButton = document.getElementById('history-button');
     const transcriptionButton = document.getElementById('transcription-button');
     const transcriptionHistory = document.getElementById('transcription-history');
+    
+    // По умолчанию открываем вкладку транскрипции
+    if (searchHistory && transcriptionHistory && transcriptionButton) {
+        searchHistory.style.display = 'none';
+        transcriptionHistory.style.display = 'block';
+        transcriptionMode = true;
+        transcriptionButton.classList.toggle('active', true);
+    }
+
+    // Мобильная версия: по умолчанию сворачиваем левую панель
+    if (sidebar && sidebarToggle) {
+        const isMobile = window.matchMedia('(max-width: 600px)').matches;
+        if (isMobile) {
+            sidebar.classList.add('collapsed');
+            sidebarToggle.setAttribute('aria-expanded', 'false');
+            sidebarToggle.setAttribute('aria-label', 'Развернуть историю');
+        }
+    }
     
     // Автоматическая загрузка всех карточек
     setTimeout(() => {
@@ -28,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let searchHistoryArray = [];
     // Единый текст транскрипции вместо разбивки на блоки
     let transcriptionText = '';
-    let transcriptionMode = false; // активен ли режим «transcription»
     let pressHoldActive = false;
     const selectedKeywordsById = new Map();
     
@@ -262,103 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Захват звука экрана (getDisplayMedia + MediaRecorder)
-    let screenMediaRecorder = null;
-    let screenChunks = [];
-    let screenStream = null;
-    let screenAudioContext = null;
-    let screenAnalyser = null;
-    let screenDataArray = null;
-    let screenVizRAF = null;
-
-    async function startScreenAudioCapture() {
-        try {
-            // Просим пользователя выбрать экран/окно со звуком
-            screenStream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,  // видео нужно, чтобы в браузере можно было включить «звук вкладки»
-                audio: true
-            });
-            if (!screenStream.getAudioTracks().length) {
-                throw new Error('Аудиодорожка не предоставлена системой');
-            }
-            screenChunks = [];
-            screenMediaRecorder = new MediaRecorder(screenStream, { mimeType: 'audio/webm' });
-            let hasData = false;
-            screenMediaRecorder.ondataavailable = (e) => {
-                if (e.data && e.data.size > 0) {
-                    hasData = true;
-                    screenChunks.push(e.data);
-                }
-            };
-            screenMediaRecorder.onstop = () => {
-                if (hasData && screenChunks.length > 0) {
-                    const blob = new Blob(screenChunks, { type: 'audio/webm' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `screen-audio-${Date.now()}.webm`;
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }, 0);
-                }
-            };
-            screenMediaRecorder.start(250);
-            if (screenAudioButton) screenAudioButton.classList.add('listening');
-            screenAudioButton.setAttribute('aria-pressed', 'true');
-
-            // Визуализация системного аудио
-            try {
-                screenAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = screenAudioContext.createMediaStreamSource(screenStream);
-                screenAnalyser = screenAudioContext.createAnalyser();
-                screenAnalyser.fftSize = 1024;
-                screenAnalyser.smoothingTimeConstant = 0.85;
-                source.connect(screenAnalyser);
-                const bufferLength = screenAnalyser.frequencyBinCount;
-                screenDataArray = new Uint8Array(bufferLength);
-                visualizeCanvas(screenAnalyser, screenDataArray, screenVisualizer, (id) => screenVizRAF = id);
-            } catch (e) {
-                console.warn('Screen visualizer not started:', e);
-            }
-        } catch (err) {
-            console.error('Не удалось начать захват звука экрана:', err);
-            alert('Не удалось начать захват звука экрана. Выберите вкладку и включите "Поделиться звуком вкладки".');
-            stopScreenAudioCapture();
-        }
-    }
-
-    function stopScreenAudioCapture() {
-        try {
-            if (screenMediaRecorder && screenMediaRecorder.state !== 'inactive') {
-                screenMediaRecorder.stop();
-            }
-        } catch (_) {}
-        if (screenStream) {
-            screenStream.getTracks().forEach(t => t.stop());
-            screenStream = null;
-        }
-        if (screenAudioButton) screenAudioButton.classList.remove('listening');
-        if (screenAudioButton) screenAudioButton.setAttribute('aria-pressed', 'false');
-        try { if (screenVizRAF) cancelAnimationFrame(screenVizRAF); } catch(_){}
-        try { if (screenAudioContext) screenAudioContext.close(); } catch(_){}
-        screenAnalyser = null;
-        screenDataArray = null;
-        clearCanvas(screenVisualizer);
-    }
-
-    if (screenAudioButton && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-        screenAudioButton.addEventListener('click', async () => {
-            if (screenMediaRecorder && screenMediaRecorder.state === 'recording') {
-                stopScreenAudioCapture();
-            } else {
-                await startScreenAudioCapture();
-            }
-        });
-    }
+    // Логика захвата звука экрана удалена
 
     // Кнопка сброса поиска и горячая клавиша Ctrl+Я
     const resetSearchBtn = document.getElementById('reset-search');

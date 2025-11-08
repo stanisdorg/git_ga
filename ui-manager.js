@@ -13,12 +13,25 @@ export function initUI() {
     
     // Добавляем стили для табов и карточек
     addStyles();
+
+    // Обновляем UI при изменении данных
+    const reinit = () => {
+        removeExistingNavigation();
+        initTabsNavigation();
+    };
+    window.addEventListener('dataLoaded', reinit);
+    window.addEventListener('adminItemAdded', reinit);
+    window.addEventListener('adminOverridesChanged', reinit);
 }
 
 // Функция для удаления существующих элементов навигации
 function removeExistingNavigation() {
     const tabsNav = document.querySelector('.tabs-navigation');
     if (tabsNav) tabsNav.remove();
+    const topControls = document.querySelector('.top-controls');
+    if (topControls) topControls.remove();
+    const trashPanel = document.querySelector('.trash-panel');
+    if (trashPanel) trashPanel.remove();
 }
 
 // Функция для добавления стилей для табов и карточек
@@ -109,7 +122,8 @@ function addStyles() {
         
         .tabs-container {
             display: flex;
-            overflow-x: auto;
+            flex-wrap: wrap;
+            overflow-x: hidden;
             background-color: #252525;
             border-radius: 5px;
             border: 1px solid #444;
@@ -132,10 +146,24 @@ function addStyles() {
             background-color: #a0a0a0;
             color: white;
         }
+
+        /* Избранное таб — тёмно-оранжевое сердечко */
+        .tab[data-category="favorites"] {
+            color: #FF8C00; /* тёмно-оранжевый */
+            font-size: 16px; /* немного больше */
+        }
+
+        /* Верхняя панель с кнопками */
+        .top-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
         
         .subcategories-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* три столбца подкатегорий */
+            display: flex;
+            flex-wrap: wrap;
             gap: 6px; /* компактнее */
             padding: 6px;
             background-color: #1e1e1e;
@@ -156,6 +184,27 @@ function addStyles() {
         .subcategory-card.active {
             background-color: #a0a0a0;
             color: white;
+        }
+
+        /* Кнопки избранного и редактирования */
+        .question-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .fav-btn, .edit-btn {
+            border: none; /* убираем серую обводку для избранного */
+            background-color: transparent;
+            color: #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px; /* сердечко чуть больше */
+            padding: 2px 6px;
+        }
+        .fav-btn.fav-active {
+            background-color: transparent; /* без фона, только цвет иконки */
+            color: #FF8C00; /* тёмно-оранжевый цвет сердечка */
         }
     `;
     

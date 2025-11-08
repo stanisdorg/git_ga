@@ -36,39 +36,35 @@ self.addEventListener('activate', event => {
 
 // Перехват запросов и обслуживание из кэша
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  const isDataRequest = url.pathname.startsWith('/data/') || url.pathname.endsWith('Копия вопросы.json');
+  const isSaveRequest = url.pathname.startsWith('/save');
+
+  if (isDataRequest || isSaveRequest) {
+    // Для данных и сохранений — всегда сеть, минуя кэш
+    event.respondWith(
+      fetch(new Request(event.request, { cache: 'no-store' }))
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // По умолчанию: cache-first
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Возвращаем кэшированный ответ, если он есть
-        if (response) {
-          return response;
+    caches.match(event.request).then(response => {
+      if (response) return response;
+      return fetch(event.request).then(networkResponse => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
         }
-        
-        // Иначе делаем сетевой запрос
-        return fetch(event.request)
-          .then(response => {
-            // Проверяем валидность ответа
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            // Клонируем ответ, так как он может быть использован только один раз
-            const responseToCache = response.clone();
-            
-            // Добавляем ответ в кэш
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-              
-            return response;
-          })
-          .catch(() => {
-            // Если сеть недоступна и запрос не в кэше, возвращаем страницу оффлайн
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
-          });
-      })
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => { cache.put(event.request, responseToCache); });
+        return networkResponse;
+      }).catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
+      });
+    })
   );
 });

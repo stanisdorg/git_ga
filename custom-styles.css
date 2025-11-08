@@ -168,6 +168,29 @@
 .sidebar.collapsed + .container {
     left: 40px;
 }
+/* === Edit mode layout: left sidebar for trash panel === */
+.container.edit-mode {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-auto-rows: min-content;
+    column-gap: var(--grid-gap);
+    align-items: start;
+    padding-right: var(--grid-gap);
+}
+
+.container.edit-mode .trash-panel {
+    grid-column: 1;
+    position: sticky;
+    top: 8px;
+    max-height: calc(100vh - 16px);
+    overflow: auto;
+}
+
+.container.edit-mode .top-controls,
+.container.edit-mode .tabs-navigation,
+.container.edit-mode .search-container {
+    grid-column: 2;
+}
 
 /* Контейнер результатов */
 #results-list {
@@ -251,6 +274,40 @@
     border-radius: 4px;
     font-size: 12px;
 }
+/* Badges for tabs variant */
+.category-badge, .subcategory-badge {
+    background: var(--color-badge-bg);
+    color: var(--color-badge-text);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Trash mini cards grid */
+.trash-panel #trash-cards { margin-top: 6px; }
+.trash-panel .trash-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--grid-gap);
+}
+.trash-panel .result-item.trash-mini { padding: 6px; }
+.trash-panel .result-item.trash-mini .question { font-size: 16px; }
+.trash-panel .result-item.trash-mini .answer { font-size: 14px; }
+.trash-panel .result-item.trash-mini .category-badge,
+.trash-panel .result-item.trash-mini .subcategory-badge {
+    font-size: 12px;
+    padding: 2px 6px;
+}
+.trash-panel .result-item.trash-mini .restore-btn {
+    background: #444;
+    color: #eee;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: auto;
+}
+.question-row { display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap; }
+.trash-panel .result-item.trash-mini .question { flex: 1; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
 
 /* Заголовок результатов */
 .results-header {
@@ -358,27 +415,6 @@
     overflow: hidden;
 }
 
-/* Кнопка захвата звука экрана размещается левее микрофона */
-#screen-audio-button {
-    right: 56px !important; /* чтобы не накладывался на mic */
-    z-index: 2;
-}
-
-.screen-audio-button.listening {
-    background: rgba(76, 175, 255, 0.25) !important;
-    box-shadow: 0 0 0 0 rgba(76, 175, 255, 0.6);
-    animation: screen-audio-pulse 1.2s ease-out infinite;
-}
-
-.screen-audio-button.listening svg {
-    fill: #ffffff !important;
-}
-
-@keyframes screen-audio-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(76, 175, 255, 0.6); }
-    70% { box-shadow: 0 0 0 12px rgba(76, 175, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(76, 175, 255, 0); }
-}
 
 /* Небольшие визуализаторы рядом с кнопками */
 .audio-visualizer {
@@ -390,7 +426,6 @@
 }
 
 #mic-visualizer { right: 120px !important; }
-#screen-visualizer { right: 360px !important; }
 
 .mic-button:active {
     background: var(--color-button-active);
