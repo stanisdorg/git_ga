@@ -302,6 +302,26 @@ export function initTabsNavigation() {
         // Но здесь мы можем оставить базовую логику title
     }
     updateLoginBtnState();
+    window.addEventListener('authChanged', () => {
+        try {
+            const raw = localStorage.getItem('qaSessionUser');
+            loggedInUser = raw ? JSON.parse(raw) : null;
+        } catch { loggedInUser = null; }
+        updateLoginBtnState();
+    });
+    loginMainBtn.addEventListener('click', () => {
+        const a0 = window.__auth0;
+        if (a0) {
+            if (loggedInUser) a0.logout({ logoutParams: { returnTo: location.origin } });
+            else a0.loginWithRedirect();
+            return;
+        }
+        const ni = window.netlifyIdentity;
+        if (ni) {
+            if (loggedInUser) ni.logout();
+            else ni.open('login');
+        }
+    });
 
     // Панель корзины (видна только в режиме редактирования)
     const trashPanel = document.createElement('div');

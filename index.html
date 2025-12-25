@@ -108,14 +108,16 @@
     </div>
 
     <script src="script.js" type="module"></script>
-    <script src="electron/renderer-stt.js" type="module"></script>
-    <script src="ui-manager.js" type="module"></script>
-    <script src="data-event-handler.js" type="module"></script>
-    <script type="module">
-        import { initUI } from './ui-manager.js';
-        
-        // Регистрация Service Worker для PWA
-        if ('serviceWorker' in navigator) {
+                <script src="electron/renderer-stt.js" type="module"></script>
+                <script src="ui-manager.js" type="module"></script>
+                <script src="data-event-handler.js" type="module"></script>
+                <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+                <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+                <script type="module">
+                    import { initUI } from './ui-manager.js';
+                    
+                    // Регистрация Service Worker для PWA
+                    if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('Service Worker зарегистрирован'))

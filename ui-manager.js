@@ -32,6 +32,60 @@ export function initUI() {
     window.addEventListener('dataLoaded', reinit);
     window.addEventListener('adminItemAdded', reinit);
     window.addEventListener('adminOverridesChanged', reinit);
+
+    const ni = window.netlifyIdentity;
+    if (ni && !ni._initialized) {
+        try {
+            ni.init();
+        } catch {}
+        ni.on('init', (user) => {
+            const evt = new Event('authChanged');
+            const data = user ? { email: user.email, id: user.id } : null;
+            localStorage.setItem('qaSessionUser', JSON.stringify(data));
+            window.dispatchEvent(evt);
+        });
+        ni.on('login', (user) => {
+            const evt = new Event('authChanged');
+            const data = user ? { email: user.email, id: user.id } : null;
+            localStorage.setItem('qaSessionUser', JSON.stringify(data));
+            window.dispatchEvent(evt);
+        });
+        ni.on('logout', () => {
+            const evt = new Event('authChanged');
+            localStorage.removeItem('qaSessionUser');
+            window.dispatchEvent(evt);
+        });
+        ni._initialized = true;
+    }
+
+    const domain = localStorage.getItem('AUTH0_DOMAIN') || '';
+    const clientId = localStorage.getItem('AUTH0_CLIENT_ID') || '';
+    if (window.createAuth0Client && domain && clientId) {
+        if (!window.__auth0_init) {
+            window.__auth0_init = window.createAuth0Client({
+                domain,
+                clientId,
+                authorizationParams: {
+                    redirect_uri: `${location.origin}/auth/callback`
+                }
+            }).then(async (client) => {
+                window.__auth0 = client;
+                if (location.pathname === '/auth/callback' || location.search.includes('code=')) {
+                    try {
+                        await client.handleRedirectCallback();
+                    } catch {}
+                    history.replaceState({}, '', '/');
+                }
+                try {
+                    const user = await client.getUser();
+                    const evt = new Event('authChanged');
+                    const data = user ? { email: user.email, id: user.sub } : null;
+                    if (data) localStorage.setItem('qaSessionUser', JSON.stringify(data));
+                    window.dispatchEvent(evt);
+                } catch {}
+            }).catch(() => {});
+        }
+    }
 }
 
 // Функция для удаления существующих элементов навигации
