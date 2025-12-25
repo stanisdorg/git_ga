@@ -1,5 +1,6 @@
 import { LearningSession } from './session.js';
 import { getDueCards } from './storage.js';
+import { checkAchievements } from './stats-utils.js';
 
 // DOM Elements
 let container = null;
@@ -177,12 +178,48 @@ function renderCardState(state) {
 
 function showStats(stats) {
     container.querySelector('.flashcard-container').style.display = 'none';
-    const statsEl = document.getElementById('learn-stats');
-    statsEl.style.display = 'block';
-    
-    document.getElementById('stat-total').textContent = stats.reviewed;
-    document.getElementById('stat-again').textContent = stats.again;
-    document.getElementById('stat-hard').textContent = stats.hard;
-    document.getElementById('stat-good').textContent = stats.good;
-    document.getElementById('stat-easy').textContent = stats.easy;
+    checkAchievements();
+    let overlay = document.getElementById('session-summary-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'session-summary-overlay';
+        overlay.className = 'summary-overlay';
+        overlay.innerHTML = `
+            <div class="summary-box">
+                <h2>Готово!</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="sum-total">0</div>
+                        <div class="stat-label">Повторено</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="sum-accuracy">0%</div>
+                        <div class="stat-label">Точность</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="sum-streak">0</div>
+                        <div class="stat-label">Дней подряд</div>
+                    </div>
+                </div>
+                <div class="motivation" id="sum-motivation"></div>
+                <button id="sum-close">Закрыть</button>
+            </div>
+        `;
+        container.appendChild(overlay);
+        overlay.querySelector('#sum-close').addEventListener('click', () => {
+            stopLearnSession();
+            overlay.remove();
+        });
+    }
+    const statsRaw = localStorage.getItem('studyStats') || '{}';
+    const s = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
+    const streakRaw = localStorage.getItem('studyStreak') || '{}';
+    const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
+    const correctSession = stats.good + stats.easy;
+    const accuracy = stats.reviewed > 0 ? Math.round((correctSession / stats.reviewed) * 100) : 0;
+    overlay.querySelector('#sum-total').textContent = String(stats.reviewed);
+    overlay.querySelector('#sum-accuracy').textContent = `${accuracy}%`;
+    overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
+    overlay.querySelector('#sum-motivation').textContent = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
+    overlay.style.display = 'flex';
 }

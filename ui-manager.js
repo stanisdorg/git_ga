@@ -2,14 +2,20 @@
 
 // Импортируем только функцию инициализации табов и карточек
 import { initTabsNavigation } from './ui-variants/tabs-navigation.js';
+import { initStatsPage } from './srs/stats-ui.js';
 
 // Функция для инициализации UI
 export function initUI() {
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
     
-    // Инициализируем табы и карточки
-    initTabsNavigation();
+    // Роутинг: если /stats — открыть страницу статистики
+    if (location.pathname === '/stats') {
+        initStatsPage();
+    } else {
+        // Инициализируем табы и карточки
+        initTabsNavigation();
+    }
     
     // Добавляем стили для табов и карточек
     addStyles();
@@ -17,7 +23,11 @@ export function initUI() {
     // Обновляем UI при изменении данных
     const reinit = () => {
         removeExistingNavigation();
-        initTabsNavigation();
+        if (location.pathname === '/stats') {
+            initStatsPage();
+        } else {
+            initTabsNavigation();
+        }
     };
     window.addEventListener('dataLoaded', reinit);
     window.addEventListener('adminItemAdded', reinit);

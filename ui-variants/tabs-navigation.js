@@ -256,6 +256,16 @@ export function initTabsNavigation() {
         startLearnSession(currentQuestions);
     });
 
+    // Кнопка статистики
+    const statsBtn = document.createElement('button');
+    statsBtn.title = 'Статистика';
+    statsBtn.textContent = '📊';
+    statsBtn.addEventListener('click', async () => {
+        const { initStatsPage } = await import('../srs/stats-ui.js');
+        history.pushState({}, '', '/stats');
+        initStatsPage();
+    });
+
     const editToggleBtn = document.createElement('button');
     editToggleBtn.title = 'Режим редактирования';
     editToggleBtn.textContent = '✎';
@@ -271,8 +281,19 @@ export function initTabsNavigation() {
     tabsActions.appendChild(loginMainBtn);
     tabsActions.appendChild(editToggleBtn);
     tabsActions.appendChild(learnBtn);
+    tabsActions.appendChild(statsBtn);
     
     tabsHeader.appendChild(tabsActions);
+
+    const streakBadge = document.createElement('div');
+    streakBadge.className = 'streak-badge';
+    const streakRaw = localStorage.getItem('studyStreak') || '{}';
+    let streakVal = 0;
+    try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch {}
+    if (streakVal > 0) {
+        streakBadge.textContent = `🔥 ${streakVal}`;
+        tabsHeader.appendChild(streakBadge);
+    }
 
     // Logic to update icon/tooltip on login change
     function updateLoginBtnState() {

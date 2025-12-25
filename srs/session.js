@@ -79,28 +79,48 @@ export class LearningSession {
     rate(grade) {
         if (!this.currentCard) return;
 
-        // Update stats
         if (grade === 0) this.stats.again++;
         else if (grade === 1) this.stats.hard++;
         else if (grade === 2) this.stats.good++;
         else if (grade === 3) this.stats.easy++;
         this.stats.reviewed++;
 
-        // Calculate new progress
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
+        const now = new Date();
+        newProgress.lastReviewed = now.toISOString().split('T')[0];
+        newProgress.lastReviewedTime = now.getHours();
         
-        // Save to storage
         updateCardProgress(this.currentCard.item.question, newProgress);
 
-        // If "Again", requeue the card at the end of the session? 
-        // Or just schedule for "now" (interval 0) and show it next time user loads session?
-        // User spec: "Again: interval = 0 (show today)".
-        // Usually in a session, "Again" cards are shown again *in the same session*.
-        // Let's implement simple re-queueing for "Again" if we want to be strict,
-        // but for MVP, let's just save it as "due now" and move to next card in queue.
-        // User said: "Перейти к следующей карточке". So we just move on.
+        const statsRaw = localStorage.getItem('studyStats') || '{}';
+        const stats = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
+        stats.total = (stats.total || 0) + 1;
+        if (grade >= 2) stats.correct = (stats.correct || 0) + 1;
+        const pointsMap = [0, 5, 10, 15];
+        const points = pointsMap[grade] || 0;
+        stats.points = (stats.points || 0) + points;
+        localStorage.setItem('studyStats', JSON.stringify(stats));
+        updateStreak();
         
         this.currentIndex++;
         this.loadCurrentCard();
     }
+}
+
+function updateStreak() {
+    const today = new Date().toISOString().split('T')[0];
+    const raw = localStorage.getItem('studyStreak') || '{}';
+    const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
+    if (streak.lastDate === today) return;
+    if (!streak.lastDate) {
+        streak.current = 1;
+    } else {
+        const y = new Date();
+        y.setDate(y.getDate() - 1);
+        const ys = y.toISOString().split('T')[0];
+        streak.current = (streak.lastDate === ys) ? (streak.current || 0) + 1 : 1;
+    }
+    streak.best = Math.max(streak.best || 0, streak.current || 0);
+    streak.lastDate = today;
+    localStorage.setItem('studyStreak', JSON.stringify(streak));
 }
