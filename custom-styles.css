@@ -517,3 +517,195 @@ body.listening .audio-visualizer {
 .popup-menu button:hover {
     background: rgba(255,255,255,0.1);
 }
+
+/* Learn Mode Styles */
+#learn-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-bg);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.learn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#learn-exit-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.learn-progress {
+    flex: 1;
+    margin: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.learn-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.learn-progress-fill {
+    height: 100%;
+    background: #2196F3;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#learn-counter {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+.flashcard-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+}
+
+.flashcard {
+    width: 100%;
+    max-width: 600px;
+    height: 400px; /* Fixed height for card */
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+    justify-content: space-between; /* Space out content and buttons */
+}
+
+.flashcard-content {
+    font-size: 24px;
+    color: var(--color-text);
+    overflow-y: auto;
+    max-height: 100%;
+    white-space: pre-wrap;
+}
+
+.flashcard-front .flashcard-content {
+    font-weight: 500;
+}
+
+.flashcard-back .flashcard-content {
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flashcard-hint {
+    margin-top: 20px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.flashcard-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
+.rate-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    max-width: 120px;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.rate-btn:active {
+    transform: scale(0.95);
+}
+
+.rate-again { background: #f44336; }
+.rate-hard { background: #ff9800; }
+.rate-good { background: #4caf50; }
+.rate-easy { background: #2196f3; }
+
+#learn-stats {
+    text-align: center;
+    color: var(--color-text);
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.stat-item {
+    background: var(--color-card);
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#learn-finish-btn {
+    padding: 12px 24px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+

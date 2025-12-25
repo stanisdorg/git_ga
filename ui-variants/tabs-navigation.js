@@ -240,10 +240,22 @@ export function initTabsNavigation() {
     tabsHeader.className = 'tabs-header';
     tabsHeader.appendChild(tabsContainer);
 
-    // Панель действий внутри табов (справа): Вход и Редактирование
+    // Панель действий внутри табов (справа): Вход, Редактирование, Учить
     const tabsActions = document.createElement('div');
     tabsActions.className = 'tabs-actions';
     
+    // Кнопка режима обучения
+    const learnBtn = document.createElement('button');
+    learnBtn.title = 'Режим обучения';
+    learnBtn.innerHTML = '🎓'; // Или SVG иконка
+    learnBtn.addEventListener('click', async () => {
+        const { startLearnSession } = await import('../srs/learn-ui.js');
+        // Собираем текущие карточки (currentQuestions - глобальная переменная в этом файле)
+        // Если она не экспортирована/доступна, берем из DOM или logic
+        // В tabs-navigation.js переменная currentQuestions объявлена в начале файла
+        startLearnSession(currentQuestions);
+    });
+
     const editToggleBtn = document.createElement('button');
     editToggleBtn.title = 'Режим редактирования';
     editToggleBtn.textContent = '✎';
@@ -258,6 +270,7 @@ export function initTabsNavigation() {
     
     tabsActions.appendChild(loginMainBtn);
     tabsActions.appendChild(editToggleBtn);
+    tabsActions.appendChild(learnBtn);
     
     tabsHeader.appendChild(tabsActions);
 
