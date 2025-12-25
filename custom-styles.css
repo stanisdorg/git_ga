@@ -163,6 +163,8 @@
     bottom: 0;
     overflow-y: auto;
     transition: left 0.3s ease;
+    height: 100vh;
+    min-height: 100vh;
 }
 
 .sidebar.collapsed + .container {
@@ -170,429 +172,348 @@
 }
 /* === Edit mode layout: left sidebar for trash panel === */
 .container.edit-mode {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    grid-auto-rows: min-content;
-    column-gap: var(--grid-gap);
-    align-items: start;
-    padding-right: var(--grid-gap);
+    /* No special grid, keep flow but allow sidebar for trash */
 }
 
-.container.edit-mode .trash-panel {
-    grid-column: 1;
-    position: sticky;
-    top: 8px;
-    max-height: calc(100vh - 16px);
-    overflow: auto;
-}
-
-.container.edit-mode .top-controls,
-.container.edit-mode .tabs-navigation,
-.container.edit-mode .search-container {
-    grid-column: 2;
+/* Trash panel full height in edit mode */
+.trash-panel {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Контейнер результатов */
 #results-list {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--grid-gap);
-    padding: var(--grid-gap);
-    max-width: none;
-    margin: 0;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    padding: 0 20px 20px 20px;
 }
 
-/* Результаты поиска */
-.results-header {
-    margin: 0;
-    gap: 4px;
-}
-
-/* Карточка результата */
 .result-item {
     background: var(--color-card);
-    border: 1px solid #444 !important;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    padding: 6px;
-    box-sizing: border-box;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 8px 16px 16px 16px; /* Reduced top padding */
+    margin-bottom: 0; /* Grid handles gap */
+    position: relative; /* For absolute positioning of star */
+    display: flex;
+    flex-direction: column;
 }
 
 .result-item:hover {
-    background: #313131;
-    border-color: #444 !important;
-}
-
-/* Вопрос */
-.question {
-    color: var(--color-text);
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    line-height: 1.2;
-    background: #2a2a2a;
-    border-radius: 4px;
-    padding: 4px;
-    border: 1px solid #444 !important;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-/* Стили для микрофона */
-#mic-button {
-    margin-right: 8px;
-}
-
-
-.result-item:hover .question {
-    border-color: #888 !important;
-    background: #333333;
-}
-
-/* Ответ */
-.answer {
-    color: var(--color-text-secondary);
-    font-size: 14px;
-    line-height: 1.3;
-    margin-bottom: 4px;
-    padding: 0 4px;
-}
-
-/* Метаданные результата */
-.result-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 0 4px;
-}
-
-/* Бейджи категорий */
-.result-category,
-.result-subcategory {
-    background: var(--color-badge-bg);
-    color: var(--color-badge-text);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-}
-/* Badges for tabs variant */
-.category-badge, .subcategory-badge {
-    background: var(--color-badge-bg);
-    color: var(--color-badge-text);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-/* Trash mini cards grid */
-.trash-panel #trash-cards { margin-top: 6px; }
-.trash-panel .trash-cards-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--grid-gap);
-}
-.trash-panel .result-item.trash-mini { padding: 6px; }
-.trash-panel .result-item.trash-mini .question { font-size: 16px; }
-.trash-panel .result-item.trash-mini .answer { font-size: 14px; }
-.trash-panel .result-item.trash-mini .category-badge,
-.trash-panel .result-item.trash-mini .subcategory-badge {
-    font-size: 12px;
-    padding: 2px 6px;
-}
-.trash-panel .result-item.trash-mini .restore-btn {
-    background: #444;
-    color: #eee;
-    border: 1px solid #333;
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin-left: auto;
-}
-.question-row { display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap; }
-.trash-panel .result-item.trash-mini .question { flex: 1; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
-
-/* Заголовок результатов */
-.results-header {
-    grid-column: 1 / -1;
-    margin: 0 !important;
-    display: flex;
-    align-items: center;
-    gap: 4px !important;
-}
-
-/* Количество результатов */
-.results-count {
-    color: var(--color-badge-text) !important;
-    font-size: 9px !important;
-    font-weight: 400 !important;
-    text-transform: none !important;
-    margin: 0 !important;
-}
-
-/* Поле поиска */
-.search-container {
-    padding: 0 var(--grid-gap) !important;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 0 !important;
-}
-
-.input-group {
-    flex: 1;
-}
-
-.input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0 !important;
-    gap: 8px;
-}
-
-/* Кнопка сброса поиска слева от поля */
-#reset-search.reset-search-button {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    width: 36px;
-    height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #c0c0c0;
-    cursor: pointer;
-}
-
-#reset-search:hover {
-    background: #2a2a2a;
-}
-
-/* Выравнивание навигации категорий по краям карточек */
-.tabs-navigation {
-    padding: 0 var(--grid-gap) !important;
-    margin-bottom: 0 !important;
-}
-
-.tabs-header {
-    margin-bottom: 0 !important;
-}
-
-#search-input {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    color: var(--color-text);
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-}
-
-#search-input:focus {
-    outline: none;
     border-color: var(--color-text-secondary);
 }
 
-#search-input::placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
+.question {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--color-text);
+    padding-right: 32px; /* Space for star */
+}
+
+.answer {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 40px;
+}
+
+.results-header {
+    margin-bottom: 16px;
+    color: var(--color-text-secondary);
     font-size: 14px;
 }
 
-/* Кнопка микрофона */
-.mic-button {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    padding: 8px;
-    cursor: pointer;
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
+/* Tabs Navigation Styling */
+.tabs-header {
+    display: flex;
+    align-items: stretch; /* Stretch items to same height */
+    margin: 0 20px 10px 20px; /* Same margins as cards */
+    gap: 10px;
+}
+
+.tabs-container {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: 4px;
+    height: 76px;
+    padding-bottom: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+.tabs-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Space them out */
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* Action buttons in tabs header */
+.tabs-actions button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    background: #444;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #eee;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
+.tabs-actions button:hover {
+    background: #555;
+}
 
-/* Небольшие визуализаторы рядом с кнопками */
-.audio-visualizer {
+.tab {
+    padding: 0 12px;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
+    transition: all 0.2s;
+    position: relative; /* For menu button */
+    padding-right: 12px; /* Default padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px; /* Fixed height */
+    box-sizing: border-box;
+    width: max-content; /* Only take necessary width */
+}
+
+.tab:hover {
+    border-color: var(--color-text);
+    color: var(--color-text);
+}
+
+.tab.active {
+    background: var(--color-button-active);
+    border-color: var(--color-text);
+    color: var(--color-text);
+}
+
+/* Menu buttons for categories/subcategories (Three dots) */
+.cat-menu-btn,
+.subcat-menu-btn {
     position: absolute;
+    right: 2px;
     top: 50%;
     transform: translateY(-50%);
-    height: 14px;
-    width: 220px;
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important;
+    opacity: 0.4;
+    padding: 2px !important;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 16px !important;
+    height: 16px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
 }
 
-#mic-visualizer { right: 120px !important; }
+.cat-menu-btn:hover,
+.subcat-menu-btn:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.1) !important;
+}
 
-.mic-button:active {
+/* Ensure tab has space for button in edit mode?
+   User said: "don't make blocks wider". 
+   So we overlay it. But text might overlap.
+   We'll rely on transparency.
+*/
+
+.subcategories-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 20px 20px 20px;
+}
+
+.subcategory-card {
+    padding: 6px 12px;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    transition: all 0.2s;
+    position: relative;
+}
+
+.subcategory-card:hover {
+    border-color: var(--color-text);
+    color: var(--color-text);
+}
+
+.subcategory-card.active {
+    background: var(--color-button-active);
+    border-color: var(--color-text);
+    color: var(--color-text);
+}
+
+/* Favorite Star on Card */
+.favorite-btn {
+    position: absolute;
+    top: 4px; /* Pressed to top */
+    right: 4px; /* Pressed to right */
+    background: none;
+    border: none;
+    color: #555; /* Default gray */
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+    z-index: 2;
+}
+
+.favorite-btn.active {
+    color: #ffd700; /* Gold */
+}
+
+.favorite-btn:hover {
+    color: #fff;
+}
+
+/* Result Meta (Badges) */
+.result-meta {
+    display: flex;
+    flex-wrap: wrap; /* Wrap if necessary */
+    gap: 1px; /* Even smaller gap */
+    margin-bottom: 4px; /* Reduced distance to text */
+    padding-right: 32px; /* Avoid star */
+}
+
+.category-badge,
+.subcategory-badge,
+.result-category,
+.result-subcategory {
+    /* Compact styles */
+    font-size: 10px !important; /* Smaller font */
+    padding: 1px 4px !important;
+    letter-spacing: -0.3px; /* Tight tracking */
+    white-space: nowrap;
+    /* Styles from inline overrides in index.html will apply too */
+    display: inline-block; 
+}
+
+/* Search Input Styling matches */
+.search-container {
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 4px;
+    position: relative;
+}
+
+.input-group:focus-within {
+    border-color: var(--color-text);
+}
+
+#search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    padding: 8px 12px;
+    font-size: 16px;
+    outline: none;
+    min-width: 0;
+}
+
+.reset-search-button,
+.mic-button {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s;
+}
+
+.reset-search-button:hover,
+.mic-button:hover {
+    color: var(--color-text);
     background: var(--color-button-active);
 }
 
-.mic-button svg {
-    fill: #c0c0c0; /* светло-серый по умолчанию */
-    width: 24px;
-    height: 24px;
+.mic-button.active {
+    color: #ff4d4d;
 }
 
-/* Визуализация состояния прослушивания */
-.mic-button.listening {
-    background: rgba(255, 77, 77, 0.25) !important;
-    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.6);
-    animation: mic-pulse 1.2s ease-out infinite;
+.audio-visualizer {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 30px;
+    pointer-events: none;
+    display: none;
 }
 
-.mic-button.listening svg {
-    fill: #ffffff !important;
+body.listening .audio-visualizer {
+    display: block;
 }
 
-@keyframes mic-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.6); }
-    70% { box-shadow: 0 0 0 12px rgba(255, 77, 77, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+/* Popup Menu */
+.popup-menu {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-/* Адаптивная верстка */
-@media (max-width: 1200px) {
-    #results-list {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 900px) {
-    #results-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    :root {
-        --sidebar-width: 250px;
-    }
-}
-
-@media (max-width: 600px) {
-    #results-list {
-        grid-template-columns: 1fr;
-    }
-    
-    :root {
-        --sidebar-width: 200px;
-    }
-}
-/* Кнопки режима в сайдбаре */
-.sidebar-mode-buttons {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    padding: 0; /* без внутреннего отступа, чтобы прижать к левому краю хедера */
-    margin: 0;  /* убираем смещение вниз */
-}
-
-.history-button,
-.transcription-button {
-    width: 36px;
-    height: 36px;
-    border: 1px solid #d0d0d0; /* светло-серая обводка */
-    background: #202020; /* слегка светлее для выделения на темном фоне */
-    border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.popup-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #eee;
+    padding: 6px 12px;
     cursor: pointer;
-    color: var(--color-text);
-    padding: 0;
+    font-size: 13px;
 }
 
-.history-button:hover,
-.transcription-button:hover {
-    background: #2a2a2a; /* легкое подсветление при наведении */
-}
-
-.transcription-button.active {
-    outline: 2px solid #888;
-}
-
-/* Цвет и размер иконок внутри кнопок */
-.history-button svg,
-.transcription-button svg {
-    stroke: #c0c0c0; /* светло-серый */
-    width: 18px;
-    height: 18px;
-}
-
-/* Заставляем currentColor быть светло-серым для inline SVG с stroke="currentColor" */
-.history-button,
-.transcription-button {
-    color: #c0c0c0;
-}
-
-/* Кнопка сворачивания сайдбара — SVG внутри использует currentColor */
-.sidebar-toggle {
-    color: #c0c0c0;
-}
-.sidebar-toggle svg {
-    stroke: #c0c0c0;
-    width: 28px;
-    height: 28px;
-}
-
-/* Элементы транскрипции в сайдбаре */
-#transcription-history {
-    padding: var(--grid-gap);
-    flex: 1;               /* занимает доступную высоту сайдбара */
-    overflow-y: auto;      /* прокрутка при переполнении */
-}
-
-.transcription-item {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 8px;
-    margin-bottom: 8px;
-}
-
-.transcription-item-text {
-    margin-bottom: 6px;
-    color: var(--color-text);
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 1.2;
-    background: #2a2a2a;
-    border-radius: 4px;
-    padding: 4px;
-    border: none !important; /* убираем лишнюю обводку */
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.transcription-word {
-    display: inline;
-    padding: 0 2px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.transcription-word.selected {
-    background: #666666; /* серое выделение выбранных слов */
-    border: 1px solid #999999;
-}
-
-.transcription-item-actions {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 4px;
-}
-
-.transcription-item-actions button {
-    background: #2a2a2a;
-    color: var(--color-text);
-    border: 1px solid #444;
-    border-radius: 4px;
-    font-size: 12px;
-    padding: 4px 8px;
-    cursor: pointer;
-}
-
-.transcription-item-actions button:hover {
-    background: #333;
+.popup-menu button:hover {
+    background: rgba(255,255,255,0.1);
 }

@@ -508,6 +508,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const resultsList = document.getElementById('results-list');
         resultsList.innerHTML = '';
         
+        // Обновляем счетчик результатов (вынесен из grid)
+        let countContainer = document.getElementById('results-count-container');
+        if (!countContainer) {
+            countContainer = document.createElement('div');
+            countContainer.id = 'results-count-container';
+            countContainer.className = 'results-header';
+            countContainer.style.padding = '0 20px 10px 20px';
+            countContainer.style.marginBottom = '0';
+            resultsList.parentNode.insertBefore(countContainer, resultsList);
+        }
+        countContainer.innerHTML = `<span class="results-count">Найдено: ${filteredData.length}</span>`;
+
         if (filteredData.length === 0) {
             const noResults = document.createElement('div');
             noResults.className = 'no-results';
@@ -516,18 +528,23 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Информация о поиске
-        const resultsHeader = document.createElement('div');
-        resultsHeader.className = 'results-header';
-        resultsHeader.innerHTML = `<span>Найдено: ${filteredData.length}</span>`;
-        resultsList.appendChild(resultsHeader);
-        
         // Добавляем результаты
         filteredData.forEach(item => {
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
             
+            // Формируем бейджи категорий
+            const badges = [];
+            if (item.category) {
+                badges.push(`<span class="category-badge">${item.category}</span>`);
+            }
+            if (item.subcategory) {
+                badges.push(`<span class="subcategory-badge">${item.subcategory}</span>`);
+            }
+            const metaHtml = badges.length ? `<div class="result-meta" style="margin-bottom:4px">${badges.join('')}</div>` : '';
+            
             resultItem.innerHTML = `
+                ${metaHtml}
                 <div class="question">${item.question}</div>
                 <div class="answer">${item.answer}</div>
             `;

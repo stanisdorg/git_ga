@@ -6,7 +6,7 @@ import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
 
 // Глобальные флаги/состояния для режима редактирования и логина
-let editMode = false;
+let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
 let currentContextKey = 'all';
 let currentQuestions = [];
 let resultsListRef = null;
@@ -235,107 +235,39 @@ export function initTabsNavigation() {
         }
     });
     
-    // Создаем верхнюю строку навигации: только табы без кнопки сброса
+    // Создаем верхнюю строку навигации: табы + кнопки действий
     const tabsHeader = document.createElement('div');
     tabsHeader.className = 'tabs-header';
     tabsHeader.appendChild(tabsContainer);
 
-    // Панель управления справа: Редактировать / Сохранить / Отмена / Вход / Категории/Подкатегории
-    const controls = document.createElement('div');
-    controls.className = 'tabs-controls';
-    controls.style.display = 'flex';
-    controls.style.gap = '8px';
-    controls.style.marginLeft = 'auto';
-
-    const editBtnTop = document.createElement('button');
-    editBtnTop.textContent = 'Редактировать';
-    editBtnTop.title = 'Включить режим редактирования';
-
-    const saveBtnTop = document.createElement('button');
-    saveBtnTop.textContent = 'Сохранить';
-    saveBtnTop.title = 'Сохранить в файл проекта';
-    saveBtnTop.disabled = true;
-
-    const cancelBtnTop = document.createElement('button');
-    cancelBtnTop.textContent = 'Отмена';
-    cancelBtnTop.title = 'Выйти из режима редактирования';
-    cancelBtnTop.disabled = true;
-
-    const loginBtnTop = document.createElement('button');
-    loginBtnTop.textContent = loggedInUser ? 'Выход' : 'Вход';
-    loginBtnTop.title = loggedInUser ? 'Выйти из личного кабинета' : 'Войти в личный кабинет';
-    // Тёмно-серый стиль кнопки вход/выход (верхняя панель управления)
-    loginBtnTop.style.background = '#444';
-    loginBtnTop.style.color = '#eee';
-    loginBtnTop.style.border = '1px solid #333';
-    loginBtnTop.style.borderRadius = '4px';
-    loginBtnTop.style.padding = '4px 8px';
-
-    const addCatBtnTop = document.createElement('button');
-    addCatBtnTop.textContent = 'Добавить категорию';
-    addCatBtnTop.title = 'Создать пустую категорию';
-
-    const delCatBtnTop = document.createElement('button');
-    delCatBtnTop.textContent = 'Удалить категорию';
-    delCatBtnTop.title = 'Удалить категорию и её карточки';
-
-    const addSubBtnTop = document.createElement('button');
-    addSubBtnTop.textContent = 'Добавить подкатегорию';
-    addSubBtnTop.title = 'Создать пустую подкатегорию';
-
-    const delSubBtnTop = document.createElement('button');
-    delSubBtnTop.textContent = 'Удалить подкатегорию';
-    delSubBtnTop.title = 'Удалить подкатегорию и её карточки';
-
-    controls.appendChild(editBtnTop);
-    controls.appendChild(saveBtnTop);
-    controls.appendChild(cancelBtnTop);
-    controls.appendChild(addCatBtnTop);
-    controls.appendChild(delCatBtnTop);
-    controls.appendChild(addSubBtnTop);
-    controls.appendChild(delSubBtnTop);
-    controls.appendChild(loginBtnTop);
-    // Старая панель управления скрыта, вместо неё будет верхняя панель
-    controls.style.display = 'none';
-    // tabsHeader.appendChild(controls);
+    // Панель действий внутри табов (справа): Вход и Редактирование
+    const tabsActions = document.createElement('div');
+    tabsActions.className = 'tabs-actions';
     
-    // Верхняя панель (над категориями): ✎ и Вход
-    const topControls = document.createElement('div');
-    topControls.className = 'top-controls';
-    topControls.style.display = 'flex';
-    topControls.style.justifyContent = 'flex-end';
-    topControls.style.gap = '8px';
-    topControls.style.marginBottom = '8px';
-    // Индикатор сохранения на сервер
-    const saveStatus = document.createElement('div');
-    saveStatus.className = 'save-status-indicator';
-    saveStatus.style.marginRight = 'auto';
-    saveStatus.style.fontSize = '12px';
-    saveStatus.style.padding = '4px 6px';
-    saveStatus.style.borderRadius = '4px';
-    saveStatus.style.display = 'none';
-    saveStatus.style.alignSelf = 'center';
     const editToggleBtn = document.createElement('button');
     editToggleBtn.title = 'Режим редактирования';
     editToggleBtn.textContent = '✎';
-    // Тёмно-серый стиль кнопки ✎
-    editToggleBtn.style.background = '#444';
-    editToggleBtn.style.color = '#eee';
-    editToggleBtn.style.border = '1px solid #333';
-    editToggleBtn.style.borderRadius = '4px';
-    editToggleBtn.style.padding = '4px 8px';
+    // Стили перенесены в CSS (.tabs-actions button)
+
     const loginMainBtn = document.createElement('button');
-    loginMainBtn.textContent = loggedInUser ? 'Выход' : 'Вход';
+    // Иконка человечка (черно-белая)
+    const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+    loginMainBtn.innerHTML = userIconSvg;
     loginMainBtn.title = loggedInUser ? 'Выйти из личного кабинета' : 'Войти в личный кабинет';
-    // Тёмно-серый стиль кнопки вход/выход (верхняя панель над категориями)
-    loginMainBtn.style.background = '#444';
-    loginMainBtn.style.color = '#eee';
-    loginMainBtn.style.border = '1px solid #333';
-    loginMainBtn.style.borderRadius = '4px';
-    loginMainBtn.style.padding = '4px 8px';
-    topControls.appendChild(saveStatus);
-    topControls.appendChild(editToggleBtn);
-    topControls.appendChild(loginMainBtn);
+    // Стили перенесены в CSS (.tabs-actions button)
+    
+    tabsActions.appendChild(loginMainBtn);
+    tabsActions.appendChild(editToggleBtn);
+    
+    tabsHeader.appendChild(tabsActions);
+
+    // Logic to update icon/tooltip on login change
+    function updateLoginBtnState() {
+        loginMainBtn.title = loggedInUser ? 'Выйти из личного кабинета' : 'Войти в личный кабинет';
+        // Цвет иконки меняется через CSS (класс active или просто color)
+        // Но здесь мы можем оставить базовую логику title
+    }
+    updateLoginBtnState();
 
     // Панель корзины (видна только в режиме редактирования)
     const trashPanel = document.createElement('div');
@@ -347,7 +279,7 @@ export function initTabsNavigation() {
     trashPanel.style.marginBottom = '8px';
     // Включаем прокрутку независимо от режима
     trashPanel.style.overflowY = 'auto';
-    trashPanel.style.maxHeight = '50vh';
+    // trashPanel.style.maxHeight удален, управляется CSS
     trashPanel.innerHTML = '<strong>Корзина</strong><div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
 
     // Добавляем элементы в контейнер навигации
@@ -357,11 +289,11 @@ export function initTabsNavigation() {
     
     // Вставляем контейнер навигации перед контейнером поиска
     // Вставляем верхнюю панель и корзину перед навигацией
-    container.insertBefore(topControls, searchContainer);
+    // container.insertBefore(topControls, searchContainer); // Удалено
     container.insertBefore(navigationContainer, searchContainer);
 
     // Привязываем глобальную ссылку на индикатор сохранения
-    globalSaveStatusEl = saveStatus;
+    // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
 
     (async () => {
         try {
@@ -373,6 +305,36 @@ export function initTabsNavigation() {
             refreshCategoriesTabs();
         } catch {}
     })();
+
+    // Применяем сохранённый режим редактирования при инициализации
+    if (editMode) {
+        try {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при старте в режиме редактирования
+            const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
+            const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
+            const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
+            if (!existingTrashBtn && sidebarButtons) {
+                const trashBtn = document.createElement('button');
+                trashBtn.id = 'trash-mode-button';
+                trashBtn.title = 'Корзина';
+                trashBtn.setAttribute('aria-label', 'Корзина');
+                trashBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" fill="currentColor" />
+                        <path d="M6 9h12l-1 10a2 2 0 0 1-2 2H9a 2 2 0 0 1-2-2L6 9z" fill="currentColor" />
+                    </svg>`;
+                sidebarButtons.appendChild(trashBtn);
+            }
+            trashPanel.style.display = 'block';
+            if (sidebar && searchHistory) {
+                try { sidebar.insertBefore(trashPanel, searchHistory); } catch {}
+            }
+            container.classList.add('edit-mode');
+            renderTrashPanel();
+            refreshCategoryEditMenus();
+        } catch {}
+    }
 
     // Функции меню категорий в режиме редактирования
     function refreshCategoryEditMenus() {
@@ -387,13 +349,7 @@ export function initTabsNavigation() {
             btn.className = 'cat-menu-btn';
             btn.title = 'Меню категории';
             btn.textContent = '⋮';
-            btn.style.marginLeft = '8px';
-            // Тёмно-серый стиль
-            btn.style.background = '#444';
-            btn.style.color = '#eee';
-            btn.style.border = '1px solid #333';
-            btn.style.borderRadius = '4px';
-            btn.style.padding = '2px 6px';
+            // Стили перенесены в CSS
             tab.appendChild(btn);
             btn.addEventListener('click', (ev) => {
                 ev.stopPropagation();
@@ -518,7 +474,7 @@ export function initTabsNavigation() {
                     saveMergedToServer();
                     // Перерисовываем табы, чтобы сразу увидеть новое имя
                     refreshCategoriesTabs(catObj.name, newName);
-                    alert('Категория переименована и сохранена в проект.');
+                    setSaveStatus('success', 'Категория переименована');
                 }
             } else if (act === 'duplicate') {
                 const dupName = prompt('Название копии категории:', `${catObj.name} (копия)`);
@@ -535,7 +491,7 @@ export function initTabsNavigation() {
                 saveMergedToServer();
                 // Перерисовываем табы, чтобы сразу появилась новая категория
                 refreshCategoriesTabs();
-                alert('Категория дублирована и сохранена в проект.');
+                setSaveStatus('success', 'Категория дублирована');
             } else if (act === 'delete') {
                 if (!confirm('Удалить категорию в корзину?')) return;
                 const trashCats = getLS('qaTrashCategories', '{}');
@@ -555,7 +511,7 @@ export function initTabsNavigation() {
                 renderTrashPanel();
                 saveMergedToServer();
                 refreshCategoriesTabs();
-                alert('Категория перемещена в корзину и сохранена.');
+                setSaveStatus('success', 'Категория удалена в корзину');
             }
             menu.remove();
         });
@@ -632,7 +588,7 @@ export function initTabsNavigation() {
                     setLS('qaAdminOverrides', ov);
                     rebuildSubcategoriesForCategory(categoryName);
                     saveMergedToServer();
-                    alert('Подкатегория переименована и сохранена в проект.');
+                    setSaveStatus('success', 'Подкатегория переименована');
                 }
             } else if (act === 'duplicate') {
                 const dupName = prompt('Название копии подкатегории:', `${subcatName} (копия)`);
@@ -649,9 +605,13 @@ export function initTabsNavigation() {
                 if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
                 scPlaceholders[categoryName][dupName] = { displayName: dupName };
                 setSubcategoryPlaceholders(scPlaceholders);
+                
+                // Force full refresh to ensure data visibility
+                refreshCategoriesTabs();
                 rebuildSubcategoriesForCategory(categoryName);
+                
                 saveMergedToServer();
-                alert('Подкатегория дублирована и сохранена.');
+                setSaveStatus('success', 'Подкатегория дублирована');
             } else if (act === 'delete') {
                 if (!confirm('Удалить подкатегорию в корзину?')) { menu.remove(); return; }
                 const delMap = getDeletedItems();
@@ -668,7 +628,7 @@ export function initTabsNavigation() {
                 renderTrashPanel();
                 saveMergedToServer();
                 rebuildSubcategoriesForCategory(categoryName);
-                alert('Подкатегория перемещена в корзину и сохранена.');
+                setSaveStatus('success', 'Подкатегория удалена в корзину');
             }
             menu.remove();
         });
@@ -939,6 +899,7 @@ export function initTabsNavigation() {
         const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
         const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
         if (editMode) {
+            if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при включении режима
             trashPanel.style.display = 'block';
             // добавить квадрат с иконкой мусорного ведра в заголовок боковой панели
             if (sidebarButtons && !sidebarButtons.querySelector('#trash-mode-button')) {
@@ -957,12 +918,15 @@ export function initTabsNavigation() {
             if (sidebar && searchHistory) {
                 try { sidebar.insertBefore(trashPanel, searchHistory); } catch {}
             }
+            container.classList.add('edit-mode');
         } else {
             trashPanel.style.display = 'none';
             // убрать индикатор корзины из заголовка боковой панели
             const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
             if (existingTrashBtn) existingTrashBtn.remove();
+            container.classList.remove('edit-mode');
         }
+        try { localStorage.setItem('qaEditMode', editMode ? 'true' : 'false'); } catch {}
         refreshCategoryEditMenus();
         // Обновляем вкладки категорий, чтобы включить/отключить перетаскивание
         refreshCategoriesTabs();
@@ -1000,26 +964,44 @@ export function initTabsNavigation() {
     });
 
     function setSaveStatus(state, msg) {
+        const statusEl = document.getElementById('global-toast-notification') || (() => {
+            const el = document.createElement('div');
+            el.id = 'global-toast-notification';
+            el.style.position = 'fixed';
+            el.style.top = '20px';
+            el.style.left = '50%';
+            el.style.transform = 'translateX(-50%)';
+            el.style.zIndex = '9999';
+            el.style.padding = '8px 16px';
+            el.style.borderRadius = '6px';
+            el.style.fontSize = '14px';
+            el.style.fontWeight = '500';
+            el.style.display = 'none';
+            el.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+            document.body.appendChild(el);
+            return el;
+        })();
+
         if (state === 'saving') {
-            saveStatus.style.display = 'inline-block';
-            saveStatus.style.background = '#444';
-            saveStatus.style.color = '#eee';
-            saveStatus.style.border = '1px solid #333';
-            saveStatus.textContent = msg || 'Сохранение...';
+            statusEl.style.display = 'block';
+            statusEl.style.background = '#333';
+            statusEl.style.color = '#eee';
+            statusEl.style.border = '1px solid #444';
+            statusEl.textContent = msg || 'Сохранение...';
         } else if (state === 'success') {
-            saveStatus.style.display = 'inline-block';
-            saveStatus.style.background = 'rgba(0, 128, 0, 0.3)';
-            saveStatus.style.color = '#cfe9cf';
-            saveStatus.style.border = '1px solid #2a6b2a';
-            saveStatus.textContent = msg || 'Сохранено';
-            setTimeout(() => { saveStatus.style.display = 'none'; }, 2000);
+            statusEl.style.display = 'block';
+            statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Зеленый фон
+            statusEl.style.color = '#ffffff';
+            statusEl.style.border = '1px solid #2a6b2a';
+            statusEl.textContent = msg || 'Сохранено';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
         } else if (state === 'error') {
-            saveStatus.style.display = 'inline-block';
-            saveStatus.style.background = 'rgba(128, 0, 0, 0.3)';
-            saveStatus.style.color = '#f1c7c7';
-            saveStatus.style.border = '1px solid #6b2a2a';
-            saveStatus.textContent = msg || 'Ошибка сохранения';
-            setTimeout(() => { saveStatus.style.display = 'none'; }, 4000);
+            statusEl.style.display = 'block';
+            statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // Красный фон
+            statusEl.style.color = '#ffffff';
+            statusEl.style.border = '1px solid #8b2a2a';
+            statusEl.textContent = msg || 'Ошибка сохранения';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
         }
     }
 
@@ -1264,7 +1246,7 @@ function setSaveStatus(state, msg) {
         saveStatus.style.color = '#cfe9cf';
         saveStatus.style.border = '1px solid #2a6b2a';
         saveStatus.textContent = msg || 'Сохранено';
-        setTimeout(() => { saveStatus.style.display = 'none'; }, 2000);
+        setTimeout(() => { saveStatus.style.display = 'none'; }, 1500);
     } else if (state === 'error') {
         saveStatus.style.display = 'inline-block';
         saveStatus.style.background = 'rgba(128, 0, 0, 0.3)';
@@ -1668,12 +1650,17 @@ function displayQuestions(questions, title) {
         currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
     }
     
-    // Добавляем заголовок
-    const resultsHeader = document.createElement('div');
-    resultsHeader.className = 'results-header';
-    // Без заголовка категории — только счётчик
-    resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
-    resultsList.appendChild(resultsHeader);
+    // Обновляем счетчик результатов (вынесен из grid)
+    let countContainer = document.getElementById('results-count-container');
+    if (!countContainer) {
+        countContainer = document.createElement('div');
+        countContainer.id = 'results-count-container';
+        countContainer.className = 'results-header'; // Use existing class for style
+        countContainer.style.padding = '0 20px 10px 20px';
+        countContainer.style.marginBottom = '0';
+        resultsList.parentNode.insertBefore(countContainer, resultsList);
+    }
+    countContainer.innerHTML = `<p class="results-count" style="margin:0">Найдено: ${questions.length}</p>`;
     
     // Добавляем вопросы
     currentQuestions.forEach((item, index) => {
