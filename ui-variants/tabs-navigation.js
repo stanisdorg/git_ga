@@ -396,7 +396,7 @@ export function initTabsNavigation() {
         updateLoginBtnState();
         adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-        cloudBtn.style.display = (user && user.role === 'admin' && window.__supabaseClient) ? 'inline-block' : 'none';
+        cloudBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
     }
 
     // Панель корзины (видна только в режиме редактирования)
