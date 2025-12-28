@@ -1,5 +1,76 @@
 const STORAGE_KEY = 'srsProgress';
 
+function getUserId() {
+    try {
+        const raw = localStorage.getItem('qaSessionUser') || '';
+        if (raw) {
+            const u = JSON.parse(raw);
+            if (u && (u.id || u.email)) return u.id || u.email;
+        }
+    } catch {}
+    let id = localStorage.getItem('deviceId');
+    if (!id) {
+        id = 'device_' + Math.random().toString(36).slice(2);
+        localStorage.setItem('deviceId', id);
+    }
+    return id;
+}
+
+function enqueueSupabase(table, data) {
+    try {
+        const raw = localStorage.getItem('supabaseQueue') || '[]';
+        const arr = JSON.parse(raw);
+        arr.push({ table, data });
+        localStorage.setItem('supabaseQueue', JSON.stringify(arr));
+    } catch {}
+}
+
+export async function syncCardProgress(question, progress) {
+    const client = window.__supabaseClient;
+    const payload = {
+        user_id: getUserId(),
+        question,
+        due_date: progress.dueDate,
+        interval: progress.interval,
+        repetitions: progress.repetitions,
+        ease_factor: progress.easeFactor,
+        last_reviewed: progress.lastReviewed || null,
+        last_reviewed_time: progress.lastReviewedTime || null
+    };
+    if (!client) {
+        enqueueSupabase('card_progress', payload);
+        return;
+    }
+    try {
+        const { error } = await client.from('card_progress').upsert(payload, { onConflict: 'user_id,question' });
+        if (error) enqueueSupabase('card_progress', payload);
+    } catch {
+        enqueueSupabase('card_progress', payload);
+    }
+}
+
+export async function syncDailyStats(date, xp, bonus, dayBonus, streak) {
+    const client = window.__supabaseClient;
+    const payload = {
+        user_id: getUserId(),
+        date,
+        xp,
+        bonus,
+        day_bonus: dayBonus,
+        streak
+    };
+    if (!client) {
+        enqueueSupabase('daily_stats', payload);
+        return;
+    }
+    try {
+        const { error } = await client.from('daily_stats').upsert(payload, { onConflict: 'user_id,date' });
+        if (error) enqueueSupabase('daily_stats', payload);
+    } catch {
+        enqueueSupabase('daily_stats', payload);
+    }
+}
+
 /**
  * Retrieves the full progress map from local storage.
  * @returns {Object.<string, import('./algorithm.js').ProgressRecord>}
@@ -41,6 +112,7 @@ export function updateCardProgress(question, progress) {
     const map = getProgressMap();
     map[question] = { ...progress, question };
     saveProgressMap(map);
+    syncCardProgress(question, progress);
 }
 
 /**

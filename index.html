@@ -11,6 +11,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
+    <script>
+        window.NEXT_PUBLIC_SUPABASE_URL = "https://zaytawcqkmpbrzvnrlnv.supabase.co";
+        window.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY = "sb_publishable_DqatNMk7ZWZVUMzPFRdvsQ_2ZUCossu";
+    </script>
     <style>
         /* Встроенные стили для гарантированного применения */
         span.category-badge, 
@@ -107,12 +111,10 @@
         </div>
     </div>
 
-    <script src="script.js" type="module"></script>
+                <script src="script.js" type="module"></script>
                 <script src="electron/renderer-stt.js" type="module"></script>
                 <script src="ui-manager.js" type="module"></script>
                 <script src="data-event-handler.js" type="module"></script>
-                <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-                <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
                 <script type="module">
                     import { initUI } from './ui-manager.js';
                     
@@ -130,5 +132,6 @@
             initUI();
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </body>
 </html>

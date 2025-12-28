@@ -84,7 +84,8 @@ function verifyCredentialsWithSupabase(email, password) {
     return !!(email && password);
 }
 function ensureLoginState() {
-    const raw = localStorage.getItem('qaSessionUser');
+    let raw = localStorage.getItem('qaSessionUser');
+    if (!raw) raw = sessionStorage.getItem('qaSessionUser');
     try { loggedInUser = raw ? JSON.parse(raw) : null; } catch { loggedInUser = null; }
 }
 ensureLoginState();
@@ -240,14 +241,15 @@ export function initTabsNavigation() {
     tabsHeader.className = 'tabs-header';
     tabsHeader.appendChild(tabsContainer);
 
-    // Панель действий внутри табов (справа): Вход, Редактирование, Учить
-    const tabsActions = document.createElement('div');
-    tabsActions.className = 'tabs-actions';
+    // Верхняя панель действий над карточками
+    const topActions = document.createElement('div');
+    topActions.className = 'top-actions';
     
     // Кнопка режима обучения
     const learnBtn = document.createElement('button');
     learnBtn.title = 'Режим обучения';
-    learnBtn.innerHTML = '🎓'; // Или SVG иконка
+    learnBtn.textContent = 'Учить';
+    learnBtn.className = 'learn-main-btn';
     learnBtn.addEventListener('click', async () => {
         const { startLearnSession } = await import('../srs/learn-ui.js');
         // Собираем текущие карточки (currentQuestions - глобальная переменная в этом файле)
@@ -259,10 +261,11 @@ export function initTabsNavigation() {
     // Кнопка статистики
     const statsBtn = document.createElement('button');
     statsBtn.title = 'Статистика';
-    statsBtn.textContent = '📊';
+    statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
+    statsBtn.style.color = '#fff';
     statsBtn.addEventListener('click', async () => {
         const { initStatsPage } = await import('../srs/stats-ui.js');
-        history.pushState({}, '', '/stats');
+        location.hash = '#/stats';
         initStatsPage();
     });
 
@@ -270,58 +273,131 @@ export function initTabsNavigation() {
     editToggleBtn.title = 'Режим редактирования';
     editToggleBtn.textContent = '✎';
     // Стили перенесены в CSS (.tabs-actions button)
+    editToggleBtn.style.display = 'none';
 
     const loginMainBtn = document.createElement('button');
     // Иконка человечка (черно-белая)
     const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
     loginMainBtn.innerHTML = userIconSvg;
-    loginMainBtn.title = loggedInUser ? 'Выйти из личного кабинета' : 'Войти в личный кабинет';
-    // Стили перенесены в CSS (.tabs-actions button)
+    loginMainBtn.title = 'Войти';
+    loginMainBtn.style.color = '#fff';
+    // Простая локальная авторизация без Netlify/Auth0
+    ensureDefaultUsers();
+    loginMainBtn.addEventListener('click', () => {
+        if (loggedInUser) {
+            if (confirm('Выйти из аккаунта?')) {
+                setLoggedUser(null);
+                loginMainBtn.title = 'Войти';
+            }
+        } else {
+            openLoginModal();
+        }
+    });
     
-    tabsActions.appendChild(loginMainBtn);
-    tabsActions.appendChild(editToggleBtn);
-    tabsActions.appendChild(learnBtn);
-    tabsActions.appendChild(statsBtn);
-    
-    tabsHeader.appendChild(tabsActions);
+    topActions.appendChild(loginMainBtn);
+    topActions.appendChild(learnBtn);
+    topActions.appendChild(statsBtn);
+    topActions.appendChild(editToggleBtn);
+    navigationContainer.appendChild(topActions);
+    tabsHeader.appendChild(tabsContainer);
 
-    const streakBadge = document.createElement('div');
-    streakBadge.className = 'streak-badge';
+    // Маленький огонёк стрика рядом с уровнем
     const streakRaw = localStorage.getItem('studyStreak') || '{}';
     let streakVal = 0;
     try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch {}
     if (streakVal > 0) {
-        streakBadge.textContent = `🔥 ${streakVal}`;
-        tabsHeader.appendChild(streakBadge);
+        const flame = document.createElement('span');
+        flame.textContent = `🔥 ${streakVal}`;
+        flame.className = 'streak-flame';
+        flame.style.fontSize = '12px';
+        flame.style.marginLeft = '8px';
+        topActions.appendChild(flame);
     }
 
     // Logic to update icon/tooltip on login change
     function updateLoginBtnState() {
-        loginMainBtn.title = loggedInUser ? 'Выйти из личного кабинета' : 'Войти в личный кабинет';
-        // Цвет иконки меняется через CSS (класс active или просто color)
-        // Но здесь мы можем оставить базовую логику title
+        loginMainBtn.title = loggedInUser ? 'Выйти' : 'Войти';
+        const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
+        loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
+        loginMainBtn.style.color = '#d0d0d0';
+        try { statsBtn.style.color = '#d0d0d0'; } catch {}
     }
-    updateLoginBtnState();
-    window.addEventListener('authChanged', () => {
+    // Плашка уровня и XP
+    import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+        const box = document.createElement('div');
+        box.className = 'level-inline';
+        const data = getCurrentLevel();
+        const label = document.createElement('div');
+        label.className = 'lv-label';
+        label.textContent = `LV:${data.level}`;
+        const bar = document.createElement('div');
+        bar.className = 'level-inline-bar';
+        const fill = document.createElement('div');
+        fill.className = 'level-inline-fill';
+        const pct = Math.round((data.progress || 0) * 100);
+        fill.style.width = `${pct}%`;
+        const txt = document.createElement('div');
+        txt.className = 'level-inline-text';
+        const currentInLevel = Math.max(0, Math.round((data.xp - data.prevThreshold)));
+        const totalForLevel = data.nextThreshold === Infinity ? currentInLevel : Math.round(data.nextThreshold - data.prevThreshold);
+        const remaining = data.remaining === 0 ? 0 : data.remaining;
+        txt.textContent = `XP:${data.xp}  ${currentInLevel}/${totalForLevel}`;
+        bar.appendChild(fill); bar.appendChild(txt);
+        box.appendChild(label); box.appendChild(bar);
+        topActions.appendChild(box);
+        function updateLevelInline() {
+            import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+                const d = getCurrentLevel();
+                const cont = topActions.querySelector('.level-inline');
+                if (!cont) return;
+                const lbl = cont.querySelector('.lv-label');
+                const fl = cont.querySelector('.level-inline-fill');
+                const tx = cont.querySelector('.level-inline-text');
+                if (lbl) lbl.textContent = `LV:${d.level}`;
+                const p = Math.round((d.progress || 0) * 100);
+                if (fl) fl.style.width = `${p}%`;
+                const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
+                const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
+                if (tx) tx.textContent = `XP:${d.xp}  ${cur}/${tot}`;
+            }).catch(()=>{});
+        }
+        window.addEventListener('xpUpdated', updateLevelInline);
+        window.addEventListener('statsClosed', updateLevelInline);
+    }).catch(()=>{});
+
+    // Кнопка администратора для добавления пользователей (появляется после входа админа)
+    const adminUsersBtn = document.createElement('button');
+    adminUsersBtn.className = 'admin-users-btn';
+    adminUsersBtn.textContent = 'Добавить пользователя';
+    adminUsersBtn.style.display = 'none';
+    adminUsersBtn.style.width = 'auto';
+    adminUsersBtn.style.background = '#111';
+    adminUsersBtn.style.border = '1px solid #444';
+    adminUsersBtn.style.color = '#ccc';
+    adminUsersBtn.addEventListener('click', openAdminUsersPanel);
+    topActions.appendChild(adminUsersBtn);
+
+    const cloudBtn = document.createElement('button');
+    cloudBtn.title = 'Облако';
+    cloudBtn.textContent = 'Облако';
+    cloudBtn.style.display = 'none';
+    cloudBtn.style.width = 'auto';
+    cloudBtn.style.background = '#111';
+    cloudBtn.style.border = '1px solid #444';
+    cloudBtn.style.color = '#ccc';
+    cloudBtn.addEventListener('click', openCloudOverview);
+    topActions.appendChild(cloudBtn);
+
+    function setLoggedUser(user) {
+        loggedInUser = user;
         try {
-            const raw = localStorage.getItem('qaSessionUser');
-            loggedInUser = raw ? JSON.parse(raw) : null;
-        } catch { loggedInUser = null; }
+            localStorage.setItem('qaSessionUser', JSON.stringify(user));
+        } catch {}
         updateLoginBtnState();
-    });
-    loginMainBtn.addEventListener('click', () => {
-        const a0 = window.__auth0;
-        if (a0) {
-            if (loggedInUser) a0.logout({ logoutParams: { returnTo: location.origin } });
-            else a0.loginWithRedirect();
-            return;
-        }
-        const ni = window.netlifyIdentity;
-        if (ni) {
-            if (loggedInUser) ni.logout();
-            else ni.open('login');
-        }
-    });
+        adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+        editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+        cloudBtn.style.display = (user && user.role === 'admin' && window.__supabaseClient) ? 'inline-block' : 'none';
+    }
 
     // Панель корзины (видна только в режиме редактирования)
     const trashPanel = document.createElement('div');
@@ -390,6 +466,266 @@ export function initTabsNavigation() {
         } catch {}
     }
 
+    // ===== Локальная авторизация =====
+    function ensureDefaultUsers() {
+        const raw = localStorage.getItem('usersDB') || '[]';
+        let users;
+        try { users = JSON.parse(raw); } catch { users = []; }
+        const ensure = (username, password, role) => {
+            if (!users.find(u => u.username === username)) {
+                users.push({ username, password, role });
+            }
+        };
+        ensure('stasdoroganov', 'world000', 'admin');
+        ensure('stanislavdoroganov', 'world000', 'user');
+        localStorage.setItem('usersDB', JSON.stringify(users));
+        const currentRaw = localStorage.getItem('qaSessionUser');
+        if (currentRaw) {
+            try { loggedInUser = JSON.parse(currentRaw); } catch {}
+        }
+        updateLoginBtnState();
+    }
+
+    function saveLoggedUser(user, remember) {
+        loggedInUser = user;
+        try {
+            const s = JSON.stringify(user);
+            if (remember) {
+                localStorage.setItem('qaSessionUser', s);
+                sessionStorage.removeItem('qaSessionUser');
+            } else {
+                sessionStorage.setItem('qaSessionUser', s);
+                localStorage.removeItem('qaSessionUser');
+            }
+        } catch {}
+        updateLoginBtnState();
+        // Показать/скрыть админские кнопки в зависимости от роли
+        try {
+            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+            editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+        } catch {}
+    }
+
+    function openLoginModal() {
+        let ov = document.getElementById('login-overlay');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.id = 'login-overlay';
+            ov.style.position = 'fixed';
+            ov.style.inset = '0';
+            ov.style.background = 'rgba(0,0,0,0.6)';
+            ov.style.display = 'flex';
+            ov.style.alignItems = 'center';
+            ov.style.justifyContent = 'center';
+            ov.style.zIndex = '5000';
+            ov.innerHTML = `
+                <div style="background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
+                    <div style="font-weight:600;margin-bottom:10px">Вход</div>
+                    <form id="login-form" autocomplete="on" style="display:flex;flex-direction:column;gap:8px">
+                        <input id="login-username" name="username" autocomplete="username" placeholder="Логин" style="width:100%;box-sizing:border-box;padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <div style="position:relative;display:block">
+                            <input id="login-password" name="password" autocomplete="current-password" placeholder="Пароль" type="password" style="width:100%;box-sizing:border-box;padding:8px 36px 8px 8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                            <button id="login-pass-eye" title="Показать пароль" aria-label="Показать пароль" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:#ccc;width:22px;height:22px">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                        <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:#ddd">
+                            <input type="checkbox" id="login-remember" checked />
+                            Оставаться в системе
+                        </label>
+                        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+                            <button id="login-cancel" type="button" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Отмена</button>
+                            <button id="login-submit" type="submit" style="padding:8px 12px;border-radius:6px;border:1px solid #e0b000;background:#ffd54f;color:#111;font-weight:700">Войти</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(ov);
+            ov.querySelector('#login-cancel').addEventListener('click', () => ov.remove());
+            ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+            ov.querySelector('#login-pass-eye').addEventListener('click', () => {
+                const inp = ov.querySelector('#login-password');
+                const isPwd = inp.type === 'password';
+                inp.type = isPwd ? 'text' : 'password';
+            });
+            ov.querySelector('#login-form').addEventListener('submit', async (evt) => {
+                evt.preventDefault();
+                try {
+                    const u = ov.querySelector('#login-username').value.trim();
+                    const p = ov.querySelector('#login-password').value;
+                    const remember = ov.querySelector('#login-remember')?.checked;
+                    // Try Supabase auth first if available
+                    let authed = null;
+                    const client = window.__supabaseClient;
+                    if (client) {
+                        const { data, error } = await client.auth.signInWithPassword({ email: u, password: p });
+                        if (!error && data && data.user) {
+                            const user = data.user;
+                            const role = (user.user_metadata && user.user_metadata.role) || 'user';
+                            authed = { id: user.id, email: user.email, role };
+                        }
+                        if (!authed) {
+                            try {
+                                const { data: row, error: e2 } = await client.from('users').select('*').eq('username', u).eq('password', p).single();
+                                if (!e2 && row) {
+                                    authed = { id: row.id || row.username, email: row.username, role: row.role || 'user' };
+                                }
+                            } catch {}
+                        }
+                    }
+                    if (authed) {
+                        saveLoggedUser(authed, !!remember);
+                        try {
+                            if ('credentials' in navigator && window.PasswordCredential) {
+                                const cred = new window.PasswordCredential({ id: u, name: u, password: p });
+                                await navigator.credentials.store(cred);
+                            }
+                        } catch {}
+                        ov.remove();
+                    } else {
+                        // Fallback to local users (legacy)
+                        const raw = localStorage.getItem('usersDB') || '[]';
+                        const users = JSON.parse(raw);
+                        const match = users.find(x => x.username === u && x.password === p);
+                        if (match) {
+                            saveLoggedUser({ username: match.username, role: match.role }, !!remember);
+                            try {
+                                if ('credentials' in navigator && window.PasswordCredential) {
+                                    const cred = new window.PasswordCredential({ id: u, name: u, password: p });
+                                    await navigator.credentials.store(cred);
+                                }
+                            } catch {}
+                            ov.remove();
+                        } else {
+                            alert('Неверный логин или пароль');
+                        }
+                    }
+                } catch {
+                    alert('Ошибка входа');
+                }
+            });
+            // Enter to submit
+            const inputs = ov.querySelectorAll('#login-username, #login-password');
+            inputs.forEach(inp => {
+                inp.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        ov.querySelector('#login-submit').click();
+                    }
+                });
+            });
+        }
+    }
+
+    function openAdminUsersPanel() {
+        let ov = document.getElementById('admin-users-overlay');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.id = 'admin-users-overlay';
+            ov.style.position = 'fixed';
+            ov.style.inset = '0';
+            ov.style.background = 'rgba(0,0,0,0.6)';
+            ov.style.display = 'flex';
+            ov.style.alignItems = 'center';
+            ov.style.justifyContent = 'center';
+            ov.style.zIndex = '5000';
+            ov.innerHTML = `
+                <div style="background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
+                    <div style="font-weight:600;margin-bottom:10px">Добавить пользователя</div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                        <input id="new-username" placeholder="Логин" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <input id="new-password" placeholder="Пароль" type="password" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <select id="new-role" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff">
+                            <option value="user">Пользователь</option>
+                            <option value="admin">Администратор</option>
+                        </select>
+                        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+                            <button id="admin-cancel" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Отмена</button>
+                            <button id="admin-add" style="padding:8px 12px;border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:#fff">Добавить</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(ov);
+            ov.querySelector('#admin-cancel').addEventListener('click', () => ov.remove());
+            ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+            ov.querySelector('#admin-add').addEventListener('click', () => {
+                const u = ov.querySelector('#new-username').value.trim();
+                const p = ov.querySelector('#new-password').value;
+                const r = ov.querySelector('#new-role').value;
+                if (!u || !p) { alert('Логин и пароль обязательны'); return; }
+                const client = window.__supabaseClient;
+                (async () => {
+                    if (client) {
+                        try {
+                            const { error } = await client.from('users').upsert({ username: u, password: p, role: r }, { onConflict: 'username' });
+                            if (error) throw error;
+                            ov.remove();
+                            alert('Пользователь добавлен');
+                            return;
+                        } catch {}
+                    }
+                    const raw = localStorage.getItem('usersDB') || '[]';
+                    let users = [];
+                    try { users = JSON.parse(raw); } catch {}
+                    if (users.find(x => x.username === u)) { alert('Такой пользователь уже существует'); return; }
+                    users.push({ username: u, password: p, role: r });
+                    localStorage.setItem('usersDB', JSON.stringify(users));
+                    ov.remove();
+                    alert('Пользователь добавлен');
+                })();
+            });
+        }
+    }
+
+    function openCloudOverview() {
+        const client = window.__supabaseClient;
+        if (!client) { alert('Supabase недоступен'); return; }
+        let ov = document.getElementById('cloud-overview-overlay');
+        if (!ov) {
+            ov = document.createElement('div');
+            ov.id = 'cloud-overview-overlay';
+            ov.style.position = 'fixed';
+            ov.style.inset = '0';
+            ov.style.background = 'rgba(0,0,0,0.6)';
+            ov.style.display = 'flex';
+            ov.style.alignItems = 'center';
+            ov.style.justifyContent = 'center';
+            ov.style.zIndex = '5000';
+            ov.innerHTML = `
+                <div style="background:#1f1f1f;color:#fff;padding:16px 20px;border-radius:10px;width:560px;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:600">Supabase данные</div>
+                        <button id="cloud-close" style="padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px">Закрыть</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                        <div>
+                            <div style="font-weight:600;margin-bottom:6px">Пользователи</div>
+                            <div id="cloud-users" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
+                        </div>
+                        <div>
+                            <div style="font-weight:600;margin-bottom:6px">Достижения (daily_stats)</div>
+                            <div id="cloud-stats" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(ov);
+            ov.querySelector('#cloud-close').addEventListener('click', () => ov.remove());
+            ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+        }
+        const usersEl = ov.querySelector('#cloud-users');
+        const statsEl = ov.querySelector('#cloud-stats');
+        usersEl.textContent = 'Загрузка...';
+        statsEl.textContent = 'Загрузка...';
+        client.from('users').select('*').then(({ data, error }) => {
+            if (error) { usersEl.textContent = 'Ошибка'; return; }
+            usersEl.innerHTML = (data || []).map(u => `<div>${u.username} • роль: ${u.role || 'user'}</div>`).join('') || '<div>Пусто</div>';
+        }).catch(() => { usersEl.textContent = 'Ошибка'; });
+        client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
+            if (error) { statsEl.textContent = 'Ошибка'; return; }
+            statsEl.innerHTML = (data || []).map(s => `<div>${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div>`).join('') || '<div>Пусто</div>';
+        }).catch(() => { statsEl.textContent = 'Ошибка'; });
+    }
     // Функции меню категорий в режиме редактирования
     function refreshCategoryEditMenus() {
         const tabs = tabsContainer.querySelectorAll('.tab');
@@ -911,38 +1247,11 @@ export function initTabsNavigation() {
         });
     }
 
-    // Логика кнопок Вход и ✎ (верхняя панель)
-    loginMainBtn.addEventListener('click', () => {
-        ensureLoginState();
-        if (loggedInUser) {
-            if (confirm('Выйти из аккаунта?')) {
-                localStorage.removeItem('qaSessionUser'); loggedInUser = null; loginMainBtn.textContent = 'Вход';
-            }
-            return;
-        }
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed'; overlay.style.inset = '0'; overlay.style.background = 'rgba(0,0,0,0.4)';
-        overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
-        const modal = document.createElement('div'); modal.style.background = '#fff'; modal.style.padding = '16px'; modal.style.borderRadius = '8px'; modal.style.minWidth = '280px';
-        modal.innerHTML = `
-            <h3>Вход</h3>
-            <label>Email:<br><input type="email" id="login-email" style="width:100%"></label>
-            <label>Пароль:<br><input type="password" id="login-pass" style="width:100%"></label>
-            <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
-                <button id="login-cancel">Отмена</button>
-                <button id="login-ok">Войти</button>
-            </div>
-        `;
-        overlay.appendChild(modal); document.body.appendChild(overlay);
-        modal.querySelector('#login-cancel').addEventListener('click', () => overlay.remove());
-        modal.querySelector('#login-ok').addEventListener('click', () => {
-            const email = modal.querySelector('#login-email').value.trim();
-            const pass = modal.querySelector('#login-pass').value.trim();
-            if (verifyCredentialsWithSupabase(email, pass)) { localStorage.setItem('qaSessionUser', JSON.stringify({ email })); loggedInUser = { email }; loginMainBtn.textContent = 'Выход'; overlay.remove(); }
-            else { alert('Неверные учетные данные'); }
-        });
-    });
+    // Удалена старая логика второго модального окна входа
 
+    editToggleBtn.style.background = '#111';
+    editToggleBtn.style.border = '1px solid #444';
+    editToggleBtn.style.color = '#ccc';
     editToggleBtn.addEventListener('click', () => {
         editMode = !editMode;
         // В режиме редактирования отключаем авто-нормализацию категорий при загрузке

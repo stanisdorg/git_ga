@@ -6,11 +6,13 @@ import { initStatsPage } from './srs/stats-ui.js';
 
 // Функция для инициализации UI
 export function initUI() {
+    initSupabase();
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
     
-    // Роутинг: если /stats — открыть страницу статистики
-    if (location.pathname === '/stats') {
+    // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
+    const isStats = location.hash && location.hash.includes('stats');
+    if (isStats) {
         initStatsPage();
     } else {
         // Инициализируем табы и карточки
@@ -23,7 +25,8 @@ export function initUI() {
     // Обновляем UI при изменении данных
     const reinit = () => {
         removeExistingNavigation();
-        if (location.pathname === '/stats') {
+        const isStats = location.hash && location.hash.includes('stats');
+        if (isStats) {
             initStatsPage();
         } else {
             initTabsNavigation();
@@ -33,59 +36,80 @@ export function initUI() {
     window.addEventListener('adminItemAdded', reinit);
     window.addEventListener('adminOverridesChanged', reinit);
 
-    const ni = window.netlifyIdentity;
-    if (ni && !ni._initialized) {
-        try {
-            ni.init();
-        } catch {}
-        ni.on('init', (user) => {
-            const evt = new Event('authChanged');
-            const data = user ? { email: user.email, id: user.id } : null;
-            localStorage.setItem('qaSessionUser', JSON.stringify(data));
-            window.dispatchEvent(evt);
-        });
-        ni.on('login', (user) => {
-            const evt = new Event('authChanged');
-            const data = user ? { email: user.email, id: user.id } : null;
-            localStorage.setItem('qaSessionUser', JSON.stringify(data));
-            window.dispatchEvent(evt);
-        });
-        ni.on('logout', () => {
-            const evt = new Event('authChanged');
-            localStorage.removeItem('qaSessionUser');
-            window.dispatchEvent(evt);
-        });
-        ni._initialized = true;
-    }
+    // Убрана интеграция Netlify Identity/Auth0. Используется локальная авторизация.
+}
 
-    const domain = localStorage.getItem('AUTH0_DOMAIN') || '';
-    const clientId = localStorage.getItem('AUTH0_CLIENT_ID') || '';
-    if (window.createAuth0Client && domain && clientId) {
-        if (!window.__auth0_init) {
-            window.__auth0_init = window.createAuth0Client({
-                domain,
-                clientId,
-                authorizationParams: {
-                    redirect_uri: `${location.origin}/auth/callback`
-                }
-            }).then(async (client) => {
-                window.__auth0 = client;
-                if (location.pathname === '/auth/callback' || location.search.includes('code=')) {
-                    try {
-                        await client.handleRedirectCallback();
-                    } catch {}
-                    history.replaceState({}, '', '/');
-                }
-                try {
-                    const user = await client.getUser();
-                    const evt = new Event('authChanged');
-                    const data = user ? { email: user.email, id: user.sub } : null;
-                    if (data) localStorage.setItem('qaSessionUser', JSON.stringify(data));
-                    window.dispatchEvent(evt);
-                } catch {}
-            }).catch(() => {});
+function initSupabase() {
+    try {
+        // Read from env-like globals if provided by hosting
+        const envUrl =
+            window.NEXT_PUBLIC_SUPABASE_URL ||
+            window.SUPABASE_URL ||
+            window.NETLIFY_SUPABASE_URL ||
+            '';
+        const envKey =
+            window.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
+            window.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+            window.SUPABASE_ANON_KEY ||
+            window.NETLIFY_SUPABASE_ANON_KEY ||
+            '';
+        // Persist to localStorage for reuse
+        if (envUrl && !localStorage.getItem('supabaseUrl')) {
+            localStorage.setItem('supabaseUrl', envUrl);
+        }
+        if (envKey && !localStorage.getItem('supabaseAnonKey')) {
+            localStorage.setItem('supabaseAnonKey', envKey);
+        }
+        const url = localStorage.getItem('supabaseUrl') || envUrl || '';
+        const key = localStorage.getItem('supabaseAnonKey') || envKey || '';
+        if (window.supabase && url && key) {
+            window.__supabaseClient = window.supabase.createClient(url, key);
+            flushSupabaseQueue();
+            window.addEventListener('online', flushSupabaseQueue);
+        } else {
+            // Optional minimal prompt to configure once
+            if (!localStorage.getItem('supabaseUrl') || !localStorage.getItem('supabaseAnonKey')) {
+                // no-op: user can provide via globals or set manually later
+            }
+        }
+    } catch (_) {}
+}
+
+function readQueue() {
+    try {
+        const raw = localStorage.getItem('supabaseQueue') || '[]';
+        return JSON.parse(raw);
+    } catch {
+        return [];
+    }
+}
+
+function writeQueue(q) {
+    localStorage.setItem('supabaseQueue', JSON.stringify(q));
+}
+
+async function flushSupabaseQueue() {
+    const client = window.__supabaseClient;
+    if (!client) return;
+    let queue = readQueue();
+    if (!Array.isArray(queue) || queue.length === 0) return;
+    const next = [];
+    for (const item of queue) {
+        try {
+            if (item.table === 'card_progress') {
+                const { error } = await client.from('card_progress').upsert(item.data, { onConflict: 'user_id,question' });
+                if (error) next.push(item);
+            } else if (item.table === 'daily_stats') {
+                const { error } = await client.from('daily_stats').upsert(item.data, { onConflict: 'user_id,date' });
+                if (error) next.push(item);
+            } else {
+                next.push(item);
+            }
+        } catch {
+            next.push(item);
         }
     }
+    writeQueue(next);
 }
 
 // Функция для удаления существующих элементов навигации

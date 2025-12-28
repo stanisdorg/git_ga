@@ -23,6 +23,8 @@ export function calculateActivity(days = 30) {
       counts.set(p.lastReviewed, (counts.get(p.lastReviewed) || 0) + 1);
     }
   });
+  const dpRaw = localStorage.getItem('dailyPoints') || '{}';
+  const dailyPts = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
   const res = [];
   const today = new Date();
   for (let i = days - 1; i >= 0; i--) {
@@ -30,11 +32,12 @@ export function calculateActivity(days = 30) {
     d.setDate(today.getDate() - i);
     const s = d.toISOString().split('T')[0];
     const c = counts.get(s) || 0;
+     const xp = dailyPts[s] || 0;
     let color = '#ebedf0';
     if (c >= 8) color = '#216e39';
     else if (c >= 4) color = '#40c463';
     else if (c >= 1) color = '#9be9a8';
-    res.push({ date: s, count: c, color });
+    res.push({ date: s, count: c, xp, color });
   }
   return res;
 }
@@ -95,6 +98,61 @@ export function getCurrentLevel() {
   return { level, xp, progress, remaining, nextThreshold, prevThreshold };
 }
 
+export function getDailyPoints(days = 30) {
+  const dpRaw = localStorage.getItem('dailyPoints') || '{}';
+  const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
+  const dbRaw = localStorage.getItem('dailyBonusPoints') || '{}';
+  const bonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();
+  const ddRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
+  const dayBonus = (() => { try { return JSON.parse(ddRaw); } catch { return {}; } })();
+  const res = [];
+  const today = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const s = d.toISOString().split('T')[0];
+    res.push({ date: s, xp: daily[s] || 0, bonus: bonus[s] || 0, dayBonus: dayBonus[s] || 0 });
+  }
+  return res;
+}
+
+export function getDailyPointsAll() {
+  const dpRaw = localStorage.getItem('dailyPoints') || '{}';
+  const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
+  const dbRaw = localStorage.getItem('dailyBonusPoints') || '{}';
+  const bonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();
+  const ddRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
+  const dayBonus = (() => { try { return JSON.parse(ddRaw); } catch { return {}; } })();
+  const dates = Object.keys(daily).sort();
+  if (dates.length === 0) return [];
+  const start = new Date(dates[0]);
+  const today = new Date();
+  const res = [];
+  for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+    const s = d.toISOString().split('T')[0];
+    res.push({ date: s, xp: daily[s] || 0, bonus: bonus[s] || 0, dayBonus: dayBonus[s] || 0 });
+  }
+  return res;
+}
+
+export function getDailyStreakSeries() {
+  const dpRaw = localStorage.getItem('dailyPoints') || '{}';
+  const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
+  const dates = Object.keys(daily).sort();
+  if (dates.length === 0) return [];
+  const start = new Date(dates[0]);
+  const today = new Date();
+  const res = [];
+  let streak = 0;
+  for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+    const s = d.toISOString().split('T')[0];
+    const didStudy = (daily[s] || 0) > 0;
+    streak = didStudy ? streak + 1 : 0;
+    res.push({ date: s, streak });
+  }
+  return res;
+}
+
 export function getMetrics(allData) {
   const stats = getStudyStats();
   const streak = getStudyStreak();
@@ -109,4 +167,3 @@ export function getMetrics(allData) {
     xp: stats.points || 0
   };
 }
-

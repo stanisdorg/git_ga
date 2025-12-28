@@ -1,5 +1,5 @@
 import { calculateNextReview } from './algorithm.js';
-import { updateCardProgress } from './storage.js';
+import { updateCardProgress, syncDailyStats } from './storage.js';
 
 /**
  * Manages the learning session state.
@@ -25,8 +25,13 @@ export class LearningSession {
             again: 0,
             hard: 0,
             good: 0,
-            easy: 0
+            easy: 0,
+            pointsEarned: 0
         };
+        const sRaw = localStorage.getItem('studyStats') || '{}';
+        const sObj = (() => { try { return JSON.parse(sRaw); } catch { return {}; } })();
+        this.startXP = sObj.points || 0;
+        this.results = []; // per-card grades
     }
 
     shuffle(array) {
@@ -57,7 +62,8 @@ export class LearningSession {
             card: this.currentCard.item,
             progress: this.currentIndex + 1,
             total: this.queue.length,
-            isFlipped: false
+            isFlipped: false,
+            results: this.results
         });
     }
 
@@ -68,7 +74,8 @@ export class LearningSession {
             card: this.currentCard.item,
             progress: this.currentIndex + 1,
             total: this.queue.length,
-            isFlipped: true
+            isFlipped: true,
+            results: this.results
         });
     }
 
@@ -84,6 +91,7 @@ export class LearningSession {
         else if (grade === 2) this.stats.good++;
         else if (grade === 3) this.stats.easy++;
         this.stats.reviewed++;
+        this.results.push(grade);
 
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
         const now = new Date();
@@ -99,8 +107,24 @@ export class LearningSession {
         const pointsMap = [0, 5, 10, 15];
         const points = pointsMap[grade] || 0;
         stats.points = (stats.points || 0) + points;
+        this.stats.pointsEarned += points;
         localStorage.setItem('studyStats', JSON.stringify(stats));
+        try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
+        // Per-day points
+        const todayKey = new Date().toISOString().split('T')[0];
+        const dpRaw = localStorage.getItem('dailyPoints') || '{}';
+        const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
+        daily[todayKey] = (daily[todayKey] || 0) + points;
+        localStorage.setItem('dailyPoints', JSON.stringify(daily));
+        // Track bonus separately for histogram breakdown (added later in overlay)
+        const dbRaw = localStorage.getItem('dailyBonusPoints') || '{}';
+        const dailyBonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();
+        dailyBonus[todayKey] = dailyBonus[todayKey] || 0;
+        localStorage.setItem('dailyBonusPoints', JSON.stringify(dailyBonus));
         updateStreak();
+        const streakRaw2 = localStorage.getItem('studyStreak') || '{}';
+        const st2 = (() => { try { return JSON.parse(streakRaw2); } catch { return {}; } })();
+        syncDailyStats(todayKey, daily[todayKey] || 0, dailyBonus[todayKey] || 0, 0, st2.current || 0);
         
         this.currentIndex++;
         this.loadCurrentCard();
