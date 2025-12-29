@@ -5,7 +5,7 @@ function getUserId() {
         const raw = localStorage.getItem('qaSessionUser') || '';
         if (raw) {
             const u = JSON.parse(raw);
-            if (u && (u.id || u.email)) return u.id || u.email;
+            if (u && (u.id || u.email || u.username)) return u.id || u.email || u.username;
         }
     } catch {}
     let id = localStorage.getItem('deviceId');
@@ -69,6 +69,80 @@ export async function syncDailyStats(date, xp, bonus, dayBonus, streak) {
     } catch {
         enqueueSupabase('daily_stats', payload);
     }
+}
+
+export async function hydrateLocalFromSupabase() {
+    const client = window.__supabaseClient;
+    const userId = getUserId();
+    if (!client || !userId) return false;
+    try {
+        const { data: ds } = await client.from('daily_stats').select('date,xp,bonus,day_bonus').eq('user_id', userId).order('date', { ascending: true });
+        const dailyPoints = {};
+        const dailyBonusPoints = {};
+        const dailyDayBonusPoints = {};
+        let totalXp = 0;
+        let currentStreak = 0;
+        let bestStreak = 0;
+        let lastDateWithStudy = null;
+        (ds || []).forEach(row => {
+            const d = row.date;
+            dailyPoints[d] = row.xp || 0;
+            dailyBonusPoints[d] = row.bonus || 0;
+            dailyDayBonusPoints[d] = row.day_bonus || 0;
+            totalXp += row.xp || 0;
+            if ((row.xp || 0) > 0) {
+                currentStreak += 1;
+                if (currentStreak > bestStreak) bestStreak = currentStreak;
+                lastDateWithStudy = d;
+            } else {
+                currentStreak = 0;
+            }
+        });
+        localStorage.setItem('dailyPoints', JSON.stringify(dailyPoints));
+        localStorage.setItem('dailyBonusPoints', JSON.stringify(dailyBonusPoints));
+        localStorage.setItem('dailyDayBonusPoints', JSON.stringify(dailyDayBonusPoints));
+        const studyStatsRaw = localStorage.getItem('studyStats') || '{}';
+        let studyStats = {};
+        try { studyStats = JSON.parse(studyStatsRaw); } catch { studyStats = {}; }
+        studyStats.points = totalXp;
+        localStorage.setItem('studyStats', JSON.stringify(studyStats));
+        const streak = { current: currentStreak, best: bestStreak, lastDate: lastDateWithStudy };
+        localStorage.setItem('studyStreak', JSON.stringify(streak));
+        const { data: favs } = await client.from('favorites').select('question').eq('user_id', userId);
+        const favList = (favs || []).map(x => x.question);
+        localStorage.setItem('qaFavorites', JSON.stringify(favList));
+    } catch {}
+    try {
+        const { data: cp } = await client.from('card_progress').select('question,due_date,interval,repetitions,ease_factor,last_reviewed,last_reviewed_time').eq('user_id', userId);
+        const map = {};
+        (cp || []).forEach(row => {
+            map[row.question] = {
+                question: row.question,
+                dueDate: row.due_date,
+                interval: row.interval,
+                repetitions: row.repetitions,
+                easeFactor: row.ease_factor,
+                lastReviewed: row.last_reviewed || null,
+                lastReviewedTime: row.last_reviewed_time || null
+            };
+        });
+        localStorage.setItem('srsProgress', JSON.stringify(map));
+    } catch {}
+    try { const evt = new Event('xpUpdated'); window.dispatchEvent(evt); } catch {}
+    return true;
+}
+
+export async function syncFavorite(question, isFav) {
+    const client = window.__supabaseClient;
+    const user_id = getUserId();
+    if (!client || !user_id) return;
+    try {
+        if (isFav) {
+            await client.from('favorites').upsert({ user_id, question }, { onConflict: 'user_id,question' });
+        } else {
+            await client.from('favorites').delete().eq('user_id', user_id).eq('question', question);
+        }
+    } catch {}
 }
 
 /**

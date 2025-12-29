@@ -186,7 +186,7 @@ function renderStats() {
     </div>
 
     <div class="section">
-      <h2>Гистограмма XP</h2>
+      <h2>XP</h2>
       <div class="hist-controls" style="margin-bottom:8px;display:flex;gap:8px">
         <button data-mode="week">Неделя</button>
         <button data-mode="month">Месяц</button>
@@ -331,7 +331,10 @@ function renderHistogram(points, streakSeries) {
         <rect x="${x}" y="${yBase}" width="${barW}" height="${hBase}" rx="3" fill="#1d4ed8"></rect>
         <rect x="${x}" y="${yBonus}" width="${barW}" height="${hBonus}" rx="3" fill="#8b5cf6"></rect>
         <rect x="${x}" y="${yDayBonus}" width="${barW}" height="${hDayBonus}" rx="3" fill="#67e8f9"></rect>
-        <text x="${x + barW / 2}" y="${height - 2}" fill="#8a8a8a" font-size="12" text-anchor="middle">${label}</text>
+        ${(() => {
+          const skip = Math.max(1, Math.floor(points.length / 12));
+          return (i % skip === 0) ? `<text x="${x + barW / 2}" y="${height - 2}" fill="#cfcfcf" font-size="11" text-anchor="middle">${label}</text>` : '';
+        })()}
       </g>
     `;
   }).join('');

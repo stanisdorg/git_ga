@@ -9,6 +9,18 @@ export function initUI() {
     initSupabase();
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
+    try {
+        const sess = localStorage.getItem('qaSessionUser');
+        if (sess) {
+            import('./srs/storage.js').then(mod => {
+                if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
+                    mod.hydrateLocalFromSupabase().then(() => {
+                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
+                    }).catch(()=>{});
+                }
+            }).catch(()=>{});
+        }
+    } catch {}
     
     // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
     const isStats = location.hash && location.hash.includes('stats');
@@ -46,12 +58,14 @@ function initSupabase() {
             window.NEXT_PUBLIC_SUPABASE_URL ||
             window.SUPABASE_URL ||
             window.NETLIFY_SUPABASE_URL ||
+            "https://zaytawcqkmpbrzvnrlnv.supabase.co" ||
             '';
         const envKey =
             window.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
             window.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
             window.SUPABASE_ANON_KEY ||
             window.NETLIFY_SUPABASE_ANON_KEY ||
+            "sb_publishable_DqatNMk7ZWZVUMzPFRdvsQ_2ZUCossu" ||
             '';
         // Persist to localStorage for reuse
         if (envUrl && !localStorage.getItem('supabaseUrl')) {
@@ -71,6 +85,7 @@ function initSupabase() {
             if (!localStorage.getItem('supabaseUrl') || !localStorage.getItem('supabaseAnonKey')) {
                 // no-op: user can provide via globals or set manually later
             }
+            setTimeout(initSupabase, 500);
         }
     } catch (_) {}
 }
@@ -284,16 +299,14 @@ function addStyles() {
         .fav-btn, .edit-btn {
             border: none; /* убираем серую обводку для избранного */
             background-color: transparent;
-            color: #ddd;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px; /* сердечко чуть больше */
             padding: 2px 6px;
         }
-        .fav-btn.fav-active {
-            background-color: transparent; /* без фона, только цвет иконки */
-            color: #FF8C00; /* тёмно-оранжевый цвет сердечка */
-        }
+        .fav-btn svg { display: block; }
+        .fav-btn svg path { fill: none; stroke: #d0d0d0; stroke-width: 1.6; }
+        .fav-btn.fav-active svg path { fill: #d0d0d0; stroke: #d0d0d0; }
     `;
     
     document.head.appendChild(stylesheet);

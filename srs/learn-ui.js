@@ -315,7 +315,16 @@ function showStats(stats) {
     const streakBonus = Math.max(0, bonus - dayBonus);
     overlay.querySelector('#sum-xp').textContent = `+${earned} XP • бонусы: день +${dayBonus} XP, стрик +${streakBonus} XP`;
     // Apply bonus split to stats and daily points
-    const todayKey = new Date().toISOString().split('T')[0];
+    const todayKey = (() => {
+        try {
+            const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+            const parts = fmt.formatToParts(new Date());
+            const y = parts.find(p => p.type === 'year')?.value || '0000';
+            const m = parts.find(p => p.type === 'month')?.value || '01';
+            const d = parts.find(p => p.type === 'day')?.value || '01';
+            return `${y}-${m}-${d}`;
+        } catch { return new Date().toISOString().split('T')[0]; }
+    })();
     s.points = (s.points || 0) + bonus;
     localStorage.setItem('studyStats', JSON.stringify(s));
     const dpRaw2 = localStorage.getItem('dailyPoints') || '{}';

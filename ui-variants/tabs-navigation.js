@@ -301,18 +301,7 @@ export function initTabsNavigation() {
     navigationContainer.appendChild(topActions);
     tabsHeader.appendChild(tabsContainer);
 
-    // Маленький огонёк стрика рядом с уровнем
-    const streakRaw = localStorage.getItem('studyStreak') || '{}';
-    let streakVal = 0;
-    try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch {}
-    if (streakVal > 0) {
-        const flame = document.createElement('span');
-        flame.textContent = `🔥 ${streakVal}`;
-        flame.className = 'streak-flame';
-        flame.style.fontSize = '12px';
-        flame.style.marginLeft = '8px';
-        topActions.appendChild(flame);
-    }
+    // Удалён прежний огонёк до виджета уровня — перенесён ближе к шкале
 
     // Logic to update icon/tooltip on login change
     function updateLoginBtnState() {
@@ -340,11 +329,29 @@ export function initTabsNavigation() {
         txt.className = 'level-inline-text';
         const currentInLevel = Math.max(0, Math.round((data.xp - data.prevThreshold)));
         const totalForLevel = data.nextThreshold === Infinity ? currentInLevel : Math.round(data.nextThreshold - data.prevThreshold);
-        const remaining = data.remaining === 0 ? 0 : data.remaining;
-        txt.textContent = `XP:${data.xp}  ${currentInLevel}/${totalForLevel}`;
+        const xpLeft = document.createElement('span');
+        xpLeft.className = 'level-inline-xp';
+        xpLeft.textContent = `XP:${data.xp}`;
+        const xpRight = document.createElement('span');
+        xpRight.className = 'level-inline-progress';
+        xpRight.textContent = `${currentInLevel}/${totalForLevel}`;
+        txt.appendChild(xpLeft);
+        txt.appendChild(xpRight);
         bar.appendChild(fill); bar.appendChild(txt);
         box.appendChild(label); box.appendChild(bar);
         topActions.appendChild(box);
+        // Огонёк стрика рядом со шкалой уровня
+        const streakRaw = localStorage.getItem('studyStreak') || '{}';
+        let streakVal = 0;
+        try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch {}
+        if (streakVal > 0) {
+            const flame = document.createElement('span');
+            flame.textContent = `🔥 ${streakVal}`;
+            flame.className = 'streak-flame';
+            flame.style.fontSize = '12px';
+            flame.style.marginLeft = '4px';
+            topActions.appendChild(flame);
+        }
         function updateLevelInline() {
             import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
                 const d = getCurrentLevel();
@@ -373,7 +380,7 @@ export function initTabsNavigation() {
     adminUsersBtn.style.width = 'auto';
     adminUsersBtn.style.background = '#111';
     adminUsersBtn.style.border = '1px solid #444';
-    adminUsersBtn.style.color = '#ccc';
+    adminUsersBtn.style.color = '#d0d0d0';
     adminUsersBtn.addEventListener('click', openAdminUsersPanel);
     topActions.appendChild(adminUsersBtn);
 
@@ -384,9 +391,11 @@ export function initTabsNavigation() {
     cloudBtn.style.width = 'auto';
     cloudBtn.style.background = '#111';
     cloudBtn.style.border = '1px solid #444';
-    cloudBtn.style.color = '#ccc';
+    cloudBtn.style.color = '#d0d0d0';
     cloudBtn.addEventListener('click', openCloudOverview);
-    topActions.appendChild(cloudBtn);
+    topActions.insertBefore(cloudBtn, adminUsersBtn);
+    // Инициализация состояния кнопок по сохранённому пользователю
+    try { setLoggedUser(loggedInUser); } catch {}
 
     function setLoggedUser(user) {
         loggedInUser = user;
@@ -396,7 +405,17 @@ export function initTabsNavigation() {
         updateLoginBtnState();
         adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-        cloudBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+        cloudBtn.style.display = user ? 'inline-block' : 'none';
+        try { migrateDeviceRecordsToUser(); } catch {}
+        if (user) {
+            import('../srs/storage.js').then(mod => {
+                if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
+                    mod.hydrateLocalFromSupabase().then(() => {
+                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
+                    }).catch(()=>{});
+                }
+            }).catch(()=>{});
+        }
     }
 
     // Панель корзины (видна только в режиме редактирования)
@@ -504,6 +523,16 @@ export function initTabsNavigation() {
             adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
             editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         } catch {}
+        try { migrateDeviceRecordsToUser(); } catch {}
+        if (user) {
+            import('../srs/storage.js').then(mod => {
+                if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
+                    mod.hydrateLocalFromSupabase().then(() => {
+                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
+                    }).catch(()=>{});
+                }
+            }).catch(()=>{});
+        }
     }
 
     function openLoginModal() {
@@ -721,10 +750,90 @@ export function initTabsNavigation() {
             if (error) { usersEl.textContent = 'Ошибка'; return; }
             usersEl.innerHTML = (data || []).map(u => `<div>${u.username} • роль: ${u.role || 'user'}</div>`).join('') || '<div>Пусто</div>';
         }).catch(() => { usersEl.textContent = 'Ошибка'; });
-        client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
-            if (error) { statsEl.textContent = 'Ошибка'; return; }
-            statsEl.innerHTML = (data || []).map(s => `<div>${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div>`).join('') || '<div>Пусто</div>';
-        }).catch(() => { statsEl.textContent = 'Ошибка'; });
+        const loadStats = () => {
+            client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
+                if (error) { statsEl.textContent = 'Ошибка'; return; }
+                const list = data || [];
+                const hasDevices = list.some(s => String(s.user_id || '').startsWith('device_'));
+                const btn = document.createElement('button');
+                btn.textContent = 'Привязать device_* к текущему пользователю';
+                btn.style.cssText = 'margin-bottom:8px;padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px';
+                statsEl.innerHTML = '';
+                if (hasDevices) {
+                    statsEl.appendChild(btn);
+                    btn.addEventListener('click', async () => {
+                        btn.disabled = true;
+                        btn.textContent = 'Миграция...';
+                        let result = null;
+                        try { result = await migrateDeviceRecordsToUser(); } catch {}
+                        btn.disabled = false;
+                        const d = (result && typeof result.daily === 'number') ? result.daily : 0;
+                        const c = (result && typeof result.cards === 'number') ? result.cards : 0;
+                        window.__cloudLastMigration = { daily: d, cards: c, at: Date.now() };
+                        btn.textContent = `Готово: достижения ${d}, карточки ${c}`;
+                        setTimeout(() => { btn.textContent = 'Привязать device_* к текущему пользователю'; }, 1800);
+                        loadStats();
+                    });
+                }
+                if (window.__cloudLastMigration && typeof window.__cloudLastMigration.daily === 'number') {
+                    const info = document.createElement('div');
+                    info.style.cssText = 'margin:6px 0;padding:6px 10px;border:1px solid #444;background:#222;color:#ddd;border-radius:6px';
+                    info.textContent = `Последняя миграция: достижения ${window.__cloudLastMigration.daily}, карточки ${window.__cloudLastMigration.cards}`;
+                    statsEl.appendChild(info);
+                    // очистить через короткое время, чтобы не мешало
+                    setTimeout(() => { try { delete window.__cloudLastMigration; } catch {} }, 2500);
+                }
+                const rows = list.map(s => `<div>${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div>`).join('');
+                statsEl.innerHTML += rows || '<div>Пусто</div>';
+            }).catch(() => { statsEl.textContent = 'Ошибка'; });
+        };
+        loadStats();
+    }
+
+    async function migrateDeviceRecordsToUser() {
+        try {
+            const client = window.__supabaseClient;
+            if (!client) return { daily: 0, cards: 0 };
+            if (!loggedInUser) { alert('Сначала войдите'); return { daily: 0, cards: 0 }; }
+            const targetId = loggedInUser.id || loggedInUser.email || loggedInUser.username;
+            if (!targetId) return { daily: 0, cards: 0 };
+            const { data: ds } = await client.from('daily_stats').select('user_id,date,xp,bonus,day_bonus,streak').like('user_id', 'device_%');
+            let dailyMigrated = 0;
+            for (const row of ds || []) {
+                try {
+                    const { error } = await client.from('daily_stats').upsert({
+                        user_id: targetId,
+                        date: row.date,
+                        xp: row.xp,
+                        bonus: row.bonus,
+                        day_bonus: row.day_bonus,
+                        streak: row.streak
+                    }, { onConflict: 'user_id,date' });
+                    if (!error) dailyMigrated++;
+                } catch {}
+                try { await client.from('daily_stats').delete().eq('user_id', row.user_id).eq('date', row.date); } catch {}
+            }
+            const { data: cp } = await client.from('card_progress').select('user_id,question,due_date,interval,repetitions,ease_factor,last_reviewed,last_reviewed_time').like('user_id', 'device_%');
+            let cardsMigrated = 0;
+            for (const row of cp || []) {
+                try {
+                    const { error } = await client.from('card_progress').upsert({
+                        user_id: targetId,
+                        question: row.question,
+                        due_date: row.due_date,
+                        interval: row.interval,
+                        repetitions: row.repetitions,
+                        ease_factor: row.ease_factor,
+                        last_reviewed: row.last_reviewed,
+                        last_reviewed_time: row.last_reviewed_time
+                    }, { onConflict: 'user_id,question' });
+                    if (!error) cardsMigrated++;
+                } catch {}
+                try { await client.from('card_progress').delete().eq('user_id', row.user_id).eq('question', row.question); } catch {}
+            }
+            return { daily: dailyMigrated, cards: cardsMigrated };
+        } catch {}
+        return { daily: 0, cards: 0 };
     }
     // Функции меню категорий в режиме редактирования
     function refreshCategoryEditMenus() {
@@ -1251,7 +1360,7 @@ export function initTabsNavigation() {
 
     editToggleBtn.style.background = '#111';
     editToggleBtn.style.border = '1px solid #444';
-    editToggleBtn.style.color = '#ccc';
+    editToggleBtn.style.color = '#d0d0d0';
     editToggleBtn.addEventListener('click', () => {
         editMode = !editMode;
         // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
@@ -2071,11 +2180,16 @@ function displayQuestions(questions, title) {
         const dispCat = (catPlaceholders[item.category] && catPlaceholders[item.category].displayName) || item.category || '';
         const dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
 
+        const starSvg = (filled) => `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+        `;
         resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
                 <span class="subcategory-badge">${dispSub}</span>
-                <button class="fav-btn ${favClass}" title="В избранное">★</button>
+                <button class="fav-btn ${favClass}" title="В избранное">${starSvg(isFav)}</button>
             </div>
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
@@ -2088,9 +2202,13 @@ function displayQuestions(questions, title) {
             if (current.has(item.question)) {
                 current.delete(item.question);
                 favBtn.classList.remove('fav-active');
+                favBtn.innerHTML = starSvg(false);
+                import('../srs/storage.js').then(({ syncFavorite }) => { try { syncFavorite(item.question, false); } catch {} }).catch(()=>{});
             } else {
                 current.add(item.question);
                 favBtn.classList.add('fav-active');
+                favBtn.innerHTML = starSvg(true);
+                import('../srs/storage.js').then(({ syncFavorite }) => { try { syncFavorite(item.question, true); } catch {} }).catch(()=>{});
             }
             localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
         });

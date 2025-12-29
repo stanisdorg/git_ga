@@ -625,11 +625,15 @@ body.listening .audio-visualizer {
     margin-bottom: 20px;
 }
 .stats-close-btn {
-    background: none;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
-    padding: 6px 10px;
-    border-radius: 6px;
+    background: #111;
+    border: 1px solid #444;
+    color: #d0d0d0;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
     cursor: pointer;
 }
 .metrics-grid {
@@ -794,6 +798,19 @@ body.listening .audio-visualizer {
     fill: #60a5fa;
 }
 
+/* Histogram controls dark theme */
+.hist-controls button {
+    background: #111;
+    border: 1px solid #444;
+    color: #d0d0d0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.hist-controls button:hover {
+    background: #1a1a1a;
+}
+
 /* Inline level widget on main */
 .level-inline {
     display: flex;
@@ -820,10 +837,13 @@ body.listening .audio-visualizer {
 .level-inline-text {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    left: 8px;
+    right: 8px;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
     font-size: 10px;
-    color: #111;
+    color: #fff;
     font-weight: 700;
 }
 .lv-label {
@@ -1114,7 +1134,8 @@ body.listening .audio-visualizer {
     margin: 8px 0 8px 0;
     padding: 0 20px;
     flex-wrap: nowrap;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 .top-actions button {
     width: 30px;

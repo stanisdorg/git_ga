@@ -111,7 +111,16 @@ export class LearningSession {
         localStorage.setItem('studyStats', JSON.stringify(stats));
         try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
         // Per-day points
-        const todayKey = new Date().toISOString().split('T')[0];
+        const todayKey = (() => {
+            try {
+                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+                const parts = fmt.formatToParts(new Date());
+                const y = parts.find(p => p.type === 'year')?.value || '0000';
+                const m = parts.find(p => p.type === 'month')?.value || '01';
+                const d = parts.find(p => p.type === 'day')?.value || '01';
+                return `${y}-${m}-${d}`;
+            } catch { return new Date().toISOString().split('T')[0]; }
+        })();
         const dpRaw = localStorage.getItem('dailyPoints') || '{}';
         const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
         daily[todayKey] = (daily[todayKey] || 0) + points;
@@ -132,7 +141,16 @@ export class LearningSession {
 }
 
 function updateStreak() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = (() => {
+        try {
+            const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+            const parts = fmt.formatToParts(new Date());
+            const y = parts.find(p => p.type === 'year')?.value || '0000';
+            const m = parts.find(p => p.type === 'month')?.value || '01';
+            const d = parts.find(p => p.type === 'day')?.value || '01';
+            return `${y}-${m}-${d}`;
+        } catch { return new Date().toISOString().split('T')[0]; }
+    })();
     const raw = localStorage.getItem('studyStreak') || '{}';
     const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
     if (streak.lastDate === today) return;
@@ -141,7 +159,16 @@ function updateStreak() {
     } else {
         const y = new Date();
         y.setDate(y.getDate() - 1);
-        const ys = y.toISOString().split('T')[0];
+        const ys = (() => {
+            try {
+                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+                const parts = fmt.formatToParts(y);
+                const yy = parts.find(p => p.type === 'year')?.value || '0000';
+                const mm = parts.find(p => p.type === 'month')?.value || '01';
+                const dd = parts.find(p => p.type === 'day')?.value || '01';
+                return `${yy}-${mm}-${dd}`;
+            } catch { return y.toISOString().split('T')[0]; }
+        })();
         streak.current = (streak.lastDate === ys) ? (streak.current || 0) + 1 : 1;
     }
     streak.best = Math.max(streak.best || 0, streak.current || 0);
