@@ -1,7 +1,7 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=7';
 import { initStatsPage } from './srs/stats-ui.js';
 
 // Функция для инициализации UI
@@ -58,14 +58,12 @@ function initSupabase() {
             window.NEXT_PUBLIC_SUPABASE_URL ||
             window.SUPABASE_URL ||
             window.NETLIFY_SUPABASE_URL ||
-            "https://zaytawcqkmpbrzvnrlnv.supabase.co" ||
             '';
         const envKey =
             window.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
             window.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
             window.SUPABASE_ANON_KEY ||
             window.NETLIFY_SUPABASE_ANON_KEY ||
-            "sb_publishable_DqatNMk7ZWZVUMzPFRdvsQ_2ZUCossu" ||
             '';
         // Persist to localStorage for reuse
         if (envUrl && !localStorage.getItem('supabaseUrl')) {

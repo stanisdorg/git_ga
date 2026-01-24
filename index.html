@@ -113,24 +113,28 @@
 
                 <script src="script.js" type="module"></script>
                 <script src="electron/renderer-stt.js" type="module"></script>
-                <script src="ui-manager.js" type="module"></script>
-                <script src="data-event-handler.js" type="module"></script>
-                <script type="module">
-                    import { initUI } from './ui-manager.js';
-                    
-                    // Регистрация Service Worker для PWA
-                    if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('Service Worker зарегистрирован'))
-                    .catch(err => console.log('Ошибка регистрации Service Worker:', err));
+    <!-- Основной скрипт UI (модуль) -->
+    <script src="ui-manager.js?v=8" type="module"></script>
+    <script type="module">
+        import { initUI } from './ui-manager.js?v=8';
+        window.initUI = initUI;
+        
+        // Unregister Service Workers to fix cache issues
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                    console.log('Service Worker unregistered');
+                }
             });
         }
-        
-        // Инициализируем UI после загрузки страницы
-        document.addEventListener('DOMContentLoaded', function() {
+
+        // Auto-init if DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUI);
+        } else {
             initUI();
-        });
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </body>

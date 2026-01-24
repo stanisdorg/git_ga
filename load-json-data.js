@@ -10,8 +10,10 @@ export function setNormalizationDisabled(disabled) {
 export async function loadJsonData() {
     try {
         // Пробуем загрузить файл Копия вопросы.json
-        // Всегда тянем свежие данные, минуя кэш браузера/Service Worker
-        const response = await fetch(`./data/Копия вопросы.json?t=${Date.now()}` , { cache: 'no-store' });
+        // Используем encodeURIComponent для корректной обработки кириллицы в URL
+        const fileName = 'Копия вопросы.json';
+        const encodedFileName = encodeURIComponent(fileName);
+        const response = await fetch(`./data/${encodedFileName}?t=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) {
             throw new Error(`Не удалось загрузить файл: ${response.status}`);
         }

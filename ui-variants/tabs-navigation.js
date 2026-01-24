@@ -15,7 +15,7 @@ let serverTrashSet = new Set();
 let serverTrashItems = [];
 // Конфигурируемый URL бэкенда (можно задать через localStorage ключ 'qaBackendUrl')
 // По умолчанию используем порт 8765, так как локальный сервер запущен там
-const BACKEND_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('qaBackendUrl')) || 'http://localhost:8081';
+const BACKEND_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('qaBackendUrl')) || window.location.origin;
 
 // Локальные хелперы для storage
 function getLS(key, fallback) {
@@ -81,14 +81,8 @@ let loggedInUser = null;
 function verifyCredentialsWithSupabase(email, password) {
     // TODO: здесь подключение к Supabase (REST/JS SDK) и проверка хеша пароля
     // Пока допускаем любой непустой логин
-    return !!(email && password);
+    return true;
 }
-function ensureLoginState() {
-    let raw = localStorage.getItem('qaSessionUser');
-    if (!raw) raw = sessionStorage.getItem('qaSessionUser');
-    try { loggedInUser = raw ? JSON.parse(raw) : null; } catch { loggedInUser = null; }
-}
-ensureLoginState();
 
 // Функция для инициализации навигации с табами
 // Глобальный индикатор сохранения (элемент верхней панели)
@@ -554,7 +548,7 @@ export function initTabsNavigation() {
                         <input id="login-username" name="username" autocomplete="username" placeholder="Логин" style="width:100%;box-sizing:border-box;padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
                         <div style="position:relative;display:block">
                             <input id="login-password" name="password" autocomplete="current-password" placeholder="Пароль" type="password" style="width:100%;box-sizing:border-box;padding:8px 36px 8px 8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
-                            <button id="login-pass-eye" title="Показать пароль" aria-label="Показать пароль" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:#ccc;width:22px;height:22px">
+                            <button type="button" id="login-pass-eye" title="Показать пароль" aria-label="Показать пароль" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:#ccc;width:22px;height:22px">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
@@ -604,12 +598,6 @@ export function initTabsNavigation() {
                     }
                     if (authed) {
                         saveLoggedUser(authed, !!remember);
-                        try {
-                            if ('credentials' in navigator && window.PasswordCredential) {
-                                const cred = new window.PasswordCredential({ id: u, name: u, password: p });
-                                await navigator.credentials.store(cred);
-                            }
-                        } catch {}
                         ov.remove();
                     } else {
                         // Fallback to local users (legacy)
@@ -618,12 +606,6 @@ export function initTabsNavigation() {
                         const match = users.find(x => x.username === u && x.password === p);
                         if (match) {
                             saveLoggedUser({ username: match.username, role: match.role }, !!remember);
-                            try {
-                                if ('credentials' in navigator && window.PasswordCredential) {
-                                    const cred = new window.PasswordCredential({ id: u, name: u, password: p });
-                                    await navigator.credentials.store(cred);
-                                }
-                            } catch {}
                             ov.remove();
                         } else {
                             alert('Неверный логин или пароль');
@@ -794,7 +776,7 @@ export function initTabsNavigation() {
         try {
             const client = window.__supabaseClient;
             if (!client) return { daily: 0, cards: 0 };
-            if (!loggedInUser) { alert('Сначала войдите'); return { daily: 0, cards: 0 }; }
+            if (!loggedInUser) { return { daily: 0, cards: 0 }; }
             const targetId = loggedInUser.id || loggedInUser.email || loggedInUser.username;
             if (!targetId) return { daily: 0, cards: 0 };
             const { data: ds } = await client.from('daily_stats').select('user_id,date,xp,bonus,day_bonus,streak').like('user_id', 'device_%');
@@ -1406,34 +1388,8 @@ export function initTabsNavigation() {
         refreshCurrentContext();
     });
 
-    // Обработчики панели управления
-    editBtnTop.addEventListener('click', () => {
-        editMode = true;
-        saveBtnTop.disabled = false;
-        cancelBtnTop.disabled = false;
-        editBtnTop.disabled = true;
-        // Перерисовываем, чтобы добавить draggable
-        refreshCategoriesTabs();
-        refreshCurrentContext();
-    });
+    // Обработчики панели управления - удалены (legacy)
 
-    cancelBtnTop.addEventListener('click', () => {
-        editMode = false;
-        saveBtnTop.disabled = true;
-        cancelBtnTop.disabled = true;
-        editBtnTop.disabled = false;
-        // Снимаем draggable с вкладок категорий
-        refreshCategoriesTabs();
-        const activeTab = tabsContainer.querySelector('.tab.active');
-        if (activeTab) {
-            if (activeTab.dataset.category === 'all') showAllQuestions();
-            else if (activeTab.dataset.category === 'favorites') showFavorites();
-            else {
-                const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
-                filterQuestionsByCategory(selectedCategory.name);
-            }
-        }
-    });
 
     function setSaveStatus(state, msg) {
         const statusEl = document.getElementById('global-toast-notification') || (() => {
@@ -1565,7 +1521,7 @@ export function initTabsNavigation() {
 
     async function trackServerDuplication(originalQuestion, newQuestion) {
         try {
-            const resp = await fetch('http://localhost:8081/duplicate', {
+            const resp = await fetch('http://localhost:8085/duplicate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1583,9 +1539,6 @@ export function initTabsNavigation() {
         }
     }
 
-
-    // Кнопка сохранения (если понадобится) вызывает общий автосейв
-    saveBtnTop.addEventListener('click', () => { saveMergedToServer(); });
 
     function addCategoryPlaceholderFlow() {
         const name = prompt('Название новой категории:');
@@ -1640,62 +1593,6 @@ export function initTabsNavigation() {
         alert('Подкатегория отмечена как удалённая. Сохраните, чтобы применить.');
     }
 
-    addCatBtnTop.addEventListener('click', addCategoryPlaceholderFlow);
-    delCatBtnTop.addEventListener('click', deleteCategoryFlow);
-    addSubBtnTop.addEventListener('click', addSubcategoryFlow);
-    delSubBtnTop.addEventListener('click', deleteSubcategoryFlow);
-
-    loginBtnTop.addEventListener('click', () => {
-        ensureLoginState();
-        if (loggedInUser) {
-            if (confirm('Выйти из аккаунта?')) {
-                localStorage.removeItem('qaSessionUser');
-                loggedInUser = null;
-                loginBtnTop.textContent = 'Вход';
-            }
-            return;
-        }
-        // Простой попап логина
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.background = 'rgba(0,0,0,0.4)';
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-
-        const modal = document.createElement('div');
-        modal.style.background = '#fff';
-        modal.style.padding = '16px';
-        modal.style.borderRadius = '8px';
-        modal.style.minWidth = '280px';
-        modal.innerHTML = `
-            <h3>Вход</h3>
-            <label>Email:<br><input type="email" id="login-email" style="width:100%"></label>
-            <label>Пароль:<br><input type="password" id="login-pass" style="width:100%"></label>
-            <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
-                <button id="login-cancel">Отмена</button>
-                <button id="login-ok">Войти</button>
-            </div>
-        `;
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-        modal.querySelector('#login-cancel').addEventListener('click', () => {
-            overlay.remove();
-        });
-        modal.querySelector('#login-ok').addEventListener('click', () => {
-            const email = modal.querySelector('#login-email').value.trim();
-            const pass = modal.querySelector('#login-pass').value.trim();
-            if (verifyCredentialsWithSupabase(email, pass)) {
-                localStorage.setItem('qaSessionUser', JSON.stringify({ email }));
-                loggedInUser = { email };
-                loginBtnTop.textContent = 'Выход';
-                overlay.remove();
-            } else {
-                alert('Неверные учетные данные');
-            }
-        });
-    });
 }
 
 // Глобальная версия индикатора сохранения для вызовов вне initTabsNavigation

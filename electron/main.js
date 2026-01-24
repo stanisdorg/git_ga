@@ -1,5 +1,5 @@
 // Main process for Electron prototype
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
@@ -25,6 +25,23 @@ function createWindow() {
     // Load existing UI
     mainWindow.loadFile(join(__dirname, '..', 'index.html'));
 
+    // Open external links in default browser
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith('http:') || url.startsWith('https:')) {
+            shell.openExternal(url);
+            return { action: 'deny' };
+        }
+        return { action: 'allow' };
+    });
+
+    // Also handle direct navigation (e.g. clicking links that don't open new windows)
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        if (url.startsWith('http:') || url.startsWith('https:')) {
+            event.preventDefault();
+            shell.openExternal(url);
+        }
+    });
+
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -46,7 +63,8 @@ app.on('window-all-closed', () => {
 ipcMain.on('stt:start', (event, config) => {
     if (sttProc) return;
     const workerPath = join(__dirname, 'stt_worker.py');
-    sttProc = spawn('python3', [workerPath], { stdio: ['pipe', 'pipe', 'inherit'] });
+    const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+    sttProc = spawn(pythonCommand, [workerPath], { stdio: ['pipe', 'pipe', 'inherit'] });
     sttProc.stdout.setEncoding('utf8');
     sttProc.stdout.on('data', (chunk) => {
         const lines = chunk.split('\n').filter(Boolean);
