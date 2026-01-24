@@ -332,7 +332,7 @@ function showStats(stats) {
             window.__overlayActive = true;
             // Скрываем контейнер обучения, чтобы статистика была поверх
             if (container) container.style.display = 'none';
-            const { initStatsPage } = await import('./stats-ui.js');
+            const { initStatsPage } = await import('./stats-ui.js?v=2');
             location.hash = '#/stats';
             initStatsPage();
         });
@@ -391,7 +391,7 @@ function showStats(stats) {
     syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
     try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
     // Level info on top
-    import('./stats-utils.js?v=2').then(({ getCurrentLevel }) => {
+    import('./stats-utils.js?v=3').then(({ getCurrentLevel }) => {
         const lvl = getCurrentLevel();
         overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
         const startXP = session.startXP || 0;

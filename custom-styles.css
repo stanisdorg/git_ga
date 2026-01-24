@@ -846,6 +846,11 @@ body.listening .audio-visualizer {
 .hist-controls button:hover {
     background: #1a1a1a;
 }
+.hist-controls button.active {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+}
 
 /* Inline level widget on main */
 .level-inline {

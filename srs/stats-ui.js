@@ -1,4 +1,4 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=2';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=3';
 import { uniqueQaData } from '../all-data.js';
 
 let statsContainer = null;
@@ -179,7 +179,7 @@ function renderStats() {
     </div>
 
     <div class="section">
-      <h2>Активность (30 дней)</h2>
+      <h2>Активность (120 дней)</h2>
       <div class="activity-grid">
         ${activity.map(a => `<div class="activity-cell" data-date="${a.date}" data-xp="${a.xp}" title="${a.date}: ${a.count} карточек, ${a.xp} XP" style="background:${a.color}"></div>`).join('')}
       </div>
@@ -232,9 +232,13 @@ function renderStats() {
   const controls = statsContainer.querySelectorAll('.hist-controls button');
   let mode = 'week';
   const renderMode = () => {
+    controls.forEach(b => {
+      if (b.getAttribute('data-mode') === mode) b.classList.add('active');
+      else b.classList.remove('active');
+    });
     const pts = aggregatePoints(mode);
     wrap.innerHTML = '';
-    wrap.appendChild(renderHistogramCanvas(pts, dailyStreak));
+    wrap.appendChild(renderHistogramCanvas(pts, dailyStreak, mode));
   };
   controls.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -325,6 +329,8 @@ function renderHistogram(points, streakSeries) {
     const streakVal = (streakSeries.find(s => s.date === p.date) || { streak: 0 }).streak;
     const emptyBar = total === 0 ? `<rect x="${x}" y="${height - 26}" width="${barW}" height="16" rx="4" fill="#3b4a66" opacity="0.7"></rect>` : '';
     const label = p.date.includes('W') ? p.date : p.date.slice(5);
+    // Skip labels in month view to avoid overlap (every 2nd day)
+    const shouldSkip = (mode === 'month' && i % 2 !== 0);
     return `
       <g class="bar-group" data-date="${p.date}" data-xp="${p.xp}" data-bonus="${p.bonus || 0}" data-daily-bonus="${p.dayBonus || 0}" data-streak="${streakVal}">
         ${emptyBar}
@@ -332,6 +338,7 @@ function renderHistogram(points, streakSeries) {
         <rect x="${x}" y="${yBonus}" width="${barW}" height="${hBonus}" rx="3" fill="#8b5cf6"></rect>
         <rect x="${x}" y="${yDayBonus}" width="${barW}" height="${hDayBonus}" rx="3" fill="#67e8f9"></rect>
         ${(() => {
+          if (shouldSkip) return '';
           const skip = Math.max(1, Math.floor(points.length / 12));
           return (i % skip === 0) ? `<text x="${x + barW / 2}" y="${height - 2}" fill="#cfcfcf" font-size="11" text-anchor="middle">${label}</text>` : '';
         })()}
@@ -402,7 +409,7 @@ function aggregatePoints(mode) {
   return getDailyPoints(30);
 }
 
-function renderHistogramCanvas(points, streakSeries) {
+function renderHistogramCanvas(points, streakSeries, mode = 'week') {
   const widthCSS = 900, heightCSS = 260;
   const dpr = Math.max(1, window.devicePixelRatio || 1);
   const width = Math.floor(widthCSS * dpr);
@@ -460,7 +467,9 @@ function renderHistogramCanvas(points, streakSeries) {
     ctx.fillStyle = '#8b5cf6'; ctx.beginPath(); ctx.roundRect(x, yBonus, barW, hBonus, Math.floor(3 * dpr)); ctx.fill();
     ctx.fillStyle = '#67e8f9'; ctx.beginPath(); ctx.roundRect(x, yDay, barW, hDay, Math.floor(3 * dpr)); ctx.fill();
     ctx.fillStyle = '#8a8a8a'; ctx.textAlign = 'center';
-    ctx.fillText(p.date.includes('W') ? p.date : p.date.slice(5), x + barW / 2, chartH + Math.floor(18 * dpr));
+    if (mode !== 'month' || i % 2 === 0) {
+      ctx.fillText(p.date.includes('W') ? p.date : p.date.slice(5), x + barW / 2, chartH + Math.floor(18 * dpr));
+    }
     barRects.push({
       x, y: yDay, w: barW, h: (hBase + hBonus + hDay),
       data: { date: p.date, xp: p.xp, bonus: p.bonus || 0, dayBonus: p.dayBonus || 0,

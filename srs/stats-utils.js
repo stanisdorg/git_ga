@@ -15,7 +15,7 @@ export function getStudyStreak() {
   return readJSON('studyStreak', { current: 0, best: 0, lastDate: null });
 }
 
-export function calculateActivity(days = 30) {
+export function calculateActivity(days = 120) {
   const prog = getProgressMap();
   const counts = new Map();
   Object.values(prog).forEach(p => {
@@ -34,9 +34,10 @@ export function calculateActivity(days = 30) {
     const c = counts.get(s) || 0;
      const xp = dailyPts[s] || 0;
     let color = '#ebedf0';
-    if (c >= 8) color = '#216e39';
-    else if (c >= 4) color = '#40c463';
-    else if (c >= 1) color = '#9be9a8';
+    if (xp >= 100) color = '#216e39';
+    else if (xp >= 50) color = '#30a14e';
+    else if (xp >= 20) color = '#40c463';
+    else if (xp > 0) color = '#9be9a8';
     res.push({ date: s, count: c, xp, color });
   }
   return res;
