@@ -366,6 +366,35 @@ export function initTabsNavigation() {
         window.addEventListener('statsClosed', updateLevelInline);
     }).catch(()=>{});
 
+    // Кнопка для генерации тестовой статистики (админская фича)
+    const genStatsBtn = document.createElement('button');
+    genStatsBtn.textContent = 'Gen Stats';
+    genStatsBtn.style.display = 'none';
+    genStatsBtn.style.width = 'auto';
+    genStatsBtn.style.background = '#111';
+    genStatsBtn.style.border = '1px solid #444';
+    genStatsBtn.style.color = '#d0d0d0';
+    genStatsBtn.style.marginLeft = '8px';
+    genStatsBtn.addEventListener('click', async () => {
+         if (confirm('Сгенерировать тестовую статистику в SUPABASE за 6 месяцев? Это перезапишет данные в облаке для вашего пользователя.')) {
+             try {
+                 const { generateTestStats } = await import('../admin-data-generator.js');
+                 generateTestStats();
+             } catch (e) {
+                 console.error(e);
+                 alert('Ошибка при загрузке модуля генератора: ' + e.message);
+             }
+         }
+    });
+    
+    // Показываем кнопку если есть ?admin=true
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminParam = urlParams.get('admin') === 'true' || urlParams.get('admin') === '1';
+    if (isAdminParam) {
+        genStatsBtn.style.display = 'inline-block';
+    }
+    topActions.appendChild(genStatsBtn);
+
     // Кнопка администратора для добавления пользователей (появляется после входа админа)
     const adminUsersBtn = document.createElement('button');
     adminUsersBtn.className = 'admin-users-btn';
