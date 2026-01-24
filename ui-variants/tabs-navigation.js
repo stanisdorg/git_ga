@@ -368,16 +368,13 @@ export function initTabsNavigation() {
 
     // Кнопка для генерации тестовой статистики (админская фича)
     const genStatsBtn = document.createElement('button');
-    genStatsBtn.textContent = 'ADMIN GEN (v10)';
-    // Force visible for debugging
-    genStatsBtn.style.display = 'inline-block';
+    genStatsBtn.textContent = 'Gen Stats';
+    genStatsBtn.style.display = 'none';
     genStatsBtn.style.width = 'auto';
-    genStatsBtn.style.background = '#330000'; // Dark red background
-    genStatsBtn.style.border = '1px solid #ff0000'; // Red border
-    genStatsBtn.style.color = '#fff';
+    genStatsBtn.style.background = '#111';
+    genStatsBtn.style.border = '1px solid #444';
+    genStatsBtn.style.color = '#d0d0d0';
     genStatsBtn.style.marginLeft = '8px';
-    genStatsBtn.style.padding = '4px 8px';
-    genStatsBtn.style.fontWeight = 'bold';
     genStatsBtn.addEventListener('click', async () => {
          if (confirm('Сгенерировать тестовую статистику в SUPABASE за 6 месяцев? Это перезапишет данные в облаке для вашего пользователя.')) {
              try {
@@ -390,8 +387,6 @@ export function initTabsNavigation() {
          }
     });
     
-    // Log for debugging
-    console.log('[DEBUG] Adding Gen Stats button unconditionally');
     topActions.appendChild(genStatsBtn);
 
     // Кнопка администратора для добавления пользователей (появляется после входа админа)
@@ -427,6 +422,7 @@ export function initTabsNavigation() {
         updateLoginBtnState();
         adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+        genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         cloudBtn.style.display = user ? 'inline-block' : 'none';
         try { migrateDeviceRecordsToUser(); } catch {}
         if (user) {
@@ -544,6 +540,7 @@ export function initTabsNavigation() {
         try {
             adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
             editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+            genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         } catch {}
         try { migrateDeviceRecordsToUser(); } catch {}
         if (user) {
