@@ -111,6 +111,7 @@ export async function hydrateLocalFromSupabase() {
         const { data: favs } = await client.from('favorites').select('question').eq('user_id', userId);
         const favList = (favs || []).map(x => x.question);
         localStorage.setItem('qaFavorites', JSON.stringify(favList));
+        window.dispatchEvent(new Event('favoritesUpdated'));
     } catch {}
     try {
         const { data: cp } = await client.from('card_progress').select('question,due_date,interval,repetitions,ease_factor,last_reviewed,last_reviewed_time').eq('user_id', userId);
@@ -135,14 +136,21 @@ export async function hydrateLocalFromSupabase() {
 export async function syncFavorite(question, isFav) {
     const client = window.__supabaseClient;
     const user_id = getUserId();
-    if (!client || !user_id) return;
+    if (!client || !user_id) {
+        console.warn('Cannot sync favorite: no client or user_id');
+        return;
+    }
     try {
         if (isFav) {
-            await client.from('favorites').upsert({ user_id, question }, { onConflict: 'user_id,question' });
+            const { error } = await client.from('favorites').upsert({ user_id, question }, { onConflict: 'user_id,question' });
+            if (error) console.error('Error syncing favorite (add):', error);
         } else {
-            await client.from('favorites').delete().eq('user_id', user_id).eq('question', question);
+            const { error } = await client.from('favorites').delete().eq('user_id', user_id).eq('question', question);
+            if (error) console.error('Error syncing favorite (remove):', error);
         }
-    } catch {}
+    } catch (e) {
+        console.error('Exception syncing favorite:', e);
+    }
 }
 
 /**

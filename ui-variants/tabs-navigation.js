@@ -104,6 +104,11 @@ export function initTabsNavigation() {
     // сбрасывал контекст после перезагрузки данных (например, после восстановления из корзины).
     // Теперь используем refreshCurrentContext(), чтобы сохранить выбранную категорию/подкатегорию/избранное.
     setTimeout(() => refreshCurrentContext(), 100);
+
+    // Слушаем обновление избранного из облака
+    window.addEventListener('favoritesUpdated', () => {
+        refreshCurrentContext();
+    });
     
     // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
     const categories = buildCategoriesFromData(getRuntimeData());
@@ -2103,7 +2108,8 @@ function displayQuestions(questions, title) {
         const dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
 
         const starSvg = (filled) => `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" 
+                fill="${filled ? '#ffd54f' : 'none'}" stroke="${filled ? '#ffd54f' : 'currentColor'}" stroke-width="2">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
             </svg>
         `;
@@ -2111,7 +2117,7 @@ function displayQuestions(questions, title) {
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
                 <span class="subcategory-badge">${dispSub}</span>
-                <button class="fav-btn ${favClass}" title="В избранное">${starSvg(isFav)}</button>
+                <button class="fav-btn ${favClass}" title="В избранное" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center">${starSvg(isFav)}</button>
             </div>
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
