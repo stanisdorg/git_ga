@@ -387,11 +387,14 @@ export function initTabsNavigation() {
          }
     });
     
-    // Показываем кнопку если есть ?admin=true
-    const urlParams = new URLSearchParams(window.location.search);
-    const isAdminParam = urlParams.get('admin') === 'true' || urlParams.get('admin') === '1';
-    if (isAdminParam) {
+    // Показываем кнопку если есть ?admin=true или в хеше
+    // Проверяем весь URL на наличие admin=true
+    const hasAdmin = window.location.href.includes('admin=true') || window.location.href.includes('admin=1');
+    console.log('[DEBUG] Admin check:', window.location.href, hasAdmin);
+    
+    if (hasAdmin) {
         genStatsBtn.style.display = 'inline-block';
+        genStatsBtn.style.border = '1px solid #00ff00'; // Temporary debug border
     }
     topActions.appendChild(genStatsBtn);
 
