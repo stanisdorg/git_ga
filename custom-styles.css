@@ -379,13 +379,31 @@
 }
 
 /* Favorite Star on Card */
-.favorite-btn {
-    position: absolute;
-    top: 4px; /* Pressed to top */
-    right: 4px; /* Pressed to right */
+/* Favorite button styles (matching JS classes .fav-btn and .fav-active) */
+.fav-btn {
     background: none;
     border: none;
-    color: #777; /* Lighter gray for better visibility on dark bg */
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: #777; /* Default gray */
+    transition: color 0.2s;
+    margin-left: 8px;
+}
+
+.fav-btn.fav-active {
+    color: #ffd700; /* Gold */
+}
+
+/* Legacy support just in case */
+.favorite-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: none;
+    border: none;
+    color: #777;
     font-size: 18px;
     cursor: pointer;
     padding: 0;
@@ -395,7 +413,8 @@
 }
 
 /* Reset positioning for inline favorite button in question list */
-.question-row .favorite-btn {
+.question-row .favorite-btn,
+.question-row .fav-btn {
     position: relative;
     top: auto;
     right: auto;
@@ -403,7 +422,8 @@
     color: #777;
 }
 
-.favorite-btn.active {
+.favorite-btn.active,
+.fav-btn.fav-active {
     color: #ffd700; /* Gold */
 }
 
