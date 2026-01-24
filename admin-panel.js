@@ -3,11 +3,13 @@ import { uniqueQaData } from './all-data.js';
 import { generateTestStats } from './admin-data-generator.js';
 
 export function initAdminPanel() {
-  // Работает только на localhost/127.0.0.1
-  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  if (!isLocal) return;
-  // Возможность скрыть панель даже на localhost: добавьте ?admin=0
   const params = new URLSearchParams(window.location.search);
+  // Работает только на localhost/127.0.0.1 ИЛИ если в URL есть ?admin=true
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  const forceAdmin = params.get('admin') === 'true' || params.get('admin') === '1';
+
+  if (!isLocal && !forceAdmin) return;
+  // Возможность скрыть панель даже на localhost: добавьте ?admin=0
   if (params.get('admin') === '0') return;
 
   // Если панель уже создана — выходим
