@@ -424,7 +424,14 @@
 
 .favorite-btn.active,
 .fav-btn.fav-active {
-    color: #ffd700; /* Gold */
+    color: #ffd700 !important; /* Gold */
+}
+
+/* Force SVG fill for favorite buttons */
+.fav-btn.fav-active svg path,
+.favorite-btn.active svg path {
+    fill: #ffd700 !important;
+    stroke: #ffd700 !important;
 }
 
 .favorite-btn:hover {

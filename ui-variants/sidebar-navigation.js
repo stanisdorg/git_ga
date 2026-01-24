@@ -159,11 +159,19 @@ function displayQuestions(questions, title) {
         const isFav = favorites.includes(item.question);
         const favClass = isFav ? 'fav-active' : '';
 
+        const starSvg = (filled) => `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                    style="fill: ${filled ? '#ffd700' : 'none'}; stroke: ${filled ? '#ffd700' : 'currentColor'}; stroke-width: 2px;"
+                />
+            </svg>
+        `;
+
         resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${item.category || ''}</span>
                 <span class="subcategory-badge">${item.subcategory || ''}</span>
-                <button class="fav-btn ${favClass}" title="В избранное">★</button>
+                <button class="fav-btn ${favClass}" title="В избранное" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center">${starSvg(isFav)}</button>
                 ${location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? '<button class="edit-btn" title="Редактировать">✎</button>' : ''}
             </div>
             <div class="question">${item.question}</div>
@@ -176,9 +184,11 @@ function displayQuestions(questions, title) {
             if (current.has(item.question)) {
                 current.delete(item.question);
                 favBtn.classList.remove('fav-active');
+                favBtn.innerHTML = starSvg(false);
             } else {
                 current.add(item.question);
                 favBtn.classList.add('fav-active');
+                favBtn.innerHTML = starSvg(true);
             }
             localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
         });
