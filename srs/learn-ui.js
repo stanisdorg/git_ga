@@ -1,5 +1,5 @@
 import { LearningSession } from './session.js';
-import { getDueCards } from './storage.js';
+import { getDueCards, syncFavorite } from './storage.js';
 import { checkAchievements } from './stats-utils.js';
 import { syncDailyStats } from './storage.js';
 
@@ -7,6 +7,13 @@ import { syncDailyStats } from './storage.js';
 let container = null;
 let mainContainer = null; // The app's main container to hide/show
 let session = null;
+
+const starSvg = (filled) => `
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" 
+        fill="${filled ? '#ffd700' : 'none'}" stroke="${filled ? '#ffd700' : 'currentColor'}" stroke-width="2">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+    </svg>
+`;
 
 export function initLearnUI() {
     // Create Learn Container if not exists
@@ -29,11 +36,13 @@ export function initLearnUI() {
             
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <div class="flashcard-front">
+                    <div class="flashcard-front" style="position:relative">
+                        <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="flashcard-content" id="learn-question"></div>
                         <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
                     </div>
-                    <div class="flashcard-back">
+                    <div class="flashcard-back" style="position:relative">
+                        <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
                             <button class="rate-btn rate-again" data-grade="0">Снова (1)</button>
@@ -65,6 +74,36 @@ export function initLearnUI() {
         
         container.querySelector('.flashcard').addEventListener('click', () => {
             if (session && !session.isFlipped) session.flip();
+        });
+
+        // Favorite buttons
+        container.querySelectorAll('.learn-fav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!session || !session.currentCard) return;
+
+                const question = session.currentCard.question;
+                const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+                const index = favs.indexOf(question);
+                let newIsFav = false;
+
+                if (index === -1) {
+                    favs.push(question);
+                    newIsFav = true;
+                } else {
+                    favs.splice(index, 1);
+                    newIsFav = false;
+                }
+
+                localStorage.setItem('qaFavorites', JSON.stringify(favs));
+                syncFavorite(question, newIsFav);
+
+                // Update all buttons (both front and back)
+                container.querySelectorAll('.learn-fav-btn').forEach(b => {
+                    b.innerHTML = starSvg(newIsFav);
+                    b.classList.toggle('active', newIsFav);
+                });
+            });
         });
 
         // Rating buttons
@@ -216,6 +255,15 @@ function renderCardState(state) {
             else if (g === 3) el.classList.add('seg-easy');
         });
     }
+
+    // Update favorite button state
+    const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+    const isFav = favs.includes(state.card.question);
+    container.querySelectorAll('.learn-fav-btn').forEach(btn => {
+        btn.innerHTML = starSvg(isFav);
+        if (isFav) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
 
     if (state.isFlipped) {
         cardEl.classList.add('flipped');
