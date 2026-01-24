@@ -368,13 +368,16 @@ export function initTabsNavigation() {
 
     // Кнопка для генерации тестовой статистики (админская фича)
     const genStatsBtn = document.createElement('button');
-    genStatsBtn.textContent = 'Gen Stats';
-    genStatsBtn.style.display = 'none';
+    genStatsBtn.textContent = 'ADMIN GEN (v10)';
+    // Force visible for debugging
+    genStatsBtn.style.display = 'inline-block';
     genStatsBtn.style.width = 'auto';
-    genStatsBtn.style.background = '#111';
-    genStatsBtn.style.border = '1px solid #444';
-    genStatsBtn.style.color = '#d0d0d0';
+    genStatsBtn.style.background = '#330000'; // Dark red background
+    genStatsBtn.style.border = '1px solid #ff0000'; // Red border
+    genStatsBtn.style.color = '#fff';
     genStatsBtn.style.marginLeft = '8px';
+    genStatsBtn.style.padding = '4px 8px';
+    genStatsBtn.style.fontWeight = 'bold';
     genStatsBtn.addEventListener('click', async () => {
          if (confirm('Сгенерировать тестовую статистику в SUPABASE за 6 месяцев? Это перезапишет данные в облаке для вашего пользователя.')) {
              try {
@@ -387,15 +390,8 @@ export function initTabsNavigation() {
          }
     });
     
-    // Показываем кнопку если есть ?admin=true или в хеше
-    // Проверяем весь URL на наличие admin=true
-    const hasAdmin = window.location.href.includes('admin=true') || window.location.href.includes('admin=1');
-    console.log('[DEBUG] Admin check:', window.location.href, hasAdmin);
-    
-    if (hasAdmin) {
-        genStatsBtn.style.display = 'inline-block';
-        genStatsBtn.style.border = '1px solid #00ff00'; // Temporary debug border
-    }
+    // Log for debugging
+    console.log('[DEBUG] Adding Gen Stats button unconditionally');
     topActions.appendChild(genStatsBtn);
 
     // Кнопка администратора для добавления пользователей (появляется после входа админа)

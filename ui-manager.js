@@ -1,7 +1,7 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=9';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=10';
 import { initStatsPage } from './srs/stats-ui.js';
 
 // Функция для инициализации UI
