@@ -108,11 +108,19 @@ export async function hydrateLocalFromSupabase() {
         localStorage.setItem('studyStats', JSON.stringify(studyStats));
         const streak = { current: currentStreak, best: bestStreak, lastDate: lastDateWithStudy };
         localStorage.setItem('studyStreak', JSON.stringify(streak));
-        const { data: favs } = await client.from('favorites').select('question').eq('user_id', userId);
-        const favList = (favs || []).map(x => x.question);
-        localStorage.setItem('qaFavorites', JSON.stringify(favList));
-        window.dispatchEvent(new Event('favoritesUpdated'));
-    } catch {}
+        
+        // Favorites sync with error handling to prevent data wipe
+        const { data: favs, error: favError } = await client.from('favorites').select('question').eq('user_id', userId);
+        if (!favError && favs) {
+            const favList = favs.map(x => x.question);
+            localStorage.setItem('qaFavorites', JSON.stringify(favList));
+            window.dispatchEvent(new Event('favoritesUpdated'));
+        } else if (favError) {
+            console.warn('Failed to fetch favorites from Supabase, keeping local data:', favError);
+        }
+    } catch (e) {
+        console.error('Error in hydrateLocalFromSupabase:', e);
+    }
     try {
         const { data: cp } = await client.from('card_progress').select('question,due_date,interval,repetitions,ease_factor,last_reviewed,last_reviewed_time').eq('user_id', userId);
         const map = {};
