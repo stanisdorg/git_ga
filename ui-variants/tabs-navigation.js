@@ -250,7 +250,7 @@ export function initTabsNavigation() {
     learnBtn.textContent = 'Учить';
     learnBtn.className = 'learn-main-btn';
     learnBtn.addEventListener('click', async () => {
-        const { startLearnSession } = await import('../srs/learn-ui.js?v=3');
+        const { startLearnSession } = await import('../srs/learn-ui.js?v=4');
         // Собираем текущие карточки (currentQuestions - глобальная переменная в этом файле)
         // Если она не экспортирована/доступна, берем из DOM или logic
         // В tabs-navigation.js переменная currentQuestions объявлена в начале файла

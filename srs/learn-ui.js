@@ -37,12 +37,12 @@ export function initLearnUI() {
             
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <div class="flashcard-front" style="position:relative">
+                    <div class="flashcard-front">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="flashcard-content" id="learn-question"></div>
                         <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
                     </div>
-                    <div class="flashcard-back" style="position:relative">
+                    <div class="flashcard-back">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
