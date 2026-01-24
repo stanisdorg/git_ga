@@ -32,6 +32,11 @@ export class LearningSession {
         const sObj = (() => { try { return JSON.parse(sRaw); } catch { return {}; } })();
         this.startXP = sObj.points || 0;
         this.results = []; // per-card grades
+        
+        // Smart Pause & Timer Logic
+        this.sessionStartTime = Date.now();
+        this.lastPauseTime = Date.now();
+        this.recentGrades = []; // Track recent performance for adaptive pauses
     }
 
     shuffle(array) {
@@ -45,7 +50,7 @@ export class LearningSession {
 
     start() {
         if (this.queue.length === 0) {
-            this.onComplete(this.stats);
+            this.onComplete(this.stats, this.results, this.queue.length);
             return;
         }
         this.loadCurrentCard();
@@ -53,17 +58,22 @@ export class LearningSession {
 
     loadCurrentCard() {
         if (this.currentIndex >= this.queue.length) {
-            this.onComplete(this.stats);
+            this.onComplete(this.stats, this.results, this.queue.length);
             return;
         }
         this.currentCard = this.queue[this.currentIndex];
         this.isFlipped = false;
+        this.cardStartTime = Date.now();
+        
+        const pauseRec = this.checkSmartPause();
+        
         this.onUpdateUI({
             card: this.currentCard.item,
             progress: this.currentIndex + 1,
             total: this.queue.length,
             isFlipped: false,
-            results: this.results
+            results: this.results,
+            pauseRecommendation: pauseRec
         });
     }
 
@@ -92,6 +102,10 @@ export class LearningSession {
         else if (grade === 3) this.stats.easy++;
         this.stats.reviewed++;
         this.results.push(grade);
+        
+        // Track recent performance
+        this.recentGrades.push(grade);
+        if (this.recentGrades.length > 15) this.recentGrades.shift();
 
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
         const now = new Date();
@@ -103,6 +117,13 @@ export class LearningSession {
         const statsRaw = localStorage.getItem('studyStats') || '{}';
         const stats = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
         stats.total = (stats.total || 0) + 1;
+        
+        // Track time spent (cap at 5 mins per card to avoid idle time)
+        const elapsed = Date.now() - (this.cardStartTime || Date.now());
+        if (elapsed > 0 && elapsed < 300000) {
+            stats.timeSpent = (stats.timeSpent || 0) + elapsed;
+        }
+
         if (grade >= 2) stats.correct = (stats.correct || 0) + 1;
         const pointsMap = [0, 5, 10, 15];
         const points = pointsMap[grade] || 0;
@@ -135,8 +156,61 @@ export class LearningSession {
         const st2 = (() => { try { return JSON.parse(streakRaw2); } catch { return {}; } })();
         syncDailyStats(todayKey, daily[todayKey] || 0, dailyBonus[todayKey] || 0, 0, st2.current || 0);
         
+        // Re-queue if interval is 0 (Again/Hard on new cards)
+        if (newProgress.interval === 0) {
+            this.queue.push({
+                item: this.currentCard.item,
+                progress: newProgress,
+                isNew: false
+            });
+        }
+
         this.currentIndex++;
         this.loadCurrentCard();
+    }
+
+    checkSmartPause() {
+        const now = Date.now();
+        const duration = (now - this.lastPauseTime) / 60000; // minutes
+        
+        // Minimum 15 mins before any pause suggestion
+        if (duration < 15) return null;
+        
+        // Calculate recent accuracy (last 10-15 cards)
+        const recentCorrect = this.recentGrades.filter(g => g >= 2).length;
+        const recentTotal = this.recentGrades.length;
+        const recentAccuracy = recentTotal > 0 ? (recentCorrect / recentTotal) : 1;
+        
+        // Fatigue check: Low accuracy (<60%) after 20 mins -> Suggest break
+        if (duration > 20 && recentAccuracy < 0.6) {
+            return { 
+                type: 'fatigue', 
+                reason: 'Снижение концентрации', 
+                duration: Math.round(duration), 
+                accuracy: Math.round(recentAccuracy * 100) 
+            };
+        }
+        
+        // Standard flow: 25-40 mins
+        // If performing well (>80%), extend up to 40 mins (Flow state)
+        // Otherwise, suggest break at 30 mins
+        const maxTime = recentAccuracy > 0.8 ? 40 : 30;
+        
+        if (duration > maxTime) {
+            return { 
+                type: 'time', 
+                reason: 'Оптимальное время для перерыва', 
+                duration: Math.round(duration), 
+                accuracy: Math.round(recentAccuracy * 100) 
+            };
+        }
+        
+        return null;
+    }
+
+    resumeFromPause() {
+        this.lastPauseTime = Date.now();
+        this.recentGrades = []; // Reset recent context
     }
 }
 

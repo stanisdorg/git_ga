@@ -69,7 +69,7 @@ export function checkAchievements() {
   const stats = getStudyStats();
   const streak = getStudyStreak();
   const prog = getProgressMap();
-  const studiedCount = Object.keys(prog).length;
+  const studiedCount = Object.values(prog).filter(p => p.repetitions > 0).length;
   const accuracy = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
   const nightOwl = Object.values(prog).some(p => (p.lastReviewedTime || 0) >= 23);
 
@@ -160,7 +160,8 @@ export function getMetrics(allData) {
   const stats = getStudyStats();
   const streak = getStudyStreak();
   const prog = getProgressMap();
-  const studiedCount = Object.keys(prog).length;
+  // Only count cards with repetitions > 0 as "studied"
+  const studiedCount = Object.values(prog).filter(p => p.repetitions > 0).length;
   const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
   return {
     streakCurrent: streak.current || 0,

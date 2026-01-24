@@ -250,11 +250,44 @@ export function initTabsNavigation() {
     learnBtn.textContent = 'Учить';
     learnBtn.className = 'learn-main-btn';
     learnBtn.addEventListener('click', async () => {
-        const { startLearnSession } = await import('../srs/learn-ui.js?v=5');
-        // Собираем текущие карточки (currentQuestions - глобальная переменная в этом файле)
-        // Если она не экспортирована/доступна, берем из DOM или logic
-        // В tabs-navigation.js переменная currentQuestions объявлена в начале файла
-        startLearnSession(currentQuestions);
+        try {
+            console.log('[Learn] Button clicked');
+            
+            // Fallback: if currentQuestions is empty, try to use all data
+            if ((!currentQuestions || currentQuestions.length === 0) && uniqueQaData && uniqueQaData.length > 0) {
+                 console.warn('[Learn] currentQuestions empty, using uniqueQaData fallback');
+                 currentQuestions = [...uniqueQaData];
+            }
+
+            if (!currentQuestions || currentQuestions.length === 0) {
+                console.warn('[Learn] No questions in current context');
+                alert('В текущем списке нет вопросов для изучения. Выберите категорию или "Все вопросы".');
+                return;
+            }
+
+            let module;
+            try {
+                module = await import('../srs/learn-ui.js?v=7');
+            } catch (e1) {
+                console.warn('[Learn] Import v7 failed, trying plain import', e1);
+                try {
+                    module = await import('../srs/learn-ui.js');
+                } catch (e2) {
+                    throw new Error(`Failed to load learn-ui.js: ${e2.message}`);
+                }
+            }
+
+            const { startLearnSession } = module;
+            if (typeof startLearnSession !== 'function') {
+                throw new Error('startLearnSession export is missing');
+            }
+            
+            console.log('[Learn] Starting session with', currentQuestions.length, 'questions');
+            startLearnSession(currentQuestions);
+        } catch (err) {
+            console.error('[Learn] Error:', err);
+            alert('Не удалось запустить режим обучения: ' + err.message);
+        }
     });
 
     // Кнопка статистики

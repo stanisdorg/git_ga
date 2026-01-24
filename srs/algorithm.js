@@ -1,104 +1,136 @@
 /**
  * @typedef {Object} ProgressRecord
- * @property {string} question - Unique identifier (using question text as ID for now)
+ * @property {string} question - Unique identifier
  * @property {string} dueDate - ISO date string of next review
  * @property {number} interval - Days until next review
  * @property {number} repetitions - Consecutive correct answers
  * @property {number} easeFactor - E-Factor (multiplier)
+ * @property {number} history - Count of total attempts
+ * @property {string} state - 'learning', 'review', 'relearning', 'mastered'
  */
 
 /**
- * Calculates the next review schedule using a simplified SM-2 algorithm.
+ * Calculates the next review schedule using a "PsychSRS" algorithm
+ * tuned for a ~60 day mastery cycle with 2-10 repetitions per card.
+ * 
  * @param {ProgressRecord | null} currentProgress
  * @param {0|1|2|3} grade - 0=Again, 1=Hard, 2=Good, 3=Easy
  * @returns {ProgressRecord}
  */
 export function calculateNextReview(currentProgress, grade) {
-    // Default initial state
+    // Initial State
+    const now = new Date();
     const progress = currentProgress || {
-        question: '', // Should be set by caller
-        dueDate: new Date().toISOString(),
+        question: '', 
+        dueDate: now.toISOString(),
         interval: 0,
         repetitions: 0,
-        easeFactor: 2.5
+        easeFactor: 2.5,
+        history: 0,
+        state: 'learning'
     };
 
-    let { interval, repetitions, easeFactor } = progress;
+    let { interval, repetitions, easeFactor, history, state } = progress;
+    history = (history || 0) + 1;
 
+    // Constants for 60-day mastery
+    const MIN_EASE = 1.3;
+    
+    // Logic Branching
     if (grade === 0) {
-        // Again: Reset repetitions and interval
+        // --- AGAIN (Forgot) ---
         repetitions = 0;
-        interval = 0;
-        // Decrease ease factor slightly for failure (standard SM-2 doesn't always decrease on fail, 
-        // but user prompt says "easeFactor уменьшается")
-        easeFactor = Math.max(1.3, easeFactor - 0.2);
+        interval = 0; // Review today/tomorrow
+        easeFactor = Math.max(MIN_EASE, easeFactor - 0.2);
+        state = 'relearning';
     } else {
-        // Correct response (Hard, Good, Easy)
+        // --- SUCCESS (Hard, Good, Easy) ---
         
-        // Update Ease Factor
-        // SM-2 Formula: EF' = EF + (0.1 - (5-q)*(0.08 + (5-q)*0.02))
-        // Mapping our grades: 
-        // 0 (Again) -> q=0? No, SM-2 uses 0-5. 
-        // User map: 0=Again, 1=Hard, 2=Good, 3=Easy.
-        // Let's approximate user request logic:
-        // "Хорошо/Easy: interval = prev * ease, reps++, ease adjusts"
-        
+        // 1. Adjust Ease Factor
         if (grade === 1) { // Hard
             easeFactor -= 0.15;
+            state = 'learning'; // Keep in learning/review pressure
         } else if (grade === 2) { // Good
-            // ease unchanged or standard adjustment? User says "ease adjusts"
-            // Standard SM-2 for grade 4 (Good): no change or small change. 
-            // Let's keep it stable or slightly up?
-            // User requirement: "easeFactor корректируется"
-            // Let's use standard formula approach mapped to 3-5 scale?
-            // Let's stick to simple rules:
-            // Good: No change to ease (common variation) or small penalty if it was hard?
-            // Let's use:
-            // Hard: -0.15
-            // Good: +0.00
-            // Easy: +0.15
+            // Stable
         } else if (grade === 3) { // Easy
             easeFactor += 0.15;
         }
-        
-        easeFactor = Math.max(1.3, easeFactor);
+        easeFactor = Math.max(MIN_EASE, easeFactor);
 
-        // Update Repetitions & Interval
-        repetitions++;
-
-        if (repetitions === 1) {
-            interval = 1;
-        } else if (repetitions === 2) {
-            interval = 6;
+        // 2. Calculate Interval
+        if (repetitions === 0) {
+            // First success
+            if (grade === 1) {
+                // Hard on new card: Keep in session, do not graduate
+                interval = 0;
+                // repetitions stays 0
+                state = 'learning';
+            } else {
+                // Good or Easy
+                interval = 1;
+                state = 'learning';
+                repetitions = 1; // Graduate to first step
+            }
         } else {
-            // For subsequent repetitions
-            let modifier = 1;
-            if (grade === 3) modifier = 1.3; // Bonus for Easy
-            if (grade === 1) modifier = 0.8; // Penalty for Hard (growth is slower)
-            
-            // Standard: I(n) = I(n-1) * EF
-            // With user constraints:
-            // Hard should probably grow slower than Good.
-            // Let's simply use: interval = Math.round(interval * easeFactor);
-            // And maybe apply a modifier for 'Hard' to make it less than 'Good'?
-            // Or just trust the easeFactor drop to handle it over time.
-            
-            // User logic: "interval = предыдущий_интервал * easeFactor"
-            interval = Math.round(interval * easeFactor);
+            // Repetitions > 0
+            if (repetitions === 1) {
+                // Second success
+                interval = grade === 1 ? 2 : (grade === 3 ? 4 : 3);
+                state = 'review';
+            } else {
+                // Subsequent reviews
+                if (grade === 1) {
+                    // Hard: Very slow growth (Anki-style x1.2), ignore Ease
+                    // This ensures "Hard" cards are seen much sooner than "Good" ones
+                    interval = Math.max(interval + 1, Math.floor(interval * 1.2));
+                } else {
+                    // Good (2) or Easy (3)
+                    let modifier = 1.0;
+                    if (grade === 3) modifier = 1.3; // Easy: grow faster (bonus)
+                    
+                    // "Psychological" Tweak for ~60 day course:
+                    // Damp growth slightly to ensure ~6-8 reps.
+                    // If user wants "more repetitions", we cap growth multiplier at 1.9
+                    const effectiveEase = Math.min(easeFactor, 1.9); 
+                    
+                    interval = Math.ceil(interval * effectiveEase * modifier);
+                }
+            }
+            repetitions++;
+        }
+
+        // 4. Mastery Check
+        // Increased threshold to ensure long-term retention
+        // Cards are "Mastered" only when interval exceeds 2 months
+        if (repetitions >= 12 || interval > 60) {
+            state = 'mastered';
         }
     }
 
-    // Calculate new Due Date
+    // Fuzzing (prevent clumps)
+    if (interval > 4) {
+        const fuzz = Math.floor(interval * 0.05 * (Math.random() - 0.5));
+        interval += fuzz;
+    }
+
+    // Set Due Date
     const nextDate = new Date();
-    nextDate.setDate(nextDate.getDate() + interval);
-    // Set to start of day or keep time? Usually SRS uses start of day.
-    // Let's keep it simple: exact time + interval days.
-    
+    if (interval === 0) {
+        nextDate.setMinutes(nextDate.getMinutes() + 10);
+    } else {
+        nextDate.setDate(nextDate.getDate() + interval);
+        // Snap to 4 AM
+        nextDate.setHours(4, 0, 0, 0);
+    }
+
     return {
         question: progress.question,
         dueDate: nextDate.toISOString(),
         interval,
         repetitions,
-        easeFactor
+        easeFactor,
+        history,
+        state,
+        lastReviewed: new Date().toISOString()
     };
 }

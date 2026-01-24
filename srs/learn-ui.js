@@ -2,11 +2,15 @@ import { LearningSession } from './session.js';
 import { getDueCards, syncFavorite } from './storage.js';
 import { checkAchievements } from './stats-utils.js?v=2';
 import { syncDailyStats } from './storage.js';
+import { Scheduler } from './scheduler.js';
 
 // DOM Elements
 let container = null;
 let mainContainer = null; // The app's main container to hide/show
 let session = null;
+let currentScheduler = null;
+let timerInterval = null;
+let sessionTimerStart = 0;
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -148,26 +152,82 @@ export function startLearnSession(candidateQuestions) {
     initLearnUI(); // Ensure UI exists
     window.__lastCandidates = candidateQuestions;
 
+    // Initialize Scheduler
+    currentScheduler = new Scheduler(candidateQuestions.length);
+    const status = currentScheduler.getScheduleStatus();
+
+    // Inject/Update Header Info safely
+    let infoEl = document.getElementById('learn-schedule-info');
+    if (!infoEl) {
+        // If not exists, create it and insert it after the exit button
+        const btn = document.getElementById('learn-exit-btn');
+        if (btn && btn.parentNode) {
+            infoEl = document.createElement('span');
+            infoEl.id = 'learn-schedule-info';
+            infoEl.className = 'schedule-info';
+            infoEl.style.marginLeft = '16px';
+            infoEl.style.fontSize = '14px';
+            infoEl.style.color = 'var(--color-text-secondary)';
+            // Insert after button
+            btn.parentNode.insertBefore(infoEl, btn.nextSibling);
+        }
+    }
+    if (infoEl) {
+        infoEl.textContent = `День ${status.dayNumber}/${status.totalDays} • Прогресс ${status.progressPercent}%`;
+    }
+
+    // Initialize Session Timer UI
+    let timerEl = document.getElementById('learn-timer');
+    if (!timerEl) {
+        timerEl = document.createElement('div');
+        timerEl.id = 'learn-timer';
+        timerEl.style.marginLeft = 'auto';
+        timerEl.style.marginRight = '16px';
+        timerEl.style.fontSize = '14px';
+        timerEl.style.fontFamily = 'monospace';
+        timerEl.style.color = 'var(--color-text-secondary)';
+        timerEl.style.fontWeight = '600';
+        
+        const btn = document.getElementById('learn-exit-btn');
+        if (btn && btn.parentNode) {
+            btn.parentNode.insertBefore(timerEl, btn);
+        }
+    }
+    
+    // Start Timer
+    if (timerInterval) clearInterval(timerInterval);
+    sessionTimerStart = Date.now();
+    updateTimerDisplay();
+    timerInterval = setInterval(updateTimerDisplay, 1000);
+
     // Filter due cards
     const dueCards = getDueCards(candidateQuestions);
     
-    // Limit new cards? User said "limit 10-15". 
-    // Let's implement a soft limit: if more than 15 NEW cards, take only 15.
-    // Existing due cards (reviews) should all be shown.
+    // Strategy:
+    // 1. All reviews are mandatory (dueCards where !isNew).
+    // 2. New cards are limited by daily goal + catchup, but capped to avoid burnout.
     const reviews = dueCards.filter(c => !c.isNew);
     let newCards = dueCards.filter(c => c.isNew);
     
-    if (newCards.length > 15) {
-        newCards = newCards.slice(0, 15);
+    // Use calculated goal from Scheduler
+    // User request: Allow > 100% progress (up to 120%)
+    const baseGoal = status.dailyNewGoal;
+    const newLimit = Math.ceil(baseGoal * 1.20);
+    
+    if (newCards.length > newLimit) {
+        newCards = newCards.slice(0, newLimit);
     }
     
     let sessionCards = [...reviews, ...newCards];
-    // Ensure total count between 15 and 18
-    const target = Math.min(18, Math.max(15, sessionCards.length));
-    sessionCards = sessionCards.slice(0, target);
+    
+    // Safety cap for session length
+    const MAX_SESSION = 40; // Increased to accommodate larger blocks + reviews
+    if (sessionCards.length > MAX_SESSION) {
+        sessionCards = sessionCards.slice(0, MAX_SESSION);
+    }
     
     if (sessionCards.length === 0) {
-        alert('Нет карточек для изучения на сегодня!');
+        alert('На сегодня план выполнен! Отличная работа!');
         return;
     }
 
@@ -204,6 +264,10 @@ export function startLearnSession(candidateQuestions) {
 }
 
 function stopLearnSession() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
     container.style.display = 'none';
     if (mainContainer) mainContainer.style.display = 'block'; // Or whatever flex/grid it was
     // Restore sidebar
@@ -214,6 +278,10 @@ function stopLearnSession() {
 }
 
 function renderCardState(state) {
+    if (state.pauseRecommendation) {
+        showSmartPause(state.pauseRecommendation);
+    }
+
     const cardEl = container.querySelector('.flashcard');
     const front = container.querySelector('.flashcard-front');
     const back = container.querySelector('.flashcard-back');
@@ -221,41 +289,15 @@ function renderCardState(state) {
     const aEl = document.getElementById('learn-answer');
     const counter = document.getElementById('learn-counter');
     const progressFill = container.querySelector('.learn-progress-fill');
-    const segs = document.getElementById('learn-segments');
+    
+    // Update segments
+    updateSegments(state.results, state.total);
 
     qEl.textContent = state.card.question;
     aEl.textContent = state.card.answer;
     
     counter.textContent = `${state.progress}/${state.total}`;
     progressFill.style.width = `${(state.progress / state.total) * 100}%`;
-    // Build segments once
-    if (segs && segs.childElementCount !== state.total) {
-        segs.innerHTML = '';
-        for (let i = 0; i < state.total; i++) {
-            const s = document.createElement('div');
-            s.className = 'learn-progress-segment';
-            segs.appendChild(s);
-        }
-    }
-    // Reset segments at the start of a new session or when no results yet
-    if (segs && (!state.results || state.results.length === 0)) {
-        for (let i = 0; i < segs.childElementCount; i++) {
-            const el = segs.children[i];
-            el.className = 'learn-progress-segment';
-        }
-    }
-    // Color segments by results
-    if (segs && state.results && state.results.length) {
-        state.results.forEach((g, idx) => {
-            const el = segs.children[idx];
-            if (!el) return;
-            el.className = 'learn-progress-segment';
-            if (g === 0) el.classList.add('seg-again');
-            else if (g === 1) el.classList.add('seg-hard');
-            else if (g === 2) el.classList.add('seg-good');
-            else if (g === 3) el.classList.add('seg-easy');
-        });
-    }
 
     // Update favorite button state
     const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
@@ -273,7 +315,39 @@ function renderCardState(state) {
     }
 }
 
-function showStats(stats) {
+function updateSegments(results, total) {
+    const segs = document.getElementById('learn-segments');
+    if (!segs) return;
+
+    // Build segments once
+    if (segs.childElementCount !== total) {
+        segs.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+            const s = document.createElement('div');
+            s.className = 'learn-progress-segment';
+            segs.appendChild(s);
+        }
+    }
+    // Color segments by results
+    if (results && results.length) {
+        results.forEach((g, idx) => {
+            const el = segs.children[idx];
+            if (!el) return;
+            el.className = 'learn-progress-segment';
+            if (g === 0) el.classList.add('seg-again');
+            else if (g === 1) el.classList.add('seg-hard');
+            else if (g === 2) el.classList.add('seg-good');
+            else if (g === 3) el.classList.add('seg-easy');
+        });
+    }
+}
+
+function showStats(stats, results, total) {
+    // Update segments one last time to show the final card's result
+    if (results && total) {
+        updateSegments(results, total);
+    }
+
     container.querySelector('.flashcard-container').style.display = 'none';
     checkAchievements();
     let overlay = document.getElementById('session-summary-overlay');
@@ -357,7 +431,31 @@ function showStats(stats) {
     accEl.classList.remove('acc-good','acc-mid','acc-bad');
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
-    overlay.querySelector('#sum-motivation').textContent = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
+
+    // Motivational Message Logic (Expert Psychology)
+    let motivation = 'Продолжайте в том же духе!';
+    if (currentScheduler) {
+        const sched = currentScheduler.getScheduleStatus();
+        const daysLeft = sched.daysRemaining;
+        
+        if (accuracy >= 90) {
+            motivation = `Потрясающая точность! Вы уверенно идете к цели за ${daysLeft} дн.`;
+        } else if (accuracy >= 75) {
+            motivation = `Отличный результат! Осталось ${daysLeft} дней до финиша.`;
+        } else if (accuracy < 50) {
+            motivation = `Тяжело в учении — легко в бою. Завтра будет лучше!`;
+        } else {
+            motivation = `Хороший темп. Выучено ${sched.learnedCount} из ${sched.learnedCount + sched.unseenCount}.`;
+        }
+
+        if (sched.dayNumber > 40) {
+            motivation += " Финиш уже близко!";
+        }
+    } else {
+         motivation = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
+    }
+
+    overlay.querySelector('#sum-motivation').textContent = motivation;
     const earned = session.stats.pointsEarned || 0;
     const bonus = Math.min(100, (st.current || 0) * 5);
     const dayBonus = bonus > 0 ? Math.min(5, bonus) : 0;
@@ -430,37 +528,121 @@ function showStats(stats) {
     }).catch(() => {});
     // Animate overlay and stats
     overlay.classList.add('show');
-    // Скрыть всё, затем показать по таймлайну
+    
+    // Show all stats immediately (without staggered delay)
     const totalEl = overlay.querySelector('#stat-total');
     const accWrap = overlay.querySelector('#stat-accuracy');
     const streakWrap = overlay.querySelector('#stat-streak');
     const motEl = overlay.querySelector('#sum-motivation');
     const xpEl = overlay.querySelector('#sum-xp');
     const actions = overlay.querySelector('.summary-actions');
-    [totalEl, accWrap, streakWrap, motEl, xpEl, actions].forEach(el => { if (el) el.style.display = 'none'; });
-    // Появление после заполнения шкалы
-    setTimeout(() => {
-        totalEl.style.display = '';
-        totalEl.classList.add('glitch-in');
-        setTimeout(() => {
-            accWrap.style.display = '';
-            accWrap.classList.add('glitch-in');
-            setTimeout(() => {
-                streakWrap.style.display = '';
-                streakWrap.classList.add('glitch-in');
-                setTimeout(() => {
-                    motEl.style.display = '';
-                    motEl.classList.add('fade-in');
-                    setTimeout(() => {
-                        xpEl.style.display = '';
-                        xpEl.classList.add('fade-in');
-                        setTimeout(() => {
-                            actions.style.display = '';
-                            actions.classList.add('fade-in');
-                        }, 300);
-                    }, 300);
-                }, 300);
-            }, 300);
-        }, 300);
-    }, 1600); // ~1.5с на шкалу + запас
+
+    // Apply animations simultaneously
+    if (totalEl) { totalEl.style.display = ''; totalEl.classList.add('glitch-in'); }
+    if (accWrap) { accWrap.style.display = ''; accWrap.classList.add('glitch-in'); }
+    if (streakWrap) { streakWrap.style.display = ''; streakWrap.classList.add('glitch-in'); }
+    
+    // Fade-in elements (originally hidden by CSS opacity: 0)
+    if (motEl) { motEl.style.display = ''; motEl.classList.add('fade-in'); }
+    if (xpEl) { xpEl.style.display = ''; xpEl.classList.add('fade-in'); }
+    if (actions) { actions.style.display = ''; actions.classList.add('fade-in'); }
+}
+
+function updateTimerDisplay() {
+    const el = document.getElementById('learn-timer');
+    if (!el) return;
+    
+    // Show time for current continuous block
+    const now = Date.now();
+    // If session exists, use session.lastPauseTime to track current block
+    const startTime = (session && session.lastPauseTime) ? session.lastPauseTime : sessionTimerStart;
+    
+    const diff = Math.floor((now - startTime) / 1000);
+    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+    const s = (diff % 60).toString().padStart(2, '0');
+    el.textContent = `${m}:${s}`;
+}
+
+function showSmartPause(rec) {
+    if (document.getElementById('smart-pause-overlay')) return;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'smart-pause-overlay';
+    overlay.className = 'summary-overlay show'; 
+    overlay.style.zIndex = '10002'; // Above everything
+    
+    overlay.innerHTML = `
+        <div class="summary-box" style="max-width: 400px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">☕</div>
+            <h2 style="margin:0 0 8px 0;">Умная пауза</h2>
+            <div style="color: var(--color-text-secondary); margin-bottom: 24px; font-size: 16px;">
+                ${rec.reason}
+            </div>
+            
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
+                <div class="stat-item">
+                    <span>Время</span>
+                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} мин</span>
+                </div>
+                <div class="stat-item">
+                    <span>Точность</span>
+                    <span style="font-size: 20px; font-weight: 600; color: ${rec.accuracy >= 80 ? '#4ade80' : rec.accuracy >= 50 ? '#fbbf24' : '#ef4444'}">${rec.accuracy}%</span>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; flex-direction: column;">
+                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">Сделать перерыв (5 мин)</button>
+                <button id="pause-skip-btn" class="secondary-btn">Пропустить и продолжить</button>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(overlay);
+    
+    // Handlers
+    overlay.querySelector('#pause-skip-btn').addEventListener('click', () => {
+        if (session) session.resumeFromPause();
+        overlay.remove();
+        updateTimerDisplay(); // Reset timer visually
+    });
+    
+    overlay.querySelector('#pause-break-btn').addEventListener('click', () => {
+        startBreakCountdown(overlay, 5 * 60);
+    });
+}
+
+function startBreakCountdown(overlay, seconds) {
+    const box = overlay.querySelector('.summary-box');
+    box.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 16px;">🧘</div>
+        <h2 style="margin:0 0 8px 0;">Отдыхаем...</h2>
+        <div id="break-timer" style="font-size: 48px; font-weight: 700; font-family: monospace; margin: 24px 0;">
+            05:00
+        </div>
+        <div style="color: var(--color-text-secondary); margin-bottom: 24px;">
+            Глубоко вдохните и расслабьтесь.
+        </div>
+        <button id="break-skip-btn" class="secondary-btn">Вернуться к обучению</button>
+    `;
+    
+    let left = seconds;
+    const timerEl = box.querySelector('#break-timer');
+    const interval = setInterval(() => {
+        left--;
+        if (left <= 0) {
+            clearInterval(interval);
+            if (session) session.resumeFromPause();
+            overlay.remove();
+            return;
+        }
+        const m = Math.floor(left / 60).toString().padStart(2, '0');
+        const s = (left % 60).toString().padStart(2, '0');
+        timerEl.textContent = `${m}:${s}`;
+    }, 1000);
+    
+    box.querySelector('#break-skip-btn').addEventListener('click', () => {
+        clearInterval(interval);
+        if (session) session.resumeFromPause();
+        overlay.remove();
+    });
 }

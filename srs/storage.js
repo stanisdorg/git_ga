@@ -165,7 +165,7 @@ export async function syncFavorite(question, isFav) {
  * Retrieves the full progress map from local storage.
  * @returns {Object.<string, import('./algorithm.js').ProgressRecord>}
  */
-function getProgressMap() {
+export function getProgressMap() {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         return raw ? JSON.parse(raw) : {};

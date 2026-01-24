@@ -9,9 +9,9 @@ export function setNormalizationDisabled(disabled) {
 
 export async function loadJsonData() {
     try {
-        // Пробуем загрузить файл Копия вопросы.json
+        // Пробуем загрузить файл questions_no_anki.json
         // Используем encodeURIComponent для корректной обработки кириллицы в URL
-        const fileName = 'Копия вопросы.json';
+        const fileName = 'questions_no_anki.json';
         const encodedFileName = encodeURIComponent(fileName);
         const response = await fetch(`./data/${encodedFileName}?t=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) {
@@ -23,11 +23,11 @@ export async function loadJsonData() {
         
         // Проверяем структуру данных
         if (data.questions && Array.isArray(data.questions)) {
-            console.log(`Загружено ${data.questions.length} вопросов из файла Копия вопросы.json`);
+            console.log(`Загружено ${data.questions.length} вопросов из файла questions_no_anki.json`);
             const base = normalizationDisabled ? data.questions : normalizeDataset(data.questions);
             return removeDuplicates(base, 'question');
         } else if (Array.isArray(data)) {
-            console.log(`Загружено ${data.length} вопросов из файла Копия вопросы.json`);
+            console.log(`Загружено ${data.length} вопросов из файла questions_no_anki.json`);
             const base = normalizationDisabled ? data : normalizeDataset(data);
             return removeDuplicates(base, 'question');
         }

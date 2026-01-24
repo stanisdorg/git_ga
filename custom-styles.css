@@ -1361,7 +1361,7 @@ body.listening .audio-visualizer {
 .level-progress-fill-old { background: #2a2a2a; }
 .level-progress-fill-earned { background: #1d4ed8; color: #1d4ed8; }
 .level-progress-fill-bonus { background: #8b5cf6; color: #8b5cf6; }
-.level-progress-fill.animate::after {
+/* .level-progress-fill.animate::after {
     content: "";
     position: absolute;
     right: 0;
@@ -1378,6 +1378,107 @@ body.listening .audio-visualizer {
     0% { opacity: 0.9; box-shadow: 0 0 6px currentColor; }
     50% { opacity: 1; box-shadow: 0 0 12px currentColor; }
     100% { opacity: 0.7; box-shadow: 0 0 8px currentColor; }
+} */
+
+/* Contribution Graph (GitHub Style) */
+.contribution-graph-container {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+
+.contribution-graph {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 700px; /* Ensure it doesn't squish too much */
+}
+
+.graph-months {
+    display: flex;
+    margin-left: 30px; /* Offset for day labels */
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.graph-body {
+    display: flex;
+    gap: 8px;
+}
+
+.graph-days-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: 10px; /* Align roughly with rows */
+    height: 88px; /* 7 cells * (10px + 2px gap) approx */
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    width: 28px;
+}
+
+.graph-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 10px);
+    grid-auto-flow: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.contribution-cell {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background-color: #161b22; /* Level 0 */
+    transition: transform 0.1s;
+}
+
+.contribution-cell:hover {
+    transform: scale(1.2);
+    z-index: 2;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Activity Levels */
+.cell-l0 { background-color: #161b22; }
+.cell-l1 { background-color: #0e4429; }
+.cell-l2 { background-color: #006d32; }
+.cell-l3 { background-color: #26a641; }
+.cell-l4 { background-color: #39d353; }
+
+.graph-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+}
+
+.legend-cell {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+/* Tooltip specific for this graph */
+.graph-tooltip {
+    position: fixed;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10000;
+    display: none;
+    white-space: nowrap;
 }
 
 /* Summary actions and buttons */

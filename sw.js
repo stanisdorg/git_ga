@@ -37,7 +37,7 @@ self.addEventListener('activate', event => {
 // Перехват запросов и обслуживание из кэша
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  const isDataRequest = url.pathname.startsWith('/data/') || url.pathname.endsWith('Копия вопросы.json');
+  const isDataRequest = url.pathname.startsWith('/data/') || url.pathname.endsWith('questions_no_anki.json');
   const isSaveRequest = url.pathname.startsWith('/save');
 
   if (isDataRequest || isSaveRequest) {

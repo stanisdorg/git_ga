@@ -130,8 +130,8 @@ class SaveHandler(http.server.BaseHTTPRequestHandler):
             return
         try:
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            target_path = os.path.join(base_dir, 'data', 'Копия вопросы.json')
-            backup_path = os.path.join(base_dir, 'data', 'Копия вопросы copy.json')
+            target_path = os.path.join(base_dir, 'data', 'questions_no_anki.json')
+            backup_path = os.path.join(base_dir, 'data', 'questions_no_anki copy.json')
             # backup
             try:
                 if os.path.exists(target_path):

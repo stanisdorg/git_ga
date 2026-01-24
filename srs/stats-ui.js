@@ -1,4 +1,6 @@
 import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=3';
+// IMPORTANT: getProgressMap is in storage.js, NOT stats-utils.js. Do not change this import.
+import { getProgressMap } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 
 let statsContainer = null;
@@ -124,6 +126,11 @@ export function hideStatsPage() {
   if (mainContainer) mainContainer.style.display = '';
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) sidebar.style.display = '';
+  
+  // Remove tooltip if exists
+  const tip = document.getElementById('stats-activity-tooltip');
+  if (tip) tip.remove();
+  
   location.hash = '';
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
 }
@@ -141,6 +148,8 @@ function renderStats() {
   try { level = getCurrentLevel(); } catch { level = { level: 1, xp: 0, remaining: 0, progress: 0, prevThreshold: 0, nextThreshold: 1000 }; }
   try { dailyXP = getDailyPoints(30); } catch { dailyXP = []; }
   try { dailyStreak = getDailyStreakSeries(); } catch { dailyStreak = []; }
+
+  const activeDaysTotal = getDailyPointsAll().filter(p => p.xp > 0).length;
 
   const emptyState = metrics.studiedCount === 0 ? `
     <div class="empty-state">Начните изучение, и мы покажем вашу статистику здесь.</div>
@@ -173,16 +182,15 @@ function renderStats() {
         <div class="metric-value">${metrics.streakCurrent} <span class="metric-sub">рекорд ${metrics.streakBest}</span></div>
       </div>
       <div class="metric-card">
-        <div class="metric-title">XP</div>
-        <div class="metric-value">${metrics.xp}</div>
+        <div class="metric-title">Активные дни</div>
+        <div class="metric-value">${activeDaysTotal} <span class="metric-sub">всего</span></div>
       </div>
     </div>
 
+    ${renderProjection(metrics)}
+
     <div class="section">
-      <h2>Активность (120 дней)</h2>
-      <div class="activity-grid">
-        ${activity.map(a => `<div class="activity-cell" data-date="${a.date}" data-xp="${a.xp}" title="${a.date}: ${a.count} карточек, ${a.xp} XP" style="background:${a.color}"></div>`).join('')}
-      </div>
+      ${renderContributionGraph()}
     </div>
 
     <div class="section">
@@ -273,33 +281,247 @@ function achievementCard(title, desc, unlocked) {
 }
 
 function bindActivityTooltip() {
+  // Remove existing to avoid duplicates
+  const existingTip = document.getElementById('stats-activity-tooltip');
+  if (existingTip) existingTip.remove();
+
   const tip = document.createElement('div');
-  tip.className = 'tooltip';
-  tip.style.position = 'fixed';
-  tip.style.pointerEvents = 'none';
-  tip.style.background = 'rgba(0,0,0,0.8)';
-  tip.style.color = '#fff';
-  tip.style.padding = '6px 8px';
-  tip.style.borderRadius = '6px';
-  tip.style.fontSize = '12px';
-  tip.style.zIndex = '9999';
-  tip.style.display = 'none';
+  tip.id = 'stats-activity-tooltip';
+  tip.className = 'graph-tooltip'; // Use the new CSS class
+  // Inline styles for position are handled by logic, but appearance by CSS
   document.body.appendChild(tip);
-  statsContainer.querySelectorAll('.activity-cell').forEach(cell => {
+  
+  statsContainer.querySelectorAll('.activity-cell, .contribution-cell').forEach(cell => {
     cell.addEventListener('mouseenter', (e) => {
       const date = cell.getAttribute('data-date');
       const xp = cell.getAttribute('data-xp');
-      tip.textContent = `${date} • ${xp} XP`;
+      const count = cell.getAttribute('data-count') || 0;
+      tip.textContent = `${date} • ${count} вопр. • ${xp} XP`;
       tip.style.display = 'block';
     });
     cell.addEventListener('mousemove', (e) => {
-      tip.style.left = `${e.clientX + 12}px`;
-      tip.style.top = `${e.clientY + 12}px`;
+      tip.style.left = (e.clientX + 10) + 'px';
+      tip.style.top = (e.clientY + 10) + 'px';
     });
     cell.addEventListener('mouseleave', () => {
       tip.style.display = 'none';
     });
   });
+}
+
+function renderProjection(metrics) {
+  // 1. Calculate "Global" Velocity (Historical average)
+  const allPoints = getDailyPointsAll();
+  const learned = metrics.studiedCount || 0;
+  const total = uniqueQaData.length;
+  const remaining = Math.max(0, total - learned);
+
+  // Calculate total active days (days with any XP)
+  const activeDaysCount = allPoints.filter(p => p.xp > 0).length;
+  // Fallback start date
+  let start = new Date();
+  if (allPoints.length > 0) {
+      allPoints.sort((a,b) => a.date.localeCompare(b.date));
+      start = new Date(allPoints[0].date);
+  }
+  const now = new Date();
+  const globalDiff = Math.max(1, (now - start) / (1000 * 60 * 60 * 24));
+  const globalVelocity = activeDaysCount > 0 ? (learned / activeDaysCount) : 0;
+
+  // 2. Calculate "Burst" Velocity (Recent performance on NEW cards)
+  // We look for "Young" cards (repetitions 1-4) that were reviewed recently.
+  // This proxies the rate of *new* material absorption.
+  const progMap = getProgressMap();
+  const youngCards = Object.values(progMap).filter(p => 
+      p.repetitions > 0 && 
+      p.repetitions <= 5 && 
+      p.lastReviewed // Must have a date
+  );
+  
+  // Filter for cards reviewed in the last 10 days to capture "Current Sprint"
+  const recentThreshold = new Date();
+  recentThreshold.setDate(recentThreshold.getDate() - 10);
+  const recentThresholdStr = recentThreshold.toISOString().split('T')[0];
+  
+  const currentSprintCards = youngCards.filter(p => p.lastReviewed >= recentThresholdStr);
+
+  let burstVelocity = 0;
+  let burstDays = 0;
+  let usedMethod = 'global';
+
+  if (currentSprintCards.length >= 3) {
+      // We have a meaningful recent burst
+      // Find the start of this burst (min lastReviewed of these cards)
+      const dates = currentSprintCards.map(p => p.lastReviewed).sort();
+      const firstDate = new Date(dates[0]);
+      const lastDate = new Date(); // now
+      
+      // Calculate duration of this sprint
+      const sprintDuration = Math.max(1, (lastDate - firstDate) / (1000 * 60 * 60 * 24));
+      
+      burstVelocity = currentSprintCards.length / sprintDuration;
+      burstDays = Math.ceil(sprintDuration);
+      
+      // If burst velocity is significantly better/more relevant, use it
+      // But clamp it if it's absurdly high (e.g. 100 cards in 1 minute -> user just clicked 'easy')
+      if (burstVelocity > globalVelocity) {
+          usedMethod = 'burst';
+      }
+  }
+
+  // Decide which velocity to use
+  // If global is very low (e.g. < 0.5) and burst is healthy, use burst.
+  // If user is steady, global and burst should be similar.
+  const velocity = (usedMethod === 'burst') ? burstVelocity : globalVelocity;
+  const daysActiveDisplay = (usedMethod === 'burst') ? burstDays : activeDaysCount;
+  const daysLabel = (usedMethod === 'burst') ? 'дн. (текущий спринт)' : 'дн. (активных)';
+
+  // Projection
+  const daysLeft = velocity > 0.05 ? Math.ceil(remaining / velocity) : 999;
+  const projectedTotalDays = (usedMethod === 'burst' ? burstDays : activeDaysCount) + daysLeft;
+  
+  const estDate = new Date();
+  estDate.setDate(estDate.getDate() + daysLeft);
+  const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  const estDateString = daysLeft < 999 ? estDate.toLocaleDateString('ru-RU', dateOptions) : 'Неизвестно';
+  
+  const TARGET_DAYS = 60;
+  // For 'On Track' calculation, we should estimate total duration based on current pace
+  const isOnTrack = projectedTotalDays <= TARGET_DAYS; // Estimate based on current mode
+  
+  return `
+    <div class="section">
+      <h2>Прогноз обучения</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;background:#1b1b1b;padding:20px;border-radius:12px;border:1px solid #333;">
+        <div style="display:flex;flex-direction:column;gap:4px">
+           <div style="font-size:13px;color:#aaa">Средняя скорость ${usedMethod === 'burst' ? '(спринт)' : '(общая)'}</div>
+           <div style="font-size:20px;font-weight:600;color:#fff">${velocity.toFixed(1)} <span style="font-size:14px;color:#888;font-weight:400">карт/день</span></div>
+           <div style="font-size:11px;color:#666">За ${daysActiveDisplay} ${daysLabel}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+           <div style="font-size:13px;color:#aaa">Осталось изучить</div>
+           <div style="font-size:20px;font-weight:600;color:#fff">${remaining} <span style="font-size:14px;color:#888;font-weight:400">из ${total}</span></div>
+           <div style="font-size:11px;color:#666">Пройдено ${Math.round((learned/total)*100)}%</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+           <div style="font-size:13px;color:#aaa">Прогноз завершения</div>
+           <div style="font-size:20px;font-weight:600;color:${daysLeft < 999 ? '#fff' : '#888'}">${estDateString}</div>
+           <div style="font-size:11px;color:#666">${daysLeft < 999 ? `Через ${daysLeft} дн.` : 'Мало данных'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+           <div style="font-size:13px;color:#aaa">Цель (60 дней)</div>
+           <div style="font-size:20px;font-weight:600;color:${isOnTrack ? '#4caf50' : '#ff9800'}">${projectedTotalDays} дн.</div>
+           <div style="font-size:11px;color:#666">${isOnTrack ? 'Вы успеваете!' : `Прогноз: ${projectedTotalDays} дн.`}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderContributionGraph() {
+  const allPoints = getDailyPointsAll();
+  const pointsMap = new Map();
+  allPoints.forEach(p => {
+    pointsMap.set(p.date, (p.xp || 0) + (p.bonus || 0) + (p.dayBonus || 0));
+  });
+
+  // Calculate review counts per day
+  // Safe implementation: getProgressMap returns {} on error, safe to iterate
+  const prog = getProgressMap();
+  const countMap = new Map();
+  if (prog) {
+    Object.values(prog).forEach(p => {
+      if (p && p.lastReviewed) {
+        countMap.set(p.lastReviewed, (countMap.get(p.lastReviewed) || 0) + 1);
+      }
+    });
+  }
+
+  const today = new Date();
+  const endDate = new Date(today);
+  const startDate = new Date(endDate);
+  startDate.setDate(endDate.getDate() - 365);
+  
+  // Align start date to previous Monday (Mon=1 ... Sun=0 in JS getDay() is weird, usually Sun=0)
+  // We want Mon as start of column.
+  const dayOfWeek = startDate.getDay(); // 0=Sun, 1=Mon...
+  // If 1 (Mon), offset 0. If 0 (Sun), offset 6.
+  const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  startDate.setDate(startDate.getDate() - offset);
+
+  const cells = [];
+  const iterDate = new Date(startDate);
+  
+  // Loop until we cover today and finish the week (Sunday)
+  // But strictly, we just need to ensure we fill full columns.
+  // Let's generate 53 weeks * 7 days = 371 cells roughly.
+  let keepGoing = true;
+  while (keepGoing) {
+    const dateStr = iterDate.toISOString().split('T')[0];
+    const xp = pointsMap.get(dateStr) || 0;
+    const count = countMap.get(dateStr) || 0;
+    
+    let level = 0;
+    if (xp > 0) level = 1;
+    if (xp >= 20) level = 2;
+    if (xp >= 50) level = 3;
+    if (xp >= 100) level = 4;
+    
+    // Future check: if iterDate > today, it's future (but we still render the cell for grid alignment)
+    const isFuture = iterDate > today;
+    
+    cells.push({
+      date: dateStr,
+      xp: xp,
+      count: count,
+      level: isFuture ? 0 : level,
+      isFuture: isFuture
+    });
+    
+    // Stop condition: if we passed today AND it is Sunday (end of column)
+    if (iterDate >= today && iterDate.getDay() === 0) {
+       keepGoing = false;
+    }
+    
+    iterDate.setDate(iterDate.getDate() + 1);
+  }
+
+  return `
+    <div class="contribution-graph-container">
+        <h2 style="margin-top:0;margin-bottom:16px;">Активность (последний год)</h2>
+        <div class="contribution-graph">
+            <div class="graph-months">
+               <!-- Approximate labels -->
+               <span>Янв</span><span>Фев</span><span>Мар</span><span>Апр</span><span>Май</span><span>Июн</span><span>Июл</span><span>Авг</span><span>Сен</span><span>Окт</span><span>Ноя</span><span>Дек</span>
+            </div>
+            <div class="graph-body">
+                <div class="graph-days-labels">
+                    <span>Пн</span>
+                    <span>Ср</span>
+                    <span>Пт</span>
+                </div>
+                <div class="graph-grid">
+                    ${cells.map(c => `
+                        <div class="contribution-cell cell-l${c.level}" 
+                             data-date="${c.date}" 
+                             data-xp="${c.xp}"
+                             data-count="${c.count}"
+                             title="${c.date}: ${c.count} вопросов, ${c.xp} XP"></div>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="graph-footer">
+                <span>Меньше</span>
+                <div class="legend-cell cell-l0"></div>
+                <div class="legend-cell cell-l1"></div>
+                <div class="legend-cell cell-l2"></div>
+                <div class="legend-cell cell-l3"></div>
+                <div class="legend-cell cell-l4"></div>
+                <span>Больше</span>
+            </div>
+        </div>
+    </div>
+  `;
 }
 
 function renderHistogram(points, streakSeries) {

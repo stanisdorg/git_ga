@@ -41,8 +41,8 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         // Путь к целевому файлу
-        const targetPath = path.join(__dirname, 'data', 'Копия вопросы.json');
-        const backupPath = path.join(__dirname, 'data', 'Копия вопросы copy.json');
+        const targetPath = path.join(__dirname, 'data', 'questions_no_anki.json');
+        const backupPath = path.join(__dirname, 'data', 'questions_no_anki copy.json');
         // Делаем бэкап текущего файла
         try {
           const existing = fs.readFileSync(targetPath, 'utf-8');
