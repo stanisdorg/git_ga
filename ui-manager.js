@@ -44,7 +44,7 @@ export function initUI() {
             initTabsNavigation();
         }
     };
-    window.addEventListener('dataLoaded', reinit);
+    document.addEventListener('dataLoaded', reinit);
     window.addEventListener('adminItemAdded', reinit);
     window.addEventListener('adminOverridesChanged', reinit);
 
