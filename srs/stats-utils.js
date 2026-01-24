@@ -85,16 +85,18 @@ export function checkAchievements() {
 export function getCurrentLevel() {
   const stats = getStudyStats();
   const xp = stats.points || 0;
-  let level = 1;
-  let nextThreshold = 1000;
-  if (xp >= 10000) { level = 5; nextThreshold = Infinity; }
-  else if (xp >= 5000) { level = 4; nextThreshold = 10000; }
-  else if (xp >= 2500) { level = 3; nextThreshold = 5000; }
-  else if (xp >= 1000) { level = 2; nextThreshold = 2500; }
-  else { level = 1; nextThreshold = 1000; }
-  const prevThreshold = (level === 1) ? 0 : (level === 2 ? 1000 : level === 3 ? 2500 : level === 4 ? 5000 : 10000);
-  const progress = nextThreshold === Infinity ? 1 : (xp - prevThreshold) / (nextThreshold - prevThreshold);
-  const remaining = nextThreshold === Infinity ? 0 : Math.max(0, nextThreshold - xp);
+  
+  // Use a quadratic formula for unlimited levels: XP = 625 * (Level - 1)^2
+  // Inverse: Level = floor(sqrt(XP / 625)) + 1
+  const level = Math.floor(Math.sqrt(xp / 625)) + 1;
+  
+  // Calculate thresholds based on the formula
+  const prevThreshold = Math.ceil(625 * Math.pow(level - 1, 2));
+  const nextThreshold = Math.ceil(625 * Math.pow(level, 2));
+  
+  const progress = (xp - prevThreshold) / (nextThreshold - prevThreshold);
+  const remaining = Math.max(0, nextThreshold - xp);
+  
   return { level, xp, progress, remaining, nextThreshold, prevThreshold };
 }
 
