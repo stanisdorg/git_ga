@@ -357,16 +357,15 @@ const STATS_STYLES = `
     padding: 40px;
     display: grid;
     grid-template-columns: 2fr 1fr;
-    grid-template-rows: auto auto auto auto;
-    gap: 32px;
+    /* Auto rows */
+    gap: 24px;
     align-items: start;
   }
   
-  /* Header */
+  /* Full Width Rows */
   .st-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding-bottom: 0; }
   .st-header::before { content: 'Статистика'; font-size: 24px; font-weight: 700; color: #fff; }
 
-  /* Hero */
   .st-hero {
     grid-column: 1 / -1;
     flex-direction: row;
@@ -376,13 +375,8 @@ const STATS_STYLES = `
     border-radius: 16px;
     border: 1px solid var(--st-border);
   }
-  .st-hero-left {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 40px;
-  }
+  /* ... hero inner styles ... */
+  .st-hero-left { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 40px; }
   .st-level-row { flex-direction: column; align-items: flex-start; min-width: 140px; }
   .st-hero-bar-bg { margin-top: 0 !important; flex: 1; height: 12px; }
   .st-hero-stats { margin-top: 0; gap: 40px; }
@@ -405,7 +399,7 @@ const STATS_STYLES = `
     min-width: 200px;
   }
 
-  /* Progress Cards */
+  /* Progress Cards (Row 3) */
   .st-prog-stack {
     grid-column: 1 / -1;
     display: grid;
@@ -414,22 +408,24 @@ const STATS_STYLES = `
   }
   .st-card { padding: 24px; }
 
-  /* Activity (Chart) */
+  /* Main Content Columns (Row 4+) */
+  
+  /* Activity: Left Column */
   .st-activity-section {
     grid-column: 1 / 2;
-    grid-row: 3 / 5;
+    /* Remove explicit grid-row to allow natural flow */
     background: var(--st-surf);
     padding: 32px;
     border-radius: 16px;
     border: 1px solid var(--st-border);
-    height: 100%;
+    height: auto; /* Allow auto height */
   }
-  .st-xp-chart-container { height: 350px; }
+  .st-xp-chart-container { height: 300px; } /* Slightly reduced height */
   .st-collapsible-header { cursor: default; pointer-events: none; margin-bottom: 24px; }
   .st-col-arrow { display: none; }
   .st-col-title { font-size: 18px; }
 
-  /* Difficulty & Categories (Right Column Stack) */
+  /* Right Column Stack */
   .st-diff-section, .st-cat-section {
     grid-column: 2 / 3;
     background: var(--st-surf);
@@ -438,22 +434,23 @@ const STATS_STYLES = `
     border: 1px solid var(--st-border);
   }
   
-  /* Force Expand Content on Desktop */
-  .st-diff-bar-wrap { display: none !important; }
-  .st-diff-list { display: flex !important; margin-top: 0; animation: none; opacity: 1; transform: none; }
-  .st-cat-list { display: flex !important; }
-  .st-cat-more-btn { display: none !important; } /* Hide "Show More" btn, show all items */
-  .st-cat-item-hidden { display: block !important; } /* Show hidden items */
-
-  /* Achievements */
+  /* Achievements: Full Width at Bottom */
   .st-ach-section {
-    grid-column: 1 / 2;
+    grid-column: 1 / -1;
     background: var(--st-surf);
     padding: 32px;
     border-radius: 16px;
     border: 1px solid var(--st-border);
+    margin-top: 8px;
   }
   .st-ach-grid { grid-template-columns: repeat(4, 1fr); }
+
+  /* Force Expand Content */
+  .st-diff-bar-wrap { display: none !important; }
+  .st-diff-list { display: flex !important; margin-top: 0; animation: none; opacity: 1; transform: none; }
+  .st-cat-list { display: flex !important; }
+  .st-cat-more-btn { display: none !important; }
+  .st-cat-item-hidden { display: block !important; }
 }
 `;
 
