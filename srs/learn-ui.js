@@ -102,6 +102,7 @@ export function initLearnUI() {
 
                 localStorage.setItem('qaFavorites', JSON.stringify(favs));
                 syncFavorite(question, newIsFav);
+                window.dispatchEvent(new Event('favoritesUpdated'));
 
                 // Update all buttons (both front and back)
                 container.querySelectorAll('.learn-fav-btn').forEach(b => {
@@ -297,6 +298,7 @@ function stopLearnSession() {
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) sidebar.style.display = '';
     
+    window.dispatchEvent(new Event('favoritesUpdated'));
     session = null;
 }
 
