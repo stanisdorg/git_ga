@@ -449,7 +449,7 @@ function showStats(stats, results, total) {
             window.__overlayActive = true;
             // Скрываем контейнер обучения, чтобы статистика была поверх
             if (container) container.style.display = 'none';
-            const { initStatsPage } = await import('./stats-ui.js?v=5');
+            const { initStatsPage } = await import('./stats-ui.js?v=6');
             location.hash = '#/stats';
             initStatsPage();
         });

@@ -351,22 +351,109 @@ const STATS_STYLES = `
 }
 
 /* Desktop Adaptation */
-@media (min-width: 800px) {
-  .st-wrapper { max-width: 1000px; }
-  .st-prog-stack { flex-direction: row; }
-  .st-card { flex: 1; }
-  .st-hero { flex-direction: row; justify-content: space-between; align-items: flex-end; }
-  .st-hero-left { flex: 1; }
+@media (min-width: 1024px) {
+  .st-wrapper {
+    max-width: 1280px;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 32px;
+    align-items: start;
+  }
+  
+  /* Header */
+  .st-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding-bottom: 0; }
+  .st-header::before { content: 'Статистика'; font-size: 24px; font-weight: 700; color: #fff; }
+
+  /* Hero */
+  .st-hero {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    background: var(--st-surf);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--st-border);
+  }
+  .st-hero-left {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+  }
+  .st-level-row { flex-direction: column; align-items: flex-start; min-width: 140px; }
+  .st-hero-bar-bg { margin-top: 0 !important; flex: 1; height: 12px; }
+  .st-hero-stats { margin-top: 0; gap: 40px; }
+  
   .st-sticky-cta-wrapper {
     position: static;
     background: none;
     padding: 0;
     width: auto;
     display: block;
+    margin-left: 40px;
   }
-  .st-cta-btn { width: auto; min-width: 200px; }
+  .st-cta-btn {
+    width: auto;
+    padding: 14px 40px;
+    font-size: 15px;
+    background: var(--st-prim);
+    color: #0E1117;
+    box-shadow: none;
+    min-width: 200px;
+  }
+
+  /* Progress Cards */
+  .st-prog-stack {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .st-card { padding: 24px; }
+
+  /* Activity (Chart) */
+  .st-activity-section {
+    grid-column: 1 / 2;
+    grid-row: 3 / 5;
+    background: var(--st-surf);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--st-border);
+    height: 100%;
+  }
+  .st-xp-chart-container { height: 350px; }
+  .st-collapsible-header { cursor: default; pointer-events: none; margin-bottom: 24px; }
+  .st-col-arrow { display: none; }
+  .st-col-title { font-size: 18px; }
+
+  /* Difficulty & Categories (Right Column Stack) */
+  .st-diff-section, .st-cat-section {
+    grid-column: 2 / 3;
+    background: var(--st-surf);
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid var(--st-border);
+  }
+  
+  /* Force Expand Content on Desktop */
+  .st-diff-bar-wrap { display: none !important; }
+  .st-diff-list { display: flex !important; margin-top: 0; animation: none; opacity: 1; transform: none; }
+  .st-cat-list { display: flex !important; }
+  .st-cat-more-btn { display: none !important; } /* Hide "Show More" btn, show all items */
+  .st-cat-item-hidden { display: block !important; } /* Show hidden items */
+
+  /* Achievements */
+  .st-ach-section {
+    grid-column: 1 / 2;
+    background: var(--st-surf);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--st-border);
+  }
   .st-ach-grid { grid-template-columns: repeat(4, 1fr); }
-  .st-cat-list { display: grid; grid-template-columns: repeat(2, 1fr); }
 }
 `;
 
@@ -509,33 +596,31 @@ function renderStats() {
       </div>
 
       <!-- DIFFICULTY (Collapsible) -->
-      <div>
+      <div class="st-diff-section">
         <div class="st-collapsible-header" onclick="window.toggleDiff()">
            <div class="st-col-title">Сложность карточек</div>
            <div class="st-col-arrow ${isDiffExpanded ? 'expanded' : ''}">▼</div>
         </div>
         
-        ${!isDiffExpanded ? `
-          <div class="st-diff-bar-wrap">
-             ${segs.map(s => `<div class="st-diff-seg ${s.colorClass}" style="width:${s.pct}%"></div>`).join('')}
-          </div>
-        ` : `
-          <div class="st-diff-list">
-             ${segs.map(s => `
-               <div class="st-diff-item" onclick="window.openDiffModal('${s.label}', '${s.colorClass}')">
-                 <div style="display:flex;align-items:center">
-                   <div class="st-diff-dot" style="background:${s.color}"></div>
-                   <div class="st-diff-name">${s.label}</div>
-                 </div>
-                 <div class="st-diff-count">${s.count}</div>
+        <div class="st-diff-bar-wrap" style="display: ${isDiffExpanded ? 'none' : 'flex'}">
+           ${segs.map(s => `<div class="st-diff-seg ${s.colorClass}" style="width:${s.pct}%"></div>`).join('')}
+        </div>
+
+        <div class="st-diff-list" style="display: ${isDiffExpanded ? 'flex' : 'none'}">
+           ${segs.map(s => `
+             <div class="st-diff-item" onclick="window.openDiffModal('${s.label}', '${s.colorClass}')">
+               <div style="display:flex;align-items:center">
+                 <div class="st-diff-dot" style="background:${s.color}"></div>
+                 <div class="st-diff-name">${s.label}</div>
                </div>
-             `).join('')}
-          </div>
-        `}
+               <div class="st-diff-count">${s.count}</div>
+             </div>
+           `).join('')}
+        </div>
       </div>
 
       <!-- ACTIVITY & XP -->
-      <div>
+      <div class="st-activity-section">
          <div class="st-collapsible-header">
            <div class="st-col-title">Активность</div>
          </div>
@@ -560,7 +645,7 @@ function renderStats() {
       </div>
 
       <!-- CATEGORIES -->
-      <div>
+      <div class="st-cat-section">
          <div class="st-collapsible-header" onclick="window.toggleCats()">
             <div class="st-col-title">Категории</div>
             <div class="st-col-arrow ${areCatsExpanded ? 'expanded' : ''}">▼</div>
@@ -578,8 +663,8 @@ function renderStats() {
               </div>
             `).join('')}
             
-            ${areCatsExpanded ? rest.map(c => `
-              <div class="st-cat-item">
+            ${rest.map(c => `
+              <div class="st-cat-item st-cat-item-hidden" style="display: ${areCatsExpanded ? 'block' : 'none'}">
                  <div class="st-cat-head">
                     <span>${c.category}</span>
                     <span>${c.percent}%</span>
@@ -588,10 +673,10 @@ function renderStats() {
                     <div class="st-cat-fill" style="width:${c.percent}%"></div>
                  </div>
               </div>
-            `).join('') : ''}
+            `).join('')}
             
-            ${(!areCatsExpanded && rest.length > 0) ? `
-              <div style="text-align:center; padding:10px; color:var(--st-prim); cursor:pointer" onclick="window.toggleCats()">
+            ${rest.length > 0 ? `
+              <div class="st-cat-more-btn" style="text-align:center; padding:10px; color:var(--st-prim); cursor:pointer; display:${areCatsExpanded ? 'none' : 'block'}" onclick="window.toggleCats()">
                  Показать ещё (${rest.length})
               </div>
             ` : ''}
@@ -599,7 +684,7 @@ function renderStats() {
       </div>
 
       <!-- ACHIEVEMENTS -->
-      <div>
+      <div class="st-ach-section">
          <div class="st-section-title" style="margin-bottom:16px;color:#fff;font-weight:600">Достижения</div>
          <div class="st-ach-grid">
             <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}">

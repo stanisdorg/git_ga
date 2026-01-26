@@ -2,7 +2,7 @@
 
 // Импортируем только функцию инициализации табов и карточек
 import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=17';
-import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=5';
+import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=6';
 
 // Функция для инициализации UI
 export function initUI() {
