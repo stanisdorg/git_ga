@@ -1,0 +1,208 @@
+{
+  "srsProgress": {
+    "брокеры?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434166473,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "брокеры?"
+    },
+    "kafka отличие партиций от топика": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434166707,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "kafka отличие партиций от топика"
+    },
+    "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434166982,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
+    },
+    "ci cd?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434167359,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "ci cd?"
+    },
+    "брокеры, кафка, как взаимодействовали сервисы?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434167629,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "брокеры, кафка, как взаимодействовали сервисы?"
+    },
+    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434167886,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
+    },
+    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434168139,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
+    },
+    "логи кафка": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434168394,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "логи кафка"
+    },
+    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434168670,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
+    },
+    "как отправлял сообщения в кафке ручками?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434168947,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "как отправлял сообщения в кафке ручками?"
+    },
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434169203,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?"
+    },
+    "Из чего состоит Kafka и как работает?": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769434169666,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 16,
+      "question": "Из чего состоит Kafka и как работает?"
+    }
+  },
+  "studyStats": {
+    "total": 12,
+    "timeSpent": 3926,
+    "points": 65
+  },
+  "studyStreak": {
+    "current": 1,
+    "best": 1,
+    "lastDate": "2026-01-26"
+  },
+  "dailyPoints": {
+    "2026-01-26": 65
+  },
+  "dailyBonusPoints": {
+    "2026-01-26": 0
+  },
+  "dailyDayBonusPoints": {
+    "2026-01-26": 5
+  },
+  "qaFavorites": [],
+  "studyAchievements": {
+    "firstSessionCompleted": true
+  },
+  "updatedAt": 1769434170676
+}

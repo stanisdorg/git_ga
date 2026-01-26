@@ -1,3 +1,5 @@
+import { syncWithServer } from './storage.js';
+
 // Read progress and stats from localStorage
 function readJSON(key, fallback = {}) {
   try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch { return fallback; }
@@ -80,6 +82,7 @@ export function checkAchievements() {
   if (!ach.nightOwl && nightOwl) ach.nightOwl = true;
 
   localStorage.setItem('studyAchievements', JSON.stringify(ach));
+  syncWithServer(); // Sync achievements to server
   return ach;
 }
 
@@ -161,7 +164,8 @@ export function getMetrics(allData) {
   const streak = getStudyStreak();
   const prog = getProgressMap();
   // Only count cards with repetitions > 0 as "studied"
-  const studiedCount = Object.values(prog).filter(p => p.repetitions > 0).length;
+  // Fixed: use lastReviewed to include cards with streak=0 (e.g. answered Hard)
+  const studiedCount = Object.values(prog).filter(p => p.lastReviewed).length;
   const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
   return {
     streakCurrent: streak.current || 0,

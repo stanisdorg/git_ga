@@ -1,136 +1,129 @@
 /**
- * @typedef {Object} ProgressRecord
- * @property {string} question - Unique identifier
- * @property {string} dueDate - ISO date string of next review
+ * @typedef {Object} SRSProgress
+ * @property {string} id - Unique identifier (question)
+ * @property {string} category
+ * @property {string} subcategory
  * @property {number} interval - Days until next review
- * @property {number} repetitions - Consecutive correct answers
- * @property {number} easeFactor - E-Factor (multiplier)
- * @property {number} history - Count of total attempts
- * @property {string} state - 'learning', 'review', 'relearning', 'mastered'
+ * @property {number} easeFactor - E-Factor (multiplier, default 2.5)
+ * @property {number} nextReviewDate - Timestamp of next review
+ * @property {number} repetitionCount - Total repetitions
+ * @property {number} streak - Consecutive correct answers
+ * @property {number} lastReviewDate - Timestamp of last review
+ * @property {Array<{date: number, quality: number}>} history - Review history
+ * @property {number} categoryMastery - 0-1, mastery in category
+ * @property {number} subcategoryMastery - 0-1, mastery in subcategory
  */
 
 /**
- * Calculates the next review schedule using a "PsychSRS" algorithm
- * tuned for a ~60 day mastery cycle with 2-10 repetitions per card.
+ * Calculates the next review interval using the "Adaptive Master Interval" algorithm.
+ * Based on modified SM-2.
  * 
- * @param {ProgressRecord | null} currentProgress
- * @param {0|1|2|3} grade - 0=Again, 1=Hard, 2=Good, 3=Easy
- * @returns {ProgressRecord}
+ * Quality Scale (mapped from UI):
+ * 0: Fail (Again)
+ * 1: Hard (Hard)
+ * 2: Delayed (mapped from Good if slow?) - NOT USED DIRECTLY FROM UI YET
+ * 3: Good (Good)
+ * 4: Perfect (Easy)
+ * 
+ * @param {SRSProgress} card
+ * @param {number} quality - 0-4
+ * @returns {SRSProgress} Updated card
+ */
+export function calculateNextInterval(card, quality) {
+    const now = Date.now();
+    
+    // Initialize defaults if missing
+    if (!card.easeFactor) card.easeFactor = 2.5;
+    if (!card.streak) card.streak = 0;
+    if (!card.interval) card.interval = 0;
+    if (!card.repetitionCount) card.repetitionCount = 0;
+    if (!card.history) card.history = [];
+
+    // Update history
+    card.history.push({ date: now, quality });
+    card.lastReviewDate = now;
+    card.repetitionCount++;
+
+    if (quality < 2) {
+        // Fail or Hard Fail
+        card.interval = 1; // Review tomorrow
+        card.streak = 0;
+        card.easeFactor = Math.max(1.3, card.easeFactor - 0.2);
+    } else {
+        // Success
+        card.streak++;
+        
+        if (card.streak === 1) {
+            card.interval = 1;
+        } else if (card.streak === 2) {
+            card.interval = 3;
+        } else {
+            // SM-2 Modified
+            card.interval = Math.round(card.interval * card.easeFactor);
+        }
+        
+        // Adjust Ease Factor
+        if (quality === 2) {
+            card.easeFactor = Math.max(1.3, card.easeFactor - 0.15);
+        } else if (quality === 3) {
+            // No change
+        } else if (quality === 4) {
+            card.easeFactor += 0.1;
+        }
+    }
+    
+    // Cap interval at 180 days
+    card.interval = Math.min(card.interval, 180);
+    
+    // Calculate next review date (start of day)
+    const nextDate = new Date(now);
+    nextDate.setDate(nextDate.getDate() + card.interval);
+    nextDate.setHours(4, 0, 0, 0); // 4 AM next day
+    card.nextReviewDate = nextDate.getTime();
+    
+    return card;
+}
+
+/**
+ * Adapter for existing codebase compatibility.
+ * Maps existing 'grade' (0-3) to 'quality' (0-4).
+ * 
+ * @param {Object} currentProgress 
+ * @param {number} grade 0=Again, 1=Hard, 2=Good, 3=Easy
  */
 export function calculateNextReview(currentProgress, grade) {
-    // Initial State
-    const now = new Date();
-    const progress = currentProgress || {
-        question: '', 
-        dueDate: now.toISOString(),
-        interval: 0,
-        repetitions: 0,
-        easeFactor: 2.5,
-        history: 0,
-        state: 'learning'
+    // Map grade 0-3 to quality 0-4
+    // 0 (Again) -> 0 (Fail)
+    // 1 (Hard) -> 1 (Hard/Struggle)
+    // 2 (Good) -> 3 (Good)
+    // 3 (Easy) -> 4 (Perfect)
+    const qualityMap = {
+        0: 0,
+        1: 1,
+        2: 3,
+        3: 4
+    };
+    const quality = qualityMap[grade];
+
+    // Ensure currentProgress has new structure fields
+    const card = {
+        ...currentProgress,
+        interval: currentProgress?.interval || 0,
+        easeFactor: currentProgress?.easeFactor || 2.5,
+        streak: currentProgress?.streak || (currentProgress?.repetitions || 0), // Approx migration
+        repetitionCount: currentProgress?.history || 0,
+        history: currentProgress?.historyArray || [] // Assuming we might want to store array
     };
 
-    let { interval, repetitions, easeFactor, history, state } = progress;
-    history = (history || 0) + 1;
+    const updated = calculateNextInterval(card, quality);
 
-    // Constants for 60-day mastery
-    const MIN_EASE = 1.3;
-    
-    // Logic Branching
-    if (grade === 0) {
-        // --- AGAIN (Forgot) ---
-        repetitions = 0;
-        interval = 0; // Review today/tomorrow
-        easeFactor = Math.max(MIN_EASE, easeFactor - 0.2);
-        state = 'relearning';
-    } else {
-        // --- SUCCESS (Hard, Good, Easy) ---
-        
-        // 1. Adjust Ease Factor
-        if (grade === 1) { // Hard
-            easeFactor -= 0.15;
-            state = 'learning'; // Keep in learning/review pressure
-        } else if (grade === 2) { // Good
-            // Stable
-        } else if (grade === 3) { // Easy
-            easeFactor += 0.15;
-        }
-        easeFactor = Math.max(MIN_EASE, easeFactor);
-
-        // 2. Calculate Interval
-        if (repetitions === 0) {
-            // First success
-            if (grade === 1) {
-                // Hard on new card: Keep in session, do not graduate
-                interval = 0;
-                // repetitions stays 0
-                state = 'learning';
-            } else {
-                // Good or Easy
-                interval = 1;
-                state = 'learning';
-                repetitions = 1; // Graduate to first step
-            }
-        } else {
-            // Repetitions > 0
-            if (repetitions === 1) {
-                // Second success
-                interval = grade === 1 ? 2 : (grade === 3 ? 4 : 3);
-                state = 'review';
-            } else {
-                // Subsequent reviews
-                if (grade === 1) {
-                    // Hard: Very slow growth (Anki-style x1.2), ignore Ease
-                    // This ensures "Hard" cards are seen much sooner than "Good" ones
-                    interval = Math.max(interval + 1, Math.floor(interval * 1.2));
-                } else {
-                    // Good (2) or Easy (3)
-                    let modifier = 1.0;
-                    if (grade === 3) modifier = 1.3; // Easy: grow faster (bonus)
-                    
-                    // "Psychological" Tweak for ~60 day course:
-                    // Damp growth slightly to ensure ~6-8 reps.
-                    // If user wants "more repetitions", we cap growth multiplier at 1.9
-                    const effectiveEase = Math.min(easeFactor, 1.9); 
-                    
-                    interval = Math.ceil(interval * effectiveEase * modifier);
-                }
-            }
-            repetitions++;
-        }
-
-        // 4. Mastery Check
-        // Increased threshold to ensure long-term retention
-        // Cards are "Mastered" only when interval exceeds 2 months
-        if (repetitions >= 12 || interval > 60) {
-            state = 'mastered';
-        }
-    }
-
-    // Fuzzing (prevent clumps)
-    if (interval > 4) {
-        const fuzz = Math.floor(interval * 0.05 * (Math.random() - 0.5));
-        interval += fuzz;
-    }
-
-    // Set Due Date
-    const nextDate = new Date();
-    if (interval === 0) {
-        nextDate.setMinutes(nextDate.getMinutes() + 10);
-    } else {
-        nextDate.setDate(nextDate.getDate() + interval);
-        // Snap to 4 AM
-        nextDate.setHours(4, 0, 0, 0);
-    }
-
+    // Return object compatible with existing storage expecting 'dueDate' ISO string
     return {
-        question: progress.question,
-        dueDate: nextDate.toISOString(),
-        interval,
-        repetitions,
-        easeFactor,
-        history,
-        state,
-        lastReviewed: new Date().toISOString()
+        ...updated,
+        dueDate: new Date(updated.nextReviewDate).toISOString(),
+        // Map back to existing fields for compatibility if needed
+        repetitions: updated.streak,
+        history: updated.repetitionCount,
+        state: updated.interval > 60 ? 'mastered' : (updated.interval > 20 ? 'review' : 'learning')
     };
 }

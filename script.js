@@ -382,8 +382,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Отобразить все карточки на старте
-    displaySearchResults(uniqueQaData, '');
+    // Отобразить все карточки на старте, если данные уже есть
+    if (uniqueQaData && uniqueQaData.length > 0) {
+        displaySearchResults(uniqueQaData, '');
+    } else {
+        // Если данные еще не загружены, ждем события
+        document.addEventListener('dataLoaded', () => {
+             displaySearchResults(uniqueQaData, '');
+        });
+    }
     
     // Обработчик нажатия Enter в поле поиска — всегда выполняет поиск и пишет в историю
     searchInput.addEventListener('keydown', function(event) {

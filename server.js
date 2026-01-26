@@ -130,6 +130,153 @@ const server = http.createServer((req, res) => {
   }
 
 
+  // Сохранение пользовательского прогресса
+  if (req.method === 'POST' && req.url === '/api/progress') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const progressPath = path.join(__dirname, 'data', 'user_progress.json');
+        
+        // Создаем папку data если нет
+        const dataDir = path.join(__dirname, 'data');
+        if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir);
+
+        // Делаем бэкап перед записью
+        try {
+          if (fs.existsSync(progressPath)) {
+             const backupPath = path.join(__dirname, 'data', 'user_progress.bak.json');
+             fs.copyFileSync(progressPath, backupPath);
+          }
+        } catch (err) {
+            console.error('Backup failed:', err);
+        }
+
+        fs.writeFile(progressPath, JSON.stringify(data, null, 2), 'utf-8', (err) => {
+          if (err) {
+            console.error('Failed to write progress:', err);
+            res.writeHead(500);
+            res.end(JSON.stringify({ ok: false }));
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        });
+      } catch (e) {
+        res.writeHead(400);
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // Загрузка пользовательского прогресса
+  if (req.method === 'GET' && req.url === '/api/progress') {
+    const progressPath = path.join(__dirname, 'data', 'user_progress.json');
+    if (fs.existsSync(progressPath)) {
+      fs.readFile(progressPath, 'utf-8', (err, content) => {
+        if (err) {
+          res.writeHead(500);
+          res.end(JSON.stringify({ ok: false }));
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(content);
+      });
+    } else {
+      // Если файла нет, возвращаем пустой объект, это нормально для первого запуска
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({}));
+    }
+    return;
+  }
+
+  // Helper for Trash
+  const getTrash = () => {
+    const p = path.join(__dirname, 'data', 'trash.json');
+    if (!fs.existsSync(p)) return [];
+    try { return JSON.parse(fs.readFileSync(p, 'utf-8')) || []; } catch { return []; }
+  };
+  const saveTrash = (items) => {
+    const p = path.join(__dirname, 'data', 'trash.json');
+    const dir = path.dirname(p);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(p, JSON.stringify(items, null, 2), 'utf-8');
+  };
+
+  // Trash: Move to trash
+  if (req.method === 'POST' && req.url === '/trash') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const items = data.items || [];
+        const trash = getTrash();
+        items.forEach(item => {
+            trash.push({
+                item,
+                deleted_at: new Date().toISOString(),
+                deleted_by: data.deleted_by || 'anonymous'
+            });
+        });
+        saveTrash(trash);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, trash_size: trash.length }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // Trash: Restore
+  if (req.method === 'POST' && req.url === '/restore') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const questions = new Set(data.questions || []);
+        let trash = getTrash();
+        const before = trash.length;
+        trash = trash.filter(t => !questions.has(t.item?.question));
+        saveTrash(trash);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, restored_count: before - trash.length }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // Trash: Delete Permanent
+  if (req.method === 'POST' && req.url === '/delete-permanent') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const questions = new Set(data.questions || []);
+        let trash = getTrash();
+        const before = trash.length;
+        trash = trash.filter(t => !questions.has(t.item?.question));
+        saveTrash(trash);
+        console.log(`[Trash] Permanently deleted ${before - trash.length} items`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, deleted_count: before - trash.length }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
   // Нормализуем URL
   // Декодируем URL для поддержки кириллических имен файлов
   let requestUrl;

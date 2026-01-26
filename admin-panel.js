@@ -1,6 +1,5 @@
 // Простейшая админ-панель: добавление новых карточек и управление overrides
 import { uniqueQaData } from './all-data.js';
-import { generateTestStats } from './admin-data-generator.js';
 
 export function initAdminPanel() {
   const params = new URLSearchParams(window.location.search);
@@ -42,7 +41,6 @@ export function initAdminPanel() {
       <button id="ap-clear-overrides" title="Сбросить overrides">Сбросить overrides</button>
       <button id="ap-clear-newitems" title="Сбросить новые карточки">Сбросить новые</button>
       <button id="ap-export-json" title="Экспорт текущих данных в JSON">Экспорт JSON</button>
-      <button id="ap-gen-stats" title="Сгенерировать тестовую статистику">Gen Stats</button>
     </div>
   `;
 
@@ -56,13 +54,6 @@ export function initAdminPanel() {
   const clearOverridesBtn = panel.querySelector('#ap-clear-overrides');
   const clearNewItemsBtn = panel.querySelector('#ap-clear-newitems');
   const exportBtn = panel.querySelector('#ap-export-json');
-  const genStatsBtn = panel.querySelector('#ap-gen-stats');
-
-  genStatsBtn.addEventListener('click', () => {
-     if (confirm('Сгенерировать тестовую статистику в SUPABASE за 6 месяцев? Это перезапишет данные в облаке для вашего пользователя.')) {
-         generateTestStats();
-     }
-   });
 
   addBtn.addEventListener('click', () => {
     const question = qEl.value.trim();

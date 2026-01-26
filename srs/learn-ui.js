@@ -1,8 +1,8 @@
 import { LearningSession } from './session.js';
-import { getDueCards, syncFavorite } from './storage.js';
-import { checkAchievements } from './stats-utils.js?v=2';
-import { syncDailyStats } from './storage.js';
-import { Scheduler } from './scheduler.js';
+import { getDueCards, syncFavorite, syncDailyStats, getProgressMap } from './storage.js';
+import { checkAchievements } from './stats-utils.js?v=3';
+import { Scheduler } from './scheduler.js?v=2';
+import { getTodaysSession } from './category-scheduler.js';
 
 // DOM Elements
 let container = null;
@@ -148,7 +148,7 @@ function handleKeydown(e) {
  * Starts a learning session with the given list of candidate questions.
  * @param {Array} candidateQuestions 
  */
-export function startLearnSession(candidateQuestions) {
+export function startLearnSession(candidateQuestions, options = {}) {
     initLearnUI(); // Ensure UI exists
     window.__lastCandidates = candidateQuestions;
 
@@ -173,7 +173,11 @@ export function startLearnSession(candidateQuestions) {
         }
     }
     if (infoEl) {
-        infoEl.textContent = `День ${status.dayNumber}/${status.totalDays} • Прогресс ${status.progressPercent}%`;
+        if (options.mode === 'cram') {
+             infoEl.textContent = `Режим тренировки • ${candidateQuestions.length} карт`;
+        } else {
+             infoEl.textContent = `День ${status.dayNumber}/${status.totalDays} • Прогресс ${status.progressPercent}%`;
+        }
     }
 
     // Initialize Session Timer UI
@@ -200,28 +204,47 @@ export function startLearnSession(candidateQuestions) {
     updateTimerDisplay();
     timerInterval = setInterval(updateTimerDisplay, 1000);
 
-    // Filter due cards
-    const dueCards = getDueCards(candidateQuestions);
-    
-    // Strategy:
-    // 1. All reviews are mandatory (dueCards where !isNew).
-    // 2. New cards are limited by daily goal + catchup, but capped to avoid burnout.
-    const reviews = dueCards.filter(c => !c.isNew);
-    let newCards = dueCards.filter(c => c.isNew);
-    
-    // Use calculated goal from Scheduler
-    // User request: Allow > 100% progress (up to 120%)
-    const baseGoal = status.dailyNewGoal;
-    const newLimit = Math.ceil(baseGoal * 1.20);
-    
-    if (newCards.length > newLimit) {
-        newCards = newCards.slice(0, newLimit);
+    let sessionCards = [];
+
+    if (options.mode === 'cram') {
+        // In cram mode, we take all candidates as they are
+        // Map them to the structure expected by session (add progress placeholder if needed)
+        const progMap = getProgressMap();
+        sessionCards = candidateQuestions.map(q => {
+             const p = progMap[q.question];
+             return {
+                 question: q.question,
+                 item: q,
+                 progress: p || null, // Use existing progress if available
+                 isNew: !p
+             };
+        });
+        // Shuffle
+        sessionCards.sort(() => Math.random() - 0.5);
+    } else {
+        // Standard SRS Logic
+        const dueCards = getDueCards(candidateQuestions);
+        
+        // Strategy:
+        // 1. All reviews are mandatory (dueCards where !isNew).
+        // 2. New cards are limited by daily goal + catchup, but capped to avoid burnout.
+        const reviews = dueCards.filter(c => !c.isNew);
+        let newCards = dueCards.filter(c => c.isNew);
+        
+        // Use calculated goal from Scheduler
+        // User request: Allow > 100% progress (up to 120%)
+        const baseGoal = status.dailyNewGoal;
+        const newLimit = Math.ceil(baseGoal * 1.20);
+        
+        if (newCards.length > newLimit) {
+            newCards = newCards.slice(0, newLimit);
+        }
+        
+        sessionCards = [...reviews, ...newCards];
     }
     
-    let sessionCards = [...reviews, ...newCards];
-    
-    // Safety cap for session length
-    const MAX_SESSION = 40; // Increased to accommodate larger blocks + reviews
+    // Safety cap for session length (except cram?)
+    const MAX_SESSION = options.mode === 'cram' ? 100 : 40; 
     if (sessionCards.length > MAX_SESSION) {
         sessionCards = sessionCards.slice(0, MAX_SESSION);
     }
@@ -401,6 +424,24 @@ function showStats(stats, results, total) {
                 startLearnSession(window.__lastCandidates);
             }
         });
+
+        // Enter key handler for Continue button
+        const enterHandler = (e) => {
+            if (e.key === 'Enter' && overlay.classList.contains('show')) {
+                e.preventDefault();
+                e.stopPropagation();
+                overlay.querySelector('#sum-continue').click();
+            }
+        };
+        document.addEventListener('keydown', enterHandler);
+
+        // Remove listener when overlay is removed
+        const originalRemove = overlay.remove.bind(overlay);
+        overlay.remove = () => {
+            document.removeEventListener('keydown', enterHandler);
+            originalRemove();
+        };
+
         overlay.querySelector('#sum-stats').addEventListener('click', async () => {
             overlay.classList.remove('show');
             window.__overlayActive = true;

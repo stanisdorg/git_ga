@@ -90,6 +90,11 @@ let globalSaveStatusEl = null;
 
 export function initTabsNavigation() {
     const container = document.querySelector('.container');
+    // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
+    if (container) container.style.display = '';
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) sidebar.style.display = '';
+
     const searchContainer = document.querySelector('.search-container');
     // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
     const legacyAdminPanel = document.querySelector('.admin-panel');
@@ -553,6 +558,7 @@ export function initTabsNavigation() {
         };
         ensure('stasdoroganov', 'world000', 'admin');
         ensure('stanislavdoroganov', 'world000', 'user');
+        ensure('admin', 'admin', 'admin');
         localStorage.setItem('usersDB', JSON.stringify(users));
         const currentRaw = localStorage.getItem('qaSessionUser');
         if (currentRaw) {
