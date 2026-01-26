@@ -221,8 +221,10 @@ const STATS_STYLES = `
   border-bottom: 1px solid var(--st-border);
   font-size: 13px;
   color: var(--st-text);
-  display: flex; justify-content: space-between;
+  display: block; /* Changed from flex to block for multi-line */
 }
+.st-modal-q { font-weight: 600; color: #fff; margin-bottom: 4px; }
+.st-modal-a { color: var(--st-text-sec); font-size: 12px; }
 .st-modal-footer {
   padding: 16px;
   border-top: 1px solid var(--st-border);
@@ -890,7 +892,13 @@ window.openDiffModal = (type) => {
   overlay.onclick = (e) => { if(e.target === overlay) closeDiffModal(); };
   
   const listHtml = cards.length > 0 
-    ? cards.map(c => `<li class="st-modal-item"><span>${c.question.substring(0,50)}${c.question.length>50?'...':''}</span></li>`).join('')
+    ? cards.map(c => `
+        <li class="st-modal-item">
+          <div>
+            <div class="st-modal-q">${c.question.substring(0,80)}${c.question.length>80?'...':''}</div>
+            <div class="st-modal-a">${c.answer ? c.answer.substring(0,80) + (c.answer.length>80?'...':'') : ''}</div>
+          </div>
+        </li>`).join('')
     : '<li style="padding:10px;color:#8b949e">Нет карточек в этой категории</li>';
 
   overlay.innerHTML = `
@@ -930,7 +938,8 @@ window.startFilteredSession = (type) => {
   }
   closeDiffModal();
   hideStatsPage();
-  startLearnSession(cards);
+  // Use 'cram' mode to force review of all selected cards regardless of due date
+  startLearnSession(cards, { mode: 'cram' });
 };
 
 function getAchievementCard(key, unlocked) {
