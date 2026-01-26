@@ -150,6 +150,11 @@ const STATS_STYLES = `
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
+.st-diff-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
 .st-diff-card {
   background: var(--st-surf-h); /* Lighter bg inside block */
   border: 1px solid var(--st-border);
@@ -157,7 +162,16 @@ const STATS_STYLES = `
   padding: 12px;
   position: relative;
   overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
 }
+.st-diff-card.interactive {
+  cursor: pointer;
+}
+.st-diff-card.interactive:hover {
+  transform: translateY(-2px);
+  border-color: var(--st-text-sec);
+}
+
 .st-diff-card::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
 }
@@ -165,15 +179,70 @@ const STATS_STYLES = `
 .st-diff-card.orange::before { background: var(--st-prim); }
 .st-diff-card.green::before { background: var(--st-acc-green); }
 .st-diff-card.blue::before { background: var(--st-acc-blue); }
+.st-diff-card.yellow::before { background: var(--st-acc-gold); }
 
 .st-diff-title { font-size: 11px; font-weight: 600; margin-bottom: 6px; }
 .st-diff-card.red .st-diff-title { color: var(--st-acc-red); }
 .st-diff-card.orange .st-diff-title { color: var(--st-prim); }
 .st-diff-card.green .st-diff-title { color: var(--st-acc-green); }
 .st-diff-card.blue .st-diff-title { color: var(--st-acc-blue); }
+/* yellow title styled inline or generic */
 
-.st-diff-val { font-size: 18px; font-weight: 700; color: #fff; }
-.st-diff-sub { font-size: 10px; color: var(--st-text-sec); }
+/* Modal */
+.st-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 2100;
+  display: flex; justify-content: center; align-items: center;
+}
+.st-modal {
+  background: var(--st-bg);
+  border: 1px solid var(--st-border);
+  border-radius: 8px;
+  width: 90%; max-width: 500px;
+  max-height: 80vh;
+  display: flex; flex-direction: column;
+}
+.st-modal-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--st-border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.st-modal-title { font-size: 16px; font-weight: 600; color: #fff; }
+.st-modal-close { background: none; border: none; color: var(--st-text-sec); cursor: pointer; font-size: 20px; }
+.st-modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+.st-modal-list { list-style: none; padding: 0; margin: 0; }
+.st-modal-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--st-border);
+  font-size: 13px;
+  color: var(--st-text);
+  display: flex; justify-content: space-between;
+}
+.st-modal-footer {
+  padding: 16px;
+  border-top: 1px solid var(--st-border);
+  display: flex; justify-content: flex-end;
+}
+.st-btn-primary {
+  background: #238636; color: #fff; border: 1px solid rgba(240,246,252,0.1);
+  padding: 6px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;
+}
+.st-btn-primary:hover { background: #2ea043; }
+
+@media (max-width: 800px) {
+  .st-info-grid, .st-forecast-grid, .st-diff-grid, .st-cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .st-diff-grid-5 { grid-template-columns: repeat(3, 1fr); } /* 3 cols on tablet */
+  .st-ach-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .st-info-grid, .st-forecast-grid, .st-diff-grid, .st-cat-grid, .st-ach-row { grid-template-columns: 1fr; }
+  .st-diff-grid-5 { grid-template-columns: repeat(2, 1fr); } /* 2 cols on mobile */
+}
 
 /* Simulator (Block) */
 .st-sim-desc { font-size: 12px; color: var(--st-text-sec); margin-bottom: 20px; }
@@ -528,6 +597,10 @@ function renderStats() {
   // Simulator initial state
   const simEf = 2.5;
 
+  // Favorites
+  const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+  const favCount = favs.length;
+
   const html = `
     <div class="st-wrapper">
       <!-- Header -->
@@ -608,22 +681,26 @@ function renderStats() {
       <!-- Difficulty -->
       <div class="st-block">
          <div class="st-section-title">Сложность карточек (Распределение EF)</div>
-         <div class="st-diff-grid">
-            <div class="st-diff-card red">
+         <div class="st-diff-grid-5">
+            <div class="st-diff-card red interactive" onclick="openDiffModal('veryHard')">
                <div class="st-diff-title">Очень трудные (&lt; 1.6)</div>
                <div class="st-diff-val">${efDistribution.buckets[0].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[0].percent}%)</span></div>
             </div>
-            <div class="st-diff-card orange">
+            <div class="st-diff-card orange interactive" onclick="openDiffModal('hard')">
                <div class="st-diff-title">Трудные (1.6-2.1)</div>
                <div class="st-diff-val">${efDistribution.buckets[1].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[1].percent}%)</span></div>
             </div>
-            <div class="st-diff-card green">
+            <div class="st-diff-card green interactive" onclick="openDiffModal('standard')">
                <div class="st-diff-title">Стандарт (2.1-2.6)</div>
                <div class="st-diff-val">${efDistribution.buckets[2].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[2].percent}%)</span></div>
             </div>
-            <div class="st-diff-card blue">
+            <div class="st-diff-card blue interactive" onclick="openDiffModal('easy')">
                <div class="st-diff-title">Легкие (&gt; 2.6)</div>
                <div class="st-diff-val">${efDistribution.buckets[3].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[3].percent}%)</span></div>
+            </div>
+            <div class="st-diff-card yellow interactive" onclick="openDiffModal('fav')">
+               <div class="st-diff-title" style="color:#d29922">Избранное</div>
+               <div class="st-diff-val">${favCount}</div>
             </div>
          </div>
       </div>
@@ -650,17 +727,17 @@ function renderStats() {
                <span>Снова</span>
                <span>-0.2 EF</span>
             </button>
-            <button class="st-sim-btn b-hard" onclick="updateSimVal(-0.2)">
+            <button class="st-sim-btn b-hard" onclick="updateSimVal(-0.1)">
                <span>Трудно</span>
-               <span>-0.2 EF</span>
+               <span>-0.1 EF</span>
             </button>
-            <button class="st-sim-btn b-good" onclick="updateSimVal(0)">
+            <button class="st-sim-btn b-good" onclick="updateSimVal(0.1)">
                <span>Хорошо</span>
-               <span>0 EF</span>
-            </button>
-            <button class="st-sim-btn b-easy" onclick="updateSimVal(0.1)">
-               <span>Легко</span>
                <span>+0.1 EF</span>
+            </button>
+            <button class="st-sim-btn b-easy" onclick="updateSimVal(0.2)">
+               <span>Легко</span>
+               <span>+0.2 EF</span>
             </button>
          </div>
          <div class="st-sim-note">
@@ -771,6 +848,90 @@ function renderStats() {
     window.addEventListener('resize', updateBubble);
   }
 }
+
+// Modal Logic
+window.openDiffModal = (type) => {
+  const modalId = 'st-diff-modal';
+  let modal = document.getElementById(modalId);
+  if (modal) modal.remove();
+
+  const progressMap = getProgressMap();
+  const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+  
+  let cards = [];
+  let title = '';
+
+  if (type === 'fav') {
+    title = 'Избранное';
+    cards = uniqueQaData.filter(c => favs.includes(c.question));
+  } else {
+    // EF Based
+    cards = uniqueQaData.filter(c => {
+      const p = progressMap[c.question];
+      const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
+      
+      if (type === 'veryHard') return ef < 1.6;
+      if (type === 'hard') return ef >= 1.6 && ef < 2.1;
+      if (type === 'standard') return ef >= 2.1 && ef < 2.6;
+      if (type === 'easy') return ef >= 2.6;
+      return false;
+    });
+    
+    if (type === 'veryHard') title = 'Очень трудные';
+    if (type === 'hard') title = 'Трудные';
+    if (type === 'standard') title = 'Стандартные';
+    if (type === 'easy') title = 'Легкие';
+  }
+
+  // Render Modal
+  const overlay = document.createElement('div');
+  overlay.id = modalId;
+  overlay.className = 'st-modal-overlay';
+  overlay.onclick = (e) => { if(e.target === overlay) closeDiffModal(); };
+  
+  const listHtml = cards.length > 0 
+    ? cards.map(c => `<li class="st-modal-item"><span>${c.question.substring(0,50)}${c.question.length>50?'...':''}</span></li>`).join('')
+    : '<li style="padding:10px;color:#8b949e">Нет карточек в этой категории</li>';
+
+  overlay.innerHTML = `
+    <div class="st-modal">
+      <div class="st-modal-header">
+        <div class="st-modal-title">${title} (${cards.length})</div>
+        <button class="st-modal-close" onclick="closeDiffModal()">✕</button>
+      </div>
+      <div class="st-modal-body">
+         <ul class="st-modal-list">
+           ${listHtml}
+         </ul>
+      </div>
+      <div class="st-modal-footer">
+         <button class="st-btn-primary" onclick="startFilteredSession('${type}')">Учить эти карточки</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  // Save filtered cards temporarily for session start
+  window._tempSessionCards = cards;
+};
+
+window.closeDiffModal = () => {
+  const m = document.getElementById('st-diff-modal');
+  if (m) m.remove();
+  window._tempSessionCards = null;
+};
+
+window.startFilteredSession = (type) => {
+  const cards = window._tempSessionCards;
+  if (!cards || cards.length === 0) {
+    alert('Нет карточек для изучения');
+    return;
+  }
+  closeDiffModal();
+  hideStatsPage();
+  startLearnSession(cards);
+};
 
 function getAchievementCard(key, unlocked) {
    const meta = {
