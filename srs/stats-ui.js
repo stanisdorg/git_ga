@@ -532,15 +532,45 @@ function renderStats() {
   const finishDateStr = finishDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const progressMap = getProgressMap();
-  const efDist = buildEfDistribution(progressMap);
   const xpSeries = getXpSeries(currentXpMode);
 
   const lvlProgressPct = Math.max(0, Math.min(1, level.progress || 0)) * 100;
   const remainingXp = Math.max(0, Math.round(level.remaining || 0));
 
-  // Difficulty Bar Segments
-  const totalEf = efDist.reduce((acc, curr) => acc + curr.count, 0) || 1;
-  const segs = efDist.map(d => ({ ...d, pct: (d.count / totalEf) * 100 }));
+  const todayStr = new Date().toISOString().split('T')[0];
+  let cardsDoneToday = 0;
+  
+  // Calculate Difficulty Distribution
+   const segs = [
+      { label: 'Очень трудные', min: 0, max: 1.6, count: 0, color: 'var(--st-diff-hard)', colorClass: 'st-diff-seg-hard' },
+      { label: 'Трудные', min: 1.6, max: 2.1, count: 0, color: 'var(--st-diff-high)', colorClass: 'st-diff-seg-high' },
+      { label: 'Стандарт', min: 2.1, max: 2.6, count: 0, color: 'var(--st-diff-std)', colorClass: 'st-diff-seg-std' },
+      { label: 'Легкие', min: 2.6, max: 999, count: 0, color: 'var(--st-diff-easy)', colorClass: 'st-diff-seg-easy' }
+   ];
+  
+  let totalRated = 0;
+  uniqueQaData.forEach(q => {
+     const p = progressMap[q.question];
+     if (!p) return;
+     
+     // Count today's activity
+     if (p.lastReviewed === todayStr) {
+         cardsDoneToday++;
+     }
+
+     // Use default EF=2.5 if missing (fallback for new/learning cards)
+     const ef = p.easeFactor || 2.5;
+     
+     if (ef < 1.6) segs[0].count++;
+     else if (ef < 2.1) segs[1].count++;
+     else if (ef < 2.6) segs[2].count++;
+     else segs[3].count++;
+     totalRated++;
+  });
+  
+  segs.forEach(s => {
+     s.pct = totalRated > 0 ? (s.count / totalRated) * 100 : 0;
+  });
 
   const html = `
     <div class="st-wrapper">
@@ -562,6 +592,7 @@ function renderStats() {
           <div class="st-hero-stats">
             <div class="st-hero-stat"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent} дн</div>
             <div class="st-hero-stat"><span class="st-hero-icon">⏱</span> ${planMins} мин</div>
+            <div class="st-hero-stat"><span class="st-hero-icon">📚</span> ${cardsDoneToday} карт</div>
           </div>
         </div>
         

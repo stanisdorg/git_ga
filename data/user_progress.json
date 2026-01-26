@@ -1,11 +1,43 @@
 {
-  "srsProgress": {},
-  "studyStats": {},
-  "studyStreak": {},
-  "dailyPoints": {},
-  "dailyBonusPoints": {},
-  "dailyDayBonusPoints": {},
+  "srsProgress": {
+    "undefined": {
+      "interval": 1,
+      "easeFactor": 2.3,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769453572133,
+      "nextReviewDate": 1769475600000,
+      "dueDate": "2026-01-27T01:00:00.000Z",
+      "repetitions": 0,
+      "state": "learning",
+      "lastReviewed": "2026-01-26",
+      "lastReviewedTime": 21
+    }
+  },
+  "studyStats": {
+    "total": 12,
+    "timeSpent": 5486,
+    "points": 85,
+    "correct": 4
+  },
+  "studyStreak": {
+    "current": 1,
+    "best": 1,
+    "lastDate": "2026-01-26"
+  },
+  "dailyPoints": {
+    "2026-01-26": 85
+  },
+  "dailyBonusPoints": {
+    "2026-01-26": 0
+  },
+  "dailyDayBonusPoints": {
+    "2026-01-26": 5
+  },
   "qaFavorites": [],
-  "studyAchievements": {},
-  "updatedAt": 1769453370714
+  "studyAchievements": {
+    "firstSessionCompleted": true
+  },
+  "updatedAt": 1769453584154
 }
