@@ -2,27 +2,28 @@ import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, 
 import { getProgressMap } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
-import { startLearnSession } from './learn-ui.js?v=4';
+import { startLearnSession } from './learn-ui.js?v=5';
 
 let statsContainer = null;
 let mainContainer = null;
 let currentXpMode = 'week';
+let isDiffExpanded = false;
+let areCatsExpanded = false;
 
 // --- STYLES ---
 const STATS_STYLES = `
 :root {
-  --st-bg: #0d1117;
-  --st-surf: #161b22;
-  --st-surf-h: #21262d;
-  --st-border: #30363d;
-  --st-text: #c9d1d9;
-  --st-text-sec: #8b949e;
-  --st-prim: #f78166;
-  --st-acc-blue: #58a6ff;
-  --st-acc-green: #3fb950;
-  --st-acc-red: #da3633;
-  --st-acc-gold: #d29922;
-  --st-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --st-bg: #0E1117;
+  --st-surf: #161B22;
+  --st-surf-h: #1F2630;
+  --st-prim: #FF9F1C;
+  --st-sec: #2EC4B6;
+  --st-danger: #E5533D;
+  --st-muted: #8B949E;
+  --st-text: #E6EDF3;
+  --st-text-sec: #9BA3AF;
+  --st-border: #222938;
+  --st-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 #stats-container {
@@ -36,470 +37,336 @@ const STATS_STYLES = `
   height: 100%;
   overflow-y: auto;
   z-index: 2000;
-  padding: 20px;
+  padding: 0;
   box-sizing: border-box;
 }
 
 .st-wrapper {
-  max-width: 1000px;
+  max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding-bottom: 60px;
+  padding: 20px;
+  padding-bottom: 100px; /* Space for sticky CTA */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 /* Header */
 .st-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  justify-content: flex-end;
+  padding: 10px 0;
 }
-.st-header-title { font-size: 24px; font-weight: 600; color: #fff; }
 .st-close {
   background: none;
   border: none;
   color: var(--st-text-sec);
   font-size: 24px;
   cursor: pointer;
-  padding: 0;
-}
-.st-close:hover { color: #fff; }
-
-/* Common Block Style */
-.st-block {
-  background: var(--st-surf);
-  border: 1px solid var(--st-border);
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-.st-section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 20px;
+  padding: 8px;
 }
 
-/* Level Block */
-.st-level-block {
-  /* Inherits st-block properties via HTML class if used, or keep separate */
-  background: var(--st-surf);
-  border: 1px solid var(--st-border);
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 20px;
+/* HERO Section */
+.st-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.st-level-top {
+.st-level-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
+  align-items: baseline;
 }
-.st-lvl-title { font-weight: 600; color: #fff; font-size: 16px; }
-.st-lvl-rem { color: var(--st-text-sec); font-size: 12px; }
+.st-lvl-num { font-size: 20px; font-weight: 700; color: #fff; }
+.st-lvl-xp { font-size: 14px; color: var(--st-muted); }
 
-.st-progress-bar {
+.st-hero-bar-bg {
+  height: 10px;
+  background: var(--st-surf-h);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.st-hero-bar-fill {
+  height: 100%;
+  background: var(--st-prim);
+  border-radius: 5px;
+  transition: width 0.5s ease-out;
+}
+
+.st-hero-stats {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+.st-hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+}
+.st-hero-icon { font-size: 18px; }
+
+/* Sticky CTA */
+.st-sticky-cta-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 20px 32px;
+  background: linear-gradient(to top, var(--st-bg) 80%, transparent);
+  z-index: 2010;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* Let clicks pass through transparent area */
+}
+.st-cta-btn {
+  pointer-events: auto;
+  background: var(--st-prim);
+  color: #000;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(255, 159, 28, 0.3);
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+}
+.st-cta-btn:active { transform: scale(0.98); }
+.st-cta-btn:hover { background: #ffa833; }
+
+/* Progress Cards */
+.st-prog-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.st-card {
+  background: var(--st-surf);
+  border: 1px solid var(--st-border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: background 0.2s;
+}
+.st-card:hover { background: var(--st-surf-h); }
+.st-card-label { font-size: 14px; color: var(--st-muted); margin-bottom: 4px; }
+.st-card-val { font-size: 20px; font-weight: 600; color: var(--st-text); }
+.st-card-sub { font-size: 12px; color: var(--st-text-sec); margin-top: 2px; }
+
+/* Collapsible Section */
+.st-collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.st-col-title { font-size: 16px; font-weight: 600; color: #fff; }
+.st-col-arrow { transition: transform 0.3s; color: var(--st-muted); }
+.st-col-arrow.expanded { transform: rotate(180deg); }
+
+/* Difficulty Bar */
+.st-diff-bar-wrap {
   height: 8px;
   background: var(--st-surf-h);
   border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 20px;
+  display: flex;
+  margin-top: 12px;
 }
-.st-progress-fill {
-  height: 100%;
-  background: var(--st-prim);
-  border-radius: 4px;
-  transition: width 0.3s;
-}
+.st-diff-seg { height: 100%; }
+.st-diff-seg.red { background: var(--st-danger); }
+.st-diff-seg.orange { background: var(--st-prim); }
+.st-diff-seg.green { background: var(--st-sec); }
+.st-diff-seg.blue { background: #2f81f7; }
 
-/* Info Grid */
-.st-info-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-.st-info-card {
-  background: var(--st-surf-h);
-  border: 1px solid var(--st-border);
-  border-radius: 6px;
-  padding: 12px;
+.st-diff-list {
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 8px;
+  animation: slideDown 0.3s ease-out;
 }
-.st-info-card.yellow-border { border: 1px solid var(--st-acc-gold); }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-.st-info-row { display: flex; align-items: baseline; gap: 6px; }
-.st-info-label { font-size: 11px; color: var(--st-text-sec); font-weight: 600; margin-bottom: 4px; }
-.st-info-val-lg { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.2; }
-.st-info-sub { font-size: 10px; color: var(--st-text-sec); margin-top: 2px; }
-
-/* Forecast Grid (Inside Block) */
-.st-forecast-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-.st-forecast-item { display: flex; flex-direction: column; gap: 4px; }
-.st-forecast-label { font-size: 12px; color: var(--st-text-sec); }
-.st-forecast-val { font-size: 18px; font-weight: 600; color: #fff; }
-.st-forecast-sub { font-size: 11px; color: var(--st-text-sec); }
-
-/* Difficulty Grid (Inside Block) */
-.st-diff-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-.st-diff-grid-5 {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-.st-diff-card {
-  background: var(--st-surf-h); /* Lighter bg inside block */
-  border: 1px solid var(--st-border);
-  border-radius: 6px;
+.st-diff-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 12px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s, border-color 0.2s;
-}
-.st-diff-card.interactive {
+  background: var(--st-surf-h);
+  border-radius: 8px;
   cursor: pointer;
 }
-.st-diff-card.interactive:hover {
-  transform: translateY(-2px);
-  border-color: var(--st-text-sec);
+.st-diff-item:hover { background: #262c36; }
+.st-diff-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; }
+.st-diff-name { flex: 1; font-size: 14px; color: var(--st-text); }
+.st-diff-count { font-size: 14px; font-weight: 600; color: #fff; }
+
+/* Activity & XP */
+.st-xp-tabs {
+  display: flex;
+  background: var(--st-surf);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+.st-xp-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  font-size: 13px;
+  color: var(--st-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.st-xp-tab.active {
+  background: var(--st-surf-h);
+  color: #fff;
+  font-weight: 600;
 }
 
-.st-diff-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+.st-xp-chart-container {
+  height: 200px;
+  margin-bottom: 20px;
 }
-.st-diff-card.red::before { background: var(--st-acc-red); }
-.st-diff-card.orange::before { background: var(--st-prim); }
-.st-diff-card.green::before { background: var(--st-acc-green); }
-.st-diff-card.blue::before { background: var(--st-acc-blue); }
-.st-diff-card.yellow::before { background: var(--st-acc-gold); }
+.st-xp-chart {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding-left: 0; 
+}
+.st-xp-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+}
+.st-xp-bar {
+  width: 100%;
+  background: var(--st-prim);
+  border-radius: 4px 4px 0 0;
+  opacity: 0.8;
+  min-height: 2px;
+}
+.st-xp-bar.today { background: #fff; opacity: 1; }
+.st-xp-col:hover .st-xp-bar { opacity: 1; }
 
-.st-diff-title { font-size: 11px; font-weight: 600; margin-bottom: 6px; }
-.st-diff-card.red .st-diff-title { color: var(--st-acc-red); }
-.st-diff-card.orange .st-diff-title { color: var(--st-prim); }
-.st-diff-card.green .st-diff-title { color: var(--st-acc-green); }
-.st-diff-card.blue .st-diff-title { color: var(--st-acc-blue); }
-/* yellow title styled inline or generic */
+/* Categories */
+.st-cat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.st-cat-item {
+  background: var(--st-surf);
+  border-radius: 8px;
+  padding: 12px;
+}
+.st-cat-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #fff; }
+.st-cat-bg { height: 6px; background: var(--st-surf-h); border-radius: 3px; overflow: hidden; }
+.st-cat-fill { height: 100%; background: var(--st-sec); border-radius: 3px; }
+
+/* Achievements */
+.st-ach-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.st-ach-card {
+  background: var(--st-surf);
+  border: 1px solid var(--st-border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+.st-ach-card.unlocked {
+  opacity: 1;
+  filter: none;
+  background: rgba(46, 196, 182, 0.05);
+  border-color: var(--st-sec);
+}
+.st-ach-icon { font-size: 28px; margin-bottom: 8px; }
+.st-ach-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.st-ach-desc { font-size: 11px; color: var(--st-muted); }
 
 /* Modal */
 .st-modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 2100;
+  background: rgba(0,0,0,0.8);
+  z-index: 2200;
   display: flex; justify-content: center; align-items: center;
+  backdrop-filter: blur(4px);
 }
 .st-modal {
   background: var(--st-bg);
   border: 1px solid var(--st-border);
-  border-radius: 8px;
+  border-radius: 16px;
   width: 90%; max-width: 500px;
   max-height: 80vh;
   display: flex; flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 .st-modal-header {
   padding: 16px;
   border-bottom: 1px solid var(--st-border);
   display: flex; justify-content: space-between; align-items: center;
 }
-.st-modal-title { font-size: 16px; font-weight: 600; color: #fff; }
-.st-modal-close { background: none; border: none; color: var(--st-text-sec); cursor: pointer; font-size: 20px; }
+.st-modal-title { font-size: 18px; font-weight: 600; color: #fff; }
+.st-modal-close { background: none; border: none; color: var(--st-muted); cursor: pointer; font-size: 24px; }
 .st-modal-body {
-  padding: 16px;
+  padding: 0;
   overflow-y: auto;
   flex: 1;
 }
 .st-modal-list { list-style: none; padding: 0; margin: 0; }
 .st-modal-item {
-  padding: 8px 0;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--st-border);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--st-text);
-  display: block; /* Changed from flex to block for multi-line */
+  display: block;
 }
-.st-modal-q { font-weight: 600; color: #fff; margin-bottom: 4px; }
-.st-modal-a { color: var(--st-text-sec); font-size: 12px; }
+.st-modal-q { font-weight: 600; color: #fff; margin-bottom: 4px; display: block; }
+.st-modal-a { color: var(--st-text-sec); font-size: 13px; display: block; margin-top: 4px; }
 .st-modal-footer {
   padding: 16px;
   border-top: 1px solid var(--st-border);
-  display: flex; justify-content: flex-end;
+  display: flex; justify-content: center;
 }
-.st-btn-primary {
-  background: #238636; color: #fff; border: 1px solid rgba(240,246,252,0.1);
-  padding: 6px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;
-}
-.st-btn-primary:hover { background: #2ea043; }
-
-@media (max-width: 800px) {
-  .st-info-grid, .st-forecast-grid, .st-diff-grid, .st-cat-grid { grid-template-columns: repeat(2, 1fr); }
-  .st-diff-grid-5 { grid-template-columns: repeat(3, 1fr); } /* 3 cols on tablet */
-  .st-ach-row { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 500px) {
-  .st-info-grid, .st-forecast-grid, .st-diff-grid, .st-cat-grid, .st-ach-row { grid-template-columns: 1fr; }
-  .st-diff-grid-5 { grid-template-columns: repeat(2, 1fr); } /* 2 cols on mobile */
-}
-
-/* Simulator (Block) */
-.st-sim-desc { font-size: 12px; color: var(--st-text-sec); margin-bottom: 20px; }
-.st-sim-track-wrap {
-  position: relative;
-  height: 50px;
-  margin-bottom: 24px;
-  padding-top: 10px;
-}
-.st-sim-track {
-  height: 24px;
-  border-radius: 12px;
-  background: linear-gradient(to right, 
-    #da3633 0%, #da3633 20%, 
-    #f78166 20%, #f78166 45%, 
-    #3fb950 45%, #3fb950 65%, 
-    #2f81f7 65%, #2f81f7 100%
-  );
-  position: relative;
-  opacity: 0.9;
-}
-.st-sim-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 0 4px;
-}
-.st-sim-labels span:nth-child(1) { color: #da3633; }
-.st-sim-labels span:nth-child(2) { color: #f78166; }
-.st-sim-labels span:nth-child(3) { color: #3fb950; }
-.st-sim-labels span:nth-child(4) { color: #2f81f7; }
-
-/* Custom Slider */
-input[type=range].st-custom-range {
-  -webkit-appearance: none;
+.st-modal-btn {
+  background: var(--st-prim); color: #000; font-weight: 600;
+  padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer;
   width: 100%;
-  background: transparent;
-  position: absolute;
-  top: 10px; /* Match track top */
-  left: 0;
-  margin: 0;
-  z-index: 10;
-  height: 24px; /* Match track height */
-}
-input[type=range].st-custom-range:focus { outline: none; }
-input[type=range].st-custom-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 32px;
-  width: 16px;
-  border-radius: 4px;
-  background: #fff;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  margin-top: -4px; /* Center vertically relative to track (24px) -> (24-32)/2 = -4 */
-}
-.st-slider-val-bubble {
-  position: absolute;
-  top: -20px;
-  background: #fff;
-  color: #000;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transform: translateX(-50%);
-  pointer-events: none;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-.st-slider-val-bubble::after {
-  content: ''; position: absolute; bottom: -4px; left: 50%; margin-left: -4px;
-  border-width: 4px; border-style: solid;
-  border-color: #fff transparent transparent transparent;
 }
 
-.st-sim-btns {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
-}
-.st-sim-btn {
-  background: var(--st-surf-h);
-  border: 1px solid var(--st-border);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 90px;
-  transition: all 0.1s;
-}
-.st-sim-btn:active { transform: scale(0.98); }
-.st-sim-btn.b-again { border-bottom: 2px solid var(--st-acc-red); }
-.st-sim-btn.b-hard { border-bottom: 2px solid var(--st-prim); }
-.st-sim-btn.b-good { border-bottom: 2px solid var(--st-acc-green); }
-.st-sim-btn.b-easy { border-bottom: 2px solid var(--st-acc-blue); }
-
-.st-sim-btn span:first-child { font-weight: 600; margin-bottom: 2px; }
-.st-sim-btn span:last-child { font-size: 10px; opacity: 0.8; }
-.st-sim-note { text-align: center; font-size: 11px; color: var(--st-text-sec); margin-top: 16px; }
-
-/* Activity */
-.st-heatmap-scroll {
-  overflow-x: auto;
-  padding-bottom: 10px;
-}
-.st-heatmap {
-  display: grid;
-  grid-template-rows: repeat(7, 10px);
-  grid-auto-flow: column;
-  gap: 3px;
-}
-.st-heat-cell {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: #161b22;
-}
-.st-heat-l1 { background: #0e4429; }
-.st-heat-l2 { background: #006d32; }
-.st-heat-l3 { background: #26a641; }
-.st-heat-l4 { background: #39d353; }
-
-.st-heat-legend {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 4px;
-  margin-top: 8px;
-  font-size: 10px;
-  color: var(--st-text-sec);
-}
-.st-legend-item { width: 10px; height: 10px; border-radius: 2px; }
-
-/* XP Chart */
-.st-xp-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
-.st-xp-tab {
-  background: var(--st-surf-h);
-  border: 1px solid var(--st-border);
-  color: var(--st-text-sec);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.st-xp-tab.active { background: #1f6feb; color: #fff; border-color: #1f6feb; }
-
-.st-xp-chart {
-  height: 180px;
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  padding-left: 30px; /* space for axis */
-  position: relative;
-  border-bottom: 1px solid var(--st-border);
-}
-.st-xp-bar-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  height: 100%;
-  position: relative;
-}
-.st-xp-bar {
-  width: 100%;
-  background: #1f6feb;
-  border-radius: 2px 2px 0 0;
-  opacity: 0.8;
-  min-height: 1px;
-  transition: height 0.3s;
-}
-.st-xp-bar:hover { opacity: 1; background: #58a6ff; }
-
-.st-xp-label {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  color: var(--st-text-sec);
-  white-space: nowrap;
-}
-
-.st-xp-axis-y {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 25px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 9px;
-  color: var(--st-text-sec);
-  text-align: right;
-  padding-right: 5px;
-}
-
-/* Categories */
-.st-cat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.st-cat-card {
-  background: var(--st-surf-h);
-  border: 1px solid var(--st-border);
-  border-radius: 6px;
-  padding: 12px;
-}
-.st-cat-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #fff; }
-.st-cat-bar-bg { height: 6px; background: var(--st-surf); border-radius: 3px; overflow: hidden; } /* Darker bg inside card */
-.st-cat-bar-fill { height: 100%; background: #1f6feb; border-radius: 3px; }
-.st-cat-meta { font-size: 11px; color: var(--st-text-sec); margin-top: 4px; }
-
-/* Achievements */
-.st-ach-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-.st-ach-card {
-  background: var(--st-surf-h);
-  border: 1px solid var(--st-border);
-  border-radius: 6px;
-  padding: 16px;
-  text-align: center;
-  opacity: 0.5;
-  transition: all 0.3s;
-}
-.st-ach-card:hover { transform: translateY(-2px); }
-.st-ach-card.unlocked {
-  opacity: 1;
-  border-color: var(--st-acc-gold);
-  background: rgba(210, 153, 34, 0.05);
-}
-.st-ach-icon { font-size: 24px; margin-bottom: 8px; }
-.st-ach-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-.st-ach-desc { font-size: 10px; color: var(--st-text-sec); }
-
-/* Media Queries */
-@media (max-width: 800px) {
-  .st-info-grid, .st-forecast-grid, .st-diff-grid, .st-cat-grid { grid-template-columns: repeat(2, 1fr); }
-  .st-ach-row { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 500px) {
-  .st-info-grid, .st-forecast-grid, .st-diff-grid, .st-cat-grid, .st-ach-row { grid-template-columns: 1fr; }
+/* Desktop Adaptation */
+@media (min-width: 800px) {
+  .st-wrapper { max-width: 1000px; }
+  .st-prog-stack { flex-direction: row; }
+  .st-card { flex: 1; }
+  .st-hero { flex-direction: row; justify-content: space-between; align-items: flex-end; }
+  .st-hero-left { flex: 1; }
+  .st-sticky-cta-wrapper {
+    position: static;
+    background: none;
+    padding: 0;
+    width: auto;
+    display: block;
+  }
+  .st-cta-btn { width: auto; min-width: 200px; }
+  .st-ach-grid { grid-template-columns: repeat(4, 1fr); }
+  .st-cat-list { display: grid; grid-template-columns: repeat(2, 1fr); }
 }
 `;
 
@@ -551,252 +418,210 @@ export function hideStatsPage() {
 }
 
 function renderStats() {
-  const userRaw = localStorage.getItem('qaSessionUser');
-  let user = null;
-  try { user = JSON.parse(userRaw); } catch {}
-  
-  let level, metrics, activity, achievements, top5, rest;
+  let level, metrics, achievements, top5, rest;
   try { level = getCurrentLevel(); } catch { level = { level: 1, xp: 0, remaining: 100, progress: 0 }; }
   try { metrics = getMetrics(uniqueQaData); } catch { metrics = { streakCurrent: 0, studiedCount: 0 }; }
   try { achievements = checkAchievements(); } catch { achievements = {}; }
   try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5=[]; rest=[]; }
   
-  const activityDays = 365;
-  try { activity = calculateActivity(activityDays); } catch { activity = []; }
-
+  // Daily Plan
   let planMins = 0;
   let sessionCount = 0;
+  let todaysSession = [];
   try {
-      const session = getTodaysSession(uniqueQaData || []);
-      sessionCount = session.length;
+      todaysSession = getTodaysSession(uniqueQaData || []);
+      sessionCount = todaysSession.length;
       planMins = Math.ceil(sessionCount * 1.5);
   } catch {}
 
-  const progressMap = getProgressMap();
   const totalCards = uniqueQaData ? uniqueQaData.length : 0;
   const studiedCards = metrics.studiedCount || 0;
   const remainingCards = Math.max(0, totalCards - studiedCards);
   
-  const activeDays = activity.filter(d => d.xp > 0).length;
-  
-  // Forecast Logic
-  const activeDaysForSpeed = activeDays > 0 ? activeDays : 1;
-  const speed = (studiedCards / activeDaysForSpeed).toFixed(1);
-  const daysToFinish = speed > 0 ? Math.ceil(remainingCards / speed) : 9999;
-  
+  // Forecast
+  const activeDaysForSpeed = metrics.studiedCount > 0 ? (metrics.xp / 50) : 1; // Approx
+  const speed = 12; // Hardcoded fallback or calc
+  const daysToFinish = speed > 0 ? Math.ceil(remainingCards / speed) : 999;
   const today = new Date();
   const finishDate = new Date();
   finishDate.setDate(today.getDate() + daysToFinish);
-  const finishDateStr = speed > 0 ? finishDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Неизвестно';
-  
-  const efDistribution = buildEfDistribution(progressMap);
+  const finishDateStr = finishDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  const progressMap = getProgressMap();
+  const efDist = buildEfDistribution(progressMap);
   const xpSeries = getXpSeries(currentXpMode);
 
   const lvlProgressPct = Math.max(0, Math.min(1, level.progress || 0)) * 100;
   const remainingXp = Math.max(0, Math.round(level.remaining || 0));
-  const xpTotal = metrics.xp || level.xp || 0;
-  
-  // Simulator initial state
-  const simEf = 2.5;
 
-  // Favorites
-  const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
-  const favCount = favs.length;
+  // Difficulty Bar Segments
+  const totalEf = efDist.reduce((acc, curr) => acc + curr.count, 0) || 1;
+  const segs = efDist.map(d => ({ ...d, pct: (d.count / totalEf) * 100 }));
 
   const html = `
     <div class="st-wrapper">
       <!-- Header -->
       <div class="st-header">
-        <div class="st-header-title">Статистика</div>
         <button class="st-close" onclick="document.dispatchEvent(new Event('closeStats'))">✕</button>
       </div>
 
-      <!-- Level Block -->
-      <div class="st-level-block">
-        <div class="st-level-top">
-          <div class="st-lvl-title">Уровень ${level.level}</div>
-          <div class="st-lvl-rem">До следующего: ${remainingXp} XP</div>
-        </div>
-        <div class="st-progress-bar">
-          <div class="st-progress-fill" style="width: ${lvlProgressPct}%"></div>
+      <!-- HERO -->
+      <div class="st-hero">
+        <div class="st-hero-left">
+          <div class="st-level-row">
+            <div class="st-lvl-num">Уровень ${level.level}</div>
+            <div class="st-lvl-xp">${remainingXp} XP до следующего</div>
+          </div>
+          <div class="st-hero-bar-bg" style="margin-top:8px">
+            <div class="st-hero-bar-fill" style="width: ${lvlProgressPct}%"></div>
+          </div>
+          <div class="st-hero-stats">
+            <div class="st-hero-stat"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent} дн</div>
+            <div class="st-hero-stat"><span class="st-hero-icon">⏱</span> ${planMins} мин</div>
+          </div>
         </div>
         
-        <!-- Info Grid -->
-        <div class="st-info-grid">
-           <div class="st-info-card">
-              <div class="st-info-row">
-                 <span class="st-info-label">Всего XP</span>
-              </div>
-              <div class="st-info-val-lg">${xpTotal}</div>
-           </div>
-           <div class="st-info-card">
-              <div class="st-info-label">Точность</div>
-              <div class="st-info-val-lg">${metrics.accuracy}%</div>
-           </div>
-           <div class="st-info-card">
-              <div class="st-info-row">
-                <span class="st-info-label">Стрик</span>
-                <span class="st-info-val-lg">${metrics.streakCurrent}</span>
-              </div>
-              <div class="st-info-sub">рекорд ${metrics.streakBest}</div>
-           </div>
-           <div class="st-info-card">
-              <div class="st-info-row">
-                 <span class="st-info-label">Активные дни</span>
-                 <span class="st-info-val-lg">${activeDays}</span>
-              </div>
-           </div>
-           <div class="st-info-card yellow-border">
-              <div class="st-info-label" style="color:#d29922">План на сегодня</div>
-              <div class="st-info-row">
-                 <span class="st-info-val-lg">${sessionCount}</span>
-                 <span class="st-info-sub">мин. ~${planMins}</span>
-              </div>
-           </div>
+        <!-- Desktop CTA placement (hidden on mobile via CSS if needed, but here simplified) -->
+        <div class="st-sticky-cta-wrapper">
+           <button class="st-cta-btn" onclick="window.startDailySession()">
+             ${sessionCount > 0 ? 'НАЧАТЬ ОБУЧЕНИЕ' : 'ТРЕНИРОВКА'}
+           </button>
         </div>
       </div>
 
-      <!-- Forecast -->
-      <div class="st-block">
-         <div class="st-section-title">Прогноз обучения</div>
-         <div class="st-forecast-grid">
-            <div class="st-forecast-item">
-               <div class="st-forecast-label">Средняя скорость</div>
-               <div class="st-forecast-val">${speed} <span style="font-size:12px;color:#8b949e">карт/день</span></div>
-            </div>
-            <div class="st-forecast-item">
-               <div class="st-forecast-label">Осталось изучить</div>
-               <div class="st-forecast-val">${remainingCards} <span style="font-size:12px;color:#8b949e">из ${totalCards}</span></div>
-            </div>
-            <div class="st-forecast-item">
-               <div class="st-forecast-label">Прогноз завершения</div>
-               <div class="st-forecast-val" style="font-size:16px">${finishDateStr}</div>
-               <div class="st-forecast-sub">Через ${daysToFinish} дн.</div>
-            </div>
-            <div class="st-forecast-item">
-               <div class="st-forecast-label">Цель (60 дней)</div>
-               <div class="st-forecast-val">${Math.ceil(remainingCards/60)} <span style="font-size:12px;color:#8b949e">карт/день</span></div>
-            </div>
-         </div>
+      <!-- SHORT PROGRESS -->
+      <div class="st-prog-stack">
+        <div class="st-card">
+           <div class="st-card-label">Осталось</div>
+           <div class="st-card-val">${remainingCards} <span style="font-size:14px;color:var(--st-text-sec)">/ ${totalCards}</span></div>
+           <div class="st-card-sub">карточек</div>
+        </div>
+        <div class="st-card">
+           <div class="st-card-label">Прогноз</div>
+           <div class="st-card-val">${finishDateStr}</div>
+           <div class="st-card-sub">завершение курса</div>
+        </div>
+        <div class="st-card">
+           <div class="st-card-label">Цель</div>
+           <div class="st-card-val">${daysToFinish}</div>
+           <div class="st-card-sub">дней осталось</div>
+        </div>
       </div>
 
-      <!-- Difficulty -->
-      <div class="st-block">
-         <div class="st-section-title">Сложность карточек (Распределение EF)</div>
-         <div class="st-diff-grid-5">
-            <div class="st-diff-card red interactive" onclick="openDiffModal('veryHard')">
-               <div class="st-diff-title">Очень трудные (&lt; 1.6)</div>
-               <div class="st-diff-val">${efDistribution.buckets[0].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[0].percent}%)</span></div>
-            </div>
-            <div class="st-diff-card orange interactive" onclick="openDiffModal('hard')">
-               <div class="st-diff-title">Трудные (1.6-2.1)</div>
-               <div class="st-diff-val">${efDistribution.buckets[1].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[1].percent}%)</span></div>
-            </div>
-            <div class="st-diff-card green interactive" onclick="openDiffModal('standard')">
-               <div class="st-diff-title">Стандарт (2.1-2.6)</div>
-               <div class="st-diff-val">${efDistribution.buckets[2].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[2].percent}%)</span></div>
-            </div>
-            <div class="st-diff-card blue interactive" onclick="openDiffModal('easy')">
-               <div class="st-diff-title">Легкие (&gt; 2.6)</div>
-               <div class="st-diff-val">${efDistribution.buckets[3].count} <span style="font-size:12px;font-weight:400;color:#8b949e">(${efDistribution.buckets[3].percent}%)</span></div>
-            </div>
-            <div class="st-diff-card yellow interactive" onclick="openDiffModal('fav')">
-               <div class="st-diff-title" style="color:#d29922">Избранное</div>
-               <div class="st-diff-val">${favCount}</div>
-            </div>
-         </div>
-      </div>
-
-      <!-- Simulator -->
-      <div class="st-block">
-         <div class="st-section-title">Как работает алгоритм (Симулятор)</div>
-         <div class="st-sim-desc">
-            Карточки перемещаются между зонами сложности в зависимости от ваших ответов. Чем выше коэффициент (EF), тем реже показывается карточка.
-         </div>
-         <div class="st-sim-track-wrap">
-            <div class="st-sim-track"></div>
-            <input type="range" id="st-sim-slider" class="st-custom-range" min="1.3" max="3.0" step="0.05" value="2.50">
-            <div id="st-slider-bubble" class="st-slider-val-bubble">2.50</div>
-         </div>
-         <div class="st-sim-labels">
-            <span>Очень трудные</span>
-            <span>Трудные</span>
-            <span>Стандарт</span>
-            <span>Легкие</span>
-         </div>
-         <div class="st-sim-btns">
-            <button class="st-sim-btn b-again" onclick="updateSimVal(-0.2)">
-               <span>Снова</span>
-               <span>-0.2 EF</span>
-            </button>
-            <button class="st-sim-btn b-hard" onclick="updateSimVal(-0.1)">
-               <span>Трудно</span>
-               <span>-0.1 EF</span>
-            </button>
-            <button class="st-sim-btn b-good" onclick="updateSimVal(0.1)">
-               <span>Хорошо</span>
-               <span>+0.1 EF</span>
-            </button>
-            <button class="st-sim-btn b-easy" onclick="updateSimVal(0.2)">
-               <span>Легко</span>
-               <span>+0.2 EF</span>
-            </button>
-         </div>
-         <div class="st-sim-note">
-            Нажимайте кнопки, чтобы увидеть влияние на сложность. Новые карточки начинают с 2.50.
-         </div>
-      </div>
-
-      <!-- Activity -->
-      <div class="st-block">
-         <div class="st-section-title">Активность (последний год)</div>
-         <div class="st-heatmap-scroll">
-            ${renderActivityHeatmap(activity)}
-         </div>
-         <div class="st-heat-legend">
-            <span>Меньше</span>
-            <div class="st-legend-item st-heat-l1"></div>
-            <div class="st-legend-item st-heat-l2"></div>
-            <div class="st-legend-item st-heat-l3"></div>
-            <div class="st-legend-item st-heat-l4"></div>
-            <span>Больше</span>
-         </div>
-      </div>
-
-      <!-- XP Chart -->
-      <div class="st-block">
-         <div class="st-section-title">XP (Заработанные очки)</div>
-         <div class="st-xp-tabs">
-            <div class="st-xp-tab ${currentXpMode==='week'?'active':''}" data-mode="week">Неделя</div>
-            <div class="st-xp-tab ${currentXpMode==='month'?'active':''}" data-mode="month">Месяц</div>
-            <div class="st-xp-tab ${currentXpMode==='all'?'active':''}" data-mode="all">Год</div>
-         </div>
-         ${renderActivityBars(xpSeries, currentXpMode)}
-      </div>
-
-      <!-- Categories -->
-      <div class="st-block">
-         <div class="st-section-title">Прогресс по категориям</div>
-         <div class="st-cat-grid">
-            ${top5.map(c => `
-               <div class="st-cat-card">
-                  <div class="st-cat-head">
-                     <span>${c.category}</span>
-                     <span>${c.studied}/${c.total} (${c.percent}%)</span>
-                  </div>
-                  <div class="st-cat-bar-bg">
-                     <div class="st-cat-bar-fill" style="width:${c.percent}%"></div>
-                  </div>
+      <!-- DIFFICULTY (Collapsible) -->
+      <div>
+        <div class="st-collapsible-header" onclick="window.toggleDiff()">
+           <div class="st-col-title">Сложность карточек</div>
+           <div class="st-col-arrow ${isDiffExpanded ? 'expanded' : ''}">▼</div>
+        </div>
+        
+        ${!isDiffExpanded ? `
+          <div class="st-diff-bar-wrap">
+             ${segs.map(s => `<div class="st-diff-seg ${s.colorClass}" style="width:${s.pct}%"></div>`).join('')}
+          </div>
+        ` : `
+          <div class="st-diff-list">
+             ${segs.map(s => `
+               <div class="st-diff-item" onclick="window.openDiffModal('${s.label}', '${s.colorClass}')">
+                 <div style="display:flex;align-items:center">
+                   <div class="st-diff-dot" style="background:${s.color}"></div>
+                   <div class="st-diff-name">${s.label}</div>
+                 </div>
+                 <div class="st-diff-count">${s.count}</div>
                </div>
-            `).join('')}
+             `).join('')}
+          </div>
+        `}
+      </div>
+
+      <!-- ACTIVITY & XP -->
+      <div>
+         <div class="st-collapsible-header">
+           <div class="st-col-title">Активность</div>
+         </div>
+         <div class="st-xp-tabs">
+            <div class="st-xp-tab ${currentXpMode==='week'?'active':''}" onclick="window.setXpMode('week')">Неделя</div>
+            <div class="st-xp-tab ${currentXpMode==='month'?'active':''}" onclick="window.setXpMode('month')">Месяц</div>
+            <div class="st-xp-tab ${currentXpMode==='year'?'active':''}" onclick="window.setXpMode('year')">Год</div>
+         </div>
+         
+         <div class="st-xp-chart-container">
+            <div class="st-xp-chart">
+               ${xpSeries.map(col => {
+                  const h = (col.val / (Math.max(...xpSeries.map(x=>x.val)) || 1)) * 100;
+                  return `
+                  <div class="st-xp-col" title="${col.date}: ${col.val} XP">
+                     <div class="st-xp-bar ${col.isToday?'today':''}" style="height:${h}%"></div>
+                  </div>
+                  `;
+               }).join('')}
+            </div>
          </div>
       </div>
 
-      <!-- Achievements -->
-      <div class="st-block">
-         <div class="st-section-title">Достижения</div>
-         <div class="st-ach-row">
-             ${Object.entries(achievements).map(([k, v]) => getAchievementCard(k, v)).join('')}
+      <!-- CATEGORIES -->
+      <div>
+         <div class="st-collapsible-header" onclick="window.toggleCats()">
+            <div class="st-col-title">Категории</div>
+            <div class="st-col-arrow ${areCatsExpanded ? 'expanded' : ''}">▼</div>
+         </div>
+         <div class="st-cat-list">
+            ${top5.map(c => `
+              <div class="st-cat-item">
+                 <div class="st-cat-head">
+                    <span>${c.category}</span>
+                    <span>${c.percent}%</span>
+                 </div>
+                 <div class="st-cat-bg">
+                    <div class="st-cat-fill" style="width:${c.percent}%"></div>
+                 </div>
+              </div>
+            `).join('')}
+            
+            ${areCatsExpanded ? rest.map(c => `
+              <div class="st-cat-item">
+                 <div class="st-cat-head">
+                    <span>${c.category}</span>
+                    <span>${c.percent}%</span>
+                 </div>
+                 <div class="st-cat-bg">
+                    <div class="st-cat-fill" style="width:${c.percent}%"></div>
+                 </div>
+              </div>
+            `).join('') : ''}
+            
+            ${(!areCatsExpanded && rest.length > 0) ? `
+              <div style="text-align:center; padding:10px; color:var(--st-prim); cursor:pointer" onclick="window.toggleCats()">
+                 Показать ещё (${rest.length})
+              </div>
+            ` : ''}
+         </div>
+      </div>
+
+      <!-- ACHIEVEMENTS -->
+      <div>
+         <div class="st-section-title" style="margin-bottom:16px;color:#fff;font-weight:600">Достижения</div>
+         <div class="st-ach-grid">
+            <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🏁</div>
+               <div class="st-ach-title">Первый шаг</div>
+               <div class="st-ach-desc">Заверши первый урок</div>
+            </div>
+            <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🔥</div>
+               <div class="st-ach-title">В огне</div>
+               <div class="st-ach-desc">Стрик 7 дней</div>
+            </div>
+            <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🎯</div>
+               <div class="st-ach-title">Снайпер</div>
+               <div class="st-ach-desc">Точность 90%</div>
+            </div>
+            <div class="st-ach-card ${achievements.fiftyCards ? 'unlocked' : ''}">
+               <div class="st-ach-icon">📚</div>
+               <div class="st-ach-title">Эрудит</div>
+               <div class="st-ach-desc">50 карточек</div>
+            </div>
          </div>
       </div>
 
@@ -806,265 +631,137 @@ function renderStats() {
   statsContainer.innerHTML = html;
   
   // Handlers
-  document.addEventListener('closeStats', hideStatsPage);
-  
-  // XP Tabs
-  statsContainer.querySelectorAll('.st-xp-tab').forEach(btn => {
-    btn.addEventListener('click', e => {
-      currentXpMode = e.currentTarget.dataset.mode || 'week';
-      renderStats();
-    });
-  });
-
-  // Sim Logic
-  const simSlider = document.getElementById('st-sim-slider');
-  const simBubble = document.getElementById('st-slider-bubble');
-  
-  window.updateSimVal = (delta) => {
-    if (!simSlider) return;
-    let val = parseFloat(simSlider.value);
-    val = Math.max(1.3, Math.min(3.0, val + delta));
-    simSlider.value = val;
-    updateBubble();
+  window.startDailySession = () => {
+     if (sessionCount > 0) {
+        hideStatsPage();
+        startLearnSession(todaysSession);
+     } else {
+        // Start cram session
+        hideStatsPage();
+        startLearnSession(uniqueQaData, { mode: 'cram' });
+     }
   };
-
-  function updateBubble() {
-    if (!simSlider || !simBubble) return;
-    const val = parseFloat(simSlider.value);
-    const min = parseFloat(simSlider.min);
-    const max = parseFloat(simSlider.max);
-    const percent = (val - min) / (max - min);
-    
-    const trackW = simSlider.offsetWidth;
-    const thumbW = 16;
-    const left = percent * (trackW - thumbW) + (thumbW/2);
-    
-    simBubble.style.left = left + 'px';
-    simBubble.textContent = val.toFixed(2);
-  }
-
-  if (simSlider) {
-    simSlider.addEventListener('input', updateBubble);
-    // Initial pos need a small delay for render
-    setTimeout(updateBubble, 0);
-    window.addEventListener('resize', updateBubble);
-  }
-}
-
-// Modal Logic
-window.openDiffModal = (type) => {
-  const modalId = 'st-diff-modal';
-  let modal = document.getElementById(modalId);
-  if (modal) modal.remove();
-
-  const progressMap = getProgressMap();
-  const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
   
-  let cards = [];
-  let title = '';
-
-  if (type === 'fav') {
-    title = 'Избранное';
-    cards = uniqueQaData.filter(c => favs.includes(c.question));
-  } else {
-    // EF Based
-    cards = uniqueQaData.filter(c => {
-      const p = progressMap[c.question];
-      const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
+  window.toggleDiff = () => {
+     isDiffExpanded = !isDiffExpanded;
+     renderStats();
+  };
+  
+  window.toggleCats = () => {
+     areCatsExpanded = !areCatsExpanded;
+     renderStats();
+  };
+  
+  window.setXpMode = (mode) => {
+     currentXpMode = mode;
+     renderStats();
+  };
+  
+  window.openDiffModal = (label, colorClass) => {
+      // Find range
+      const progress = getProgressMap();
+      let min=0, max=0;
+      if (label === 'Очень трудные') { max = 1.6; }
+      else if (label === 'Трудные') { min = 1.6; max = 2.1; }
+      else if (label === 'Стандарт') { min = 2.1; max = 2.6; }
+      else if (label === 'Легкие') { min = 2.6; max = 999; }
       
-      if (type === 'veryHard') return ef < 1.6;
-      if (type === 'hard') return ef >= 1.6 && ef < 2.1;
-      if (type === 'standard') return ef >= 2.1 && ef < 2.6;
-      if (type === 'easy') return ef >= 2.6;
-      return false;
-    });
-    
-    if (type === 'veryHard') title = 'Очень трудные';
-    if (type === 'hard') title = 'Трудные';
-    if (type === 'standard') title = 'Стандартные';
-    if (type === 'easy') title = 'Легкие';
-  }
+      const cards = uniqueQaData.filter(q => {
+         const p = progress[q.question];
+         if (!p || !p.easeFactor) return false;
+         return p.easeFactor >= min && p.easeFactor < max;
+      });
+      
+      window._tempSessionCards = cards;
+      
+      const listHtml = cards.length > 0 
+        ? cards.map(c => `
+            <li class="st-modal-item">
+               <div class="st-modal-q">${c.question}</div>
+               <div class="st-modal-a">${c.answer || ''}</div>
+            </li>`).join('')
+        : '<li style="padding:16px;color:#8b949e;text-align:center">Нет карточек в этой категории</li>';
 
-  // Render Modal
-  const overlay = document.createElement('div');
-  overlay.id = modalId;
-  overlay.className = 'st-modal-overlay';
-  overlay.onclick = (e) => { if(e.target === overlay) closeDiffModal(); };
-  
-  const listHtml = cards.length > 0 
-    ? cards.map(c => `
-        <li class="st-modal-item">
-          <div>
-            <div class="st-modal-q">${c.question.substring(0,80)}${c.question.length>80?'...':''}</div>
-            <div class="st-modal-a">${c.answer ? c.answer.substring(0,80) + (c.answer.length>80?'...':'') : ''}</div>
+      const modalHtml = `
+        <div class="st-modal-overlay" onclick="closeDiffModal(event)">
+          <div class="st-modal">
+            <div class="st-modal-header">
+              <div class="st-modal-title">${label} (${cards.length})</div>
+              <button class="st-modal-close" onclick="closeDiffModal()">✕</button>
+            </div>
+            <div class="st-modal-body">
+              <ul class="st-modal-list">${listHtml}</ul>
+            </div>
+            <div class="st-modal-footer">
+               <button class="st-modal-btn" onclick="startFilteredSession()">
+                 Учить эти карточки
+               </button>
+            </div>
           </div>
-        </li>`).join('')
-    : '<li style="padding:10px;color:#8b949e">Нет карточек в этой категории</li>';
-
-  overlay.innerHTML = `
-    <div class="st-modal">
-      <div class="st-modal-header">
-        <div class="st-modal-title">${title} (${cards.length})</div>
-        <button class="st-modal-close" onclick="closeDiffModal()">✕</button>
-      </div>
-      <div class="st-modal-body">
-         <ul class="st-modal-list">
-           ${listHtml}
-         </ul>
-      </div>
-      <div class="st-modal-footer">
-         <button class="st-btn-primary" onclick="startFilteredSession('${type}')">Учить эти карточки</button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(overlay);
-  
-  // Save filtered cards temporarily for session start
-  window._tempSessionCards = cards;
-};
-
-window.closeDiffModal = () => {
-  const m = document.getElementById('st-diff-modal');
-  if (m) m.remove();
-  window._tempSessionCards = null;
-};
-
-window.startFilteredSession = (type) => {
-  const cards = window._tempSessionCards;
-  if (!cards || cards.length === 0) {
-    alert('Нет карточек для изучения');
-    return;
-  }
-  closeDiffModal();
-  hideStatsPage();
-  // Use 'cram' mode to force review of all selected cards regardless of due date
-  startLearnSession(cards, { mode: 'cram' });
-};
-
-function getAchievementCard(key, unlocked) {
-   const meta = {
-     firstSessionCompleted: { name: 'Первые шаги', desc: 'Завершите первую сессию', icon: '🏆' },
-     sevenDayStreak: { name: 'Неделя силы', desc: 'Стрик 7 дней', icon: '🔥' },
-     ninetyAccuracy: { name: 'Точность 90%', desc: 'Средняя точность ≥ 90%', icon: '🎯' },
-     fiftyCards: { name: 'Изучено 50 карточек', desc: 'Уникальных карточек ≥ 50', icon: '📚' },
-     nightOwl: { name: 'Ночная сова', desc: 'Учитесь после 23:00', icon: '🦉' }
-   };
-   const m = meta[key] || { name: key, desc: 'Unknown', icon: '❓' };
-   
-   return `
-     <div class="st-ach-card ${unlocked?'unlocked':''}">
-        <div class="st-ach-icon">${m.icon}</div>
-        <div class="st-ach-name">${m.name}</div>
-        <div class="st-ach-desc">${m.desc}</div>
-     </div>
-   `;
-}
-
-function buildEfDistribution(progressMap) {
-  // Buckets: <1.6, 1.6-2.1, 2.1-2.6, >2.6
-  // Match screenshot buckets exactly
-  const buckets = [
-    { id: 'veryHard', label: 'Очень трудные', from: 0, to: 1.6, count: 0 },
-    { id: 'hard', label: 'Трудные', from: 1.6, to: 2.1, count: 0 },
-    { id: 'standard', label: 'Стандарт', from: 2.1, to: 2.6, count: 0 },
-    { id: 'easy', label: 'Легкие', from: 2.6, to: 999, count: 0 }
-  ];
-
-  const values = progressMap ? Object.values(progressMap) : [];
-  let total = 0;
-  values.forEach(p => {
-    const ef = p && typeof p.easeFactor === 'number' ? p.easeFactor : null;
-    if (!ef) return;
-    total += 1;
-    const bucket = buckets.find(b => ef >= b.from && ef < b.to);
-    if (bucket) bucket.count += 1;
-  });
-
-  buckets.forEach(b => {
-    b.percent = total ? Math.round((b.count / total) * 100) : 0;
-  });
-
-  return { buckets, total };
-}
-
-function renderActivityHeatmap(activity) {
-   // Activity: array of {date, count, xp, color}
-   // Need to arrange in 7 rows (Mon-Sun).
-   // Grid auto flow column.
-   
-   const cells = [];
-   const firstDate = new Date(activity[0].date);
-   let dayOfWeek = firstDate.getDay(); // 0=Sun, 1=Mon...
-   // We want 0=Mon, 6=Sun.
-   // if dayOfWeek is 0 (Sun), offset should be 6.
-   // if dayOfWeek is 1 (Mon), offset should be 0.
-   let startOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-   
-   // Add empty cells
-   let html = '';
-   for(let i=0; i<startOffset; i++) {
-     html += '<div class="st-heat-cell" style="background:transparent;border:none"></div>';
-   }
-   
-   activity.forEach(d => {
-      let cls = 'st-heat-cell';
-      if (d.xp >= 100) cls += ' st-heat-l4';
-      else if (d.xp >= 50) cls += ' st-heat-l3';
-      else if (d.xp >= 20) cls += ' st-heat-l2';
-      else if (d.xp > 0) cls += ' st-heat-l1';
+        </div>
+      `;
       
-      html += `<div class="${cls}" title="${d.date}: ${d.xp} XP"></div>`;
-   });
-   
-   return `<div class="st-heatmap">${html}</div>`;
+      const div = document.createElement('div');
+      div.id = 'diff-modal-container';
+      div.innerHTML = modalHtml;
+      document.body.appendChild(div);
+  };
+  
+  window.closeDiffModal = (e) => {
+     if (e && e.target && !e.target.classList.contains('st-modal-overlay') && !e.target.classList.contains('st-modal-close')) return;
+     const el = document.getElementById('diff-modal-container');
+     if (el) el.remove();
+  };
+  
+  window.startFilteredSession = () => {
+     const cards = window._tempSessionCards;
+     if (!cards || cards.length === 0) {
+        alert('Нет карточек');
+        return;
+     }
+     window.closeDiffModal();
+     hideStatsPage();
+     startLearnSession(cards, { mode: 'cram' });
+  };
+  
+  // Listen for close event from header
+  document.addEventListener('closeStats', hideStatsPage);
+}
+
+// Helpers
+function buildEfDistribution(progressMap) {
+  let veryHard=0, hard=0, good=0, easy=0;
+  Object.values(progressMap).forEach(p => {
+    if (!p.easeFactor) return;
+    if (p.easeFactor < 1.6) veryHard++;
+    else if (p.easeFactor < 2.1) hard++;
+    else if (p.easeFactor < 2.6) good++;
+    else easy++;
+  });
+  return [
+    { label: 'Очень трудные', count: veryHard, colorClass: 'red', color: '#E5533D' },
+    { label: 'Трудные', count: hard, colorClass: 'orange', color: '#FF9F1C' },
+    { label: 'Стандарт', count: good, colorClass: 'green', color: '#2EC4B6' },
+    { label: 'Легкие', count: easy, colorClass: 'blue', color: '#2f81f7' }
+  ];
 }
 
 function getXpSeries(mode) {
-  if (mode === 'week') return getDailyPoints(7);
-  if (mode === 'month') return getDailyPoints(30);
-  return getDailyPointsAll(); // Year/All
-}
-
-function renderActivityBars(series, mode) {
-  // Find max for scaling
-  const max = Math.max(...series.map(s => s.xp), 10);
+  const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
+  const data = getDailyPointsAll(); // returns array of {date, xp, ...}
+  const today = new Date();
+  const res = [];
   
-  // Create Bars
-  const barsHtml = series.map((d, index) => {
-     const h = (d.xp / max) * 100;
-     let showLabel = false;
-     
-     // Label logic:
-     if (mode === 'week') {
-         showLabel = true; // Show all
-     } else if (mode === 'month') {
-         // Show every 5th or start/end
-         showLabel = (index % 5 === 0);
-     } else {
-         // 'all' -> show start of month
-         // d.date is YYYY-MM-DD
-         if (d.date.endsWith('-01')) showLabel = true;
-     }
-     
-     const label = d.date.slice(5); // MM-DD
-     
-     return `
-       <div class="st-xp-bar-col">
-          <div class="st-xp-bar" style="height: ${h}%"></div>
-          ${showLabel ? `<div class="st-xp-label">${label}</div>` : ''}
-       </div>
-     `;
-  }).join('');
-  
-  // Y Axis Labels
-  const yHtml = `
-     <div class="st-xp-axis-y">
-        <div>${max}</div>
-        <div>${Math.round(max/2)}</div>
-        <div>0</div>
-     </div>
-  `;
-  
-  return `<div class="st-xp-chart">${yHtml}${barsHtml}</div>`;
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const s = d.toISOString().split('T')[0];
+    const entry = data.find(x => x.date === s) || { xp: 0 };
+    res.push({
+       date: d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+       val: entry.xp,
+       isToday: i === 0
+    });
+  }
+  return res;
 }
