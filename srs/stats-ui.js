@@ -2,7 +2,7 @@ import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, 
 import { getProgressMap, syncFavorite } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
-import { startLearnSession } from './learn-ui.js?v=29';
+import { startLearnSession } from './learn-ui.js?v=30';
 
 let statsContainer = null;
 let mainContainer = null;
@@ -657,7 +657,7 @@ function renderStats() {
         <div class="st-collapsible-header" onclick="window.toggleDiff()">
            <div class="st-col-title">
                Сложность карточек
-               <button class="st-info-btn" onclick="event.stopPropagation(); window.toggleDiffInfo()" title="Как это работает?" style="background:none;border:none;cursor:pointer;font-size:16px;margin-left:8px;opacity:0.7">ℹ️</button>
+               <button class="st-info-btn" onclick="event.stopPropagation(); window.toggleDiffInfo()" title="Как это работает?" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;margin-left:8px;opacity:0.9;color:var(--st-text-sec)">ℹ️</button>
            </div>
            <div class="st-col-arrow ${isDiffExpanded ? 'expanded' : ''}">▼</div>
         </div>
@@ -850,31 +850,44 @@ function renderStats() {
         el.remove();
         return;
     }
+    
+    const renderHeartsEx = (count) => {
+        let html = '<div style="display:flex; gap:2px;">';
+        for (let i = 0; i < 5; i++) {
+            const color = i < count ? '#ff4d4d' : '#444';
+            html += `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="${color}">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>`;
+        }
+        html += '</div>';
+        return html;
+    };
+
     const html = `
       <div class="st-modal-overlay" id="diff-info-modal" onclick="window.toggleDiffInfo()" style="z-index: 2200;">
         <div class="st-modal" onclick="event.stopPropagation()">
            <div class="st-modal-header">
-             <div class="st-modal-title">Как работает сложность?</div>
+             <div class="st-modal-title">Сложность карточек</div>
              <button class="st-modal-close" onclick="window.toggleDiffInfo()">✕</button>
            </div>
            <div class="st-modal-body" style="font-size:14px;line-height:1.5;color:var(--st-text-sec)">
-             <p style="margin-bottom:12px">Алгоритм SRS распределяет карточки по категориям на основе ваших ответов (Ease Factor):</p>
+             <p style="margin-bottom:12px">Количество сердечек показывает, насколько хорошо вы помните карточку (Ease Factor):</p>
              <ul style="display:flex;flex-direction:column;gap:12px;padding-left:0;list-style:none;margin:0">
                <li style="display:flex;gap:12px;align-items:start">
-                 <div style="width:12px;height:12px;border-radius:50%;background:var(--st-danger);margin-top:4px;flex-shrink:0"></div>
-                 <div><strong style="color:var(--st-text)">Очень трудные</strong> (EF < 1.6)<br>Вы часто ошибаетесь. Карточки будут появляться часто для закрепления.</div>
+                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(1)}</div>
+                 <div><strong style="color:var(--st-text)">Очень трудные</strong> (1 ❤️)<br>Вы часто ошибаетесь. Карточки повторяются часто.</div>
                </li>
                <li style="display:flex;gap:12px;align-items:start">
-                 <div style="width:12px;height:12px;border-radius:50%;background:var(--st-prim);margin-top:4px;flex-shrink:0"></div>
-                 <div><strong style="color:var(--st-text)">Трудные</strong> (1.6 - 2.1)<br>Требуют усилий для вспоминания. Интервалы растут медленно.</div>
+                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(2)}</div>
+                 <div><strong style="color:var(--st-text)">Трудные</strong> (2 ❤️)<br>Требуют усилий. Интервалы растут медленно.</div>
                </li>
                <li style="display:flex;gap:12px;align-items:start">
-                 <div style="width:12px;height:12px;border-radius:50%;background:var(--st-sec);margin-top:4px;flex-shrink:0"></div>
-                 <div><strong style="color:var(--st-text)">Стандарт</strong> (2.1 - 2.6)<br>Обычный режим. Новые карточки начинаются здесь (EF 2.5).</div>
+                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(3)}</div>
+                 <div><strong style="color:var(--st-text)">Стандарт</strong> (3 ❤️)<br>Обычный режим. Новые карточки начинаются здесь.</div>
                </li>
                <li style="display:flex;gap:12px;align-items:start">
-                 <div style="width:12px;height:12px;border-radius:50%;background:#2f81f7;margin-top:4px;flex-shrink:0"></div>
-                 <div><strong style="color:var(--st-text)">Легкие</strong> (> 2.6)<br>Вы помните их хорошо. Интервалы растут быстро.</div>
+                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(5)}</div>
+                 <div><strong style="color:var(--st-text)">Легкие</strong> (4-5 ❤️)<br>Вы помните их отлично. Интервалы растут быстро.</div>
                </li>
              </ul>
            </div>
