@@ -10,6 +10,34 @@ const EXPECTED_VERSION = versionMatch ? versionMatch[1] : 'UNKNOWN';
 
 test.describe('QA Voice Assistant E2E', () => {
   test.beforeEach(async ({ page }) => {
+    // 1. Mock user login in localStorage
+    await page.addInitScript(() => {
+        localStorage.setItem('qaSessionUser', JSON.stringify({
+            username: 'test_user',
+            role: 'user'
+        }));
+    });
+
+    // 2. Mock network requests for progress
+    await page.route('**/api/progress?username=test_user', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    srsProgress: {
+                        'юнит': { easeFactor: 2.9, interval: 6, repetitions: 3 }, // Easy
+                        'ci cd?': { easeFactor: 1.3, interval: 1, repetitions: 1 }, // Hard
+                        // Others will be default 2.5
+                    },
+                    updatedAt: Date.now()
+                })
+            });
+        } else {
+            await route.continue();
+        }
+    });
+
     await page.goto('/');
     // Wait for content to load
     await page.waitForSelector('#results-list', { timeout: 10000 });
@@ -19,15 +47,8 @@ test.describe('QA Voice Assistant E2E', () => {
     await expect(page).toHaveTitle(/QA/);
     console.log(`Expecting version: ${EXPECTED_VERSION}`);
     
-    // Check if version is visible in the page text
     const bodyText = await page.locator('body').textContent();
-    if (!bodyText.includes(EXPECTED_VERSION)) {
-        console.warn(`Version ${EXPECTED_VERSION} not found in body text!`);
-        // TODO: Enable this check once version display is confirmed
-        // expect(bodyText).toContain(EXPECTED_VERSION);
-    } else {
-        expect(bodyText).toContain(EXPECTED_VERSION);
-    }
+    expect(bodyText).toContain(EXPECTED_VERSION);
   });
 
   test('should search and find results', async ({ page }) => {
@@ -65,7 +86,6 @@ test.describe('QA Voice Assistant E2E', () => {
                 // Try to extract EF from tooltip
                 const heartsContainer = item.querySelector('.hearts-container');
                 let ef = 2.5; // Default
-                let id = 0; // Default
 
                 if (heartsContainer) {
                     const title = heartsContainer.getAttribute('title') || '';
@@ -74,12 +94,6 @@ test.describe('QA Voice Assistant E2E', () => {
                         ef = parseFloat(match[1]);
                     }
                 }
-                
-                // We don't display ID explicitly in DOM, but we can infer it or rely on text fallback
-                // For this test, since we can't easily get ID from DOM unless we add it,
-                // we will rely on the fact that for equal EF, the text order should change if ID order changes
-                // (assuming IDs are somewhat distributed).
-                // Actually, let's verify EF sorting primarily.
                 
                 return { text: questionText, ef };
             });
@@ -104,6 +118,14 @@ test.describe('QA Voice Assistant E2E', () => {
         }
     }
     expect(isAscSorted).toBeTruthy();
+    
+    // Check specific known items
+    // 'ci cd?' (EF 1.3) should be before 'юнит' (EF 2.9)
+    const idxHard = dataAsc.findIndex(d => d.text.includes('ci cd?'));
+    const idxEasy = dataAsc.findIndex(d => d.text.includes('юнит'));
+    expect(idxHard).not.toBe(-1);
+    expect(idxEasy).not.toBe(-1);
+    expect(idxHard).toBeLessThan(idxEasy);
 
     // 2. Switch to DESC (Easiest to Hardest: 2.9 -> 1.3)
     await sortBtn.click(); // Asc -> Desc
@@ -122,6 +144,14 @@ test.describe('QA Voice Assistant E2E', () => {
         }
     }
     expect(isDescSorted).toBeTruthy();
+
+    // Check specific known items
+    // 'юнит' (EF 2.9) should be before 'ci cd?' (EF 1.3)
+    const idxHardDesc = dataDesc.findIndex(d => d.text.includes('ci cd?'));
+    const idxEasyDesc = dataDesc.findIndex(d => d.text.includes('юнит'));
+    expect(idxHardDesc).not.toBe(-1);
+    expect(idxEasyDesc).not.toBe(-1);
+    expect(idxEasyDesc).toBeLessThan(idxHardDesc);
 
     // 3. Verify total reversal for equal items
     // Since we can't easily see ID, we check if the arrays are reversed versions of each other
