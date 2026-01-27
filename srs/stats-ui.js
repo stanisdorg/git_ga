@@ -818,7 +818,9 @@ function renderStats() {
   window.startDailySession = () => {
      if (sessionCount > 0) {
         hideStatsPage();
-        startLearnSession(todaysSession);
+        // todaysSession returns wrappers {item, progress, isNew}, we need to pass raw items
+        const rawSession = todaysSession.map(s => s.item || s);
+        startLearnSession(rawSession);
      } else {
         // Start cram session
         hideStatsPage();
