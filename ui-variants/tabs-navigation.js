@@ -30,6 +30,13 @@ function setOverrides(map) { setLS('qaAdminOverrides', map); }
 function getNewItems() { return getLS('qaNewItems', '[]'); }
 function getDeletedItems() { return getLS('qaDeletedItems', '{}'); }
 function setDeletedItems(map) { setLS('qaDeletedItems', map); }
+
+// Получение актуальных данных с учетом удаленных
+function getRuntimeData() {
+    const deleted = getDeletedItems();
+    return uniqueQaData.filter(item => !deleted[item.question]);
+}
+
 function getCategoryPlaceholders() { return getLS('qaCategoryPlaceholders', '{}'); }
 function setCategoryPlaceholders(obj) { setLS('qaCategoryPlaceholders', obj); }
 // Порядок категорий: хранится как массив имён категорий
