@@ -2,7 +2,7 @@ import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, 
 import { getProgressMap, syncFavorite } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
-import { startLearnSession } from './learn-ui.js?v=31';
+import { startLearnSession } from './learn-ui.js?v=32';
 
 let statsContainer = null;
 let mainContainer = null;
@@ -870,7 +870,7 @@ function renderStats() {
              <div class="st-modal-title">Сложность карточек</div>
              <button class="st-modal-close" onclick="window.toggleDiffInfo()">✕</button>
            </div>
-           <div class="st-modal-body" style="font-size:14px;line-height:1.5;color:var(--st-text-sec)">
+           <div class="st-modal-body" style="font-size:14px;line-height:1.5;color:var(--st-text-sec);padding:24px;">
              <p style="margin-bottom:12px">Количество сердечек показывает, насколько хорошо вы помните карточку (Ease Factor):</p>
              <ul style="display:flex;flex-direction:column;gap:12px;padding-left:0;list-style:none;margin:0">
                <li style="display:flex;gap:12px;align-items:start">
