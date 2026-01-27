@@ -2,7 +2,7 @@ import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, 
 import { getProgressMap, syncFavorite } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
-import { startLearnSession } from './learn-ui.js?v=30';
+import { startLearnSession } from './learn-ui.js?v=31';
 
 let statsContainer = null;
 let mainContainer = null;
@@ -44,7 +44,7 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 20px;
+  padding: 32px; /* Increased from 20px */
   padding-bottom: 100px; /* Space for sticky CTA */
   display: flex;
   flex-direction: column;
@@ -657,7 +657,7 @@ function renderStats() {
         <div class="st-collapsible-header" onclick="window.toggleDiff()">
            <div class="st-col-title">
                Сложность карточек
-               <button class="st-info-btn" onclick="event.stopPropagation(); window.toggleDiffInfo()" title="Как это работает?" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;margin-left:8px;opacity:0.9;color:var(--st-text-sec)">ℹ️</button>
+               <button class="st-info-btn" onclick="event.stopPropagation(); window.toggleDiffInfo()" title="Как это работает?" style="pointer-events: auto; background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;margin-left:8px;opacity:0.9;color:var(--st-text-sec)">ℹ️</button>
            </div>
            <div class="st-col-arrow ${isDiffExpanded ? 'expanded' : ''}">▼</div>
         </div>
