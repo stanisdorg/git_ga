@@ -549,7 +549,12 @@ function renderStats() {
    ];
   
   let totalRated = 0;
+  let favCount = 0;
+  const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+
   uniqueQaData.forEach(q => {
+     if (favorites.has(q.question)) favCount++;
+
      const p = progressMap[q.question];
      if (!p) return;
      
@@ -626,7 +631,10 @@ function renderStats() {
       <!-- DIFFICULTY (Collapsible) -->
       <div class="st-diff-section">
         <div class="st-collapsible-header" onclick="window.toggleDiff()">
-           <div class="st-col-title">Сложность карточек</div>
+           <div class="st-col-title">
+               Сложность карточек
+               <button class="st-info-btn" onclick="event.stopPropagation(); window.toggleDiffInfo()" title="Как это работает?" style="background:none;border:none;cursor:pointer;font-size:16px;margin-left:8px;opacity:0.7">ℹ️</button>
+           </div>
            <div class="st-col-arrow ${isDiffExpanded ? 'expanded' : ''}">▼</div>
         </div>
         
@@ -636,14 +644,23 @@ function renderStats() {
 
         <div class="st-diff-list" style="display: ${isDiffExpanded ? 'flex' : 'none'}">
            ${segs.map(s => `
-             <div class="st-diff-item" onclick="window.openDiffModal('${s.label}', '${s.colorClass}')">
-               <div style="display:flex;align-items:center">
+             <div class="st-diff-item" onclick="window.openDiffModal('${s.label}', '${s.colorClass}')" style="border-left: 3px solid ${s.color}; background: rgba(255,255,255,0.03);">
+               <div style="display:flex;align-items:center;gap:12px">
                  <div class="st-diff-dot" style="background:${s.color}"></div>
-                 <div class="st-diff-name">${s.label}</div>
+                 <div class="st-diff-name" style="color:${s.color}">${s.label}</div>
                </div>
                <div class="st-diff-count">${s.count}</div>
              </div>
            `).join('')}
+           
+           <!-- Favorites Item -->
+           <div class="st-diff-item" onclick="window.openDiffModal('Избранное', 'gold')" style="border-left: 3px solid #ffd700; background: rgba(255,215,0,0.05); margin-top: 8px;">
+               <div style="display:flex;align-items:center;gap:12px">
+                 <div class="st-diff-dot" style="background:#ffd700"></div>
+                 <div class="st-diff-name" style="color:#ffd700">Избранное</div>
+               </div>
+               <div class="st-diff-count">${favCount}</div>
+           </div>
         </div>
       </div>
 
@@ -769,21 +786,72 @@ function renderStats() {
      currentXpMode = mode;
      renderStats();
   };
+
+  window.toggleDiffInfo = () => {
+    const el = document.getElementById('diff-info-modal');
+    if (el) {
+        el.remove();
+        return;
+    }
+    const html = `
+      <div class="st-modal-overlay" id="diff-info-modal" onclick="window.toggleDiffInfo()" style="z-index: 2200;">
+        <div class="st-modal" onclick="event.stopPropagation()">
+           <div class="st-modal-header">
+             <div class="st-modal-title">Как работает сложность?</div>
+             <button class="st-modal-close" onclick="window.toggleDiffInfo()">✕</button>
+           </div>
+           <div class="st-modal-body" style="font-size:14px;line-height:1.5;color:var(--st-text-sec)">
+             <p style="margin-bottom:12px">Алгоритм SRS распределяет карточки по категориям на основе ваших ответов (Ease Factor):</p>
+             <ul style="display:flex;flex-direction:column;gap:12px;padding-left:0;list-style:none;margin:0">
+               <li style="display:flex;gap:12px;align-items:start">
+                 <div style="width:12px;height:12px;border-radius:50%;background:var(--st-danger);margin-top:4px;flex-shrink:0"></div>
+                 <div><strong style="color:var(--st-text)">Очень трудные</strong> (EF < 1.6)<br>Вы часто ошибаетесь. Карточки будут появляться часто для закрепления.</div>
+               </li>
+               <li style="display:flex;gap:12px;align-items:start">
+                 <div style="width:12px;height:12px;border-radius:50%;background:var(--st-prim);margin-top:4px;flex-shrink:0"></div>
+                 <div><strong style="color:var(--st-text)">Трудные</strong> (1.6 - 2.1)<br>Требуют усилий для вспоминания. Интервалы растут медленно.</div>
+               </li>
+               <li style="display:flex;gap:12px;align-items:start">
+                 <div style="width:12px;height:12px;border-radius:50%;background:var(--st-sec);margin-top:4px;flex-shrink:0"></div>
+                 <div><strong style="color:var(--st-text)">Стандарт</strong> (2.1 - 2.6)<br>Обычный режим. Новые карточки начинаются здесь (EF 2.5).</div>
+               </li>
+               <li style="display:flex;gap:12px;align-items:start">
+                 <div style="width:12px;height:12px;border-radius:50%;background:#2f81f7;margin-top:4px;flex-shrink:0"></div>
+                 <div><strong style="color:var(--st-text)">Легкие</strong> (> 2.6)<br>Вы помните их хорошо. Интервалы растут быстро.</div>
+               </li>
+             </ul>
+           </div>
+        </div>
+      </div>
+    `;
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    document.body.appendChild(div.firstElementChild);
+  };
   
   window.openDiffModal = (label, colorClass) => {
       // Find range
       const progress = getProgressMap();
-      let min=0, max=0;
-      if (label === 'Очень трудные') { max = 1.6; }
-      else if (label === 'Трудные') { min = 1.6; max = 2.1; }
-      else if (label === 'Стандарт') { min = 2.1; max = 2.6; }
-      else if (label === 'Легкие') { min = 2.6; max = 999; }
-      
-      const cards = uniqueQaData.filter(q => {
-         const p = progress[q.question];
-         if (!p || !p.easeFactor) return false;
-         return p.easeFactor >= min && p.easeFactor < max;
-      });
+      let cards = [];
+
+      if (label === 'Избранное') {
+          const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+          cards = uniqueQaData.filter(q => favorites.has(q.question));
+      } else {
+          let min=0, max=0;
+          if (label === 'Очень трудные') { max = 1.6; }
+          else if (label === 'Трудные') { min = 1.6; max = 2.1; }
+          else if (label === 'Стандарт') { min = 2.1; max = 2.6; }
+          else if (label === 'Легкие') { min = 2.6; max = 999; }
+          
+          cards = uniqueQaData.filter(q => {
+             const p = progress[q.question];
+             if (!p) return false;
+             // Use default EF=2.5 if missing (same logic as chart)
+             const ef = p.easeFactor || 2.5; 
+             return ef >= min && ef < max;
+          });
+      }
       
       window._tempSessionCards = cards;
       

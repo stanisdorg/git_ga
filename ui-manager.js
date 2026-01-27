@@ -3,24 +3,19 @@
 // Импортируем только функцию инициализации табов и карточек
 import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=17';
 import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=6';
+import { loadFromServer } from './srs/storage.js';
 
 // Функция для инициализации UI
 export function initUI() {
-    initSupabase();
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
-    try {
-        const sess = localStorage.getItem('qaSessionUser');
-        if (sess) {
-            import('./srs/storage.js').then(mod => {
-                if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
-                    mod.hydrateLocalFromSupabase().then(() => {
-                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
-                    }).catch(()=>{});
-                }
-            }).catch(()=>{});
-        }
-    } catch {}
+    
+    // Загружаем прогресс с локального сервера
+    loadFromServer().then(() => {
+        const evt = new Event('xpUpdated'); 
+        window.dispatchEvent(evt);
+        window.dispatchEvent(new Event('dataLoaded'));
+    }).catch(e => console.error('Failed to load progress:', e));
     
     // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
     const isStats = location.hash && location.hash.includes('stats');
@@ -50,80 +45,6 @@ export function initUI() {
     window.addEventListener('adminOverridesChanged', reinit);
 
     // Убрана интеграция Netlify Identity/Auth0. Используется локальная авторизация.
-}
-
-function initSupabase() {
-    try {
-        // Read from env-like globals if provided by hosting
-        const envUrl =
-            window.NEXT_PUBLIC_SUPABASE_URL ||
-            window.SUPABASE_URL ||
-            window.NETLIFY_SUPABASE_URL ||
-            '';
-        const envKey =
-            window.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ||
-            window.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-            window.SUPABASE_ANON_KEY ||
-            window.NETLIFY_SUPABASE_ANON_KEY ||
-            '';
-        // Persist to localStorage for reuse
-        if (envUrl && !localStorage.getItem('supabaseUrl')) {
-            localStorage.setItem('supabaseUrl', envUrl);
-        }
-        if (envKey && !localStorage.getItem('supabaseAnonKey')) {
-            localStorage.setItem('supabaseAnonKey', envKey);
-        }
-        const url = localStorage.getItem('supabaseUrl') || envUrl || '';
-        const key = localStorage.getItem('supabaseAnonKey') || envKey || '';
-        if (window.supabase && url && key) {
-            window.__supabaseClient = window.supabase.createClient(url, key);
-            flushSupabaseQueue();
-            window.addEventListener('online', flushSupabaseQueue);
-        } else {
-            // Optional minimal prompt to configure once
-            if (!localStorage.getItem('supabaseUrl') || !localStorage.getItem('supabaseAnonKey')) {
-                // no-op: user can provide via globals or set manually later
-            }
-            setTimeout(initSupabase, 500);
-        }
-    } catch (_) {}
-}
-
-function readQueue() {
-    try {
-        const raw = localStorage.getItem('supabaseQueue') || '[]';
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
-}
-
-function writeQueue(q) {
-    localStorage.setItem('supabaseQueue', JSON.stringify(q));
-}
-
-async function flushSupabaseQueue() {
-    const client = window.__supabaseClient;
-    if (!client) return;
-    let queue = readQueue();
-    if (!Array.isArray(queue) || queue.length === 0) return;
-    const next = [];
-    for (const item of queue) {
-        try {
-            if (item.table === 'card_progress') {
-                const { error } = await client.from('card_progress').upsert(item.data, { onConflict: 'user_id,question' });
-                if (error) next.push(item);
-            } else if (item.table === 'daily_stats') {
-                const { error } = await client.from('daily_stats').upsert(item.data, { onConflict: 'user_id,date' });
-                if (error) next.push(item);
-            } else {
-                next.push(item);
-            }
-        } catch {
-            next.push(item);
-        }
-    }
-    writeQueue(next);
 }
 
 // Функция для удаления существующих элементов навигации
