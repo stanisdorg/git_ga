@@ -135,6 +135,17 @@ let globalSaveStatusEl = null;
 
 export function initTabsNavigation() {
     console.log('Initializing Tabs Navigation...');
+    // Debug visible element
+    const debugNav = document.createElement('div');
+    debugNav.innerHTML = 'Tabs Init Triggered';
+    debugNav.style.color = 'red';
+    debugNav.style.position = 'fixed';
+    debugNav.style.top = '10px';
+    debugNav.style.left = '50%';
+    debugNav.style.zIndex = '100000';
+    document.body.appendChild(debugNav);
+    setTimeout(() => debugNav.remove(), 5000);
+
     try {
         const container = document.querySelector('.container');
     // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)

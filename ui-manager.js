@@ -5,8 +5,22 @@ import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=21';
 import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=6';
 import { loadFromServer } from './srs/storage.js';
 
+// Debug banner for script loading verification
+const debugBanner = document.createElement('div');
+debugBanner.style.position = 'fixed';
+debugBanner.style.top = '0';
+debugBanner.style.left = '0';
+debugBanner.style.width = '100%';
+debugBanner.style.height = '5px';
+debugBanner.style.background = '#00ff00';
+debugBanner.style.zIndex = '99999';
+debugBanner.style.pointerEvents = 'none';
+document.body.prepend(debugBanner);
+console.log('UI Manager Loaded');
+
 // Функция для инициализации UI
 export function initUI() {
+    console.log('initUI called');
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
     
