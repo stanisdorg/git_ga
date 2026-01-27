@@ -2258,19 +2258,22 @@ export function displayQuestions(questions, title) {
             const efA = progressMap[a.question]?.easeFactor ?? 2.5;
             const efB = progressMap[b.question]?.easeFactor ?? 2.5;
             
-            // Основная сортировка по EF
+            // 1. Первичная сортировка по EF
             if (Math.abs(efA - efB) >= 0.001) {
                  // asc: от меньшего к большему (1.3 -> 2.9) - Самые сложные сначала
                  return sortMode === 'asc' ? efA - efB : efB - efA;
             }
 
-            // Вторичная сортировка по ID (всегда возрастание, чтобы порядок был стабильным)
+            // 2. Вторичная сортировка по ID (теперь тоже зависит от sortMode для полного разворота)
             const idA = parseInt(a.id, 10) || 0;
             const idB = parseInt(b.id, 10) || 0;
-            if (idA !== idB) return idA - idB;
+            if (idA !== idB) {
+                return sortMode === 'asc' ? idA - idB : idB - idA;
+            }
 
-            // Третичная сортировка по алфавиту (всегда возрастание)
-            return a.question.localeCompare(b.question);
+            // 3. Третичная сортировка по алфавиту (тоже зависит от sortMode)
+            const textCompare = a.question.localeCompare(b.question);
+            return sortMode === 'asc' ? textCompare : -textCompare;
         });
     }
     
