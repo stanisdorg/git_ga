@@ -1,0 +1,7 @@
+.DS_Store
+.venv/
+node_modules/
+*.log
+.env
+_backups/
+

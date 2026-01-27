@@ -66,11 +66,9 @@ export function calculateNextInterval(card, quality) {
         if (quality === 2) {
             card.easeFactor = Math.max(1.3, card.easeFactor - 0.15);
         } else if (quality === 3) {
-            // Good: Slight increase to reward consistency
-            card.easeFactor += 0.1;
+            // No change
         } else if (quality === 4) {
-            // Easy: Larger increase
-            card.easeFactor += 0.2;
+            card.easeFactor += 0.1;
         }
     }
     

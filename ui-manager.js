@@ -1,8 +1,8 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=25';
-import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=25';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=26';
+import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=26';
 import { loadFromServer } from './srs/storage.js';
 
 export const APP_VERSION = '26';

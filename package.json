@@ -6,9 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "electron .",
-    "electron:dev": "electron .",
-    "backup": "node backup.cjs",
-    "release": "node release.cjs"
+    "electron:dev": "electron ."
   },
   "devDependencies": {
     "electron": "^30.0.0"
