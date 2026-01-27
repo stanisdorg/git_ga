@@ -1,6 +1,6 @@
 // Импортируем данные из отдельного файла
 import { uniqueQaData } from './all-data.js';
-import { displayQuestions } from './ui-variants/tabs-navigation.js?v=37';
+import { displayQuestions } from './ui-variants/tabs-navigation.js?v=39';
 let transcriptionMode = false; // глобальное состояние режима транскрипции
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -447,6 +447,9 @@ document.addEventListener('DOMContentLoaded', function() {
             searchHistory.appendChild(historyElement);
         });
     }
+
+    // ------------------------
+
     
     // Функции для транскрипции: единое поле без разбиения на блоки
     function appendToTranscription(text) {
@@ -504,9 +507,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Функция выполнения поиска
     function performSearch(query) {
-        const filteredData = uniqueQaData.filter(item =>
-            item.question.toLowerCase().includes(query.toLowerCase())
-        );
+        if (!query) {
+             displaySearchResults(uniqueQaData, '');
+             return;
+        }
+        
+        const lowerQuery = query.toLowerCase();
+        const filteredData = uniqueQaData.filter(item => {
+            const inQuestion = item.question && item.question.toLowerCase().includes(lowerQuery);
+            const inAnswer = item.answer && item.answer.toLowerCase().includes(lowerQuery);
+            const inCategory = item.category && item.category.toLowerCase().includes(lowerQuery);
+            const inSubcategory = item.subcategory && item.subcategory.toLowerCase().includes(lowerQuery);
+            
+            return inQuestion || inAnswer || inCategory || inSubcategory;
+        });
         
         displaySearchResults(filteredData, query);
     }

@@ -358,7 +358,8 @@ function removeDuplicates(data) {
 }
 
 // Удаляем дубликаты из статических данных
-let uniqueQaData = removeDuplicates(allQaData);
+// Изначально инициализируем пустым массивом, чтобы не показывать старые данные до загрузки JSON
+let uniqueQaData = [];
 
 // Применение локальных админ-правок (overrides) и новых карточек к данным
 function applyAdminOverridesAndNewItems() {
@@ -408,17 +409,24 @@ async function initializeData() {
         // Загружаем данные из JSON файлов
         const jsonData = await loadJsonData();
         
-        // Если данные успешно загружены, используем только их
+        // Если данные успешно загружены и содержат валидные вопросы
         if (jsonData && jsonData.length > 0) {
-            uniqueQaData = jsonData;
+            // Фильтруем пустые объекты, если они есть
+            const validData = jsonData.filter(item => item && item.question);
             
-            // Применяем локальные overrides и новые карточки
-            applyAdminOverridesAndNewItems();
+            if (validData.length > 0) {
+                uniqueQaData = validData;
+                
+                // Применяем локальные overrides и новые карточки
+                applyAdminOverridesAndNewItems();
 
-            console.log(`Всего загружено ${uniqueQaData.length} уникальных вопросов (с учетом локальных правок)`);
-            
-            // Вызываем событие, чтобы уведомить о загрузке данных
-            document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
+                console.log(`Всего загружено ${uniqueQaData.length} уникальных вопросов (с учетом локальных правок)`);
+                
+                // Вызываем событие, чтобы уведомить о загрузке данных
+                document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
+            } else {
+                console.warn('Загруженные JSON данные не содержат валидных вопросов. Используем статические данные.');
+            }
         }
     } catch (error) {
         console.error('Ошибка при инициализации данных:', error);

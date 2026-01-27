@@ -11,6 +11,7 @@ import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
 let currentContextKey = 'all';
 let currentQuestions = [];
+let sortMode = 'default'; // Global sort state
 let resultsListRef = null;
 // Кэш корзины на стороне сервера (не используем localStorage для удалённых карточек)
 let serverTrashSet = new Set();
@@ -2198,6 +2199,13 @@ function refreshCurrentContext() {
 
 // Функция для отображения вопросов
 export function displayQuestions(questions, title) {
+    // Safety check and logging
+    if (!questions) {
+        console.warn('displayQuestions: questions is undefined/null, defaulting to []');
+        questions = [];
+    }
+    console.log(`displayQuestions: rendering ${questions.length} items. Title: ${title}`);
+
     try {
         const resultsList = document.getElementById('results-list');
         if (!resultsList) {
@@ -2206,6 +2214,27 @@ export function displayQuestions(questions, title) {
         }
         resultsList.innerHTML = '';
         resultsListRef = resultsList;
+
+        if (questions.length === 0) {
+             // DEBUG INFO
+             const totalData = uniqueQaData ? uniqueQaData.length : 'N/A';
+             resultsList.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-style: italic;">
+                Список вопросов пуст
+             </div>`;
+        } else {
+             // Force display grid
+             resultsList.style.display = 'grid';
+             resultsList.style.visibility = 'visible';
+             resultsList.style.opacity = '1';
+             // Ensure container is visible too
+             const container = resultsList.closest('.results-container');
+             if (container) {
+                 container.style.display = 'block';
+                 container.style.visibility = 'visible';
+                 container.style.opacity = '1';
+             }
+        }
+
         currentQuestions = [...questions];
 
         // Применяем порядок, если задан
@@ -2216,7 +2245,12 @@ export function displayQuestions(questions, title) {
     }
     
     // Получаем прогресс для всех карточек для сортировки и отображения
-    const progressMap = getProgressMap();
+    let progressMap = {};
+    try {
+        progressMap = getProgressMap();
+    } catch (e) {
+        console.warn('getProgressMap failed:', e);
+    }
 
     // Применяем сортировку по EF (сердечкам), если включена
     if (sortMode !== 'default') {
@@ -2255,8 +2289,15 @@ export function displayQuestions(questions, title) {
         desc: 'Сортировка: От легких к сложным (EF ↓)'
     };
 
+    // Формируем текст счетчика
+    const totalCount = uniqueQaData ? uniqueQaData.length : 0;
+    const isFiltered = questions.length !== totalCount;
+    const countText = isFiltered 
+        ? `Найдено: ${questions.length} из ${totalCount}` 
+        : `Всего карточек: ${questions.length}`;
+
     countContainer.innerHTML = `
-        <p class="results-count" style="margin:0">Найдено: ${questions.length}</p>
+        <p class="results-count" style="margin:0">${countText}</p>
         <button id="sort-toggle-btn" class="nav-icon-btn" title="${sortTitle[sortMode]}" style="padding:4px 8px; border-radius:4px; border:1px solid #444; background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             ${sortIcons[sortMode]}
         </button>
@@ -2275,58 +2316,78 @@ export function displayQuestions(questions, title) {
 
     // Хелпер для отрисовки сердечек (новая логика с дробными)
     const renderHearts = (ef) => {
-        const level = getDifficultyLevel(ef);
-        const progress = getLevelProgress(ef, level);
+        try {
+            if (typeof getDifficultyLevel !== 'function' || typeof getLevelProgress !== 'function') {
+                console.warn('SRS functions not available');
+                return '';
+            }
+            const level = getDifficultyLevel(ef);
+            const progress = getLevelProgress(ef, level);
         
-        const levelNames = {
-            'VERY_HARD': 'Очень трудные',
-            'HARD': 'Трудные',
-            'STANDARD': 'Стандарт',
-            'EASY': 'Легкие'
-        };
-        const levelNums = {
-            'VERY_HARD': 1,
-            'HARD': 2,
-            'STANDARD': 3,
-            'EASY': 4
-        };
-        const levelName = levelNames[level] || level;
-        const levelNum = levelNums[level] || '?';
-        
-        let html = '<div class="hearts-container" title="Уровень: ' + levelNum + ' (' + levelName + ')\\nПрогресс: ' + Math.round(progress * 100) + '%\\nEF: ' + ef.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
-        
-        // Рисуем 4 сердечка
-        for (let i = 0; i < 4; i++) {
-            const threshold = (i + 1) * 0.25;
-            const prevThreshold = i * 0.25;
-            let fill = 0;
-            if (progress >= threshold) fill = 1;
-            else if (progress > prevThreshold) fill = (progress - prevThreshold) / 0.25;
+            const levelNames = {
+                'VERY_HARD': 'Очень трудные',
+                'HARD': 'Трудные',
+                'STANDARD': 'Стандарт',
+                'EASY': 'Легкие'
+            };
+            const levelNums = {
+                'VERY_HARD': 1,
+                'HARD': 2,
+                'STANDARD': 3,
+                'EASY': 4
+            };
+            const levelName = levelNames[level] || level;
+            const levelNum = levelNums[level] || '?';
             
-            const stopVal = Math.round(fill * 100);
-            const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+            let html = '<div class="hearts-container" title="Уровень: ' + levelNum + ' (' + levelName + ')\\nПрогресс: ' + Math.round(progress * 100) + '%\\nEF: ' + ef.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
             
-            html += `
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
-                    <defs>
-                        <linearGradient id="${id}">
-                            <stop offset="${stopVal}%" stop-color="#ff4d4d" />
-                            <stop offset="${stopVal}%" stop-color="#444" />
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-            `;
+            // Рисуем 4 сердечка
+            for (let i = 0; i < 4; i++) {
+                const threshold = (i + 1) * 0.25;
+                const prevThreshold = i * 0.25;
+                let fill = 0;
+                if (progress >= threshold) fill = 1;
+                else if (progress > prevThreshold) fill = (progress - prevThreshold) / 0.25;
+                
+                const stopVal = Math.round(fill * 100);
+                const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+                
+                html += `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                        <defs>
+                            <linearGradient id="${id}">
+                                <stop offset="${stopVal}%" stop-color="#ff4d4d" />
+                                <stop offset="${stopVal}%" stop-color="#444" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                `;
+            }
+            html += '</div>';
+            return html;
+        } catch (e) {
+            console.error('Error in renderHearts:', e);
+            return '';
         }
-        html += '</div>';
-        return html;
     };
 
     // Добавляем вопросы
     currentQuestions.forEach((item, index) => {
         try {
+            if (index === 0) console.log('Rendering first item:', item);
             const resultItem = document.createElement('div');
-        resultItem.className = 'result-item';
+            resultItem.className = 'result-item';
+            
+            // DEBUG STYLES - REMOVE LATER
+            resultItem.style.display = 'flex';
+            resultItem.style.flexDirection = 'column';
+            resultItem.style.minHeight = '100px';
+            resultItem.style.backgroundColor = '#242424';
+            resultItem.style.border = '1px solid #444';
+            resultItem.style.color = '#fff';
+            // END DEBUG STYLES
+
         if (editMode) {
             resultItem.setAttribute('draggable', 'true');
             resultItem.dataset.index = String(index);
@@ -2359,15 +2420,27 @@ export function displayQuestions(questions, title) {
         }
         
         // Избранное
-        const favorites = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
-        const isFav = favorites.includes(item.question);
-        const favClass = isFav ? 'fav-active' : '';
+        let isFav = false;
+        let favClass = '';
+        try {
+            const favorites = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+            isFav = favorites.includes(item.question);
+            favClass = isFav ? 'fav-active' : '';
+        } catch (e) {
+            console.warn('Favorites error:', e);
+        }
 
         // Отображаем бейджи с учётом плейсхолдеров
-        const catPlaceholders = getCategoryPlaceholders();
-        const scPlaceholders = getSubcategoryPlaceholders();
-        const dispCat = (catPlaceholders[item.category] && catPlaceholders[item.category].displayName) || item.category || '';
-        const dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
+        let dispCat = item.category || '';
+        let dispSub = item.subcategory || '';
+        try {
+            const catPlaceholders = getCategoryPlaceholders();
+            const scPlaceholders = getSubcategoryPlaceholders();
+            dispCat = (catPlaceholders[item.category] && catPlaceholders[item.category].displayName) || item.category || '';
+            dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
+        } catch (e) {
+            console.warn('Placeholders error:', e);
+        }
 
         const starSvg = (filled) => `
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -2648,6 +2721,15 @@ export function displayQuestions(questions, title) {
         resultsList.appendChild(resultItem);
         } catch (err) {
             console.error('Error rendering item:', item, err);
+            // Визуально показываем, что элемент сломался (для отладки)
+            try {
+                const errDiv = document.createElement('div');
+                errDiv.style.border = '1px solid red';
+                errDiv.style.color = 'red';
+                errDiv.style.padding = '10px';
+                errDiv.textContent = `Ошибка отображения вопроса: ${err.message}`;
+                resultsList.appendChild(errDiv);
+            } catch (_) {}
         }
     });
     } catch (e) {
