@@ -4256,12 +4256,33 @@
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 2,
       "question": "Что такое пайплайн и как он используется?"
+    },
+    "Где передается GET?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769557872006,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769557872006,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Где передается GET?"
     }
   },
   "studyStats": {
-    "total": 568,
-    "timeSpent": 291136,
-    "points": 6455,
+    "total": 569,
+    "timeSpent": 293167,
+    "points": 6460,
     "correct": 370
   },
   "studyStreak": {
@@ -4271,7 +4292,7 @@
   },
   "dailyPoints": {
     "2026-01-27": 6445,
-    "2026-01-28": 10
+    "2026-01-28": 15
   },
   "dailyBonusPoints": {
     "2026-01-27": 0,
@@ -4294,5 +4315,5 @@
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769556753295
+  "updatedAt": 1769557873026
 }

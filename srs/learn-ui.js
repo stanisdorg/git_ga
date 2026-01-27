@@ -3,6 +3,7 @@ import { getDueCards, syncFavorite, syncDailyStats, getProgressMap } from './sto
 import { checkAchievements } from './stats-utils.js?v=3';
 import { Scheduler } from './scheduler.js?v=2';
 import { getTodaysSession } from './category-scheduler.js';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js';
 
 // DOM Elements
 let container = null;

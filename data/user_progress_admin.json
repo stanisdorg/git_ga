@@ -2938,7 +2938,7 @@
       "state": "learning",
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 21,
-      "question": "Например у нас 5 фильтров с 3мя значениями, и чтобы не тестировать каждый фильтр со всеми\nзначениями, мы комбинируем между собой -чтобы меньше тестов делать( только уникальные тесты pairvise)"
+      "question": "Например у нас 5 фильтров с 3мя значениями, и чтобы не тестировать каждый фильтр со всеми\nзначениям��, мы комбинируем между собой -чтобы меньше тестов делать( только уникальные тесты pairvise)"
     },
     "CI/CD у вас был?": {
       "interval": 3,
@@ -4256,12 +4256,54 @@
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 2,
       "question": "Что такое пайплайн и как он используется?"
+    },
+    "Где передается GET?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769557872006,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769557872006,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Где передается GET?"
+    },
+    "Rest": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769557873040,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769557873040,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Rest"
     }
   },
   "studyStats": {
-    "total": 568,
-    "timeSpent": 291136,
-    "points": 6455,
+    "total": 570,
+    "timeSpent": 294200,
+    "points": 6465,
     "correct": 370
   },
   "studyStreak": {
@@ -4271,7 +4313,7 @@
   },
   "dailyPoints": {
     "2026-01-27": 6445,
-    "2026-01-28": 10
+    "2026-01-28": 20
   },
   "dailyBonusPoints": {
     "2026-01-27": 0,
@@ -4294,5 +4336,5 @@
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769556754349
+  "updatedAt": 1769557874046
 }
