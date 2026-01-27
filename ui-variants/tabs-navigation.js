@@ -320,9 +320,9 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=7');
+                module = await import('../srs/learn-ui.js?v=24');
             } catch (e1) {
-                console.warn('[Learn] Import v7 failed, trying plain import', e1);
+                console.warn('[Learn] Import v24 failed, trying plain import', e1);
                 try {
                     module = await import('../srs/learn-ui.js');
                 } catch (e2) {
@@ -350,7 +350,7 @@ export function initTabsNavigation(appVersion) {
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
     // statsBtn.style.color = '#fff';
     statsBtn.addEventListener('click', async () => {
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=8');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=24');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
