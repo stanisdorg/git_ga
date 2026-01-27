@@ -4,6 +4,7 @@
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
+import { getProgressMap } from '../srs/storage.js';
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
@@ -2220,6 +2221,25 @@ function displayQuestions(questions, title) {
     }
     countContainer.innerHTML = `<p class="results-count" style="margin:0">Найдено: ${questions.length}</p>`;
     
+    // Получаем прогресс для всех карточек
+    const progressMap = getProgressMap();
+
+    // Хелпер для отрисовки сердечек
+    const renderHearts = (count) => {
+        let html = '<div class="hearts-container" title="Сложность (Ease Factor)" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
+        for (let i = 0; i < 5; i++) {
+            const filled = i < count;
+            const color = filled ? '#ff4d4d' : '#444';
+            html += `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${color}">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            `;
+        }
+        html += '</div>';
+        return html;
+    };
+
     // Добавляем вопросы
     currentQuestions.forEach((item, index) => {
         const resultItem = document.createElement('div');
@@ -2273,6 +2293,19 @@ function displayQuestions(questions, title) {
                 />
             </svg>
         `;
+
+        // Расчет сердечек
+        const cardProgress = progressMap[item.question];
+        let heartCount = 0;
+        if (cardProgress) {
+            const ef = cardProgress.easeFactor;
+            if (ef >= 2.7) heartCount = 5;
+            else if (ef >= 2.4) heartCount = 4;
+            else if (ef >= 2.1) heartCount = 3;
+            else if (ef >= 1.7) heartCount = 2;
+            else heartCount = 1;
+        }
+
         resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
