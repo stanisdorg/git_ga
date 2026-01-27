@@ -338,15 +338,34 @@ function renderCardState(state) {
     if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
     
-    // Update Hearts
-    const renderHearts = (count) => {
+    // Update Hearts and Difficulty Label
+    const renderHearts = (progress) => {
+        // Render 4 hearts to represent 0-100% progress (each heart is 25%)
         let html = '';
-        for (let i = 0; i < 5; i++) {
-            const filled = i < count;
-            const color = filled ? '#ff4d4d' : '#444';
+        for (let i = 0; i < 4; i++) {
+            const threshold = (i + 1) * 0.25;
+            const prevThreshold = i * 0.25;
+            
+            let fill = 0; // 0 to 1
+            if (progress >= threshold) {
+                fill = 1;
+            } else if (progress > prevThreshold) {
+                fill = (progress - prevThreshold) / 0.25;
+            }
+            
+            // Render heart with gradient if partial, or solid color
+            const stopVal = Math.round(fill * 100);
+            const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+            
             html += `
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${color}">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="heart-icon">
+                    <defs>
+                        <linearGradient id="${id}">
+                            <stop offset="${stopVal}%" stop-color="#ff4d4d" />
+                            <stop offset="${stopVal}%" stop-color="#444" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
             `;
         }
@@ -354,22 +373,56 @@ function renderCardState(state) {
     };
 
     if (state.card) {
-        let heartCount = 0;
-        // Check both passed progress object or fetch fresh from storage
-        const progMap = getProgressMap();
-        const p = progMap[state.card.question];
-        if (p) {
-            const ef = p.easeFactor;
-            if (ef >= 2.7) heartCount = 5;
-            else if (ef >= 2.4) heartCount = 4;
-            else if (ef >= 2.1) heartCount = 3;
-            else if (ef >= 1.7) heartCount = 2;
-            else heartCount = 1;
+        // Prefer passed cardProgress, fallback to storage
+        let progressObj = state.cardProgress;
+        if (!progressObj) {
+            const progMap = getProgressMap();
+            progressObj = progMap[state.card.question];
         }
+
+        const ef = progressObj && progressObj.easeFactor !== undefined ? progressObj.easeFactor : 2.5;
+        const level = getDifficultyLevel(ef);
+        const progress = getLevelProgress(ef, level);
+
+        // Map level to Russian text
+        const levelNames = {
+            'VERY_HARD': 'Очень трудные',
+            'HARD': 'Трудные',
+            'STANDARD': 'Стандарт',
+            'EASY': 'Легкие'
+        };
+
         container.querySelectorAll('.learn-hearts').forEach(el => {
-            el.innerHTML = renderHearts(heartCount);
-            el.title = `Сложность (Ease Factor): ${p ? p.easeFactor.toFixed(2) : 'New'}`;
+            // Label for the level
+            const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
+            
+            el.innerHTML = labelHtml + renderHearts(progress);
+            el.title = `Уровень: ${levelNames[level]}\nПрогресс: ${Math.round(progress * 100)}%\nEF: ${ef.toFixed(2)}`;
+            
+            // Cleanup old sibling label if it exists (from previous version)
+            const oldLabel = el.nextElementSibling;
+            if (oldLabel && oldLabel.classList.contains('level-label')) {
+                oldLabel.remove();
+            }
         });
+
+        // Update "Easy" button state
+        const easyBtn = container.querySelector('.rate-easy');
+        if (easyBtn) {
+            const canEasy = canUseEasy(progressObj || { easeFactor: 2.5 });
+            if (!canEasy) {
+                easyBtn.style.opacity = '0.5';
+                easyBtn.style.cursor = 'not-allowed';
+                easyBtn.title = 'Доступно только для карточек уровня "Легкие" с прогрессом > 70%';
+                // Optional: Change text or add lock icon
+                easyBtn.innerHTML = 'Легко 🔒 (4)';
+            } else {
+                easyBtn.style.opacity = '1';
+                easyBtn.style.cursor = 'pointer';
+                easyBtn.title = '';
+                easyBtn.innerHTML = 'Легко (4)';
+            }
+        }
     }
 
     if (counter) counter.textContent = `${state.progress}/${state.total}`;

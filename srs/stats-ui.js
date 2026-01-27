@@ -2,7 +2,7 @@ import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, 
 import { getProgressMap, syncFavorite } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
-import { startLearnSession } from './learn-ui.js?v=32';
+import { startLearnSession } from './learn-ui.js?v=33';
 
 let statsContainer = null;
 let mainContainer = null;

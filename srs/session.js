@@ -1,4 +1,4 @@
-import { calculateNextReview } from './algorithm.js';
+import { calculateNextReview, canUseEasy } from './algorithm.js';
 import { updateCardProgress, syncDailyStats } from './storage.js';
 
 /**
@@ -69,6 +69,7 @@ export class LearningSession {
         
         this.onUpdateUI({
             card: this.currentCard.item,
+            cardProgress: this.currentCard.progress, // Pass the progress object
             progress: this.currentIndex + 1,
             total: this.queue.length,
             isFlipped: false,
@@ -82,6 +83,7 @@ export class LearningSession {
         this.isFlipped = true;
         this.onUpdateUI({
             card: this.currentCard.item,
+            cardProgress: this.currentCard.progress, // Pass the progress object
             progress: this.currentIndex + 1,
             total: this.queue.length,
             isFlipped: true,
@@ -95,6 +97,14 @@ export class LearningSession {
      */
     rate(grade) {
         if (!this.currentCard) return;
+
+        // Apply restriction if grade is Easy (3 in UI)
+        if (grade === 3) {
+            const progress = this.currentCard.progress || { easeFactor: 2.5 };
+            if (!canUseEasy(progress)) {
+                grade = 2; // Downgrade to Good (2 in UI)
+            }
+        }
 
         if (grade === 0) this.stats.again++;
         else if (grade === 1) this.stats.hard++;
