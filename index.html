@@ -107,12 +107,12 @@
         </div>
     </div>
 
-                <script src="script.js" type="module"></script>
-                <script src="electron/renderer-stt.js" type="module"></script>
+                <script src="script.js?v=37" type="module"></script>
+    <script src="electron/renderer-stt.js" type="module"></script>
     <!-- Основной скрипт UI (модуль) -->
-    <script src="ui-manager.js?v=21" type="module"></script>
+    <script src="ui-manager.js?v=37" type="module"></script>
     <script type="module">
-        import { initUI } from './ui-manager.js?v=21';
+        import { initUI } from './ui-manager.js?v=37';
         window.initUI = initUI;
         
         // Unregister Service Workers to fix cache issues
