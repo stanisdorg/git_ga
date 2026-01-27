@@ -46,11 +46,13 @@ export function initLearnUI() {
                 <div class="flashcard">
                     <div class="flashcard-front">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
+                        <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-content" id="learn-question"></div>
                         <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
                     </div>
                     <div class="flashcard-back">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
+                        <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
                             <button class="rate-btn rate-again" data-grade="0">Снова (1)</button>
@@ -336,6 +338,40 @@ function renderCardState(state) {
     if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
     
+    // Update Hearts
+    const renderHearts = (count) => {
+        let html = '';
+        for (let i = 0; i < 5; i++) {
+            const filled = i < count;
+            const color = filled ? '#ff4d4d' : '#444';
+            html += `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${color}">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            `;
+        }
+        return html;
+    };
+
+    if (state.card) {
+        let heartCount = 0;
+        // Check both passed progress object or fetch fresh from storage
+        const progMap = getProgressMap();
+        const p = progMap[state.card.question];
+        if (p) {
+            const ef = p.easeFactor;
+            if (ef >= 2.7) heartCount = 5;
+            else if (ef >= 2.4) heartCount = 4;
+            else if (ef >= 2.1) heartCount = 3;
+            else if (ef >= 1.7) heartCount = 2;
+            else heartCount = 1;
+        }
+        container.querySelectorAll('.learn-hearts').forEach(el => {
+            el.innerHTML = renderHearts(heartCount);
+            el.title = `Сложность (Ease Factor): ${p ? p.easeFactor.toFixed(2) : 'New'}`;
+        });
+    }
+
     if (counter) counter.textContent = `${state.progress}/${state.total}`;
     
     if (progressFill) {

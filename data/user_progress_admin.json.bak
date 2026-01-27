@@ -77,17 +77,17 @@
     },
     "Из чего состоит Kafka и как работает?": {
       "interval": 1,
-      "easeFactor": 1.3,
-      "streak": 0,
-      "repetitionCount": 9,
-      "history": 9,
-      "lastReviewDate": 1769528778901,
+      "easeFactor": 1.4000000000000001,
+      "streak": 1,
+      "repetitionCount": 10,
+      "history": 10,
+      "lastReviewDate": 1769544817481,
       "nextReviewDate": 1769562000000,
       "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 0,
+      "repetitions": 1,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
+      "lastReviewedTime": 23,
       "question": "Из чего состоит Kafka и как работает?"
     },
     "Взаимодействие с другими командами?": {
@@ -332,17 +332,17 @@
     },
     "брокеры?": {
       "interval": 1,
-      "easeFactor": 1.3,
-      "streak": 0,
-      "repetitionCount": 9,
-      "history": 9,
-      "lastReviewDate": 1769528779265,
+      "easeFactor": 1.4000000000000001,
+      "streak": 1,
+      "repetitionCount": 10,
+      "history": 10,
+      "lastReviewDate": 1769544818112,
       "nextReviewDate": 1769562000000,
       "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 0,
+      "repetitions": 1,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
+      "lastReviewedTime": 23,
       "question": "брокеры?"
     },
     "Понимание того, как ляжет новое требование относительно всей архитектуры": {
@@ -392,17 +392,17 @@
     },
     "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
       "interval": 1,
-      "easeFactor": 1.3,
-      "streak": 0,
-      "repetitionCount": 9,
-      "history": 9,
-      "lastReviewDate": 1769528779636,
+      "easeFactor": 1.4000000000000001,
+      "streak": 1,
+      "repetitionCount": 10,
+      "history": 10,
+      "lastReviewDate": 1769544816843,
       "nextReviewDate": 1769562000000,
       "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 0,
+      "repetitions": 1,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
+      "lastReviewedTime": 23,
       "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
     },
     "Что такое gRPC?": {
@@ -437,17 +437,17 @@
     },
     "ci cd?": {
       "interval": 1,
-      "easeFactor": 1.3,
-      "streak": 0,
-      "repetitionCount": 9,
-      "history": 9,
-      "lastReviewDate": 1769528779088,
+      "easeFactor": 1.4000000000000001,
+      "streak": 1,
+      "repetitionCount": 10,
+      "history": 10,
+      "lastReviewDate": 1769544818319,
       "nextReviewDate": 1769562000000,
       "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 0,
+      "repetitions": 1,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
+      "lastReviewedTime": 23,
       "question": "ci cd?"
     },
     "Какие поля обязательны для заполнения при заведении бага?": {
@@ -3271,18 +3271,18 @@
       "question": "Какие типы браузеров ты тестировал?"
     },
     "Идентификация, валидация, авторизация примеры": {
-      "interval": 3,
-      "easeFactor": 2.7,
-      "streak": 2,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1769539813361,
-      "nextReviewDate": 1769734800000,
-      "dueDate": "2026-01-30T01:00:00.000Z",
-      "repetitions": 2,
+      "interval": 8,
+      "easeFactor": 2.8000000000000003,
+      "streak": 3,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1769544817693,
+      "nextReviewDate": 1770166800000,
+      "dueDate": "2026-02-04T01:00:00.000Z",
+      "repetitions": 3,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 21,
+      "lastReviewedTime": 23,
       "question": "Идентификация, валидация, авторизация примеры"
     },
     "анализ требований": {
@@ -3884,13 +3884,43 @@
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 21,
       "question": "Документно-ориентированная No SQL"
+    },
+    "Токен?": {
+      "interval": 1,
+      "easeFactor": 2.6,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769544817183,
+      "nextReviewDate": 1769562000000,
+      "dueDate": "2026-01-28T01:00:00.000Z",
+      "repetitions": 1,
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 23,
+      "question": "Токен?"
+    },
+    "401 vs 403?": {
+      "interval": 1,
+      "easeFactor": 2.6,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769544819031,
+      "nextReviewDate": 1769562000000,
+      "dueDate": "2026-01-28T01:00:00.000Z",
+      "repetitions": 1,
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 23,
+      "question": "401 vs 403?"
     }
   },
   "studyStats": {
-    "total": 526,
-    "timeSpent": 180149,
-    "points": 5915,
-    "correct": 341
+    "total": 535,
+    "timeSpent": 267440,
+    "points": 6065,
+    "correct": 350
   },
   "studyStreak": {
     "current": 1,
@@ -3898,23 +3928,27 @@
     "lastDate": "2026-01-27"
   },
   "dailyPoints": {
-    "2026-01-27": 5915
+    "2026-01-27": 6065
   },
   "dailyBonusPoints": {
     "2026-01-27": 0
   },
   "dailyDayBonusPoints": {
-    "2026-01-27": 225
+    "2026-01-27": 240
   },
   "qaFavorites": [
     "Из чего состоит Kafka и как работает?",
     "ci cd?",
     "брокеры?",
-    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
+    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?",
+    "401 vs 403?",
+    "Токен?",
+    "Идентификация, валидация, авторизация примеры"
   ],
   "studyAchievements": {
     "firstSessionCompleted": true,
-    "fiftyCards": true
+    "fiftyCards": true,
+    "nightOwl": true
   },
-  "updatedAt": 1769544123570
+  "updatedAt": 1769544820049
 }
