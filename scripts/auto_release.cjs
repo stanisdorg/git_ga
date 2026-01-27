@@ -12,14 +12,25 @@ console.log('--- AUTO-RELEASE SCRIPT STARTED ---');
 try {
     // 1. Read current version from ui-manager.js
     let uiManagerContent = fs.readFileSync(uiManagerPath, 'utf8');
-    const versionMatch = uiManagerContent.match(/export const APP_VERSION = '(\d+)';/);
+    const versionMatch = uiManagerContent.match(/export const APP_VERSION = '(\d+(\.\d+)?)';/);
 
     if (!versionMatch) {
         throw new Error('Could not find APP_VERSION in ui-manager.js');
     }
 
-    const currentVersion = parseInt(versionMatch[1], 10);
-    const newVersion = currentVersion + 1;
+    const currentVersion = versionMatch[1];
+    let newVersion;
+
+    if (currentVersion.includes('.')) {
+        const parts = currentVersion.split('.');
+        const major = parseInt(parts[0], 10);
+        const minor = parseInt(parts[1], 10);
+        newVersion = `${major}.${minor + 1}`;
+    } else {
+        // Fallback for integer versions (should verify this logic)
+        newVersion = `${parseInt(currentVersion, 10)}.1`;
+    }
+    
     console.log(`Bumping version: ${currentVersion} -> ${newVersion}`);
 
     // 2. Update ui-manager.js
@@ -29,14 +40,15 @@ try {
         `export const APP_VERSION = '${newVersion}';`
     );
     // Update all query parameters (cache busters)
-    uiManagerContent = uiManagerContent.replace(/v=\d+/g, `v=${newVersion}`);
+    // Supports v=1.0, v=1.1, v=40, etc.
+    uiManagerContent = uiManagerContent.replace(/v=[\d\.]+/g, `v=${newVersion}`);
     fs.writeFileSync(uiManagerPath, uiManagerContent);
     console.log('Updated ui-manager.js');
 
     // 3. Update index.html
     let indexHtmlContent = fs.readFileSync(indexHtmlPath, 'utf8');
     // Update all query parameters (cache busters)
-    indexHtmlContent = indexHtmlContent.replace(/v=\d+/g, `v=${newVersion}`);
+    indexHtmlContent = indexHtmlContent.replace(/v=[\d\.]+/g, `v=${newVersion}`);
     fs.writeFileSync(indexHtmlPath, indexHtmlContent);
     console.log('Updated index.html');
 

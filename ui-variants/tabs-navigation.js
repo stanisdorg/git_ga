@@ -2257,8 +2257,17 @@ export function displayQuestions(questions, title) {
         currentQuestions.sort((a, b) => {
             const efA = progressMap[a.question]?.easeFactor ?? 2.5;
             const efB = progressMap[b.question]?.easeFactor ?? 2.5;
-            // asc: от меньшего к большему (1.3 -> 2.9)
-            // desc: от большего к меньшему (2.9 -> 1.3)
+            
+            // Если EF одинаковый, сортируем по id для стабильности
+            if (Math.abs(efA - efB) < 0.001) {
+                return (a.id || 0) - (b.id || 0);
+            }
+            
+            // asc: от меньшего к большему (1.3 -> 2.9) - Самые сложные сначала (т.к. 1.3 = Very Hard)
+            // desc: от большего к меньшему (2.9 -> 1.3) - Самые легкие сначала (т.к. 2.9 = Easy)
+            // В SRS: Меньше EF = Сложнее, Больше EF = Легче.
+            // Сортировка "asc" (возрастание EF) = От сложных к легким
+            // Сортировка "desc" (убывание EF) = От легких к сложным
             return sortMode === 'asc' ? efA - efB : efB - efA;
         });
     }
