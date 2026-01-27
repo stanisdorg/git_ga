@@ -10,6 +10,11 @@ const indexHtmlPath = path.join(projectRoot, 'index.html');
 console.log('--- AUTO-RELEASE SCRIPT STARTED ---');
 
 try {
+    // 0. Run tests
+    console.log('Running tests...');
+    execSync('npm test', { cwd: projectRoot, stdio: 'inherit' });
+    console.log('Tests passed!');
+
     // 1. Read current version from ui-manager.js
     let uiManagerContent = fs.readFileSync(uiManagerPath, 'utf8');
     const versionMatch = uiManagerContent.match(/export const APP_VERSION = '(\d+(\.\d+)?)';/);

@@ -6,11 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "electron .",
+    "test": "playwright test",
     "electron:dev": "electron .",
     "release": "node scripts/auto_release.cjs"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.0",
     "electron": "^30.0.0"
   }
 }
-
