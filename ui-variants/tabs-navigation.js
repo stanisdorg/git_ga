@@ -33,8 +33,46 @@ function setDeletedItems(map) { setLS('qaDeletedItems', map); }
 
 // Получение актуальных данных с учетом удаленных
 function getRuntimeData() {
+    const base = uniqueQaData.map(item => ({ ...item }));
+    const overrides = getOverrides();
+    const newItems = getNewItems();
     const deleted = getDeletedItems();
-    return uniqueQaData.filter(item => !deleted[item.question]);
+    // Применяем overrides (категория/подкатегория/вопрос/ответ)
+    const byQuestion = new Map(base.map(i => [i.question, i]));
+    Object.keys(overrides).forEach(origQ => {
+        const ov = overrides[origQ];
+        if (!ov) return;
+        if (byQuestion.has(origQ)) {
+            const it = byQuestion.get(origQ);
+            const updated = { ...it };
+            if (ov.category) updated.category = ov.category;
+            if (ov.subcategory) updated.subcategory = ov.subcategory;
+            if (ov.question) updated.question = ov.question;
+            if (ov.answer) updated.answer = ov.answer;
+            // Если изменилось ключевое поле вопроса — обновляем ключ в Map
+            if (ov.question && ov.question !== origQ) {
+                byQuestion.delete(origQ);
+                byQuestion.set(updated.question, updated);
+            } else {
+                byQuestion.set(origQ, updated);
+            }
+        } else {
+            // Если исходного вопроса нет в базе, рассматриваем как новый элемент
+            byQuestion.set(ov.question || origQ, {
+                question: ov.question || origQ,
+                answer: ov.answer || '',
+                category: ov.category || 'Без категории',
+                subcategory: ov.subcategory || 'Общее',
+            });
+        }
+    });
+    // Добавляем новые элементы
+    newItems.forEach(ni => {
+        if (!byQuestion.has(ni.question)) byQuestion.set(ni.question, { ...ni });
+    });
+    // Исключаем удалённые
+    const merged = Array.from(byQuestion.values()).filter(i => !deleted[i.question] && !serverTrashSet.has(i.question));
+    return merged;
 }
 
 function getCategoryPlaceholders() { return getLS('qaCategoryPlaceholders', '{}'); }
@@ -97,7 +135,8 @@ let globalSaveStatusEl = null;
 
 export function initTabsNavigation() {
     console.log('Initializing Tabs Navigation...');
-    const container = document.querySelector('.container');
+    try {
+        const container = document.querySelector('.container');
     // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
     if (container) container.style.display = '';
     const sidebar = document.querySelector('.sidebar');
@@ -1709,6 +1748,20 @@ export function initTabsNavigation() {
         alert('Подкатегория отмечена как удалённая. Сохраните, чтобы применить.');
     }
 
+    } catch (e) {
+        console.error('CRITICAL ERROR in initTabsNavigation:', e);
+        // Show visible error on screen in case console is closed
+        const errDiv = document.createElement('div');
+        errDiv.style.color = 'red';
+        errDiv.style.padding = '20px';
+        errDiv.style.border = '1px solid red';
+        errDiv.style.margin = '20px';
+        errDiv.style.background = '#330000';
+        errDiv.textContent = 'Ошибка инициализации навигации: ' + e.message;
+        const c = document.querySelector('.container');
+        if (c) c.prepend(errDiv);
+        else document.body.prepend(errDiv);
+    }
 }
 
 // Глобальная версия индикатора сохранения для вызовов вне initTabsNavigation
@@ -2466,46 +2519,4 @@ function displayQuestions(questions, title) {
         resultsList.appendChild(resultItem);
     });
 }
-// Агрегатор данных на лету: применяет overrides, добавляет новые элементы и исключает удалённые
-function getRuntimeData() {
-    const base = uniqueQaData.map(item => ({ ...item }));
-    const overrides = getOverrides();
-    const newItems = getNewItems();
-    const deleted = getDeletedItems();
-    // Применяем overrides (категория/подкатегория/вопрос/ответ)
-    const byQuestion = new Map(base.map(i => [i.question, i]));
-    Object.keys(overrides).forEach(origQ => {
-        const ov = overrides[origQ];
-        if (!ov) return;
-        if (byQuestion.has(origQ)) {
-            const it = byQuestion.get(origQ);
-            const updated = { ...it };
-            if (ov.category) updated.category = ov.category;
-            if (ov.subcategory) updated.subcategory = ov.subcategory;
-            if (ov.question) updated.question = ov.question;
-            if (ov.answer) updated.answer = ov.answer;
-            // Если изменилось ключевое поле вопроса — обновляем ключ в Map
-            if (ov.question && ov.question !== origQ) {
-                byQuestion.delete(origQ);
-                byQuestion.set(updated.question, updated);
-            } else {
-                byQuestion.set(origQ, updated);
-            }
-        } else {
-            // Если исходного вопроса нет в базе, рассматриваем как новый элемент
-            byQuestion.set(ov.question || origQ, {
-                question: ov.question || origQ,
-                answer: ov.answer || '',
-                category: ov.category || 'Без категории',
-                subcategory: ov.subcategory || 'Общее',
-            });
-        }
-    });
-    // Добавляем новые элементы
-    newItems.forEach(ni => {
-        if (!byQuestion.has(ni.question)) byQuestion.set(ni.question, { ...ni });
-    });
-    // Исключаем удалённые
-    const merged = Array.from(byQuestion.values()).filter(i => !deleted[i.question] && !serverTrashSet.has(i.question));
-    return merged;
-}
+
