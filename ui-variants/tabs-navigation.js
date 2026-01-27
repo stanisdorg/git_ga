@@ -371,10 +371,10 @@ export function initTabsNavigation() {
     editToggleBtn.style.display = 'none';
 
     const loginMainBtn = document.createElement('button');
+    loginMainBtn.className = 'nav-icon-btn';
     const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
     loginMainBtn.innerHTML = userIconSvg;
     loginMainBtn.title = 'Войти';
-    loginMainBtn.style.color = '#fff';
     ensureDefaultUsers();
     loginMainBtn.addEventListener('click', () => {
         if (loggedInUser) {
@@ -391,6 +391,18 @@ export function initTabsNavigation() {
     topActions.appendChild(learnBtn);
     topActions.appendChild(statsBtn);
     topActions.appendChild(editToggleBtn);
+
+    // Version Display
+    if (appVersion) {
+        const verEl = document.createElement('span');
+        verEl.textContent = 'v' + appVersion;
+        verEl.style.fontSize = '10px';
+        verEl.style.color = 'var(--st-text-sec)';
+        verEl.style.marginLeft = '8px';
+        verEl.style.opacity = '0.5';
+        topActions.appendChild(verEl);
+    }
+
     navigationContainer.appendChild(topActions);
     tabsHeader.appendChild(tabsContainer);
 
@@ -401,8 +413,8 @@ export function initTabsNavigation() {
         loginMainBtn.title = loggedInUser ? 'Выйти' : 'Войти';
         const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
         loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
-        loginMainBtn.style.color = '#d0d0d0';
-        try { statsBtn.style.color = '#d0d0d0'; } catch {}
+        // loginMainBtn.style.color = '#d0d0d0';
+        // try { statsBtn.style.color = '#d0d0d0'; } catch {}
     }
     if (!window.qaAuth) window.qaAuth = {};
     window.qaAuth.getUser = () => loggedInUser;

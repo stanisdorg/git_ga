@@ -27,10 +27,10 @@ export function initUI() {
     // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
     const isStats = location.hash && location.hash.includes('stats');
     if (isStats) {
-        initStatsPage();
+        initStatsPage(APP_VERSION);
     } else {
         // Инициализируем табы и карточки
-        initTabsNavigation();
+        initTabsNavigation(APP_VERSION);
     }
     
     // Добавляем стили для табов и карточек
@@ -41,10 +41,10 @@ export function initUI() {
         removeExistingNavigation();
         const isStats = location.hash && location.hash.includes('stats');
         if (isStats) {
-            initStatsPage();
+            initStatsPage(APP_VERSION);
         } else {
             hideStatsPage();
-            initTabsNavigation();
+            initTabsNavigation(APP_VERSION);
         }
     };
     document.addEventListener('dataLoaded', reinit);

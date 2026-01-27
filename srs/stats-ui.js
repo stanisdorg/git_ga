@@ -55,7 +55,8 @@ const STATS_STYLES = `
 .st-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 16px;
   padding: 10px 0;
 }
 .st-header-title {
@@ -69,21 +70,10 @@ const STATS_STYLES = `
   gap: 8px;
 }
 .st-auth-btn {
-  background: none;
-  border: 1px solid var(--st-border);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  color: var(--st-text-sec);
-  cursor: pointer;
+  /* nav-icon-btn styles will apply via class */
 }
 .st-home-btn {
-  background: none;
-  border: none;
-  color: var(--st-text-sec);
-  font-size: 20px;
-  cursor: pointer;
-  padding: 6px;
+  /* nav-icon-btn styles will apply via class */
 }
 
 /* HERO Section */
@@ -383,8 +373,8 @@ const STATS_STYLES = `
   }
   
   /* Full Width Rows */
-  .st-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding-bottom: 0; }
-  .st-header::before { content: 'Статистика'; font-size: 24px; font-weight: 700; color: #fff; }
+  .st-header { grid-column: 1 / -1; display: flex; justify-content: flex-start; gap: 16px; align-items: center; padding-bottom: 0; }
+  .st-header::before { content: none; }
 
   .st-hero {
     grid-column: 1 / -1;
@@ -603,11 +593,17 @@ function renderStats() {
     <div class="st-wrapper">
       <!-- Header -->
       <div class="st-header">
-        <div class="st-header-title">Статистика</div>
         <div class="st-header-right">
-          <button class="st-auth-btn" id="st-auth-btn"></button>
-          <button class="st-home-btn" onclick="document.dispatchEvent(new Event('closeStats'))" title="На главную">🏠</button>
+          <button class="st-home-btn nav-icon-btn" onclick="document.dispatchEvent(new Event('closeStats'))" title="На главную">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </button>
+          <button class="st-auth-btn nav-icon-btn" id="st-auth-btn"></button>
+          ${currentAppVersion ? `<span style="font-size:10px;color:var(--st-text-sec);opacity:0.5;margin-left:4px;">v${currentAppVersion}</span>` : ''}
         </div>
+        <div class="st-header-title">Статистика</div>
       </div>
 
       <!-- HERO -->

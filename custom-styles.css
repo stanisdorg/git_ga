@@ -283,6 +283,33 @@
     background: #555;
 }
 
+/* Minimalist Nav Icon Button (Unified Style) */
+.nav-icon-btn {
+    background: none !important;
+    border: none !important;
+    color: #9BA3AF !important; /* var(--st-text-sec) match */
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+}
+.nav-icon-btn:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.1) !important;
+}
+
+/* Top Actions Container */
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px 10px 20px;
+    justify-content: flex-start; /* Ensure left alignment */
+}
+
 .tab {
     padding: 0 12px;
     background: var(--color-card);
