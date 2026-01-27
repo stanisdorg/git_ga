@@ -510,8 +510,14 @@ document.addEventListener('DOMContentLoaded', function() {
         displaySearchResults(filteredData, query);
     }
     
-    // Функция для отображения результатов поиска
+    // Функция отображения результатов поиска
     function displaySearchResults(filteredData, query) {
+        // Use the advanced display logic from tabs-navigation if available
+        if (typeof displayQuestions === 'function') {
+             displayQuestions(filteredData, query ? `Результаты поиска: ${query}` : 'Результаты поиска');
+             return;
+        }
+
         const resultsList = document.getElementById('results-list');
         resultsList.innerHTML = '';
         

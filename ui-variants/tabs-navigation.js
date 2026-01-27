@@ -2197,13 +2197,18 @@ function refreshCurrentContext() {
 }
 
 // Функция для отображения вопросов
-function displayQuestions(questions, title) {
-    const resultsList = document.getElementById('results-list');
-    resultsList.innerHTML = '';
-    resultsListRef = resultsList;
-    currentQuestions = [...questions];
+export function displayQuestions(questions, title) {
+    try {
+        const resultsList = document.getElementById('results-list');
+        if (!resultsList) {
+            console.error('results-list element not found');
+            return;
+        }
+        resultsList.innerHTML = '';
+        resultsListRef = resultsList;
+        currentQuestions = [...questions];
 
-    // Применяем порядок, если задан
+        // Применяем порядок, если задан
     const order = getOrderForContext(currentContextKey);
     if (order && sortMode === 'default') {
         const idx = new Map(order.map((q, i) => [q, i]));
@@ -2319,7 +2324,8 @@ function displayQuestions(questions, title) {
 
     // Добавляем вопросы
     currentQuestions.forEach((item, index) => {
-        const resultItem = document.createElement('div');
+        try {
+            const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
         if (editMode) {
             resultItem.setAttribute('draggable', 'true');
@@ -2640,6 +2646,12 @@ function displayQuestions(questions, title) {
         }
 
         resultsList.appendChild(resultItem);
+        } catch (err) {
+            console.error('Error rendering item:', item, err);
+        }
     });
+    } catch (e) {
+        console.error('Critical error in displayQuestions:', e);
+    }
 }
 
