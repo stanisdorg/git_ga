@@ -133,18 +133,8 @@ function verifyCredentialsWithSupabase(email, password) {
 // Глобальный индикатор сохранения (элемент верхней панели)
 let globalSaveStatusEl = null;
 
-export function initTabsNavigation() {
+export function initTabsNavigation(appVersion) {
     console.log('Initializing Tabs Navigation...');
-    // Debug visible element
-    const debugNav = document.createElement('div');
-    debugNav.innerHTML = 'Tabs Init Triggered';
-    debugNav.style.color = 'red';
-    debugNav.style.position = 'fixed';
-    debugNav.style.top = '10px';
-    debugNav.style.left = '50%';
-    debugNav.style.zIndex = '100000';
-    document.body.appendChild(debugNav);
-    setTimeout(() => debugNav.remove(), 5000);
 
     try {
         const container = document.querySelector('.container');
@@ -355,13 +345,14 @@ export function initTabsNavigation() {
 
     // Кнопка статистики
     const statsBtn = document.createElement('button');
+    statsBtn.className = 'nav-icon-btn';
     statsBtn.title = 'Статистика';
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
-    statsBtn.style.color = '#fff';
+    // statsBtn.style.color = '#fff';
     statsBtn.addEventListener('click', async () => {
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=6');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=8');
         location.hash = '#/stats';
-        initStatsPage();
+        initStatsPage(appVersion);
     });
 
     const editToggleBtn = document.createElement('button');

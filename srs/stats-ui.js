@@ -464,7 +464,8 @@ const STATS_STYLES = `
 }
 `;
 
-export function initStatsPage() {
+export function initStatsPage(appVersion) {
+  if (appVersion) window.currentAppVersion = appVersion;
   if (!document.getElementById('stats-container')) {
     const appWrapper = document.querySelector('.app-wrapper') || document.body;
     statsContainer = document.createElement('div');
@@ -601,7 +602,7 @@ function renderStats() {
             </svg>
           </button>
           <button class="st-auth-btn nav-icon-btn" id="st-auth-btn"></button>
-          ${currentAppVersion ? `<span style="font-size:10px;color:var(--st-text-sec);opacity:0.5;margin-left:4px;">v${currentAppVersion}</span>` : ''}
+          ${window.currentAppVersion ? `<span style="font-size:10px;color:var(--st-text-sec);opacity:0.5;margin-left:4px;">v${window.currentAppVersion}</span>` : ''}
         </div>
         <div class="st-header-title">Статистика</div>
       </div>

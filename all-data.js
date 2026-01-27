@@ -358,7 +358,7 @@ function removeDuplicates(data) {
 }
 
 // Удаляем дубликаты из статических данных
-let uniqueQaData = [];
+let uniqueQaData = removeDuplicates(allQaData);
 
 // Применение локальных админ-правок (overrides) и новых карточек к данным
 function applyAdminOverridesAndNewItems() {
