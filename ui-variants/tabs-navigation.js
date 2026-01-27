@@ -2264,16 +2264,15 @@ export function displayQuestions(questions, title) {
                  return sortMode === 'asc' ? efA - efB : efB - efA;
             }
 
-            // 2. Вторичная сортировка по ID (теперь тоже зависит от sortMode для полного разворота)
+            // 2. Вторичная сортировка по ID (всегда ASC для стабильности)
             const idA = parseInt(a.id, 10) || 0;
             const idB = parseInt(b.id, 10) || 0;
             if (idA !== idB) {
-                return sortMode === 'asc' ? idA - idB : idB - idA;
+                return idA - idB;
             }
 
-            // 3. Третичная сортировка по алфавиту (тоже зависит от sortMode)
-            const textCompare = a.question.localeCompare(b.question);
-            return sortMode === 'asc' ? textCompare : -textCompare;
+            // 3. Третичная сортировка по алфавиту (всегда ASC для стабильности)
+            return a.question.localeCompare(b.question, undefined, { numeric: true, sensitivity: 'base' });
         });
     }
     
