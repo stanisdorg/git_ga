@@ -18,6 +18,39 @@ debugBanner.style.pointerEvents = 'none';
 document.body.prepend(debugBanner);
 console.log('UI Manager Loaded');
 
+// Global Error Handler - Prints errors to screen
+window.onerror = function(msg, url, line, col, error) {
+    const errDiv = document.createElement('div');
+    errDiv.style.position = 'fixed';
+    errDiv.style.bottom = '0';
+    errDiv.style.left = '0';
+    errDiv.style.width = '100%';
+    errDiv.style.background = 'rgba(255,0,0,0.9)';
+    errDiv.style.color = 'white';
+    errDiv.style.padding = '10px';
+    errDiv.style.zIndex = '100000';
+    errDiv.style.fontFamily = 'monospace';
+    errDiv.style.fontSize = '12px';
+    errDiv.textContent = `Global Error: ${msg} \n ${url}:${line}:${col}`;
+    document.body.appendChild(errDiv);
+    return false;
+};
+window.addEventListener('unhandledrejection', function(event) {
+    const errDiv = document.createElement('div');
+    errDiv.style.position = 'fixed';
+    errDiv.style.bottom = '50px';
+    errDiv.style.left = '0';
+    errDiv.style.width = '100%';
+    errDiv.style.background = 'rgba(255,100,0,0.9)';
+    errDiv.style.color = 'white';
+    errDiv.style.padding = '10px';
+    errDiv.style.zIndex = '100000';
+    errDiv.style.fontFamily = 'monospace';
+    errDiv.style.fontSize = '12px';
+    errDiv.textContent = `Promise Rejection: ${event.reason}`;
+    document.body.appendChild(errDiv);
+});
+
 // Функция для инициализации UI
 export function initUI() {
     console.log('initUI called');
