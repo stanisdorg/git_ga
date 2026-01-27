@@ -133,12 +133,12 @@ export function initLearnUI() {
 }
 
 // Stub for Smart Pause feature to prevent errors
-function showSmartPause(recommendation) {
-    if (!recommendation) return;
-    console.log('[SmartPause] Recommendation:', recommendation);
-    // Auto-resume for now to avoid blocking UI without modal implementation
-    if (session) session.resumeFromPause();
-}
+// function showSmartPause(recommendation) {
+//    if (!recommendation) return;
+//    console.log('[SmartPause] Recommendation:', recommendation);
+//    // Auto-resume for now to avoid blocking UI without modal implementation
+//    if (session) session.resumeFromPause();
+//}
 
 function handleKeydown(e) {
     if (container.style.display === 'none') return;
