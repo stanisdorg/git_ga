@@ -305,7 +305,7 @@ function stopLearnSession() {
         clearInterval(timerInterval);
         timerInterval = null;
     }
-    container.style.display = 'none';
+    if (container) container.style.display = 'none';
     if (mainContainer) mainContainer.style.display = 'block'; // Or whatever flex/grid it was
     // Restore sidebar
     const sidebar = document.querySelector('.sidebar');
@@ -319,6 +319,8 @@ function renderCardState(state) {
     if (state.pauseRecommendation) {
         try { showSmartPause(state.pauseRecommendation); } catch (e) { console.error('Pause error', e); }
     }
+
+    if (!container) return; // Guard against missing container
 
     const cardEl = container.querySelector('.flashcard');
     const front = container.querySelector('.flashcard-front');
@@ -393,7 +395,10 @@ function showStats(stats, results, total) {
         updateSegments(results, total);
     }
 
-    container.querySelector('.flashcard-container').style.display = 'none';
+    if (container) {
+        const fcContainer = container.querySelector('.flashcard-container');
+        if (fcContainer) fcContainer.style.display = 'none';
+    }
     checkAchievements();
     let overlay = document.getElementById('session-summary-overlay');
     if (!overlay) {

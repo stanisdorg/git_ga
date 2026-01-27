@@ -2257,8 +2257,8 @@ function displayQuestions(questions, title) {
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
                 <span class="subcategory-badge">${dispSub}</span>
-                <button class="fav-btn ${favClass}" title="В избранное" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center">${starSvg(isFav)}</button>
             </div>
+            <button class="fav-btn ${favClass}" title="В избранное" style="position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;padding:0;z-index:5;">${starSvg(isFav)}</button>
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>
         `;
