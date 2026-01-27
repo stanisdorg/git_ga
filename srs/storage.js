@@ -21,6 +21,16 @@ let syncDebounceTimer = null;
 export async function syncWithServer() {
     if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
 
+    // Only sync if we have a logged-in user (not guest)
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    let username = null;
+    try {
+        const u = JSON.parse(sessionUserRaw);
+        if (u && u.username) username = u.username;
+    } catch {}
+
+    if (!username) return; // Guest -> do not sync
+
     syncDebounceTimer = setTimeout(async () => {
         // Collect all data
         const data = {
@@ -37,7 +47,7 @@ export async function syncWithServer() {
 
         try {
             window.dispatchEvent(new Event('sync-start'));
-            const res = await fetch('/api/progress', {
+            const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -57,14 +67,30 @@ export async function syncWithServer() {
 }
 
 export async function loadFromServer() {
+    // Only load if we have a logged-in user
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    let username = null;
     try {
-        const res = await fetch('/api/progress');
+        const u = JSON.parse(sessionUserRaw);
+        if (u && u.username) username = u.username;
+    } catch {}
+
+    if (!username) return; // Guest -> do not load
+
+    try {
+        const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`);
         if (!res.ok) return;
         const data = await res.json();
         
         if (!data || Object.keys(data).length === 0) return;
 
         // Check if server data is newer than local last sync
+        // Note: When switching users, localDataTimestamp might be from previous user or guest.
+        // But since we are loading explicit user data, we should probably ALWAYS load it
+        // if it's the first load after login.
+        // However, standard logic checks timestamp.
+        // If we want to force load on login, we should clear 'localDataTimestamp' in setLoggedUser.
+        
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
         if (data.updatedAt && data.updatedAt <= localTS) {
             // Local data is fresher or equal, do not overwrite
@@ -89,6 +115,8 @@ export async function loadFromServer() {
         console.error('Error loading from server:', e);
     }
 }
+
+export const hydrateLocalFromSupabase = loadFromServer;
 
 export async function syncCardProgress(question, progress) {
     syncWithServer(); // Sync with local server

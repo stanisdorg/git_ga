@@ -301,7 +301,7 @@ export function initTabsNavigation() {
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
     statsBtn.style.color = '#fff';
     statsBtn.addEventListener('click', async () => {
-        const { initStatsPage } = await import('../srs/stats-ui.js');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=6');
         location.hash = '#/stats';
         initStatsPage();
     });
@@ -313,12 +313,10 @@ export function initTabsNavigation() {
     editToggleBtn.style.display = 'none';
 
     const loginMainBtn = document.createElement('button');
-    // Иконка человечка (черно-белая)
     const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
     loginMainBtn.innerHTML = userIconSvg;
     loginMainBtn.title = 'Войти';
     loginMainBtn.style.color = '#fff';
-    // Простая локальная авторизация без Netlify/Auth0
     ensureDefaultUsers();
     loginMainBtn.addEventListener('click', () => {
         if (loggedInUser) {
@@ -348,6 +346,10 @@ export function initTabsNavigation() {
         loginMainBtn.style.color = '#d0d0d0';
         try { statsBtn.style.color = '#d0d0d0'; } catch {}
     }
+    if (!window.qaAuth) window.qaAuth = {};
+    window.qaAuth.getUser = () => loggedInUser;
+    window.qaAuth.openLogin = () => openLoginModal();
+    window.qaAuth.logout = () => setLoggedUser(null);
     // Плашка уровня и XP
     import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
         const box = document.createElement('div');
@@ -457,28 +459,6 @@ export function initTabsNavigation() {
     // Инициализация состояния кнопок по сохранённому пользователю
     try { setLoggedUser(loggedInUser); } catch {}
 
-    function setLoggedUser(user) {
-        loggedInUser = user;
-        try {
-            localStorage.setItem('qaSessionUser', JSON.stringify(user));
-        } catch {}
-        updateLoginBtnState();
-        adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-        editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-        genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-        cloudBtn.style.display = user ? 'inline-block' : 'none';
-        try { migrateDeviceRecordsToUser(); } catch {}
-        if (user) {
-            import('../srs/storage.js').then(mod => {
-                if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
-                    mod.hydrateLocalFromSupabase().then(() => {
-                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
-                    }).catch(()=>{});
-                }
-            }).catch(()=>{});
-        }
-    }
-
     // Панель корзины (видна только в режиме редактирования)
     const trashPanel = document.createElement('div');
     trashPanel.className = 'trash-panel';
@@ -551,14 +531,21 @@ export function initTabsNavigation() {
         const raw = localStorage.getItem('usersDB') || '[]';
         let users;
         try { users = JSON.parse(raw); } catch { users = []; }
-        const ensure = (username, password, role) => {
-            if (!users.find(u => u.username === username)) {
+        if (!Array.isArray(users)) users = [];
+        
+        const upsert = (username, password, role) => {
+            const idx = users.findIndex(u => u.username === username);
+            if (idx >= 0) {
+                users[idx].password = password;
+                users[idx].role = role;
+            } else {
                 users.push({ username, password, role });
             }
         };
-        ensure('stasdoroganov', 'world000', 'admin');
-        ensure('stanislavdoroganov', 'world000', 'user');
-        ensure('admin', 'admin', 'admin');
+
+        upsert('admin', 'admin', 'admin');
+        upsert('stas', 'admin', 'user');
+        
         localStorage.setItem('usersDB', JSON.stringify(users));
         const currentRaw = localStorage.getItem('qaSessionUser');
         if (currentRaw) {
@@ -567,16 +554,52 @@ export function initTabsNavigation() {
         updateLoginBtnState();
     }
 
-    function saveLoggedUser(user, remember) {
+    const DATA_KEYS = [
+        'srsProgress', 'studyStats', 'studyStreak', 'dailyPoints', 
+        'dailyBonusPoints', 'dailyDayBonusPoints', 'qaFavorites', 'studyAchievements'
+    ];
+
+    function setLoggedUser(user) {
+        // Переключение Guest -> User (Login)
+        if (!loggedInUser && user) {
+            // Бэкап данных гостя
+            const backup = {};
+            DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
+            localStorage.setItem('guest_backup', JSON.stringify(backup));
+            
+            // Очищаем данные, чтобы загрузить профиль пользователя начисто
+            DATA_KEYS.forEach(k => localStorage.removeItem(k));
+            localStorage.removeItem('localDataTimestamp'); 
+        }
+
+        // Переключение User -> Guest (Logout)
+        if (loggedInUser && !user) {
+            // Восстанавливаем данные гостя
+            const raw = localStorage.getItem('guest_backup');
+            if (raw) {
+                try {
+                    const backup = JSON.parse(raw);
+                    DATA_KEYS.forEach(k => {
+                        if (backup[k] !== null) localStorage.setItem(k, backup[k]);
+                        else localStorage.removeItem(k);
+                    });
+                } catch {}
+            } else {
+                // Если бэкапа нет (странно), чистим, чтобы не оставить данные админа
+                DATA_KEYS.forEach(k => localStorage.removeItem(k));
+            }
+            localStorage.removeItem('localDataTimestamp');
+        }
+
         loggedInUser = user;
         try {
             const s = JSON.stringify(user);
-            if (remember) {
+            if (user) { // Only save if user exists
                 localStorage.setItem('qaSessionUser', s);
                 sessionStorage.removeItem('qaSessionUser');
             } else {
-                sessionStorage.setItem('qaSessionUser', s);
                 localStorage.removeItem('qaSessionUser');
+                sessionStorage.removeItem('qaSessionUser');
             }
         } catch {}
         updateLoginBtnState();
@@ -592,9 +615,15 @@ export function initTabsNavigation() {
                 if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
                     mod.hydrateLocalFromSupabase().then(() => {
                         const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
+                        // Также обновляем избранное
+                         window.dispatchEvent(new Event('favoritesUpdated'));
                     }).catch(()=>{});
                 }
             }).catch(()=>{});
+        } else {
+             // Если вышли (Guest), тоже обновим UI
+             window.dispatchEvent(new Event('xpUpdated'));
+             window.dispatchEvent(new Event('favoritesUpdated'));
         }
     }
 
@@ -666,7 +695,7 @@ export function initTabsNavigation() {
                         }
                     }
                     if (authed) {
-                        saveLoggedUser(authed, !!remember);
+                        setLoggedUser(authed); // remember ignored in setLoggedUser currently, but that is fine
                         ov.remove();
                     } else {
                         // Fallback to local users (legacy)
@@ -674,7 +703,7 @@ export function initTabsNavigation() {
                         const users = JSON.parse(raw);
                         const match = users.find(x => x.username === u && x.password === p);
                         if (match) {
-                            saveLoggedUser({ username: match.username, role: match.role }, !!remember);
+                            setLoggedUser({ username: match.username, role: match.role });
                             ov.remove();
                         } else {
                             alert('Неверный логин или пароль');

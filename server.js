@@ -131,13 +131,30 @@ const server = http.createServer((req, res) => {
 
 
   // Сохранение пользовательского прогресса
-  if (req.method === 'POST' && req.url === '/api/progress') {
+  if (req.method === 'POST' && req.url.startsWith('/api/progress')) {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
-        const progressPath = path.join(__dirname, 'data', 'user_progress.json');
+        
+        // Определяем пользователя из query параметра или тела запроса
+        // В данном случае лучше ожидать username в query: /api/progress?username=...
+        const urlObj = new URL(req.url, `http://${req.headers.host}`);
+        const username = urlObj.searchParams.get('username');
+        
+        let filename = 'user_progress.json';
+        if (username) {
+            // Санитизация имени файла
+            const safeUsername = username.replace(/[^a-zA-Z0-9_-]/g, '');
+            if (safeUsername) filename = `user_progress_${safeUsername}.json`;
+        } else {
+             // Если нет юзера, но мы хотим запретить сохранение для гостей на сервере?
+             // Клиент просто не должен слать запрос. Но если прислал - сохраним в дефолтный (legacy) или вернем ошибку.
+             // Для совместимости оставим user_progress.json как "общий" или "девайс" сторадж, если вдруг понадобится.
+        }
+
+        const progressPath = path.join(__dirname, 'data', filename);
         
         // Создаем папку data если нет
         const dataDir = path.join(__dirname, 'data');
@@ -146,7 +163,7 @@ const server = http.createServer((req, res) => {
         // Делаем бэкап перед записью
         try {
           if (fs.existsSync(progressPath)) {
-             const backupPath = path.join(__dirname, 'data', 'user_progress.bak.json');
+             const backupPath = path.join(__dirname, 'data', `${filename}.bak`);
              fs.copyFileSync(progressPath, backupPath);
           }
         } catch (err) {
@@ -172,8 +189,17 @@ const server = http.createServer((req, res) => {
   }
 
   // Загрузка пользовательского прогресса
-  if (req.method === 'GET' && req.url === '/api/progress') {
-    const progressPath = path.join(__dirname, 'data', 'user_progress.json');
+  if (req.method === 'GET' && req.url.startsWith('/api/progress')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('username');
+    
+    let filename = 'user_progress.json';
+    if (username) {
+        const safeUsername = username.replace(/[^a-zA-Z0-9_-]/g, '');
+        if (safeUsername) filename = `user_progress_${safeUsername}.json`;
+    }
+
+    const progressPath = path.join(__dirname, 'data', filename);
     if (fs.existsSync(progressPath)) {
       fs.readFile(progressPath, 'utf-8', (err, content) => {
         if (err) {
@@ -185,7 +211,7 @@ const server = http.createServer((req, res) => {
         res.end(content);
       });
     } else {
-      // Если файла нет, возвращаем пустой объект, это нормально для первого запуска
+      // Если файла нет, возвращаем пустой объект
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({}));
     }

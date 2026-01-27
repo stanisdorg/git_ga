@@ -21,8 +21,11 @@ const starSvg = (filled) => `
 `;
 
 export function initLearnUI() {
+    // Check if container already exists (from previous session or reload)
+    container = document.getElementById('learn-container');
+    
     // Create Learn Container if not exists
-    if (!document.getElementById('learn-container')) {
+    if (!container) {
         const appWrapper = document.querySelector('.app-wrapper') || document.body;
         container = document.createElement('div');
         container.id = 'learn-container';
@@ -129,6 +132,14 @@ export function initLearnUI() {
     mainContainer = document.querySelector('.container');
 }
 
+// Stub for Smart Pause feature to prevent errors
+function showSmartPause(recommendation) {
+    if (!recommendation) return;
+    console.log('[SmartPause] Recommendation:', recommendation);
+    // Auto-resume for now to avoid blocking UI without modal implementation
+    if (session) session.resumeFromPause();
+}
+
 function handleKeydown(e) {
     if (container.style.display === 'none') return;
     
@@ -151,6 +162,16 @@ function handleKeydown(e) {
  */
 export function startLearnSession(candidateQuestions, options = {}) {
     initLearnUI(); // Ensure UI exists
+
+    // Filter out invalid cards to prevent empty screens
+    if (candidateQuestions && Array.isArray(candidateQuestions)) {
+        const originalCount = candidateQuestions.length;
+        candidateQuestions = candidateQuestions.filter(q => q && q.question && q.answer);
+        if (candidateQuestions.length < originalCount) {
+            console.warn(`Filtered out ${originalCount - candidateQuestions.length} invalid cards (missing question/answer)`);
+        }
+    }
+
     window.__lastCandidates = candidateQuestions;
 
     // Initialize Scheduler
@@ -175,9 +196,9 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     if (infoEl) {
         if (options.mode === 'cram') {
-             infoEl.textContent = `Режим тренировки • ${candidateQuestions.length} карт`;
+            infoEl.textContent = `Углубленное обучение • ${candidateQuestions.length} карт`;
         } else {
-             infoEl.textContent = `День ${status.dayNumber}/${status.totalDays} • Прогресс ${status.progressPercent}%`;
+            infoEl.textContent = `День ${status.dayNumber}/${status.totalDays} • Прогресс ${status.progressPercent}%`;
         }
     }
 
@@ -208,13 +229,12 @@ export function startLearnSession(candidateQuestions, options = {}) {
     let sessionCards = [];
 
     if (options.mode === 'cram') {
-        // In cram mode, we take all candidates as they are
-        // Map them to the structure expected by session (add progress placeholder if needed)
         const progMap = getProgressMap();
         sessionCards = candidateQuestions.map(q => {
              const p = progMap[q.question];
              return {
                  question: q.question,
+                 answer: q.answer,
                  item: q,
                  progress: p || null, // Use existing progress if available
                  isNew: !p
@@ -223,24 +243,9 @@ export function startLearnSession(candidateQuestions, options = {}) {
         // Shuffle
         sessionCards.sort(() => Math.random() - 0.5);
     } else {
-        // Standard SRS Logic
         const dueCards = getDueCards(candidateQuestions);
-        
-        // Strategy:
-        // 1. All reviews are mandatory (dueCards where !isNew).
-        // 2. New cards are limited by daily goal + catchup, but capped to avoid burnout.
         const reviews = dueCards.filter(c => !c.isNew);
         let newCards = dueCards.filter(c => c.isNew);
-        
-        // Use calculated goal from Scheduler
-        // User request: Allow > 100% progress (up to 120%)
-        const baseGoal = status.dailyNewGoal;
-        const newLimit = Math.ceil(baseGoal * 1.20);
-        
-        if (newCards.length > newLimit) {
-            newCards = newCards.slice(0, newLimit);
-        }
-        
         sessionCards = [...reviews, ...newCards];
     }
     
@@ -251,7 +256,11 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     
     if (sessionCards.length === 0) {
-        alert('На сегодня план выполнен! Отличная работа!');
+        if (candidateQuestions && candidateQuestions.length > 0 && options.mode !== 'cram') {
+            startLearnSession(candidateQuestions, { mode: 'cram' });
+            return;
+        }
+        alert('Нет карточек для обучения.');
         return;
     }
 
@@ -262,8 +271,12 @@ export function startLearnSession(candidateQuestions, options = {}) {
     if (sidebar) sidebar.style.display = 'none';
     
     container.style.display = 'flex';
-    document.getElementById('learn-stats').style.display = 'none';
-    container.querySelector('.flashcard-container').style.display = 'flex';
+    const learnStats = document.getElementById('learn-stats');
+    if (learnStats) learnStats.style.display = 'none';
+    
+    const fcContainer = container.querySelector('.flashcard-container');
+    if (fcContainer) fcContainer.style.display = 'flex';
+    
     // Reset progress UI for new session
     const segs = document.getElementById('learn-segments');
     const progressFill = container.querySelector('.learn-progress-fill');
@@ -304,7 +317,7 @@ function stopLearnSession() {
 
 function renderCardState(state) {
     if (state.pauseRecommendation) {
-        showSmartPause(state.pauseRecommendation);
+        try { showSmartPause(state.pauseRecommendation); } catch (e) { console.error('Pause error', e); }
     }
 
     const cardEl = container.querySelector('.flashcard');
@@ -318,25 +331,32 @@ function renderCardState(state) {
     // Update segments
     updateSegments(state.results, state.total);
 
-    qEl.textContent = state.card.question;
-    aEl.textContent = state.card.answer;
+    if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
+    if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
     
-    counter.textContent = `${state.progress}/${state.total}`;
-    progressFill.style.width = `${(state.progress / state.total) * 100}%`;
+    if (counter) counter.textContent = `${state.progress}/${state.total}`;
+    
+    if (progressFill) {
+        progressFill.style.width = `${(state.progress / state.total) * 100}%`;
+    }
 
     // Update favorite button state
-    const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
-    const isFav = favs.includes(state.card.question);
-    container.querySelectorAll('.learn-fav-btn').forEach(btn => {
-        btn.innerHTML = starSvg(isFav);
-        if (isFav) btn.classList.add('active');
-        else btn.classList.remove('active');
-    });
+    try {
+        const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+        const isFav = state.card && favs.includes(state.card.question);
+        container.querySelectorAll('.learn-fav-btn').forEach(btn => {
+            btn.innerHTML = starSvg(isFav);
+            if (isFav) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    } catch (e) { console.error('Fav update error', e); }
 
-    if (state.isFlipped) {
-        cardEl.classList.add('flipped');
-    } else {
-        cardEl.classList.remove('flipped');
+    if (cardEl) {
+        if (state.isFlipped) {
+            cardEl.classList.add('flipped');
+        } else {
+            cardEl.classList.remove('flipped');
+        }
     }
 }
 

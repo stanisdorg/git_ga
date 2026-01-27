@@ -54,16 +54,36 @@ const STATS_STYLES = `
 /* Header */
 .st-header {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 0;
 }
-.st-close {
+.st-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+.st-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.st-auth-btn {
+  background: none;
+  border: 1px solid var(--st-border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--st-text-sec);
+  cursor: pointer;
+}
+.st-home-btn {
   background: none;
   border: none;
   color: var(--st-text-sec);
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
 }
 
 /* HERO Section */
@@ -583,7 +603,11 @@ function renderStats() {
     <div class="st-wrapper">
       <!-- Header -->
       <div class="st-header">
-        <button class="st-close" onclick="document.dispatchEvent(new Event('closeStats'))">✕</button>
+        <div class="st-header-title">Статистика</div>
+        <div class="st-header-right">
+          <button class="st-auth-btn" id="st-auth-btn"></button>
+          <button class="st-home-btn" onclick="document.dispatchEvent(new Event('closeStats'))" title="На главную">🏠</button>
+        </div>
       </div>
 
       <!-- HERO -->
@@ -606,7 +630,7 @@ function renderStats() {
         <!-- Desktop CTA placement (hidden on mobile via CSS if needed, but here simplified) -->
         <div class="st-sticky-cta-wrapper">
            <button class="st-cta-btn" onclick="window.startDailySession()">
-             ${sessionCount > 0 ? 'НАЧАТЬ ОБУЧЕНИЕ' : 'ТРЕНИРОВКА'}
+             ${sessionCount > 0 ? 'НАЧАТЬ ОБУЧЕНИЕ' : 'УЧИТЬ ВСЕ'}
            </button>
         </div>
       </div>
@@ -762,6 +786,37 @@ function renderStats() {
   
   statsContainer.innerHTML = html;
   
+  const authBtn = document.getElementById('st-auth-btn');
+  if (authBtn) {
+    const getUser = () => {
+      try {
+        const raw = localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser') || '';
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    };
+    const updateAuth = () => {
+      const u = getUser();
+      if (u) {
+        authBtn.textContent = u.username || u.email || 'Выйти';
+      } else {
+        authBtn.textContent = 'Войти';
+      }
+    };
+    authBtn.onclick = () => {
+      const api = window.qaAuth || {};
+      const u = getUser();
+      if (u) {
+        if (typeof api.logout === 'function') api.logout();
+      } else {
+        if (typeof api.openLogin === 'function') api.openLogin();
+      }
+      setTimeout(updateAuth, 300);
+    };
+    updateAuth();
+  }
+  
   // Handlers
   window.startDailySession = () => {
      if (sessionCount > 0) {
@@ -832,25 +887,28 @@ function renderStats() {
   };
   
   window.openDiffModal = (label, colorClass) => {
-      // Find range
       const progress = getProgressMap();
       let cards = [];
 
       if (label === 'Избранное') {
           const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-          cards = uniqueQaData.filter(q => favorites.has(q.question));
+          cards = uniqueQaData.filter(q => q && q.question && q.answer && favorites.has(q.question));
       } else {
-          let min=0, max=0;
+          let min = 0, max = 0;
           if (label === 'Очень трудные') { max = 1.6; }
           else if (label === 'Трудные') { min = 1.6; max = 2.1; }
           else if (label === 'Стандарт') { min = 2.1; max = 2.6; }
           else if (label === 'Легкие') { min = 2.6; max = 999; }
-          
+
+          // Use the same EF logic as in the chart: all карты участвуют,
+          // а у новых EF по умолчанию 2.5 (Стандарт)
           cards = uniqueQaData.filter(q => {
-             const p = progress[q.question];
-             if (!p) return false;
-             // Use default EF=2.5 if missing (same logic as chart)
-             const ef = p.easeFactor || 2.5; 
+             // Ensure valid card data
+             if (!q || !q.question || !q.answer) return false;
+
+             let p = progress[q.question];
+             if (!p && q.question) p = progress[q.question.trim()];
+             const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
              return ef >= min && ef < max;
           });
       }
@@ -877,7 +935,7 @@ function renderStats() {
             </div>
             <div class="st-modal-footer">
                <button class="st-modal-btn" onclick="startFilteredSession()">
-                 Учить эти карточки
+                 Начать обучение
                </button>
             </div>
           </div>
