@@ -555,16 +555,18 @@ function renderStats() {
   uniqueQaData.forEach(q => {
      if (favorites.has(q.question)) favCount++;
 
-     const p = progressMap[q.question];
-     if (!p) return;
-     
+     let p = progressMap[q.question];
+     // Try trimmed lookup if direct failed
+     if (!p && q.question) p = progressMap[q.question.trim()];
+
      // Count today's activity
-     if (p.lastReviewed === todayStr) {
+     if (p && p.lastReviewed === todayStr) {
          cardsDoneToday++;
      }
 
      // Use default EF=2.5 if missing (fallback for new/learning cards)
-     const ef = p.easeFactor || 2.5;
+     // This ensures ALL cards appear in the chart, defaulting to 'Standard'
+     const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
      
      if (ef < 1.6) segs[0].count++;
      else if (ef < 2.1) segs[1].count++;
