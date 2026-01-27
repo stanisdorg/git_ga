@@ -2204,9 +2204,23 @@ function displayQuestions(questions, title) {
 
     // Применяем порядок, если задан
     const order = getOrderForContext(currentContextKey);
-    if (order) {
+    if (order && sortMode === 'default') {
         const idx = new Map(order.map((q, i) => [q, i]));
         currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
+    }
+    
+    // Получаем прогресс для всех карточек для сортировки и отображения
+    const progressMap = getProgressMap();
+
+    // Применяем сортировку по EF (сердечкам), если включена
+    if (sortMode !== 'default') {
+        currentQuestions.sort((a, b) => {
+            const efA = progressMap[a.question]?.easeFactor ?? 2.5;
+            const efB = progressMap[b.question]?.easeFactor ?? 2.5;
+            // asc: от меньшего к большему (1.3 -> 2.9)
+            // desc: от большего к меньшему (2.9 -> 1.3)
+            return sortMode === 'asc' ? efA - efB : efB - efA;
+        });
     }
     
     // Обновляем счетчик результатов (вынесен из grid)
@@ -2217,22 +2231,84 @@ function displayQuestions(questions, title) {
         countContainer.className = 'results-header'; // Use existing class for style
         countContainer.style.padding = '0 20px 10px 20px';
         countContainer.style.marginBottom = '0';
+        countContainer.style.display = 'flex';
+        countContainer.style.alignItems = 'center';
+        countContainer.style.gap = '10px';
         resultsList.parentNode.insertBefore(countContainer, resultsList);
     }
-    countContainer.innerHTML = `<p class="results-count" style="margin:0">Найдено: ${questions.length}</p>`;
     
-    // Получаем прогресс для всех карточек
-    const progressMap = getProgressMap();
+    // Иконки сортировки
+    const sortIcons = {
+        default: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5"/></svg>',
+        asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // Стрелка вниз (возрастание)
+        desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // Стрелка вверх (убывание)
+    };
+    const sortTitle = {
+        default: 'Сортировка: По умолчанию',
+        asc: 'Сортировка: От сложных к легким (EF ↑)',
+        desc: 'Сортировка: От легких к сложным (EF ↓)'
+    };
 
-    // Хелпер для отрисовки сердечек
-    const renderHearts = (count) => {
-        let html = '<div class="hearts-container" title="Сложность (Ease Factor)" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
-        for (let i = 0; i < 5; i++) {
-            const filled = i < count;
-            const color = filled ? '#ff4d4d' : '#444';
+    countContainer.innerHTML = `
+        <p class="results-count" style="margin:0">Найдено: ${questions.length}</p>
+        <button id="sort-toggle-btn" class="nav-icon-btn" title="${sortTitle[sortMode]}" style="padding:4px 8px; border-radius:4px; border:1px solid #444; background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            ${sortIcons[sortMode]}
+        </button>
+    `;
+
+    // Обработчик кнопки сортировки
+    const sortBtn = countContainer.querySelector('#sort-toggle-btn');
+    if (sortBtn) {
+        sortBtn.addEventListener('click', () => {
+            if (sortMode === 'default') sortMode = 'asc';
+            else if (sortMode === 'asc') sortMode = 'desc';
+            else sortMode = 'default';
+            displayQuestions(currentQuestions, title);
+        });
+    }
+
+    // Хелпер для отрисовки сердечек (новая логика с дробными)
+    const renderHearts = (ef) => {
+        const level = getDifficultyLevel(ef);
+        const progress = getLevelProgress(ef, level);
+        
+        const levelNames = {
+            'VERY_HARD': 'Очень трудные',
+            'HARD': 'Трудные',
+            'STANDARD': 'Стандарт',
+            'EASY': 'Легкие'
+        };
+        const levelNums = {
+            'VERY_HARD': 1,
+            'HARD': 2,
+            'STANDARD': 3,
+            'EASY': 4
+        };
+        const levelName = levelNames[level] || level;
+        const levelNum = levelNums[level] || '?';
+        
+        let html = '<div class="hearts-container" title="Уровень: ' + levelNum + ' (' + levelName + ')\\nПрогресс: ' + Math.round(progress * 100) + '%\\nEF: ' + ef.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
+        
+        // Рисуем 4 сердечка
+        for (let i = 0; i < 4; i++) {
+            const threshold = (i + 1) * 0.25;
+            const prevThreshold = i * 0.25;
+            let fill = 0;
+            if (progress >= threshold) fill = 1;
+            else if (progress > prevThreshold) fill = (progress - prevThreshold) / 0.25;
+            
+            const stopVal = Math.round(fill * 100);
+            const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+            
             html += `
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${color}">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="${id}">
+                            <stop offset="${stopVal}%" stop-color="#ff4d4d" />
+                            <stop offset="${stopVal}%" stop-color="#444" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
             `;
         }
@@ -2296,22 +2372,14 @@ function displayQuestions(questions, title) {
 
         // Расчет сердечек
         const cardProgress = progressMap[item.question];
-        let heartCount = 0;
-        if (cardProgress) {
-            const ef = cardProgress.easeFactor;
-            if (ef >= 2.7) heartCount = 5;
-            else if (ef >= 2.4) heartCount = 4;
-            else if (ef >= 2.1) heartCount = 3;
-            else if (ef >= 1.7) heartCount = 2;
-            else heartCount = 1;
-        }
-
+        const ef = cardProgress ? cardProgress.easeFactor : 2.5;
+        
         resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
                 <span class="subcategory-badge">${dispSub}</span>
             </div>
-            ${renderHearts(heartCount)}
+            ${renderHearts(ef)}
             <button class="fav-btn ${favClass}" title="В избранное" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
             <div class="question">${item.question}</div>
             <div class="answer">${item.answer}</div>

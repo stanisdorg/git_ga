@@ -1,5 +1,6 @@
 import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=3';
 import { getProgressMap, syncFavorite } from './storage.js';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
 import { startLearnSession } from './learn-ui.js?v=33';
@@ -935,24 +936,50 @@ function renderStats() {
       `;
 
       const renderHearts = (ef) => {
-          let count = 1;
-          if (ef >= 2.7) count = 5;
-          else if (ef >= 2.4) count = 4;
-          else if (ef >= 2.1) count = 3;
-          else if (ef >= 1.7) count = 2;
-          
-          let html = '<div style="display:flex; gap:2px; align-items:center;">';
-          for (let i = 0; i < 5; i++) {
-              const filled = i < count;
-              const color = filled ? '#ff4d4d' : '#444';
-              html += `
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="${color}">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-              `;
-          }
-          html += '</div>';
-          return html;
+        const level = getDifficultyLevel(ef);
+        const progress = getLevelProgress(ef, level);
+        
+        const levelNames = {
+            'VERY_HARD': 'Очень трудные',
+            'HARD': 'Трудные',
+            'STANDARD': 'Стандарт',
+            'EASY': 'Легкие'
+        };
+        const levelNums = {
+            'VERY_HARD': 1,
+            'HARD': 2,
+            'STANDARD': 3,
+            'EASY': 4
+        };
+        const levelName = levelNames[level] || level;
+        const levelNum = levelNums[level] || '?';
+        
+        let html = '<div class="hearts-container" title="Уровень: ' + levelNum + ' (' + levelName + ')\\nПрогресс: ' + Math.round(progress * 100) + '%\\nEF: ' + ef.toFixed(2) + '" style="display:flex; gap:2px;">';
+        
+        for (let i = 0; i < 4; i++) {
+            const threshold = (i + 1) * 0.25;
+            const prevThreshold = i * 0.25;
+            let fill = 0;
+            if (progress >= threshold) fill = 1;
+            else if (progress > prevThreshold) fill = (progress - prevThreshold) / 0.25;
+            
+            const stopVal = Math.round(fill * 100);
+            const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+            
+            html += `
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="${id}">
+                            <stop offset="${stopVal}%" stop-color="#ff4d4d" />
+                            <stop offset="${stopVal}%" stop-color="#444" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            `;
+        }
+        html += '</div>';
+        return html;
       };
 
       const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
@@ -968,7 +995,7 @@ function renderStats() {
             <li class="st-modal-item" style="position:relative; padding-right: 40px;">
                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                    <div class="st-modal-q" style="margin-bottom:0; flex:1; padding-right:8px;">${c.question}</div>
-                   <div title="Сложность: ${ef.toFixed(2)}">${renderHearts(ef)}</div>
+                   ${renderHearts(ef)}
                </div>
                <div class="st-modal-a">${c.answer || ''}</div>
                <button class="st-modal-fav-btn" data-q="${c.question.replace(/"/g, '&quot;')}" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:4px;">
@@ -1057,9 +1084,10 @@ function buildEfDistribution(progressMap) {
   let veryHard=0, hard=0, good=0, easy=0;
   Object.values(progressMap).forEach(p => {
     if (!p.easeFactor) return;
-    if (p.easeFactor < 1.6) veryHard++;
-    else if (p.easeFactor < 2.1) hard++;
-    else if (p.easeFactor < 2.6) good++;
+    const ef = p.easeFactor;
+    if (ef < 1.7) veryHard++;
+    else if (ef < 2.1) hard++;
+    else if (ef < 2.4) good++;
     else easy++;
   });
   return [
