@@ -2,7 +2,7 @@ import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, 
 import { getProgressMap } from './storage.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
-import { startLearnSession } from './learn-ui.js?v=24';
+import { startLearnSession } from './learn-ui.js?v=25';
 
 let statsContainer = null;
 let mainContainer = null;
@@ -130,6 +130,7 @@ const STATS_STYLES = `
   display: flex;
   justify-content: center;
   pointer-events: none; /* Let clicks pass through transparent area */
+  box-sizing: border-box; /* Fix width overflow */
 }
 .st-cta-btn {
   pointer-events: auto;
@@ -140,7 +141,7 @@ const STATS_STYLES = `
   border: none;
   border-radius: 12px;
   padding: 16px 32px;
-  width: 100%;
+  width: 100%; /* Full width on mobile */
   max-width: 600px;
   box-shadow: 0 4px 12px rgba(255, 159, 28, 0.3);
   cursor: pointer;
