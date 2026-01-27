@@ -2938,7 +2938,7 @@
       "state": "learning",
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 21,
-      "question": "Например у нас 5 фильтров с 3мя значениями, и чтобы не тестировать каждый фильтр со всеми\nзначениями, мы комбинируем между собой -чтобы меньше тестов делать( только уникальные тесты pairvise)"
+      "question": "Например у нас 5 фильтров с 3мя значениями, и чтобы не тестировать каждый фильтр со всеми\nзначениям��, мы комбинируем между собой -чтобы меньше тестов делать( только уникальные тесты pairvise)"
     },
     "CI/CD у вас был?": {
       "interval": 3,
@@ -4277,12 +4277,33 @@
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 2,
       "question": "Где передается GET?"
+    },
+    "Rest": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769557873040,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769557873040,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Rest"
     }
   },
   "studyStats": {
-    "total": 569,
-    "timeSpent": 293167,
-    "points": 6460,
+    "total": 570,
+    "timeSpent": 294200,
+    "points": 6465,
     "correct": 370
   },
   "studyStreak": {
@@ -4292,7 +4313,7 @@
   },
   "dailyPoints": {
     "2026-01-27": 6445,
-    "2026-01-28": 15
+    "2026-01-28": 20
   },
   "dailyBonusPoints": {
     "2026-01-27": 0,
@@ -4315,5 +4336,5 @@
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769557873026
+  "updatedAt": 1769558090022
 }

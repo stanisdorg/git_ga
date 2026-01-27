@@ -144,14 +144,18 @@ export function initLearnUI() {
 //}
 
 function handleKeydown(e) {
-    if (container.style.display === 'none') return;
+    // If no active session, ignore keys
+    if (!session) return;
     
-    if (e.code === 'Space' || e.code === 'Enter') {
-        if (session && !session.isFlipped) {
+    // Check for Space or Enter to flip
+    if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter') {
+        // Only flip if not already flipped and not typing in an input (though we don't have inputs here)
+        if (!session.isFlipped) {
             e.preventDefault(); // Prevent scrolling
             session.flip();
         }
-    } else if (session && session.isFlipped) {
+    } else if (session.isFlipped) {
+        // Rating keys
         if (e.key === '1') session.rate(0);
         if (e.key === '2') session.rate(1);
         if (e.key === '3') session.rate(2);
