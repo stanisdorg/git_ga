@@ -46,8 +46,9 @@ test.describe('QA Voice Assistant E2E', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('should sort results correctly (Asc/Desc)', async ({ page }) => {
-    await page.waitForTimeout(1000);
+  test('should sort results correctly (Asc/Desc) with full validation', async ({ page }) => {
+    // Wait for data and rendering
+    await page.waitForTimeout(2000);
     
     const sortBtn = page.locator('#sort-toggle-btn');
     if (await sortBtn.count() === 0) {
@@ -55,23 +56,81 @@ test.describe('QA Voice Assistant E2E', () => {
         return;
     }
 
-    // Capture first item text in Default
-    const firstItemDefault = await page.locator('.result-item .question').first().textContent();
-    console.log('Default first:', firstItemDefault);
+    // Helper to extract data from all cards
+    const getCardsData = async () => {
+        return await page.evaluate(() => {
+            const items = Array.from(document.querySelectorAll('.result-item'));
+            return items.map(item => {
+                const questionText = item.querySelector('.question')?.textContent.trim() || '';
+                // Try to extract EF from tooltip
+                const heartsContainer = item.querySelector('.hearts-container');
+                let ef = 2.5; // Default
+                let id = 0; // Default
 
-    // Click -> ASC
-    await sortBtn.click();
-    await page.waitForTimeout(500);
-    const firstItemAsc = await page.locator('.result-item .question').first().textContent();
-    console.log('Asc first:', firstItemAsc);
+                if (heartsContainer) {
+                    const title = heartsContainer.getAttribute('title') || '';
+                    const match = title.match(/EF:\s*([\d\.]+)/);
+                    if (match) {
+                        ef = parseFloat(match[1]);
+                    }
+                }
+                
+                // We don't display ID explicitly in DOM, but we can infer it or rely on text fallback
+                // For this test, since we can't easily get ID from DOM unless we add it,
+                // we will rely on the fact that for equal EF, the text order should change if ID order changes
+                // (assuming IDs are somewhat distributed).
+                // Actually, let's verify EF sorting primarily.
+                
+                return { text: questionText, ef };
+            });
+        });
+    };
 
-    // Click -> DESC
-    await sortBtn.click();
-    await page.waitForTimeout(500);
-    const firstItemDesc = await page.locator('.result-item .question').first().textContent();
-    console.log('Desc first:', firstItemDesc);
+    // 1. Switch to ASC (Hardest to Easiest: 1.3 -> 2.9)
+    await sortBtn.click(); // Default -> Asc
+    await page.waitForTimeout(1000);
+    
+    const dataAsc = await getCardsData();
+    console.log('ASC Sample:', dataAsc.slice(0, 3));
+    
+    // Validate ASC sorting
+    let isAscSorted = true;
+    for (let i = 0; i < dataAsc.length - 1; i++) {
+        // Allow small floating point diffs
+        if (dataAsc[i].ef > dataAsc[i+1].ef + 0.001) {
+            console.error(`ASC Violation at index ${i}: ${dataAsc[i].ef} > ${dataAsc[i+1].ef}`);
+            isAscSorted = false;
+            break;
+        }
+    }
+    expect(isAscSorted).toBeTruthy();
 
-    // Expect difference between Asc and Desc
-    expect(firstItemAsc).not.toBe(firstItemDesc);
+    // 2. Switch to DESC (Easiest to Hardest: 2.9 -> 1.3)
+    await sortBtn.click(); // Asc -> Desc
+    await page.waitForTimeout(1000);
+
+    const dataDesc = await getCardsData();
+    console.log('DESC Sample:', dataDesc.slice(0, 3));
+
+    // Validate DESC sorting
+    let isDescSorted = true;
+    for (let i = 0; i < dataDesc.length - 1; i++) {
+        if (dataDesc[i].ef < dataDesc[i+1].ef - 0.001) {
+             console.error(`DESC Violation at index ${i}: ${dataDesc[i].ef} < ${dataDesc[i+1].ef}`);
+             isDescSorted = false;
+             break;
+        }
+    }
+    expect(isDescSorted).toBeTruthy();
+
+    // 3. Verify total reversal for equal items
+    // Since we can't easily see ID, we check if the arrays are reversed versions of each other
+    // (approximately, ignoring minor shifts if EF is unique, but for equal EF they should be reversed)
+    const ascTexts = dataAsc.map(d => d.text);
+    const descTexts = dataDesc.map(d => d.text);
+    
+    // Check first and last elements are swapped
+    expect(ascTexts[0]).toBe(descTexts[descTexts.length - 1]);
+    expect(ascTexts[ascTexts.length - 1]).toBe(descTexts[0]);
   });
 });
