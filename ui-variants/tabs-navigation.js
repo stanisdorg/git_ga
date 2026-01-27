@@ -96,6 +96,7 @@ function verifyCredentialsWithSupabase(email, password) {
 let globalSaveStatusEl = null;
 
 export function initTabsNavigation() {
+    console.log('Initializing Tabs Navigation...');
     const container = document.querySelector('.container');
     // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
     if (container) container.style.display = '';
@@ -487,7 +488,17 @@ export function initTabsNavigation() {
     // Вставляем контейнер навигации перед контейнером поиска
     // Вставляем верхнюю панель и корзину перед навигацией
     // container.insertBefore(topControls, searchContainer); // Удалено
-    container.insertBefore(navigationContainer, searchContainer);
+    
+    if (container) {
+        if (searchContainer && searchContainer.parentNode === container) {
+            container.insertBefore(navigationContainer, searchContainer);
+        } else {
+            console.warn('Search container not found or not in container, appending navigation');
+            container.appendChild(navigationContainer);
+        }
+    } else {
+        console.error('Main container not found, cannot insert navigation');
+    }
 
     // Привязываем глобальную ссылку на индикатор сохранения
     // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
