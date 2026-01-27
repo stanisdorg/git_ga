@@ -4214,24 +4214,68 @@
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 23,
       "question": "юнит"
+    },
+    "Например, тестирование API\nчастичное знание о внутренней структуре": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769556656161,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769556656161,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Например, тестирование API\nчастичное знание о внутренней структуре"
+    },
+    "Что такое пайплайн и как он используется?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769556657265,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769556657265,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Что такое пайплайн и как он используется?"
     }
   },
   "studyStats": {
-    "total": 566,
-    "timeSpent": 288989,
-    "points": 6445,
+    "total": 568,
+    "timeSpent": 291136,
+    "points": 6455,
     "correct": 370
   },
   "studyStreak": {
-    "current": 1,
-    "best": 1,
-    "lastDate": "2026-01-27"
+    "current": 2,
+    "best": 2,
+    "lastDate": "2026-01-28"
   },
   "dailyPoints": {
-    "2026-01-27": 6445
+    "2026-01-27": 6445,
+    "2026-01-28": 10
   },
   "dailyBonusPoints": {
-    "2026-01-27": 0
+    "2026-01-27": 0,
+    "2026-01-28": 0
   },
   "dailyDayBonusPoints": {
     "2026-01-27": 265
@@ -4250,5 +4294,5 @@
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769555488895
+  "updatedAt": 1769556753295
 }

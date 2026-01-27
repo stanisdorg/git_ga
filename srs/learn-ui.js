@@ -339,37 +339,62 @@ function renderCardState(state) {
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
     
     // Update Hearts and Difficulty Label
-    const renderHearts = (progress) => {
-        // Render 4 hearts to represent 0-100% progress (each heart is 25%)
-        let html = '';
-        for (let i = 0; i < 4; i++) {
-            const threshold = (i + 1) * 0.25;
-            const prevThreshold = i * 0.25;
+    const renderHearts = (ef) => {
+        try {
+            let heartsCount = 0;
+            // Absolute 1-5 scale based on EF ranges
+            // Range 1: 1.3 - 1.7 (Very Hard) -> 1 heart base
+            // Range 2: 1.7 - 2.1 (Hard) -> 2 hearts base
+            // Range 3: 2.1 - 2.4 (Standard) -> 3 hearts base
+            // Range 4: 2.4 - 2.9 (Easy) -> 4-5 hearts
             
-            let fill = 0; // 0 to 1
-            if (progress >= threshold) {
-                fill = 1;
-            } else if (progress > prevThreshold) {
-                fill = (progress - prevThreshold) / 0.25;
+            if (ef < 1.7) {
+                // 1.3 to 1.7 -> 1.0 to 2.0
+                heartsCount = 1 + (ef - 1.3) / 0.4;
+            } else if (ef < 2.1) {
+                // 1.7 to 2.1 -> 2.0 to 3.0
+                heartsCount = 2 + (ef - 1.7) / 0.4;
+            } else if (ef < 2.4) {
+                // 2.1 to 2.4 -> 3.0 to 4.0
+                heartsCount = 3 + (ef - 2.1) / 0.3;
+            } else {
+                // 2.4 to 2.9 -> 4.0 to 5.0
+                heartsCount = 4 + (ef - 2.4) / 0.5;
             }
             
-            // Render heart with gradient if partial, or solid color
-            const stopVal = Math.round(fill * 100);
-            const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
-            
-            html += `
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="heart-icon">
-                    <defs>
-                        <linearGradient id="${id}">
-                            <stop offset="${stopVal}%" stop-color="#ff4d4d" />
-                            <stop offset="${stopVal}%" stop-color="#444" />
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-            `;
+            // Clamp between 1 and 5
+            heartsCount = Math.max(1, Math.min(5, heartsCount));
+
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                let fill = 0;
+                if (heartsCount >= i + 1) {
+                    fill = 1;
+                } else if (heartsCount > i) {
+                    fill = heartsCount - i;
+                }
+                
+                // Render heart with gradient if partial, or solid color
+                const stopVal = Math.round(fill * 100);
+                const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+                
+                html += `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="heart-icon">
+                        <defs>
+                            <linearGradient id="${id}">
+                                <stop offset="${stopVal}%" stop-color="#ff4d4d" />
+                                <stop offset="${stopVal}%" stop-color="#444" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                `;
+            }
+            return html;
+        } catch (e) {
+            console.error('Error in renderHearts:', e);
+            return '';
         }
-        return html;
     };
 
     if (state.card) {
@@ -382,7 +407,7 @@ function renderCardState(state) {
 
         const ef = progressObj && progressObj.easeFactor !== undefined ? progressObj.easeFactor : 2.5;
         const level = getDifficultyLevel(ef);
-        const progress = getLevelProgress(ef, level);
+        // const progress = getLevelProgress(ef, level); // No longer needed for hearts
 
         // Map level to Russian text
         const levelNames = {
@@ -391,13 +416,21 @@ function renderCardState(state) {
             'STANDARD': 'Стандарт',
             'EASY': 'Легкие'
         };
+        
+        // Recalculate hearts count for title
+        let heartsCount = 0;
+        if (ef < 1.7) heartsCount = 1 + (ef - 1.3) / 0.4;
+        else if (ef < 2.1) heartsCount = 2 + (ef - 1.7) / 0.4;
+        else if (ef < 2.4) heartsCount = 3 + (ef - 2.1) / 0.3;
+        else heartsCount = 4 + (ef - 2.4) / 0.5;
+        heartsCount = Math.max(1, Math.min(5, heartsCount));
 
         container.querySelectorAll('.learn-hearts').forEach(el => {
             // Label for the level
             const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
             
-            el.innerHTML = labelHtml + renderHearts(progress);
-            el.title = `Уровень: ${levelNames[level]}\nПрогресс: ${Math.round(progress * 100)}%\nEF: ${ef.toFixed(2)}`;
+            el.innerHTML = labelHtml + renderHearts(ef);
+            el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
             
             // Cleanup old sibling label if it exists (from previous version)
             const oldLabel = el.nextElementSibling;
@@ -409,7 +442,7 @@ function renderCardState(state) {
         // Update "Easy" button state
         const easyBtn = container.querySelector('.rate-easy');
         if (easyBtn) {
-            const canEasy = canUseEasy(progressObj || { easeFactor: 2.5 });
+            const canEasy = canUseEasy(progressObj || { easeFactor: 2.3 });
             if (!canEasy) {
                 easyBtn.style.opacity = '0.5';
                 easyBtn.style.cursor = 'not-allowed';

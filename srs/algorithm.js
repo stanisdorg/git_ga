@@ -46,7 +46,7 @@ export function getLevelProgress(ef, level) {
 }
 
 export function canUseEasy(card) {
-    const ef = card.easeFactor !== undefined ? card.easeFactor : 2.5;
+    const ef = card.easeFactor !== undefined ? card.easeFactor : 2.3;
     const level = getDifficultyLevel(ef);
     if (level !== 'EASY') return false;
     const progress = getLevelProgress(ef, level);
@@ -64,7 +64,7 @@ export function calculateNextInterval(card, grade) {
     const now = Date.now();
     
     // Initialize defaults if missing
-    if (card.easeFactor === undefined) card.easeFactor = 2.5;
+    if (card.easeFactor === undefined) card.easeFactor = 2.3; // Default to Standard (was 2.5 Easy)
     if (!card.streak) card.streak = 0;
     if (!card.interval) card.interval = 0;
     if (!card.repetitionCount) card.repetitionCount = 0;

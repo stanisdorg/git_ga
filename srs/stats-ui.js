@@ -555,10 +555,10 @@ function renderStats() {
   
   // Calculate Difficulty Distribution
    const segs = [
-      { label: 'Очень трудные', min: 0, max: 1.6, count: 0, color: 'var(--st-diff-hard)', colorClass: 'st-diff-seg-hard' },
-      { label: 'Трудные', min: 1.6, max: 2.1, count: 0, color: 'var(--st-diff-high)', colorClass: 'st-diff-seg-high' },
-      { label: 'Стандарт', min: 2.1, max: 2.6, count: 0, color: 'var(--st-diff-std)', colorClass: 'st-diff-seg-std' },
-      { label: 'Легкие', min: 2.6, max: 999, count: 0, color: 'var(--st-diff-easy)', colorClass: 'st-diff-seg-easy' }
+      { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: 'var(--st-diff-hard)', colorClass: 'st-diff-seg-hard' },
+      { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: 'var(--st-diff-high)', colorClass: 'st-diff-seg-high' },
+      { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: 'var(--st-diff-std)', colorClass: 'st-diff-seg-std' },
+      { label: 'Легкие', min: 2.4, max: 999, count: 0, color: 'var(--st-diff-easy)', colorClass: 'st-diff-seg-easy' }
    ];
   
   let totalRated = 0;
@@ -577,13 +577,13 @@ function renderStats() {
          cardsDoneToday++;
      }
 
-     // Use default EF=2.5 if missing (fallback for new/learning cards)
+     // Use default EF=2.3 if missing (fallback for new/learning cards)
      // This ensures ALL cards appear in the chart, defaulting to 'Standard'
-     const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
+     const ef = (p && p.easeFactor) ? p.easeFactor : 2.3;
      
-     if (ef < 1.6) segs[0].count++;
+     if (ef < 1.7) segs[0].count++;
      else if (ef < 2.1) segs[1].count++;
-     else if (ef < 2.6) segs[2].count++;
+     else if (ef < 2.4) segs[2].count++;
      else segs[3].count++;
      totalRated++;
   });
@@ -909,10 +909,10 @@ function renderStats() {
           cards = uniqueQaData.filter(q => q && q.question && q.answer && favorites.has(q.question));
       } else {
           let min = 0, max = 0;
-          if (label === 'Очень трудные') { max = 1.6; }
-          else if (label === 'Трудные') { min = 1.6; max = 2.1; }
-          else if (label === 'Стандарт') { min = 2.1; max = 2.6; }
-          else if (label === 'Легкие') { min = 2.6; max = 999; }
+          if (label === 'Очень трудные') { max = 1.7; }
+          else if (label === 'Трудные') { min = 1.7; max = 2.1; }
+          else if (label === 'Стандарт') { min = 2.1; max = 2.4; }
+          else if (label === 'Легкие') { min = 2.4; max = 999; }
 
           // Use the same EF logic as in the chart: all карты участвуют,
           // а у новых EF по умолчанию 2.5 (Стандарт)
@@ -922,7 +922,7 @@ function renderStats() {
 
              let p = progress[q.question];
              if (!p && q.question) p = progress[q.question.trim()];
-             const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
+             const ef = (p && p.easeFactor) ? p.easeFactor : 2.3;
              return ef >= min && ef < max;
           });
       }
@@ -936,32 +936,37 @@ function renderStats() {
       `;
 
       const renderHearts = (ef) => {
+        // Расчет количества сердечек (1.0 - 5.0)
+        let heartsCount = 0;
+        if (ef < 1.7) {
+            heartsCount = 1 + (ef - 1.3) / 0.4;
+        } else if (ef < 2.1) {
+            heartsCount = 2 + (ef - 1.7) / 0.4;
+        } else if (ef < 2.4) {
+            heartsCount = 3 + (ef - 2.1) / 0.3;
+        } else {
+            heartsCount = 4 + (ef - 2.4) / 0.5;
+        }
+        heartsCount = Math.max(1, Math.min(5, heartsCount));
+
         const level = getDifficultyLevel(ef);
-        const progress = getLevelProgress(ef, level);
-        
         const levelNames = {
             'VERY_HARD': 'Очень трудные',
             'HARD': 'Трудные',
             'STANDARD': 'Стандарт',
             'EASY': 'Легкие'
         };
-        const levelNums = {
-            'VERY_HARD': 1,
-            'HARD': 2,
-            'STANDARD': 3,
-            'EASY': 4
-        };
         const levelName = levelNames[level] || level;
-        const levelNum = levelNums[level] || '?';
         
-        let html = '<div class="hearts-container" title="Уровень: ' + levelNum + ' (' + levelName + ')\\nПрогресс: ' + Math.round(progress * 100) + '%\\nEF: ' + ef.toFixed(2) + '" style="display:flex; gap:2px;">';
+        let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="display:flex; gap:2px;">';
         
-        for (let i = 0; i < 4; i++) {
-            const threshold = (i + 1) * 0.25;
-            const prevThreshold = i * 0.25;
+        for (let i = 0; i < 5; i++) {
             let fill = 0;
-            if (progress >= threshold) fill = 1;
-            else if (progress > prevThreshold) fill = (progress - prevThreshold) / 0.25;
+            if (heartsCount >= i + 1) {
+                fill = 1;
+            } else if (heartsCount > i) {
+                fill = heartsCount - i;
+            }
             
             const stopVal = Math.round(fill * 100);
             const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
@@ -988,7 +993,7 @@ function renderStats() {
         ? cards.map(c => {
             let p = progress[c.question];
             if (!p && c.question) p = progress[c.question.trim()];
-            const ef = (p && p.easeFactor) ? p.easeFactor : 2.5;
+            const ef = (p && p.easeFactor) ? p.easeFactor : 2.3;
             const isFav = favorites.has(c.question);
 
             return `
@@ -1080,24 +1085,6 @@ function renderStats() {
 }
 
 // Helpers
-function buildEfDistribution(progressMap) {
-  let veryHard=0, hard=0, good=0, easy=0;
-  Object.values(progressMap).forEach(p => {
-    if (!p.easeFactor) return;
-    const ef = p.easeFactor;
-    if (ef < 1.7) veryHard++;
-    else if (ef < 2.1) hard++;
-    else if (ef < 2.4) good++;
-    else easy++;
-  });
-  return [
-    { label: 'Очень трудные', count: veryHard, colorClass: 'red', color: '#E5533D' },
-    { label: 'Трудные', count: hard, colorClass: 'orange', color: '#FF9F1C' },
-    { label: 'Стандарт', count: good, colorClass: 'green', color: '#2EC4B6' },
-    { label: 'Легкие', count: easy, colorClass: 'blue', color: '#2f81f7' }
-  ];
-}
-
 function getXpSeries(mode) {
   const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
   const data = getDailyPointsAll(); // returns array of {date, xp, ...}

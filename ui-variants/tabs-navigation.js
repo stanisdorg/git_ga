@@ -2255,8 +2255,8 @@ export function displayQuestions(questions, title) {
     // Применяем сортировку по EF (сердечкам), если включена
     if (sortMode !== 'default') {
         currentQuestions.sort((a, b) => {
-            const efA = progressMap[a.question]?.easeFactor ?? 2.5;
-            const efB = progressMap[b.question]?.easeFactor ?? 2.5;
+            const efA = progressMap[a.question]?.easeFactor ?? 2.3;
+            const efB = progressMap[b.question]?.easeFactor ?? 2.3;
             
             // 1. Первичная сортировка по EF
             if (Math.abs(efA - efB) >= 0.001) {
@@ -2334,33 +2334,44 @@ export function displayQuestions(questions, title) {
                 console.warn('SRS functions not available');
                 return '';
             }
+            // Расчет количества сердечек (1.0 - 5.0)
+            let heartsCount = 0;
+            if (ef < 1.7) {
+                // 1.3 -> 1.0, 1.7 -> 2.0
+                heartsCount = 1 + (ef - 1.3) / 0.4;
+            } else if (ef < 2.1) {
+                // 1.7 -> 2.0, 2.1 -> 3.0
+                heartsCount = 2 + (ef - 1.7) / 0.4;
+            } else if (ef < 2.4) {
+                // 2.1 -> 3.0, 2.4 -> 4.0
+                heartsCount = 3 + (ef - 2.1) / 0.3;
+            } else {
+                // 2.4 -> 4.0, 2.9 -> 5.0
+                heartsCount = 4 + (ef - 2.4) / 0.5;
+            }
+            
+            // Clamp to 1-5 range just in case
+            heartsCount = Math.max(1, Math.min(5, heartsCount));
+
             const level = getDifficultyLevel(ef);
-            const progress = getLevelProgress(ef, level);
-        
             const levelNames = {
                 'VERY_HARD': 'Очень трудные',
                 'HARD': 'Трудные',
                 'STANDARD': 'Стандарт',
                 'EASY': 'Легкие'
             };
-            const levelNums = {
-                'VERY_HARD': 1,
-                'HARD': 2,
-                'STANDARD': 3,
-                'EASY': 4
-            };
             const levelName = levelNames[level] || level;
-            const levelNum = levelNums[level] || '?';
             
-            let html = '<div class="hearts-container" title="Уровень: ' + levelNum + ' (' + levelName + ')\\nПрогресс: ' + Math.round(progress * 100) + '%\\nEF: ' + ef.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
+            let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
             
-            // Рисуем 4 сердечка
-            for (let i = 0; i < 4; i++) {
-                const threshold = (i + 1) * 0.25;
-                const prevThreshold = i * 0.25;
+            // Рисуем 5 сердечек
+            for (let i = 0; i < 5; i++) {
                 let fill = 0;
-                if (progress >= threshold) fill = 1;
-                else if (progress > prevThreshold) fill = (progress - prevThreshold) / 0.25;
+                if (heartsCount >= i + 1) {
+                    fill = 1;
+                } else if (heartsCount > i) {
+                    fill = heartsCount - i;
+                }
                 
                 const stopVal = Math.round(fill * 100);
                 const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
@@ -2465,7 +2476,7 @@ export function displayQuestions(questions, title) {
 
         // Расчет сердечек
         const cardProgress = progressMap[item.question];
-        const ef = cardProgress ? cardProgress.easeFactor : 2.5;
+        const ef = cardProgress ? cardProgress.easeFactor : 2.3;
         
         resultItem.innerHTML = `
             <div class="question-row">
