@@ -77,18 +77,24 @@
     },
     "Из чего состоит Kafka и как работает?": {
       "interval": 1,
-      "easeFactor": 1.4000000000000001,
-      "streak": 1,
-      "repetitionCount": 10,
-      "history": 10,
-      "lastReviewDate": 1769544817481,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.3,
+      "streak": 0,
+      "repetitionCount": 11,
+      "history": 11,
+      "lastReviewDate": 1769558387374,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "Из чего состоит Kafka и как работает?"
+      "lastReviewedTime": 2,
+      "question": "Из чего состоит Kafka и как работает?",
+      "historyArray": [
+        {
+          "date": 1769558387374,
+          "grade": 1
+        }
+      ]
     },
     "Взаимодействие с другими командами?": {
       "interval": 1,
@@ -332,18 +338,24 @@
     },
     "брокеры?": {
       "interval": 1,
-      "easeFactor": 1.4000000000000001,
-      "streak": 1,
-      "repetitionCount": 10,
-      "history": 10,
-      "lastReviewDate": 1769544818112,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.3,
+      "streak": 0,
+      "repetitionCount": 11,
+      "history": 11,
+      "lastReviewDate": 1769558386306,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "брокеры?"
+      "lastReviewedTime": 2,
+      "question": "брокеры?",
+      "historyArray": [
+        {
+          "date": 1769558386306,
+          "grade": 1
+        }
+      ]
     },
     "Понимание того, как ляжет новое требование относительно всей архитектуры": {
       "interval": 1,
@@ -392,18 +404,24 @@
     },
     "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
       "interval": 1,
-      "easeFactor": 1.4000000000000001,
-      "streak": 1,
-      "repetitionCount": 10,
-      "history": 10,
-      "lastReviewDate": 1769544816843,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.3,
+      "streak": 0,
+      "repetitionCount": 11,
+      "history": 11,
+      "lastReviewDate": 1769558387867,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
+      "lastReviewedTime": 2,
+      "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?",
+      "historyArray": [
+        {
+          "date": 1769558387867,
+          "grade": 1
+        }
+      ]
     },
     "Что такое gRPC?": {
       "interval": 3,
@@ -437,18 +455,24 @@
     },
     "ci cd?": {
       "interval": 1,
-      "easeFactor": 1.4000000000000001,
-      "streak": 1,
-      "repetitionCount": 10,
-      "history": 10,
-      "lastReviewDate": 1769544818319,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.3,
+      "streak": 0,
+      "repetitionCount": 11,
+      "history": 11,
+      "lastReviewDate": 1769558385938,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "ci cd?"
+      "lastReviewedTime": 2,
+      "question": "ci cd?",
+      "historyArray": [
+        {
+          "date": 1769558385938,
+          "grade": 1
+        }
+      ]
     },
     "Какие поля обязательны для заполнения при заведении бага?": {
       "interval": 1,
@@ -3271,19 +3295,25 @@
       "question": "Какие типы браузеров ты тестировал?"
     },
     "Идентификация, валидация, авторизация примеры": {
-      "interval": 8,
-      "easeFactor": 2.8000000000000003,
-      "streak": 3,
-      "repetitionCount": 3,
-      "history": 3,
-      "lastReviewDate": 1769544817693,
-      "nextReviewDate": 1770166800000,
-      "dueDate": "2026-02-04T01:00:00.000Z",
-      "repetitions": 3,
+      "interval": 1,
+      "easeFactor": 2.5500000000000003,
+      "streak": 0,
+      "repetitionCount": 4,
+      "history": 4,
+      "lastReviewDate": 1769558386964,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "Идентификация, валидация, авторизация примеры"
+      "lastReviewedTime": 2,
+      "question": "Идентификация, валидация, авторизация примеры",
+      "historyArray": [
+        {
+          "date": 1769558386964,
+          "grade": 1
+        }
+      ]
     },
     "анализ требований": {
       "interval": 3,
@@ -3887,33 +3917,45 @@
     },
     "Токен?": {
       "interval": 1,
-      "easeFactor": 2.6,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769544817183,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769558386648,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "Токен?"
+      "lastReviewedTime": 2,
+      "question": "Токен?",
+      "historyArray": [
+        {
+          "date": 1769558386648,
+          "grade": 1
+        }
+      ]
     },
     "401 vs 403?": {
       "interval": 1,
-      "easeFactor": 2.6,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769544819031,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769558385493,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
       "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 23,
-      "question": "401 vs 403?"
+      "lastReviewedTime": 2,
+      "question": "401 vs 403?",
+      "historyArray": [
+        {
+          "date": 1769558385493,
+          "grade": 1
+        }
+      ]
     },
     "Из чего состоит HTTP запрос?": {
       "interval": 1,
@@ -4298,13 +4340,244 @@
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 2,
       "question": "Rest"
+    },
+    "Что такое хэдеры и для чего они используются?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558372606,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769558372606,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Что такое хэдеры и для чего они используются?"
+    },
+    "REST какие методы знаешь?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558374359,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558374359,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "REST какие методы знаешь?"
+    },
+    "Единый интерфейс для клиентов": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558375046,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558375046,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Единый интерфейс для клиентов"
+    },
+    "Fiddler everywhere": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558375541,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558375541,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Fiddler everywhere"
+    },
+    "Когда проводится регрессионное тестирование?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558375878,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558375878,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Когда проводится регрессионное тестирование?"
+    },
+    "Регресс vs ретест?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558376157,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558376157,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Регресс vs ретест?"
+    },
+    "Ограниченное время на регресс?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558376454,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558376454,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Ограниченное время на регресс?"
+    },
+    "Уточнение критериев\nприемки (DoD, DoR) и стратегию тестирования": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558376708,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558376708,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Уточнение критериев\nприемки (DoD, DoR) и стратегию тестирования"
+    },
+    "Что делал в git?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558377102,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558377102,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Что делал в git?"
+    },
+    "Проверки на cookies, как они влияют на авторизацию?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558378144,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558378144,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Проверки на cookies, как они влияют на авторизацию?"
+    },
+    "Как устроена клиент-серверная архитектура?": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769558378784,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769558378784,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-27",
+      "lastReviewedTime": 2,
+      "question": "Как устроена клиент-серверная архитектура?"
     }
   },
   "studyStats": {
-    "total": 570,
-    "timeSpent": 294200,
-    "points": 6465,
-    "correct": 370
+    "total": 589,
+    "timeSpent": 307439,
+    "points": 6610,
+    "correct": 381
   },
   "studyStreak": {
     "current": 2,
@@ -4313,14 +4586,15 @@
   },
   "dailyPoints": {
     "2026-01-27": 6445,
-    "2026-01-28": 20
+    "2026-01-28": 165
   },
   "dailyBonusPoints": {
     "2026-01-27": 0,
-    "2026-01-28": 0
+    "2026-01-28": 15
   },
   "dailyDayBonusPoints": {
-    "2026-01-27": 265
+    "2026-01-27": 265,
+    "2026-01-28": 15
   },
   "qaFavorites": [
     "Из чего состоит Kafka и как работает?",
@@ -4336,5 +4610,5 @@
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769558105220
+  "updatedAt": 1769558973283
 }
