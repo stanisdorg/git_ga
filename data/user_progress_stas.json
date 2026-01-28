@@ -62,12 +62,33 @@
       "lastReviewed": "2026-01-28",
       "lastReviewedTime": 10,
       "question": "Чем отличаются серьёзность и приоритет бага?"
+    },
+    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769607538894,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769607538894,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-28",
+      "lastReviewedTime": 16,
+      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
     }
   },
   "studyStats": {
-    "total": 3,
-    "timeSpent": 77575,
-    "points": 15
+    "total": 4,
+    "timeSpent": 181272,
+    "points": 20
   },
   "studyStreak": {
     "current": 1,
@@ -75,7 +96,7 @@
     "lastDate": "2026-01-28"
   },
   "dailyPoints": {
-    "2026-01-28": 15
+    "2026-01-28": 20
   },
   "dailyBonusPoints": {
     "2026-01-28": 0
@@ -85,5 +106,5 @@
   "studyAchievements": {
     "firstSessionCompleted": true
   },
-  "updatedAt": 1769606528788
+  "updatedAt": 1769607539903
 }

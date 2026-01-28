@@ -2334,6 +2334,12 @@ export function displayQuestions(questions, title) {
                 console.warn('SRS functions not available');
                 return '';
             }
+
+            // Check for NEW card (ef is null or undefined)
+            if (ef === null || ef === undefined) {
+                 return '<div class="hearts-container" title="Карточка еще не изучалась" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span></div>';
+            }
+
             // Расчет количества сердечек (1.0 - 5.0)
             let heartsCount = 0;
             if (ef < 1.7) {
@@ -2476,7 +2482,8 @@ export function displayQuestions(questions, title) {
 
         // Расчет сердечек
         const cardProgress = progressMap[item.question];
-        const ef = cardProgress ? cardProgress.easeFactor : 2.3;
+        // If no progress or no easeFactor, treat as NEW (pass null)
+        const ef = (cardProgress && cardProgress.easeFactor !== undefined) ? cardProgress.easeFactor : null;
         
         resultItem.innerHTML = `
             <div class="question-row">

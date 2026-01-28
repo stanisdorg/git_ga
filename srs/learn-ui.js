@@ -410,39 +410,53 @@ function renderCardState(state) {
             progressObj = progMap[state.card.question];
         }
 
-        const ef = progressObj && progressObj.easeFactor !== undefined ? progressObj.easeFactor : 2.5;
-        const level = getDifficultyLevel(ef);
-        // const progress = getLevelProgress(ef, level); // No longer needed for hearts
-
-        // Map level to Russian text
-        const levelNames = {
-            'VERY_HARD': 'Очень трудные',
-            'HARD': 'Трудные',
-            'STANDARD': 'Стандарт',
-            'EASY': 'Легкие'
-        };
+        // Determine EF: if no progress or no easeFactor, it's a NEW card (null)
+        const ef = progressObj && progressObj.easeFactor !== undefined ? progressObj.easeFactor : null;
         
-        // Recalculate hearts count for title
-        let heartsCount = 0;
-        if (ef < 1.7) heartsCount = 1 + (ef - 1.3) / 0.4;
-        else if (ef < 2.1) heartsCount = 2 + (ef - 1.7) / 0.4;
-        else if (ef < 2.4) heartsCount = 3 + (ef - 2.1) / 0.3;
-        else heartsCount = 4 + (ef - 2.4) / 0.5;
-        heartsCount = Math.max(1, Math.min(5, heartsCount));
+        if (ef === null) {
+            // Render "NEW" state
+            container.querySelectorAll('.learn-hearts').forEach(el => {
+                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span>`;
+                el.title = 'Карточка еще не изучалась';
+                
+                // Remove old label if exists
+                const oldLabel = el.nextElementSibling;
+                if (oldLabel && oldLabel.classList.contains('level-label')) oldLabel.remove();
+            });
+        } else {
+            const level = getDifficultyLevel(ef);
+            // const progress = getLevelProgress(ef, level); // No longer needed for hearts
 
-        container.querySelectorAll('.learn-hearts').forEach(el => {
-            // Label for the level
-            const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
+            // Map level to Russian text
+            const levelNames = {
+                'VERY_HARD': 'Очень трудные',
+                'HARD': 'Трудные',
+                'STANDARD': 'Стандарт',
+                'EASY': 'Легкие'
+            };
             
-            el.innerHTML = labelHtml + renderHearts(ef);
-            el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
-            
-            // Cleanup old sibling label if it exists (from previous version)
-            const oldLabel = el.nextElementSibling;
-            if (oldLabel && oldLabel.classList.contains('level-label')) {
-                oldLabel.remove();
-            }
-        });
+            // Recalculate hearts count for title
+            let heartsCount = 0;
+            if (ef < 1.7) heartsCount = 1 + (ef - 1.3) / 0.4;
+            else if (ef < 2.1) heartsCount = 2 + (ef - 1.7) / 0.4;
+            else if (ef < 2.4) heartsCount = 3 + (ef - 2.1) / 0.3;
+            else heartsCount = 4 + (ef - 2.4) / 0.5;
+            heartsCount = Math.max(1, Math.min(5, heartsCount));
+
+            container.querySelectorAll('.learn-hearts').forEach(el => {
+                // Label for the level
+                const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
+                
+                el.innerHTML = labelHtml + renderHearts(ef);
+                el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
+                
+                // Cleanup old sibling label if it exists (from previous version)
+                const oldLabel = el.nextElementSibling;
+                if (oldLabel && oldLabel.classList.contains('level-label')) {
+                    oldLabel.remove();
+                }
+            });
+        }
 
         // Update "Easy" button state
         const easyBtn = container.querySelector('.rate-easy');

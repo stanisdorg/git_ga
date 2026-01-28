@@ -82,6 +82,8 @@
   },
   "dailyDayBonusPoints": {},
   "qaFavorites": [],
-  "studyAchievements": {},
-  "updatedAt": 1769586330904
+  "studyAchievements": {
+    "firstSessionCompleted": true
+  },
+  "updatedAt": 1769607285261
 }

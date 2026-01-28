@@ -941,6 +941,10 @@ function renderStats() {
       `;
 
       const renderHearts = (ef) => {
+        if (ef === null || ef === undefined) {
+             return '<div class="hearts-container" title="Карточка еще не изучалась" style="display:flex; gap:2px;"><span class="level-label" style="font-size:10px;color:var(--st-text-sec);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span></div>';
+        }
+
         // Расчет количества сердечек (1.0 - 5.0)
         let heartsCount = 0;
         if (ef < 1.7) {
@@ -998,7 +1002,7 @@ function renderStats() {
         ? cards.map(c => {
             let p = progress[c.question];
             if (!p && c.question) p = progress[c.question.trim()];
-            const ef = (p && p.easeFactor) ? p.easeFactor : 2.3;
+            const ef = (p && p.easeFactor !== undefined) ? p.easeFactor : null;
             const isFav = favorites.has(c.question);
 
             return `
