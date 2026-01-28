@@ -53,10 +53,8 @@ export function initLearnUI() {
                 .nav-arrow-btn:hover {
                     background: rgba(255,255,255,0.1);
                     color: var(--color-text-primary, #fff);
-                    transform: scale(1.1);
                 }
                 .nav-arrow-btn:active {
-                    transform: scale(0.95);
                     background: rgba(255,255,255,0.15);
                 }
                 .nav-arrow-btn:disabled {
@@ -75,26 +73,41 @@ export function initLearnUI() {
                 /* Mobile Layout */
                 @media (max-width: 768px) {
                     .flashcard-container {
+                        position: relative;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        gap: 12px;
                         width: 100%;
                         padding: 0 10px; /* Prevent card from touching edges */
                         box-sizing: border-box;
                     }
                     .flashcard {
+                        position: relative;
                         margin: 0 auto;
                         width: 92vw;
                         max-width: 520px;
                     }
                     .nav-arrow-btn {
-                        position: static;
-                        width: 44px;
-                        height: 44px;
-                        background: rgba(0,0,0,0.25);
+                        position: absolute;
+                        top: 66%;
+                        transform: translateY(-50%);
+                        width: 36px;
+                        height: 36px;
+                        z-index: 100;
+                        background: rgba(0,0,0,0.35);
                         color: rgba(255,255,255,0.95);
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+                        opacity: 0.7;
+                    }
+                    .nav-arrow-btn.left {
+                        left: 12px;
+                    }
+                    .nav-arrow-btn.right {
+                        right: 12px;
+                    }
+                    .nav-arrow-btn svg {
+                        width: 22px;
+                        height: 22px;
                     }
                 }
                 
@@ -106,18 +119,26 @@ export function initLearnUI() {
                         justify-content: center;
                         gap: 24px;
                     }
+                    .flashcard {
+                        position: relative;
+                    }
                     .nav-arrow-btn {
-                        position: static;
-                        width: 64px;
-                        height: 64px;
+                        position: absolute;
+                        top: 66%;
+                        transform: translateY(-50%);
+                        width: 48px;
+                        height: 48px;
+                        z-index: 90;
+                        background: rgba(0,0,0,0.25);
+                        color: rgba(255,255,255,0.95);
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
                     }
+                    .nav-arrow-btn.left { left: 16px; }
+                    .nav-arrow-btn.right { right: 16px; }
                     .nav-arrow-btn svg {
-                        width: 40px;
-                        height: 40px;
+                        width: 28px;
+                        height: 28px;
                     }
-                    .nav-arrow-btn.left { order: 1; }
-                    .flashcard { order: 2; }
-                    .nav-arrow-btn.right { order: 3; }
                 }
             </style>
             <div class="learn-header">
@@ -132,11 +153,10 @@ export function initLearnUI() {
             </div>
             
             <div class="flashcard-container">
-                <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
-                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                </button>
-                
                 <div class="flashcard">
+                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
                     <div class="flashcard-front">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
@@ -154,11 +174,10 @@ export function initLearnUI() {
                             <button class="rate-btn rate-easy" data-grade="3">Легко (4)</button>
                         </div>
                     </div>
+                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Вперед (Стрелка вправо)" aria-label="Вперед">
+                        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
                 </div>
-
-                <button id="learn-next-btn" class="nav-arrow-btn right" title="Вперед (Стрелка вправо)" aria-label="Вперед">
-                    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                </button>
             </div>
 
             <div id="learn-stats" style="display:none">
