@@ -32,6 +32,93 @@ export function initLearnUI() {
         container.id = 'learn-container';
         container.style.display = 'none';
         container.innerHTML = `
+            <style>
+                /* Navigation Arrows */
+                .nav-arrow-btn {
+                    background: transparent;
+                    border: none;
+                    color: var(--color-text-secondary, #888);
+                    width: 48px;
+                    height: 48px;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    outline: none;
+                    flex-shrink: 0;
+                    -webkit-tap-highlight-color: transparent;
+                }
+                .nav-arrow-btn:hover {
+                    background: rgba(255,255,255,0.1);
+                    color: var(--color-text-primary, #fff);
+                    transform: scale(1.1);
+                }
+                .nav-arrow-btn:active {
+                    transform: scale(0.95);
+                    background: rgba(255,255,255,0.15);
+                }
+                .nav-arrow-btn:disabled {
+                    opacity: 0.1;
+                    cursor: default;
+                    pointer-events: none;
+                    transform: none;
+                }
+                .nav-arrow-btn svg {
+                    width: 32px;
+                    height: 32px;
+                    fill: currentColor;
+                    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+                }
+                
+                /* Mobile Layout */
+                @media (max-width: 768px) {
+                    .nav-arrow-btn {
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -24px;
+                        z-index: 90;
+                        background: rgba(0,0,0,0.3);
+                        backdrop-filter: blur(4px);
+                        color: rgba(255,255,255,0.9);
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    }
+                    .nav-arrow-btn.left { left: 8px; }
+                    .nav-arrow-btn.right { right: 8px; }
+                    
+                    .flashcard-container {
+                        position: relative;
+                        width: 100%;
+                        padding: 0 10px; /* Prevent card from touching edges */
+                    }
+                    .flashcard {
+                        max-width: 100%; /* Ensure card fits */
+                    }
+                }
+                
+                /* Desktop Layout */
+                @media (min-width: 769px) {
+                    .flashcard-container {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 24px;
+                    }
+                    .nav-arrow-btn {
+                        position: static;
+                        width: 64px;
+                        height: 64px;
+                    }
+                    .nav-arrow-btn svg {
+                        width: 40px;
+                        height: 40px;
+                    }
+                    .nav-arrow-btn.left { order: 1; }
+                    .flashcard { order: 2; }
+                    .nav-arrow-btn.right { order: 3; }
+                }
+            </style>
             <div class="learn-header">
                 <button id="learn-exit-btn">✕ Выход</button>
                 <div class="learn-progress">
@@ -44,6 +131,10 @@ export function initLearnUI() {
             </div>
             
             <div class="flashcard-container">
+                <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
+                
                 <div class="flashcard">
                     <div class="flashcard-front">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
@@ -63,6 +154,10 @@ export function initLearnUI() {
                         </div>
                     </div>
                 </div>
+
+                <button id="learn-next-btn" class="nav-arrow-btn right" title="Вперед (Стрелка вправо)" aria-label="Вперед">
+                    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
             </div>
 
             <div id="learn-stats" style="display:none">
@@ -82,6 +177,10 @@ export function initLearnUI() {
         // Bind Events
         document.getElementById('learn-exit-btn').addEventListener('click', stopLearnSession);
         document.getElementById('learn-finish-btn').addEventListener('click', stopLearnSession);
+        const prevBtn = document.getElementById('learn-prev-btn');
+        const nextBtn = document.getElementById('learn-next-btn');
+        if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (session) session.goTo((session.currentIndex || 0) - 1); });
+        if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (session) session.goTo((session.currentIndex || 0) + 1); });
         
         container.querySelector('.flashcard').addEventListener('click', () => {
             if (session && !session.isFlipped) session.flip();
@@ -160,6 +259,14 @@ function handleKeydown(e) {
         if (e.key === '2') session.rate(1);
         if (e.key === '3') session.rate(2);
         if (e.key === '4') session.rate(3);
+    }
+
+    // Navigation arrows (Left/Right)
+    if (e.key === 'ArrowLeft') {
+         if (session) session.goTo((session.currentIndex || 0) - 1);
+    }
+    if (e.key === 'ArrowRight') {
+         if (session) session.goTo((session.currentIndex || 0) + 1);
     }
 }
 
@@ -287,7 +394,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     // Reset progress UI for new session
     const segs = document.getElementById('learn-segments');
     const progressFill = container.querySelector('.learn-progress-fill');
-    if (progressFill) progressFill.style.width = '0%';
+    if (progressFill) { progressFill.style.width = '0%'; progressFill.style.pointerEvents = 'none'; }
 
     // Start Session
     session = new LearningSession(
@@ -301,8 +408,10 @@ export function startLearnSession(candidateQuestions, options = {}) {
         for (let i = 0; i < sessionCards.length; i++) {
             const s = document.createElement('div');
             s.className = 'learn-progress-segment';
+            s.dataset.index = String(i);
             segs.appendChild(s);
         }
+        wireSegmentsInteractions(session);
     }
     session.start();
 }
@@ -339,6 +448,23 @@ function renderCardState(state) {
     
     // Update segments
     updateSegments(state.results, state.total);
+    // Update nav buttons availability
+    try {
+        const prevBtn = document.getElementById('learn-prev-btn');
+        const nextBtn = document.getElementById('learn-next-btn');
+        if (prevBtn) {
+            const isStart = (session?.currentIndex || 0) <= 0;
+            prevBtn.disabled = isStart;
+            prevBtn.style.opacity = isStart ? '0.5' : '1';
+            prevBtn.style.cursor = isStart ? 'not-allowed' : 'pointer';
+        }
+        if (nextBtn) {
+            const isEnd = (session?.currentIndex || 0) >= ((session?.queue?.length || 1) - 1);
+            nextBtn.disabled = isEnd;
+            nextBtn.style.opacity = isEnd ? '0.5' : '1';
+            nextBtn.style.cursor = isEnd ? 'not-allowed' : 'pointer';
+        }
+    } catch {}
 
     if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
@@ -528,6 +654,95 @@ function updateSegments(results, total) {
             else if (g === 3) el.classList.add('seg-easy');
         });
     }
+}
+
+function wireSegmentsInteractions(sess) {
+    const segs = document.getElementById('learn-segments');
+    if (!segs) return;
+    let touchTimer = null;
+    const ensurePreviewEl = () => {
+        let el = document.getElementById('learn-seg-preview');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'learn-seg-preview';
+            el.style.position = 'fixed';
+            el.style.zIndex = '10010';
+            el.style.background = 'var(--color-surface, #161B22)';
+            el.style.border = '1px solid var(--color-border, #222938)';
+            el.style.borderRadius = '10px';
+            el.style.boxShadow = '0 8px 20px rgba(0,0,0,0.35)';
+            el.style.padding = '10px 12px';
+            el.style.maxWidth = '300px';
+            el.style.fontSize = '13px';
+            el.style.color = 'var(--color-text, #E6EDF3)';
+            el.style.display = 'none';
+            el.style.pointerEvents = 'none';
+            document.body.appendChild(el);
+        }
+        return el;
+    };
+    const showPreview = (index, anchor) => {
+        const el = ensurePreviewEl();
+        const q = sess.queue[index]?.item?.question || '';
+        const a = sess.queue[index]?.item?.answer || '';
+        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div>`;
+        const r = anchor.getBoundingClientRect();
+        const isMobile = window.innerWidth < 768;
+        el.style.display = 'block';
+        const pw = el.offsetWidth || 260;
+        const ph = el.offsetHeight || 140;
+        if (isMobile) {
+            el.style.left = '50%';
+            el.style.bottom = '16px';
+            el.style.top = 'auto';
+            el.style.transform = 'translateX(-50%)';
+            el.style.pointerEvents = 'auto';
+        } else {
+            let top = r.top - 10 - ph;
+            if (top < 10) {
+                top = r.bottom + 10;
+            }
+            if (top + ph > window.innerHeight - 10) {
+                top = Math.max(10, window.innerHeight - ph - 10);
+            }
+            let left = r.left + (r.width / 2) - (pw / 2);
+            const minLeft = 10;
+            const maxLeft = Math.max(minLeft, window.innerWidth - pw - 10);
+            left = Math.max(minLeft, Math.min(maxLeft, left));
+            el.style.top = `${top}px`;
+            el.style.left = `${left}px`;
+            el.style.transform = 'none';
+        }
+    };
+    const hidePreview = () => {
+        const el = document.getElementById('learn-seg-preview');
+        if (el) el.style.display = 'none';
+    };
+    Array.from(segs.children).forEach((seg) => {
+        const i = Number(seg.dataset.index || '0');
+        seg.style.cursor = 'pointer';
+        seg.addEventListener('click', (e) => {
+            e.preventDefault();
+            sess.goTo(i);
+            hidePreview();
+        });
+        seg.addEventListener('mouseenter', () => showPreview(i, seg));
+        seg.addEventListener('mouseleave', hidePreview);
+        seg.addEventListener('touchstart', (e) => {
+            if (touchTimer) clearTimeout(touchTimer);
+            const target = seg;
+            touchTimer = setTimeout(() => { showPreview(i, target); touchTimer = null; }, 300);
+        }, { passive: true });
+        seg.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+                sess.goTo(i);
+            }
+        });
+    });
+    document.addEventListener('scroll', hidePreview, { passive: true });
+    window.addEventListener('resize', hidePreview);
 }
 
 function showStats(stats, results, total) {

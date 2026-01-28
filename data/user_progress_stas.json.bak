@@ -2,11 +2,11 @@
   "srsProgress": {
     "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
       "interval": 1,
-      "easeFactor": 2.35,
+      "easeFactor": 2.1,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769586277622,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769608932057,
       "nextReviewDate": 1769648400000,
       "dueDate": "2026-01-29T01:00:00.000Z",
       "repetitions": 0,
@@ -14,20 +14,24 @@
         {
           "date": 1769586277622,
           "grade": 2
+        },
+        {
+          "date": 1769608932057,
+          "grade": 1
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 10,
+      "lastReviewedTime": 17,
       "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
     },
     "Foreign Key": {
       "interval": 1,
-      "easeFactor": 2.35,
+      "easeFactor": 2.1,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769586289934,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769608934796,
       "nextReviewDate": 1769648400000,
       "dueDate": "2026-01-29T01:00:00.000Z",
       "repetitions": 0,
@@ -35,20 +39,24 @@
         {
           "date": 1769586289934,
           "grade": 2
+        },
+        {
+          "date": 1769608934796,
+          "grade": 1
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 10,
+      "lastReviewedTime": 17,
       "question": "Foreign Key"
     },
     "Чем отличаются серьёзность и приоритет бага?": {
       "interval": 1,
-      "easeFactor": 2.35,
+      "easeFactor": 2.1,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769586329899,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769608935927,
       "nextReviewDate": 1769648400000,
       "dueDate": "2026-01-29T01:00:00.000Z",
       "repetitions": 0,
@@ -56,18 +64,94 @@
         {
           "date": 1769586329899,
           "grade": 2
+        },
+        {
+          "date": 1769608935927,
+          "grade": 1
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 10,
+      "lastReviewedTime": 17,
       "question": "Чем отличаются серьёзность и приоритет бага?"
+    },
+    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
+      "interval": 1,
+      "easeFactor": 2.1,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769608933354,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769607538894,
+          "grade": 2
+        },
+        {
+          "date": 1769608933354,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-28",
+      "lastReviewedTime": 17,
+      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
+    },
+    "1) Физического доступа": {
+      "interval": 1,
+      "easeFactor": 2.5,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769608860933,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1769608860933,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-28",
+      "lastReviewedTime": 17,
+      "question": "1) Физического доступа"
+    },
+    "Понимание того, как ляжет новое требование относительно всей архитектуры": {
+      "interval": 1,
+      "easeFactor": 2,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769608937526,
+      "nextReviewDate": 1769648400000,
+      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769608913877,
+          "grade": 1
+        },
+        {
+          "date": 1769608937526,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-28",
+      "lastReviewedTime": 17,
+      "question": "Понимание того, как ляжет новое требование относительно всей архитектуры"
     }
   },
   "studyStats": {
-    "total": 3,
-    "timeSpent": 77575,
-    "points": 15
+    "total": 11,
+    "timeSpent": 193906,
+    "points": 35,
+    "correct": 1
   },
   "studyStreak": {
     "current": 1,
@@ -75,15 +159,17 @@
     "lastDate": "2026-01-28"
   },
   "dailyPoints": {
-    "2026-01-28": 15
+    "2026-01-28": 35
   },
   "dailyBonusPoints": {
     "2026-01-28": 0
   },
-  "dailyDayBonusPoints": {},
+  "dailyDayBonusPoints": {
+    "2026-01-28": 5
+  },
   "qaFavorites": [],
   "studyAchievements": {
     "firstSessionCompleted": true
   },
-  "updatedAt": 1769607285261
+  "updatedAt": 1769608938534
 }

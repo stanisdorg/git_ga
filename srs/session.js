@@ -56,6 +56,17 @@ export class LearningSession {
         this.loadCurrentCard();
     }
 
+    goTo(index) {
+        const n = this.queue.length;
+        if (n === 0) {
+            this.onComplete(this.stats, this.results, this.queue.length);
+            return;
+        }
+        const i = Math.max(0, Math.min(n - 1, Number(index) || 0));
+        this.currentIndex = i;
+        this.loadCurrentCard();
+    }
+
     loadCurrentCard() {
         if (this.currentIndex >= this.queue.length) {
             this.onComplete(this.stats, this.results, this.queue.length);
