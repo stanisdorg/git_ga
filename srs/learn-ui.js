@@ -74,26 +74,27 @@ export function initLearnUI() {
                 
                 /* Mobile Layout */
                 @media (max-width: 768px) {
-                    .nav-arrow-btn {
-                        position: absolute;
-                        top: 50%;
-                        margin-top: -24px;
-                        z-index: 90;
-                        background: rgba(0,0,0,0.3);
-                        backdrop-filter: blur(4px);
-                        color: rgba(255,255,255,0.9);
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                    }
-                    .nav-arrow-btn.left { left: 8px; }
-                    .nav-arrow-btn.right { right: 8px; }
-                    
                     .flashcard-container {
-                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 12px;
                         width: 100%;
                         padding: 0 10px; /* Prevent card from touching edges */
+                        box-sizing: border-box;
                     }
                     .flashcard {
-                        max-width: 100%; /* Ensure card fits */
+                        margin: 0 auto;
+                        width: 92vw;
+                        max-width: 520px;
+                    }
+                    .nav-arrow-btn {
+                        position: static;
+                        width: 44px;
+                        height: 44px;
+                        background: rgba(0,0,0,0.25);
+                        color: rgba(255,255,255,0.95);
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
                     }
                 }
                 
