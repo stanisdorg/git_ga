@@ -577,15 +577,17 @@ function renderStats() {
          cardsDoneToday++;
      }
 
-     // Use default EF=2.3 if missing (fallback for new/learning cards)
-     // This ensures ALL cards appear in the chart, defaulting to 'Standard'
-     const ef = (p && p.easeFactor) ? p.easeFactor : 2.3;
-     
-     if (ef < 1.7) segs[0].count++;
-     else if (ef < 2.1) segs[1].count++;
-     else if (ef < 2.4) segs[2].count++;
-     else segs[3].count++;
-     totalRated++;
+     // Only count difficulty for cards with actual progress
+     // Unstudied/New cards are excluded from the difficulty distribution
+     if (p && p.easeFactor !== undefined) {
+         const ef = p.easeFactor;
+         
+         if (ef < 1.7) segs[0].count++;
+         else if (ef < 2.1) segs[1].count++;
+         else if (ef < 2.4) segs[2].count++;
+         else segs[3].count++;
+         totalRated++;
+     }
   });
   
   segs.forEach(s => {
@@ -914,15 +916,18 @@ function renderStats() {
           else if (label === 'Стандарт') { min = 2.1; max = 2.4; }
           else if (label === 'Легкие') { min = 2.4; max = 999; }
 
-          // Use the same EF logic as in the chart: all карты участвуют,
-          // а у новых EF по умолчанию 2.5 (Стандарт)
+          // Use the same EF logic as in the chart: only cards with progress
           cards = uniqueQaData.filter(q => {
              // Ensure valid card data
              if (!q || !q.question || !q.answer) return false;
 
              let p = progress[q.question];
              if (!p && q.question) p = progress[q.question.trim()];
-             const ef = (p && p.easeFactor) ? p.easeFactor : 2.3;
+             
+             // Filter out cards without progress (new cards)
+             if (!p || p.easeFactor === undefined) return false;
+             
+             const ef = p.easeFactor;
              return ef >= min && ef < max;
           });
       }
