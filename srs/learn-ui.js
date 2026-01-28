@@ -61,7 +61,6 @@ export function initLearnUI() {
                     opacity: 0.1;
                     cursor: default;
                     pointer-events: none;
-                    transform: none;
                 }
                 .nav-arrow-btn svg {
                     width: 32px;
