@@ -435,7 +435,7 @@
 }
 
 .fav-btn.fav-active {
-    color: #ffd700; /* Gold */
+    color: #fb923c; /* Orange */
 }
 
 /* Legacy support just in case */
@@ -466,14 +466,14 @@
 
 .favorite-btn.active,
 .fav-btn.fav-active {
-    color: #ffd700 !important; /* Gold */
+    color: #fb923c !important; /* Orange */
 }
 
 /* Force SVG fill for favorite buttons */
 .fav-btn.fav-active svg path,
 .favorite-btn.active svg path {
-    fill: #ffd700 !important;
-    stroke: #ffd700 !important;
+    fill: #fb923c !important;
+    stroke: #fb923c !important;
 }
 
 .favorite-btn:hover {

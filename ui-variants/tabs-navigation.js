@@ -2627,7 +2627,7 @@ export function displayQuestions(questions, title) {
         const starSvg = (filled) => `
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                    style="fill: ${filled ? '#ffd700' : 'none'}; stroke: ${filled ? '#ffd700' : 'currentColor'}; stroke-width: 2px;"
+                    style="fill: ${filled ? '#fb923c' : 'none'}; stroke: ${filled ? '#fb923c' : 'currentColor'}; stroke-width: 2px;"
                 />
             </svg>
         `;
