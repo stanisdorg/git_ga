@@ -291,20 +291,35 @@ export function initTabsNavigation(appVersion) {
         }
     });
     
-    // Создаем верхнюю строку навигации: табы + кнопки действий
-    const tabsHeader = document.createElement('div');
-    tabsHeader.className = 'tabs-header';
-    tabsHeader.appendChild(tabsContainer);
-
-    // Верхняя панель действий над карточками
-    const topActions = document.createElement('div');
-    topActions.className = 'top-actions';
+    // Интегрируем кнопку фильтров внутрь списка табов как первый элемент (sticky left)
+    const filtersBtn = document.createElement('button');
+    filtersBtn.className = 'tab'; 
+    filtersBtn.title = 'Фильтры';
+    filtersBtn.style.padding = '0 10px';
+    filtersBtn.style.minWidth = 'auto';
+    filtersBtn.style.position = 'sticky';
+    filtersBtn.style.left = '0';
+    filtersBtn.style.zIndex = '10';
+    filtersBtn.style.marginRight = '4px';
+    filtersBtn.style.backgroundColor = 'var(--color-card)'; // Ensure background covers scrolling content
+    filtersBtn.style.border = '1px solid var(--color-border)';
+    filtersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2l-7 7v4l-4 2v-6L3 7z"/></svg>';
+    filtersBtn.addEventListener('click', () => {
+        const sheet = document.getElementById('filters-sheet');
+        if (sheet) {
+            sheet.style.bottom = '0';
+        }
+    });
     
-    // Кнопка режима обучения
+    // Вставляем кнопку фильтров перед остальными табами
+    tabsContainer.insertBefore(filtersBtn, tabsContainer.firstChild);
+
+    // Кнопка режима обучения (скрыта на мобильных через CSS .learn-main-btn)
     const learnBtn = document.createElement('button');
     learnBtn.title = 'Режим обучения';
     learnBtn.textContent = 'Учить';
-    learnBtn.className = 'learn-main-btn';
+    learnBtn.className = 'learn-main-btn tab'; // Add 'tab' class for styling consistency
+    learnBtn.style.marginLeft = 'auto'; // Push to right if flex container allows
     learnBtn.addEventListener('click', async () => {
         try {
             console.log('[Learn] Button clicked');
@@ -322,12 +337,12 @@ export function initTabsNavigation(appVersion) {
             }
 
             let module;
-        try {
-            module = await import('../srs/learn-ui.js?v=26');
-        } catch (e1) {
-            console.warn('[Learn] Import v26 failed, trying plain import', e1);
             try {
-                module = await import('../srs/learn-ui.js');
+                module = await import('../srs/learn-ui.js?v=26');
+            } catch (e1) {
+                console.warn('[Learn] Import v26 failed, trying plain import', e1);
+                try {
+                    module = await import('../srs/learn-ui.js');
                 } catch (e2) {
                     throw new Error(`Failed to load learn-ui.js: ${e2.message}`);
                 }
@@ -348,24 +363,29 @@ export function initTabsNavigation(appVersion) {
 
     // Кнопка статистики
     const statsBtn = document.createElement('button');
-    statsBtn.className = 'nav-icon-btn';
+    statsBtn.className = 'nav-icon-btn tab';
     statsBtn.title = 'Статистика';
+    statsBtn.style.minWidth = 'auto';
+    statsBtn.style.padding = '0 10px';
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
-    // statsBtn.style.color = '#fff';
     statsBtn.addEventListener('click', async () => {
         const { initStatsPage } = await import('../srs/stats-ui.js?v=25');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
 
-    const editToggleBtn = document.createElement('button');
-    editToggleBtn.title = 'Режим редактирования';
-    editToggleBtn.textContent = '✎';
-    // Стили перенесены в CSS (.tabs-actions button)
-    editToggleBtn.style.display = 'none';
-
+    // Кнопка профиля / Войти
     const loginMainBtn = document.createElement('button');
-    loginMainBtn.className = 'nav-icon-btn';
+    loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
+    loginMainBtn.style.minWidth = 'auto';
+    loginMainBtn.style.padding = '0 10px';
+    // Sticky right for profile
+    loginMainBtn.style.position = 'sticky';
+    loginMainBtn.style.right = '0';
+    loginMainBtn.style.zIndex = '10';
+    loginMainBtn.style.backgroundColor = 'var(--color-card)';
+    loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
+    
     const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
     loginMainBtn.innerHTML = userIconSvg;
     loginMainBtn.title = 'Войти';
@@ -380,25 +400,110 @@ export function initTabsNavigation(appVersion) {
             openLoginModal();
         }
     });
+
+    const editToggleBtn = document.createElement('button');
+    editToggleBtn.title = 'Режим редактирования';
+    editToggleBtn.textContent = '✎';
+    editToggleBtn.className = 'tab';
+    editToggleBtn.style.display = 'none';
     
-    topActions.appendChild(loginMainBtn);
-    topActions.appendChild(learnBtn);
-    topActions.appendChild(statsBtn);
-    topActions.appendChild(editToggleBtn);
+    // Добавляем кнопки в конец списка табов (они будут прокручиваться, кроме sticky)
+    // Порядок: Learn -> Stats -> Edit -> Profile (Sticky Right)
+    tabsContainer.appendChild(learnBtn);
+    tabsContainer.appendChild(statsBtn);
+    tabsContainer.appendChild(editToggleBtn);
+    tabsContainer.appendChild(loginMainBtn);
 
-    // Version Display
-    if (appVersion) {
-        const verEl = document.createElement('span');
-        verEl.textContent = 'v' + appVersion;
-        verEl.style.fontSize = '10px';
-        verEl.style.color = 'var(--st-text-sec)';
-        verEl.style.marginLeft = '8px';
-        verEl.style.opacity = '0.5';
-        topActions.appendChild(verEl);
+    // Добавляем контейнер табов в навигацию напрямую
+    navigationContainer.appendChild(tabsContainer);
+
+    // Bottom sheet фильтров
+    let activeFilters = { status: null, ef: null };
+    const sheetExists = document.getElementById('filters-sheet');
+    const sheet = sheetExists || document.createElement('div');
+    sheet.id = 'filters-sheet';
+    sheet.style.position = 'fixed';
+    sheet.style.left = '0';
+    sheet.style.right = '0';
+    sheet.style.bottom = '-100%';
+    sheet.style.background = '#222';
+    sheet.style.borderTop = '1px solid #444';
+    sheet.style.borderRadius = '12px 12px 0 0';
+    sheet.style.boxShadow = '0 -8px 24px rgba(0,0,0,0.4)';
+    sheet.style.padding = '12px';
+    sheet.style.zIndex = '3000';
+    sheet.style.transition = 'bottom 0.25s ease';
+    sheet.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="color:#ddd;font-weight:600">Фильтры</div>
+            <button id="filters-close" class="nav-icon-btn" title="Закрыть"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+            <button class="filter-chip" data-status="new">Новые</button>
+            <button class="filter-chip" data-status="studying">Изучаются</button>
+            <button class="filter-chip" data-status="review">Повторение</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="filter-chip" data-ef="all">Все</button>
+            <button class="filter-chip" data-ef="vh">Очень трудные</button>
+            <button class="filter-chip" data-ef="h">Трудные</button>
+            <button class="filter-chip" data-ef="st">Стандарт</button>
+            <button class="filter-chip" data-ef="e">Легкие</button>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="filters-apply" class="nav-icon-btn" title="Применить"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>
+            <button id="filters-reset" class="nav-icon-btn" title="Сброс"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+    `;
+    if (!sheetExists) document.body.appendChild(sheet);
+    filtersBtn.addEventListener('click', () => { sheet.style.bottom = '0'; });
+    sheet.querySelector('#filters-close').addEventListener('click', () => { sheet.style.bottom = '-100%'; });
+    sheet.querySelector('#filters-reset').addEventListener('click', () => { activeFilters = { status: null, ef: null }; refreshCurrentContext(); sheet.style.bottom = '-100%'; });
+    sheet.querySelector('#filters-apply').addEventListener('click', () => { applyFilters(); sheet.style.bottom = '-100%'; });
+    Array.from(sheet.querySelectorAll('.filter-chip')).forEach(btn => {
+        btn.style.background = '#333';
+        btn.style.color = '#ddd';
+        btn.style.border = '1px solid #444';
+        btn.style.borderRadius = '16px';
+        btn.style.padding = '6px 10px';
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+            const s = btn.dataset.status || null;
+            const e = btn.dataset.ef || null;
+            if (s) activeFilters.status = activeFilters.status === s ? null : s;
+            if (e) activeFilters.ef = activeFilters.ef === e ? null : e;
+            Array.from(sheet.querySelectorAll('.filter-chip')).forEach(b => b.style.opacity = '0.6');
+            if (activeFilters.status) sheet.querySelector(`.filter-chip[data-status="${activeFilters.status}"]`).style.opacity = '1';
+            if (activeFilters.ef) sheet.querySelector(`.filter-chip[data-ef="${activeFilters.ef}"]`).style.opacity = '1';
+        });
+    });
+
+    function applyFilters() {
+        const data = getRuntimeData();
+        let progMap = {};
+        try { progMap = getProgressMap(); } catch {}
+        const byStatus = (q) => {
+            const p = progMap[q.question];
+            if (!activeFilters.status) return true;
+            if (activeFilters.status === 'new') return !p || p.easeFactor === undefined;
+            if (activeFilters.status === 'studying') return !!p && (p.easeFactor !== undefined) && p.easeFactor < 2.1;
+            if (activeFilters.status === 'review') return !!p && (p.easeFactor !== undefined) && p.easeFactor >= 2.1;
+            return true;
+        };
+        const byEf = (q) => {
+            const p = progMap[q.question];
+            const ef = (p && p.easeFactor !== undefined) ? p.easeFactor : null;
+            if (!activeFilters.ef || activeFilters.ef === 'all') return true;
+            if (ef === null) return false;
+            if (activeFilters.ef === 'vh') return ef < 1.7;
+            if (activeFilters.ef === 'h') return ef >= 1.7 && ef < 2.1;
+            if (activeFilters.ef === 'st') return ef >= 2.1 && ef < 2.4;
+            if (activeFilters.ef === 'e') return ef >= 2.4;
+            return true;
+        };
+        const filtered = data.filter(q => byStatus(q) && byEf(q));
+        displayQuestions(filtered, '');
     }
-
-    navigationContainer.appendChild(topActions);
-    tabsHeader.appendChild(tabsContainer);
 
     // Удалён прежний огонёк до виджета уровня — перенесён ближе к шкале
 
@@ -2767,4 +2872,3 @@ export function displayQuestions(questions, title) {
         console.error('Critical error in displayQuestions:', e);
     }
 }
-

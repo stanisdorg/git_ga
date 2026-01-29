@@ -797,6 +797,97 @@ body.listening .audio-visualizer {
     font-size: 28px;
     margin-bottom: 8px;
 }
+
+/* Mobile-first overrides */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        position: relative;
+    }
+    .sidebar {
+        display: none;
+    }
+    .container {
+        margin-left: 0;
+        padding: 10px 0 0 0;
+    }
+    .tabs-header {
+        margin: 0 10px 8px 10px;
+        gap: 8px;
+    }
+    .tabs-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab {
+        height: 32px;
+        font-size: 12px;
+    }
+    .learn-main-btn {
+        display: none !important;
+    }
+    #results-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 0 10px 14px 10px;
+    }
+    .result-item {
+        padding: 10px 12px 14px 12px;
+        border-radius: 10px;
+        max-width: none;
+    }
+    .question {
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 6px;
+    }
+    .answer {
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        hyphens: auto;
+    }
+    .nav-icon-btn:hover {
+        background: none !important;
+    }
+    .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 56px;
+        background: var(--color-card);
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 3000;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottom-nav button {
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        font-size: 10px;
+        cursor: pointer;
+    }
+    .bottom-nav button.active {
+        color: var(--color-text);
+    }
+    body {
+        padding-bottom: 56px;
+    }
+}
 .achievement-title {
     color: var(--color-text);
     font-weight: 600;
@@ -918,6 +1009,9 @@ body.listening .audio-visualizer {
     height: 12px;
     line-height: 12px;
     font-size: 12px;
+}
+@media (min-width: 769px) {
+    .bottom-nav { display: none; }
 }
 @media (max-width: 768px) {
     .metrics-grid {
