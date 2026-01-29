@@ -344,6 +344,7 @@ export function initTabsNavigation(appVersion) {
     learnBtn.className = 'nav-icon-btn tab'; 
     learnBtn.style.padding = '0 10px';
     learnBtn.style.minWidth = 'auto';
+    learnBtn.style.setProperty('color', '#ffd700', 'important'); // Yellow icon
     learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
     learnBtn.addEventListener('click', async () => {
         try {
