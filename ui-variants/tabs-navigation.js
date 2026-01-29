@@ -163,6 +163,16 @@ export function initTabsNavigation(appVersion) {
     topActions.style.justifyContent = 'flex-end';
     topActions.style.padding = '4px 10px';
     
+    // Версия приложения
+    const verEl = document.createElement('div');
+    verEl.textContent = `v${appVersion}`;
+    verEl.className = 'app-version-display';
+    verEl.style.fontSize = '11px';
+    verEl.style.color = '#555';
+    verEl.style.marginRight = 'auto'; // Прижимаем влево
+    verEl.style.fontWeight = 'bold';
+    topActions.appendChild(verEl);
+
     // Автоматическая загрузка с учётом текущего контекста
     // Раньше здесь был безусловный вызов showAllQuestions(), который
     // сбрасывал контекст после перезагрузки данных (например, после восстановления из корзины).
