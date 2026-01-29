@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=1.32';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '1.31';
+export const APP_VERSION = '1.33';
 
 // Debug banner for script loading verification
 // Removed after fix
