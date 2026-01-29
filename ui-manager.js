@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=1.23';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '1.23';
+export const APP_VERSION = '1.24';
 
 // Debug banner for script loading verification
 // Removed after fix
@@ -39,6 +39,7 @@ export function initUI() {
     // Добавляем стили для табов и карточек
     addStyles();
     createBottomNav();
+    initSyncIndicator();
 
     // Обновляем UI при изменении данных
     const reinit = () => {
