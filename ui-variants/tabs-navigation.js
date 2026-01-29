@@ -1274,7 +1274,7 @@ export function initTabsNavigation(appVersion) {
         document.body.appendChild(menu);
         const rect = tabEl.getBoundingClientRect();
         menu.style.left = `${rect.right + 6}px`;
-        menu.style.top = `${rect.top}px`;
+        menu.style.top = `${rect.top + window.scrollY}px`;
         const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
         document.addEventListener('click', onDocClick);
         menu.addEventListener('click', async (e) => {
@@ -1382,7 +1382,7 @@ export function initTabsNavigation(appVersion) {
         document.body.appendChild(menu);
         const rect = cardEl.getBoundingClientRect();
         menu.style.left = `${rect.right + 6}px`;
-        menu.style.top = `${rect.top}px`;
+        menu.style.top = `${rect.top + window.scrollY}px`;
         const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
         document.addEventListener('click', onDocClick);
         menu.addEventListener('click', async (e) => {
@@ -2763,7 +2763,7 @@ export function displayQuestions(questions, title) {
                 document.body.appendChild(menu);
                 const rect = kebabBtn.getBoundingClientRect();
                 menu.style.left = `${rect.right + 6}px`;
-                menu.style.top = `${rect.top}px`;
+                menu.style.top = `${rect.top + window.scrollY}px`;
                 const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
                 document.addEventListener('click', onDocClick);
 
