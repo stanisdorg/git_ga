@@ -193,17 +193,23 @@
     "Опишите ситуацию, когда вам пришлось работать под давлением.": {
       "interval": 1,
       "easeFactor": 2.3,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769527029148,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 0,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769689626651,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
+      "repetitions": 1,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Опишите ситуацию, когда вам пришлось работать под давлением."
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 15,
+      "question": "Опишите ситуацию, когда вам пришлось работать под давлением.",
+      "historyArray": [
+        {
+          "date": 1769689626651,
+          "grade": 3
+        }
+      ]
     },
     "Local Storage:": {
       "interval": 1,
@@ -2534,7 +2540,7 @@
       "state": "learning",
       "lastReviewed": "2026-01-27",
       "lastReviewedTime": 18,
-      "question": "Для чего придуманы техники тест-дизайна?"
+      "question": "Дл�� чего придуманы техники тест-дизайна?"
     },
     "Какую тестовую документацию писал?": {
       "interval": 1,
@@ -4806,10 +4812,10 @@
     }
   },
   "studyStats": {
-    "total": 631,
-    "timeSpent": 351268,
-    "points": 6875,
-    "correct": 383
+    "total": 632,
+    "timeSpent": 353507,
+    "points": 6885,
+    "correct": 384
   },
   "studyStreak": {
     "current": 3,
@@ -4819,7 +4825,7 @@
   "dailyPoints": {
     "2026-01-27": 6445,
     "2026-01-28": 165,
-    "2026-01-29": 265
+    "2026-01-29": 275
   },
   "dailyBonusPoints": {
     "2026-01-27": 0,
@@ -4837,12 +4843,13 @@
     "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?",
     "401 vs 403?",
     "Токен?",
-    "Идентификация, валидация, авторизация примеры"
+    "Идентификация, валидация, авторизация примеры",
+    "Разработчик возвращает баг с пометкой 'не воспроизводится'. Что делать?"
   ],
   "studyAchievements": {
     "firstSessionCompleted": true,
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769689060252
+  "updatedAt": 1769689636521
 }
