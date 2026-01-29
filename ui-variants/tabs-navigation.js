@@ -425,11 +425,10 @@ export function initTabsNavigation(appVersion) {
         tabsContainer.appendChild(loginMainBtn);
     } else {
         // Desktop: показываем статические кнопки в верхней панели действий
+        topActions.appendChild(learnBtn);
         topActions.appendChild(statsBtn);
         topActions.appendChild(loginMainBtn);
         topActions.appendChild(editToggleBtn);
-        // Кнопку обучения оставляем в табах
-        tabsContainer.appendChild(learnBtn);
     }
 
     // Добавляем контейнер табов в навигацию напрямую
