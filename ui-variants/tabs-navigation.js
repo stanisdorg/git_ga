@@ -154,6 +154,14 @@ export function initTabsNavigation(appVersion) {
     // Создаем контейнер для навигации
     const navigationContainer = document.createElement('div');
     navigationContainer.className = 'tabs-navigation';
+
+    // Контейнер для верхних действий (статистика, админка)
+    const topActions = document.createElement('div');
+    topActions.className = 'top-actions-bar';
+    topActions.style.display = 'flex';
+    topActions.style.alignItems = 'center';
+    topActions.style.justifyContent = 'flex-end';
+    topActions.style.padding = '4px 10px';
     
     // Автоматическая загрузка с учётом текущего контекста
     // Раньше здесь был безусловный вызов showAllQuestions(), который
@@ -407,12 +415,22 @@ export function initTabsNavigation(appVersion) {
     editToggleBtn.className = 'tab';
     editToggleBtn.style.display = 'none';
     
-    // Добавляем кнопки в конец списка табов (они будут прокручиваться, кроме sticky)
-    // Порядок: Learn -> Stats -> Edit -> Profile (Sticky Right)
-    tabsContainer.appendChild(learnBtn);
-    tabsContainer.appendChild(statsBtn);
-    tabsContainer.appendChild(editToggleBtn);
-    tabsContainer.appendChild(loginMainBtn);
+    // Добавляем кнопки: на мобильных внутри списка табов, на desktop — в верхнюю панель
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile) {
+        // Порядок: Learn -> Stats -> Edit -> Profile (Sticky Right)
+        tabsContainer.appendChild(learnBtn);
+        tabsContainer.appendChild(statsBtn);
+        tabsContainer.appendChild(editToggleBtn);
+        tabsContainer.appendChild(loginMainBtn);
+    } else {
+        // Desktop: показываем статические кнопки в верхней панели действий
+        topActions.appendChild(statsBtn);
+        topActions.appendChild(loginMainBtn);
+        topActions.appendChild(editToggleBtn);
+        // Кнопку обучения оставляем в табах
+        tabsContainer.appendChild(learnBtn);
+    }
 
     // Добавляем контейнер табов в навигацию напрямую
     navigationContainer.appendChild(tabsContainer);

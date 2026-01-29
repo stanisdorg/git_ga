@@ -35,12 +35,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Автоматическая загрузка всех карточек
+    // Автоматическая загрузка всех карточек - ОТКЛЮЧЕНО (конфликт с ui-manager.js)
+    /*
     setTimeout(() => {
         if (typeof showAllQuestions === 'function') {
             showAllQuestions();
         }
     }, 300);
+    */
     
     // Массив для хранения истории поиска
     let searchHistoryArray = [];
@@ -383,7 +385,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Отобразить все карточки на старте, если данные уже есть
+    // Отобразить все карточки на старте, если данные уже есть - ОТКЛЮЧЕНО (конфликт с ui-manager.js)
+    /*
     if (uniqueQaData && uniqueQaData.length > 0) {
         displaySearchResults(uniqueQaData, '');
     } else {
@@ -392,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
              displaySearchResults(uniqueQaData, '');
         });
     }
+    */
     
     // Обработчик нажатия Enter в поле поиска — всегда выполняет поиск и пишет в историю
     searchInput.addEventListener('keydown', function(event) {
