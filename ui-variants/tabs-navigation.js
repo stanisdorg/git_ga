@@ -729,8 +729,11 @@ export function initTabsNavigation(appVersion) {
                 trashBtn.id = 'trash-mode-button';
                 trashBtn.title = 'Корзина';
                 trashBtn.setAttribute('aria-label', 'Корзина');
+                trashBtn.className = 'nav-icon-btn';
+                trashBtn.style.padding = '6px';
+                trashBtn.style.minWidth = 'auto';
                 trashBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                         <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" fill="currentColor" />
                         <path d="M6 9h12l-1 10a2 2 0 0 1-2 2H9a 2 2 0 0 1-2-2L6 9z" fill="currentColor" />
                     </svg>`;
@@ -1682,8 +1685,11 @@ export function initTabsNavigation(appVersion) {
                 trashBtn.id = 'trash-mode-button';
                 trashBtn.title = 'Корзина';
                 trashBtn.setAttribute('aria-label', 'Корзина');
+                trashBtn.className = 'nav-icon-btn';
+                trashBtn.style.padding = '6px';
+                trashBtn.style.minWidth = 'auto';
                 trashBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                         <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" fill="currentColor" />
                         <path d="M6 9h12l-1 10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9z" fill="currentColor" />
                     </svg>`;
