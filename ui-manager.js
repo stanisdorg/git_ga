@@ -1,12 +1,12 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=1.43';
-import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=1.43';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=1.44';
+import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=1.44';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '1.43';
+export const APP_VERSION = '1.44';
 
 // Debug banner for script loading verification
 // Removed after fix
@@ -185,8 +185,9 @@ function addStyles() {
 
         /* Избранное таб — тёмно-оранжевое сердечко */
         .tab[data-category="favorites"] {
-            color: #FF8C00; /* тёмно-оранжевый */
-            font-size: 16px; /* немного больше */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Верхняя панель с кнопками */
