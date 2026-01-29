@@ -419,88 +419,114 @@ export function initTabsNavigation(appVersion) {
 
     // Bottom sheet фильтров
     let activeFilters = { status: null, ef: null };
-    const sheetExists = document.getElementById('filters-sheet');
-    const sheet = sheetExists || document.createElement('div');
-    sheet.id = 'filters-sheet';
-    sheet.style.position = 'fixed';
-    sheet.style.left = '0';
-    sheet.style.right = '0';
-    sheet.style.bottom = '-100%';
-    sheet.style.background = '#222';
-    sheet.style.borderTop = '1px solid #444';
-    sheet.style.borderRadius = '12px 12px 0 0';
-    sheet.style.boxShadow = '0 -8px 24px rgba(0,0,0,0.4)';
-    sheet.style.padding = '12px';
-    sheet.style.zIndex = '3000';
-    sheet.style.transition = 'bottom 0.25s ease';
-    sheet.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <div style="color:#ddd;font-weight:600">Фильтры</div>
-            <button id="filters-close" class="nav-icon-btn" title="Закрыть"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-            <button class="filter-chip" data-status="new">Новые</button>
-            <button class="filter-chip" data-status="studying">Изучаются</button>
-            <button class="filter-chip" data-status="review">Повторение</button>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="filter-chip" data-ef="all">Все</button>
-            <button class="filter-chip" data-ef="vh">Очень трудные</button>
-            <button class="filter-chip" data-ef="h">Трудные</button>
-            <button class="filter-chip" data-ef="st">Стандарт</button>
-            <button class="filter-chip" data-ef="e">Легкие</button>
-        </div>
-        <div style="margin-top:10px;display:flex;gap:8px">
-            <button id="filters-apply" class="nav-icon-btn" title="Применить"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>
-            <button id="filters-reset" class="nav-icon-btn" title="Сброс"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-        </div>
-    `;
-    if (!sheetExists) document.body.appendChild(sheet);
-    filtersBtn.addEventListener('click', () => { sheet.style.bottom = '0'; });
-    sheet.querySelector('#filters-close').addEventListener('click', () => { sheet.style.bottom = '-100%'; });
-    sheet.querySelector('#filters-reset').addEventListener('click', () => { activeFilters = { status: null, ef: null }; refreshCurrentContext(); sheet.style.bottom = '-100%'; });
-    sheet.querySelector('#filters-apply').addEventListener('click', () => { applyFilters(); sheet.style.bottom = '-100%'; });
-    Array.from(sheet.querySelectorAll('.filter-chip')).forEach(btn => {
-        btn.style.background = '#333';
-        btn.style.color = '#ddd';
-        btn.style.border = '1px solid #444';
-        btn.style.borderRadius = '16px';
-        btn.style.padding = '6px 10px';
-        btn.style.cursor = 'pointer';
-        btn.addEventListener('click', () => {
-            const s = btn.dataset.status || null;
-            const e = btn.dataset.ef || null;
-            if (s) activeFilters.status = activeFilters.status === s ? null : s;
-            if (e) activeFilters.ef = activeFilters.ef === e ? null : e;
-            Array.from(sheet.querySelectorAll('.filter-chip')).forEach(b => b.style.opacity = '0.6');
-            if (activeFilters.status) sheet.querySelector(`.filter-chip[data-status="${activeFilters.status}"]`).style.opacity = '1';
-            if (activeFilters.ef) sheet.querySelector(`.filter-chip[data-ef="${activeFilters.ef}"]`).style.opacity = '1';
+    const sheet = document.getElementById('filters-sheet');
+    
+    if (sheet) {
+        const overlay = document.getElementById('sheet-overlay');
+        
+        // Привязываем обработчики к существующим элементам из index.html
+        const closeBtn = document.getElementById('close-filters');
+        const resetBtn = document.getElementById('reset-filters');
+        const applyBtn = document.getElementById('apply-filters');
+        
+        function closeSheet() {
+            sheet.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+        }
+
+        function openSheet() {
+            sheet.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+        }
+        
+        if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+        if (overlay) overlay.addEventListener('click', closeSheet);
+        
+        if (resetBtn) resetBtn.addEventListener('click', () => { 
+            activeFilters = { status: null, ef: null }; 
+            refreshCurrentContext(); 
+            closeSheet(); 
+            // Сброс визуального состояния чипов
+            sheet.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
         });
-    });
+        
+        if (applyBtn) applyBtn.addEventListener('click', () => { 
+            applyFilters(); 
+            closeSheet(); 
+        });
+
+        // Открытие по кнопке фильтров
+        filtersBtn.addEventListener('click', openSheet);
+        
+        // Обработка кликов по чипам
+        sheet.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const filterData = chip.dataset.filter; // "status:new" or "difficulty:easy"
+                if (!filterData) return;
+                
+                const [type, value] = filterData.split(':');
+                
+                // Toggle logic
+                if (type === 'status') {
+                    activeFilters.status = activeFilters.status === value ? null : value;
+                } else if (type === 'difficulty') {
+                    activeFilters.ef = activeFilters.ef === value ? null : value;
+                }
+                
+                // Обновляем визуальное состояние
+                updateChipsVisuals();
+            });
+        });
+        
+        function updateChipsVisuals() {
+            sheet.querySelectorAll('.filter-chip').forEach(c => {
+                const fd = c.dataset.filter;
+                if (!fd) return;
+                const [t, v] = fd.split(':');
+                const isActive = (t === 'status' && activeFilters.status === v) || 
+                                 (t === 'difficulty' && activeFilters.ef === v);
+                
+                if (isActive) c.classList.add('active');
+                else c.classList.remove('active');
+            });
+        }
+    }
 
     function applyFilters() {
         const data = getRuntimeData();
         let progMap = {};
         try { progMap = getProgressMap(); } catch {}
+        
         const byStatus = (q) => {
             const p = progMap[q.question];
             if (!activeFilters.status) return true;
+            
             if (activeFilters.status === 'new') return !p || p.easeFactor === undefined;
-            if (activeFilters.status === 'studying') return !!p && (p.easeFactor !== undefined) && p.easeFactor < 2.1;
+            if (activeFilters.status === 'learning') return !!p && (p.easeFactor !== undefined) && p.easeFactor < 2.1;
             if (activeFilters.status === 'review') return !!p && (p.easeFactor !== undefined) && p.easeFactor >= 2.1;
             return true;
         };
+        
         const byEf = (q) => {
             const p = progMap[q.question];
             const ef = (p && p.easeFactor !== undefined) ? p.easeFactor : null;
-            if (!activeFilters.ef || activeFilters.ef === 'all') return true;
-            if (ef === null) return false;
-            if (activeFilters.ef === 'vh') return ef < 1.7;
-            if (activeFilters.ef === 'h') return ef >= 1.7 && ef < 2.1;
-            if (activeFilters.ef === 'st') return ef >= 2.1 && ef < 2.4;
-            if (activeFilters.ef === 'e') return ef >= 2.4;
+            
+            if (!activeFilters.ef) return true;
+            
+            // Mapping difficulty values from chips to EF ranges
+            // easy: >= 2.4
+            // medium: 2.1 - 2.4
+            // hard: < 2.1
+            
+            if (ef === null) return false; // Hard/Medium/Easy imply studied cards
+            
+            if (activeFilters.ef === 'easy') return ef >= 2.4;
+            if (activeFilters.ef === 'medium') return ef >= 1.7 && ef < 2.4;
+            if (activeFilters.ef === 'hard') return ef < 1.7;
+            
             return true;
         };
+        
         const filtered = data.filter(q => byStatus(q) && byEf(q));
         displayQuestions(filtered, '');
     }
