@@ -689,7 +689,7 @@ export function initTabsNavigation(appVersion) {
     // Включаем прокрутку независимо от режима
     trashPanel.style.overflowY = 'auto';
     // trashPanel.style.maxHeight удален, управляется CSS
-    trashPanel.innerHTML = '<strong>Корзина</strong><div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
+    trashPanel.innerHTML = '<div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
 
     // Добавляем элементы в контейнер навигации
     navigationContainer.appendChild(topActions);

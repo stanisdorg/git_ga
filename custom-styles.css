@@ -1539,3 +1539,44 @@ body.listening .audio-visualizer {
     margin-bottom: 4px; /* Reduced margin */
 }
 
+/* Trash Panel Buttons */
+.restore-btn {
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+    flex: 1;
+    font-weight: 500;
+}
+
+.restore-btn:hover {
+    background-color: #1b5e20;
+}
+
+.purge-btn {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+    flex: 1;
+    font-weight: 500;
+}
+
+.purge-btn:hover {
+    background-color: #b71c1c;
+}
+
+.restore-btn:disabled,
+.purge-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
