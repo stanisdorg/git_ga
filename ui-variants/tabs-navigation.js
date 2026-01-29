@@ -160,7 +160,7 @@ export function initTabsNavigation(appVersion) {
     topActions.className = 'top-actions-bar';
     topActions.style.display = 'flex';
     topActions.style.alignItems = 'center';
-    topActions.style.justifyContent = 'flex-end';
+    topActions.style.justifyContent = 'flex-start';
     topActions.style.padding = '4px 10px';
     
     // Версия приложения
@@ -169,9 +169,15 @@ export function initTabsNavigation(appVersion) {
     verEl.className = 'app-version-display';
     verEl.style.fontSize = '11px';
     verEl.style.color = '#555';
-    verEl.style.marginRight = 'auto'; // Прижимаем влево
     verEl.style.fontWeight = 'bold';
-    topActions.appendChild(verEl);
+    verEl.style.marginLeft = '10px';
+    
+    // Контейнер для правой части (Уровень + Стрик)
+    const levelContainer = document.createElement('div');
+    levelContainer.className = 'level-container-right';
+    levelContainer.style.marginLeft = 'auto';
+    levelContainer.style.display = 'flex';
+    levelContainer.style.alignItems = 'center';
 
     // Автоматическая загрузка с учётом текущего контекста
     // Раньше здесь был безусловный вызов showAllQuestions(), который
@@ -397,12 +403,7 @@ export function initTabsNavigation(appVersion) {
     loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
     loginMainBtn.style.minWidth = 'auto';
     loginMainBtn.style.padding = '0 10px';
-    // Sticky right for profile
-    loginMainBtn.style.position = 'sticky';
-    loginMainBtn.style.right = '0';
-    loginMainBtn.style.zIndex = '10';
     loginMainBtn.style.backgroundColor = 'var(--color-card)';
-    loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
     
     const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
     loginMainBtn.innerHTML = userIconSvg;
@@ -428,6 +429,12 @@ export function initTabsNavigation(appVersion) {
     // Добавляем кнопки: на мобильных внутри списка табов, на desktop — в верхнюю панель
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (isMobile) {
+        // Sticky right for profile
+        loginMainBtn.style.position = 'sticky';
+        loginMainBtn.style.right = '0';
+        loginMainBtn.style.zIndex = '10';
+        loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
+
         // Порядок: Learn -> Stats -> Edit -> Profile (Sticky Right)
         tabsContainer.appendChild(learnBtn);
         tabsContainer.appendChild(statsBtn);
@@ -435,10 +442,13 @@ export function initTabsNavigation(appVersion) {
         tabsContainer.appendChild(loginMainBtn);
     } else {
         // Desktop: показываем статические кнопки в верхней панели действий
-        topActions.appendChild(learnBtn);
-        topActions.appendChild(statsBtn);
+        // Order: Login -> Stats -> Learn -> Version -> Level (Right Aligned)
         topActions.appendChild(loginMainBtn);
+        topActions.appendChild(statsBtn);
+        topActions.appendChild(learnBtn);
+        topActions.appendChild(verEl);
         topActions.appendChild(editToggleBtn);
+        topActions.appendChild(levelContainer);
     }
 
     // Добавляем контейнер табов в навигацию напрямую
@@ -611,12 +621,12 @@ export function initTabsNavigation(appVersion) {
             flame.className = 'streak-flame';
             flame.style.fontSize = '12px';
             flame.style.marginLeft = '4px';
-            topActions.appendChild(flame);
+            levelContainer.appendChild(flame);
         }
         function updateLevelInline() {
             import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
                 const d = getCurrentLevel();
-                const cont = topActions.querySelector('.level-inline');
+                const cont = levelContainer.querySelector('.level-inline');
                 if (!cont) return;
                 const lbl = cont.querySelector('.lv-label');
                 const fl = cont.querySelector('.level-inline-fill');
