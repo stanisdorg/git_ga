@@ -2702,9 +2702,6 @@ export function displayQuestions(questions, title) {
                             <label class="edit-mode-label">Подкатегория</label>
                             <select class="edit-subcategory">${subcategoryOptions}</select>
                         </div>
-                        <button class="save-inline" title="Сохранить">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                        </button>
                     </div>
                     <div class="editor-field-group">
                         <label class="edit-mode-label">Вопрос</label>
@@ -2714,6 +2711,9 @@ export function displayQuestions(questions, title) {
                         <label class="edit-mode-label">Ответ</label>
                         <textarea class="edit-answer">${item.answer}</textarea>
                     </div>
+                    <button class="save-inline" title="Сохранить">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    </button>
                 `;
                 const editCategory = resultItem.querySelector('.edit-category');
                 const editSubcategory = resultItem.querySelector('.edit-subcategory');
@@ -2871,50 +2871,7 @@ export function displayQuestions(questions, title) {
                             }
                         });
                     } else if (act === 'edit') {
-                        const categoriesData = buildCategoriesFromData(getRuntimeData());
-                        const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}" ${item.category === cat.name ? 'selected' : ''}>${cat.name}</option>`).join('');
-                        const selectedCategory = categoriesData.find(cat => cat.name === item.category);
-                        const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
-                        resultItem.innerHTML = `
-                            <div class="question-row">
-                                <label>Категория: <select class="edit-category">${categoryOptions}</select></label>
-                                <label>Подкатегория: <select class="edit-subcategory">${subcategoryOptions}</select></label>
-                                <button class="save-inline" title="Сохранить">✓</button>
-                            </div>
-                            <div><label>Вопрос:<br><textarea class="edit-question" style="width:100%">${item.question}</textarea></label></div>
-                            <div><label>Ответ:<br><textarea class="edit-answer" style="width:100%">${item.answer}</textarea></label></div>
-                        `;
-                        const editCategory = resultItem.querySelector('.edit-category');
-                        const editSubcategory = resultItem.querySelector('.edit-subcategory');
-                        const editQuestion = resultItem.querySelector('.edit-question');
-                        const editAnswer = resultItem.querySelector('.edit-answer');
-                        // Каретка по умолчанию в конце текста и возможность свободно позиционировать
-                        setTimeout(() => {
-                            editQuestion.focus();
-                            const qLen = editQuestion.value.length;
-                            editQuestion.setSelectionRange(qLen, qLen);
-                        }, 0);
-                        editCategory.addEventListener('change', () => {
-                            const newCategory = editCategory.value;
-                            const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
-                            editSubcategory.innerHTML = newSubs;
-                        });
-                        resultItem.querySelector('.save-inline').addEventListener('click', async () => {
-                            const newCategory = editCategory.value;
-                            const newSubcategory = editSubcategory.value;
-                            const newQuestion = editQuestion.value.trim();
-                            const newAnswer = editAnswer.value.trim();
-                            if (!newQuestion || !newAnswer) { alert('Вопрос и ответ не могут быть пустыми'); return; }
-                            const overrides = getOverrides();
-                            // Сохраняем override по исходному ключу вопроса
-                            overrides[item.question] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
-                            setOverrides(overrides);
-                            displayQuestions(currentQuestions.map(q => q.question === item.question ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
-                            const rowEl = resultItem.querySelector('.question-row');
-                            setInlineSaveStatus(rowEl, 'saving');
-                            const ok = await saveMergedToServer();
-                            setInlineSaveStatus(rowEl, ok ? 'success' : 'error');
-                        });
+                        launchEditor();
                     }
                     menu.remove();
                 });

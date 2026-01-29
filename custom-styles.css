@@ -1472,8 +1472,7 @@ body.listening .audio-visualizer {
     max-width: 100%;
 }
 
-.edit-question,
-.edit-answer {
+.edit-question {
     background-color: var(--color-bg); /* Match page background */
     color: var(--color-text);
     border: 1px solid var(--color-border);
@@ -1484,7 +1483,21 @@ body.listening .audio-visualizer {
     width: 100%;
     min-height: 60px;
     resize: vertical;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+}
+
+.edit-answer {
+    background-color: var(--color-bg); /* Match page background */
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    width: 100%;
+    min-height: 160px; /* Much larger for answer */
+    resize: vertical;
+    margin-bottom: 4px;
 }
 
 .save-inline {
@@ -1492,15 +1505,20 @@ body.listening .audio-visualizer {
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 6px 12px;
-    font-size: 14px;
+    padding: 4px; /* Reduced padding */
     cursor: pointer;
     margin-left: auto; /* Push to right */
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
-    height: 32px;
+    width: 24px; /* Small square */
+    height: 24px;
+    margin-top: 4px;
+}
+
+.save-inline svg {
+    width: 16px;
+    height: 16px;
 }
 
 .save-inline:hover {
@@ -1509,14 +1527,15 @@ body.listening .audio-visualizer {
 
 .editor-row {
     display: flex;
-    gap: 12px;
+    gap: 8px; /* Reduced gap */
     align-items: flex-end;
-    margin-bottom: 12px;
+    margin-bottom: 8px; /* Reduced margin */
     flex-wrap: wrap;
 }
 
 .editor-field-group {
     display: flex;
     flex-direction: column;
+    margin-bottom: 4px; /* Reduced margin */
 }
 
