@@ -250,7 +250,7 @@
     overflow-x: auto;
     gap: 4px;
     height: auto;
-    padding: 0 20px;
+    padding: 0;
     scrollbar-width: thin;
     scrollbar-color: var(--color-border) transparent;
 }
@@ -375,11 +375,13 @@
    We'll rely on transparency.
 */
 
+/* Subcategories Container */
 .subcategories-container {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 0 20px 20px 20px;
+    margin: 0 0 20px 0;
+    width: 100%;
 }
 
 .subcategory-card {

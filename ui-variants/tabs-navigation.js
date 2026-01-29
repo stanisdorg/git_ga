@@ -322,7 +322,7 @@ export function initTabsNavigation(appVersion) {
     filtersBtn.style.padding = '0 10px';
     filtersBtn.style.minWidth = 'auto';
     filtersBtn.style.position = 'sticky';
-    filtersBtn.style.left = '20px';
+    filtersBtn.style.left = '0';
     filtersBtn.style.zIndex = '10';
     filtersBtn.style.marginRight = '4px';
     filtersBtn.style.backgroundColor = 'var(--color-card)'; // Ensure background covers scrolling content
