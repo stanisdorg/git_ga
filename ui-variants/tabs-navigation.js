@@ -325,7 +325,7 @@ export function initTabsNavigation(appVersion) {
     // Кнопка режима обучения (скрыта на мобильных через CSS .learn-main-btn)
     const learnBtn = document.createElement('button');
     learnBtn.title = 'Режим обучения';
-    learnBtn.textContent = 'Учить';
+    learnBtn.textContent = 'начать обучение';
     learnBtn.className = 'learn-main-btn tab'; // Add 'tab' class for styling consistency
     learnBtn.style.marginLeft = 'auto'; // Push to right if flex container allows
     learnBtn.addEventListener('click', async () => {

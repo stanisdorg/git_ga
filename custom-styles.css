@@ -1043,3 +1043,51 @@ body.listening .audio-visualizer {
     background: #3b82f6;
     color: #fff;
 }
+
+/* Level Inline Bar (Top Right) */
+.level-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e0e0e0;
+    margin-left: auto;
+    white-space: nowrap;
+}
+.level-inline .lv-label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #fb923c;
+}
+.level-inline-bar {
+    width: 240px;
+    height: 12px;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+.level-inline-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f97316, #fb923c);
+    width: 0%;
+    transition: width 300ms ease;
+}
+.level-inline-text {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    font-size: 9px;
+    line-height: 12px;
+    color: #fff;
+    text-shadow: 0 1px 2px #000;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px;
+    pointer-events: none;
+}
+.level-inline-xp { opacity: 0.8; }
+.level-inline-progress { font-weight: 600; }
+
+@media (max-width: 768px) {
+    .level-inline { display: none !important; }
+}
+
