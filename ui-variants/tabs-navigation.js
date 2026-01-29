@@ -1259,7 +1259,7 @@ export function initTabsNavigation(appVersion) {
         document.querySelectorAll('.popup-menu').forEach(m => m.remove());
         const menu = document.createElement('div');
         menu.className = 'popup-menu';
-        menu.style.position = 'absolute';
+        menu.style.position = 'fixed';
         menu.style.background = '#222';
         menu.style.color = '#ddd';
         menu.style.border = '1px solid #444';
@@ -1274,7 +1274,7 @@ export function initTabsNavigation(appVersion) {
         document.body.appendChild(menu);
         const rect = tabEl.getBoundingClientRect();
         menu.style.left = `${rect.right + 6}px`;
-        menu.style.top = `${rect.top + window.scrollY}px`;
+        menu.style.top = `${rect.top}px`;
         const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
         document.addEventListener('click', onDocClick);
         menu.addEventListener('click', async (e) => {
@@ -1367,7 +1367,7 @@ export function initTabsNavigation(appVersion) {
         document.querySelectorAll('.popup-menu').forEach(m => m.remove());
         const menu = document.createElement('div');
         menu.className = 'popup-menu';
-        menu.style.position = 'absolute';
+        menu.style.position = 'fixed';
         menu.style.background = '#222';
         menu.style.color = '#ddd';
         menu.style.border = '1px solid #444';
@@ -1382,7 +1382,7 @@ export function initTabsNavigation(appVersion) {
         document.body.appendChild(menu);
         const rect = cardEl.getBoundingClientRect();
         menu.style.left = `${rect.right + 6}px`;
-        menu.style.top = `${rect.top + window.scrollY}px`;
+        menu.style.top = `${rect.top}px`;
         const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
         document.addEventListener('click', onDocClick);
         menu.addEventListener('click', async (e) => {
@@ -2693,13 +2693,27 @@ export function displayQuestions(questions, title) {
                 const selectedCategory = categoriesData.find(cat => cat.name === item.category);
                 const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
                 resultItem.innerHTML = `
-                    <div class="question-row">
-                        <label>Категория: <select class="edit-category">${categoryOptions}</select></label>
-                        <label>Подкатегория: <select class="edit-subcategory">${subcategoryOptions}</select></label>
-                        <button class="save-inline" title="Сохранить">✓</button>
+                    <div class="editor-row">
+                        <div class="editor-field-group">
+                            <label class="edit-mode-label">Категория</label>
+                            <select class="edit-category">${categoryOptions}</select>
+                        </div>
+                        <div class="editor-field-group">
+                            <label class="edit-mode-label">Подкатегория</label>
+                            <select class="edit-subcategory">${subcategoryOptions}</select>
+                        </div>
+                        <button class="save-inline" title="Сохранить">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        </button>
                     </div>
-                    <div><label>Вопрос:<br><textarea class="edit-question" style="width:100%">${item.question}</textarea></label></div>
-                    <div><label>Ответ:<br><textarea class="edit-answer" style="width:100%">${item.answer}</textarea></label></div>
+                    <div class="editor-field-group">
+                        <label class="edit-mode-label">Вопрос</label>
+                        <textarea class="edit-question">${item.question}</textarea>
+                    </div>
+                    <div class="editor-field-group">
+                        <label class="edit-mode-label">Ответ</label>
+                        <textarea class="edit-answer">${item.answer}</textarea>
+                    </div>
                 `;
                 const editCategory = resultItem.querySelector('.edit-category');
                 const editSubcategory = resultItem.querySelector('.edit-subcategory');
@@ -2748,7 +2762,7 @@ export function displayQuestions(questions, title) {
                 document.querySelectorAll('.popup-menu').forEach(m => m.remove());
                 const menu = document.createElement('div');
                 menu.className = 'popup-menu';
-                menu.style.position = 'absolute';
+                menu.style.position = 'fixed';
                 menu.style.background = '#222';
                 menu.style.color = '#ddd';
                 menu.style.border = '1px solid #444';
@@ -2763,7 +2777,7 @@ export function displayQuestions(questions, title) {
                 document.body.appendChild(menu);
                 const rect = kebabBtn.getBoundingClientRect();
                 menu.style.left = `${rect.right + 6}px`;
-                menu.style.top = `${rect.top + window.scrollY}px`;
+                menu.style.top = `${rect.top}px`;
                 const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
                 document.addEventListener('click', onDocClick);
 
