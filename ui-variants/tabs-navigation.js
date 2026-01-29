@@ -343,7 +343,7 @@ export function initTabsNavigation(appVersion) {
     learnBtn.title = 'Режим обучения';
     learnBtn.textContent = 'начать обучение';
     learnBtn.className = 'learn-main-btn tab'; // Add 'tab' class for styling consistency
-    learnBtn.style.marginLeft = 'auto'; // Push to right if flex container allows
+    // learnBtn.style.marginLeft = 'auto'; // Removed to keep it next to stats
     learnBtn.addEventListener('click', async () => {
         try {
             console.log('[Learn] Button clicked');
@@ -422,8 +422,10 @@ export function initTabsNavigation(appVersion) {
 
     const editToggleBtn = document.createElement('button');
     editToggleBtn.title = 'Режим редактирования';
-    editToggleBtn.textContent = '✎';
-    editToggleBtn.className = 'tab';
+    editToggleBtn.className = 'nav-icon-btn tab';
+    editToggleBtn.style.minWidth = 'auto';
+    editToggleBtn.style.padding = '0 10px';
+    editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
     editToggleBtn.style.display = 'none';
     
     // Добавляем кнопки: на мобильных внутри списка табов, на desktop — в верхнюю панель
@@ -643,49 +645,23 @@ export function initTabsNavigation(appVersion) {
         window.addEventListener('statsClosed', updateLevelInline);
     }).catch(()=>{});
 
-    // Кнопка для генерации тестовой статистики (админская фича)
-    const genStatsBtn = document.createElement('button');
-    genStatsBtn.textContent = 'Gen Stats';
-    genStatsBtn.style.display = 'none';
-    genStatsBtn.style.width = 'auto';
-    genStatsBtn.style.background = '#111';
-    genStatsBtn.style.border = '1px solid #444';
-    genStatsBtn.style.color = '#d0d0d0';
-    genStatsBtn.style.marginLeft = '8px';
-    genStatsBtn.addEventListener('click', async () => {
-         if (confirm('Сгенерировать тестовую статистику в SUPABASE за 6 месяцев? Это перезапишет данные в облаке для вашего пользователя.')) {
-             try {
-                 const { generateTestStats } = await import('../admin-data-generator.js');
-                 generateTestStats();
-             } catch (e) {
-                 console.error(e);
-                 alert('Ошибка при загрузке модуля генератора: ' + e.message);
-             }
-         }
-    });
-    
-    topActions.appendChild(genStatsBtn);
-
     // Кнопка администратора для добавления пользователей (появляется после входа админа)
     const adminUsersBtn = document.createElement('button');
-    adminUsersBtn.className = 'admin-users-btn';
+    adminUsersBtn.className = 'admin-users-btn tab';
     adminUsersBtn.textContent = 'Добавить пользователя';
     adminUsersBtn.style.display = 'none';
     adminUsersBtn.style.width = 'auto';
-    adminUsersBtn.style.background = '#111';
-    adminUsersBtn.style.border = '1px solid #444';
-    adminUsersBtn.style.color = '#d0d0d0';
+    // Removed manual styles to match app style
     adminUsersBtn.addEventListener('click', openAdminUsersPanel);
     topActions.appendChild(adminUsersBtn);
 
     const cloudBtn = document.createElement('button');
     cloudBtn.title = 'Облако';
     cloudBtn.textContent = 'Облако';
+    cloudBtn.className = 'tab';
     cloudBtn.style.display = 'none';
     cloudBtn.style.width = 'auto';
-    cloudBtn.style.background = '#111';
-    cloudBtn.style.border = '1px solid #444';
-    cloudBtn.style.color = '#d0d0d0';
+    // Removed manual styles to match app style
     cloudBtn.addEventListener('click', openCloudOverview);
     topActions.insertBefore(cloudBtn, adminUsersBtn);
     // Инициализация состояния кнопок по сохранённому пользователю
@@ -1686,9 +1662,6 @@ export function initTabsNavigation(appVersion) {
 
     // Удалена старая логика второго модального окна входа
 
-    editToggleBtn.style.background = '#111';
-    editToggleBtn.style.border = '1px solid #444';
-    editToggleBtn.style.color = '#d0d0d0';
     editToggleBtn.addEventListener('click', () => {
         editMode = !editMode;
         // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
