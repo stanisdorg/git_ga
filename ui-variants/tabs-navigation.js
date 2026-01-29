@@ -669,7 +669,7 @@ export function initTabsNavigation(appVersion) {
 
     // Добавляем элементы в контейнер навигации
     navigationContainer.appendChild(tabsContainer);
-    // navigationContainer.appendChild(tabsHeader); // Removed
+    navigationContainer.appendChild(topActions);
     navigationContainer.appendChild(subcategoriesContainer);
     
     // Вставляем контейнер навигации перед контейнером поиска

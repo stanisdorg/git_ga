@@ -816,6 +816,9 @@ body.listening .audio-visualizer {
         margin: 0 10px 8px 10px;
         gap: 8px;
     }
+    .top-actions-bar {
+        display: none !important;
+    }
     .tabs-container {
         flex-wrap: nowrap;
         overflow-x: auto;
