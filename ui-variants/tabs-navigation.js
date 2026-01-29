@@ -161,7 +161,7 @@ export function initTabsNavigation(appVersion) {
     topActions.style.display = 'flex';
     topActions.style.alignItems = 'center';
     topActions.style.justifyContent = 'flex-start';
-    topActions.style.padding = '4px 10px';
+    topActions.style.padding = '4px 0';
     
     // Версия приложения
     const verEl = document.createElement('div');
