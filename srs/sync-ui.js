@@ -1,9 +1,14 @@
 export function initSyncIndicator() {
+    console.log('Initializing Sync Indicator...');
     // Avoid duplicate initialization
-    if (document.getElementById('sync-indicator')) return;
+    if (document.getElementById('sync-indicator')) {
+        console.log('Sync Indicator already exists');
+        return;
+    }
 
     const container = document.createElement('div');
     container.id = 'sync-indicator';
+    console.log('Created Sync Indicator element');
     container.title = 'Статус синхронизации';
     document.body.appendChild(container);
 
