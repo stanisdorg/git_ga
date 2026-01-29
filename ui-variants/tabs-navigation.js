@@ -340,10 +340,11 @@ export function initTabsNavigation(appVersion) {
 
     // Кнопка режима обучения (скрыта на мобильных через CSS .learn-main-btn)
     const learnBtn = document.createElement('button');
-    learnBtn.title = 'Режим обучения';
-    learnBtn.textContent = 'начать обучение';
-    learnBtn.className = 'learn-main-btn tab'; // Add 'tab' class for styling consistency
-    // learnBtn.style.marginLeft = 'auto'; // Removed to keep it next to stats
+    learnBtn.title = 'Начать обучение';
+    learnBtn.className = 'nav-icon-btn tab'; 
+    learnBtn.style.padding = '0 10px';
+    learnBtn.style.minWidth = 'auto';
+    learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
     learnBtn.addEventListener('click', async () => {
         try {
             console.log('[Learn] Button clicked');
@@ -647,11 +648,12 @@ export function initTabsNavigation(appVersion) {
 
     // Кнопка администратора для добавления пользователей (появляется после входа админа)
     const adminUsersBtn = document.createElement('button');
-    adminUsersBtn.className = 'admin-users-btn tab';
-    adminUsersBtn.textContent = 'Добавить пользователя';
+    adminUsersBtn.className = 'nav-icon-btn tab';
+    adminUsersBtn.title = 'Добавить пользователя';
+    adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
     adminUsersBtn.style.display = 'none';
-    adminUsersBtn.style.width = 'auto';
-    // Removed manual styles to match app style
+    adminUsersBtn.style.minWidth = 'auto';
+    adminUsersBtn.style.padding = '0 10px';
     adminUsersBtn.addEventListener('click', openAdminUsersPanel);
     topActions.appendChild(adminUsersBtn);
 
