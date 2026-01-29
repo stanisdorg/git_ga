@@ -705,8 +705,8 @@ export function initTabsNavigation(appVersion) {
     trashPanel.innerHTML = '<strong>Корзина</strong><div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
 
     // Добавляем элементы в контейнер навигации
-    navigationContainer.appendChild(tabsContainer);
     navigationContainer.appendChild(topActions);
+    navigationContainer.appendChild(tabsContainer);
     navigationContainer.appendChild(subcategoriesContainer);
     
     // Вставляем контейнер навигации перед контейнером поиска
