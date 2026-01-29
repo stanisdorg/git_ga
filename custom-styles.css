@@ -1495,7 +1495,7 @@ body.listening .audio-visualizer {
     font-family: inherit;
     font-size: 14px;
     width: 100%;
-    min-height: 160px; /* Much larger for answer */
+    min-height: 300px; /* Significantly increased height */
     resize: vertical;
     margin-bottom: 4px;
 }
@@ -1529,7 +1529,7 @@ body.listening .audio-visualizer {
     display: flex;
     gap: 8px; /* Reduced gap */
     align-items: flex-end;
-    margin-bottom: 8px; /* Reduced margin */
+    margin-bottom: 4px; /* Matches editor-field-group margin */
     flex-wrap: wrap;
 }
 
