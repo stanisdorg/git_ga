@@ -344,7 +344,7 @@ export function initTabsNavigation(appVersion) {
     learnBtn.className = 'nav-icon-btn tab'; 
     learnBtn.style.padding = '0 10px';
     learnBtn.style.minWidth = 'auto';
-    learnBtn.style.setProperty('color', '#ffd700', 'important'); // Yellow icon
+    learnBtn.style.setProperty('color', '#fb923c', 'important'); // Orange icon (matches Level)
     learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
     learnBtn.addEventListener('click', async () => {
         try {
@@ -430,6 +430,25 @@ export function initTabsNavigation(appVersion) {
     editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
     editToggleBtn.style.display = 'none';
     
+    // Кнопка администратора для добавления пользователей (появляется после входа админа)
+    const adminUsersBtn = document.createElement('button');
+    adminUsersBtn.className = 'nav-icon-btn tab';
+    adminUsersBtn.title = 'Добавить пользователя';
+    adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+    adminUsersBtn.style.display = 'none';
+    adminUsersBtn.style.minWidth = 'auto';
+    adminUsersBtn.style.padding = '0 10px';
+    adminUsersBtn.addEventListener('click', openAdminUsersPanel);
+
+    const cloudBtn = document.createElement('button');
+    cloudBtn.title = 'Облако';
+    cloudBtn.textContent = 'Облако';
+    cloudBtn.className = 'tab';
+    cloudBtn.style.display = 'none';
+    cloudBtn.style.width = 'auto';
+    // Removed manual styles to match app style
+    cloudBtn.addEventListener('click', openCloudOverview);
+
     // Добавляем кнопки: на мобильных внутри списка табов, на desktop — в верхнюю панель
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (isMobile) {
@@ -439,19 +458,22 @@ export function initTabsNavigation(appVersion) {
         loginMainBtn.style.zIndex = '10';
         loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
 
-        // Порядок: Learn -> Stats -> Edit -> Profile (Sticky Right)
+        // Порядок: Learn -> Stats -> Edit -> Admin -> Profile (Sticky Right)
         tabsContainer.appendChild(learnBtn);
         tabsContainer.appendChild(statsBtn);
         tabsContainer.appendChild(editToggleBtn);
+        tabsContainer.appendChild(adminUsersBtn);
         tabsContainer.appendChild(loginMainBtn);
     } else {
         // Desktop: показываем статические кнопки в верхней панели действий
-        // Order: Login -> Stats -> Learn -> Version -> Level (Right Aligned)
+        // Order: Login -> Stats -> Learn -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
         topActions.appendChild(loginMainBtn);
         topActions.appendChild(statsBtn);
         topActions.appendChild(learnBtn);
         topActions.appendChild(verEl);
         topActions.appendChild(editToggleBtn);
+        topActions.appendChild(cloudBtn);
+        topActions.appendChild(adminUsersBtn);
         topActions.appendChild(levelContainer);
     }
 
@@ -647,26 +669,6 @@ export function initTabsNavigation(appVersion) {
         window.addEventListener('statsClosed', updateLevelInline);
     }).catch(()=>{});
 
-    // Кнопка администратора для добавления пользователей (появляется после входа админа)
-    const adminUsersBtn = document.createElement('button');
-    adminUsersBtn.className = 'nav-icon-btn tab';
-    adminUsersBtn.title = 'Добавить пользователя';
-    adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
-    adminUsersBtn.style.display = 'none';
-    adminUsersBtn.style.minWidth = 'auto';
-    adminUsersBtn.style.padding = '0 10px';
-    adminUsersBtn.addEventListener('click', openAdminUsersPanel);
-    topActions.appendChild(adminUsersBtn);
-
-    const cloudBtn = document.createElement('button');
-    cloudBtn.title = 'Облако';
-    cloudBtn.textContent = 'Облако';
-    cloudBtn.className = 'tab';
-    cloudBtn.style.display = 'none';
-    cloudBtn.style.width = 'auto';
-    // Removed manual styles to match app style
-    cloudBtn.addEventListener('click', openCloudOverview);
-    topActions.insertBefore(cloudBtn, adminUsersBtn);
     // Инициализация состояния кнопок по сохранённому пользователю
     try { setLoggedUser(loggedInUser); } catch {}
 

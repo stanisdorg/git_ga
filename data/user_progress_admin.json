@@ -120,18 +120,24 @@
     },
     "Взаимодействие с другими командами?": {
       "interval": 1,
-      "easeFactor": 2.5,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769527028235,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.25,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769695096089,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Взаимодействие с другими командами?"
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Взаимодействие с другими командами?",
+      "historyArray": [
+        {
+          "date": 1769695096089,
+          "grade": 1
+        }
+      ]
     },
     "Foreign Key": {
       "interval": 1,
@@ -263,19 +269,25 @@
       "question": "4) Прикладной"
     },
     "Как происходит адаптация нового сотрудника в команде?": {
-      "interval": 1,
+      "interval": 3,
       "easeFactor": 2.6,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769527030315,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "streak": 2,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769695094774,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 2,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Как происходит адаптация нового сотрудника в команде?"
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Как происходит адаптация нового сотрудника в команде?",
+      "historyArray": [
+        {
+          "date": 1769695094774,
+          "grade": 3
+        }
+      ]
     },
     "Как вы проводили тестирование безопасности (авторизация, SQL-инъекции)?": {
       "interval": 3,
@@ -657,18 +669,24 @@
     },
     "Демо для заказчика было?": {
       "interval": 1,
-      "easeFactor": 2.6,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769527037067,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.45,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769695092274,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Демо для заказчика было?"
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Демо для заказчика было?",
+      "historyArray": [
+        {
+          "date": 1769695092274,
+          "grade": 2
+        }
+      ]
     },
     "Конкурентное - между модулями": {
       "interval": 3,
@@ -1557,18 +1575,24 @@
     },
     "Документация от аналитиков была? Use case?": {
       "interval": 1,
-      "easeFactor": 2.6,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769527060339,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.45,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769695093344,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
+      "repetitions": 0,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Документация от аналитиков была? Use case?"
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Документация от аналитиков была? Use case?",
+      "historyArray": [
+        {
+          "date": 1769695093344,
+          "grade": 2
+        }
+      ]
     },
     "Протокол обмена структурированными\nсообщениями в определенной вычислительной\nсреде. Обмен произвольных сообщений в\nформате xml, описываемый wsdl (Web Services Description Language)": {
       "interval": 3,
@@ -2154,18 +2178,24 @@
     },
     "Какой у вас был процесс тестирования на проекте?": {
       "interval": 1,
-      "easeFactor": 1.6999999999999997,
+      "easeFactor": 1.5499999999999998,
       "streak": 0,
-      "repetitionCount": 4,
-      "history": 4,
-      "lastReviewDate": 1769527099585,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
+      "repetitionCount": 5,
+      "history": 5,
+      "lastReviewDate": 1769695099181,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
       "repetitions": 0,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Какой у вас был процесс тестирования на проекте?"
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Какой у вас был процесс тестирования на проекте?",
+      "historyArray": [
+        {
+          "date": 1769695099181,
+          "grade": 2
+        }
+      ]
     },
     "Как вы получаете фикс бага?": {
       "interval": 1,
@@ -2230,17 +2260,23 @@
     "Опишите процесс работы с баг-репортами.": {
       "interval": 1,
       "easeFactor": 1.6999999999999997,
-      "streak": 0,
-      "repetitionCount": 4,
-      "history": 4,
-      "lastReviewDate": 1769527100310,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 0,
+      "streak": 1,
+      "repetitionCount": 5,
+      "history": 5,
+      "lastReviewDate": 1769695098836,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
+      "repetitions": 1,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Опишите процесс работы с баг-репортами."
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Опишите процесс работы с баг-репортами.",
+      "historyArray": [
+        {
+          "date": 1769695098836,
+          "grade": 3
+        }
+      ]
     },
     "Как у вас проходил процесс ревью кода?": {
       "interval": 1,
@@ -2259,18 +2295,24 @@
     },
     "Расскажите немного про процесс тестирования в вашем проекте.": {
       "interval": 1,
-      "easeFactor": 1.6999999999999997,
+      "easeFactor": 1.5499999999999998,
       "streak": 0,
-      "repetitionCount": 4,
-      "history": 4,
-      "lastReviewDate": 1769527099412,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
+      "repetitionCount": 5,
+      "history": 5,
+      "lastReviewDate": 1769695093000,
+      "nextReviewDate": 1769734800000,
+      "dueDate": "2026-01-30T01:00:00.000Z",
       "repetitions": 0,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Расскажите немного про процесс тестирования в вашем проекте."
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Расскажите немного про процесс тестирования в вашем проекте.",
+      "historyArray": [
+        {
+          "date": 1769695093000,
+          "grade": 2
+        }
+      ]
     },
     "Примеры незавершенности требования?": {
       "interval": 1,
@@ -2828,19 +2870,25 @@
       "question": "confirmation (подтверждающее) - перед регрессом для проверки фикса багов"
     },
     "Что читал в последнее время, статьи каналы?": {
-      "interval": 1,
+      "interval": 3,
       "easeFactor": 2.6,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1769527146953,
-      "nextReviewDate": 1769562000000,
-      "dueDate": "2026-01-28T01:00:00.000Z",
-      "repetitions": 1,
+      "streak": 2,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1769695097628,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 2,
       "state": "learning",
-      "lastReviewed": "2026-01-27",
-      "lastReviewedTime": 18,
-      "question": "Что читал в последнее время, статьи каналы?"
+      "lastReviewed": "2026-01-29",
+      "lastReviewedTime": 16,
+      "question": "Что читал в последнее время, статьи каналы?",
+      "historyArray": [
+        {
+          "date": 1769695097628,
+          "grade": 3
+        }
+      ]
     },
     "Как проверить требование?": {
       "interval": 8,
@@ -4812,10 +4860,10 @@
     }
   },
   "studyStats": {
-    "total": 632,
-    "timeSpent": 353507,
-    "points": 6885,
-    "correct": 384
+    "total": 640,
+    "timeSpent": 374683,
+    "points": 6935,
+    "correct": 387
   },
   "studyStreak": {
     "current": 3,
@@ -4825,7 +4873,7 @@
   "dailyPoints": {
     "2026-01-27": 6445,
     "2026-01-28": 165,
-    "2026-01-29": 275
+    "2026-01-29": 325
   },
   "dailyBonusPoints": {
     "2026-01-27": 0,
@@ -4851,5 +4899,5 @@
     "fiftyCards": true,
     "nightOwl": true
   },
-  "updatedAt": 1769689636521
+  "updatedAt": 1769695129910
 }
