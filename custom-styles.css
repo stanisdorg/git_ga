@@ -59,6 +59,12 @@
     position: relative; /* для абсолютного позиционирования toggle справа */
 }
 
+.sidebar-mode-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 /* Кнопка сворачивания/разворачивания */
 .sidebar-toggle {
     background: none;
