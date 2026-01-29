@@ -610,7 +610,7 @@ export function initTabsNavigation(appVersion) {
         txt.appendChild(xpRight);
         bar.appendChild(fill); bar.appendChild(txt);
         box.appendChild(label); box.appendChild(bar);
-        topActions.appendChild(box);
+        levelContainer.appendChild(box);
         // Огонёк стрика рядом со шкалой уровня
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
         let streakVal = 0;
