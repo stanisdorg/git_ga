@@ -1161,3 +1161,148 @@ body.listening .audio-visualizer {
     animation: spin 1s linear infinite;
 }
 
+.flashcard-back .flashcard-content {
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flashcard-hint {
+    margin-top: 20px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.flashcard-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
+.rate-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    max-width: 120px;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.rate-btn:active {
+    transform: scale(0.95);
+}
+
+.rate-again { background: #f44336; }
+.rate-hard { background: #ff9800; }
+.rate-good { background: #4caf50; }
+.rate-easy { background: #2196f3; }
+
+#learn-stats {
+    text-align: center;
+    color: var(--color-text);
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.stat-item {
+    background: var(--color-card);
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#learn-finish-btn {
+    padding: 12px 24px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Mobile adjustments for Learn mode and summary overlay */
+@media (max-width: 480px) {
+    #learn-container {
+        padding: 10px;
+    }
+    .flashcard {
+        max-width: 100%;
+        height: calc(100vh - 140px);
+        min-height: 70vh;
+    }
+    .flashcard-front, .flashcard-back {
+        padding: 16px;
+    }
+    .flashcard-content {
+        font-size: 18px;
+    }
+    .flashcard-back .flashcard-content {
+        font-size: 16px;
+    }
+    .flashcard-hint {
+        font-size: 12px;
+        margin-top: 12px;
+    }
+    .flashcard-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+    }
+    .rate-btn {
+        flex: 0 0 calc(50% - 8px);
+        max-width: none;
+        font-size: 12px;
+        padding: 8px 12px;
+        box-sizing: border-box;
+    }
+    .summary-overlay {
+        background: rgba(0,0,0,0.85);
+    }
+    .summary-box {
+        width: calc(100% - 24px);
+        max-width: none;
+        background: #1f1f1f;
+        color: #fff;
+        border: 1px solid #2b2b2b;
+        padding: 20px;
+        border-radius: 12px;
+    }
+    .summary-box .stats {
+        justify-content: space-between;
+        margin: 20px 0;
+    }
+    .summary-box .stat-value {
+        color: #fff;
+    }
+    .summary-box .stat-label {
+        color: #cfcfcf;
+    }
+    .summary-box button, #sum-close {
+        background: #111;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
+
