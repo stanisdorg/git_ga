@@ -27,6 +27,26 @@ const STATS_STYLES = `
   --st-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+.nav-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: var(--st-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+}
+.nav-icon-btn:hover {
+  background: var(--st-surf-h);
+  color: #fff;
+}
+.nav-icon-btn:active {
+  transform: scale(0.95);
+}
+
 /* NEW METRICS STYLES */
 .st-meta-state {
   background: linear-gradient(90deg, rgba(46,196,182,0.1), rgba(46,196,182,0.02));
@@ -792,12 +812,19 @@ function renderStats() {
   container.innerHTML = `
     <div class="st-wrapper">
       <div class="st-header">
-        <button class="nav-icon-btn st-home-btn" onclick="location.hash=''">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <button class="nav-icon-btn st-home-btn" title="На главную">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 3l9 8-1.5 1.5L12 6 4.5 12.5 3 11z"/><path d="M5 13v8h6v-6h2v6h6v-8l-7-6z"/></svg>
         </button>
         <div class="st-header-title">Статистика</div>
         <div class="st-header-right">
-           <button class="nav-icon-btn st-auth-btn" title="Аккаунт" style="opacity:0.5"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
+           <button class="nav-icon-btn st-learn-btn" title="Начать обучение" style="color: #fb923c;">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+           </button>
+           <button class="nav-icon-btn st-auth-btn" title="Аккаунт">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>
+           </button>
+        </div>
+      </div>
         </div>
       </div>
 
@@ -1017,6 +1044,46 @@ function renderStats() {
       </div>
     </div>
   `;
+
+  const homeBtn = container.querySelector('.st-home-btn');
+  if (homeBtn) {
+      homeBtn.addEventListener('click', () => {
+          location.hash = '';
+          hideStatsPage();
+          const mainNav = document.getElementById('bottom-nav');
+          if (mainNav) {
+             const homeNav = mainNav.querySelector('#bn-home');
+             if (homeNav) homeNav.click();
+          }
+      });
+  }
+
+  const learnBtn = container.querySelector('.st-learn-btn');
+  if (learnBtn) {
+      learnBtn.addEventListener('click', () => {
+         const questions = (window.currentQuestions && window.currentQuestions.length > 0) 
+             ? window.currentQuestions 
+             : uniqueQaData;
+         
+         if (!questions || questions.length === 0) {
+             alert('Нет вопросов для изучения');
+             return;
+         }
+         startLearnSession(questions); 
+         hideStatsPage();
+      });
+  }
+
+  const authBtn = container.querySelector('.st-auth-btn');
+  if (authBtn) {
+      authBtn.addEventListener('click', () => {
+          if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
+              window.qaAuth.openLogin();
+          } else {
+              alert('Окно входа недоступно');
+          }
+      });
+  }
 }
 
 function renderXpChart(data) {
