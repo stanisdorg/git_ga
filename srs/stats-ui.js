@@ -916,7 +916,7 @@ function renderStats() {
          <div class="st-collapsible-header" style="cursor:default">
             <div class="st-col-title">
                Сложность карточек
-               <button class="st-info-btn" onclick="window.openDiffInfoModal()" title="Справка">?</button>
+               <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Справка">?</button>
             </div>
          </div>
          
@@ -1165,7 +1165,8 @@ window.changeXpMode = (mode) => {
   currentXpMode = mode;
   renderStats();
 };
-window.openDiffInfoModal = () => {
+window.openDiffInfoModal = (event) => {
+   if (event) event.stopPropagation();
    const overlay = document.createElement('div');
    overlay.className = 'st-modal-overlay';
    overlay.innerHTML = `
@@ -1201,12 +1202,23 @@ window.openDiffInfoModal = () => {
    `;
    document.body.appendChild(overlay);
 };
+
+function getHeartsForEf(ef) {
+    if (ef === undefined || ef === null) return '🆕'; // New cards
+    if (ef < 1.7) return '❤️🤍🤍🤍🤍';
+    if (ef < 2.1) return '❤️❤️🤍🤍🤍';
+    if (ef < 2.4) return '❤️❤️❤️🤍🤍';
+    if (ef < 2.9) return '❤️❤️❤️❤️🤍';
+    return '❤️❤️❤️❤️❤️';
+}
+
 window.openDiffModal = (index) => {
   let list = [];
   let label = '';
+  const prog = getProgressMap();
+  const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   
   if (index === 'favorites') {
-     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
      list = uniqueQaData.filter(q => favorites.has(q.question));
      label = 'Избранное';
   } else {
@@ -1219,7 +1231,6 @@ window.openDiffModal = (index) => {
      ];
      const r = ranges[i];
      label = r.label;
-     const prog = getProgressMap();
      list = uniqueQaData.filter(q => {
         const p = prog[q.question] || prog[q.question.trim()];
         if (!p || p.easeFactor === undefined) return false;
@@ -1238,12 +1249,25 @@ window.openDiffModal = (index) => {
        </div>
        <div class="st-modal-body">
           <ul class="st-modal-list">
-             ${list.slice(0, 50).map(q => `
+             ${list.slice(0, 50).map(q => {
+                const p = prog[q.question] || prog[q.question.trim()];
+                const ef = p ? p.easeFactor : undefined;
+                const hearts = getHeartsForEf(ef);
+                const isFav = favorites.has(q.question);
+                
+                return `
                 <li class="st-modal-item">
-                   <span class="st-modal-q">${q.question}</span>
-                   <span class="st-modal-a">${q.answer.substring(0, 60)}...</span>
+                   <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
+                       <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
+                       <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
+                          <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${hearts}</span>
+                          ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
+                       </div>
+                   </div>
+                   <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${q.answer.substring(0, 80)}${q.answer.length > 80 ? '...' : ''}</div>
                 </li>
-             `).join('')}
+                `;
+             }).join('')}
              ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и еще ${list.length - 50}</li>` : ''}
           </ul>
        </div>
