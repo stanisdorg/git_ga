@@ -499,6 +499,14 @@ const STATS_STYLES = `
   background: rgba(46, 196, 182, 0.05);
   border-color: var(--st-sec);
 }
+.st-info-btn {
+  background: none; border: 1px solid var(--st-muted); color: var(--st-muted);
+  width: 18px; height: 18px; border-radius: 50%;
+  font-size: 11px; line-height: 16px; text-align: center;
+  margin-left: 8px; cursor: pointer; display: inline-block;
+  vertical-align: middle;
+}
+.st-info-btn:hover { border-color: var(--st-text); color: var(--st-text); }
 .st-ach-icon { font-size: 28px; margin-bottom: 8px; }
 .st-ach-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
 .st-ach-desc { font-size: 11px; color: var(--st-muted); }
@@ -905,23 +913,16 @@ function renderStats() {
       </div>
 
       <div class="st-diff-section">
-         <div class="st-collapsible-header" onclick="window.toggleDiffInfo()">
-            <div class="st-col-title">Сложность</div>
-            <div class="st-col-arrow ${isDiffExpanded?'expanded':''}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+         <div class="st-collapsible-header" style="cursor:default">
+            <div class="st-col-title">
+               Сложность карточек
+               <button class="st-info-btn" onclick="window.openDiffInfoModal()" title="Справка">?</button>
+            </div>
          </div>
          
-         <div class="st-hearts-wrap">
-            <div class="st-hearts-title">
-               <span>Распределение знаний</span>
-               <span style="opacity:0.7; font-weight:400">${totalRated} карт</span>
-            </div>
-            ${renderHearts(heartsDist, totalRated)}
-         </div>
-
-         ${isDiffExpanded ? `
-         <div class="st-diff-list">
+         <div class="st-diff-list" style="margin-top:0">
             ${segs.map((s, i) => `
-              <div class="st-diff-item" onclick="window.openDiffModal(${i})">
+              <div class="st-diff-item" onclick="window.openDiffModal('${i}')">
                  <div style="display:flex;align-items:center">
                    <div class="st-diff-dot" style="background:${s.color}"></div>
                    <div class="st-diff-name">${s.label}</div>
@@ -929,12 +930,15 @@ function renderStats() {
                  <div class="st-diff-count">${s.count}</div>
               </div>
             `).join('')}
+            
+            <div class="st-diff-item" onclick="window.openDiffModal('favorites')">
+               <div style="display:flex;align-items:center">
+                 <div class="st-diff-dot" style="background:#ffd700"></div>
+                 <div class="st-diff-name">Избранное</div>
+               </div>
+               <div class="st-diff-count">${favCount}</div>
+            </div>
          </div>
-         ` : `
-         <div class="st-diff-bar-wrap" onclick="window.toggleDiffInfo()">
-            ${segs.map(s => `<div class="st-diff-seg ${s.colorClass}" style="width: ${s.pct}%"></div>`).join('')}
-         </div>
-         `}
       </div>
 
       ${riskZones.length > 0 ? `
@@ -1161,31 +1165,67 @@ window.changeXpMode = (mode) => {
   currentXpMode = mode;
   renderStats();
 };
-window.toggleDiffInfo = () => {
-  isDiffExpanded = !isDiffExpanded;
-  renderStats();
+window.openDiffInfoModal = () => {
+   const overlay = document.createElement('div');
+   overlay.className = 'st-modal-overlay';
+   overlay.innerHTML = `
+     <div class="st-modal">
+        <div class="st-modal-header">
+           <div class="st-modal-title">Сложность карточек</div>
+           <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+        </div>
+        <div class="st-modal-body" style="padding:16px">
+           <p style="margin-bottom:12px;color:var(--st-text-sec)">Количество сердечек показывает, насколько хорошо вы помните карточку (Ease Factor):</p>
+           
+           <div style="margin-bottom:16px">
+              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ 🤍 🤍 🤍 🤍 Очень трудные (1 ❤️)</div>
+              <div style="font-size:13px;color:var(--st-text-sec)">Вы часто ошибаетесь. Карточки повторяются часто.</div>
+           </div>
+           
+           <div style="margin-bottom:16px">
+              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ ❤️ 🤍 🤍 🤍 Трудные (2 ❤️)</div>
+              <div style="font-size:13px;color:var(--st-text-sec)">Требуют усилий. Интервалы растут медленно.</div>
+           </div>
+           
+           <div style="margin-bottom:16px">
+              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ ❤️ ❤️ 🤍 🤍 Стандарт (3 ❤️)</div>
+              <div style="font-size:13px;color:var(--st-text-sec)">Обычный режим. Новые карточки начинаются здесь.</div>
+           </div>
+           
+           <div>
+              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ ❤️ ❤️ ❤️ ❤️ Легкие (4-5 ❤️)</div>
+              <div style="font-size:13px;color:var(--st-text-sec)">Вы помните их отлично. Интервалы растут быстро.</div>
+           </div>
+        </div>
+     </div>
+   `;
+   document.body.appendChild(overlay);
 };
 window.openDiffModal = (index) => {
-  // Logic to show modal with filtered cards
-  // Filter logic:
-  // 0: ef < 1.7
-  // 1: 1.7 <= ef < 2.1
-  // 2: 2.1 <= ef < 2.4
-  // 3: ef >= 2.4
+  let list = [];
+  let label = '';
   
-  const ranges = [
-     { min: 0, max: 1.7, label: 'Очень трудные' },
-     { min: 1.7, max: 2.1, label: 'Трудные' },
-     { min: 2.1, max: 2.4, label: 'Стандарт' },
-     { min: 2.4, max: 999, label: 'Легкие' }
-  ];
-  const r = ranges[index];
-  const prog = getProgressMap();
-  const list = uniqueQaData.filter(q => {
-     const p = prog[q.question] || prog[q.question.trim()];
-     if (!p || p.easeFactor === undefined) return false;
-     return p.easeFactor >= r.min && p.easeFactor < r.max;
-  });
+  if (index === 'favorites') {
+     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+     list = uniqueQaData.filter(q => favorites.has(q.question));
+     label = 'Избранное';
+  } else {
+     const i = parseInt(index);
+     const ranges = [
+        { min: 0, max: 1.7, label: 'Очень трудные' },
+        { min: 1.7, max: 2.1, label: 'Трудные' },
+        { min: 2.1, max: 2.4, label: 'Стандарт' },
+        { min: 2.4, max: 999, label: 'Легкие' }
+     ];
+     const r = ranges[i];
+     label = r.label;
+     const prog = getProgressMap();
+     list = uniqueQaData.filter(q => {
+        const p = prog[q.question] || prog[q.question.trim()];
+        if (!p || p.easeFactor === undefined) return false;
+        return p.easeFactor >= r.min && p.easeFactor < r.max;
+     });
+  }
   
   // Show Modal
   const overlay = document.createElement('div');
@@ -1193,7 +1233,7 @@ window.openDiffModal = (index) => {
   overlay.innerHTML = `
     <div class="st-modal">
        <div class="st-modal-header">
-          <div class="st-modal-title">${r.label} (${list.length})</div>
+          <div class="st-modal-title">${label} (${list.length})</div>
           <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
        </div>
        <div class="st-modal-body">
@@ -1208,7 +1248,7 @@ window.openDiffModal = (index) => {
           </ul>
        </div>
        <div class="st-modal-footer">
-          <button class="st-modal-btn" onclick="window.startFilteredSession(${index})">Тренировать эту группу</button>
+          <button class="st-modal-btn" onclick="window.startFilteredSession('${index}')">Тренировать эту группу</button>
        </div>
     </div>
   `;
@@ -1218,20 +1258,27 @@ window.openDiffModal = (index) => {
 window.startFilteredSession = (index) => {
   document.querySelector('.st-modal-overlay')?.remove();
   
-  const ranges = [
-     { min: 0, max: 1.7 },
-     { min: 1.7, max: 2.1 },
-     { min: 2.1, max: 2.4 },
-     { min: 2.4, max: 999 }
-  ];
-  const r = ranges[index];
-  const prog = getProgressMap();
-  
-  const cards = uniqueQaData.filter(q => {
-     const p = prog[q.question] || prog[q.question.trim()];
-     if (!p || p.easeFactor === undefined) return false;
-     return p.easeFactor >= r.min && p.easeFactor < r.max;
-  });
+  let cards = [];
+  if (index === 'favorites') {
+      const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+      cards = uniqueQaData.filter(q => favorites.has(q.question));
+  } else {
+      const i = parseInt(index);
+      const ranges = [
+         { min: 0, max: 1.7 },
+         { min: 1.7, max: 2.1 },
+         { min: 2.1, max: 2.4 },
+         { min: 2.4, max: 999 }
+      ];
+      const r = ranges[i];
+      const prog = getProgressMap();
+      
+      cards = uniqueQaData.filter(q => {
+         const p = prog[q.question] || prog[q.question.trim()];
+         if (!p || p.easeFactor === undefined) return false;
+         return p.easeFactor >= r.min && p.easeFactor < r.max;
+      });
+  }
   
   if (cards.length === 0) {
       alert('Нет карт в этой категории');
