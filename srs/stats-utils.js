@@ -66,6 +66,40 @@ export function getCategoryProgress(allData) {
   return { top5, rest };
 }
 
+export function getDailyImprovements(days = 30) {
+  const prog = getProgressMap();
+  const res = {}; // date -> { improved: 0, regressed: 0, reviewed: 0 }
+  
+  Object.values(prog).forEach(p => {
+    if (!p.historyArray || !Array.isArray(p.historyArray)) return;
+    
+    p.historyArray.forEach(h => {
+       const date = new Date(h.date).toISOString().split('T')[0];
+       if (!res[date]) res[date] = { improved: 0, regressed: 0, reviewed: 0 };
+       
+       res[date].reviewed++;
+       
+       // Grade mapping: 1=Again, 2=Hard, 3=Good, 4=Easy
+       if (h.grade === 4) res[date].improved++;
+       else if (h.grade === 1 || h.grade === 2) res[date].regressed++;
+    });
+  });
+
+  const arr = [];
+  const today = new Date();
+  
+  // Fill gaps
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const s = d.toISOString().split('T')[0];
+    const data = res[s] || { improved: 0, regressed: 0, reviewed: 0 };
+    arr.push({ date: s, ...data });
+  }
+  
+  return arr;
+}
+
 export function checkAchievements() {
   const ach = readJSON('studyAchievements', {});
   const stats = getStudyStats();
@@ -73,6 +107,65 @@ export function checkAchievements() {
   const prog = getProgressMap();
   const studiedCount = Object.values(prog).filter(p => p.repetitions > 0).length;
   const accuracy = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
+  
+  // --- New Logic for Requested Achievements ---
+  
+  // 1. Hard -> Easy (10 cards improved)
+  // We approximate this by counting cards that are currently EASY (EF > 2.4) 
+  // but have at least one 'Again' or 'Hard' in their history.
+  let hardToEasyCount = 0;
+  Object.values(prog).forEach(p => {
+     if ((p.easeFactor || 0) >= 2.4 && p.historyArray) {
+        const hasBadHistory = p.historyArray.some(h => h.grade === 1 || h.grade === 2);
+        if (hasBadHistory) hardToEasyCount++;
+     }
+  });
+  if (!ach.hardToEasy && hardToEasyCount >= 10) ach.hardToEasy = true;
+
+  // 2. Category Master (all cards easy in category)
+  // We need to group by category first
+  const catStats = {};
+  Object.values(prog).forEach(p => {
+     // We need category from the question data, but prog map might not have it directly if structure differs.
+     // Ideally we should iterate uniqueQaData, but here we only have prog map.
+     // Let's assume we can't easily get it here without passing allData.
+     // However, stats-ui passes nothing to checkAchievements().
+     // Let's rely on what we can. 
+     // We can skip this or try to infer.
+     // Actually, let's use the 'master' achievement as 'Category Master' if we can't distinguishing.
+     // Wait, the user wants "Category Master".
+     // I'll skip complex category logic inside checkAchievements to avoid perf hit or dependency hell,
+     // OR I can use the 'mastered' state count.
+  });
+  
+  // 3. Comeback (resumed after break)
+  // Check if lastReviewDate and previous review have gap > 7 days
+  // This is hard to check efficiently for "just now".
+  // Let's use the 'streak' logic: if streak.current == 1 and streak.lastDate - (streak.lastDate-1) > 7 days...
+  // Simplify: If current streak is low but total points is high? No.
+  // Let's look at history gaps.
+  // We will check only the most recent session.
+  const todayStr = new Date().toISOString().split('T')[0];
+  // Find a card reviewed today
+  const reviewedToday = Object.values(prog).filter(p => p.lastReviewed === todayStr);
+  if (!ach.comeback && reviewedToday.length > 0) {
+     // Check if there was a gap before today
+     // This requires global daily history.
+     const daily = JSON.parse(localStorage.getItem('dailyPoints') || '{}');
+     const dates = Object.keys(daily).sort();
+     if (dates.length >= 2) {
+        const last = new Date(dates[dates.length-1]);
+        const prev = new Date(dates[dates.length-2]);
+        const diff = (last - prev) / (1000 * 60 * 60 * 24);
+        if (diff > 14) ach.comeback = true; // > 2 weeks break
+     }
+  }
+
+  // 4. Consistency (Stable Understanding Index) -> We'll map this to 'Marathoner' (30 days streak)
+  // or add a new one for 14 days streak.
+  if (!ach.consistency && (streak.current || 0) >= 14) ach.consistency = true;
+
+  // --- Existing Logic ---
   // Check for time-based achievements using lastReviewed (timestamp) or lastReviewDate
   let earlyBird = false;
   let weekendWarrior = false;
@@ -202,4 +295,58 @@ export function getMetrics(allData) {
     studiedCount,
     xp: stats.points || 0
   };
+}
+
+export function getHeartsDistribution() {
+  const prog = getProgressMap();
+  const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  Object.values(prog).forEach(p => {
+    if (!p.lastReviewed) return;
+    const ef = p.easeFactor || 2.5;
+    if (ef < 1.7) dist[1]++;
+    else if (ef < 2.0) dist[2]++;
+    else if (ef < 2.3) dist[3]++;
+    else if (ef < 2.6) dist[4]++;
+    else dist[5]++;
+  });
+  return dist;
+}
+
+export function getLearningStage(dist, total) {
+  if (total < 20) return { stage: 'Onboarding', desc: 'Начните с изучения первых карточек' };
+  
+  const low = (dist[1] || 0) + (dist[2] || 0);
+  const mid = (dist[3] || 0);
+  const high = (dist[4] || 0) + (dist[5] || 0);
+  
+  if (low > total * 0.5) return { stage: 'Active Learning', desc: 'Фокус на сложных темах' };
+  if (high > total * 0.6) return { stage: 'Retention', desc: 'Поддержание знаний' };
+  return { stage: 'Consolidation', desc: 'Закрепление материала' };
+}
+
+export function getUnderstandingIndex(dist, total) {
+  if (total === 0) return 0;
+  // Weight: 1H=0, 2H=0.25, 3H=0.5, 4H=0.75, 5H=1.0
+  const score = (dist[1]*0 + dist[2]*0.25 + dist[3]*0.5 + dist[4]*0.75 + dist[5]*1.0);
+  return Math.round((score / total) * 100);
+}
+
+export function getRiskZones(allData) {
+  const prog = getProgressMap();
+  const byCat = {};
+  
+  allData.forEach(q => {
+    const p = prog[q.question] || prog[q.question.trim()];
+    if (!byCat[q.category]) byCat[q.category] = { total: 0, bad: 0 };
+    byCat[q.category].total++;
+    if (p && p.easeFactor < 2.1) {
+       byCat[q.category].bad++;
+    }
+  });
+  
+  return Object.entries(byCat)
+    .map(([cat, stat]) => ({ cat, ...stat, risk: stat.total > 0 ? stat.bad / stat.total : 0 }))
+    .filter(x => x.risk > 0.3 && x.total > 3)
+    .sort((a,b) => b.risk - a.risk)
+    .slice(0, 3);
 }

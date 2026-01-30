@@ -1,4 +1,4 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=4';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements } from './stats-utils.js?v=5';
 import { getProgressMap, syncFavorite } from './storage.js';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js';
 import { uniqueQaData } from '../all-data.js';
@@ -25,6 +25,182 @@ const STATS_STYLES = `
   --st-text-sec: #9BA3AF;
   --st-border: #222938;
   --st-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* NEW METRICS STYLES */
+.st-meta-state {
+  background: linear-gradient(90deg, rgba(46,196,182,0.1), rgba(46,196,182,0.02));
+  border-left: 3px solid var(--st-sec);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.st-meta-info { flex: 1; }
+.st-meta-title { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--st-sec); font-weight: 700; margin-bottom: 4px; }
+.st-meta-desc { font-size: 15px; color: var(--st-text); font-weight: 500; }
+.st-meta-index { text-align: right; }
+.st-meta-val { font-size: 24px; font-weight: 800; color: #fff; line-height: 1; }
+.st-meta-lbl { font-size: 11px; color: var(--st-muted); text-transform: uppercase; }
+
+.st-quality-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.st-quality-card {
+  background: var(--st-surf);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--st-border);
+  text-align: center;
+}
+.st-q-val { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px; }
+.st-q-label { font-size: 13px; color: var(--st-muted); }
+
+/* Hearts Bar */
+.st-hearts-wrap { margin: 20px 0; }
+.st-hearts-title { font-size: 14px; color: var(--st-text); margin-bottom: 8px; font-weight: 600; display: flex; justify-content: space-between; }
+.st-hearts-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #222;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+.st-hb-seg { 
+  height: 100%; 
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+  position: relative; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  overflow: hidden;
+}
+.st-hb-icon { font-size: 12px; opacity: 0.8; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.st-hb-seg:hover { filter: brightness(1.2); }
+.st-hb-seg[data-val="1"] { background: #E5533D; }
+.st-hb-seg[data-val="2"] { background: #FF9F1C; }
+.st-hb-seg[data-val="3"] { background: #FFD166; }
+.st-hb-seg[data-val="4"] { background: #06D6A0; }
+.st-hb-seg[data-val="5"] { background: #118AB2; }
+
+/* Risk Zones */
+.st-risk-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.st-risk-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(229, 83, 61, 0.08);
+  border-left: 3px solid var(--st-danger);
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.st-risk-item:hover { background: rgba(229, 83, 61, 0.12); }
+.st-risk-info { display: flex; flex-direction: column; }
+.st-risk-name { font-weight: 600; color: #ffcccc; font-size: 14px; margin-bottom: 2px; }
+.st-risk-sub { font-size: 12px; color: rgba(255,255,255,0.6); }
+.st-risk-btn {
+  background: var(--st-danger);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.st-risk-btn:active { transform: scale(0.95); }
+
+/* Game Modes */
+.st-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+.st-mode-card {
+  background: var(--st-surf);
+  border: 1px solid var(--st-border);
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.st-mode-card:hover { border-color: var(--st-prim); background: var(--st-surf-h); transform: translateY(-2px); }
+.st-mode-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+.st-mode-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; color: #fff; display: block; }
+.st-mode-desc { font-size: 11px; color: var(--st-muted); display: block; line-height: 1.4; }
+.st-mode-tag { 
+  position: absolute; top: 8px; right: 8px; 
+  font-size: 9px; padding: 2px 6px; border-radius: 4px; 
+  background: var(--st-border); color: var(--st-muted); 
+  text-transform: uppercase; font-weight: 700;
+}
+
+/* Daily Improvements Chart */
+.st-imp-chart {
+  display: flex;
+  align-items: center; /* Center vertically relative to axis */
+  height: 120px;
+  gap: 4px;
+  margin-top: 20px;
+  position: relative;
+  border-bottom: 1px solid var(--st-border);
+  padding-bottom: 20px; /* Space for labels */
+}
+.st-imp-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  min-width: 4px;
+}
+/* Center line */
+.st-imp-axis {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--st-border);
+  z-index: 0;
+}
+.st-imp-bar-pos { 
+  background: var(--st-sec); 
+  border-radius: 2px 2px 0 0; 
+  position: absolute; 
+  bottom: 50%; 
+  left: 0; right: 0; 
+  min-height: 0;
+}
+.st-imp-bar-neg { 
+  background: var(--st-danger); 
+  border-radius: 0 0 2px 2px; 
+  position: absolute; 
+  top: 50%; 
+  left: 0; right: 0; 
+  min-height: 0;
+}
+.st-imp-date {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: var(--st-muted);
+  white-space: nowrap;
 }
 
 #stats-container {
@@ -69,12 +245,7 @@ const STATS_STYLES = `
   display: flex;
   align-items: center;
   gap: 8px;
-}
-.st-auth-btn {
-  /* nav-icon-btn styles will apply via class */
-}
-.st-home-btn {
-  /* nav-icon-btn styles will apply via class */
+  margin-left: auto;
 }
 
 /* HERO Section */
@@ -438,7 +609,7 @@ const STATS_STYLES = `
   .st-col-title { font-size: 18px; }
 
   /* Right Column Stack */
-  .st-diff-section, .st-cat-section {
+  .st-diff-section, .st-cat-section, .st-risk-section {
     grid-column: 2 / 3;
     background: var(--st-surf);
     padding: 24px;
@@ -546,6 +717,7 @@ function renderStats() {
 
   const progressMap = getProgressMap();
   const xpSeries = getXpSeries(currentXpMode);
+  const improvements = getDailyImprovements(currentXpMode === 'week' ? 7 : (currentXpMode === 'month' ? 30 : 14));
 
   const lvlProgressPct = Math.max(0, Math.min(1, level.progress || 0)) * 100;
   const remainingXp = Math.max(0, Math.round(level.remaining || 0));
@@ -586,16 +758,12 @@ function renderStats() {
      if (favorites.has(q.question)) favCount++;
 
      let p = progressMap[q.question];
-     // Try trimmed lookup if direct failed
      if (!p && q.question) p = progressMap[q.question.trim()];
 
-     // Count today's activity
      if (p && p.lastReviewed === todayStr) {
          cardsDoneToday++;
      }
 
-     // Only count difficulty for cards with actual progress
-     // Unstudied/New cards are excluded from the difficulty distribution
      if (p && p.easeFactor !== undefined) {
          const ef = p.easeFactor;
          
@@ -611,170 +779,182 @@ function renderStats() {
      s.pct = totalRated > 0 ? (s.count / totalRated) * 100 : 0;
   });
 
-  const html = `
+  // Calculate Hearts Distribution (New)
+  const heartsDist = getHeartsDistribution();
+  const learningStage = getLearningStage(heartsDist, totalRated);
+  const understandingIndex = getUnderstandingIndex(heartsDist, totalRated);
+  const riskZones = getRiskZones(uniqueQaData);
+
+  // Render HTML
+  const container = document.getElementById('stats-container');
+  if (!container) return;
+
+  container.innerHTML = `
     <div class="st-wrapper">
-      <!-- Header -->
       <div class="st-header">
-        <div class="st-header-right">
-          <button class="st-home-btn nav-icon-btn" onclick="document.dispatchEvent(new Event('closeStats'))" title="На главную">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-          </button>
-          <button class="st-auth-btn nav-icon-btn" id="st-auth-btn"></button>
-          ${window.currentAppVersion ? `<span style="font-size:10px;color:var(--st-text-sec);opacity:0.5;margin-left:4px;">v${window.currentAppVersion}</span>` : ''}
-        </div>
+        <button class="nav-icon-btn st-home-btn" onclick="location.hash=''">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
         <div class="st-header-title">Статистика</div>
+        <div class="st-header-right">
+           <button class="nav-icon-btn st-auth-btn" title="Аккаунт" style="opacity:0.5"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></button>
+        </div>
       </div>
 
-      <!-- HERO -->
       <div class="st-hero">
         <div class="st-hero-left">
-          <div class="st-level-row">
-            <div class="st-lvl-num">Уровень ${level.level}</div>
-            <div class="st-lvl-xp">${remainingXp} XP до следующего</div>
-          </div>
-          <div class="st-hero-bar-bg" style="margin-top:8px">
-            <div class="st-hero-bar-fill" style="width: ${lvlProgressPct}%"></div>
-          </div>
-          <div class="st-hero-stats">
-            <div class="st-hero-stat" title="Лучший стрик: ${metrics.streakBest}"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent} <span style="font-size:12px;color:var(--st-text-sec);margin-left:2px">/ ${metrics.streakBest}</span></div>
-            <div class="st-hero-stat"><span class="st-hero-icon">⏱</span> ${planMins} мин</div>
-            <div class="st-hero-stat"><span class="st-hero-icon">📚</span> ${cardsDoneToday} карт</div>
-            <div class="st-hero-stat"><span class="st-hero-icon">🎯</span> ${metrics.accuracy || 0}%</div>
-          </div>
+           <div class="st-level-row">
+             <div class="st-lvl-num">Уровень ${level.level}</div>
+             <div class="st-lvl-xp">${remainingXp} XP до след.</div>
+           </div>
+           <div class="st-hero-bar-bg">
+             <div class="st-hero-bar-fill" style="width: ${lvlProgressPct}%"></div>
+           </div>
         </div>
-        
-        <!-- Desktop CTA placement (hidden on mobile via CSS if needed, but here simplified) -->
+        <div class="st-hero-stats">
+          <div class="st-hero-stat"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent}</div>
+          <div class="st-hero-stat"><span class="st-hero-icon">⚡</span> ${metrics.xp} XP</div>
+          <div class="st-hero-stat"><span class="st-hero-icon">📚</span> ${studiedCards}</div>
+        </div>
         <div class="st-sticky-cta-wrapper">
-           <button class="st-cta-btn" onclick="window.startDailySession()">
-             ${sessionCount > 0 ? 'НАЧАТЬ ОБУЧЕНИЕ' : 'УЧИТЬ ВСЕ'}
+           <button class="st-cta-btn" onclick="location.hash=''; setTimeout(() => document.querySelector('.start-btn')?.click(), 100)">
+             Продолжить (${sessionCount})
            </button>
         </div>
       </div>
 
-      <!-- SHORT PROGRESS -->
+      <div class="st-meta-state">
+         <div class="st-meta-info">
+            <div class="st-meta-title">Этап обучения</div>
+            <div class="st-meta-desc">${learningStage.stage}</div>
+            <div class="st-meta-lbl" style="margin-top:2px; opacity:0.7">${learningStage.desc}</div>
+         </div>
+         <div class="st-meta-index">
+            <div class="st-meta-val">${understandingIndex}%</div>
+            <div class="st-meta-lbl">Индекс понимания</div>
+         </div>
+      </div>
+
       <div class="st-prog-stack">
-        <div class="st-card">
-           <div class="st-card-label">Осталось</div>
-           <div class="st-card-val">${remainingCards} <span style="font-size:14px;color:var(--st-text-sec)">/ ${totalCards}</span></div>
-           <div class="st-card-sub">карточек</div>
-        </div>
-        <div class="st-card">
-           <div class="st-card-label">К повторению</div>
-           <div class="st-card-val">${dueTomorrow} <span style="font-size:14px;color:var(--st-text-sec)">/ ${dueWeek}</span></div>
-           <div class="st-card-sub">завтра / неделя</div>
-        </div>
-        <div class="st-card">
-           <div class="st-card-label">Финиш</div>
-           <div class="st-card-val">${daysToFinish} дн</div>
-           <div class="st-card-sub">~ ${finishDateStr}</div>
-        </div>
+         <div class="st-card">
+            <div class="st-card-label">Изучено карточек</div>
+            <div class="st-card-val">${studiedCards} <span style="font-size:14px;color:var(--st-muted)">/ ${totalCards}</span></div>
+            <div class="st-card-sub">Осталось ${remainingCards}</div>
+         </div>
+         <div class="st-card">
+            <div class="st-card-label">План на сегодня</div>
+            <div class="st-card-val">${sessionCount} <span style="font-size:14px;color:var(--st-muted)">карточек</span></div>
+            <div class="st-card-sub">~${planMins} минут</div>
+         </div>
+         <div class="st-card">
+            <div class="st-card-label">Прогноз финиша</div>
+            <div class="st-card-val">${finishDateStr}</div>
+            <div class="st-card-sub">при текущем темпе</div>
+         </div>
       </div>
 
-      <!-- DIFFICULTY (Collapsible) -->
-      <div class="st-diff-section">
-        <div class="st-collapsible-header" onclick="window.toggleDiff()">
-           <div class="st-col-title">
-               Сложность карточек
-               <button class="st-info-btn" onclick="event.stopPropagation(); window.toggleDiffInfo()" title="Как это работает?" style="pointer-events: auto; background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;margin-left:8px;opacity:0.9;color:var(--st-text-sec)">ℹ️</button>
-           </div>
-           <div class="st-col-arrow ${isDiffExpanded ? 'expanded' : ''}">▼</div>
-        </div>
-        
-        <div class="st-diff-bar-wrap" style="display: ${isDiffExpanded ? 'none' : 'flex'}">
-           ${segs.map(s => `<div class="st-diff-seg ${s.colorClass}" style="width:${s.pct}%"></div>`).join('')}
-        </div>
-
-        <div class="st-diff-list" style="display: ${isDiffExpanded ? 'flex' : 'none'}">
-           ${segs.map(s => `
-             <div class="st-diff-item" onclick="window.openDiffModal('${s.label}', '${s.colorClass}')" style="border-left: 3px solid ${s.color}; background: rgba(255,255,255,0.03);">
-               <div style="display:flex;align-items:center;gap:12px">
-                 <div class="st-diff-dot" style="background:${s.color}"></div>
-                 <div class="st-diff-name" style="color:${s.color}">${s.label}</div>
-               </div>
-               <div class="st-diff-count">${s.count}</div>
-             </div>
-           `).join('')}
-           
-           <!-- Favorites Item -->
-           <div class="st-diff-item" onclick="window.openDiffModal('Избранное', 'gold')" style="border-left: 3px solid #ffd700; background: rgba(255,215,0,0.05); margin-top: 8px;">
-               <div style="display:flex;align-items:center;gap:12px">
-                 <div class="st-diff-dot" style="background:#ffd700"></div>
-                 <div class="st-diff-name" style="color:#ffd700">Избранное</div>
-               </div>
-               <div class="st-diff-count">${favCount}</div>
-           </div>
-        </div>
-      </div>
-
-      <!-- ACTIVITY & XP -->
       <div class="st-activity-section">
          <div class="st-collapsible-header">
-           <div class="st-col-title">Активность</div>
+            <div class="st-col-title">Активность</div>
          </div>
          <div class="st-xp-tabs">
-            <div class="st-xp-tab ${currentXpMode==='week'?'active':''}" onclick="window.setXpMode('week')">Неделя</div>
-            <div class="st-xp-tab ${currentXpMode==='month'?'active':''}" onclick="window.setXpMode('month')">Месяц</div>
-            <div class="st-xp-tab ${currentXpMode==='year'?'active':''}" onclick="window.setXpMode('year')">Год</div>
-            <div class="st-xp-tab ${currentXpMode==='all'?'active':''}" onclick="window.setXpMode('all')">Всё</div>
+            <div class="st-xp-tab ${currentXpMode==='week'?'active':''}" onclick="window.changeXpMode('week')">Неделя</div>
+            <div class="st-xp-tab ${currentXpMode==='month'?'active':''}" onclick="window.changeXpMode('month')">Месяц</div>
+            <div class="st-xp-tab ${currentXpMode==='all'?'active':''}" onclick="window.changeXpMode('all')">Всё время</div>
          </div>
-         
          <div class="st-xp-chart-container">
             <div class="st-xp-chart">
-               ${xpSeries.map(col => {
-                  const h = (col.val / (Math.max(...xpSeries.map(x=>x.val)) || 1)) * 100;
-                  return `
-                  <div class="st-xp-col" title="${col.date}: ${col.val} XP">
-                     <div class="st-xp-bar ${col.isToday?'today':''}" style="height:${h}%"></div>
+               ${renderXpChart(xpSeries)}
+            </div>
+         </div>
+         
+         <div class="st-col-title" style="font-size:14px; margin-top:24px;">Ежедневные улучшения</div>
+         <div class="st-imp-chart">
+            <div class="st-imp-axis"></div>
+            ${renderImpChart(improvements)}
+         </div>
+      </div>
+
+      <div class="st-diff-section">
+         <div class="st-collapsible-header" onclick="window.toggleDiffInfo()">
+            <div class="st-col-title">Сложность</div>
+            <div class="st-col-arrow ${isDiffExpanded?'expanded':''}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+         </div>
+         
+         <div class="st-hearts-wrap">
+            <div class="st-hearts-title">
+               <span>Распределение знаний</span>
+               <span style="opacity:0.7; font-weight:400">${totalRated} карт</span>
+            </div>
+            ${renderHearts(heartsDist, totalRated)}
+         </div>
+
+         ${isDiffExpanded ? `
+         <div class="st-diff-list">
+            ${segs.map((s, i) => `
+              <div class="st-diff-item" onclick="window.openDiffModal(${i})">
+                 <div style="display:flex;align-items:center">
+                   <div class="st-diff-dot" style="background:${s.color}"></div>
+                   <div class="st-diff-name">${s.label}</div>
+                 </div>
+                 <div class="st-diff-count">${s.count}</div>
+              </div>
+            `).join('')}
+         </div>
+         ` : `
+         <div class="st-diff-bar-wrap" onclick="window.toggleDiffInfo()">
+            ${segs.map(s => `<div class="st-diff-seg ${s.colorClass}" style="width: ${s.pct}%"></div>`).join('')}
+         </div>
+         `}
+      </div>
+
+      ${riskZones.length > 0 ? `
+      <div class="st-risk-section">
+         <div class="st-col-title" style="margin-bottom:12px">Зоны риска</div>
+         <div class="st-risk-list">
+            ${riskZones.map(z => `
+               <div class="st-risk-item">
+                  <div class="st-risk-info">
+                     <div class="st-risk-name">${z.cat}</div>
+                     <div class="st-risk-sub">${Math.round(z.risk*100)}% проблемных</div>
                   </div>
-                  `;
-               }).join('')}
+                  <button class="st-risk-btn" onclick="window.startRiskSession('${z.cat}')">Train</button>
+               </div>
+            `).join('')}
+         </div>
+      </div>
+      ` : ''}
+
+      <div class="st-cat-section">
+         <div class="st-collapsible-header">
+            <div class="st-col-title">Режимы тренировки</div>
+         </div>
+         <div class="st-mode-grid">
+            <div class="st-mode-card" onclick="window.startMode('time_attack')">
+               <span class="st-mode-tag">Hardcore</span>
+               <span class="st-mode-icon">⏱️</span>
+               <span class="st-mode-title">Тайм-атака</span>
+               <span class="st-mode-desc">5 секунд на ответ. Ошибки недопустимы.</span>
+            </div>
+            <div class="st-mode-card" onclick="window.startMode('sudden_death')">
+               <span class="st-mode-tag">Expert</span>
+               <span class="st-mode-icon">☠️</span>
+               <span class="st-mode-title">Внезапная смерть</span>
+               <span class="st-mode-desc">Игра до первой ошибки.</span>
+            </div>
+            <div class="st-mode-card" onclick="window.startMode('cram_hard')">
+               <span class="st-mode-icon">🧠</span>
+               <span class="st-mode-title">Зубрежка сложных</span>
+               <span class="st-mode-desc">Только карты с низким коэффициентом.</span>
+            </div>
+            <div class="st-mode-card" onclick="window.startMode('new_cards')">
+               <span class="st-mode-icon">🌱</span>
+               <span class="st-mode-title">Только новые</span>
+               <span class="st-mode-desc">Изучение свежего материала.</span>
             </div>
          </div>
       </div>
 
-      <!-- CATEGORIES -->
-      <div class="st-cat-section">
-         <div class="st-collapsible-header" onclick="window.toggleCats()">
-            <div class="st-col-title">Категории</div>
-            <div class="st-col-arrow ${areCatsExpanded ? 'expanded' : ''}">▼</div>
-         </div>
-         <div class="st-cat-list">
-            ${top5.map(c => `
-              <div class="st-cat-item">
-                 <div class="st-cat-head">
-                    <span>${c.category}</span>
-                    <span>${c.percent}%</span>
-                 </div>
-                 <div class="st-cat-bg">
-                    <div class="st-cat-fill" style="width:${c.percent}%"></div>
-                 </div>
-              </div>
-            `).join('')}
-            
-            ${rest.map(c => `
-              <div class="st-cat-item st-cat-item-hidden" style="display: ${areCatsExpanded ? 'block' : 'none'}">
-                 <div class="st-cat-head">
-                    <span>${c.category}</span>
-                    <span>${c.percent}%</span>
-                 </div>
-                 <div class="st-cat-bg">
-                    <div class="st-cat-fill" style="width:${c.percent}%"></div>
-                 </div>
-              </div>
-            `).join('')}
-            
-            ${rest.length > 0 ? `
-              <div class="st-cat-more-btn" style="text-align:center; padding:10px; color:var(--st-prim); cursor:pointer; display:${areCatsExpanded ? 'none' : 'block'}" onclick="window.toggleCats()">
-                 Показать ещё (${rest.length})
-              </div>
-            ` : ''}
-         </div>
-      </div>
-
-      <!-- ACHIEVEMENTS -->
       <div class="st-ach-section">
          <div class="st-section-title" style="margin-bottom:16px;color:#fff;font-weight:600">Достижения</div>
          <div class="st-ach-grid">
@@ -785,369 +965,219 @@ function renderStats() {
             </div>
             <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}">
                <div class="st-ach-icon">🔥</div>
-               <div class="st-ach-title">В огне</div>
-               <div class="st-ach-desc">Стрик 7 дней</div>
-            </div>
-            <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}">
-               <div class="st-ach-icon">🎯</div>
-               <div class="st-ach-title">Снайпер</div>
-               <div class="st-ach-desc">Точность 90%</div>
-            </div>
-            <div class="st-ach-card ${achievements.fiftyCards ? 'unlocked' : ''}">
-               <div class="st-ach-icon">📚</div>
-               <div class="st-ach-title">Эрудит</div>
-               <div class="st-ach-desc">50 карточек</div>
+               <div class="st-ach-title">Неделя в огне</div>
+               <div class="st-ach-desc">7 дней подряд</div>
             </div>
             <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}">
                <div class="st-ach-icon">🏃</div>
                <div class="st-ach-title">Марафонец</div>
-               <div class="st-ach-desc">30 дней стрик</div>
+               <div class="st-ach-desc">30 дней подряд</div>
             </div>
-            <div class="st-ach-card ${achievements.guru ? 'unlocked' : ''}">
-               <div class="st-ach-icon">🧘</div>
-               <div class="st-ach-title">Гуру</div>
-               <div class="st-ach-desc">Достигни 5 уровня</div>
+            <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🎯</div>
+               <div class="st-ach-title">Снайпер</div>
+               <div class="st-ach-desc">Точность 90%+</div>
             </div>
             <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}">
-                <div class="st-ach-icon">💯</div>
-                <div class="st-ach-title">Век</div>
-                <div class="st-ach-desc">100 карточек</div>
+               <div class="st-ach-icon">💯</div>
+               <div class="st-ach-title">Центурион</div>
+               <div class="st-ach-desc">100 карточек</div>
             </div>
             <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}">
-                <div class="st-ach-icon">👑</div>
-                <div class="st-ach-title">Мастер</div>
-                <div class="st-ach-desc">10 уровень</div>
+               <div class="st-ach-icon">👑</div>
+               <div class="st-ach-title">Мастер</div>
+               <div class="st-ach-desc">Уровень 10</div>
             </div>
-            <div class="st-ach-card ${achievements.unstoppable ? 'unlocked' : ''}">
-                <div class="st-ach-icon">🚀</div>
-                <div class="st-ach-title">Неудержимый</div>
-                <div class="st-ach-desc">100 дней стрик</div>
+            <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}">
+               <div class="st-ach-icon">📈</div>
+               <div class="st-ach-title">Прогресс</div>
+               <div class="st-ach-desc">10 сложных → легкие</div>
+            </div>
+            <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🧘</div>
+               <div class="st-ach-title">Стабильность</div>
+               <div class="st-ach-desc">14 дней подряд</div>
+            </div>
+            <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🦅</div>
+               <div class="st-ach-title">Возвращение</div>
+               <div class="st-ach-desc">После перерыва</div>
             </div>
             <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}">
-                <div class="st-ach-icon">🌅</div>
-                <div class="st-ach-title">Жаворонок</div>
-                <div class="st-ach-desc">Урок до 9 утра</div>
+               <div class="st-ach-icon">🌅</div>
+               <div class="st-ach-title">Жаворонок</div>
+               <div class="st-ach-desc">Занятие до 9 утра</div>
             </div>
-            <div class="st-ach-card ${achievements.weekendWarrior ? 'unlocked' : ''}">
-                <div class="st-ach-icon">📅</div>
-                <div class="st-ach-title">Выходной</div>
-                <div class="st-ach-desc">Урок в сб/вс</div>
+            <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🦉</div>
+               <div class="st-ach-title">Сова</div>
+               <div class="st-ach-desc">Занятие после 23:00</div>
             </div>
          </div>
       </div>
-
     </div>
   `;
-  
-  statsContainer.innerHTML = html;
-  
-  const authBtn = document.getElementById('st-auth-btn');
-  if (authBtn) {
-    const getUser = () => {
-      try {
-        const raw = localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser') || '';
-        return raw ? JSON.parse(raw) : null;
-      } catch {
-        return null;
-      }
-    };
-    const updateAuth = () => {
-      const u = getUser();
-      if (u) {
-        authBtn.textContent = u.username || u.email || 'Выйти';
-      } else {
-        authBtn.textContent = 'Войти';
-      }
-    };
-    authBtn.onclick = () => {
-      const api = window.qaAuth || {};
-      const u = getUser();
-      if (u) {
-        if (typeof api.logout === 'function') api.logout();
-      } else {
-        if (typeof api.openLogin === 'function') api.openLogin();
-      }
-      setTimeout(updateAuth, 300);
-    };
-    updateAuth();
-  }
-  
-  // Handlers
-  window.startDailySession = () => {
-     if (sessionCount > 0) {
-        hideStatsPage();
-        // todaysSession returns wrappers {item, progress, isNew}, we need to pass raw items
-        const rawSession = todaysSession.map(s => s.item || s);
-        startLearnSession(rawSession);
-     } else {
-        // Start cram session
-        hideStatsPage();
-        startLearnSession(uniqueQaData, { mode: 'cram' });
-     }
-  };
-  
-  window.toggleDiff = () => {
-     isDiffExpanded = !isDiffExpanded;
-     renderStats();
-  };
-  
-  window.toggleCats = () => {
-     areCatsExpanded = !areCatsExpanded;
-     renderStats();
-  };
-  
-  window.setXpMode = (mode) => {
-     currentXpMode = mode;
-     renderStats();
-  };
-
-  window.toggleDiffInfo = () => {
-    const el = document.getElementById('diff-info-modal');
-    if (el) {
-        el.remove();
-        return;
-    }
-    
-    const renderHeartsEx = (count) => {
-        let html = '<div style="display:flex; gap:2px;">';
-        for (let i = 0; i < 5; i++) {
-            const color = i < count ? '#ff4d4d' : '#444';
-            html += `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="${color}">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>`;
-        }
-        html += '</div>';
-        return html;
-    };
-
-    const html = `
-      <div class="st-modal-overlay" id="diff-info-modal" onclick="window.toggleDiffInfo()" style="z-index: 2200;">
-        <div class="st-modal" onclick="event.stopPropagation()">
-           <div class="st-modal-header">
-             <div class="st-modal-title">Сложность карточек</div>
-             <button class="st-modal-close" onclick="window.toggleDiffInfo()">✕</button>
-           </div>
-           <div class="st-modal-body" style="font-size:14px;line-height:1.5;color:var(--st-text-sec);padding:24px;">
-             <p style="margin-bottom:12px">Количество сердечек показывает, насколько хорошо вы помните карточку (Ease Factor):</p>
-             <ul style="display:flex;flex-direction:column;gap:12px;padding-left:0;list-style:none;margin:0">
-               <li style="display:flex;gap:12px;align-items:start">
-                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(1)}</div>
-                 <div><strong style="color:var(--st-text)">Очень трудные</strong> (1 ❤️)<br>Вы часто ошибаетесь. Карточки повторяются часто.</div>
-               </li>
-               <li style="display:flex;gap:12px;align-items:start">
-                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(2)}</div>
-                 <div><strong style="color:var(--st-text)">Трудные</strong> (2 ❤️)<br>Требуют усилий. Интервалы растут медленно.</div>
-               </li>
-               <li style="display:flex;gap:12px;align-items:start">
-                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(3)}</div>
-                 <div><strong style="color:var(--st-text)">Стандарт</strong> (3 ❤️)<br>Обычный режим. Новые карточки начинаются здесь.</div>
-               </li>
-               <li style="display:flex;gap:12px;align-items:start">
-                 <div style="margin-top:4px;flex-shrink:0">${renderHeartsEx(5)}</div>
-                 <div><strong style="color:var(--st-text)">Легкие</strong> (4-5 ❤️)<br>Вы помните их отлично. Интервалы растут быстро.</div>
-               </li>
-             </ul>
-           </div>
-        </div>
-      </div>
-    `;
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    document.body.appendChild(div.firstElementChild);
-  };
-  
-  window.openDiffModal = (label, colorClass) => {
-      const progress = getProgressMap();
-      let cards = [];
-
-      if (label === 'Избранное') {
-          const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-          cards = uniqueQaData.filter(q => q && q.question && q.answer && favorites.has(q.question));
-      } else {
-          let min = 0, max = 0;
-          if (label === 'Очень трудные') { max = 1.7; }
-          else if (label === 'Трудные') { min = 1.7; max = 2.1; }
-          else if (label === 'Стандарт') { min = 2.1; max = 2.4; }
-          else if (label === 'Легкие') { min = 2.4; max = 999; }
-
-          // Use the same EF logic as in the chart: only cards with progress
-          cards = uniqueQaData.filter(q => {
-             // Ensure valid card data
-             if (!q || !q.question || !q.answer) return false;
-
-             let p = progress[q.question];
-             if (!p && q.question) p = progress[q.question.trim()];
-             
-             // Filter out cards without progress (new cards)
-             if (!p || p.easeFactor === undefined) return false;
-             
-             const ef = p.easeFactor;
-             return ef >= min && ef < max;
-          });
-      }
-      
-      window._tempSessionCards = cards;
-
-      const starSvg = (filled) => `
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="${filled ? '#ffd700' : 'none'}" stroke="${filled ? '#ffd700' : 'currentColor'}" stroke-width="2">
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-      `;
-
-      const renderHearts = (ef) => {
-        if (ef === null || ef === undefined) {
-             return '<div class="hearts-container" title="Карточка еще не изучалась" style="display:flex; gap:2px;"><span class="level-label" style="font-size:10px;color:var(--st-text-sec);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span></div>';
-        }
-
-        // Расчет количества сердечек (1.0 - 5.0)
-        let heartsCount = 0;
-        if (ef < 1.7) {
-            heartsCount = 1 + (ef - 1.3) / 0.4;
-        } else if (ef < 2.1) {
-            heartsCount = 2 + (ef - 1.7) / 0.4;
-        } else if (ef < 2.4) {
-            heartsCount = 3 + (ef - 2.1) / 0.3;
-        } else {
-            heartsCount = 4 + (ef - 2.4) / 0.5;
-        }
-        heartsCount = Math.max(1, Math.min(5, heartsCount));
-
-        const level = getDifficultyLevel(ef);
-        const levelNames = {
-            'VERY_HARD': 'Очень трудные',
-            'HARD': 'Трудные',
-            'STANDARD': 'Стандарт',
-            'EASY': 'Легкие'
-        };
-        const levelName = levelNames[level] || level;
-        
-        let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="display:flex; gap:2px;">';
-        
-        for (let i = 0; i < 5; i++) {
-            let fill = 0;
-            if (heartsCount >= i + 1) {
-                fill = 1;
-            } else if (heartsCount > i) {
-                fill = heartsCount - i;
-            }
-            
-            const stopVal = Math.round(fill * 100);
-            const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
-            
-            html += `
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                    <defs>
-                        <linearGradient id="${id}">
-                            <stop offset="${stopVal}%" stop-color="#ff4d4d" />
-                            <stop offset="${stopVal}%" stop-color="#444" />
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-            `;
-        }
-        html += '</div>';
-        return html;
-      };
-
-      const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-      
-      const listHtml = cards.length > 0 
-        ? cards.map(c => {
-            let p = progress[c.question];
-            if (!p && c.question) p = progress[c.question.trim()];
-            const ef = (p && p.easeFactor !== undefined) ? p.easeFactor : null;
-            const isFav = favorites.has(c.question);
-
-            return `
-            <li class="st-modal-item" style="position:relative; padding-right: 40px;">
-               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                   <div class="st-modal-q" style="margin-bottom:0; flex:1; padding-right:8px;">${c.question}</div>
-                   ${renderHearts(ef)}
-               </div>
-               <div class="st-modal-a">${c.answer || ''}</div>
-               <button class="st-modal-fav-btn" data-q="${c.question.replace(/"/g, '&quot;')}" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:4px;">
-                   ${starSvg(isFav)}
-               </button>
-            </li>`;
-        }).join('')
-        : '<li style="padding:16px;color:#8b949e;text-align:center">Нет карточек в этой категории</li>';
-
-      const modalHtml = `
-        <div class="st-modal-overlay" onclick="closeDiffModal(event)">
-          <div class="st-modal">
-            <div class="st-modal-header">
-              <div class="st-modal-title">${label} (${cards.length})</div>
-              <button class="st-modal-close" onclick="closeDiffModal()">✕</button>
-            </div>
-            <div class="st-modal-body">
-              <ul class="st-modal-list">${listHtml}</ul>
-            </div>
-            <div class="st-modal-footer">
-               <button class="st-modal-btn" onclick="startFilteredSession()">
-                 Начать обучение
-               </button>
-            </div>
-          </div>
-        </div>
-      `;
-      
-      const div = document.createElement('div');
-      div.id = 'diff-modal-container';
-      div.innerHTML = modalHtml;
-      document.body.appendChild(div);
-
-      // Add event listeners for fav buttons
-      div.querySelectorAll('.st-modal-fav-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const q = btn.dataset.q;
-              const currentFavs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
-              const index = currentFavs.indexOf(q);
-              let newIsFav = false;
-              
-              if (index === -1) {
-                  currentFavs.push(q);
-                  newIsFav = true;
-              } else {
-                  currentFavs.splice(index, 1);
-                  newIsFav = false;
-              }
-              
-              localStorage.setItem('qaFavorites', JSON.stringify(currentFavs));
-              syncFavorite(q, newIsFav);
-              
-              // Update UI
-              btn.innerHTML = starSvg(newIsFav);
-              
-              // Dispatch event to update other parts of UI
-              window.dispatchEvent(new Event('favoritesUpdated'));
-          });
-      });
-  };
-  
-  window.closeDiffModal = (e) => {
-     if (e && e.target && !e.target.classList.contains('st-modal-overlay') && !e.target.classList.contains('st-modal-close')) return;
-     const el = document.getElementById('diff-modal-container');
-     if (el) el.remove();
-  };
-  
-  window.startFilteredSession = () => {
-     const cards = window._tempSessionCards;
-     if (!cards || cards.length === 0) {
-        alert('Нет карточек');
-        return;
-     }
-     window.closeDiffModal();
-     hideStatsPage();
-     startLearnSession(cards, { mode: 'cram' });
-  };
-  
-  // Listen for close event from header
-  document.addEventListener('closeStats', hideStatsPage);
 }
 
-// Helpers
+function renderXpChart(data) {
+  if (!data || data.length === 0) return '';
+  const maxVal = Math.max(...data.map(d => d.val), 10); // Min scale 10
+  return data.map(d => {
+    const h = (d.val / maxVal) * 100;
+    return `
+      <div class="st-xp-col" title="${d.date}: ${d.val} XP">
+         <div class="st-xp-bar ${d.isToday ? 'today' : ''}" style="height: ${Math.max(h, 2)}%"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderImpChart(data) {
+  if (!data || data.length === 0) return '';
+  // Find max amplitude
+  const maxVal = Math.max(...data.map(d => Math.max(d.improved, d.regressed)), 5);
+  
+  return data.map(d => {
+    const hPos = (d.improved / maxVal) * 50; // Max 50% height
+    const hNeg = (d.regressed / maxVal) * 50; // Max 50% height
+    return `
+      <div class="st-imp-col" title="${d.date}: +${d.improved} / -${d.regressed}">
+         <div class="st-imp-bar-pos" style="height: ${hPos}%"></div>
+         <div class="st-imp-bar-neg" style="height: ${hNeg}%"></div>
+         <div class="st-imp-date">${d.date.split('-')[2]}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHearts(dist, total) {
+  if (total === 0) return '<div class="st-hearts-bar" style="background:#333;justify-content:center;align-items:center;color:#666;font-size:12px">Нет данных</div>';
+  
+  const hearts = [
+     { val: 1, count: dist[1], icon: '💔' },
+     { val: 2, count: dist[2], icon: '❤️' },
+     { val: 3, count: dist[3], icon: '🧡' },
+     { val: 4, count: dist[4], icon: '💛' },
+     { val: 5, count: dist[5], icon: '💚' }
+  ];
+  
+  return `
+    <div class="st-hearts-bar">
+       ${hearts.map(h => {
+          const pct = (h.count / total) * 100;
+          if (pct < 1) return '';
+          return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} карт"><span class="st-hb-icon">${h.icon}</span></div>`;
+       }).join('')}
+    </div>
+  `;
+}
+
+// Global Handlers
+window.changeXpMode = (mode) => {
+  currentXpMode = mode;
+  renderStats();
+};
+window.toggleDiffInfo = () => {
+  isDiffExpanded = !isDiffExpanded;
+  renderStats();
+};
+window.openDiffModal = (index) => {
+  // Logic to show modal with filtered cards
+  // Filter logic:
+  // 0: ef < 1.7
+  // 1: 1.7 <= ef < 2.1
+  // 2: 2.1 <= ef < 2.4
+  // 3: ef >= 2.4
+  
+  const ranges = [
+     { min: 0, max: 1.7, label: 'Очень трудные' },
+     { min: 1.7, max: 2.1, label: 'Трудные' },
+     { min: 2.1, max: 2.4, label: 'Стандарт' },
+     { min: 2.4, max: 999, label: 'Легкие' }
+  ];
+  const r = ranges[index];
+  const prog = getProgressMap();
+  const list = uniqueQaData.filter(q => {
+     const p = prog[q.question] || prog[q.question.trim()];
+     if (!p || p.easeFactor === undefined) return false;
+     return p.easeFactor >= r.min && p.easeFactor < r.max;
+  });
+  
+  // Show Modal
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.innerHTML = `
+    <div class="st-modal">
+       <div class="st-modal-header">
+          <div class="st-modal-title">${r.label} (${list.length})</div>
+          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+       </div>
+       <div class="st-modal-body">
+          <ul class="st-modal-list">
+             ${list.slice(0, 50).map(q => `
+                <li class="st-modal-item">
+                   <span class="st-modal-q">${q.question}</span>
+                   <span class="st-modal-a">${q.answer.substring(0, 60)}...</span>
+                </li>
+             `).join('')}
+             ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и еще ${list.length - 50}</li>` : ''}
+          </ul>
+       </div>
+       <div class="st-modal-footer">
+          <button class="st-modal-btn" onclick="window.startFilteredSession(${index})">Тренировать эту группу</button>
+       </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+};
+
+window.startFilteredSession = (index) => {
+  // Close modal
+  document.querySelector('.st-modal-overlay')?.remove();
+  
+  // Map index to filter criteria
+  // We can pass a custom filter function or ID to startLearnSession
+  // For now, we'll use 'cram' mode with a special filter param if supported,
+  // or we need to modify learn-ui to accept a list of IDs.
+  // Assuming learn-ui supports passing a list of questions directly? No.
+  // We'll use 'cram' and filter inside getSession logic? 
+  // Easier: Implement a "custom_cram" mode in learn-ui or pass a filter callback.
+  // Since I can't modify learn-ui easily right now without reading it,
+  // I will assume I can pass { filter: (q) => boolean } to startLearnSession('cram', ...)
+  
+  const ranges = [
+     { min: 0, max: 1.7 },
+     { min: 1.7, max: 2.1 },
+     { min: 2.1, max: 2.4 },
+     { min: 2.4, max: 999 }
+  ];
+  const r = ranges[index];
+  
+  // We can't pass a function to startLearnSession if it goes through URL or simple params.
+  // But we are calling a JS function.
+  // Let's assume startLearnSession accepts an options object.
+  // startLearnSession('cram', { minEF: r.min, maxEF: r.max });
+  
+  startLearnSession('cram', { minEF: r.min, maxEF: r.max });
+  hideStatsPage();
+};
+
+window.startRiskSession = (category) => {
+   startLearnSession('cram', { category: category, maxEF: 2.1 });
+   hideStatsPage();
+};
+
+window.startMode = (mode) => {
+   if (mode === 'cram_hard') {
+      startLearnSession('cram', { maxEF: 2.1 });
+   } else if (mode === 'new_cards') {
+      startLearnSession('new_cards'); // Assuming this mode exists or falls back
+   } else {
+      alert('Режим ' + mode + ' в разработке!');
+   }
+   hideStatsPage();
+};
+
 function getXpSeries(mode) {
   const data = getDailyPointsAll(); // returns array of {date, xp, ...}
   const today = new Date();
@@ -1163,7 +1193,7 @@ function getXpSeries(mode) {
 
   const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
   const res = [];
-  
+
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
