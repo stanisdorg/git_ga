@@ -32,7 +32,7 @@ const STATS_STYLES = `
   border: none;
   cursor: pointer;
   padding: 8px;
-  border-radius: 50%;
+  border-radius: 8px;
   color: var(--st-text);
   display: flex;
   align-items: center;
@@ -805,6 +805,13 @@ function renderStats() {
   const understandingIndex = getUnderstandingIndex(heartsDist, totalRated);
   const riskZones = getRiskZones(uniqueQaData);
 
+  // Check login status
+  const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
+  const authTitle = user ? `Выйти (${user.email})` : 'Вход';
+  const authIcon = user 
+    ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5z"/><path d="M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>';
+
   // Render HTML
   const container = document.getElementById('stats-container');
   if (!container) return;
@@ -817,14 +824,9 @@ function renderStats() {
         </button>
         <div class="st-header-title">Статистика</div>
         <div class="st-header-right">
-           <button class="nav-icon-btn st-learn-btn" title="Начать обучение" style="color: #fb923c;">
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+           <button class="nav-icon-btn st-auth-btn" title="${authTitle}">
+             ${authIcon}
            </button>
-           <button class="nav-icon-btn st-auth-btn" title="Аккаунт">
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>
-           </button>
-        </div>
-      </div>
         </div>
       </div>
 
@@ -844,7 +846,7 @@ function renderStats() {
           <div class="st-hero-stat"><span class="st-hero-icon">📚</span> ${studiedCards}</div>
         </div>
         <div class="st-sticky-cta-wrapper">
-           <button class="st-cta-btn" onclick="location.hash=''; setTimeout(() => document.querySelector('.start-btn')?.click(), 100)">
+           <button class="st-cta-btn" id="st-continue-btn">
              Продолжить (${sessionCount})
            </button>
         </div>
@@ -1058,29 +1060,44 @@ function renderStats() {
       });
   }
 
-  const learnBtn = container.querySelector('.st-learn-btn');
-  if (learnBtn) {
-      learnBtn.addEventListener('click', () => {
-         const questions = (window.currentQuestions && window.currentQuestions.length > 0) 
-             ? window.currentQuestions 
-             : uniqueQaData;
-         
-         if (!questions || questions.length === 0) {
-             alert('Нет вопросов для изучения');
-             return;
-         }
-         startLearnSession(questions); 
-         hideStatsPage();
+  const continueBtn = container.querySelector('#st-continue-btn');
+  if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+          const questions = (window.currentQuestions && window.currentQuestions.length > 0) 
+              ? window.currentQuestions 
+              : uniqueQaData;
+          
+          if (!questions || questions.length === 0) {
+              alert('Нет вопросов для изучения');
+              return;
+          }
+          
+          hideStatsPage();
+          startLearnSession(questions);
+          
+          const mainNav = document.getElementById('bottom-nav');
+          if (mainNav) {
+              const learnNav = mainNav.querySelector('#bn-learn');
+              if (learnNav) learnNav.click();
+          }
       });
   }
 
   const authBtn = container.querySelector('.st-auth-btn');
   if (authBtn) {
       authBtn.addEventListener('click', () => {
-          if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
-              window.qaAuth.openLogin();
+          const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
+          if (user) {
+             if (confirm(`Выйти из аккаунта ${user.email}?`)) {
+                 if (window.qaAuth.logout) window.qaAuth.logout();
+                 renderStats();
+             }
           } else {
-              alert('Окно входа недоступно');
+              if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
+                  window.qaAuth.openLogin();
+              } else {
+                  alert('Окно входа недоступно');
+              }
           }
       });
   }
