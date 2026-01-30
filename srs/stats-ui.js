@@ -368,7 +368,7 @@ const STATS_STYLES = `
   cursor: pointer;
   padding: 8px 0;
 }
-.st-col-title { font-size: 16px; font-weight: 600; color: #fff; }
+.st-col-title { font-size: 16px; font-weight: 600; color: #fff; display: flex; align-items: center; justify-content: space-between; }
 .st-col-arrow { transition: transform 0.3s; color: var(--st-muted); }
 .st-col-arrow.expanded { transform: rotate(180deg); }
 
@@ -500,13 +500,17 @@ const STATS_STYLES = `
   border-color: var(--st-sec);
 }
 .st-info-btn {
-  background: none; border: 1px solid var(--st-muted); color: var(--st-muted);
-  width: 18px; height: 18px; border-radius: 50%;
-  font-size: 11px; line-height: 16px; text-align: center;
-  margin-left: 8px; cursor: pointer; display: inline-block;
-  vertical-align: middle;
+  background: rgba(255,255,255,0.1); 
+  border: none; 
+  color: var(--st-text-sec);
+  width: 24px; height: 24px; border-radius: 50%;
+  font-size: 14px; line-height: 24px; text-align: center;
+  margin-left: 10px; cursor: pointer; display: inline-flex;
+  align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
-.st-info-btn:hover { border-color: var(--st-text); color: var(--st-text); }
+.st-info-btn:hover { background: var(--st-sec); color: #fff; transform: scale(1.1); }
 .st-ach-icon { font-size: 28px; margin-bottom: 8px; }
 .st-ach-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
 .st-ach-desc { font-size: 11px; color: var(--st-muted); }

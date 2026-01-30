@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=1.54';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '1.57';
+export const APP_VERSION = '1.58';
 
 // Debug banner for script loading verification
 // Removed after fix
@@ -29,11 +29,12 @@ export function initUI() {
     
     // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
     const isStats = location.hash && location.hash.includes('stats');
+    
+    // Always initialize main app to ensure Auth and logic availability
+    initTabsNavigation(APP_VERSION);
+    
     if (isStats) {
         initStatsPage(APP_VERSION);
-    } else {
-        // Инициализируем табы и карточки
-        initTabsNavigation(APP_VERSION);
     }
     
     // Добавляем стили для табов и карточек
@@ -44,12 +45,15 @@ export function initUI() {
     // Обновляем UI при изменении данных
     const reinit = () => {
         removeExistingNavigation();
+        
+        // Always init main app
+        initTabsNavigation(APP_VERSION);
+        
         const isStats = location.hash && location.hash.includes('stats');
         if (isStats) {
             initStatsPage(APP_VERSION);
         } else {
             hideStatsPage();
-            initTabsNavigation(APP_VERSION);
         }
         createBottomNav();
     };
