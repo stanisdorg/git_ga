@@ -1,4 +1,4 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=3';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries } from './stats-utils.js?v=4';
 import { getProgressMap, syncFavorite } from './storage.js';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js';
 import { uniqueQaData } from '../all-data.js';
@@ -555,10 +555,10 @@ function renderStats() {
   
   // Calculate Difficulty Distribution
    const segs = [
-      { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: 'var(--st-diff-hard)', colorClass: 'st-diff-seg-hard' },
-      { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: 'var(--st-diff-high)', colorClass: 'st-diff-seg-high' },
-      { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: 'var(--st-diff-std)', colorClass: 'st-diff-seg-std' },
-      { label: 'Легкие', min: 2.4, max: 999, count: 0, color: 'var(--st-diff-easy)', colorClass: 'st-diff-seg-easy' }
+      { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: 'var(--st-danger)', colorClass: 'red' },
+      { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: 'var(--st-prim)', colorClass: 'orange' },
+      { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: 'var(--st-sec)', colorClass: 'green' },
+      { label: 'Легкие', min: 2.4, max: 999, count: 0, color: '#2f81f7', colorClass: 'blue' }
    ];
   
   let totalRated = 0;
@@ -625,6 +625,7 @@ function renderStats() {
             <div class="st-hero-stat"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent} дн</div>
             <div class="st-hero-stat"><span class="st-hero-icon">⏱</span> ${planMins} мин</div>
             <div class="st-hero-stat"><span class="st-hero-icon">📚</span> ${cardsDoneToday} карт</div>
+            <div class="st-hero-stat"><span class="st-hero-icon">🎯</span> ${metrics.accuracy || 0}%</div>
           </div>
         </div>
         
@@ -700,6 +701,7 @@ function renderStats() {
             <div class="st-xp-tab ${currentXpMode==='week'?'active':''}" onclick="window.setXpMode('week')">Неделя</div>
             <div class="st-xp-tab ${currentXpMode==='month'?'active':''}" onclick="window.setXpMode('month')">Месяц</div>
             <div class="st-xp-tab ${currentXpMode==='year'?'active':''}" onclick="window.setXpMode('year')">Год</div>
+            <div class="st-xp-tab ${currentXpMode==='all'?'active':''}" onclick="window.setXpMode('all')">Всё</div>
          </div>
          
          <div class="st-xp-chart-container">
@@ -778,6 +780,16 @@ function renderStats() {
                <div class="st-ach-icon">📚</div>
                <div class="st-ach-title">Эрудит</div>
                <div class="st-ach-desc">50 карточек</div>
+            </div>
+            <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🏃</div>
+               <div class="st-ach-title">Марафонец</div>
+               <div class="st-ach-desc">30 дней стрик</div>
+            </div>
+            <div class="st-ach-card ${achievements.guru ? 'unlocked' : ''}">
+               <div class="st-ach-icon">🧘</div>
+               <div class="st-ach-title">Гуру</div>
+               <div class="st-ach-desc">Достигни 5 уровня</div>
             </div>
          </div>
       </div>
@@ -1095,9 +1107,19 @@ function renderStats() {
 
 // Helpers
 function getXpSeries(mode) {
-  const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
   const data = getDailyPointsAll(); // returns array of {date, xp, ...}
   const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+
+  if (mode === 'all') {
+      return data.map(entry => ({
+          date: new Date(entry.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+          val: entry.xp,
+          isToday: entry.date === todayStr
+      }));
+  }
+
+  const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
   const res = [];
   
   for (let i = days - 1; i >= 0; i--) {

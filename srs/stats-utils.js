@@ -77,8 +77,11 @@ export function checkAchievements() {
 
   if (!ach.firstSessionCompleted && stats.total > 0) ach.firstSessionCompleted = true;
   if (!ach.sevenDayStreak && (streak.current || 0) >= 7) ach.sevenDayStreak = true;
+  if (!ach.marathoner && (streak.current || 0) >= 30) ach.marathoner = true;
   if (!ach.ninetyAccuracy && accuracy >= 90) ach.ninetyAccuracy = true;
   if (!ach.fiftyCards && studiedCount >= 50) ach.fiftyCards = true;
+  const levelInfo = getCurrentLevel();
+  if (!ach.guru && levelInfo.level >= 5) ach.guru = true;
   if (!ach.nightOwl && nightOwl) ach.nightOwl = true;
 
   localStorage.setItem('studyAchievements', JSON.stringify(ach));
