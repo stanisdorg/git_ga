@@ -139,6 +139,19 @@ export function initLearnUI() {
                         height: 28px;
                     }
                 }
+                
+                .mode-timer {
+                    position: absolute;
+                    top: 12px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: #ff4d4d;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                    z-index: 20;
+                    display: none;
+                }
             </style>
             <div class="learn-header">
                 <button id="learn-exit-btn">✕ Выход</button>
@@ -153,6 +166,7 @@ export function initLearnUI() {
             
             <div class="flashcard-container">
                 <div class="flashcard">
+                    <div id="mode-timer" class="mode-timer"></div>
                     <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
@@ -383,13 +397,13 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     
     // Safety cap for session length (except cram?)
-    const MAX_SESSION = options.mode === 'cram' ? 100 : 40; 
+    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death') ? 100 : 40; 
     if (sessionCards.length > MAX_SESSION) {
         sessionCards = sessionCards.slice(0, MAX_SESSION);
     }
     
     if (sessionCards.length === 0) {
-        if (candidateQuestions && candidateQuestions.length > 0 && options.mode !== 'cram') {
+        if (candidateQuestions && candidateQuestions.length > 0 && options.mode !== 'cram' && options.mode !== 'time_attack' && options.mode !== 'sudden_death') {
             startLearnSession(candidateQuestions, { mode: 'cram' });
             return;
         }
@@ -419,7 +433,8 @@ export function startLearnSession(candidateQuestions, options = {}) {
     session = new LearningSession(
         sessionCards,
         renderCardState,
-        showStats
+        showStats,
+        options
     );
     // Build fresh segments for the new session size
     if (segs) {
@@ -644,6 +659,24 @@ function renderCardState(state) {
             cardEl.classList.add('flipped');
         } else {
             cardEl.classList.remove('flipped');
+        }
+    }
+
+    // Update Mode Timer
+    const timerEl = document.getElementById('mode-timer');
+    if (timerEl) {
+        if (state.mode === 'time_attack' && state.timeLeft !== null && !state.isFlipped) {
+            timerEl.style.display = 'block';
+            timerEl.textContent = state.timeLeft;
+            if (state.timeLeft <= 2) {
+                timerEl.style.color = '#ff0000';
+                timerEl.style.transform = 'translateX(-50%) scale(1.2)';
+            } else {
+                timerEl.style.color = '#ff4d4d';
+                timerEl.style.transform = 'translateX(-50%) scale(1)';
+            }
+        } else {
+            timerEl.style.display = 'none';
         }
     }
 }

@@ -9,16 +9,19 @@ export class LearningSession {
      * @param {Array<{item: Object, progress: Object, isNew: boolean}>} dueCards 
      * @param {Function} onUpdateUI - Callback to render UI
      * @param {Function} onComplete - Callback when session ends
+     * @param {Object} options - Session options (mode, etc.)
      */
-    constructor(dueCards, onUpdateUI, onComplete) {
+    constructor(dueCards, onUpdateUI, onComplete, options = {}) {
         this.queue = this.shuffle(dueCards);
         this.currentIndex = 0;
         this.currentCard = null;
         this.isFlipped = false;
         this.onUpdateUI = onUpdateUI;
         this.onComplete = onComplete;
-        
-        // Session stats
+        this.options = options;
+        this.mode = options.mode || 'standard';
+        this.modeTimer = null;
+
         this.stats = {
             total: this.queue.length,
             reviewed: 0,
@@ -80,25 +83,62 @@ export class LearningSession {
         
         this.onUpdateUI({
             card: this.currentCard.item,
-            cardProgress: this.currentCard.progress, // Pass the progress object
+            cardProgress: this.currentCard.progress,
             progress: this.currentIndex + 1,
             total: this.queue.length,
             isFlipped: false,
             results: this.results,
-            pauseRecommendation: pauseRec
+            pauseRecommendation: pauseRec,
+            mode: this.mode,
+            timeLeft: this.mode === 'time_attack' ? 5 : null
         });
+
+        if (this.mode === 'time_attack') {
+            this.startModeTimer(5);
+        }
+    }
+
+    startModeTimer(seconds) {
+        if (this.modeTimer) clearInterval(this.modeTimer);
+        this.timeLeft = seconds;
+        this.modeTimer = setInterval(() => {
+            this.timeLeft--;
+            this.onUpdateUI({
+                card: this.currentCard.item,
+                cardProgress: this.currentCard.progress,
+                progress: this.currentIndex + 1,
+                total: this.queue.length,
+                isFlipped: false,
+                results: this.results,
+                mode: this.mode,
+                timeLeft: this.timeLeft
+            });
+
+            if (this.timeLeft <= 0) {
+                clearInterval(this.modeTimer);
+                this.finishGame('time_out');
+            }
+        }, 1000);
+    }
+
+    finishGame(reason) {
+        if (this.modeTimer) clearInterval(this.modeTimer);
+        this.onComplete(this.stats, this.results, this.queue.length, { reason });
     }
 
     flip() {
         if (this.isFlipped) return;
+        if (this.modeTimer) clearInterval(this.modeTimer);
+        
         this.isFlipped = true;
         this.onUpdateUI({
             card: this.currentCard.item,
-            cardProgress: this.currentCard.progress, // Pass the progress object
+            cardProgress: this.currentCard.progress,
             progress: this.currentIndex + 1,
             total: this.queue.length,
             isFlipped: true,
-            results: this.results
+            results: this.results,
+            mode: this.mode
         });
     }
 
@@ -108,6 +148,12 @@ export class LearningSession {
      */
     rate(grade) {
         if (!this.currentCard) return;
+
+        // Check for Game Over conditions
+        if ((this.mode === 'sudden_death' || this.mode === 'time_attack') && grade === 0) {
+             this.finishGame('wrong_answer');
+             return;
+        }
 
         // Apply restriction if grade is Easy (3 in UI)
         if (grade === 3) {

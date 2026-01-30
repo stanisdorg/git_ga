@@ -1216,18 +1216,7 @@ window.openDiffModal = (index) => {
 };
 
 window.startFilteredSession = (index) => {
-  // Close modal
   document.querySelector('.st-modal-overlay')?.remove();
-  
-  // Map index to filter criteria
-  // We can pass a custom filter function or ID to startLearnSession
-  // For now, we'll use 'cram' mode with a special filter param if supported,
-  // or we need to modify learn-ui to accept a list of IDs.
-  // Assuming learn-ui supports passing a list of questions directly? No.
-  // We'll use 'cram' and filter inside getSession logic? 
-  // Easier: Implement a "custom_cram" mode in learn-ui or pass a filter callback.
-  // Since I can't modify learn-ui easily right now without reading it,
-  // I will assume I can pass { filter: (q) => boolean } to startLearnSession('cram', ...)
   
   const ranges = [
      { min: 0, max: 1.7 },
@@ -1236,30 +1225,81 @@ window.startFilteredSession = (index) => {
      { min: 2.4, max: 999 }
   ];
   const r = ranges[index];
+  const prog = getProgressMap();
   
-  // We can't pass a function to startLearnSession if it goes through URL or simple params.
-  // But we are calling a JS function.
-  // Let's assume startLearnSession accepts an options object.
-  // startLearnSession('cram', { minEF: r.min, maxEF: r.max });
+  const cards = uniqueQaData.filter(q => {
+     const p = prog[q.question] || prog[q.question.trim()];
+     if (!p || p.easeFactor === undefined) return false;
+     return p.easeFactor >= r.min && p.easeFactor < r.max;
+  });
   
-  startLearnSession('cram', { minEF: r.min, maxEF: r.max });
+  if (cards.length === 0) {
+      alert('Нет карт в этой категории');
+      return;
+  }
+
   hideStatsPage();
+  startLearnSession(cards, { mode: 'cram' });
 };
 
-window.startRiskSession = (category) => {
-   startLearnSession('cram', { category: category, maxEF: 2.1 });
+window.startRiskSession = (catName) => {
+   const riskZones = getRiskZones(uniqueQaData);
+   const zone = riskZones.find(z => z.cat === catName);
+   if (!zone || !zone.items || zone.items.length === 0) return;
+   
    hideStatsPage();
+   startLearnSession(zone.items, { mode: 'cram' });
 };
 
-window.startMode = (mode) => {
-   if (mode === 'cram_hard') {
-      startLearnSession('cram', { maxEF: 2.1 });
-   } else if (mode === 'new_cards') {
-      startLearnSession('new_cards'); // Assuming this mode exists or falls back
-   } else {
-      alert('Режим ' + mode + ' в разработке!');
-   }
-   hideStatsPage();
+window.startMode = (modeId) => {
+    console.log('[Stats] Starting mode:', modeId);
+    
+    if (!uniqueQaData || uniqueQaData.length === 0) {
+        alert('Данные не загружены');
+        return;
+    }
+
+    const progress = getProgressMap();
+    let candidates = [];
+    let options = { mode: modeId };
+
+    if (modeId === 'time_attack' || modeId === 'sudden_death') {
+        const valid = uniqueQaData.filter(q => q && q.question && q.answer);
+        if (valid.length === 0) {
+             alert('Нет доступных карточек');
+             return;
+        }
+        candidates = [...valid].sort(() => 0.5 - Math.random()).slice(0, 50);
+        
+    } else if (modeId === 'cram_hard') {
+        candidates = uniqueQaData.filter(q => {
+             const p = progress[q.question] || progress[q.question.trim()];
+             return p && p.easeFactor !== undefined && p.easeFactor < 2.2;
+        });
+        
+        if (candidates.length === 0) {
+             alert('Нет карточек со сложностью ниже 2.2');
+             return;
+        }
+        options.mode = 'cram'; 
+        
+    } else if (modeId === 'new_cards') {
+        candidates = uniqueQaData.filter(q => {
+             const p = progress[q.question] || progress[q.question.trim()];
+             return !p || !p.lastReviewed;
+        });
+        
+        if (candidates.length === 0) {
+             alert('Нет новых карточек');
+             return;
+        }
+        options.mode = 'cram';
+    }
+
+    if (candidates.length > 0) {
+        hideStatsPage();
+        startLearnSession(candidates, options);
+    }
 };
 
 function getXpSeries(mode) {
