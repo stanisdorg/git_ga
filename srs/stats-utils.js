@@ -73,16 +73,41 @@ export function checkAchievements() {
   const prog = getProgressMap();
   const studiedCount = Object.values(prog).filter(p => p.repetitions > 0).length;
   const accuracy = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
-  const nightOwl = Object.values(prog).some(p => (p.lastReviewedTime || 0) >= 23);
+  // Check for time-based achievements using lastReviewed (timestamp) or lastReviewDate
+  let earlyBird = false;
+  let weekendWarrior = false;
+  
+  Object.values(prog).forEach(p => {
+    if (p.lastReviewDate) {
+      const d = new Date(p.lastReviewDate);
+      const h = d.getHours();
+      const day = d.getDay();
+      if (h >= 4 && h < 9) earlyBird = true; // 4 AM - 9 AM
+      if (day === 0 || day === 6) weekendWarrior = true; // Sun or Sat
+    }
+  });
+
+  const nightOwl = Object.values(prog).some(p => {
+     if (!p.lastReviewDate) return false;
+     const h = new Date(p.lastReviewDate).getHours();
+     return h >= 23 || h < 4;
+  });
 
   if (!ach.firstSessionCompleted && stats.total > 0) ach.firstSessionCompleted = true;
   if (!ach.sevenDayStreak && (streak.current || 0) >= 7) ach.sevenDayStreak = true;
   if (!ach.marathoner && (streak.current || 0) >= 30) ach.marathoner = true;
+  if (!ach.unstoppable && (streak.current || 0) >= 100) ach.unstoppable = true;
   if (!ach.ninetyAccuracy && accuracy >= 90) ach.ninetyAccuracy = true;
   if (!ach.fiftyCards && studiedCount >= 50) ach.fiftyCards = true;
+  if (!ach.century && studiedCount >= 100) ach.century = true;
+  
   const levelInfo = getCurrentLevel();
   if (!ach.guru && levelInfo.level >= 5) ach.guru = true;
+  if (!ach.master && levelInfo.level >= 10) ach.master = true;
+  
   if (!ach.nightOwl && nightOwl) ach.nightOwl = true;
+  if (!ach.earlyBird && earlyBird) ach.earlyBird = true;
+  if (!ach.weekendWarrior && weekendWarrior) ach.weekendWarrior = true;
 
   localStorage.setItem('studyAchievements', JSON.stringify(ach));
   syncWithServer(); // Sync achievements to server

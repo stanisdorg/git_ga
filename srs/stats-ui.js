@@ -553,6 +553,23 @@ function renderStats() {
   const todayStr = new Date().toISOString().split('T')[0];
   let cardsDoneToday = 0;
   
+  // Forecast calculations
+  let dueTomorrow = 0;
+  let dueWeek = 0;
+  const now = new Date();
+  const tomorrowStart = new Date(now); tomorrowStart.setDate(now.getDate() + 1); tomorrowStart.setHours(0,0,0,0);
+  const tomorrowEnd = new Date(tomorrowStart); tomorrowEnd.setHours(23,59,59,999);
+  const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7); weekEnd.setHours(23,59,59,999);
+
+  uniqueQaData.forEach(q => {
+      const p = progressMap[q.question] || progressMap[q.question.trim()];
+      if (p && p.nextReviewDate) {
+          const d = new Date(p.nextReviewDate);
+          if (d >= tomorrowStart && d <= tomorrowEnd) dueTomorrow++;
+          if (d >= now && d <= weekEnd) dueWeek++;
+      }
+  });
+  
   // Calculate Difficulty Distribution
    const segs = [
       { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: 'var(--st-danger)', colorClass: 'red' },
@@ -622,7 +639,7 @@ function renderStats() {
             <div class="st-hero-bar-fill" style="width: ${lvlProgressPct}%"></div>
           </div>
           <div class="st-hero-stats">
-            <div class="st-hero-stat"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent} дн</div>
+            <div class="st-hero-stat" title="Лучший стрик: ${metrics.streakBest}"><span class="st-hero-icon">🔥</span> ${metrics.streakCurrent} <span style="font-size:12px;color:var(--st-text-sec);margin-left:2px">/ ${metrics.streakBest}</span></div>
             <div class="st-hero-stat"><span class="st-hero-icon">⏱</span> ${planMins} мин</div>
             <div class="st-hero-stat"><span class="st-hero-icon">📚</span> ${cardsDoneToday} карт</div>
             <div class="st-hero-stat"><span class="st-hero-icon">🎯</span> ${metrics.accuracy || 0}%</div>
@@ -645,14 +662,14 @@ function renderStats() {
            <div class="st-card-sub">карточек</div>
         </div>
         <div class="st-card">
-           <div class="st-card-label">Прогноз</div>
-           <div class="st-card-val">${finishDateStr}</div>
-           <div class="st-card-sub">завершение курса</div>
+           <div class="st-card-label">К повторению</div>
+           <div class="st-card-val">${dueTomorrow} <span style="font-size:14px;color:var(--st-text-sec)">/ ${dueWeek}</span></div>
+           <div class="st-card-sub">завтра / неделя</div>
         </div>
         <div class="st-card">
-           <div class="st-card-label">Цель</div>
-           <div class="st-card-val">${daysToFinish}</div>
-           <div class="st-card-sub">дней осталось</div>
+           <div class="st-card-label">Финиш</div>
+           <div class="st-card-val">${daysToFinish} дн</div>
+           <div class="st-card-sub">~ ${finishDateStr}</div>
         </div>
       </div>
 
@@ -790,6 +807,31 @@ function renderStats() {
                <div class="st-ach-icon">🧘</div>
                <div class="st-ach-title">Гуру</div>
                <div class="st-ach-desc">Достигни 5 уровня</div>
+            </div>
+            <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}">
+                <div class="st-ach-icon">💯</div>
+                <div class="st-ach-title">Век</div>
+                <div class="st-ach-desc">100 карточек</div>
+            </div>
+            <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}">
+                <div class="st-ach-icon">👑</div>
+                <div class="st-ach-title">Мастер</div>
+                <div class="st-ach-desc">10 уровень</div>
+            </div>
+            <div class="st-ach-card ${achievements.unstoppable ? 'unlocked' : ''}">
+                <div class="st-ach-icon">🚀</div>
+                <div class="st-ach-title">Неудержимый</div>
+                <div class="st-ach-desc">100 дней стрик</div>
+            </div>
+            <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}">
+                <div class="st-ach-icon">🌅</div>
+                <div class="st-ach-title">Жаворонок</div>
+                <div class="st-ach-desc">Урок до 9 утра</div>
+            </div>
+            <div class="st-ach-card ${achievements.weekendWarrior ? 'unlocked' : ''}">
+                <div class="st-ach-icon">📅</div>
+                <div class="st-ach-title">Выходной</div>
+                <div class="st-ach-desc">Урок в сб/вс</div>
             </div>
          </div>
       </div>
