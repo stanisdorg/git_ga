@@ -1,175 +1,300 @@
 {
   "srsProgress": {
-    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
+    "Как происходит тестирование локально с помощью Docker?": {
       "interval": 1,
-      "easeFactor": 2.1,
+      "easeFactor": 2.35,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1769608932057,
-      "nextReviewDate": 1769648400000,
-      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857234990,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1769586277622,
+          "date": 1769857234990,
           "grade": 2
-        },
-        {
-          "date": 1769608932057,
-          "grade": 1
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 17,
-      "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "Как происходит тестирование локально с помощью Docker?"
     },
-    "Foreign Key": {
+    "postman, swagger": {
       "interval": 1,
-      "easeFactor": 2.1,
+      "easeFactor": 2.35,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1769608934796,
-      "nextReviewDate": 1769648400000,
-      "dueDate": "2026-01-29T01:00:00.000Z",
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857235201,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1769586289934,
+          "date": 1769857235201,
           "grade": 2
-        },
-        {
-          "date": 1769608934796,
-          "grade": 1
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 17,
-      "question": "Foreign Key"
-    },
-    "Чем отличаются серьёзность и приоритет бага?": {
-      "interval": 1,
-      "easeFactor": 2.1,
-      "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1769608935927,
-      "nextReviewDate": 1769648400000,
-      "dueDate": "2026-01-29T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1769586329899,
-          "grade": 2
-        },
-        {
-          "date": 1769608935927,
-          "grade": 1
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 17,
-      "question": "Чем отличаются серьёзность и приоритет бага?"
-    },
-    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
-      "interval": 1,
-      "easeFactor": 2.1,
-      "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1769608933354,
-      "nextReviewDate": 1769648400000,
-      "dueDate": "2026-01-29T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1769607538894,
-          "grade": 2
-        },
-        {
-          "date": 1769608933354,
-          "grade": 1
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 17,
-      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "postman, swagger"
     },
     "1) Физического доступа": {
       "interval": 1,
-      "easeFactor": 2.5,
-      "streak": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1769608860933,
-      "nextReviewDate": 1769648400000,
-      "dueDate": "2026-01-29T01:00:00.000Z",
-      "repetitions": 1,
-      "historyArray": [
-        {
-          "date": 1769608860933,
-          "grade": 3
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 17,
-      "question": "1) Физического доступа"
-    },
-    "Понимание того, как ляжет новое требование относительно всей архитектуры": {
-      "interval": 1,
-      "easeFactor": 2,
-      "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1769608937526,
-      "nextReviewDate": 1769648400000,
-      "dueDate": "2026-01-29T01:00:00.000Z",
+      "lastReviewDate": 1769857235409,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1769608913877,
-          "grade": 1
-        },
-        {
-          "date": 1769608937526,
-          "grade": 1
+          "date": 1769857235409,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-01-28",
-      "lastReviewedTime": 17,
-      "question": "Понимание того, как ляжет новое требование относительно всей архитектуры"
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "1) Физического доступа"
+    },
+    "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857235578,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857235578,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается"
+    },
+    "брокеры, кафка, как взаимодействовали сервисы?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857235769,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857235769,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "брокеры, кафка, как взаимодействовали сервисы?"
+    },
+    "Что такое GraphQL?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857235935,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857235935,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "Что такое GraphQL?"
+    },
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857236288,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857236288,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?"
+    },
+    "как отправлял сообщения в кафке ручками?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857236454,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857236454,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "как отправлял сообщения в кафке ручками?"
+    },
+    "пример для чего подмена запросов?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857236621,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857236621,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "пример для чего подмена запросов?"
+    },
+    "403 Forbidden": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857237069,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857237069,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "403 Forbidden"
+    },
+    "docker команды?": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857237218,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857237218,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "docker команды?"
+    },
+    "PCT/IP": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857237363,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857237363,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "PCT/IP"
+    },
+    "kafka отличие партиций от топика": {
+      "interval": 1,
+      "easeFactor": 2.35,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1769857237508,
+      "nextReviewDate": 1769907600000,
+      "dueDate": "2026-02-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1769857237508,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-01-31",
+      "lastReviewedTime": 14,
+      "question": "kafka отличие партиций от топика"
     }
   },
   "studyStats": {
-    "total": 11,
-    "timeSpent": 193906,
-    "points": 35,
-    "correct": 1
+    "total": 13,
+    "timeSpent": 3442,
+    "points": 65
   },
   "studyStreak": {
     "current": 1,
     "best": 1,
-    "lastDate": "2026-01-28"
+    "lastDate": "2026-01-31"
   },
   "dailyPoints": {
-    "2026-01-28": 35
+    "2026-01-31": 65
   },
   "dailyBonusPoints": {
-    "2026-01-28": 0
+    "2026-01-31": 0
   },
-  "dailyDayBonusPoints": {
-    "2026-01-28": 5
-  },
+  "dailyDayBonusPoints": {},
   "qaFavorites": [],
   "studyAchievements": {
-    "firstSessionCompleted": true
+    "firstSessionCompleted": true,
+    "weekendWarrior": true
   },
-  "updatedAt": 1769608942649
+  "updatedAt": 1769857239966
 }
