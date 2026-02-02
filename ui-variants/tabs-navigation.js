@@ -1,11 +1,11 @@
 // Вариант 3: Табы для категорий и карточки для подкатегорий
 
 // Импортируем данные и генератор категорий
-import { uniqueQaData } from '../all-data.js';
-import { buildCategoriesFromData } from '../computed-categories.js';
-import { setNormalizationDisabled } from '../load-json-data.js';
-import { getProgressMap } from '../srs/stats-utils.js';
-import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
+import { uniqueQaData } from '../all-data.js?v=1.61';
+import { buildCategoriesFromData } from '../computed-categories.js?v=1.61';
+import { setNormalizationDisabled } from '../load-json-data.js?v=1.61';
+import { getProgressMap } from '../srs/stats-utils.js?v=1.61';
+import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js?v=1.61';
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
