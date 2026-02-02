@@ -1,4 +1,4 @@
-import { syncWithServer } from './storage.js';
+import { syncWithServer } from './storage.js?v=1.60';
 
 // Read progress and stats from localStorage
 function readJSON(key, fallback = {}) {

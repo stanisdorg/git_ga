@@ -1,5 +1,5 @@
 
-import { getProgressMap } from './storage.js';
+import { getProgressMap } from './stats-utils.js?v=6';
 
 const GOAL_DAYS = 60;
 const START_DATE_KEY = 'srsStartDate';

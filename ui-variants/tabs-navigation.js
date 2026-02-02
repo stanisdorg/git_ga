@@ -4,7 +4,7 @@
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
-import { getProgressMap } from '../srs/storage.js';
+import { getProgressMap } from '../srs/stats-utils.js';
 import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
 
 // Глобальные флаги/состояния для режима редактирования и логина

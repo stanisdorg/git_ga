@@ -1,5 +1,5 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements } from './stats-utils.js?v=5';
-import { getProgressMap, syncFavorite } from './storage.js';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=6';
+import { syncFavorite } from './storage.js';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js';
 import { uniqueQaData } from '../all-data.js';
 import { getTodaysSession } from './category-scheduler.js';
@@ -58,7 +58,7 @@ const STATS_STYLES = `
 .chart-label { font-size: 11px; opacity: 0.45; fill: var(--st-text); }
 .bar-xp { fill: #f59e0b; }
 .bar-hearts { fill: #ef4444; }
-.bar-cards { fill: #38bdf8; opacity: 0.9; }
+.bar-cards { fill: #60a5fa; opacity: 1; stroke: #1e40af; stroke-width: 1; }
 .chart-grid-line { stroke: rgba(255,255,255,0.06); stroke-width: 1; }
 .tooltip { position: absolute; width: 160px; padding: 8px 10px; font-size: 12px; border-radius: 8px; background: var(--st-surf-h); color: var(--st-text); border: 1px solid var(--st-border); display: none; pointer-events: none; z-index: 3000; }
 .tooltip .tip-arrow { position: absolute; bottom: -6px; left: calc(50% - 6px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid var(--st-surf-h); }
@@ -1119,7 +1119,7 @@ function renderStats() {
       const rawMax = Math.max(...data.map(d => d.xp), 1);
       const maxXp = currentXpMode==='week' ? rawMax * 1.2
                     : currentXpMode==='month' ? rawMax * 1.15
-                    : 200;
+                    : rawMax * 1.2;
       const h = chartEl.clientHeight || 280;
       const bottomPad = 16;
       const topPad = 20;
@@ -1129,7 +1129,7 @@ function renderStats() {
         ? [0, maxXp*0.25, maxXp*0.5, maxXp*0.75, maxXp]
         : (currentXpMode==='month'
            ? [0, maxXp*0.33, maxXp*0.66, maxXp]
-           : [0, 50, 100, 150, 200]);
+           : [0, maxXp*0.25, maxXp*0.5, maxXp*0.75, maxXp]);
 
       const now = new Date();
       const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -1139,7 +1139,10 @@ function renderStats() {
                  : currentXpMode==='month' ? {bar:12,gap:6,count:data.length,labelStep:4}
                  : {bar:28,gap:16,count:12,labelStep:1};
       const width = chartEl.clientWidth || 600;
-      const colsW = cfg.count*cfg.bar + (cfg.count-1)*cfg.gap + leftMargin;
+      const barW = 8;
+      const innerGap = 0;
+      const groupW = (barW * 3) + (innerGap * 2);
+      const colsW = cfg.count*groupW + (cfg.count-1)*cfg.gap + leftMargin;
       chartEl.setAttribute('viewBox', `0 0 ${Math.max(width, colsW)} ${h}`);
       const grid = ticks.map(t=>{
          const y = (innerH/maxXp)*t;
@@ -1153,30 +1156,26 @@ function renderStats() {
       const bars = [];
       let x = leftMargin;
       const maxCards = Math.max(...data.map(d => d.cards || 0), 1);
+      const maxHearts = Math.max(...data.map(d => d.hearts || 0), 1);
+      const hcMax = Math.max(maxHearts, maxCards);
       data.forEach((d, idx) => {
          const xpH = Math.max(0, Math.min(innerH, (innerH/maxXp)*d.xp));
-         const segH = 3;
-         const rawHearts = Math.max(0, d.hearts || 0);
-         const segCount = Math.min(5, rawHearts);
          const yXp = topPad + (innerH - xpH);
          const labelOk = currentXpMode==='year' ? true : (idx % cfg.labelStep === 0);
-         bars.push(`<rect class="bar-xp" x="${x}" y="${yXp}" width="${cfg.bar}" height="${xpH}" rx="6" ry="6" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
-         // Heart segments inside top of XP bar
-         const maxSegVisible = Math.max(0, Math.floor(xpH / segH));
-         const visibleSegs = Math.min(segCount, maxSegVisible);
-         for (let i = 0; i < visibleSegs; i++) {
-           const ySeg = yXp + xpH - (i + 1) * segH;
-           const opacity = (i === visibleSegs - 1 && rawHearts > 5) ? 0.5 : 1.0;
-           bars.push(`<rect class="bar-hearts" x="${x}" y="${ySeg}" width="${cfg.bar}" height="${segH}" rx="1" ry="1" style="opacity:${opacity}" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
-         }
-         // Cards marker on its own vertical scale (not tied to XP)
-         const cardsH = Math.max(0, Math.min(innerH, (innerH/maxCards) * (d.cards || 0)));
+         // XP bar (yellow)
+         bars.push(`<rect class="bar-xp" x="${x}" y="${yXp}" width="${barW}" height="${xpH}" rx="3" ry="3" data-type="xp" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
+         
+         const heartsH = Math.max(3, Math.min(innerH, (innerH/hcMax) * (d.hearts || 0)));
+         const yHearts = topPad + (innerH - heartsH);
+         bars.push(`<rect class="bar-hearts" x="${x + barW + innerGap}" y="${yHearts}" width="${barW}" height="${heartsH}" rx="3" ry="3" data-type="hearts" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
+         
+         const cardsH = Math.max(3, Math.min(innerH, (innerH/hcMax) * (d.cards || 0)));
          const yCards = topPad + (innerH - cardsH);
-         bars.push(`<rect class="bar-cards" x="${x + cfg.bar + 4}" y="${yCards}" width="12" height="2" rx="1" ry="1" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
+         bars.push(`<rect class="bar-cards" x="${x + (barW*2) + (innerGap*2)}" y="${yCards}" width="${barW}" height="${cardsH}" rx="3" ry="3" data-type="cards" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
          if (labelOk) {
-           bars.push(`<text class="chart-label" x="${x + cfg.bar/2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
+           bars.push(`<text class="chart-label" x="${x + groupW/2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
          }
-         x += cfg.bar + cfg.gap;
+         x += groupW + cfg.gap;
       });
       chartEl.innerHTML = `${grid}${yLabels}${bars.join('')}`;
       let tip = document.querySelector('.tooltip');
@@ -1190,7 +1189,9 @@ function renderStats() {
         const xp = tgt.getAttribute('data-xp');
         const hearts = tgt.getAttribute('data-hearts');
         const cards = tgt.getAttribute('data-cards');
-        tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'})}</div><div>XP: ${xp}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
+        const type = tgt.getAttribute('data-type');
+        const typeLabel = type === 'xp' ? 'Опыт (XP, жёлтый)' : (type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (синий)');
+        tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'})}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>XP: ${xp}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
         tip.style.display = 'block';
         const bb = tgt.getBoundingClientRect();
         tip.style.left = Math.round(bb.left + window.scrollX + (bb.width/2) + 12) + 'px';
