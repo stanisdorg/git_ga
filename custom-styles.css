@@ -10,6 +10,9 @@
     --color-button-active: rgba(255, 255, 255, 0.1);
     --grid-gap: 10px;
     --sidebar-width: 300px;
+  --sidebar-collapsed-width: 48px;
+  --header-fixed-height: 150px;
+  --header-fixed-width: 920px;
 }
 
 /* Общая структура приложения */
@@ -34,7 +37,7 @@
 }
 
 .sidebar.collapsed {
-    transform: translateX(calc(-100% + 40px));
+    transform: translateX(calc(-100% + var(--sidebar-collapsed-width)));
 }
 
 .sidebar.collapsed .search-history,
@@ -171,7 +174,7 @@
 }
 
 .sidebar.collapsed + .container {
-    margin-left: 40px;
+    margin-left: var(--sidebar-collapsed-width);
 }
 /* === Edit mode layout: left sidebar for trash panel === */
 .container.edit-mode {
@@ -1106,6 +1109,134 @@ body.listening .audio-visualizer {
     .level-inline { display: none !important; }
 }
 
+.st-compact-card {
+    width: min(360px, calc(100% - 24px));
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(30,38,58,0.62), rgba(14,18,28,0.62));
+    border: 1px solid var(--st-border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+    padding: 16px 18px;
+}
+.progress { display: flex; justify-content: center; }
+.stc-top {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    column-gap: 18px;
+    row-gap: 0;
+    padding: 0 0 12px 0;
+    position: relative;
+}
+.stc-top::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    bottom: 10px;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.08), transparent);
+    transform: translateX(-0.5px);
+    pointer-events: none;
+}
+.stc-left, .stc-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 0;
+    min-width: 0; /* allow content to shrink without overflow */
+}
+.stc-right { padding-right: 0; padding-left: 0; }
+.stc-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    white-space: nowrap;
+}
+.stc-label {
+    color: var(--st-text-sec);
+    font-size: 14px;
+    font-weight: 600;
+}
+.stc-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+.stc-strong { font-weight: 800; }
+.stc-orange { color: #ff9a1f; }
+.stc-red { color: #ff4d4d; }
+.stc-today { color: #43d17a; font-size: 16px; font-weight: 700; }
+.stc-today-line {
+    font-size: clamp(18px, 2.2vw, 22px);
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+    overflow: hidden; /* protect from wrapping; shrink via clamp first */
+}
+.stc-today-line .muted { color: rgba(245,247,255,0.62); font-weight: 600; }
+.stc-today-line .approx { color: rgba(245,247,255,0.46); font-weight: 650; }
+.stc-icon {
+    width: 18px; height: 18px; display: inline-grid; place-items: center; flex: 0 0 18px; color: #ff9a1f;
+}
+.stc-icon svg { width: 18px; height: 18px; display: block; }
+.stc-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
+    padding: 12px 0 12px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+.stc-forecast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: clamp(14px, 1.7vw, 16px);
+    font-weight: 650;
+    color: #fff;
+    white-space: nowrap;
+}
+.stc-forecast .key { color: #ff9a1f; font-weight: 700; }
+.stc-forecast .date { color: rgba(245,247,255,0.62); font-weight: 650; }
+@media (max-width: 720px) {
+    .stc-top { grid-template-columns: 1fr; gap: 10px; }
+    .stc-top::after { display: none; }
+    .stc-left, .stc-right { padding: 0; }
+    .stc-today-line, .stc-value { font-size: 18px; }
+    .stc-label { font-size: 13px; }
+    .stc-forecast { font-size: 14px; }
+}
+/* 700–900px: decrease Top-Right by ~2px, tighten gaps */
+@media (max-width: 900px) and (min-width: 700px) {
+    .stc-right .stc-row { gap: 6px; }
+    .stc-today-line { font-size: clamp(18px, 2vw, 20px); letter-spacing: 0; }
+}
+/* <700px: minimal sizes, no wraps, tighten spacing further */
+@media (max-width: 700px) {
+    .stc-right .stc-row { gap: 4px; }
+    .stc-today-line { letter-spacing: 0; }
+}
+
+/* Independent scaling for Top-Left */
+.stage-value {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 700;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.index-label {
+    font-size: clamp(12px, 1.6vw, 14px);
+    font-weight: 600;
+}
+.index-value {
+    font-size: clamp(12px, 1.6vw, 14px);
+    font-weight: 800;
+}
 .learn-header {
     display: flex;
     justify-content: space-between;

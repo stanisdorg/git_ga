@@ -27,7 +27,7 @@ export const LEVEL_RANGES = {
 const EF_DELTAS = {
     AGAIN: -0.25, // Снова (1)
     HARD:  -0.15, // Трудно (2)
-    GOOD:   0.00, // Хорошо (3)
+    GOOD:   0.05, // Хорошо (3)
     EASY:  +0.05  // Легко (4)
 };
 
@@ -46,11 +46,8 @@ export function getLevelProgress(ef, level) {
 }
 
 export function canUseEasy(card) {
-    const ef = card.easeFactor !== undefined ? card.easeFactor : 2.3;
-    const level = getDifficultyLevel(ef);
-    if (level !== 'EASY') return false;
-    const progress = getLevelProgress(ef, level);
-    return progress >= 0.7;
+    const rc = card && typeof card.repetitionCount === 'number' ? card.repetitionCount : (card && Array.isArray(card.history) ? card.history.length : 0);
+    return rc > 0;
 }
 
 /**
@@ -78,6 +75,7 @@ export function calculateNextInterval(card, grade) {
     // Update history
     card.history.push({ date: now, grade });
     card.lastReviewDate = now;
+    const prevCount = card.repetitionCount;
     card.repetitionCount++;
 
     let efChange = 0;
@@ -89,7 +87,7 @@ export function calculateNextInterval(card, grade) {
             // Interval logic for AGAIN is handled below, but usually resets to 1
             break;
         case 2: // HARD
-            efChange = EF_DELTAS.HARD;
+            efChange = prevCount === 0 ? -0.35 : EF_DELTAS.HARD;
             card.streak = 0;
             break;
         case 3: // GOOD
@@ -165,7 +163,7 @@ export function calculateNextReview(currentProgress, grade) {
     const card = {
         ...currentProgress,
         interval: currentProgress?.interval || 0,
-        easeFactor: currentProgress?.easeFactor !== undefined ? currentProgress.easeFactor : 2.5,
+        easeFactor: currentProgress?.easeFactor !== undefined ? currentProgress.easeFactor : 2.3,
         streak: currentProgress?.streak || (currentProgress?.repetitions || 0),
         repetitionCount: currentProgress?.repetitionCount || (currentProgress?.history || 0),
         history: Array.isArray(currentProgress?.historyArray) ? currentProgress.historyArray : [] 

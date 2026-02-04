@@ -162,6 +162,7 @@ export function initTabsNavigation(appVersion) {
     topActions.style.alignItems = 'center';
     topActions.style.justifyContent = 'flex-start';
     topActions.style.padding = '4px 0';
+    // keep full-width behavior horizontally
     
     // Версия приложения
     const verEl = document.createElement('div');

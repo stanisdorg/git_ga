@@ -1,9 +1,9 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=1.61';
-import { syncFavorite } from './storage.js?v=1.61';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=1.61';
-import { uniqueQaData } from '../all-data.js?v=1.61';
-import { getTodaysSession } from './category-scheduler.js?v=1.61';
-import { startLearnSession } from './learn-ui.js?v=1.61';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=1.80';
+import { syncFavorite } from './storage.js?v=1.80';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=1.80';
+import { uniqueQaData } from '../all-data.js?v=1.80';
+import { getTodaysSession } from './category-scheduler.js?v=1.80';
+import { startLearnSession } from './learn-ui.js?v=1.80';
 
 let statsContainer = null;
 let mainContainer = null;
@@ -47,7 +47,8 @@ const STATS_STYLES = `
   transform: scale(0.95);
 }
 .st-auth-btn svg { width: 20px; height: 20px; }
-.st-top-actions .nav-icon-btn { padding: 0 10px; }
+.st-top-actions .nav-icon-btn { padding: 0; }
+.st-top-actions .tab { width: 36px; height: 36px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 0; display:flex; align-items:center; justify-content:center; box-sizing: border-box; }
 .activity-card { background: var(--st-surf); border: 1px solid var(--st-border); border-radius: 16px; padding: 16px 16px 12px; grid-column: span 8; height: 320px; }
 .activity-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .period-switch { display: flex; gap: 12px; font-size: 12px; color: var(--st-muted); }
@@ -56,9 +57,9 @@ const STATS_STYLES = `
 .chart-wrapper { display: block; height: calc(100% - 8px); position: relative; }
 .chart { width: 100%; height: 100%; overflow: visible; }
 .chart-label { font-size: 11px; opacity: 0.45; fill: var(--st-text); }
-.bar-xp { fill: #f59e0b; }
-.bar-hearts { fill: #ef4444; }
-.bar-cards { fill: #60a5fa; opacity: 1; stroke: #1e40af; stroke-width: 1; }
+.bar-xp { display: none; }
+.bar-hearts { opacity: 1; }
+.bar-cards { opacity: 0.9; stroke: none; }
 .chart-grid-line { stroke: rgba(255,255,255,0.06); stroke-width: 1; }
 .tooltip { position: absolute; width: 160px; padding: 8px 10px; font-size: 12px; border-radius: 8px; background: var(--st-surf-h); color: var(--st-text); border: 1px solid var(--st-border); display: none; pointer-events: none; z-index: 3000; }
 .tooltip .tip-arrow { position: absolute; bottom: -6px; left: calc(50% - 6px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid var(--st-surf-h); }
@@ -257,8 +258,7 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 20px; /* Reduced from 32px */
-  padding-bottom: 80px; /* Space for sticky CTA */
+  padding: 0 20px 80px; /* Top aligned with main page, keep side/bottom */
   display: flex;
   flex-direction: column;
   gap: 16px; /* Reduced from 24px */
@@ -619,15 +619,19 @@ const STATS_STYLES = `
   }
   
   /* Full Width Rows */
-  .st-top { grid-area: top; height: 64px; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: center; }
+  .st-top { grid-area: top; height: var(--header-fixed-height); display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: flex-start; padding-top: 0; }
   .st-top-left { grid-column: 1 / span 6; display: flex; flex-direction: column; gap: 6px; }
   .st-top-title { display: none; }
   .st-top-sub { display: none; }
   .st-top-right { grid-column: 7 / span 6; display: grid; grid-template-columns: 1fr auto auto; column-gap: 16px; align-items: center; }
-  .st-top-metrics { display: flex; gap: 12px; align-items: center; justify-content: flex-end; }
+  .st-top-right { display: flex; align-items: center; gap: 12px; }
+  .st-top-actions { align-items: flex-start; }
+  .st-home-btn { font-size: 20px !important; padding: 0 10px !important; line-height: 20px !important; }
+  .st-top-metrics { display: flex; gap: 12px; align-items: center; }
   .st-top-metrics .metric { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #fff; }
   .st-cta-btn { height: 40px; padding: 0 20px; font-size: 14px; background: var(--st-prim); color: #0E1117; border-radius: 12px; border: none; }
   .st-level-row, .st-hero-bar-bg, .st-hero-bar-fill, .st-hero-stats { display: block; }
+  .st-level-inline { align-self: center; }
 
   /* Progress Cards (Row 3) */
   .st-prog-stack { display: none; }
@@ -782,6 +786,11 @@ function renderStats() {
   const finishDateStr = finishDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const progressMap = getProgressMap();
+  const easyCount = (() => {
+    try {
+      return Object.values(progressMap).filter(p => p && typeof p.easeFactor === 'number' && p.easeFactor >= 2.4).length;
+    } catch { return 0; }
+  })();
   const xpSeries = getXpSeries(currentXpMode);
   const improvements = getDailyImprovements(currentXpMode === 'week' ? 7 : (currentXpMode === 'month' ? 30 : 14));
 
@@ -864,27 +873,25 @@ function renderStats() {
   container.innerHTML = `
     <div class="st-wrapper">
       <div class="st-top">
-        <div class="st-top-left">
-          <div class="st-level-row">
-            <div class="st-lvl-num">Уровень ${level.level}</div>
-            <div class="st-lvl-xp">${level.xp} XP • Осталось ${remainingXp}</div>
+        <div class="st-top-left" style="display:none"></div>
+        <div class="st-top-right" style="grid-column:1 / span 12;display:flex;align-items:center;gap:10px;justify-content:flex-start;width:100%">
+          <div class="st-top-actions" style="display:flex;align-items:center;gap:10px;">
+            <button class="nav-icon-btn login-main-btn tab st-auth-btn" title="${authTitle}" style="min-width:auto;background-color:var(--color-card);">${authIcon}</button>
+            <button class="nav-icon-btn st-home-btn tab" title="Домой" style="min-width:auto;background-color:var(--color-card);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 3l9 8-1.5 1.5L12 6 4.5 12.5 3 11z"/>
+                <path d="M5 13v8h6v-6h2v6h6v-8l-7-6z"/>
+              </svg>
+            </button>
           </div>
-          <div class="st-hero-bar-bg">
-            <div class="st-hero-bar-fill" style="width:${lvlProgressPct}%"></div>
-          </div>
-        </div>
-        <div class="st-top-right">
+          <div class="app-version-display" style="font-size:11px;color:#555;font-weight:bold;margin-left:10px;">v${window.currentAppVersion || ''}</div>
+          <button class="st-cta-btn" id="st-continue-btn">Продолжить обучение</button>
           <div class="st-top-metrics">
             <div class="metric"><span>🔥</span> ${metrics.streakCurrent}</div>
-            <div class="metric"><span>⚡</span> ${metrics.xp} XP</div>
+            <div class="metric"><span>⚡</span> ${easyCount}</div>
             <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
-            <div class="metric"><span>⭑</span> Уровень ${level.level}</div>
           </div>
-          <button class="st-cta-btn" id="st-continue-btn">Продолжить обучение</button>
-          <div class="st-top-actions" style="display:flex;gap:8px;align-items:center;justify-content:flex-end">
-            <button class="nav-icon-btn st-home-btn" title="Домой">⌂</button>
-            <button class="nav-icon-btn st-auth-btn" title="${authTitle}">${authIcon}</button>
-          </div>
+          <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
 
@@ -914,23 +921,42 @@ function renderStats() {
 
       <div class="st-main">
         <div class="progress">
-          <div class="st-progress-row">
-            <div class="st-progress-card">
-              <div class="st-p-title">Этап обучения</div>
-              <div class="st-p-value">${learningStage.stage}</div>
-              <div class="st-p-sub">Индекс удержания</div>
-              <div style="margin-left:auto;font-size:24px;font-weight:700;color:#fff">${understandingIndex}%</div>
+          <div class="st-compact-card" role="group" aria-label="Краткая статистика">
+            <div class="stc-top">
+              <div class="stc-left">
+                <div class="stc-row">
+                  <span class="stc-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2Z" fill="currentColor" opacity="0.95"/>
+                    </svg>
+                  </span>
+                  <span class="stc-label">Этап:</span>
+                  <span class="stc-value stage-value stc-orange">${learningStage.stage}</span>
+                </div>
+                <div class="stc-row">
+                  <span class="stc-label index-label">Индекс удержания:</span>
+                  <span class="stc-value index-value stc-red stc-strong">${understandingIndex}%</span>
+                </div>
+              </div>
+              <div class="stc-right">
+                <div class="stc-row">
+                  <span class="stc-label stc-today">Сегодня:</span>
+                </div>
+                <div class="stc-row">
+                  <span class="stc-today-line"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">≈</span> <span class="approx">${planMins} минут</span></span>
+                </div>
+              </div>
             </div>
-            <div class="st-progress-card">
-              <div class="st-p-title">Сегодня</div>
-              <div class="st-p-value">${sessionCount} карточек</div>
-              <div class="st-p-sub">≈ ${planMins} минут</div>
-              <div class="st-p-link" id="st-start-today">Начать</div>
-            </div>
-            <div class="st-progress-card">
-              <div class="st-p-title">Прогноз</div>
-              <div class="st-p-value">${finishDateStr}</div>
-              <div class="st-p-sub">При текущем темпе</div>
+            <div class="stc-bottom">
+              <div class="stc-forecast">
+                <span class="stc-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <span class="key">Прогноз:</span>
+                <span class="date">${finishDateStr}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1035,6 +1061,67 @@ function renderStats() {
     </div>
   `;
 
+  const levelCont = container.querySelector('.st-level-inline');
+  if (levelCont) {
+    try {
+      const d = getCurrentLevel();
+      const box = document.createElement('div');
+      box.className = 'level-inline';
+      const lbl = document.createElement('div');
+      lbl.className = 'lv-label';
+      lbl.textContent = `LV:${d.level}`;
+      const bar = document.createElement('div');
+      bar.className = 'level-inline-bar';
+      const fill = document.createElement('div');
+      fill.className = 'level-inline-fill';
+      const p = Math.round((d.progress || 0) * 100);
+      fill.style.width = `${p}%`;
+      const txt = document.createElement('div');
+      txt.className = 'level-inline-text';
+      const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
+      const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
+      txt.textContent = `XP:${d.xp}  ${cur}/${tot}`;
+      bar.appendChild(fill); bar.appendChild(txt);
+      box.appendChild(lbl); box.appendChild(bar);
+      levelCont.appendChild(box);
+      /* duplicate flame removed; streak already shown in metrics */
+      const upd = () => {
+        try {
+          const dd = getCurrentLevel();
+          const l = levelCont.querySelector('.lv-label');
+          const f = levelCont.querySelector('.level-inline-fill');
+          const t = levelCont.querySelector('.level-inline-text');
+          if (l) l.textContent = `LV:${dd.level}`;
+          const pp = Math.round((dd.progress || 0) * 100);
+          if (f) f.style.width = `${pp}%`;
+          const cc = Math.max(0, Math.round((dd.xp - dd.prevThreshold)));
+          const tt = dd.nextThreshold === Infinity ? cc : Math.round(dd.nextThreshold - dd.prevThreshold);
+          if (t) t.textContent = `XP:${dd.xp}  ${cc}/${tt}`;
+        } catch {}
+      };
+      window.addEventListener('xpUpdated', upd);
+      window.addEventListener('statsClosed', upd);
+    } catch {}
+  }
+
+  // Ensure "39 карточек ≈ 59 минут" stays on one line; reduce font-size by up to 2px if needed
+  try {
+    const todayLine = container.querySelector('.stc-today-line');
+    if (todayLine) {
+      const base = parseFloat(getComputedStyle(todayLine).fontSize) || 18;
+      let size = base;
+      let tries = 0;
+      todayLine.style.whiteSpace = 'nowrap';
+      while (todayLine.scrollWidth > todayLine.clientWidth && tries < 2) {
+        size -= 1;
+        todayLine.style.fontSize = `${size}px`;
+        tries += 1;
+      }
+    }
+  } catch {}
+
+  const topRight = container.querySelector('.st-top-right');
+
   const homeBtn = container.querySelector('.st-home-btn');
   if (homeBtn) {
       homeBtn.addEventListener('click', () => {
@@ -1112,12 +1199,32 @@ function renderStats() {
           }
       });
   }
+  const statsBtn = container.querySelector('.st-stats-btn');
+  if (statsBtn) {
+      statsBtn.addEventListener('click', () => { });
+  }
+  const learnMainBtn = container.querySelector('.st-learn-btn');
+  if (learnMainBtn) {
+      learnMainBtn.addEventListener('click', () => {
+          const qs = (window.currentQuestions && window.currentQuestions.length > 0) ? window.currentQuestions : uniqueQaData;
+          if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
+          hideStatsPage();
+          startLearnSession(qs);
+          const mainNav = document.getElementById('bottom-nav');
+          if (mainNav) {
+              const learnNav = mainNav.querySelector('#bn-learn');
+              if (learnNav) learnNav.click();
+          }
+      });
+  }
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
   if (chartEl) {
       const data = getActivitySeries(currentXpMode);
-      const rawMax = Math.max(...data.map(d => d.xp), 1);
-      const maxXp = currentXpMode==='week' ? rawMax * 1.2
+      const maxHearts = Math.max(...data.map(d => d.hearts || 0), 1);
+      const maxCards = Math.max(...data.map(d => d.cards || 0), 1);
+      const rawMax = Math.max(maxHearts, maxCards);
+      const maxVal = currentXpMode==='week' ? rawMax * 1.2
                     : currentXpMode==='month' ? rawMax * 1.15
                     : rawMax * 1.2;
       const h = chartEl.clientHeight || 280;
@@ -1126,10 +1233,10 @@ function renderStats() {
       const leftMargin = 40;
       const innerH = h - bottomPad - topPad;
       const ticks = currentXpMode==='week'
-        ? [0, maxXp*0.25, maxXp*0.5, maxXp*0.75, maxXp]
+        ? [0, maxVal*0.25, maxVal*0.5, maxVal*0.75, maxVal]
         : (currentXpMode==='month'
-           ? [0, maxXp*0.33, maxXp*0.66, maxXp]
-           : [0, maxXp*0.25, maxXp*0.5, maxXp*0.75, maxXp]);
+           ? [0, maxVal*0.33, maxVal*0.66, maxVal]
+           : [0, maxVal*0.25, maxVal*0.5, maxVal*0.75, maxVal]);
 
       const now = new Date();
       const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -1139,45 +1246,56 @@ function renderStats() {
                  : currentXpMode==='month' ? {bar:12,gap:6,count:data.length,labelStep:4}
                  : {bar:28,gap:16,count:12,labelStep:1};
       const width = chartEl.clientWidth || 600;
-      const barW = 8;
+      const wideBarW = 14;
+      const narrowBarW = 8;
       const innerGap = 0;
-      const groupW = (barW * 3) + (innerGap * 2);
+      const groupW = wideBarW;
       const colsW = cfg.count*groupW + (cfg.count-1)*cfg.gap + leftMargin;
       chartEl.setAttribute('viewBox', `0 0 ${Math.max(width, colsW)} ${h}`);
       const grid = ticks.map(t=>{
-         const y = (innerH/maxXp)*t;
+         const y = (innerH/maxVal)*t;
          return `<line class="chart-grid-line" x1="${leftMargin}" y1="${topPad + (innerH - y)}" x2="${Math.max(width, colsW)}" y2="${topPad + (innerH - y)}"/>`;
       }).join('');
       const yLabels = ticks.map(t=>{
-         const y = (innerH/maxXp)*t;
+         const y = (innerH/maxVal)*t;
          const yy = topPad + (innerH - y) + 4;
-         return `<text class="chart-label" x="${leftMargin - 8}" y="${yy}" text-anchor="end">${Math.round(t)} XP</text>`;
+         return `<text class="chart-label" x="${leftMargin - 8}" y="${yy}" text-anchor="end">${Math.round(t)}</text>`;
       }).join('');
       const bars = [];
+      const defs = [];
       let x = leftMargin;
-      const maxCards = Math.max(...data.map(d => d.cards || 0), 1);
-      const maxHearts = Math.max(...data.map(d => d.hearts || 0), 1);
-      const hcMax = Math.max(maxHearts, maxCards);
+      const hcMax = rawMax;
+      const toRgb = (hex) => { const h = hex.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; };
+      const lerp = (a,b,t) => Math.round(a + (b - a) * t);
+      const lerpHex = (h1,h2,t) => { const [r1,g1,b1]=toRgb(h1), [r2,g2,b2]=toRgb(h2); const r=lerp(r1,r2,t).toString(16).padStart(2,'0'); const g=lerp(g1,g2,t).toString(16).padStart(2,'0'); const b=lerp(b1,b2,t).toString(16).padStart(2,'0'); return `#${r}${g}${b}`; };
+      const redDark = '#8B0000'; const redBright = '#FF3B3B';
+      const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
       data.forEach((d, idx) => {
-         const xpH = Math.max(0, Math.min(innerH, (innerH/maxXp)*d.xp));
-         const yXp = topPad + (innerH - xpH);
          const labelOk = currentXpMode==='year' ? true : (idx % cfg.labelStep === 0);
-         // XP bar (yellow)
-         bars.push(`<rect class="bar-xp" x="${x}" y="${yXp}" width="${barW}" height="${xpH}" rx="3" ry="3" data-type="xp" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
-         
-         const heartsH = Math.max(3, Math.min(innerH, (innerH/hcMax) * (d.hearts || 0)));
-         const yHearts = topPad + (innerH - heartsH);
-         bars.push(`<rect class="bar-hearts" x="${x + barW + innerGap}" y="${yHearts}" width="${barW}" height="${heartsH}" rx="3" ry="3" data-type="hearts" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
-         
-         const cardsH = Math.max(3, Math.min(innerH, (innerH/hcMax) * (d.cards || 0)));
+         const cardsH = Math.max(2, Math.min(innerH, (innerH/hcMax) * (d.cards || 0)));
          const yCards = topPad + (innerH - cardsH);
-         bars.push(`<rect class="bar-cards" x="${x + (barW*2) + (innerGap*2)}" y="${yCards}" width="${barW}" height="${cardsH}" rx="3" ry="3" data-type="cards" data-date="${d.date}" data-xp="${d.xp}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}"/>`);
+         const tCards = Math.max(0, Math.min(1, (d.cards || 0) / hcMax));
+         const topOrange = lerpHex(orangeDark, orangeBright, tCards);
+         defs.push(`<linearGradient id="go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`);
+         const rWide = Math.round(wideBarW/2);
+         const pathCards = `M ${x} ${yCards + cardsH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + wideBarW} ${yCards + rWide} L ${x + wideBarW} ${yCards + cardsH} Z`;
+         bars.push(`<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}" fill="url(#go${idx})"/>`);
+         
+         const heartsH = Math.max(2, Math.min(innerH, (innerH/hcMax) * (d.hearts || 0)));
+         const yHearts = topPad + (innerH - heartsH);
+         const heartsX = x + Math.round((wideBarW - narrowBarW)/2);
+         const tHearts = Math.max(0, Math.min(1, (d.hearts || 0) / hcMax));
+         const topRed = lerpHex(redDark, redBright, tHearts);
+         defs.push(`<linearGradient id="gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`);
+         const rNarrow = Math.round(narrowBarW/2);
+         const pathHearts = `M ${heartsX} ${yHearts + heartsH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${yHearts + heartsH} Z`;
+         bars.push(`<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}" fill="url(#gh${idx})"/>`);
          if (labelOk) {
            bars.push(`<text class="chart-label" x="${x + groupW/2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
          }
          x += groupW + cfg.gap;
       });
-      chartEl.innerHTML = `${grid}${yLabels}${bars.join('')}`;
+      chartEl.innerHTML = `<defs>${defs.join('')}</defs>${grid}${yLabels}${bars.join('')}`;
       let tip = document.querySelector('.tooltip');
       if (!tip) {
          tip = document.createElement('div');
@@ -1186,12 +1304,11 @@ function renderStats() {
       }
       const showTip = (ev, tgt) => {
         const date = tgt.getAttribute('data-date');
-        const xp = tgt.getAttribute('data-xp');
         const hearts = tgt.getAttribute('data-hearts');
         const cards = tgt.getAttribute('data-cards');
         const type = tgt.getAttribute('data-type');
-        const typeLabel = type === 'xp' ? 'Опыт (XP, жёлтый)' : (type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (синий)');
-        tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'})}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>XP: ${xp}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
+        const typeLabel = type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (оранжевый)';
+        tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'})}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
         tip.style.display = 'block';
         const bb = tgt.getBoundingClientRect();
         tip.style.left = Math.round(bb.left + window.scrollX + (bb.width/2) + 12) + 'px';
@@ -1199,7 +1316,7 @@ function renderStats() {
       };
       const moveTip = () => {};
       const hideTip = () => { tip.style.display = 'none'; };
-      chartEl.querySelectorAll('.bar-xp,.bar-hearts,.bar-cards').forEach(el=>{
+      chartEl.querySelectorAll('.bar-hearts,.bar-cards').forEach(el=>{
         el.addEventListener('mouseenter', (e)=>{ showTip(e, e.currentTarget); e.currentTarget.style.filter='brightness(1.2)'; });
         el.addEventListener('mousemove', moveTip);
         el.addEventListener('mouseleave', (e)=>{ hideTip(); e.currentTarget.style.filter=''; });
@@ -1329,10 +1446,10 @@ window.openDiffModal = (index) => {
   } else {
      const i = parseInt(index);
      const ranges = [
-        { min: 0, max: 1.7, label: 'Очень трудные' },
-        { min: 1.7, max: 2.1, label: 'Трудные' },
+        { min: 2.4, max: 999, label: 'Легкие' },
         { min: 2.1, max: 2.4, label: 'Стандарт' },
-        { min: 2.4, max: 999, label: 'Легкие' }
+        { min: 1.7, max: 2.1, label: 'Трудные' },
+        { min: 0,   max: 1.7, label: 'Очень трудные' }
      ];
      const r = ranges[i];
      label = r.label;
@@ -1394,10 +1511,10 @@ window.startFilteredSession = (index) => {
   } else {
       const i = parseInt(index);
       const ranges = [
-         { min: 0, max: 1.7 },
-         { min: 1.7, max: 2.1 },
+         { min: 2.4, max: 999 },
          { min: 2.1, max: 2.4 },
-         { min: 2.4, max: 999 }
+         { min: 1.7, max: 2.1 },
+         { min: 0,   max: 1.7 }
       ];
       const r = ranges[i];
       const prog = getProgressMap();
