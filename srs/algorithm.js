@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @typedef {Object} SRSProgress
  * @property {string} id - Unique identifier (question)
  * @property {string} category

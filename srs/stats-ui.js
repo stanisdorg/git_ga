@@ -605,7 +605,7 @@ const STATS_STYLES = `
 @media (min-width: 1024px) {
   #stats-container { overflow: hidden; }
   .st-wrapper {
-    max-width: 1200px;
+    max-width: 1400px;
     height: 100vh;
     padding: 24px;
     display: grid;
@@ -615,9 +615,10 @@ const STATS_STYLES = `
     align-items: start;
     grid-template-areas:
       "top top top top top top top top top top top top"
+      "progress progress progress progress progress progress sidebar sidebar sidebar sidebar sidebar sidebar"
       "main main main main main main main main main main main main";
   }
-  
+
   /* Full Width Rows */
   .st-top { grid-area: top; height: var(--header-fixed-height); display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: flex-start; padding-top: 0; }
   .st-top-left { grid-column: 1 / span 6; display: flex; flex-direction: column; gap: 6px; }
@@ -633,31 +634,62 @@ const STATS_STYLES = `
   .st-level-row, .st-hero-bar-bg, .st-hero-bar-fill, .st-hero-stats { display: block; }
   .st-level-inline { align-self: center; }
 
-  /* Progress Cards (Row 3) */
-  .st-prog-stack { display: none; }
-  .st-card { padding: 16px; }
-  .st-progress-row { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 24px; height: 120px; }
-  .st-progress-card { background: var(--st-surf); border: 1px solid var(--st-border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-  .st-p-title { font-size: 14px; color: var(--st-muted); }
-  .st-p-value { font-size: 24px; font-weight: 700; color: #fff; }
-  .st-p-sub { font-size: 12px; color: var(--st-text-sec); }
-  .st-p-link { font-size: 14px; color: var(--st-prim); cursor: pointer; }
-
-  /* Main Content Columns (Row 4+) */
+  /* Progress - 50% width */
+  .progress { grid-area: progress; }
+  .st-compact-card { width: 100%; height: 100%; min-height: 200px; }
   
-  .st-main { 
-    grid-area: main; 
+  /* Sidebar with modes - 50% width */
+  .st-sidebar { 
+    grid-area: sidebar; 
+    display: flex !important; 
+    flex-direction: column;
+    background: var(--st-surf);
+    border: 1px solid var(--st-border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .st-sidebar .st-col-title { 
+    font-size: 14px; 
+    font-weight: 700; 
+    color: var(--st-text); 
+    margin-bottom: 16px; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+  }
+  .st-sidebar .st-mode-grid { 
     display: grid; 
-    grid-template-columns: repeat(12, 1fr); 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 12px; 
+  }
+  .st-sidebar .st-mode-card { 
+    padding: 16px; 
+    background: var(--st-surf-h);
+    border: 1px solid var(--st-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .st-sidebar .st-mode-card:hover {
+    border-color: var(--st-prim);
+    background: rgba(255, 159, 28, 0.1);
+    transform: translateY(-2px);
+  }
+  .st-sidebar .st-mode-icon { font-size: 24px; display: block; margin-bottom: 8px; }
+  .st-sidebar .st-mode-title { font-weight: 700; font-size: 13px; color: #fff; display: block; }
+  .st-sidebar .st-mode-desc { font-size: 11px; color: var(--st-text-sec); display: block; line-height: 1.3; }
+
+  /* Main Content */
+  .st-main {
+    grid-area: main;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
     grid-template-rows: auto auto 140px;
     column-gap: 24px;
-    row-gap: 24px; 
-    grid-template-areas: 
-      "progress progress progress progress progress progress progress progress progress progress progress progress" 
-      "activity activity activity activity activity activity activity activity difficulty difficulty difficulty difficulty" 
-      "achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements"; 
+    row-gap: 24px;
+    grid-template-areas:
+      "activity activity activity activity activity activity activity activity difficulty difficulty difficulty difficulty"
+      "achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements";
   }
-  .progress { grid-area: progress; }
   .activity { grid-area: activity; }
   .difficulty { grid-area: difficulty; }
   .achievements { grid-area: achievements; height: 140px; display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; }
@@ -678,10 +710,6 @@ const STATS_STYLES = `
   .st-col-arrow { display: none; }
   .st-col-title { font-size: 16px; }
 
-  /* Left Column */
-  .st-sidebar { display: none; }
-  .st-plan-card, .st-cat-section { background: var(--st-surf); border: 1px solid var(--st-border); border-radius: 16px; padding: 16px; }
-
   /* Right Column Stack */
   .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
   .st-risk-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
@@ -689,7 +717,7 @@ const STATS_STYLES = `
   /* Primary Stats */
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
   .st-mode-desc { display: none; }
-  
+
   /* Achievements: Full Width at Bottom */
   .st-ach-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
   .st-ach-scroll { display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; }
@@ -1060,6 +1088,14 @@ function renderStats() {
       </div>
     </div>
   `;
+
+  // Перемещаем .progress перед .st-sidebar для правильной grid структуры
+  const progress = container.querySelector('.progress');
+  const sidebar = container.querySelector('.st-sidebar');
+  const wrapper = container.querySelector('.st-wrapper');
+  if (progress && sidebar && wrapper) {
+    wrapper.insertBefore(progress, sidebar);
+  }
 
   const levelCont = container.querySelector('.st-level-inline');
   if (levelCont) {
@@ -1490,7 +1526,7 @@ window.openDiffModal = (index) => {
                 </li>
                 `;
              }).join('')}
-             ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и еще ${list.length - 50}</li>` : ''}
+             ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и ещ�� ${list.length - 50}</li>` : ''}
           </ul>
        </div>
        <div class="st-modal-footer">

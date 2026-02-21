@@ -1,4 +1,4 @@
-export function initSyncIndicator() {
+﻿export function initSyncIndicator() {
     console.log('Initializing Sync Indicator...');
     // Avoid duplicate initialization
     if (document.getElementById('sync-indicator')) {

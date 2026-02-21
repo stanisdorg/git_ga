@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'srsProgress';
+﻿const STORAGE_KEY = 'srsProgress';
 
 function getUserId() {
     try {

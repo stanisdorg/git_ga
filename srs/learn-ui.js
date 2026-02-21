@@ -1,4 +1,4 @@
-import { LearningSession } from './session.js?v=1.61';
+﻿import { LearningSession } from './session.js?v=1.61';
 import { getDueCards, syncFavorite, syncDailyStats } from './storage.js?v=1.61';
 import { getProgressMap } from './stats-utils.js?v=1.61';
 import { checkAchievements } from './stats-utils.js?v=1.61';
@@ -25,7 +25,7 @@ const starSvg = (filled) => `
 export function initLearnUI() {
     // Check if container already exists (from previous session or reload)
     container = document.getElementById('learn-container');
-    
+
     // Create Learn Container if not exists
     if (!container) {
         const appWrapper = document.querySelector('.app-wrapper') || document.body;
@@ -180,6 +180,7 @@ export function initLearnUI() {
                     <div class="flashcard-back">
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
+                        <div class="flashcard-back-question" id="learn-back-question"></div>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
                             <button class="rate-btn rate-again" data-grade="0">Снова (1)</button>
@@ -311,6 +312,11 @@ function handleKeydown(e) {
 export function startLearnSession(candidateQuestions, options = {}) {
     initLearnUI(); // Ensure UI exists
 
+    // Скрываем навигацию и добавляем класс на body
+    document.body.classList.add('learning-mode');
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) bottomNav.style.display = 'none';
+
     // Filter out invalid cards to prevent empty screens
     if (candidateQuestions && Array.isArray(candidateQuestions)) {
         const originalCount = candidateQuestions.length;
@@ -346,7 +352,8 @@ export function startLearnSession(candidateQuestions, options = {}) {
         if (options.mode === 'cram') {
             infoEl.textContent = `Углубленное обучение • ${candidateQuestions.length} карт`;
         } else {
-            infoEl.textContent = `День ${status.dayNumber}/${status.totalDays} • Прогресс ${status.progressPercent}%`;
+            // Убираем День X/Y и Прогресс - не нужно в режиме обучения
+            infoEl.textContent = '';
         }
     }
 
@@ -462,6 +469,11 @@ function stopLearnSession() {
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) sidebar.style.display = '';
     
+    // Возвращаем навигацию и убираем класс с body
+    document.body.classList.remove('learning-mode');
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) bottomNav.style.display = 'flex';
+
     window.dispatchEvent(new Event('favoritesUpdated'));
     session = null;
 }
@@ -503,6 +515,12 @@ function renderCardState(state) {
 
     if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
+    
+    // Обновляем вопрос на back-стороне
+    const backQuestionEl = document.getElementById('learn-back-question');
+    if (backQuestionEl && state.card) {
+        backQuestionEl.textContent = state.card.question || '(Пустой вопрос)';
+    }
     
     // Update Hearts and Difficulty Label
     const renderHearts = (ef) => {

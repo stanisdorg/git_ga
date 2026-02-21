@@ -1,70 +1,33 @@
 const CACHE_NAME = 'trae-app-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json',
-  '/icons/icon-192x192.svg',
-  '/icons/icon-512x512.svg'
-];
+const urlsToCache = []; // Отключаем кэширование
 
-// Установка Service Worker и кэширование ресурсов
+// Установка Service Worker БЕЗ кэширования
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+    // Пропускаем кэширование
+    self.skipWaiting();
 });
 
 // Активация Service Worker
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.filter(cacheName => {
-          return cacheName !== CACHE_NAME;
-        }).map(cacheName => {
-          return caches.delete(cacheName);
+    // Удаляем все кэши
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    return caches.delete(cacheName);
+                })
+            );
         })
-      );
-    })
-  );
+    );
+    self.clients.claim();
 });
 
-// Перехват запросов и обслуживание из кэша
+// Перехват запросов - всегда сеть, без кэша
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  const isDataRequest = url.pathname.startsWith('/data/') || url.pathname.endsWith('questions_no_anki.json');
-  const isSaveRequest = url.pathname.startsWith('/save');
-
-  if (isDataRequest || isSaveRequest) {
-    // Для данных и сохранений — всегда сеть, минуя кэш
     event.respondWith(
-      fetch(new Request(event.request, { cache: 'no-store' }))
-        .catch(() => caches.match(event.request))
+        fetch(new Request(event.request, { 
+            cache: 'no-store',
+            mode: 'cors'
+        }))
     );
-    return;
-  }
-
-  // По умолчанию: cache-first
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      if (response) return response;
-      return fetch(event.request).then(networkResponse => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
-        }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => { cache.put(event.request, responseToCache); });
-        return networkResponse;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
-      });
-    })
-  );
 });

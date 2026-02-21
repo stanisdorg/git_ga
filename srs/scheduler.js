@@ -1,4 +1,4 @@
-
+﻿
 import { getProgressMap } from './stats-utils.js?v=6';
 
 const GOAL_DAYS = 60;

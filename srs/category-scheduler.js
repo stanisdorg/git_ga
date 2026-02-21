@@ -1,4 +1,4 @@
-import { getProgressMap } from './stats-utils.js?v=6';
+﻿import { getProgressMap } from './stats-utils.js?v=6';
 import { getStudyStats } from './stats-utils.js?v=3';
 
 /**
