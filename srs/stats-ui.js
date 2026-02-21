@@ -1,9 +1,9 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=1.80';
-import { syncFavorite } from './storage.js?v=1.80';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=1.80';
-import { uniqueQaData } from '../all-data.js?v=1.80';
-import { getTodaysSession } from './category-scheduler.js?v=1.80';
-import { startLearnSession } from './learn-ui.js?v=1.80';
+﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.00';
+import { syncFavorite } from './storage.js?v=2.00';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
+import { uniqueQaData } from '../all-data.js?v=2.00';
+import { getTodaysSession } from './category-scheduler.js?v=2.00';
+import { startLearnSession } from './learn-ui.js?v=2.00';
 
 let statsContainer = null;
 let mainContainer = null;
