@@ -1,4 +1,4 @@
-﻿import { LearningSession } from './session.js?v=2.00';
+﻿import { LearningSession } from './session.js?v=2.01';
 import { getDueCards, syncFavorite, syncDailyStats } from './storage.js?v=2.01';
 import { getProgressMap } from './stats-utils.js?v=2.00';
 import { checkAchievements } from './stats-utils.js?v=2.00';
