@@ -1742,6 +1742,7 @@ function getXpSeries(mode) {
     }
   };
 
+  console.log('[CHART.XP] Starting getXpSeries, mode:', mode);
   const data = getDailyPointsAll(); // {date, xp, bonus, dayBonus}
   const prog = getProgressMap();
   const revCounts = new Map();
@@ -1754,6 +1755,7 @@ function getXpSeries(mode) {
   } catch {}
   const today = new Date();
   const todayStr = getMSKDate(today);
+  console.log('[CHART.XP] todayStr (MSK):', todayStr);
   const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : (mode === 'year' ? 365 : 365));
   const res = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -1761,6 +1763,9 @@ function getXpSeries(mode) {
     d.setDate(today.getDate() - i);
     const s = getMSKDate(d);
     const entry = data.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
+    if (i <= 2 || i >= days - 2) {
+      console.log(`[CHART.XP] Day ${i}:`, { date: s, xp: entry.xp, isToday: s === todayStr });
+    }
     res.push({
        date: s,
        label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),

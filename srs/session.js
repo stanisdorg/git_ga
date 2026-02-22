@@ -185,10 +185,14 @@ export class LearningSession {
                 const m = parts.find(p => p.type === 'month')?.value || '01';
                 const d = parts.find(p => p.type === 'day')?.value || '01';
                 const result = `${y}-${m}-${d}`;
-                console.log('[MSK Date]', new Date().toISOString(), '->', result);
+                console.log('[SESSION.MSK]', {
+                    utc: now.toISOString(),
+                    msk: result,
+                    source: 'Intl.DateTimeFormat'
+                });
                 return result;
             } catch (e) {
-                console.error('[MSK Date Error]', e);
+                console.error('[SESSION.MSK Error]', e);
                 const mskOffset = 3 * 60 * 60 * 1000;
                 return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
             }
@@ -196,16 +200,23 @@ export class LearningSession {
         const getMSKHours = () => {
             try {
                 const result = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour: 'numeric' });
-                console.log('[MSK Hours]', result);
+                console.log('[SESSION.HOURS]', result);
                 return result;
             } catch (e) {
-                console.error('[MSK Hours Error]', e);
+                console.error('[SESSION.HOURS Error]', e);
                 const mskOffset = 3 * 60 * 60 * 1000;
                 return new Date(Date.now() + mskOffset).getHours();
             }
         };
-        newProgress.lastReviewed = getMSKDate();
-        newProgress.lastReviewedTime = getMSKHours();
+        const mskDate = getMSKDate();
+        const mskHours = getMSKHours();
+        console.log('[SESSION.SAVE]', {
+            question: this.currentCard.item.question?.substring(0, 50),
+            lastReviewed: mskDate,
+            lastReviewedTime: mskHours
+        });
+        newProgress.lastReviewed = mskDate;
+        newProgress.lastReviewedTime = mskHours;
         
         updateCardProgress(this.currentCard.item.question, newProgress);
 

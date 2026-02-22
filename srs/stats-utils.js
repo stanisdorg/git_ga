@@ -57,21 +57,28 @@ function toMSKDate(date) {
 // Миграция старых данных из UTC в MSK
 export function migrateToMSK() {
     const migratedKey = localStorage.getItem('mskMigrated');
-    if (migratedKey === 'true') return false; // Уже мигрировано
+    if (migratedKey === 'true') {
+        console.log('[MSK.MIGRATE] Already migrated, skipping');
+        return false;
+    }
 
-    console.log('[MSK Migration] Starting migration...');
+    console.log('[MSK.MIGRATE] Starting migration...');
+    console.log('[MSK.MIGRATE] Current UTC:', new Date().toISOString());
+    console.log('[MSK.MIGRATE] Current MSK:', new Date().toLocaleString('ru-RU', {timeZone: 'Europe/Moscow'}));
     
     try {
         // Миграция dailyPoints
         const dailyPointsRaw = localStorage.getItem('dailyPoints') || '{}';
         const dailyPoints = JSON.parse(dailyPointsRaw);
+        console.log('[MSK.MIGRATE] dailyPoints BEFORE:', dailyPoints);
         const newDailyPoints = {};
         Object.entries(dailyPoints).forEach(([date, value]) => {
             const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
             newDailyPoints[mskDate] = (newDailyPoints[mskDate] || 0) + value;
+            console.log(`[MSK.MIGRATE] ${date} (UTC) -> ${mskDate} (MSK): ${value}`);
         });
         localStorage.setItem('dailyPoints', JSON.stringify(newDailyPoints));
-        console.log('[MSK Migration] dailyPoints migrated:', newDailyPoints);
+        console.log('[MSK.MIGRATE] dailyPoints AFTER:', newDailyPoints);
 
         // Миграция dailyBonusPoints
         const bonusRaw = localStorage.getItem('dailyBonusPoints') || '{}';
