@@ -1,5 +1,5 @@
 ﻿import { LearningSession } from './session.js?v=1.61';
-import { getDueCards, syncFavorite, syncDailyStats } from './storage.js?v=1.61';
+import { getDueCards, syncFavorite, syncDailyStats } from './storage.js?v=2.01';
 import { getProgressMap } from './stats-utils.js?v=1.61';
 import { checkAchievements } from './stats-utils.js?v=1.61';
 import { Scheduler } from './scheduler.js?v=1.61';

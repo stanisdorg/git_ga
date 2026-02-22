@@ -1,9 +1,9 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=2.00';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=2.01';
 import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=2.00';
-import { loadFromServer } from './srs/storage.js?v=2.00';
+import { loadFromServer } from './srs/storage.js?v=2.01';
 import { initSyncIndicator } from './srs/sync-ui.js?v=2.00';
 
 export const APP_VERSION = '2.00';
@@ -45,10 +45,10 @@ export function initUI() {
     // Обновляем UI при изменении данных
     const reinit = () => {
         removeExistingNavigation();
-        
+
         // Always init main app
         initTabsNavigation(APP_VERSION);
-        
+
         const isStats = location.hash && location.hash.includes('stats');
         if (isStats) {
             initStatsPage(APP_VERSION);
@@ -56,6 +56,7 @@ export function initUI() {
             hideStatsPage();
         }
         createBottomNav();
+        initSyncIndicator();
     };
     document.addEventListener('dataLoaded', reinit);
     window.addEventListener('adminItemAdded', reinit);
@@ -256,6 +257,7 @@ function createBottomNav() {
     try {
         const existing = document.getElementById('bottom-nav');
         if (existing) existing.remove();
+
         const nav = document.createElement('div');
         nav.id = 'bottom-nav';
         nav.className = 'bottom-nav';
@@ -272,7 +274,9 @@ function createBottomNav() {
         const stats = mkBtn('bn-stats', 'Статистика', statsSvg);
         const profile = mkBtn('bn-profile', 'Профиль', userSvg);
         nav.appendChild(home); nav.appendChild(stats); nav.appendChild(profile);
+
         document.body.appendChild(nav);
+
         const setActive = () => {
             [home, stats, profile].forEach(b => b.classList.remove('active'));
             if (location.hash && location.hash.includes('stats')) stats.classList.add('active');

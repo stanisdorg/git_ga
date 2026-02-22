@@ -1,5 +1,5 @@
 ﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.00';
-import { syncFavorite } from './storage.js?v=2.00';
+import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { uniqueQaData } from '../all-data.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
@@ -154,6 +154,58 @@ const STATS_STYLES = `
   transition: transform 0.1s;
 }
 .st-risk-btn:active { transform: scale(0.95); }
+
+/* Mobile - show continue button below header */
+@media (max-width: 1024px) {
+  .st-continue-mobile {
+    display: block !important;
+  }
+  .st-top .st-cta-btn {
+    display: none !important;
+  }
+  /* Compact header on mobile */
+  .st-top {
+    padding: 12px 16px !important;
+  }
+  .st-top-right {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    justify-content: flex-end !important;
+  }
+  .st-top-actions {
+    flex-shrink: 0 !important;
+  }
+  .app-version-display {
+    display: none !important;
+  }
+  .st-top-metrics {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+  .st-top-metrics .metric {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+  .st-top-metrics .metric svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0 !important;
+  }
+  .st-level-inline {
+    display: flex !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+}
 
 /* Game Modes */
 .st-mode-grid {
@@ -357,6 +409,15 @@ const STATS_STYLES = `
 }
 .st-cta-btn:active { transform: scale(0.98); }
 .st-cta-btn:hover { background: #ffa833; }
+
+/* Mobile continue button - full width below header */
+.st-continue-mobile {
+  display: none;
+  margin: 16px 0;
+  padding: 14px 20px;
+  width: 100%;
+  max-width: none;
+}
 
 /* Progress Cards */
 .st-prog-stack {
@@ -913,7 +974,6 @@ function renderStats() {
             </button>
           </div>
           <div class="app-version-display" style="font-size:11px;color:#555;font-weight:bold;margin-left:10px;">v${window.currentAppVersion || ''}</div>
-          <button class="st-cta-btn" id="st-continue-btn">Продолжить обучение</button>
           <div class="st-top-metrics">
             <div class="metric"><span>🔥</span> ${metrics.streakCurrent}</div>
             <div class="metric"><span>⚡</span> ${easyCount}</div>
@@ -922,6 +982,9 @@ function renderStats() {
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
+
+      <!-- Кнопка продолжить на всю ширину -->
+      <button class="st-cta-btn st-continue-mobile" id="st-continue-btn">Продолжить обучение</button>
 
       <div class="st-sidebar">
         <div class="st-cat-section">

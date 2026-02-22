@@ -1,6 +1,6 @@
 // Импортируем данные из отдельного файла
-import { uniqueQaData } from './all-data.js?v=1.61';
-import { displayQuestions } from './ui-variants/tabs-navigation.js?v=1.61';
+import { uniqueQaData } from './all-data.js?v=1.80';
+import { displayQuestions } from './ui-variants/tabs-navigation.js?v=2.01';
 let transcriptionMode = false; // глобальное состояние режима транскрипции
 
 document.addEventListener('DOMContentLoaded', function() {

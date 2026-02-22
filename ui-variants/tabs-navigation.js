@@ -933,7 +933,17 @@ export function initTabsNavigation(appVersion) {
                     } else {
                         // Admin backdoor for local usage (Fix for "admin/admin")
                         if (u === 'admin' && p === 'admin') {
-                            setLoggedUser({ username: 'admin', role: 'admin' });
+                            const adminUser = { username: 'admin', role: 'admin' };
+                            setLoggedUser(adminUser);
+                            // Загружаем данные с сервера для admin
+                            import('../srs/storage.js').then(mod => {
+                                if (mod && typeof mod.loadFromServer === 'function') {
+                                    mod.loadFromServer().then(() => {
+                                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
+                                        window.dispatchEvent(new Event('dataLoaded'));
+                                    }).catch(()=>{});
+                                }
+                            }).catch(()=>{});
                             ov.remove();
                             return;
                         }

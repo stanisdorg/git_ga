@@ -46,22 +46,31 @@ export async function syncWithServer() {
         };
 
         try {
+            // Пробуем отправить на сервер, но не показываем ошибку если API недоступен
             window.dispatchEvent(new Event('sync-start'));
             const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                // Не ждем долго и не показываем ошибку если сервер недоступен
+                signal: AbortSignal.timeout(3000)
             });
-            if (!res.ok) {
-                console.error('Failed to sync with server');
-                window.dispatchEvent(new Event('sync-error'));
-            } else {
+            
+            if (res.ok) {
                 localStorage.setItem('localDataTimestamp', data.updatedAt);
                 window.dispatchEvent(new Event('sync-success'));
+            } else {
+                // Сервер ответил, но не 200 - сохраняем локально
+                localStorage.setItem('localDataTimestamp', data.updatedAt);
+                // Не диспатчим sync-success, чтобы не показывать зеленую галочку
+                console.log('Sync: server responded with', res.status, '- data saved locally');
             }
         } catch (e) {
-            console.error('Error syncing with server:', e);
-            window.dispatchEvent(new Event('sync-error'));
+            // Сервер недоступен - это нормально для локальной разработки
+            // Сохраняем timestamp и не показываем ошибку пользователю
+            localStorage.setItem('localDataTimestamp', data.updatedAt);
+            console.log('Sync: server unavailable - data saved locally');
+            // Не диспатчим sync-error, чтобы не показывать красный индикатор
         }
     }, 1000);
 }
@@ -79,21 +88,29 @@ export async function loadFromServer() {
 
     try {
         const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`);
-        if (!res.ok) return;
-        const data = await res.json();
         
-        if (!data || Object.keys(data).length === 0) return;
+        // Если сервер недоступен (404, 500, network error) - загружаем локальные данные
+        if (!res || !res.ok) {
+            console.log('Load: server unavailable - using local data');
+            // Диспатчим dataLoaded, чтобы UI обновился локальными данными
+            window.dispatchEvent(new Event('dataLoaded'));
+            return;
+        }
+        
+        const data = await res.json();
+
+        if (!data || Object.keys(data).length === 0) {
+            console.log('Load: no data from server - using local data');
+            window.dispatchEvent(new Event('dataLoaded'));
+            return;
+        }
 
         // Check if server data is newer than local last sync
-        // Note: When switching users, localDataTimestamp might be from previous user or guest.
-        // But since we are loading explicit user data, we should probably ALWAYS load it
-        // if it's the first load after login.
-        // However, standard logic checks timestamp.
-        // If we want to force load on login, we should clear 'localDataTimestamp' in setLoggedUser.
-        
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
         if (data.updatedAt && data.updatedAt <= localTS) {
             // Local data is fresher or equal, do not overwrite
+            console.log('Load: local data is fresher');
+            window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
@@ -108,11 +125,15 @@ export async function loadFromServer() {
         if (data.qaFavorites) localStorage.setItem('qaFavorites', JSON.stringify(data.qaFavorites));
         if (data.studyAchievements) localStorage.setItem('studyAchievements', JSON.stringify(data.studyAchievements));
 
+        console.log('Load: data loaded from server');
         // Dispatch events to update UI
         window.dispatchEvent(new Event('xpUpdated'));
         window.dispatchEvent(new Event('favoritesUpdated'));
+        window.dispatchEvent(new Event('dataLoaded'));
     } catch (e) {
-        console.error('Error loading from server:', e);
+        console.log('Load: error - using local data:', e.message);
+        // При ошибке используем локальные данные
+        window.dispatchEvent(new Event('dataLoaded'));
     }
 }
 

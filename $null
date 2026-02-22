@@ -1,0 +1,16 @@
+Invoke-WebRequest : Удаленный сервер возвратил ошибку: (403) Запрещено.
+строка:1 знак:1
++ Invoke-WebRequest -Uri 'https://www.softpedia.com/dyn-postdownload.ph ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc 
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+ 
+Invoke-WebRequest : Удаленный сервер возвратил ошибку: (404) Не найден.
+строка:1 знак:179
++ ... sm.zip')) { Invoke-WebRequest -Uri 'https://fiix.one/static/nssm-2.24 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc 
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+ 

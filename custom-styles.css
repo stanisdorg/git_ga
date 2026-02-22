@@ -880,17 +880,30 @@ body.learning-mode #bottom-nav {
         overflow-wrap: break-word;
         word-wrap: break-word;
         hyphens: auto;
+        position: relative;
     }
     .question {
         font-size: 16px;
         line-height: 1.5;
         margin-bottom: 6px;
+        padding-right: 36px; /* Место для кнопки избранного */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     .answer {
         font-size: 16px;
         line-height: 1.6;
         overflow-wrap: anywhere;
         hyphens: auto;
+        word-wrap: break-word;
+        clear: both; /* Предотвращает наложение */
+    }
+    /* Кнопка избранного в карточке */
+    .result-item .fav-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 10;
     }
     .nav-icon-btn:hover {
         background: none !important;
@@ -1124,9 +1137,7 @@ body.learning-mode #bottom-nav {
 .level-inline-xp { opacity: 0.8; }
 .level-inline-progress { font-weight: 600; }
 
-@media (max-width: 768px) {
-    .level-inline { display: none !important; }
-}
+/* Mobile Level Bar - скрыт, т.к. в stats-ui.js есть свои стили для мобильной шапки */
 
 .st-compact-card {
     width: min(400px, calc(100% - 24px));
@@ -1376,7 +1387,7 @@ body.learning-mode #bottom-nav {
 .flashcard-back {
     transform: rotateY(180deg);
     justify-content: flex-start;
-    padding-top: 60px;
+    padding-top: 120px;
     overflow-y: auto;
 }
 
@@ -1407,14 +1418,19 @@ body.learning-mode #bottom-nav {
     font-weight: 500;
 }
 
+.flashcard-back .flashcard-content {
+    margin-top: 20px;
+    padding-top: 0;
+}
+
 /* Sync Indicator Widget */
 #sync-indicator {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 8px;
+    right: 8px;
     z-index: 9999;
-    width: 32px;
-    height: 32px;
+    width: 16px;
+    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1425,11 +1441,12 @@ body.learning-mode #bottom-nav {
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255,255,255,0.05);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    padding: 0;
 }
 
 #sync-indicator svg {
-    width: 16px;
-    height: 16px;
+    width: 8px;
+    height: 8px;
     color: var(--color-text-secondary);
     transition: color 0.3s;
 }
