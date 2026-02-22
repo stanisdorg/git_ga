@@ -923,13 +923,76 @@
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "00",
       "question": "Use-cases"
+    },
+    "Берем значения с\nграниц диапазона, а так же +1 -1": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771796904225,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771796904225,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "00",
+      "question": "Берем значения с\nграниц диапазона, а так же +1 -1"
+    },
+    "CI CD?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771796935633,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771796935633,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "00",
+      "question": "CI CD?"
+    },
+    "пример для чего подмена запросов?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771796951970,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771796951970,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "00",
+      "question": "пример для чего подмена запросов?"
     }
   },
   "studyStats": {
-    "total": 44,
-    "timeSpent": 698849,
-    "points": 325,
-    "correct": 17
+    "total": 47,
+    "timeSpent": 760820,
+    "points": 355,
+    "correct": 20
   },
   "studyStreak": {
     "current": 2,
@@ -938,7 +1001,7 @@
   },
   "dailyPoints": {
     "2026-02-22": 190,
-    "2026-02-23": 135
+    "2026-02-23": 165
   },
   "dailyBonusPoints": {
     "2026-02-22": 0,
@@ -962,5 +1025,5 @@
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771796596035
+  "updatedAt": 1771796965688
 }

@@ -54,6 +54,72 @@ function toMSKDate(date) {
     }
 }
 
+// Миграция старых данных из UTC в MSK
+export function migrateToMSK() {
+    const migratedKey = localStorage.getItem('mskMigrated');
+    if (migratedKey === 'true') return false; // Уже мигрировано
+
+    console.log('[MSK Migration] Starting migration...');
+    
+    try {
+        // Миграция dailyPoints
+        const dailyPointsRaw = localStorage.getItem('dailyPoints') || '{}';
+        const dailyPoints = JSON.parse(dailyPointsRaw);
+        const newDailyPoints = {};
+        Object.entries(dailyPoints).forEach(([date, value]) => {
+            const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
+            newDailyPoints[mskDate] = (newDailyPoints[mskDate] || 0) + value;
+        });
+        localStorage.setItem('dailyPoints', JSON.stringify(newDailyPoints));
+        console.log('[MSK Migration] dailyPoints migrated:', newDailyPoints);
+
+        // Миграция dailyBonusPoints
+        const bonusRaw = localStorage.getItem('dailyBonusPoints') || '{}';
+        const bonus = JSON.parse(bonusRaw);
+        const newBonus = {};
+        Object.entries(bonus).forEach(([date, value]) => {
+            const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
+            newBonus[mskDate] = (newBonus[mskDate] || 0) + value;
+        });
+        localStorage.setItem('dailyBonusPoints', JSON.stringify(newBonus));
+
+        // Миграция dailyDayBonusPoints
+        const dayBonusRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
+        const dayBonus = JSON.parse(dayBonusRaw);
+        const newDayBonus = {};
+        Object.entries(dayBonus).forEach(([date, value]) => {
+            const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
+            newDayBonus[mskDate] = (newDayBonus[mskDate] || 0) + value;
+        });
+        localStorage.setItem('dailyDayBonusPoints', JSON.stringify(newDayBonus));
+
+        // Миграция studyStreak
+        const streakRaw = localStorage.getItem('studyStreak') || '{}';
+        const streak = JSON.parse(streakRaw);
+        if (streak.lastDate) {
+            streak.lastDate = toMSKDate(new Date(streak.lastDate + 'T00:00:00Z'));
+            localStorage.setItem('studyStreak', JSON.stringify(streak));
+        }
+
+        // Миграция srsProgress (lastReviewed)
+        const progressRaw = localStorage.getItem('srsProgress') || '{}';
+        const progress = JSON.parse(progressRaw);
+        Object.values(progress).forEach(p => {
+            if (p.lastReviewed) {
+                p.lastReviewed = toMSKDate(new Date(p.lastReviewed + 'T00:00:00Z'));
+            }
+        });
+        localStorage.setItem('srsProgress', JSON.stringify(progress));
+
+        localStorage.setItem('mskMigrated', 'true');
+        console.log('[MSK Migration] Complete!');
+        return true;
+    } catch (e) {
+        console.error('[MSK Migration] Error:', e);
+        return false;
+    }
+}
+
 // Read progress and stats from localStorage
 function readJSON(key, fallback = {}) {
   try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch { return fallback; }
@@ -391,10 +457,19 @@ export function getRiskZones(allData) {
        byCat[q.category].bad++;
     }
   });
-  
+
   return Object.entries(byCat)
     .map(([cat, stat]) => ({ cat, ...stat, risk: stat.total > 0 ? stat.bad / stat.total : 0 }))
     .filter(x => x.risk > 0.3 && x.total > 3)
     .sort((a,b) => b.risk - a.risk)
     .slice(0, 3);
+}
+
+// Авто-миграция старых данных из UTC в MSK при загрузке
+try {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    migrateToMSK();
+  }
+} catch (e) {
+  console.error('[MSK Auto-Migrate] Error:', e);
 }
