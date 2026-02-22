@@ -483,7 +483,7 @@
       "lastReviewedTime": 2,
       "question": "Гибкость разработки"
     },
-    "1) Физического ��оступа": {
+    "1) Физического ��ос��упа": {
       "interval": 1,
       "easeFactor": 2.3499999999999996,
       "streak": 1,
@@ -587,34 +587,210 @@
       "lastReviewed": "2026-02-22",
       "lastReviewedTime": 23,
       "question": "2/3ех/многоуровневая"
+    },
+    "Что такое gRPC?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771793380875,
+      "nextReviewDate": 1771808400000,
+      "dueDate": "2026-02-23T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771793380875,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 23,
+      "question": "Что такое gRPC?"
+    },
+    "микросервис ждет подтверждения от кафки": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771793997174,
+      "nextReviewDate": 1771808400000,
+      "dueDate": "2026-02-23T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771793997174,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 23,
+      "question": "микросерв��с ждет подтверждения от кафки"
+    },
+    "postman, swagger": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771794874952,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771794874952,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 0,
+      "question": "postman, swagger"
+    },
+    "Access Token": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795192627,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771795192627,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 0,
+      "question": "Access Token"
+    },
+    "Модульное/компонентное": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795197501,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771795197501,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 0,
+      "question": "Модульное/компонентное"
+    },
+    "Отладка и мониторинг": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795262268,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771795262268,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 0,
+      "question": "Отладка и мониторинг"
+    },
+    "что в Elements смотришь обычно?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795340988,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771795340988,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 0,
+      "question": "что в Elements смотришь обычно?"
+    },
+    "сущности в докере?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795358397,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771795358397,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 0,
+      "question": "сущности в докере?"
     }
   },
   "studyStats": {
-    "total": 28,
-    "timeSpent": 76956,
-    "points": 175,
-    "correct": 7
+    "total": 36,
+    "timeSpent": 438902,
+    "points": 255,
+    "correct": 10
   },
   "studyStreak": {
-    "current": 1,
-    "best": 1,
-    "lastDate": "2026-02-22"
+    "current": 2,
+    "best": 2,
+    "lastDate": "2026-02-23"
   },
   "dailyPoints": {
-    "2026-02-22": 175
+    "2026-02-22": 190,
+    "2026-02-23": 65
   },
   "dailyBonusPoints": {
-    "2026-02-22": 0
+    "2026-02-22": 0,
+    "2026-02-23": 10
   },
-  "dailyDayBonusPoints": {},
+  "dailyDayBonusPoints": {
+    "2026-02-22": 5,
+    "2026-02-23": 10
+  },
   "qaFavorites": [
     "2/3ех/многоуровневая",
-    "postman, swagger"
+    "postman, swagger",
+    "микросервис ждет подтверждения от кафки",
+    "Отладка и мониторинг",
+    "сущности в докере?"
   ],
   "studyAchievements": {
     "firstSessionCompleted": true,
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771793055564
+  "updatedAt": 1771795371314
 }

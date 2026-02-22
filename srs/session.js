@@ -176,8 +176,11 @@ export class LearningSession {
 
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
         const now = new Date();
-        newProgress.lastReviewed = now.toISOString().split('T')[0];
-        newProgress.lastReviewedTime = now.getHours();
+        // Сохраняем дату и время по московскому времени
+        const mskOffset = 3 * 60 * 60 * 1000;
+        const mskTime = new Date(now.getTime() + mskOffset);
+        newProgress.lastReviewed = mskTime.toISOString().split('T')[0];
+        newProgress.lastReviewedTime = mskTime.getHours();
         
         updateCardProgress(this.currentCard.item.question, newProgress);
 
@@ -199,14 +202,12 @@ export class LearningSession {
         localStorage.setItem('studyStats', JSON.stringify(stats));
         try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
         // Per-day points
+        // Получаем дату по московскому времени
         const todayKey = (() => {
             try {
-                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-                const parts = fmt.formatToParts(new Date());
-                const y = parts.find(p => p.type === 'year')?.value || '0000';
-                const m = parts.find(p => p.type === 'month')?.value || '01';
-                const d = parts.find(p => p.type === 'day')?.value || '01';
-                return `${y}-${m}-${d}`;
+                const mskOffset = 3 * 60 * 60 * 1000;
+                const mskTime = new Date(Date.now() + mskOffset);
+                return mskTime.toISOString().split('T')[0];
             } catch { return new Date().toISOString().split('T')[0]; }
         })();
         const dpRaw = localStorage.getItem('dailyPoints') || '{}';
@@ -282,35 +283,35 @@ export class LearningSession {
 }
 
 function updateStreak() {
-    const today = (() => {
+    // Получаем текущую дату по московскому времени
+    const getMSKDate = () => {
         try {
-            const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-            const parts = fmt.formatToParts(new Date());
-            const y = parts.find(p => p.type === 'year')?.value || '0000';
-            const m = parts.find(p => p.type === 'month')?.value || '01';
-            const d = parts.find(p => p.type === 'day')?.value || '01';
-            return `${y}-${m}-${d}`;
+            const mskOffset = 3 * 60 * 60 * 1000;
+            return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
         } catch { return new Date().toISOString().split('T')[0]; }
-    })();
+    };
+
+    const today = getMSKDate();
     const raw = localStorage.getItem('studyStreak') || '{}';
     const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
     if (streak.lastDate === today) return;
     if (!streak.lastDate) {
         streak.current = 1;
     } else {
-        const y = new Date();
-        y.setDate(y.getDate() - 1);
-        const ys = (() => {
+        // Вчера по MSK
+        const yesterday = (() => {
             try {
-                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-                const parts = fmt.formatToParts(y);
-                const yy = parts.find(p => p.type === 'year')?.value || '0000';
-                const mm = parts.find(p => p.type === 'month')?.value || '01';
-                const dd = parts.find(p => p.type === 'day')?.value || '01';
-                return `${yy}-${mm}-${dd}`;
-            } catch { return y.toISOString().split('T')[0]; }
+                const mskOffset = 3 * 60 * 60 * 1000;
+                const y = new Date(Date.now() + mskOffset);
+                y.setDate(y.getDate() - 1);
+                return y.toISOString().split('T')[0];
+            } catch { 
+                const y = new Date();
+                y.setDate(y.getDate() - 1);
+                return y.toISOString().split('T')[0];
+            }
         })();
-        streak.current = (streak.lastDate === ys) ? (streak.current || 0) + 1 : 1;
+        streak.current = (streak.lastDate === yesterday) ? (streak.current || 0) + 1 : 1;
     }
     streak.best = Math.max(streak.best || 0, streak.current || 0);
     streak.lastDate = today;

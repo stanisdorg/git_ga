@@ -1,5 +1,31 @@
 ﻿import { syncWithServer } from './storage.js?v=2.01';
 
+// Вспомогательные функции для работы с датой (MSK timezone UTC+3)
+function getMSKDate() {
+    // Возвращает дату в формате YYYY-MM-DD для московского времени
+    const now = new Date();
+    const mskOffset = 3 * 60 * 60 * 1000; // 3 часа в миллисекундах
+    const mskTime = new Date(now.getTime() + mskOffset);
+    return mskTime.toISOString().split('T')[0];
+}
+
+function getMSKHours() {
+    // Возвращает часы по московскому времени
+    const now = new Date();
+    const mskOffset = 3 * 60 * 60 * 1000;
+    const mskTime = new Date(now.getTime() + mskOffset);
+    return mskTime.getHours();
+}
+
+function toMSKDate(date) {
+    // Конвертирует любую дату в московскую дату YYYY-MM-DD
+    if (!date) return getMSKDate();
+    const d = typeof date === 'string' ? new Date(date) : date;
+    const mskOffset = 3 * 60 * 60 * 1000;
+    const mskTime = new Date(d.getTime() + mskOffset);
+    return mskTime.toISOString().split('T')[0];
+}
+
 // Read progress and stats from localStorage
 function readJSON(key, fallback = {}) {
   try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch { return fallback; }
@@ -32,7 +58,7 @@ export function calculateActivity(days = 120) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = d.toISOString().split('T')[0];
+    const s = toMSKDate(d);
     const c = counts.get(s) || 0;
      const xp = dailyPts[s] || 0;
     let color = '#ebedf0';
@@ -92,7 +118,7 @@ export function getDailyImprovements(days = 30) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = d.toISOString().split('T')[0];
+    const s = toMSKDate(d);
     const data = res[s] || { improved: 0, regressed: 0, reviewed: 0 };
     arr.push({ date: s, ...data });
   }
@@ -139,13 +165,7 @@ export function checkAchievements() {
   });
   
   // 3. Comeback (resumed after break)
-  // Check if lastReviewDate and previous review have gap > 7 days
-  // This is hard to check efficiently for "just now".
-  // Let's use the 'streak' logic: if streak.current == 1 and streak.lastDate - (streak.lastDate-1) > 7 days...
-  // Simplify: If current streak is low but total points is high? No.
-  // Let's look at history gaps.
-  // We will check only the most recent session.
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getMSKDate();
   // Find a card reviewed today
   const reviewedToday = Object.values(prog).filter(p => p.lastReviewed === todayStr);
   if (!ach.comeback && reviewedToday.length > 0) {
@@ -237,7 +257,7 @@ export function getDailyPoints(days = 30) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = d.toISOString().split('T')[0];
+    const s = toMSKDate(d);
     res.push({ date: s, xp: daily[s] || 0, bonus: bonus[s] || 0, dayBonus: dayBonus[s] || 0 });
   }
   return res;
@@ -256,7 +276,7 @@ export function getDailyPointsAll() {
   const today = new Date();
   const res = [];
   for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-    const s = d.toISOString().split('T')[0];
+    const s = toMSKDate(d);
     res.push({ date: s, xp: daily[s] || 0, bonus: bonus[s] || 0, dayBonus: dayBonus[s] || 0 });
   }
   return res;
@@ -272,7 +292,7 @@ export function getDailyStreakSeries() {
   const res = [];
   let streak = 0;
   for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-    const s = d.toISOString().split('T')[0];
+    const s = toMSKDate(d);
     const didStudy = (daily[s] || 0) > 0;
     streak = didStudy ? streak + 1 : 0;
     res.push({ date: s, streak });
