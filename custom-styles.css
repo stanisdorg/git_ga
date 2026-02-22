@@ -1403,7 +1403,43 @@ body.learning-mode #bottom-nav {
     font-weight: 500;
     border-bottom: 2px solid var(--color-border);
     background: var(--color-card);
-    z-index: 10;
+    z-index: 5; /* Ниже кнопки избранного */
+}
+
+/* Кнопка избранного на карточке обучения */
+.learn-fav-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 20; /* Выше всех элементов */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #d0d0d0;
+    transition: all 0.2s;
+}
+.learn-fav-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+.learn-fav-btn.active {
+    color: #ffd700 !important;
+}
+.learn-fav-btn svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+/* Сердечки на карточке обучения */
+.learn-hearts {
+    position: absolute;
+    top: 12px;
+    right: 45px;
+    display: flex;
+    gap: 2px;
+    z-index: 20; /* Выше всех элементов */
 }
 
 .flashcard-content {
