@@ -273,7 +273,7 @@
       "lastReviewedTime": 2,
       "question": "radis?"
     },
-    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграцио��ные проверки ты сделаешь?": {
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
@@ -503,12 +503,96 @@
       "lastReviewed": "2026-02-21",
       "lastReviewedTime": 2,
       "question": "1) Физического доступа"
+    },
+    "502 Bad Gateway": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771791628769,
+      "nextReviewDate": 1771808400000,
+      "dueDate": "2026-02-23T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771791628769,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 23,
+      "question": "502 Bad Gateway"
+    },
+    "Веб Сервис": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771791637114,
+      "nextReviewDate": 1771808400000,
+      "dueDate": "2026-02-23T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771791637114,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 23,
+      "question": "Веб Сервис"
+    },
+    "для чего виртуальное окружение?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771791644680,
+      "nextReviewDate": 1771808400000,
+      "dueDate": "2026-02-23T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771791644680,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 23,
+      "question": "для чего виртуальное окружение?"
+    },
+    "2/3ех/многоуровневая": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771791648382,
+      "nextReviewDate": 1771808400000,
+      "dueDate": "2026-02-23T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771791648382,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-22",
+      "lastReviewedTime": 23,
+      "question": "2/3ех/многоуровневая"
     }
   },
   "studyStats": {
-    "total": 24,
-    "timeSpent": 57351,
-    "points": 155,
+    "total": 28,
+    "timeSpent": 76956,
+    "points": 175,
     "correct": 7
   },
   "studyStreak": {
@@ -517,17 +601,20 @@
     "lastDate": "2026-02-22"
   },
   "dailyPoints": {
-    "2026-02-22": 155
+    "2026-02-22": 175
   },
   "dailyBonusPoints": {
     "2026-02-22": 0
   },
   "dailyDayBonusPoints": {},
-  "qaFavorites": [],
+  "qaFavorites": [
+    "2/3ех/многоуровневая",
+    "postman, swagger"
+  ],
   "studyAchievements": {
     "firstSessionCompleted": true,
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771721954691
+  "updatedAt": 1771791715148
 }

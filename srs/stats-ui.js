@@ -160,7 +160,8 @@ const STATS_STYLES = `
   .st-continue-mobile {
     display: block !important;
   }
-  .st-top .st-cta-btn {
+  .st-top .st-cta-btn,
+  #st-continue-top-btn {
     display: none !important;
   }
   /* Compact header on mobile */
@@ -691,7 +692,9 @@ const STATS_STYLES = `
   .st-home-btn { font-size: 20px !important; padding: 0 10px !important; line-height: 20px !important; }
   .st-top-metrics { display: flex; gap: 12px; align-items: center; }
   .st-top-metrics .metric { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #fff; }
-  .st-cta-btn { height: 40px; padding: 0 20px; font-size: 14px; background: var(--st-prim); color: #0E1117; border-radius: 12px; border: none; }
+  .st-cta-btn { height: 40px; padding: 0 20px; font-size: 14px; background: var(--st-prim); color: #0E1117; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; }
+  .st-cta-btn:hover { background: #ffa833; transform: translateY(-1px); }
+  #st-continue-top-btn { display: inline-flex; align-items: center; gap: 6px; }
   .st-level-row, .st-hero-bar-bg, .st-hero-bar-fill, .st-hero-stats { display: block; }
   .st-level-inline { align-self: center; }
 
@@ -979,6 +982,7 @@ function renderStats() {
             <div class="metric"><span>⚡</span> ${easyCount}</div>
             <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
           </div>
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:8px 16px;height:36px;font-size:13px;">▶ Продолжить обучение</button>
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
@@ -1237,18 +1241,18 @@ function renderStats() {
   const continueBtn = container.querySelector('#st-continue-btn');
   if (continueBtn) {
       continueBtn.addEventListener('click', () => {
-          const questions = (window.currentQuestions && window.currentQuestions.length > 0) 
-              ? window.currentQuestions 
+          const questions = (window.currentQuestions && window.currentQuestions.length > 0)
+              ? window.currentQuestions
               : uniqueQaData;
-          
+
           if (!questions || questions.length === 0) {
               alert('Нет вопросов для изучения');
               return;
           }
-          
+
           hideStatsPage();
           startLearnSession(questions);
-          
+
           const mainNav = document.getElementById('bottom-nav');
           if (mainNav) {
               const learnNav = mainNav.querySelector('#bn-learn');
@@ -1256,6 +1260,27 @@ function renderStats() {
           }
       });
   }
+
+  // Функция для кнопки "Продолжить обучение" в шапке
+  window.startDailySession = () => {
+      const questions = (window.currentQuestions && window.currentQuestions.length > 0)
+          ? window.currentQuestions
+          : uniqueQaData;
+
+      if (!questions || questions.length === 0) {
+          alert('Нет вопросов для изучения');
+          return;
+      }
+
+      hideStatsPage();
+      startLearnSession(questions);
+
+      const mainNav = document.getElementById('bottom-nav');
+      if (mainNav) {
+          const learnNav = mainNav.querySelector('#bn-learn');
+          if (learnNav) learnNav.click();
+      }
+  };
 
   const startTodayLink = container.querySelector('#st-start-today');
   if (startTodayLink) {
