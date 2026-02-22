@@ -986,11 +986,53 @@
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "00",
       "question": "пример для чего подмена запросов?"
+    },
+    "Что такое GraphQL?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771797370768,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771797370768,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "00",
+      "question": "Что такое GraphQL?"
+    },
+    "Как вы работали с Docker и TeamCity?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771797414906,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771797414906,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "00",
+      "question": "Как вы работали с Docker и TeamCity?"
     }
   },
   "studyStats": {
-    "total": 47,
-    "timeSpent": 760820,
+    "total": 49,
+    "timeSpent": 794820,
     "points": 355,
     "correct": 20
   },
@@ -1025,5 +1067,5 @@
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771796956931
+  "updatedAt": 1771797420266
 }

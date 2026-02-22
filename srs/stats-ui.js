@@ -889,7 +889,17 @@ function renderStats() {
   const lvlProgressPct = Math.max(0, Math.min(1, level.progress || 0)) * 100;
   const remainingXp = Math.max(0, Math.round(level.remaining || 0));
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  // MSK timezone fix
+  const todayStr = (() => {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = fmt.formatToParts(new Date());
+      return `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}`;
+    } catch {
+      const mskOffset = 3 * 60 * 60 * 1000;
+      return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
+    }
+  })();
   let cardsDoneToday = 0;
   
   // Forecast calculations
