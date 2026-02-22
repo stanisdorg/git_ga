@@ -1280,11 +1280,95 @@
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "01",
       "question": "Foreign Key"
+    },
+    "аспекты качества продукта": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798410963,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798410963,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "аспекты качества продукта"
+    },
+    "системное интеграционное": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798411172,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798411172,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "системное интеграционное"
+    },
+    "Производительность": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798411367,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798411367,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Производительность"
+    },
+    "UAT пользовательское": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798411536,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798411536,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "UAT пользовательское"
     }
   },
   "studyStats": {
-    "total": 61,
-    "timeSpent": 910902,
+    "total": 65,
+    "timeSpent": 912773,
     "points": 375,
     "correct": 20
   },
@@ -1319,5 +1403,5 @@
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771798029830
+  "updatedAt": 1771798427342
 }

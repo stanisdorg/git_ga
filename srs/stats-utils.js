@@ -3,55 +3,22 @@
 // Вспомогательные функции для работы с датой (MSK timezone UTC+3)
 function getMSKDate() {
     // Возвращает дату в формате YYYY-MM-DD для московского времени
-    try {
-        const fmt = new Intl.DateTimeFormat('en-CA', { 
-            timeZone: 'Europe/Moscow',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        });
-        const parts = fmt.formatToParts(new Date());
-        const y = parts.find(p => p.type === 'year')?.value || '0000';
-        const m = parts.find(p => p.type === 'month')?.value || '01';
-        const d = parts.find(p => p.type === 'day')?.value || '01';
-        return `${y}-${m}-${d}`;
-    } catch {
-        // Fallback: добавляем 3 часа к UTC
-        const mskOffset = 3 * 60 * 60 * 1000;
-        return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
-    }
+    const mskOffset = 3 * 60 * 60 * 1000; // 3 часа в миллисекундах
+    return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
 }
 
 function getMSKHours() {
     // Возвращает часы по московскому времени
-    try {
-        return new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour: 'numeric' });
-    } catch {
-        const mskOffset = 3 * 60 * 60 * 1000;
-        return new Date(Date.now() + mskOffset).getHours();
-    }
+    const mskOffset = 3 * 60 * 60 * 1000;
+    return new Date(Date.now() + mskOffset).getHours();
 }
 
 function toMSKDate(date) {
     // Конвертирует любую дату в московскую дату YYYY-MM-DD
     if (!date) return getMSKDate();
     const d = typeof date === 'string' ? new Date(date) : date;
-    try {
-        const fmt = new Intl.DateTimeFormat('en-CA', { 
-            timeZone: 'Europe/Moscow',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        });
-        const parts = fmt.formatToParts(d);
-        const y = parts.find(p => p.type === 'year')?.value || '0000';
-        const m = parts.find(p => p.type === 'month')?.value || '01';
-        const d = parts.find(p => p.type === 'day')?.value || '01';
-        return `${y}-${m}-${d}`;
-    } catch {
-        const mskOffset = 3 * 60 * 60 * 1000;
-        return new Date(d.getTime() + mskOffset).toISOString().split('T')[0];
-    }
+    const mskOffset = 3 * 60 * 60 * 1000;
+    return new Date(d.getTime() + mskOffset).toISOString().split('T')[0];
 }
 
 // Миграция старых данных из UTC в MSK

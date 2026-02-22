@@ -273,7 +273,7 @@
       "lastReviewedTime": 2,
       "question": "radis?"
     },
-    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграцио������ные проверки ты сделаешь?": {
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграцио��������ные проверки ты сделаешь?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
@@ -880,7 +880,7 @@
       "state": "learning",
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "00",
-      "question": "sdls - жизненный цикл\nразработки (d - development)"
+      "question": "sdls - жизненн��й цикл\nразработки (d - development)"
     },
     "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
       "interval": 1,
@@ -1112,12 +1112,180 @@
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "01",
       "question": "docker swarm?"
+    },
+    "Отказоустойчивость": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798026898,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798026898,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Отказоустойчивость"
+    },
+    "Проблемы масштабирования": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798027238,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798027238,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Проблемы масштабирования"
+    },
+    "Серый ящик": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798027517,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798027517,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Серый ящик"
+    },
+    "Session Storage:": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798027812,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798027812,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Session Storage:"
+    },
+    "id, module, title, str, OP, attachment": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798028230,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798028230,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "id, module, title, str, OP, attachment"
+    },
+    "Масштабируемость": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798028439,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798028439,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Масштабируемость"
+    },
+    "Как происходит тестирование локально с помощью Docker?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798028655,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798028655,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Как происходит тестирование локально с помощью Docker?"
+    },
+    "Foreign Key": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771798028816,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771798028816,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "01",
+      "question": "Foreign Key"
     }
   },
   "studyStats": {
-    "total": 53,
-    "timeSpent": 907722,
-    "points": 355,
+    "total": 61,
+    "timeSpent": 910902,
+    "points": 375,
     "correct": 20
   },
   "studyStreak": {
@@ -1127,7 +1295,7 @@
   },
   "dailyPoints": {
     "2026-02-22": 190,
-    "2026-02-23": 165
+    "2026-02-23": 185
   },
   "dailyBonusPoints": {
     "2026-02-22": 0,
@@ -1151,5 +1319,5 @@
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771797996440
+  "updatedAt": 1771798402171
 }
