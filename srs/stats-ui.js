@@ -1,4 +1,4 @@
-﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.00';
+﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.01';
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { uniqueQaData } from '../all-data.js?v=2.00';
@@ -1720,6 +1720,18 @@ window.startMode = (modeId) => {
 };
 
 function getXpSeries(mode) {
+  // Вспомогательная функция для получения даты по MSK
+  const getMSKDate = (date) => {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = fmt.formatToParts(date);
+      return `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}`;
+    } catch {
+      const mskOffset = 3 * 60 * 60 * 1000;
+      return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+    }
+  };
+
   const data = getDailyPointsAll(); // {date, xp, bonus, dayBonus}
   const prog = getProgressMap();
   const revCounts = new Map();
@@ -1731,13 +1743,13 @@ function getXpSeries(mode) {
     });
   } catch {}
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = getMSKDate(today);
   const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : (mode === 'year' ? 365 : 365));
   const res = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = d.toISOString().split('T')[0];
+    const s = getMSKDate(d);
     const entry = data.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
     res.push({
        date: s,
@@ -1752,6 +1764,18 @@ function getXpSeries(mode) {
 }
 
 function getActivitySeries(mode) {
+  // Вспомогательная функция для получения даты по MSK
+  const getMSKDate = (date) => {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = fmt.formatToParts(date);
+      return `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}`;
+    } catch {
+      const mskOffset = 3 * 60 * 60 * 1000;
+      return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+    }
+  };
+
   const daily = getDailyPointsAll();
   const imp = getDailyImprovements(400);
   const impMap = new Map(imp.map(d => [d.date, d]));
@@ -1765,14 +1789,14 @@ function getActivitySeries(mode) {
       const end = new Date(y, m+1, 0);
       let xp = 0, hearts = 0, cards = 0;
       for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
-        const s = d.toISOString().split('T')[0];
+        const s = getMSKDate(d);
         const de = daily.find(x => x.date === s);
         const im = impMap.get(s);
         xp += de ? (de.xp || 0) : 0;
         hearts += im ? (im.regressed || 0) : 0;
         cards += im ? (im.reviewed || 0) : 0;
       }
-      res.push({ date: new Date(y,m,1).toISOString().split('T')[0], label: new Date(y,m,1).toLocaleString('ru-RU',{month:'short'}), xp, hearts, cards });
+      res.push({ date: getMSKDate(new Date(y,m,1)), label: new Date(y,m,1).toLocaleString('ru-RU',{month:'short'}), xp, hearts, cards });
     }
     return res;
   }
@@ -1780,7 +1804,7 @@ function getActivitySeries(mode) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     if (mode === 'month' && d.getMonth() !== today.getMonth()) continue;
-    const s = d.toISOString().split('T')[0];
+    const s = getMSKDate(d);
     const de = daily.find(x => x.date === s) || { xp: 0 };
     const im = impMap.get(s) || { improved:0, regressed:0, reviewed:0 };
     res.push({

@@ -902,11 +902,32 @@
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "00",
       "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
+    },
+    "Use-cases": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771796586325,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771796586325,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": "00",
+      "question": "Use-cases"
     }
   },
   "studyStats": {
-    "total": 43,
-    "timeSpent": 652133,
+    "total": 44,
+    "timeSpent": 698849,
     "points": 325,
     "correct": 17
   },
@@ -933,12 +954,13 @@
     "микросервис ждет подтверждения от кафки",
     "Отладка и мониторинг",
     "сущности в докере?",
-    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
+    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?",
+    "Use-cases"
   ],
   "studyAchievements": {
     "firstSessionCompleted": true,
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771796339971
+  "updatedAt": 1771796596035
 }
