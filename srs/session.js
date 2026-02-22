@@ -218,9 +218,9 @@ export class LearningSession {
         try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
         // Per-day points
         // Получаем дату по московскому времени (UTC+3)
-        const mskOffset = 3 * 60 * 60 * 1000;
-        const mskTime = new Date(Date.now() + mskOffset);
-        const todayKey = mskTime.toISOString().split('T')[0];
+        const mskOffset2 = 3 * 60 * 60 * 1000;
+        const mskTime2 = new Date(Date.now() + mskOffset2);
+        const todayKey = mskTime2.toISOString().split('T')[0];
         console.log('[SESSION.DAILY]', { utc: new Date().toISOString(), msk: todayKey });
         const dpRaw = localStorage.getItem('dailyPoints') || '{}';
         const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
