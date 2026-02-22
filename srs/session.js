@@ -184,16 +184,22 @@ export class LearningSession {
                 const y = parts.find(p => p.type === 'year')?.value || '0000';
                 const m = parts.find(p => p.type === 'month')?.value || '01';
                 const d = parts.find(p => p.type === 'day')?.value || '01';
-                return `${y}-${m}-${d}`;
-            } catch {
+                const result = `${y}-${m}-${d}`;
+                console.log('[MSK Date]', new Date().toISOString(), '->', result);
+                return result;
+            } catch (e) {
+                console.error('[MSK Date Error]', e);
                 const mskOffset = 3 * 60 * 60 * 1000;
                 return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
             }
         };
         const getMSKHours = () => {
             try {
-                return new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour: 'numeric' });
-            } catch {
+                const result = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour: 'numeric' });
+                console.log('[MSK Hours]', result);
+                return result;
+            } catch (e) {
+                console.error('[MSK Hours Error]', e);
                 const mskOffset = 3 * 60 * 60 * 1000;
                 return new Date(Date.now() + mskOffset).getHours();
             }
