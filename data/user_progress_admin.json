@@ -1364,13 +1364,118 @@
       "lastReviewed": "2026-02-23",
       "lastReviewedTime": "01",
       "question": "UAT пользовательское"
+    },
+    "верификация": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771799123256,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771799123256,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 4,
+      "question": "верификация"
+    },
+    "система знает как реагировать ДАЖЕ\nна ошибки пользователя": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771799123640,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771799123640,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 4,
+      "question": "система знает как реагировать ДАЖЕ\nна ошибки пользователя"
+    },
+    "Что происходит после того как ты нажимаешь на поиск в Google?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771799519877,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771799519877,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 4,
+      "question": "Что происходит после того как ты нажимаешь на поиск в Google?"
+    },
+    "Простота отладки": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771799520370,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1771799520370,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 4,
+      "question": "Простота отладки"
+    },
+    "Юзабилити - порог вхождения, как быстро достигается цель": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771799520819,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771799520819,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 4,
+      "question": "Юзабилити - порог вхождения, как быстро достигается цель"
     }
   },
   "studyStats": {
-    "total": 65,
-    "timeSpent": 912773,
-    "points": 375,
-    "correct": 20
+    "total": 70,
+    "timeSpent": 917813,
+    "points": 405,
+    "correct": 21
   },
   "studyStreak": {
     "current": 2,
@@ -1379,7 +1484,7 @@
   },
   "dailyPoints": {
     "2026-02-22": 190,
-    "2026-02-23": 185
+    "2026-02-23": 215
   },
   "dailyBonusPoints": {
     "2026-02-22": 0,
@@ -1403,5 +1508,5 @@
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771798427342
+  "updatedAt": 1771799741099
 }

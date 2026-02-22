@@ -1,10 +1,10 @@
-﻿import { LearningSession } from './session.js?v=1.61';
+﻿import { LearningSession } from './session.js?v=2.00';
 import { getDueCards, syncFavorite, syncDailyStats } from './storage.js?v=2.01';
-import { getProgressMap } from './stats-utils.js?v=1.61';
-import { checkAchievements } from './stats-utils.js?v=1.61';
-import { Scheduler } from './scheduler.js?v=1.61';
-import { getTodaysSession } from './category-scheduler.js?v=1.61';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=1.61';
+import { getProgressMap } from './stats-utils.js?v=2.00';
+import { checkAchievements } from './stats-utils.js?v=2.00';
+import { Scheduler } from './scheduler.js?v=2.00';
+import { getTodaysSession } from './category-scheduler.js?v=2.00';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=2.00';
 
 // DOM Elements
 let container = null;
