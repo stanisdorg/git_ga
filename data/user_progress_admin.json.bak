@@ -273,7 +273,7 @@
       "lastReviewedTime": 2,
       "question": "radis?"
     },
-    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграцио��ные проверки ты сделаешь?": {
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграцио����ные проверки ты сделаешь?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
@@ -483,7 +483,7 @@
       "lastReviewedTime": 2,
       "question": "Гибкость разработки"
     },
-    "1) Физического ��ос��упа": {
+    "1) Физического ��оступа": {
       "interval": 1,
       "easeFactor": 2.3499999999999996,
       "streak": 1,
@@ -628,7 +628,7 @@
       "state": "learning",
       "lastReviewed": "2026-02-22",
       "lastReviewedTime": 23,
-      "question": "микросерв��с ждет подтверждения от кафки"
+      "question": "микросервис ждет подтверждения от кафки"
     },
     "postman, swagger": {
       "interval": 1,
@@ -755,13 +755,97 @@
       "lastReviewed": "2026-02-22",
       "lastReviewedTime": 0,
       "question": "сущности в докере?"
+    },
+    "БД правильно взаимодействует с другими\nсистемами и приложениями": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795917615,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771795917615,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 3,
+      "question": "БД правильно взаимодействует с другими\nсистемами и приложениями"
+    },
+    "Под (Pod):": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795923113,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771795923113,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 3,
+      "question": "Под (Pod):"
+    },
+    "Gitlab Ci/Jenkins": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795930876,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771795930876,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 3,
+      "question": "Gitlab Ci/Jenkins"
+    },
+    "1) Физического доступа": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1771795934101,
+      "nextReviewDate": 1771894800000,
+      "dueDate": "2026-02-24T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1771795934101,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-02-23",
+      "lastReviewedTime": 3,
+      "question": "1) Физического доступа"
     }
   },
   "studyStats": {
-    "total": 36,
-    "timeSpent": 438902,
-    "points": 255,
-    "correct": 10
+    "total": 40,
+    "timeSpent": 611060,
+    "points": 295,
+    "correct": 14
   },
   "studyStreak": {
     "current": 2,
@@ -770,7 +854,7 @@
   },
   "dailyPoints": {
     "2026-02-22": 190,
-    "2026-02-23": 65
+    "2026-02-23": 105
   },
   "dailyBonusPoints": {
     "2026-02-22": 0,
@@ -792,5 +876,5 @@
     "weekendWarrior": true,
     "nightOwl": true
   },
-  "updatedAt": 1771795371314
+  "updatedAt": 1771795958346
 }

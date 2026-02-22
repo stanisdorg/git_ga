@@ -177,10 +177,29 @@ export class LearningSession {
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
         const now = new Date();
         // Сохраняем дату и время по московскому времени
-        const mskOffset = 3 * 60 * 60 * 1000;
-        const mskTime = new Date(now.getTime() + mskOffset);
-        newProgress.lastReviewed = mskTime.toISOString().split('T')[0];
-        newProgress.lastReviewedTime = mskTime.getHours();
+        const getMSKDate = () => {
+            try {
+                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+                const parts = fmt.formatToParts(new Date());
+                const y = parts.find(p => p.type === 'year')?.value || '0000';
+                const m = parts.find(p => p.type === 'month')?.value || '01';
+                const d = parts.find(p => p.type === 'day')?.value || '01';
+                return `${y}-${m}-${d}`;
+            } catch {
+                const mskOffset = 3 * 60 * 60 * 1000;
+                return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
+            }
+        };
+        const getMSKHours = () => {
+            try {
+                return new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour: 'numeric' });
+            } catch {
+                const mskOffset = 3 * 60 * 60 * 1000;
+                return new Date(Date.now() + mskOffset).getHours();
+            }
+        };
+        newProgress.lastReviewed = getMSKDate();
+        newProgress.lastReviewedTime = getMSKHours();
         
         updateCardProgress(this.currentCard.item.question, newProgress);
 
@@ -205,10 +224,16 @@ export class LearningSession {
         // Получаем дату по московскому времени
         const todayKey = (() => {
             try {
+                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+                const parts = fmt.formatToParts(new Date());
+                const y = parts.find(p => p.type === 'year')?.value || '0000';
+                const m = parts.find(p => p.type === 'month')?.value || '01';
+                const d = parts.find(p => p.type === 'day')?.value || '01';
+                return `${y}-${m}-${d}`;
+            } catch {
                 const mskOffset = 3 * 60 * 60 * 1000;
-                const mskTime = new Date(Date.now() + mskOffset);
-                return mskTime.toISOString().split('T')[0];
-            } catch { return new Date().toISOString().split('T')[0]; }
+                return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
+            }
         })();
         const dpRaw = localStorage.getItem('dailyPoints') || '{}';
         const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
@@ -286,9 +311,16 @@ function updateStreak() {
     // Получаем текущую дату по московскому времени
     const getMSKDate = () => {
         try {
+            const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+            const parts = fmt.formatToParts(new Date());
+            const y = parts.find(p => p.type === 'year')?.value || '0000';
+            const m = parts.find(p => p.type === 'month')?.value || '01';
+            const d = parts.find(p => p.type === 'day')?.value || '01';
+            return `${y}-${m}-${d}`;
+        } catch {
             const mskOffset = 3 * 60 * 60 * 1000;
             return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
-        } catch { return new Date().toISOString().split('T')[0]; }
+        }
     };
 
     const today = getMSKDate();
@@ -301,12 +333,15 @@ function updateStreak() {
         // Вчера по MSK
         const yesterday = (() => {
             try {
+                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+                const parts = fmt.formatToParts(new Date(Date.now() - 86400000));
+                const y = parts.find(p => p.type === 'year')?.value || '0000';
+                const m = parts.find(p => p.type === 'month')?.value || '01';
+                const d = parts.find(p => p.type === 'day')?.value || '01';
+                return `${y}-${m}-${d}`;
+            } catch {
                 const mskOffset = 3 * 60 * 60 * 1000;
                 const y = new Date(Date.now() + mskOffset);
-                y.setDate(y.getDate() - 1);
-                return y.toISOString().split('T')[0];
-            } catch { 
-                const y = new Date();
                 y.setDate(y.getDate() - 1);
                 return y.toISOString().split('T')[0];
             }
