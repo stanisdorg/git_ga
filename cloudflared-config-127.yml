@@ -1,0 +1,7 @@
+tunnel: e315380c-7f82-49b0-bb14-4ee1f53a16a2
+credentials-file: C:\\Users\\web\\.cloudflared\\e315380c-7f82-49b0-bb14-4ee1f53a16a2.json
+
+ingress:
+  - hostname: qa.crispcode.ru
+    service: http://127.0.0.1:8085
+  - service: http_status:404

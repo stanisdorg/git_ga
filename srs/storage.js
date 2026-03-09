@@ -34,6 +34,7 @@ export async function syncWithServer() {
     syncDebounceTimer = setTimeout(async () => {
         // Collect all data
         const data = {
+            _cards: JSON.parse(localStorage.getItem('qaUserCards') || '[]'),
             srsProgress: JSON.parse(localStorage.getItem('srsProgress') || '{}'),
             studyStats: JSON.parse(localStorage.getItem('studyStats') || '{}'),
             studyStreak: JSON.parse(localStorage.getItem('studyStreak') || '{}'),
@@ -48,6 +49,8 @@ export async function syncWithServer() {
         try {
             // Пробуем отправить на сервер, но не показываем ошибку если API недоступен
             window.dispatchEvent(new Event('sync-start'));
+            
+            // Отправляем все данные на /api/progress
             const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -55,7 +58,7 @@ export async function syncWithServer() {
                 // Не ждем долго и не показываем ошибку если сервер недоступен
                 signal: AbortSignal.timeout(3000)
             });
-            
+
             if (res.ok) {
                 localStorage.setItem('localDataTimestamp', data.updatedAt);
                 window.dispatchEvent(new Event('sync-success'));
@@ -116,6 +119,7 @@ export async function loadFromServer() {
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
         // Restore keys
+        if (data._cards) localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
         if (data.srsProgress) localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
         if (data.studyStats) localStorage.setItem('studyStats', JSON.stringify(data.studyStats));
         if (data.studyStreak) localStorage.setItem('studyStreak', JSON.stringify(data.studyStreak));

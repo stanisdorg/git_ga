@@ -124,6 +124,83 @@ function genUniqueQuestionGlobal(baseQ) {
 function getSubcategoryPlaceholders() { return getLS('qaSubcategoryPlaceholders', '{}'); }
 function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', obj); }
 
+// Global helper function for authenticated fetch requests (NO TOKEN - username/password only)
+async function fetchWithAuth(url, options = {}) {
+    const user = loggedInUser;
+    
+    // Добавляем username в query параметры
+    const urlObj = new URL(url, BACKEND_URL);
+    if (user && user.username) {
+        urlObj.searchParams.set('user', user.username);
+    }
+    // token removed - using username only for development
+    
+    const fetchOptions = {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+        }
+    };
+    
+    return fetch(urlObj.toString(), fetchOptions);
+}
+
+// Auto-load user data on page load if credentials are saved
+async function autoLoadUserData() {
+    const savedUsername = localStorage.getItem('qaUsername');
+    const savedPassword = localStorage.getItem('qaPassword');
+    
+    if (savedUsername && savedPassword) {
+        console.log('[AutoLoad] Found saved credentials, attempting auto-login...');
+        try {
+            const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: savedUsername, password: savedPassword })
+            });
+            
+            if (loginRes.ok) {
+                const loginData = await loginRes.json();
+                if (loginData.ok) {
+                    console.log('[AutoLoad] Auto-login successful:', savedUsername);
+                    setLoggedUser({ username: loginData.username, role: loginData.role });
+                    
+                    // Load user data from server
+                    const loadRes = await fetch(`${BACKEND_URL}/load?user=${savedUsername}`);
+                    if (loadRes.ok) {
+                        const userData = await loadRes.json();
+                        console.log('[AutoLoad] Loaded', userData._cards?.length, 'cards for', savedUsername);
+                        
+                        // Save to localStorage for offline use
+                        if (userData._cards) {
+                            localStorage.setItem('qaUserCards', JSON.stringify(userData._cards));
+                        }
+                        if (userData._achievements) {
+                            localStorage.setItem('studyAchievements', JSON.stringify(userData._achievements));
+                            console.log('[AutoLoad] Loaded achievements from server');
+                        }
+                        if (userData._stats) {
+                            localStorage.setItem('studyStats', JSON.stringify(userData._stats));
+                        }
+                        if (userData._srsProgress) {
+                            localStorage.setItem('srsProgress', JSON.stringify(userData._srsProgress));
+                        }
+                        if (userData._favorites) {
+                            localStorage.setItem('qaFavorites', JSON.stringify(userData._favorites));
+                        }
+                        
+                        // Trigger data loaded event
+                        window.dispatchEvent(new Event('dataLoaded'));
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('[AutoLoad] Auto-login failed:', e);
+        }
+    }
+}
+
 // Простейшая заглушка логина — замените verifyCredentialsWithSupabase на реальную проверку
 let loggedInUser = null;
 function verifyCredentialsWithSupabase(email, password) {
@@ -792,17 +869,22 @@ export function initTabsNavigation(appVersion) {
         'dailyBonusPoints', 'dailyDayBonusPoints', 'qaFavorites', 'studyAchievements'
     ];
 
-    function setLoggedUser(user) {
+    function setLoggedUser(user, token = null) {
         // Переключение Guest -> User (Login)
         if (!loggedInUser && user) {
             // Бэкап данных гостя
             const backup = {};
             DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
             localStorage.setItem('guest_backup', JSON.stringify(backup));
-            
+
             // Очищаем данные, чтобы загрузить профиль пользователя начисто
             DATA_KEYS.forEach(k => localStorage.removeItem(k));
-            localStorage.removeItem('localDataTimestamp'); 
+            localStorage.removeItem('localDataTimestamp');
+            
+            // Сохраняем токен если есть
+            if (token) {
+                localStorage.setItem('sessionToken', token);
+            }
         }
 
         // Переключение User -> Guest (Logout)
@@ -822,6 +904,11 @@ export function initTabsNavigation(appVersion) {
                 DATA_KEYS.forEach(k => localStorage.removeItem(k));
             }
             localStorage.removeItem('localDataTimestamp');
+            // Удаляем токен и credentials при выходе
+            localStorage.removeItem('sessionToken');
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('qaUsername');
+            localStorage.removeItem('qaPassword');
         }
 
         loggedInUser = user;
@@ -859,6 +946,13 @@ export function initTabsNavigation(appVersion) {
              window.dispatchEvent(new Event('favoritesUpdated'));
         }
     }
+
+    // Make setLoggedUser available globally for autoLoadUserData
+    window.setLoggedUser = setLoggedUser;
+
+    // Auto-load user data on page load if credentials are saved
+    // Вызываем с задержкой чтобы все функции были определены
+    setTimeout(() => autoLoadUserData(), 1000);
 
     function openLoginModal() {
         let ov = document.getElementById('login-overlay');
@@ -908,55 +1002,47 @@ export function initTabsNavigation(appVersion) {
                     const u = ov.querySelector('#login-username').value.trim();
                     const p = ov.querySelector('#login-password').value;
                     const remember = ov.querySelector('#login-remember')?.checked;
-                    // Try Supabase auth first if available
-                    let authed = null;
-                    const client = window.__supabaseClient;
-                    if (client) {
-                        const { data, error } = await client.auth.signInWithPassword({ email: u, password: p });
-                        if (!error && data && data.user) {
-                            const user = data.user;
-                            const role = (user.user_metadata && user.user_metadata.role) || 'user';
-                            authed = { id: user.id, email: user.email, role };
-                        }
-                        if (!authed) {
-                            try {
-                                const { data: row, error: e2 } = await client.from('users').select('*').eq('username', u).eq('password', p).single();
-                                if (!e2 && row) {
-                                    authed = { id: row.id || row.username, email: row.username, role: row.role || 'user' };
+
+                    // Local auth only (локальный сервер)
+                    try {
+                        // Пробуем войти через локальный API
+                        const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username: u, password: p })
+                        });
+
+                        if (loginRes.ok) {
+                            const loginData = await loginRes.json();
+                            if (loginData.ok) {
+                                // Сохраняем username/password для последующей загрузки данных
+                                if (remember) {
+                                    localStorage.setItem('qaUsername', u);
+                                    localStorage.setItem('qaPassword', p);
                                 }
-                            } catch {}
+                                setLoggedUser({ username: loginData.username, role: loginData.role });
+                                ov.remove();
+                                return;
+                            }
                         }
+                    } catch (e) {
+                        console.log('Local login failed:', e);
                     }
-                    if (authed) {
-                        setLoggedUser(authed); // remember ignored in setLoggedUser currently, but that is fine
+
+                    // Fallback to local users (legacy)
+                    const raw = localStorage.getItem('usersDB') || '[]';
+                    const users = JSON.parse(raw);
+                    const match = users.find(x => x.username === u && x.password === p);
+                    if (match) {
+                        setLoggedUser({ username: match.username, role: match.role });
+                        // Сохраняем credentials для автозагрузки
+                        if (remember) {
+                            localStorage.setItem('qaUsername', u);
+                            localStorage.setItem('qaPassword', p);
+                        }
                         ov.remove();
                     } else {
-                        // Admin backdoor for local usage (Fix for "admin/admin")
-                        if (u === 'admin' && p === 'admin') {
-                            const adminUser = { username: 'admin', role: 'admin' };
-                            setLoggedUser(adminUser);
-                            // Загружаем данные с сервера для admin
-                            import('../srs/storage.js').then(mod => {
-                                if (mod && typeof mod.loadFromServer === 'function') {
-                                    mod.loadFromServer().then(() => {
-                                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
-                                        window.dispatchEvent(new Event('dataLoaded'));
-                                    }).catch(()=>{});
-                                }
-                            }).catch(()=>{});
-                            ov.remove();
-                            return;
-                        }
-                        // Fallback to local users (legacy)
-                        const raw = localStorage.getItem('usersDB') || '[]';
-                        const users = JSON.parse(raw);
-                        const match = users.find(x => x.username === u && x.password === p);
-                        if (match) {
-                            setLoggedUser({ username: match.username, role: match.role });
-                            ov.remove();
-                        } else {
-                            alert('Неверный логин или пароль');
-                        }
+                        alert('Неверный логин или пароль');
                     }
                 } catch {
                     alert('Ошибка входа');
@@ -1805,7 +1891,7 @@ export function initTabsNavigation(appVersion) {
                 }
             });
             // Отправка на сервер
-            const resp = await fetch(`${BACKEND_URL}/save`, {
+            const resp = await fetchWithAuth('/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(merged)
@@ -1837,7 +1923,7 @@ export function initTabsNavigation(appVersion) {
     // New server-side helper functions
     async function moveToServerTrash(items) {
         try {
-            const resp = await fetch(`${BACKEND_URL}/trash`, {
+            const resp = await fetchWithAuth('/trash', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1854,7 +1940,7 @@ export function initTabsNavigation(appVersion) {
 
     async function restoreFromServerTrash(questions) {
         try {
-            const resp = await fetch(`${BACKEND_URL}/restore`, {
+            const resp = await fetchWithAuth('/restore', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ questions: questions })
@@ -2026,7 +2112,15 @@ async function saveMergedToServer() {
             containsLastRestored: lastRestored ? merged.some(i => i.question === lastRestored) : 'n/a',
         });
 
-        const resp = await fetch(`${BACKEND_URL}/save`, {
+        // Получаем username для отправки на сервер
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        let username = null;
+        try {
+            const u = JSON.parse(sessionUserRaw);
+            if (u && u.username) username = u.username;
+        } catch {}
+
+        const resp = await fetch(`${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(merged)
@@ -2052,7 +2146,15 @@ async function saveMergedToServer() {
 
 async function moveToServerTrash(items) {
     try {
-        const resp = await fetch(`${BACKEND_URL}/trash`, {
+        // Получаем username для отправки на сервер
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        let username = null;
+        try {
+            const u = JSON.parse(sessionUserRaw);
+            if (u && u.username) username = u.username;
+        } catch {}
+
+        const resp = await fetch(`${BACKEND_URL}/trash?user=${encodeURIComponent(username || 'guest')}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2069,7 +2171,15 @@ async function moveToServerTrash(items) {
 
 async function restoreFromServerTrash(questions) {
     try {
-        const resp = await fetch(`${BACKEND_URL}/restore`, {
+        // Получаем username для отправки на сервер
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        let username = null;
+        try {
+            const u = JSON.parse(sessionUserRaw);
+            if (u && u.username) username = u.username;
+        } catch {}
+
+        const resp = await fetch(`${BACKEND_URL}/restore?user=${encodeURIComponent(username || 'guest')}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ questions: questions })
@@ -2108,7 +2218,7 @@ async function trackServerDuplication(originalQuestion, newQuestion) {
 
 async function getServerMetadata() {
     try {
-        const resp = await fetch(`${BACKEND_URL}/metadata`);
+        const resp = await fetchWithAuth('/metadata');
         if (resp.ok) {
             const data = await resp.json();
             const raw = data.metadata || {};
@@ -2129,7 +2239,7 @@ async function getServerMetadata() {
 
 async function refreshServerTrash() {
     try {
-        const resp = await fetch(`${BACKEND_URL}/metadata`);
+        const resp = await fetchWithAuth('/metadata');
         if (resp.ok) {
             const data = await resp.json();
             const bin = Array.isArray(data.trash_bin) ? data.trash_bin : [];
@@ -2149,7 +2259,7 @@ async function updateServerMetadata(metadata) {
         if (Array.isArray(metadata.categoryOrder)) payload.category_order = metadata.categoryOrder;
         if (metadata.subcategoryOrder && typeof metadata.subcategoryOrder === 'object') payload.subcategory_order = metadata.subcategoryOrder;
         if (metadata.orderOverrides && typeof metadata.orderOverrides === 'object') payload.card_order = metadata.orderOverrides;
-        const resp = await fetch(`${BACKEND_URL}/metadata`, {
+        const resp = await fetchWithAuth('/metadata', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -2302,7 +2412,7 @@ function renderTrashPanel() {
     }
 }
 
-// Функция для фильтрации вопросов по категории
+// Фун��ция для фильтрации вопросов по категории
 function filterQuestionsByCategory(categoryName) {
     currentContextKey = `category:${categoryName}`;
     const data = getRuntimeData();
@@ -2323,7 +2433,7 @@ function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     const scMap = scPlaceholders[canonicalCategory] || scPlaceholders[categoryName] || {};
     const canonicalSub = Object.entries(scMap).find(([, v]) => v?.displayName === subcategoryName)?.[0] || subcategoryName;
     const filteredData = data.filter(item => (item.category === canonicalCategory || item.category === categoryName) && (item.subcategory === canonicalSub || item.subcategory === subcategoryName));
-    displayQuestions(filteredData, `Подкатегория: ${subcategoryName}`);
+    displayQuestions(filteredData, `Подкатегор����: ${subcategoryName}`);
 }
 
 // Функция для отображения всех вопросов

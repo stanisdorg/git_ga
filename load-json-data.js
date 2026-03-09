@@ -9,29 +9,28 @@ export function setNormalizationDisabled(disabled) {
 
 export async function loadJsonData() {
     try {
-        // Пробуем загрузить файл questions_no_anki.json
-        // Используем encodeURIComponent для корректной обработки кириллицы в URL
-        const fileName = 'questions_no_anki.json';
+        // Пробуем загрузить файл global.json
+        const fileName = 'global.json';
         const encodedFileName = encodeURIComponent(fileName);
         const response = await fetch(`./data/${encodedFileName}?t=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) {
             throw new Error(`Не удалось загрузить файл: ${response.status}`);
         }
-        
+
         const text = await response.text();
         const data = JSON.parse(text);
-        
+
         // Проверяем структуру данных
         if (data.questions && Array.isArray(data.questions)) {
-            console.log(`Загружено ${data.questions.length} вопросов из файла questions_no_anki.json`);
+            console.log(`Загружено ${data.questions.length} вопросов из файла global.json`);
             const base = normalizationDisabled ? data.questions : normalizeDataset(data.questions);
             return removeDuplicates(base, 'question');
         } else if (Array.isArray(data)) {
-            console.log(`Загружено ${data.length} вопросов из файла questions_no_anki.json`);
+            console.log(`Загружено ${data.length} вопросов из файла global.json`);
             const base = normalizationDisabled ? data : normalizeDataset(data);
             return removeDuplicates(base, 'question');
         }
-        
+
         return [];
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);

@@ -1,12 +1,12 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=2.01';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=4.11';
 import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=2.00';
 import { loadFromServer } from './srs/storage.js?v=2.01';
 import { initSyncIndicator } from './srs/sync-ui.js?v=2.00';
 
-export const APP_VERSION = '2.20';
+export const APP_VERSION = '4.11';
 
 // Debug banner for script loading verification
 // Removed after fix

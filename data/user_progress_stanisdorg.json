@@ -1,0 +1,51 @@
+{
+  "srsProgress": {
+    "PCT/IP": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1772927853094,
+      "nextReviewDate": 1773018000000,
+      "dueDate": "2026-03-09T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1772927853094,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-08",
+      "lastReviewedTime": 5,
+      "question": "PCT/IP"
+    }
+  },
+  "studyStats": {
+    "total": 1,
+    "timeSpent": 18032,
+    "correct": 1,
+    "points": 10
+  },
+  "studyStreak": {
+    "current": 1,
+    "best": 1,
+    "lastDate": "2026-03-08"
+  },
+  "dailyPoints": {
+    "2026-03-08": 10
+  },
+  "dailyBonusPoints": {
+    "2026-03-08": 0
+  },
+  "dailyDayBonusPoints": {},
+  "qaFavorites": [],
+  "studyAchievements": {
+    "firstSessionCompleted": true,
+    "ninetyAccuracy": true,
+    "nightOwl": true,
+    "weekendWarrior": true
+  },
+  "updatedAt": 1772928065053
+}

@@ -2,6 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,29 +42,307 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Сохранение данных в JSON
-  if (req.method === 'POST' && req.url === '/save') {
+  // Helper: Generate random session token (DISABLED for development)
+  // const generateToken = () => {
+  //   return 'session_' + crypto.randomBytes(16).toString('hex');
+  // };
+
+  // Helper: Verify token (DISABLED for development)
+  // const verifyToken = (token) => {
+  //   return activeTokens.get(token) || null;
+  // };
+  const activeTokens = new Map(); // Keep for future use
+
+  // POST /api/login - Login and get username (token disabled)
+  if (req.method === 'POST' && req.url === '/api/login') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        console.log('[Login] Request body:', body);
+        if (!body) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Empty body' }));
+          return;
+        }
+        const parsed = JSON.parse(body);
+        console.log('[Login] Parsed:', parsed);
+        const username = parsed.username;
+        const password = parsed.password;
+        
+        if (!username || !password) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'username and password required' }));
+          return;
+        }
+        
+        const usersPath = path.join(__dirname, 'data', 'users.json');
+
+        if (!fs.existsSync(usersPath)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Users database not found' }));
+          return;
+        }
+
+        const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+        const user = users.find(u => u.username === username && u.password === password);
+
+        if (!user) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Invalid credentials' }));
+          return;
+        }
+
+        // Update lastLoginAt in users.json
+        const userIndex = users.findIndex(u => u.username === username);
+        if (userIndex !== -1) {
+          users[userIndex].lastLoginAt = new Date().toISOString();
+          fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+        }
+
+        console.log(`[Login] User ${username} logged in successfully`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          username: user.username,
+          role: user.role
+          // token removed for development simplicity
+        }));
+      } catch (e) {
+        console.error('[Login] Error:', e.message);
+        console.error('[Login] Stack:', e.stack);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json', details: e.message }));
+      }
+    });
+    return;
+  }
+
+  // POST /api/logout - Invalidate session token
+  if (req.method === 'POST' && req.url === '/api/logout') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const {token} = JSON.parse(body);
+        if (token && activeTokens.has(token)) {
+          const userInfo = activeTokens.get(token);
+          console.log(`[Logout] User ${userInfo.username} logged out`);
+          activeTokens.delete(token);
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // POST /api/register - Register new user
+  if (req.method === 'POST' && req.url === '/api/register') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const {username, password, role, adminToken} = JSON.parse(body);
+        
+        // Verify admin token (only admin can create new users)
+        const adminInfo = verifyToken(adminToken);
+        if (!adminInfo || adminInfo.role !== 'admin') {
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Admin authorization required' }));
+          return;
+        }
+
+        const usersPath = path.join(__dirname, 'data', 'users.json');
+        const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+
+        // Check if user exists
+        if (users.find(u => u.username === username)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'User already exists' }));
+          return;
+        }
+
+        // Add user to users.json
+        const newUser = {
+          username,
+          password,
+          role: role || 'user',
+          createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+
+        // Clone global.json to user file
+        const globalPath = path.join(__dirname, 'data', 'global.json');
+        const globalCards = JSON.parse(fs.readFileSync(globalPath, 'utf-8'));
+        
+        const userFile = {
+          _meta: {
+            username,
+            role: role || 'user',
+            createdAt: new Date().toISOString(),
+            lastLoginAt: null,
+            cardsCount: globalCards.length
+          },
+          _cards: globalCards,
+          _achievements: {},
+          _stats: {},
+          _srsProgress: {},
+          _favorites: []
+        };
+        
+        const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
+        fs.writeFileSync(userFilePath, JSON.stringify(userFile, null, 2));
+
+        // Create user metadata file
+        const metadataFilePath = path.join(__dirname, 'data', `user_${username}_metadata.json`);
+        fs.writeFileSync(metadataFilePath, JSON.stringify({}, null, 2));
+
+        // Create user trash file
+        const trashFilePath = path.join(__dirname, 'data', `user_${username}_trash.json`);
+        fs.writeFileSync(trashFilePath, JSON.stringify([], null, 2));
+
+        console.log(`[Register] New user ${username} registered by admin ${adminInfo.username}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          user: { username, role: role || 'user' }
+        }));
+      } catch (e) {
+        console.error('[Register] Error:', e.message);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // GET /load - Load all user data (ТОЧНЫЙ МАТЧ /load или /load?user=...)
+  if (req.method === 'GET' && (req.url === '/load' || req.url.startsWith('/load?'))) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    // token parameter removed - using username only for development
+    
+    // Проверка что username существует
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
+    
+    if (!fs.existsSync(userFilePath)) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'User data not found' }));
+      return;
+    }
+
+    fs.readFile(userFilePath, 'utf-8', (err, content) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'Read error' }));
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(content);
+    });
+    return;
+  }
+
+  // GET /api/progress - Load all user progress (achievements, favorites, stats)
+  if (req.method === 'GET' && req.url.startsWith('/api/progress')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('username');
+
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+
+    if (!fs.existsSync(targetPath)) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'User data not found' }));
+      return;
+    }
+
+    try {
+      const userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+      
+      // Возвращаем данные в формате который ожидает клиент
+      const response = {
+        ok: true,
+        _cards: userData._cards || [],  // Возвращаем карточки
+        studyAchievements: userData._achievements || {},
+        qaFavorites: userData._favorites || [],
+        srsProgress: userData._srsProgress || {},
+        studyStats: userData._stats || {},
+        studyStreak: userData.studyStreak || {},
+        dailyPoints: userData.dailyPoints || {},
+        dailyBonusPoints: userData.dailyBonusPoints || {},
+        dailyDayBonusPoints: userData.dailyDayBonusPoints || {},
+        updatedAt: Date.now()
+      };
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(response));
+    } catch (e) {
+      console.error('Failed to load progress:', e);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'read_failed' }));
+    }
+    return;
+  }
+
+  // POST /api/progress - Save all user progress (achievements, favorites, stats)
+  if (req.method === 'POST' && req.url.startsWith('/api/progress')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('username');
+
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
-        // Путь к целевому файлу
-        const targetPath = path.join(__dirname, 'data', 'questions_no_anki.json');
-        const backupPath = path.join(__dirname, 'data', 'questions_no_anki copy.json');
-        // Делаем бэкап текущего файла
-        try {
-          const existing = fs.readFileSync(targetPath, 'utf-8');
-          fs.writeFileSync(backupPath, existing, 'utf-8');
-        } catch (_) {}
-        // Записываем новые данные
-        fs.writeFile(targetPath, JSON.stringify(data, null, 2), 'utf-8', (err) => {
+        const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+
+        let userData = {};
+        if (fs.existsSync(targetPath)) {
+          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+        }
+
+        // Обновляем все данные
+        if (data._cards) userData._cards = data._cards;
+        if (data._achievements) userData._achievements = data._achievements;
+        if (data._favorites) userData._favorites = data._favorites;
+        if (data._stats) userData._stats = data._stats;
+        if (data._srsProgress) userData._srsProgress = data._srsProgress;
+        if (data.studyAchievements) userData._achievements = data.studyAchievements;
+        if (data.qaFavorites) userData._favorites = data.qaFavorites;
+        if (data.srsProgress) userData._srsProgress = data.srsProgress;
+        if (data.studyStats) userData._stats = data.studyStats;
+
+        fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
           if (err) {
-            console.error('Failed to write file:', err);
+            console.error('Failed to save progress:', err);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
+          console.log(`[Progress] User ${username} saved progress`);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
         });
@@ -76,11 +355,180 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Обработка метаданных (GET)
-  if (req.method === 'GET' && req.url === '/metadata') {
-    const metaPath = path.join(__dirname, 'data', 'metadata.json');
-    const trashPath = path.join(__dirname, 'data', 'trash.json');
-    
+  // Сохранение данных в JSON (персональное для пользователя)
+  if (req.method === 'POST' && req.url.startsWith('/save')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    // token parameter removed - using username only for development
+
+    // Проверка что username существует
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+
+        // Персональный файл пользователя
+        const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+
+        let userData = {};
+        if (fs.existsSync(targetPath)) {
+          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+        }
+
+        // Сохраняем карточки в _cards
+        userData._cards = data;
+        
+        // Обновляем метаданные
+        if (!userData._meta) userData._meta = {};
+        userData._meta.cardsCount = data.length;
+        userData._meta.lastLoginAt = new Date().toISOString();
+
+        // Записываем обратно
+        fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
+          if (err) {
+            console.error('Failed to write user data:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
+            return;
+          }
+          console.log(`[Save] User ${username} saved ${data.length} cards`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true, saved: data.length }));
+        });
+      } catch (e) {
+        console.error('Invalid JSON body:', e);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // POST /api/achievements - Save achievements
+  if (req.method === 'POST' && req.url.startsWith('/api/achievements')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const achievements = JSON.parse(body);
+        const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+
+        let userData = {};
+        if (fs.existsSync(targetPath)) {
+          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+        }
+
+        // Обновляем достижения
+        userData._achievements = achievements;
+
+        fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
+          if (err) {
+            console.error('Failed to save achievements:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
+            return;
+          }
+          console.log(`[Achievements] User ${username} saved achievements`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        });
+      } catch (e) {
+        console.error('Invalid JSON body:', e);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // POST /api/favorites - Save favorites
+  if (req.method === 'POST' && req.url.startsWith('/api/favorites')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const favorites = JSON.parse(body);
+        const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+
+        let userData = {};
+        if (fs.existsSync(targetPath)) {
+          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+        }
+
+        // Обновляем избранное
+        userData._favorites = favorites;
+
+        fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
+          if (err) {
+            console.error('Failed to save favorites:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
+            return;
+          }
+          console.log(`[Favorites] User ${username} saved favorites`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        });
+      } catch (e) {
+        console.error('Invalid JSON body:', e);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // Обработка метаданных (GET) - персональные для пользователя
+  if (req.method === 'GET' && req.url.startsWith('/metadata')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    const token = urlObj.searchParams.get('token');
+
+    // Verify token (опционально - если нет токена, возвращаем пустые метаданные)
+    let userInfo = null;
+    if (token) {
+      userInfo = verifyToken(token);
+      if (!userInfo || userInfo.username !== username) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+        return;
+      }
+    }
+
+    // Если нет username, возвращаем пустые метаданные
+    if (!username) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({}));
+      return;
+    }
+
+    const metaPath = path.join(__dirname, 'data', `user_${username}_metadata.json`);
+
     let meta = {};
     try {
       if (fs.existsSync(metaPath)) {
@@ -88,30 +536,33 @@ const server = http.createServer((req, res) => {
       }
     } catch (e) { console.error('Error reading metadata:', e); }
 
-    let trash = [];
-    try {
-      if (fs.existsSync(trashPath)) {
-        trash = JSON.parse(fs.readFileSync(trashPath, 'utf-8'));
-        if (!Array.isArray(trash)) trash = [];
-      }
-    } catch (e) { console.error('Error reading trash:', e); }
-
-    const response = { ...meta, trash_bin: trash };
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(response));
+    res.end(JSON.stringify(meta));
     return;
   }
 
-  // Обработка метаданных (POST)
-  if (req.method === 'POST' && req.url === '/metadata') {
+  // Обработка метаданных (POST) - персональные для пользователя
+  if (req.method === 'POST' && req.url.startsWith('/metadata')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    const token = urlObj.searchParams.get('token');
+
+    // Verify token
+    const userInfo = verifyToken(token);
+    if (!userInfo || userInfo.username !== username) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+      return;
+    }
+
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
         const payload = JSON.parse(body);
-        const metaPath = path.join(__dirname, 'data', 'metadata.json');
-        
-        // Читаем текущие метаданные, чтобы не затереть другие поля
+        const metaPath = path.join(__dirname, 'data', `user_${username}_metadata.json`);
+
+        // Читаем текущие метаданные
         let currentMeta = {};
         try {
            if (fs.existsSync(metaPath)) currentMeta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
@@ -119,143 +570,175 @@ const server = http.createServer((req, res) => {
 
         // Обновляем поля
         const newMeta = { ...currentMeta, ...payload };
-        
+
         fs.writeFile(metaPath, JSON.stringify(newMeta, null, 2), 'utf-8', (err) => {
           if (err) {
-            res.writeHead(500);
-            res.end(JSON.stringify({ ok: false }));
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
+          console.log(`[Metadata] User ${username} saved metadata`);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
         });
       } catch (e) {
-        res.writeHead(400);
-        res.end(JSON.stringify({ ok: false }));
-      }
-    });
-    return;
-  }
-
-
-  // Сохранение пользовательского прогресса
-  if (req.method === 'POST' && req.url.startsWith('/api/progress')) {
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        
-        // Определяем пользователя из query параметра или тела запроса
-        // В данном случае лучше ожидать username в query: /api/progress?username=...
-        const urlObj = new URL(req.url, `http://${req.headers.host}`);
-        const username = urlObj.searchParams.get('username');
-        
-        let filename = 'user_progress.json';
-        if (username) {
-            // Санитизация имени файла
-            const safeUsername = username.replace(/[^a-zA-Z0-9_-]/g, '');
-            if (safeUsername) filename = `user_progress_${safeUsername}.json`;
-        } else {
-             // Если нет юзера, но мы хотим запретить сохранение для гостей на сервере?
-             // Клиент просто не должен слать запрос. Но если прислал - сохраним в дефолтный (legacy) или вернем ошибку.
-             // Для совместимости оставим user_progress.json как "общий" или "девайс" сторадж, если вдруг понадобится.
-        }
-
-        const progressPath = path.join(__dirname, 'data', filename);
-        
-        // Создаем папку data если нет
-        const dataDir = path.join(__dirname, 'data');
-        if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir);
-
-        // Делаем бэкап перед записью
-        try {
-          if (fs.existsSync(progressPath)) {
-             const backupPath = path.join(__dirname, 'data', `${filename}.bak`);
-             fs.copyFileSync(progressPath, backupPath);
-          }
-        } catch (err) {
-            console.error('Backup failed:', err);
-        }
-
-        fs.writeFile(progressPath, JSON.stringify(data, null, 2), 'utf-8', (err) => {
-          if (err) {
-            console.error('Failed to write progress:', err);
-            res.writeHead(500);
-            res.end(JSON.stringify({ ok: false }));
-            return;
-          }
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ ok: true }));
-        });
-      } catch (e) {
-        res.writeHead(400);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
       }
     });
     return;
   }
 
-  // Загрузка пользовательского прогресса
+
+  // Сохранение пользовательского прогресса (объединено с основным файлом)
+  if (req.method === 'POST' && req.url.startsWith('/api/progress')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('username');
+    const token = urlObj.searchParams.get('token');
+
+    // Verify token (опционально - для обратной совместимости)
+    if (token) {
+      const userInfo = verifyToken(token);
+      if (!userInfo || userInfo.username !== username) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+        return;
+      }
+    }
+
+    // Если нет username, возвращаем ошибку
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
+
+        // Читаем текущие данные
+        let userData = {};
+        if (fs.existsSync(userFilePath)) {
+          userData = JSON.parse(fs.readFileSync(userFilePath, 'utf-8'));
+        }
+
+        // Обновляем поля прогресса
+        if (data._achievements) userData._achievements = data._achievements;
+        if (data._stats) userData._stats = data._stats;
+        if (data._srsProgress) userData._srsProgress = data._srsProgress;
+        if (data._favorites) userData._favorites = data._favorites;
+
+        // Записываем обратно
+        fs.writeFile(userFilePath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
+          if (err) {
+            console.error('Failed to write progress:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
+            return;
+          }
+          console.log(`[Progress] User ${username} saved progress`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        });
+      } catch (e) {
+        console.error('Invalid JSON body:', e);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // Загрузка пользовательского прогресса (теперь часть /load)
+  // Оставляем для обратной совместимости, но возвращаем данные из основного файла
   if (req.method === 'GET' && req.url.startsWith('/api/progress')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username');
-    
-    let filename = 'user_progress.json';
-    if (username) {
-        const safeUsername = username.replace(/[^a-zA-Z0-9_-]/g, '');
-        if (safeUsername) filename = `user_progress_${safeUsername}.json`;
-    }
+    const token = urlObj.searchParams.get('token');
 
-    const progressPath = path.join(__dirname, 'data', filename);
-    if (fs.existsSync(progressPath)) {
-      fs.readFile(progressPath, 'utf-8', (err, content) => {
+    // Verify token (опционально, для обратной совместимости можно без токена)
+    // const userInfo = verifyToken(token);
+    // if (!userInfo || userInfo.username !== username) {
+    //   res.writeHead(401, { 'Content-Type': 'application/json' });
+    //   res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+    //   return;
+    // }
+
+    const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
+    
+    if (fs.existsSync(userFilePath)) {
+      fs.readFile(userFilePath, 'utf-8', (err, content) => {
         if (err) {
-          res.writeHead(500);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false }));
           return;
         }
+        const userData = JSON.parse(content);
+        // Возвращаем только прогресс (без карт)
+        const progressData = {
+          _achievements: userData._achievements || {},
+          _stats: userData._stats || {},
+          _srsProgress: userData._srsProgress || {},
+          _favorites: userData._favorites || []
+        };
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(content);
+        res.end(JSON.stringify(progressData));
       });
     } else {
-      // Если файла нет, возвращаем пустой объект
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({}));
     }
     return;
   }
 
-  // Helper for Trash
-  const getTrash = () => {
-    const p = path.join(__dirname, 'data', 'trash.json');
+  // Helper for Trash (персональная для пользователя)
+  const getUserTrash = (username) => {
+    const p = path.join(__dirname, 'data', `user_${username}_trash.json`);
     if (!fs.existsSync(p)) return [];
     try { return JSON.parse(fs.readFileSync(p, 'utf-8')) || []; } catch { return []; }
   };
-  const saveTrash = (items) => {
-    const p = path.join(__dirname, 'data', 'trash.json');
+  
+  const saveUserTrash = (username, items) => {
+    const p = path.join(__dirname, 'data', `user_${username}_trash.json`);
     const dir = path.dirname(p);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(p, JSON.stringify(items, null, 2), 'utf-8');
   };
 
-  // Trash: Move to trash
-  if (req.method === 'POST' && req.url === '/trash') {
+  // Trash: Move to trash (персональная)
+  if (req.method === 'POST' && req.url.startsWith('/trash')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    const token = urlObj.searchParams.get('token');
+
+    // Verify token
+    const userInfo = verifyToken(token);
+    if (!userInfo || userInfo.username !== username) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+      return;
+    }
+
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
         const items = data.items || [];
-        const trash = getTrash();
+        const trash = getUserTrash(username);
         items.forEach(item => {
             trash.push({
                 item,
                 deleted_at: new Date().toISOString(),
-                deleted_by: data.deleted_by || 'anonymous'
+                deleted_by: username
             });
         });
-        saveTrash(trash);
+        saveUserTrash(username, trash);
+        console.log(`[Trash] User ${username} moved ${items.length} items to trash`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, trash_size: trash.length }));
       } catch (e) {
@@ -266,18 +749,31 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Trash: Restore
-  if (req.method === 'POST' && req.url === '/restore') {
+  // Trash: Restore (персональная)
+  if (req.method === 'POST' && req.url.startsWith('/restore')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    const token = urlObj.searchParams.get('token');
+
+    // Verify token
+    const userInfo = verifyToken(token);
+    if (!userInfo || userInfo.username !== username) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+      return;
+    }
+
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
         const questions = new Set(data.questions || []);
-        let trash = getTrash();
+        let trash = getUserTrash(username);
         const before = trash.length;
         trash = trash.filter(t => !questions.has(t.item?.question));
-        saveTrash(trash);
+        saveUserTrash(username, trash);
+        console.log(`[Restore] User ${username} restored ${before - trash.length} items`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, restored_count: before - trash.length }));
       } catch (e) {
@@ -288,19 +784,31 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Trash: Delete Permanent
-  if (req.method === 'POST' && req.url === '/delete-permanent') {
+  // Trash: Delete Permanent (персональная)
+  if (req.method === 'POST' && req.url.startsWith('/delete-permanent')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user');
+    const token = urlObj.searchParams.get('token');
+
+    // Verify token
+    const userInfo = verifyToken(token);
+    if (!userInfo || userInfo.username !== username) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+      return;
+    }
+
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
         const questions = new Set(data.questions || []);
-        let trash = getTrash();
+        let trash = getUserTrash(username);
         const before = trash.length;
         trash = trash.filter(t => !questions.has(t.item?.question));
-        saveTrash(trash);
-        console.log(`[Trash] Permanently deleted ${before - trash.length} items`);
+        saveUserTrash(username, trash);
+        console.log(`[Trash] User ${username} permanently deleted ${before - trash.length} items`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, deleted_count: before - trash.length }));
       } catch (e) {
