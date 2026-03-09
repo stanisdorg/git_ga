@@ -22,6 +22,20 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
+// ============================================
+// Хеширование паролей (SHA-256 + соль)
+// ============================================
+const PASSWORD_SALT = process.env.PASSWORD_SALT || 'qa_helper_salt_2026_secure_key';
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(PASSWORD_SALT + password).digest('hex');
+}
+
+function verifyPassword(password, hash) {
+  return hashPassword(password) === hash;
+}
+
+// ============================================
 const server = http.createServer((req, res) => {
   const ts = new Date().toISOString();
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
@@ -133,9 +147,11 @@ const server = http.createServer((req, res) => {
         }
 
         const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-        const user = users.find(u => u.username === username && u.password === password);
-
-        if (!user) {
+        
+        // Ищем пользователя и проверяем хеш пароля
+        const user = users.find(u => u.username === username);
+        
+        if (!user || !verifyPassword(password, user.password)) {
           res.writeHead(401, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false, error: 'Invalid credentials' }));
           return;
@@ -214,10 +230,10 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        // Add user to users.json
+        // Add user to users.json с хешированным паролем
         const newUser = {
           username,
-          password,
+          password: hashPassword(password), // Хешируем пароль
           role: role || 'user',
           createdAt: new Date().toISOString()
         };

@@ -1,14 +1,14 @@
 [
   {
     "username": "admin",
-    "password": "admin",
+    "password": "de541379fba8a374e2e24d434f152bd9962a07d8345922e7ae98268dc9d3c2eb",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-09T23:34:11.354Z"
+    "lastLoginAt": "2026-03-09T23:47:53.572Z"
   },
   {
     "username": "stas",
-    "password": "admin",
+    "password": "de541379fba8a374e2e24d434f152bd9962a07d8345922e7ae98268dc9d3c2eb",
     "role": "user",
     "createdAt": "2026-03-08T12:00:00Z"
   }
