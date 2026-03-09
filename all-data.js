@@ -403,33 +403,62 @@ function applyAdminOverridesAndNewItems() {
     }
 }
 
+// Загрузка данных пользователя с сервера (для авторизованных пользователей)
+function loadUserCardsFromStorage() {
+    try {
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        if (!sessionUserRaw) return false;
+
+        const user = JSON.parse(sessionUserRaw);
+        if (!user || !user.username) return false;
+
+        const userCardsRaw = localStorage.getItem('qaUserCards');
+        if (!userCardsRaw) return false;
+
+        const userCards = JSON.parse(userCardsRaw);
+        if (!Array.isArray(userCards) || userCards.length === 0) return false;
+
+        console.log(`[all-data] Загружено ${userCards.length} карточек пользователя ${user.username} из localStorage`);
+        uniqueQaData = [...userCards];
+        return true;
+    } catch (e) {
+        console.error('[all-data] Ошибка загрузки данных пользователя:', e);
+        return false;
+    }
+}
+
 // Асинхронная функция для загрузки данных из JSON файлов
 async function initializeData() {
     try {
-        // Загружаем данные из JSON файлов
-        const jsonData = await loadJsonData();
-        
-        // Если данные успешно загружены и содержат валидные вопросы
-        if (jsonData && jsonData.length > 0) {
-            // Фильтруем пустые объекты, если они есть
-            const validData = jsonData.filter(item => item && item.question);
-            
-            if (validData.length > 0) {
-                uniqueQaData = validData;
-                
-                // Применяем локальные overrides и новые карточки
-                applyAdminOverridesAndNewItems();
+        // Сначала пробуем загрузить данные пользователя из localStorage
+        const userCardsLoaded = loadUserCardsFromStorage();
 
-                console.log(`Всего загружено ${uniqueQaData.length} уникальных вопросов (с учетом локальных правок)`);
-                
-                // Вызываем событие, чтобы уведомить о загрузке данных
-                document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
-            } else {
-                console.warn('Загруженные JSON данные не содержат валидных вопросов. Используем статические данные.');
+        // Если данные пользователя не загружены, загружаем из JSON файлов
+        if (!userCardsLoaded) {
+            console.log('[all-data] Данные пользователя не найдены, загружаем global.json');
+            const jsonData = await loadJsonData();
+
+            // Если данные успешно загружены и содержат валидные вопросы
+            if (jsonData && jsonData.length > 0) {
+                // Фильтруем пустые объекты, если они есть
+                const validData = jsonData.filter(item => item && item.question);
+
+                if (validData.length > 0) {
+                    uniqueQaData = validData;
+                    console.log(`Всего загружено ${uniqueQaData.length} вопросов из global.json`);
+                }
             }
         }
+
+        // Применяем локальные overrides и новые карточки (если они есть)
+        applyAdminOverridesAndNewItems();
+
+        console.log(`[all-data] Итоговое количество карточек: ${uniqueQaData.length}`);
+
+        // Вызываем событие, чтобы уведомить о загрузке данных
+        document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
     } catch (error) {
-        console.error('Ошибка при инициализации данных:', error);
+        console.error('[all-data] Ошибка при инициализации данных:', error);
     }
 }
 

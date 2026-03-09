@@ -5,6 +5,27 @@ import { uniqueQaData } from '../all-data.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
 import { startLearnSession } from './learn-ui.js?v=2.00';
 
+// Функция для получения актуальных данных (с учётом изменений пользователя)
+function getCurrentCards() {
+    // Пробуем получить данные из localStorage (для авторизованных пользователей)
+    try {
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        if (sessionUserRaw) {
+            const userCardsRaw = localStorage.getItem('qaUserCards');
+            if (userCardsRaw) {
+                const userCards = JSON.parse(userCardsRaw);
+                if (Array.isArray(userCards) && userCards.length > 0) {
+                    return userCards;
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('[stats-ui] Ошибка загрузки userCards:', e);
+    }
+    // Fallback на uniqueQaData
+    return uniqueQaData || [];
+}
+
 let statsContainer = null;
 let mainContainer = null;
 let currentXpMode = 'week';
@@ -903,7 +924,10 @@ function renderStats() {
   const tomorrowEnd = new Date(tomorrowStart); tomorrowEnd.setHours(23,59,59,999);
   const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7); weekEnd.setHours(23,59,59,999);
 
-  uniqueQaData.forEach(q => {
+  const currentCards = getCurrentCards();
+  console.log('[STATS.UI] Текущих карточек:', currentCards.length);
+
+  currentCards.forEach(q => {
       const p = progressMap[q.question] || progressMap[q.question.trim()];
       if (p && p.nextReviewDate) {
           const d = new Date(p.nextReviewDate);
@@ -911,7 +935,7 @@ function renderStats() {
           if (d >= now && d <= weekEnd) dueWeek++;
       }
   });
-  
+
   // Calculate Difficulty Distribution (ordered: Easy, Standard, Hard, Very Hard) with single palette
   const segs = [
       { label: 'Легкие', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: '❤️❤️❤️❤️🤍' },
@@ -919,12 +943,12 @@ function renderStats() {
       { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: '❤️❤️🤍🤍🤍' },
       { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: '❤️🤍🤍🤍🤍' }
   ];
-  
+
   let totalRated = 0;
   let favCount = 0;
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
 
-  uniqueQaData.forEach(q => {
+  currentCards.forEach(q => {
      if (favorites.has(q.question)) favCount++;
 
      let p = progressMap[q.question];
@@ -985,10 +1009,13 @@ function renderStats() {
             <div class="metric"><span>⚡</span> ${easyCount}</div>
             <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
           </div>
-          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:8px 16px;height:36px;font-size:13px;">▶ Продолжить обучение</button>
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 12px;height:32px;font-size:12px;font-weight:600;">▶ Обучение</button>
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
+
+      <!-- Отображение имени пользователя будет добавлено через JS -->
+      <div class="st-username-placeholder" style="display:none"></div>
 
       <!-- Кнопка продолжить на всю ширину -->
       <button class="st-cta-btn st-continue-mobile" id="st-continue-btn">Продолжить обучение</button>
@@ -1098,60 +1125,49 @@ function renderStats() {
 
         <div class="st-ach-section achievements">
           <div class="st-ach-scroll">
-            <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="🏁 Первый шаг: Заверши первый урок" style="cursor: help;">
               <div class="st-ach-icon">🏁</div>
               <div class="st-ach-title">Первый шаг</div>
-              <div class="st-ach-desc">Заверши первый урок</div>
             </div>
-            <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}" title="🔥 Неделя в огне: 7 дней подряд" style="cursor: help;">
               <div class="st-ach-icon">🔥</div>
               <div class="st-ach-title">Неделя в огне</div>
-              <div class="st-ach-desc">7 дней подряд</div>
             </div>
-            <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}" title="🏃 Марафонец: 30 дней подряд" style="cursor: help;">
               <div class="st-ach-icon">🏃</div>
               <div class="st-ach-title">Марафонец</div>
-              <div class="st-ach-desc">30 дней подряд</div>
             </div>
-            <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}" title="🎯 Снайпер: Точность 90%+" style="cursor: help;">
               <div class="st-ach-icon">🎯</div>
               <div class="st-ach-title">Снайпер</div>
-              <div class="st-ach-desc">Точность 90%+</div>
             </div>
-            <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}" title="💯 Центурион: 100 карточек" style="cursor: help;">
               <div class="st-ach-icon">💯</div>
               <div class="st-ach-title">Центурион</div>
-              <div class="st-ach-desc">100 карточек</div>
             </div>
-            <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}" title="👑 Мастер: Уровень 10" style="cursor: help;">
               <div class="st-ach-icon">👑</div>
               <div class="st-ach-title">Мастер</div>
-              <div class="st-ach-desc">Уровень 10</div>
             </div>
-            <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}" title="📈 Прогресс: 10 сложных → легкие" style="cursor: help;">
               <div class="st-ach-icon">📈</div>
               <div class="st-ach-title">Прогресс</div>
-              <div class="st-ach-desc">10 сложных → легкие</div>
             </div>
-            <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}" title="🧘 Стабильность: 14 дней подряд" style="cursor: help;">
               <div class="st-ach-icon">🧘</div>
               <div class="st-ach-title">Стабильность</div>
-              <div class="st-ach-desc">14 дней подряд</div>
             </div>
-            <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}" title="🦅 Возвращение: После перерыва" style="cursor: help;">
               <div class="st-ach-icon">🦅</div>
               <div class="st-ach-title">Возвращение</div>
-              <div class="st-ach-desc">После перерыва</div>
             </div>
-            <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}" title="🌅 Жаворонок: Занятие до 9 утра" style="cursor: help;">
               <div class="st-ach-icon">🌅</div>
               <div class="st-ach-title">Жаворонок</div>
-              <div class="st-ach-desc">Занятие до 9 утра</div>
             </div>
-            <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}">
+            <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}" title="🦉 Сова: Занятие после 23:00" style="cursor: help;">
               <div class="st-ach-icon">🦉</div>
               <div class="st-ach-title">Сова</div>
-              <div class="st-ach-desc">Занятие после 23:00</div>
             </div>
           </div>
         </div>
@@ -1169,6 +1185,35 @@ function renderStats() {
 
   const levelCont = container.querySelector('.st-level-inline');
   if (levelCont) {
+    // Добавляем имя пользователя перед уровнем
+    const usernameSpan = document.createElement('span');
+    usernameSpan.className = 'st-username-display';
+    usernameSpan.style.marginRight = '8px';
+    usernameSpan.style.fontSize = '13px';
+    usernameSpan.style.color = '#4ec9b0';
+    usernameSpan.style.fontWeight = '600';
+    
+    try {
+      const sessionUserRaw = localStorage.getItem('qaSessionUser');
+      if (sessionUserRaw) {
+        const user = JSON.parse(sessionUserRaw);
+        if (user && user.username) {
+          usernameSpan.textContent = user.username;
+        } else {
+          usernameSpan.textContent = 'Гость';
+          usernameSpan.style.color = '#808080';
+        }
+      } else {
+        usernameSpan.textContent = 'Гость';
+        usernameSpan.style.color = '#808080';
+      }
+    } catch (e) {
+      usernameSpan.textContent = 'Гость';
+      usernameSpan.style.color = '#808080';
+    }
+    
+    levelCont.parentNode.insertBefore(usernameSpan, levelCont);
+    
     try {
       const d = getCurrentLevel();
       const box = document.createElement('div');
@@ -1246,7 +1291,7 @@ function renderStats() {
       continueBtn.addEventListener('click', () => {
           const questions = (window.currentQuestions && window.currentQuestions.length > 0)
               ? window.currentQuestions
-              : uniqueQaData;
+              : getCurrentCards();
 
           if (!questions || questions.length === 0) {
               alert('Нет вопросов для изучения');
@@ -1313,7 +1358,8 @@ function renderStats() {
       authBtn.addEventListener('click', () => {
           const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
           if (user) {
-             if (confirm(`Выйти из аккаунта ${user.email}?`)) {
+             const username = user.username || user.email || 'пользователь';
+             if (confirm(`Выйти из аккаунта ${username}?`)) {
                  if (window.qaAuth.logout) window.qaAuth.logout();
                  renderStats();
              }
@@ -1566,9 +1612,10 @@ window.openDiffModal = (index) => {
   let label = '';
   const prog = getProgressMap();
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-  
+  const currentCards = getCurrentCards();
+
   if (index === 'favorites') {
-     list = uniqueQaData.filter(q => favorites.has(q.question));
+     list = currentCards.filter(q => favorites.has(q.question));
      label = 'Избранное';
   } else {
      const i = parseInt(index);
@@ -1580,12 +1627,14 @@ window.openDiffModal = (index) => {
      ];
      const r = ranges[i];
      label = r.label;
-     list = uniqueQaData.filter(q => {
+     list = currentCards.filter(q => {
         const p = prog[q.question] || prog[q.question.trim()];
         if (!p || p.easeFactor === undefined) return false;
         return p.easeFactor >= r.min && p.easeFactor < r.max;
      });
   }
+
+  console.log('[openDiffModal] Карточек:', list.length, 'из', currentCards.length);
   
   // Show Modal
   const overlay = document.createElement('div');
@@ -1630,11 +1679,12 @@ window.openDiffModal = (index) => {
 
 window.startFilteredSession = (index) => {
   document.querySelector('.st-modal-overlay')?.remove();
-  
+
+  const currentCards = getCurrentCards();
   let cards = [];
   if (index === 'favorites') {
       const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-      cards = uniqueQaData.filter(q => favorites.has(q.question));
+      cards = currentCards.filter(q => favorites.has(q.question));
   } else {
       const i = parseInt(index);
       const ranges = [
@@ -1645,14 +1695,16 @@ window.startFilteredSession = (index) => {
       ];
       const r = ranges[i];
       const prog = getProgressMap();
-      
-      cards = uniqueQaData.filter(q => {
+
+      cards = currentCards.filter(q => {
          const p = prog[q.question] || prog[q.question.trim()];
          if (!p || p.easeFactor === undefined) return false;
          return p.easeFactor >= r.min && p.easeFactor < r.max;
       });
   }
-  
+
+  console.log('[startFilteredSession] Карточек:', cards.length);
+
   if (cards.length === 0) {
       alert('Нет карт в этой категории');
       return;
@@ -1663,18 +1715,20 @@ window.startFilteredSession = (index) => {
 };
 
 window.startRiskSession = (catName) => {
-   const riskZones = getRiskZones(uniqueQaData);
+   const currentCards = getCurrentCards();
+   const riskZones = getRiskZones(currentCards);
    const zone = riskZones.find(z => z.cat === catName);
    if (!zone || !zone.items || zone.items.length === 0) return;
-   
+
    hideStatsPage();
    startLearnSession(zone.items, { mode: 'cram' });
 };
 
 window.startMode = (modeId) => {
     console.log('[Stats] Starting mode:', modeId);
-    
-    if (!uniqueQaData || uniqueQaData.length === 0) {
+
+    const currentCards = getCurrentCards();
+    if (!currentCards || currentCards.length === 0) {
         alert('Данные не загружены');
         return;
     }

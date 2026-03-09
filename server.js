@@ -259,7 +259,11 @@ const server = http.createServer((req, res) => {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username');
 
+    console.log('[Server/Load] === ЗАПРОС НА ЗАГРУЗКУ ПРОГРЕССА ===');
+    console.log('[Server/Load] Username:', username);
+
     if (!username) {
+      console.error('[Server/Load] Ошибка: username не указан');
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
@@ -268,6 +272,7 @@ const server = http.createServer((req, res) => {
     const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
     if (!fs.existsSync(targetPath)) {
+      console.log('[Server/Load] Файл пользователя не найден');
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'User data not found' }));
       return;
@@ -275,7 +280,12 @@ const server = http.createServer((req, res) => {
 
     try {
       const userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
-      
+      console.log('[Server/Load] Прочитано данных:', {
+        cards: userData._cards?.length || 0,
+        favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
+        achievements: Object.keys(userData._achievements || {}).length
+      });
+
       // Возвращаем данные в формате который ожидает клиент
       const response = {
         ok: true,
@@ -291,10 +301,11 @@ const server = http.createServer((req, res) => {
         updatedAt: Date.now()
       };
 
+      console.log('[Server/Load] === ОТПРАВКА ДАННЫХ КЛИЕНТУ ===');
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(response));
     } catch (e) {
-      console.error('Failed to load progress:', e);
+      console.error('[Server/Load] Ошибка чтения:', e);
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'read_failed' }));
     }
@@ -359,10 +370,13 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/save')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
-    // token parameter removed - using username only for development
+
+    console.log('[Server/Save] === ЗАПРОС НА СОХРАНЕНИЕ ===');
+    console.log('[Server/Save] Username:', username);
 
     // Проверка что username существует
     if (!username) {
+      console.error('[Server/Save] Ошибка: username не указан');
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
@@ -373,6 +387,7 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
+        console.log('[Server/Save] Получено данных:', Array.isArray(data) ? data.length : 'not array');
 
         // Персональный файл пользователя
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
@@ -380,30 +395,34 @@ const server = http.createServer((req, res) => {
         let userData = {};
         if (fs.existsSync(targetPath)) {
           userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+          console.log('[Server/Save] Существующий файл найден, карточ:', userData._cards?.length || 0);
+        } else {
+          console.log('[Server/Save] Создаётся новый файл пользователя');
         }
 
         // Сохраняем карточки в _cards
         userData._cards = data;
-        
+
         // Обновляем метаданные
         if (!userData._meta) userData._meta = {};
         userData._meta.cardsCount = data.length;
         userData._meta.lastLoginAt = new Date().toISOString();
+        userData._meta.lastSavedAt = new Date().toISOString();
 
         // Записываем обратно
         fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
           if (err) {
-            console.error('Failed to write user data:', err);
+            console.error('[Server/Save] Ошибка записи:', err);
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
-          console.log(`[Save] User ${username} saved ${data.length} cards`);
+          console.log(`[Server/Save] === УСПЕШНО СОХРАНЕНО === ${data.length} карточек для ${username}`);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {
-        console.error('Invalid JSON body:', e);
+        console.error('[Server/Save] Ошибка парсинга JSON:', e);
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
       }
@@ -828,7 +847,7 @@ const server = http.createServer((req, res) => {
     console.error('URI Decode Error:', e.message);
     requestUrl = req.url;
   }
-  
+
   // Удаляем параметры запроса (например ?t=...)
   const queryIndex = requestUrl.indexOf('?');
   if (queryIndex !== -1) {

@@ -1,49 +1,51 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=4.11';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=4.30';
 import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=2.00';
 import { loadFromServer } from './srs/storage.js?v=2.01';
 import { initSyncIndicator } from './srs/sync-ui.js?v=2.00';
 
 export const APP_VERSION = '4.11';
 
-// Debug banner for script loading verification
-// Removed after fix
-
-// Global Error Handler - Prints errors to screen
-// Removed after fix
+let uiInitialized = false;
 
 // Функция для инициализации UI
 export function initUI() {
     console.log('initUI called');
+    
+    // Защита от повторной инициализации
+    if (uiInitialized) {
+        console.log('initUI: уже инициализировано, пропускаем');
+        return;
+    }
+    uiInitialized = true;
+    
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
-    
-    // Загружаем прогресс с локального сервера
-    loadFromServer().then(() => {
-        const evt = new Event('xpUpdated'); 
-        window.dispatchEvent(evt);
-        window.dispatchEvent(new Event('dataLoaded'));
-    }).catch(e => console.error('Failed to load progress:', e));
-    
+
     // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
     const isStats = location.hash && location.hash.includes('stats');
-    
+
     // Always initialize main app to ensure Auth and logic availability
     initTabsNavigation(APP_VERSION);
-    
+
     if (isStats) {
         initStatsPage(APP_VERSION);
     }
-    
+
     // Добавляем стили для табов и карточек
     addStyles();
     createBottomNav();
     initSyncIndicator();
 
-    // Обновляем UI при изменении данных
+    // Загружаем прогресс с локального сервера ПОСЛЕ инициализации табов
+    // dataLoaded не диспатчим здесь — loadFromServer сам диспатчит
+    loadFromServer().catch(e => console.error('Failed to load progress:', e));
+
+    // Обновляем UI при изменении данных (только для админских изменений)
     const reinit = () => {
+        console.log('reinit: перерисовка UI');
         removeExistingNavigation();
 
         // Always init main app
@@ -58,7 +60,7 @@ export function initUI() {
         createBottomNav();
         initSyncIndicator();
     };
-    document.addEventListener('dataLoaded', reinit);
+    // Убрали dataLoaded из списка, чтобы не было дублей
     window.addEventListener('adminItemAdded', reinit);
     window.addEventListener('adminOverridesChanged', reinit);
 

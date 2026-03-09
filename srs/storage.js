@@ -79,6 +79,8 @@ export async function syncWithServer() {
 }
 
 export async function loadFromServer() {
+    console.log('[loadFromServer] === ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ===');
+    
     // Only load if we have a logged-in user
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
@@ -87,55 +89,80 @@ export async function loadFromServer() {
         if (u && u.username) username = u.username;
     } catch {}
 
-    if (!username) return; // Guest -> do not load
+    if (!username) {
+        console.log('[loadFromServer] Нет авторизованного пользователя, загрузка не требуется');
+        // Диспатчим dataLoaded чтобы UI загрузился с global.json
+        window.dispatchEvent(new Event('dataLoaded'));
+        return;
+    }
+
+    console.log('[loadFromServer] Загрузка для пользователя:', username);
 
     try {
-        const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`);
+        const url = `/api/progress?username=${encodeURIComponent(username)}`;
+        console.log('[loadFromServer] GET', url);
         
+        const res = await fetch(url);
+
         // Если сервер недоступен (404, 500, network error) - загружаем локальные данные
         if (!res || !res.ok) {
-            console.log('Load: server unavailable - using local data');
-            // Диспатчим dataLoaded, чтобы UI обновился локальными данными
+            console.log('[loadFromServer] Сервер недоступен (status:', res?.status, ') - используем локальные данные');
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
-        
+
         const data = await res.json();
+        console.log('[loadFromServer] Получены данные с сервера:', {
+            hasCards: !!data._cards,
+            cardsCount: data._cards?.length || 0,
+            hasProgress: !!data.srsProgress,
+            hasFavorites: !!data.qaFavorites,
+            hasAchievements: !!data.studyAchievements,
+            updatedAt: data.updatedAt ? new Date(data.updatedAt).toISOString() : 'no timestamp'
+        });
 
         if (!data || Object.keys(data).length === 0) {
-            console.log('Load: no data from server - using local data');
+            console.log('[loadFromServer] Нет данных от сервера - используем локальные данные');
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
 
         // Check if server data is newer than local last sync
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
+        console.log('[loadFromServer] Сравнение timestamp: локальный=', localTS, 'серверный=', data.updatedAt);
+        
         if (data.updatedAt && data.updatedAt <= localTS) {
             // Local data is fresher or equal, do not overwrite
-            console.log('Load: local data is fresher');
+            console.log('[loadFromServer] Локальные данные свежее или равны - не перезаписываем');
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
         // Restore keys
-        if (data._cards) localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
+        if (data._cards) {
+            localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
+            console.log('[loadFromServer] Сохранено', data._cards.length, 'карточек в localStorage');
+        }
         if (data.srsProgress) localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
         if (data.studyStats) localStorage.setItem('studyStats', JSON.stringify(data.studyStats));
         if (data.studyStreak) localStorage.setItem('studyStreak', JSON.stringify(data.studyStreak));
         if (data.dailyPoints) localStorage.setItem('dailyPoints', JSON.stringify(data.dailyPoints));
         if (data.dailyBonusPoints) localStorage.setItem('dailyBonusPoints', JSON.stringify(data.dailyBonusPoints));
         if (data.dailyDayBonusPoints) localStorage.setItem('dailyDayBonusPoints', JSON.stringify(data.dailyDayBonusPoints));
-        if (data.qaFavorites) localStorage.setItem('qaFavorites', JSON.stringify(data.qaFavorites));
+        if (data.qaFavorites) {
+            localStorage.setItem('qaFavorites', JSON.stringify(data.qaFavorites));
+            console.log('[loadFromServer] Сохранено', data.qaFavorites.length, 'избранных');
+        }
         if (data.studyAchievements) localStorage.setItem('studyAchievements', JSON.stringify(data.studyAchievements));
 
-        console.log('Load: data loaded from server');
+        console.log('[loadFromServer] === ДАННЫЕ УСПЕШНО ЗАГРУЖЕНЫ ===');
         // Dispatch events to update UI
         window.dispatchEvent(new Event('xpUpdated'));
         window.dispatchEvent(new Event('favoritesUpdated'));
         window.dispatchEvent(new Event('dataLoaded'));
     } catch (e) {
-        console.log('Load: error - using local data:', e.message);
+        console.error('[loadFromServer] Ошибка загрузки:', e.message);
         // При ошибке используем локальные данные
         window.dispatchEvent(new Event('dataLoaded'));
     }

@@ -1,7 +1,7 @@
 // Вариант 3: Табы для категорий и карточки для подкатегорий
 
 // Импортируем данные и генератор категорий
-import { uniqueQaData } from '../all-data.js?v=1.61';
+import { uniqueQaData } from '../all-data.js?v=4.17';
 import { buildCategoriesFromData } from '../computed-categories.js?v=1.61';
 import { setNormalizationDisabled } from '../load-json-data.js?v=1.61';
 import { getProgressMap } from '../srs/stats-utils.js?v=1.61';
@@ -36,7 +36,25 @@ function setDeletedItems(map) { setLS('qaDeletedItems', map); }
 
 // Получение актуальных данных с учетом удаленных
 function getRuntimeData() {
-    const base = uniqueQaData.map(item => ({ ...item }));
+    // Сначала пробуем загрузить данные пользователя из localStorage
+    let baseData = uniqueQaData;
+    try {
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        if (sessionUserRaw) {
+            const userCardsRaw = localStorage.getItem('qaUserCards');
+            if (userCardsRaw) {
+                const userCards = JSON.parse(userCardsRaw);
+                if (Array.isArray(userCards) && userCards.length > 0) {
+                    baseData = userCards;
+                    console.log('[getRuntimeData] Используем qaUserCards:', userCards.length, 'карточек');
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('[getRuntimeData] Ошибка загрузки userCards:', e);
+    }
+    
+    const base = baseData.map(item => ({ ...item }));
     const overrides = getOverrides();
     const newItems = getNewItems();
     const deleted = getDeletedItems();
@@ -146,58 +164,40 @@ async function fetchWithAuth(url, options = {}) {
     return fetch(urlObj.toString(), fetchOptions);
 }
 
-// Auto-load user data on page load if credentials are saved
+// Auto-load user data on page load if user is logged in (qaSessionUser exists)
 async function autoLoadUserData() {
-    const savedUsername = localStorage.getItem('qaUsername');
-    const savedPassword = localStorage.getItem('qaPassword');
+    console.log('[AutoLoad] === ПРОВЕРКА АВТОЗАГРУЗКИ ===');
     
-    if (savedUsername && savedPassword) {
-        console.log('[AutoLoad] Found saved credentials, attempting auto-login...');
-        try {
-            const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: savedUsername, password: savedPassword })
-            });
-            
-            if (loginRes.ok) {
-                const loginData = await loginRes.json();
-                if (loginData.ok) {
-                    console.log('[AutoLoad] Auto-login successful:', savedUsername);
-                    setLoggedUser({ username: loginData.username, role: loginData.role });
-                    
-                    // Load user data from server
-                    const loadRes = await fetch(`${BACKEND_URL}/load?user=${savedUsername}`);
-                    if (loadRes.ok) {
-                        const userData = await loadRes.json();
-                        console.log('[AutoLoad] Loaded', userData._cards?.length, 'cards for', savedUsername);
-                        
-                        // Save to localStorage for offline use
-                        if (userData._cards) {
-                            localStorage.setItem('qaUserCards', JSON.stringify(userData._cards));
-                        }
-                        if (userData._achievements) {
-                            localStorage.setItem('studyAchievements', JSON.stringify(userData._achievements));
-                            console.log('[AutoLoad] Loaded achievements from server');
-                        }
-                        if (userData._stats) {
-                            localStorage.setItem('studyStats', JSON.stringify(userData._stats));
-                        }
-                        if (userData._srsProgress) {
-                            localStorage.setItem('srsProgress', JSON.stringify(userData._srsProgress));
-                        }
-                        if (userData._favorites) {
-                            localStorage.setItem('qaFavorites', JSON.stringify(userData._favorites));
-                        }
-                        
-                        // Trigger data loaded event
-                        window.dispatchEvent(new Event('dataLoaded'));
-                    }
-                }
-            }
-        } catch (e) {
-            console.error('[AutoLoad] Auto-login failed:', e);
-        }
+    // Проверяем, есть ли активная сессия
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    if (!sessionUserRaw) {
+        console.log('[AutoLoad] Нет активной сессии (qaSessionUser пуст)');
+        return;
+    }
+    
+    let username = null;
+    try {
+        const u = JSON.parse(sessionUserRaw);
+        if (u && u.username) username = u.username;
+    } catch (e) {
+        console.error('[AutoLoad] Ошибка парсинга qaSessionUser:', e);
+        return;
+    }
+
+    if (!username) {
+        console.log('[AutoLoad] Нет username в сессии');
+        return;
+    }
+
+    console.log('[AutoLoad] Найдена активная сессия для:', username);
+
+    // Загружаем данные через srs/storage.js
+    try {
+        const { loadFromServer } = await import('../srs/storage.js?v=2.01');
+        await loadFromServer();
+        console.log('[AutoLoad] Автозагрузка завершена');
+    } catch (e) {
+        console.error('[AutoLoad] Ошибка автозагрузки:', e);
     }
 }
 
@@ -257,15 +257,30 @@ export function initTabsNavigation(appVersion) {
     levelContainer.style.display = 'flex';
     levelContainer.style.alignItems = 'center';
 
+    // Показываем все вопросы при инициализации
+    console.log('[initTabsNavigation] Показываем все вопросы при инициализации');
+    showAllQuestions();
+
     // Автоматическая загрузка с учётом текущего контекста
-    // Раньше здесь был безусловный вызов showAllQuestions(), который
-    // сбрасывал контекст после перезагрузки данных (например, после восстановления из корзины).
-    // Теперь используем refreshCurrentContext(), чтобы сохранить выбранную категорию/подкатегорию/избранное.
-    setTimeout(() => refreshCurrentContext(), 100);
+    // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
+    setTimeout(() => {
+        console.log('[initTabsNavigation] Обновляем контекст через 100мс');
+        refreshCurrentContext();
+    }, 100);
 
     // Слушаем обновление избранного из облака
     window.addEventListener('favoritesUpdated', () => {
         refreshCurrentContext();
+    });
+
+    // Слушаем dataLoaded от all-data.js для обновления после загрузки данных
+    document.addEventListener('dataLoaded', (e) => {
+        const data = e.detail?.data;
+        console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
+        if (data && data.length > 0) {
+            // Обновляем UI только если данные изменились
+            refreshCurrentContext();
+        }
     });
     
     // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
@@ -479,7 +494,7 @@ export function initTabsNavigation(appVersion) {
     statsBtn.style.padding = '0 10px';
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
     statsBtn.addEventListener('click', async () => {
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=25');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.30');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -497,7 +512,8 @@ export function initTabsNavigation(appVersion) {
     ensureDefaultUsers();
     loginMainBtn.addEventListener('click', () => {
         if (loggedInUser) {
-            if (confirm('Выйти из аккаунта?')) {
+            const username = loggedInUser.username || 'пользователь';
+            if (confirm(`Выйти из аккаунта ${username}?`)) {
                 setLoggedUser(null);
                 loginMainBtn.title = 'Войти';
             }
@@ -694,6 +710,36 @@ export function initTabsNavigation(appVersion) {
     window.qaAuth.logout = () => setLoggedUser(null);
     // Плашка уровня и XP
     import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+        // Добавляем имя пользователя
+        const usernameSpan = document.createElement('span');
+        usernameSpan.className = 'username-display';
+        usernameSpan.style.marginRight = '8px';
+        usernameSpan.style.fontSize = '13px';
+        usernameSpan.style.color = '#4ec9b0';
+        usernameSpan.style.fontWeight = '600';
+        
+        // Получаем имя из сессии
+        try {
+            const sessionUserRaw = localStorage.getItem('qaSessionUser');
+            if (sessionUserRaw) {
+                const user = JSON.parse(sessionUserRaw);
+                if (user && user.username) {
+                    usernameSpan.textContent = user.username;
+                } else {
+                    usernameSpan.textContent = 'Гость';
+                    usernameSpan.style.color = '#808080';
+                }
+            } else {
+                usernameSpan.textContent = 'Гость';
+                usernameSpan.style.color = '#808080';
+            }
+        } catch (e) {
+            usernameSpan.textContent = 'Гость';
+            usernameSpan.style.color = '#808080';
+        }
+        
+        levelContainer.appendChild(usernameSpan);
+        
         const box = document.createElement('div');
         box.className = 'level-inline';
         const data = getCurrentLevel();
@@ -747,6 +793,24 @@ export function initTabsNavigation(appVersion) {
                 const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
                 const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
                 if (tx) tx.textContent = `XP:${d.xp}  ${cur}/${tot}`;
+                
+                // Обновляем имя пользователя
+                const usernameSpan = levelContainer.querySelector('.username-display');
+                if (usernameSpan) {
+                    try {
+                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                        if (sessionUserRaw) {
+                            const user = JSON.parse(sessionUserRaw);
+                            if (user && user.username) {
+                                usernameSpan.textContent = user.username;
+                                usernameSpan.style.color = '#4ec9b0';
+                            } else {
+                                usernameSpan.textContent = 'Гость';
+                                usernameSpan.style.color = '#808080';
+                            }
+                        }
+                    } catch (e) {}
+                }
             }).catch(()=>{});
         }
         window.addEventListener('xpUpdated', updateLevelInline);
@@ -869,7 +933,7 @@ export function initTabsNavigation(appVersion) {
         'dailyBonusPoints', 'dailyDayBonusPoints', 'qaFavorites', 'studyAchievements'
     ];
 
-    function setLoggedUser(user, token = null) {
+    async function setLoggedUser(user, token = null) {
         // Переключение Guest -> User (Login)
         if (!loggedInUser && user) {
             // Бэкап данных гостя
@@ -880,7 +944,7 @@ export function initTabsNavigation(appVersion) {
             // Очищаем данные, чтобы загрузить профиль пользователя начисто
             DATA_KEYS.forEach(k => localStorage.removeItem(k));
             localStorage.removeItem('localDataTimestamp');
-            
+
             // Сохраняем токен если есть
             if (token) {
                 localStorage.setItem('sessionToken', token);
@@ -889,6 +953,15 @@ export function initTabsNavigation(appVersion) {
 
         // Переключение User -> Guest (Logout)
         if (loggedInUser && !user) {
+            // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
+            console.log('[Logout] Saving all data to server before logout...');
+            try {
+                await saveMergedToServer();
+                console.log('[Logout] Data saved successfully');
+            } catch (e) {
+                console.error('[Logout] Failed to save data before logout:', e);
+            }
+
             // Восстанавливаем данные гостя
             const raw = localStorage.getItem('guest_backup');
             if (raw) {
@@ -904,11 +977,12 @@ export function initTabsNavigation(appVersion) {
                 DATA_KEYS.forEach(k => localStorage.removeItem(k));
             }
             localStorage.removeItem('localDataTimestamp');
-            // Удаляем токен и credentials при выходе
+
+            // ⚠️ ВАЖНО: Удаляем сессию полностью
             localStorage.removeItem('sessionToken');
             localStorage.removeItem('currentUser');
-            localStorage.removeItem('qaUsername');
-            localStorage.removeItem('qaPassword');
+            localStorage.removeItem('qaSessionUser');
+            console.log('[Logout] Session cleared. User must login again to access data.');
         }
 
         loggedInUser = user;
@@ -936,7 +1010,9 @@ export function initTabsNavigation(appVersion) {
                     mod.hydrateLocalFromSupabase().then(() => {
                         const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
                         // Также обновляем избранное
-                         window.dispatchEvent(new Event('favoritesUpdated'));
+                        window.dispatchEvent(new Event('favoritesUpdated'));
+                        // Обновляем UI табов после загрузки данных
+                        window.dispatchEvent(new Event('dataLoaded'));
                     }).catch(()=>{});
                 }
             }).catch(()=>{});
@@ -944,6 +1020,12 @@ export function initTabsNavigation(appVersion) {
              // Если вышли (Guest), тоже обновим UI
              window.dispatchEvent(new Event('xpUpdated'));
              window.dispatchEvent(new Event('favoritesUpdated'));
+             // Обновляем имя на "Гость"
+             const usernameSpan = document.querySelector('.username-display');
+             if (usernameSpan) {
+                 usernameSpan.textContent = 'Гость';
+                 usernameSpan.style.color = '#808080';
+             }
         }
     }
 
@@ -2078,12 +2160,16 @@ function setSaveStatus(state, msg) {
 
 async function saveMergedToServer() {
     try {
+        // Отправляем событие начала синхронизации
+        console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ ===');
+        window.dispatchEvent(new Event('sync-start'));
+
         const overrides = getOverrides();
         const newItems = getNewItems();
         const deletedMap = getDeletedItems();
         const merged = [];
         const seen = new Set();
-        console.log('[saveMergedToServer] Старт', {
+        console.log('[saveMergedToServer] Параметры', {
             baseCount: uniqueQaData.length,
             overridesCount: Object.keys(overrides || {}).length,
             newItemsCount: Array.isArray(newItems) ? newItems.length : 0,
@@ -2107,7 +2193,7 @@ async function saveMergedToServer() {
             }
         });
         const lastRestored = typeof window !== 'undefined' ? window.__lastRestoredQuestion : null;
-        console.log('[saveMergedToServer] Перед отправкой', {
+        console.log('[saveMergedToServer] Сформировано данных', {
             mergedCount: merged.length,
             containsLastRestored: lastRestored ? merged.some(i => i.question === lastRestored) : 'n/a',
         });
@@ -2119,8 +2205,12 @@ async function saveMergedToServer() {
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
         } catch {}
+        console.log('[saveMergedToServer] Пользователь:', username || 'guest');
 
-        const resp = await fetch(`${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`, {
+        const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
+        console.log('[saveMergedToServer] POST', url);
+
+        const resp = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(merged)
@@ -2130,16 +2220,35 @@ async function saveMergedToServer() {
         try {
             responseJson = await resp.json();
             if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
-        } catch (_) {}
-        console.log('[saveMergedToServer] Ответ сервера', { ok, responseJson });
-        if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
+        } catch (parseErr) {
+            console.warn('[saveMergedToServer] Не удалось распарсить ответ:', parseErr);
+        }
+        console.log('[saveMergedToServer] Ответ сервера:', { status: resp.status, ok, responseJson });
 
+        if (!ok) {
+            console.error('[saveMergedToServer] Сервер вернул ошибку');
+            throw new Error('Сервер вернул ошибку при сохранении');
+        }
+
+        // Успешное сохранение
+        console.log('[saveMergedToServer] Успешно сохранено', merged.length, 'карточек');
         setSaveStatus('success');
-        setTimeout(() => { window.dispatchEvent(new Event('forceReloadData')); }, 50);
+        
+        // Отправляем событие успешной синхронизации
+        window.dispatchEvent(new Event('sync-success'));
+        
+        // Принудительная перезагрузка данных через 50мс
+        setTimeout(() => {
+            console.log('[saveMergedToServer] Dispatch forceReloadData');
+            window.dispatchEvent(new Event('forceReloadData'));
+        }, 50);
+        
         return true;
     } catch (e) {
-        console.error('Save failed:', e);
+        console.error('[saveMergedToServer] Ошибка сохранения:', e);
         setSaveStatus('error', 'Ошибка: ' + e.message);
+        // Отправляем событие ошибки синхронизации
+        window.dispatchEvent(new Event('sync-error'));
         return false;
     }
 }
@@ -2365,9 +2474,9 @@ function renderTrashPanel() {
                     if (!baseHas && !newHas && it) {
                         newItemsArr.push({ ...it });
                         setLS('qaNewItems', newItemsArr);
-                        console.log('[restore-click] Карточка добавлена в qaNewItems для сохранения', { question: q });
+                        console.log('[restore-click] Карточка до������влена в qaNewItems для сохранения', { question: q });
                     } else {
-                        console.log('[restore-click] Карточка уже присутствует в данных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
+                        console.log('[restore-click] Карточка уже присутствует в ����анных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
                     }
                     try { window.__lastRestoredQuestion = q; } catch (_) {}
                     // После успешного восстановления сразу сохраняем объединённые данные на сервер,
@@ -2856,12 +2965,24 @@ export function displayQuestions(questions, title) {
                     const newQuestion = editQuestion.value.trim();
                     const newAnswer = editAnswer.value.trim();
                     if (!newQuestion || !newAnswer) { alert('Вопрос и ответ не могут быть пустыми'); return; }
+                    
+                    const oldQuestion = item.question;
                     const overrides = getOverrides();
                     // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
-                    overrides[item.question] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
+                    overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
                     setOverrides(overrides);
+                    
+                    // Если карточка была в избранном — обновляем ключ в избранном
+                    const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+                    if (favorites.has(oldQuestion)) {
+                        favorites.delete(oldQuestion);
+                        favorites.add(newQuestion);
+                        localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
+                        console.log('[Edit] Обновлено избранное:', { oldQuestion, newQuestion });
+                    }
+                    
                     // После сохранения — перерисовка с карандашом и меню
-                    displayQuestions(currentQuestions.map(q => q.question === item.question ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
+                    displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
                     const rowEl = resultItem.querySelector('.question-row');
                     setInlineSaveStatus(rowEl, 'saving');
                     const ok = await saveMergedToServer();
