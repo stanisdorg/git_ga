@@ -3,15 +3,15 @@
     "username": "admin",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-09T21:22:42.353Z",
+    "lastLoginAt": "2026-03-09T23:23:34.996Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-09T21:22:42.353Z"
+    "lastSavedAt": "2026-03-09T23:23:34.996Z"
   },
   "_cards": [
     {
       "category": "DevOps",
       "subcategory": "CI/CD",
-      "question": "CI CD? 23",
+      "question": "CI CD?",
       "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
     },
     {
@@ -924,7 +924,7 @@
     },
     {
       "category": "Документация",
-      "subcategory": "Т�����������������пы тре������������������������ований",
+      "subcategory": "Типы тре����������������������ований",
       "question": "Какие виды требований знаете?",
       "answer": "Функциональные — это как работает система. Нефункциональные — это про UI, UX, дизайн, насколько удобно пользователю, например, доступность не менее 99,9% времени в год.\n\n--- Дополнительный ответ ---\nфункц-то как работает система, нефункц-про ui, ux, дизайн, про то насколько удобно пользователю, нефункц- по нагрузке, например: доступность не менее 99,9% времени в год"
     },
@@ -1003,7 +1003,7 @@
     {
       "category": "Тестирование",
       "subcategory": "API",
-      "question": "Что такое пирамида тестирования?",
+      "question": "Что такое пирамида ��естирования?",
       "answer": "Пирамида те��ти��ования — это концепция, которая демонстрирует, как распределяются тесты: внизу находятся модульные (unit) тесты, интеграционные (API тесты) и системные (E2E тесты). Модульные тесты имеют большое покрытие, требуют меньших затрат на поддержку и более стабильны. Двигаемся вверх: API тесты — покрытие меньше, затраты выше, стабильности меньше. Системные тесты самые дорогие, их покрытие также меньше, и они менее стабильны."
     },
     {
@@ -1483,7 +1483,7 @@
       "category": "Технические",
       "subcategory": "API и Сети",
       "question": "PUT vs PATCH? (пример неидемпотентного PATCH)",
-      "answer": "Оба метода изменяют информацию. PUT — (идемпотентный) например, создание новой карточки, передаем все поля. PATCH — (неидемпотентный) редактирование уже существующего объекта. Пример: запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным.\n\n--- Дополнительный ответ ---\nоба метода меняют информацию\n    put - (идемпот+?)например создание новой карточки, передаем все поля\n    patch - (не идемпот)���ед��кт��ро��ан��е уже ��у��еств��ющего о��ъе��та\n    PUT-о��но��ле��ие, PATCH-ч��стич��о�� обновление, пример:\n    Запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным."
+      "answer": "Оба метода изменяют информацию. PUT — (идемпотентный) например, создание новой карточки, передаем все поля. PATCH — (неидемпотентный) редактирование уже существующего объекта. Пример: запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным.\n\n--- Дополнительный ответ ---\nоба метода меняют информацию\n    put - (идемпот+?)например создание новой карточки, передаем все поля\n    patch - (не идемпот)редактирование уже существующего о��ъе��та\n    PUT-о��но��ле��ие, PATCH-ч��стич��о�� обновление, пример:\n    Запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным."
     },
     {
       "category": "Технические",
@@ -2042,384 +2042,253 @@
     }
   ],
   "_achievements": {
-    "firstSessionCompleted": true
+    "firstSessionCompleted": true,
+    "nightOwl": true
   },
   "_stats": {
-    "total": 17,
-    "timeSpent": 11482,
-    "points": 85
+    "total": 11,
+    "timeSpent": 3977,
+    "points": 55
   },
   "_srsProgress": {
-    "PCT/IP": {
+    "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773057501030,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095735839,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773057501030,
+          "date": 1773095735839,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 17,
-      "question": "PCT/IP"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
     },
-    "брокеры?": {
+    "charlies proxy": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773057501302,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095736070,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773057501302,
+          "date": 1773095736070,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 17,
-      "question": "брокеры?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "charlies proxy"
     },
-    "как отправлял сообщения в кафке ручками?": {
+    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773057501539,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095736240,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773057501539,
+          "date": 1773095736240,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 17,
-      "question": "как отправлял сообщения в кафке ручками?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
     },
-    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
+    "docker swarm?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773057501725,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095736773,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773057501725,
+          "date": 1773095736773,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 17,
-      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "docker swarm?"
     },
-    "User story": {
+    "Из чего состоит Kafka и как работает?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773059435291,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095736960,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773059435291,
+          "date": 1773095736960,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "User story"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "Из чего состоит Kafka и как работает?"
     },
-    "логи кафка": {
+    "Gitlab Ci/Jenkins": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773059435525,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095737277,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773059435525,
+          "date": 1773095737277,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "логи кафка"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "Gitlab Ci/Jenkins"
     },
-    "CI CD?": {
+    "Access Token": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773059435670,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095793557,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773059435670,
+          "date": 1773095793557,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "CI CD?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "Access Token"
     },
-    "radis?": {
+    "как с kibana работал?  уровни ошибок ?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773059435843,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095793856,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773059435843,
+          "date": 1773095793856,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "radis?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "как с kibana работал?  уровни ошибок ?"
     },
-    "docker команды?": {
+    "Что такое gRPC?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773059436009,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095794532,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773059436009,
+          "date": 1773095794532,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "docker команды?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "Что такое gRPC?"
     },
-    "Берем значения с\nграниц диапазона, а так же +1 -1": {
+    "сущности в докере?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773059541840,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095794811,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773059541840,
+          "date": 1773095794811,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "Берем значения с\nграниц диапазона, а так же +1 -1"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "сущности в докере?"
     },
-    "4) Прикладной": {
+    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773061034392,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
+      "lastReviewDate": 1773095795002,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773061034392,
+          "date": 1773095795002,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "4) Прикладной"
-    },
-    "брокеры, кафка, как взаимодействовали сервисы?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773061034759,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773061034759,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "брокеры, кафка, как взаимодействовали сервисы?"
-    },
-    "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773061035029,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773061035029,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 18,
-      "question": "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается"
-    },
-    "Local Storage:": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773061702153,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773061702153,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 19,
-      "question": "Local Storage:"
-    },
-    "Foreign Key": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773061702449,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773061702449,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 19,
-      "question": "Foreign Key"
-    },
-    "postman, swagger": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773061702639,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773061702639,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 19,
-      "question": "postman, swagger"
-    },
-    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773061704151,
-      "nextReviewDate": 1773104400000,
-      "dueDate": "2026-03-10T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773061704151,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-09",
-      "lastReviewedTime": 19,
-      "question": "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?"
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 4,
+      "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
     }
   },
   "_favorites": [
-    "CI CD?",
-    "CI CD? admin",
-    "брокеры, кафка, как взаимодействовали сервисы?",
-    "CI CD? Admin admin3",
-    "CI CD? Admin admin4",
-    "CI CD? Admin admin5",
-    "CI CD? Admin admin8",
     "Из чего состоит Kafka и как работает?",
-    "как отправлял сообщения в кафке ручками?",
-    "CI CD? Admin admin",
-    "CI CD? 23",
-    "брокеры?"
+    "CI CD???",
+    "брокеры? admin",
+    "брокеры",
+    "брокеры?",
+    "CI CD?"
   ]
 }

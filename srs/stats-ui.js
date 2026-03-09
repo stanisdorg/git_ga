@@ -1,13 +1,11 @@
 ﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.01';
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
-import { uniqueQaData } from '../all-data.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
 import { startLearnSession } from './learn-ui.js?v=2.00';
 
-// Функция для получения актуальных данных (с учётом изменений пользователя)
+// Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
-    // Пробуем получить данные из localStorage (для авторизованных пользователей)
     try {
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
         if (sessionUserRaw) {
@@ -15,6 +13,7 @@ function getCurrentCards() {
             if (userCardsRaw) {
                 const userCards = JSON.parse(userCardsRaw);
                 if (Array.isArray(userCards) && userCards.length > 0) {
+                    console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
                     return userCards;
                 }
             }
@@ -22,8 +21,15 @@ function getCurrentCards() {
     } catch (e) {
         console.warn('[stats-ui] Ошибка загрузки userCards:', e);
     }
-    // Fallback на uniqueQaData
-    return uniqueQaData || [];
+    
+    // Fallback: читаем из all-data.js через window
+    if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
+        console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
+        return window.uniqueQaData;
+    }
+    
+    console.log('[getCurrentCards] Нет данных');
+    return [];
 }
 
 let statsContainer = null;
@@ -1614,9 +1620,16 @@ window.openDiffModal = (index) => {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   const currentCards = getCurrentCards();
 
+  console.log('[openDiffModal] Избранное:', { 
+    favCount: favorites.size, 
+    favQuestions: Array.from(favorites),
+    totalCards: currentCards.length
+  });
+
   if (index === 'favorites') {
      list = currentCards.filter(q => favorites.has(q.question));
      label = 'Избранное';
+     console.log('[openDiffModal] Найдено карточек в избранном:', list.length, list.map(q => q.question));
   } else {
      const i = parseInt(index);
      const ranges = [

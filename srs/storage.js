@@ -179,7 +179,51 @@ export async function syncDailyStats(date, xp, bonus, dayBonus, streak) {
 }
 
 export async function syncFavorite(question, isFav) {
-    syncWithServer(); // Sync with local server
+    console.log('[syncFavorite] Синхронизация избранного:', { question, isFav });
+    
+    // Получаем username
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    let username = null;
+    try {
+        const u = JSON.parse(sessionUserRaw);
+        if (u && u.username) username = u.username;
+    } catch {}
+
+    if (!username) {
+        console.log('[syncFavorite] Нет пользователя, сохраняем только локально');
+        return;
+    }
+
+    // Сохраняем избранное в localStorage
+    const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+    if (isFav) {
+        favorites.add(question);
+    } else {
+        favorites.delete(question);
+    }
+    const favArray = Array.from(favorites);
+    localStorage.setItem('qaFavorites', JSON.stringify(favArray));
+
+    // НЕМЕДЛЕННО отправляем ВЕСЬ список на сервер
+    try {
+        const url = `/api/favorites?username=${encodeURIComponent(username)}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(favArray)
+        });
+
+        if (res.ok) {
+            console.log('[syncFavorite] Успешно сохранено на сервер:', favArray.length, 'карточек');
+        } else {
+            console.warn('[syncFavorite] Сервер вернул ошибку:', res.status);
+        }
+    } catch (e) {
+        console.error('[syncFavorite] Ошибка отправки на сервер:', e);
+    }
+
+    // Обновляем UI
+    window.dispatchEvent(new Event('favoritesUpdated'));
 }
 
 /**

@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import { logger } from './logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,7 +23,23 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  const ts = new Date().toISOString();
+  const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  
+  // Детальное логирование всех запросов
+  logger.info('HTTP запрос', {
+    method: req.method,
+    url: req.url,
+    path: urlObj.pathname,
+    query: Object.fromEntries(urlObj.searchParams),
+    headers: {
+      'user-agent': req.headers['user-agent'],
+      'content-type': req.headers['content-type'],
+      'content-length': req.headers['content-length']
+    }
+  }, 'HTTP');
+  
+  console.log(`${ts} - ${req.method} ${req.url}`);
 
   // CORS и preflight
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -39,6 +56,33 @@ const server = http.createServer((req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
+    return;
+  }
+
+  // API: Логи
+  if (req.method === 'GET' && req.url.startsWith('/api/logs')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const limit = parseInt(urlObj.searchParams.get('limit') || '100');
+    const level = urlObj.searchParams.get('level') || 'DEBUG';
+    const context = urlObj.searchParams.get('context');
+    const search = urlObj.searchParams.get('search');
+    const logs = logger.getLogs({ limit, level, context, search });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, logs }));
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/logs/clear') {
+    const result = logger.clearLogs();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/logs/stats') {
+    const stats = logger.getStats();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, stats }));
     return;
   }
 
@@ -59,6 +103,10 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
+        logger.info('Тело запроса', { 
+          body: body.substring(0, 5000),
+          bodyLength: body.length
+        }, 'HTTP');
         console.log('[Login] Request body:', body);
         if (!body) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -254,16 +302,15 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // GET /api/progress - Load all user progress (achievements, favorites, stats)
+  // GET /api/progress - Load all user progress
   if (req.method === 'GET' && req.url.startsWith('/api/progress')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username');
 
-    console.log('[Server/Load] === ЗАПРОС НА ЗАГРУЗКУ ПРОГРЕССА ===');
-    console.log('[Server/Load] Username:', username);
+    logger.info('=== ЗАПРОС НА ЗАГРУЗКУ ПРОГРЕССА ===', { username }, 'Load');
 
     if (!username) {
-      console.error('[Server/Load] Ошибка: username не указан');
+      logger.error('Ошибка: username не указан', null, 'Load');
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
@@ -272,7 +319,7 @@ const server = http.createServer((req, res) => {
     const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
     if (!fs.existsSync(targetPath)) {
-      console.log('[Server/Load] Файл пользователя не найден');
+      logger.warn('Файл пользователя не найден', { username }, 'Load');
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'User data not found' }));
       return;
@@ -280,16 +327,15 @@ const server = http.createServer((req, res) => {
 
     try {
       const userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
-      console.log('[Server/Load] Прочитано данных:', {
+      logger.info('Прочитано данных', {
         cards: userData._cards?.length || 0,
         favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
         achievements: Object.keys(userData._achievements || {}).length
-      });
+      }, 'Load');
 
-      // Возвращаем данные в формате который ожидает клиент
       const response = {
         ok: true,
-        _cards: userData._cards || [],  // Возвращаем карточки
+        _cards: userData._cards || [],
         studyAchievements: userData._achievements || {},
         qaFavorites: userData._favorites || [],
         srsProgress: userData._srsProgress || {},
@@ -301,11 +347,11 @@ const server = http.createServer((req, res) => {
         updatedAt: Date.now()
       };
 
-      console.log('[Server/Load] === ОТПРАВКА ДАННЫХ КЛИЕНТУ ===');
+      logger.info('=== ОТПРАВКА ДАННЫХ КЛИЕНТУ ===', null, 'Load');
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(response));
     } catch (e) {
-      console.error('[Server/Load] Ошибка чтения:', e);
+      logger.error('Ошибка чтения', { error: e.message }, 'Load');
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'read_failed' }));
     }
@@ -371,12 +417,10 @@ const server = http.createServer((req, res) => {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
 
-    console.log('[Server/Save] === ЗАПРОС НА СОХРАНЕНИЕ ===');
-    console.log('[Server/Save] Username:', username);
+    logger.info('=== ЗАПРОС НА СОХРАНЕНИЕ ===', { username }, 'Save');
 
-    // Проверка что username существует
     if (!username) {
-      console.error('[Server/Save] Ошибка: username не указан');
+      logger.error('Ошибка: username не указан', null, 'Save');
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
@@ -387,42 +431,37 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
-        console.log('[Server/Save] Получено данных:', Array.isArray(data) ? data.length : 'not array');
+        logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array' }, 'Save');
 
-        // Персональный файл пользователя
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
         let userData = {};
         if (fs.existsSync(targetPath)) {
           userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
-          console.log('[Server/Save] Существующий файл найден, карточ:', userData._cards?.length || 0);
+          logger.info('Существующий файл', { cards: userData._cards?.length || 0 }, 'Save');
         } else {
-          console.log('[Server/Save] Создаётся новый файл пользователя');
+          logger.info('Создаётся новый файл пользователя', null, 'Save');
         }
 
-        // Сохраняем карточки в _cards
         userData._cards = data;
-
-        // Обновляем метаданные
         if (!userData._meta) userData._meta = {};
         userData._meta.cardsCount = data.length;
         userData._meta.lastLoginAt = new Date().toISOString();
         userData._meta.lastSavedAt = new Date().toISOString();
 
-        // Записываем обратно
         fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
           if (err) {
-            console.error('[Server/Save] Ошибка записи:', err);
+            logger.error('Ошибка записи', { error: err.message }, 'Save');
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
-          console.log(`[Server/Save] === УСПЕШНО СОХРАНЕНО === ${data.length} карточек для ${username}`);
+          logger.info('=== УСПЕШНО СОХРАНЕНО ===', { count: data.length, username }, 'Save');
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {
-        console.error('[Server/Save] Ошибка парсинга JSON:', e);
+        logger.error('Ошибка парсинга JSON', { error: e.message }, 'Save');
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
       }
@@ -479,9 +518,12 @@ const server = http.createServer((req, res) => {
   // POST /api/favorites - Save favorites
   if (req.method === 'POST' && req.url.startsWith('/api/favorites')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
-    const username = urlObj.searchParams.get('user');
+    const username = urlObj.searchParams.get('username') || urlObj.searchParams.get('user');
+
+    logger.info('Сохранение избранного', { username }, 'Favorites');
 
     if (!username) {
+      logger.error('Ошибка: username не указан', null, 'Favorites');
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
@@ -492,6 +534,8 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const favorites = JSON.parse(body);
+        logger.info('Получено избранное', { count: Array.isArray(favorites) ? favorites.length : 0 }, 'Favorites');
+
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
         let userData = {};
@@ -501,20 +545,22 @@ const server = http.createServer((req, res) => {
 
         // Обновляем избранное
         userData._favorites = favorites;
+        if (!userData._meta) userData._meta = {};
+        userData._meta.lastSavedAt = new Date().toISOString();
 
         fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
           if (err) {
-            console.error('Failed to save favorites:', err);
+            logger.error('Ошибка записи избранного', { error: err.message }, 'Favorites');
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
-          console.log(`[Favorites] User ${username} saved favorites`);
+          logger.info('Избранное сохранено', { count: favorites.length, username }, 'Favorites');
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
         });
       } catch (e) {
-        console.error('Invalid JSON body:', e);
+        logger.error('Ошибка парсинга JSON', { error: e.message }, 'Favorites');
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
       }

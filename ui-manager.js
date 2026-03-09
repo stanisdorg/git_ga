@@ -1,7 +1,7 @@
 // Файл для управления UI вариантами
 
 // Импортируем только функцию инициализации табов и карточек
-import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=4.30';
+import { initTabsNavigation } from './ui-variants/tabs-navigation.js?v=4.44';
 import { initStatsPage, hideStatsPage } from './srs/stats-ui.js?v=2.00';
 import { loadFromServer } from './srs/storage.js?v=2.01';
 import { initSyncIndicator } from './srs/sync-ui.js?v=2.00';
@@ -36,7 +36,7 @@ export function initUI() {
 
     // Добавляем стили для табов и карточек
     addStyles();
-    createBottomNav();
+    // createBottomNav(); // Убрали нижнюю навигацию
     initSyncIndicator();
 
     // Загружаем прогресс с локального сервера ПОСЛЕ инициализации табов
@@ -57,7 +57,7 @@ export function initUI() {
         } else {
             hideStatsPage();
         }
-        createBottomNav();
+        // createBottomNav() убран
         initSyncIndicator();
     };
     // Убрали dataLoaded из списка, чтобы не было дублей
@@ -255,10 +255,15 @@ function addStyles() {
     document.head.appendChild(stylesheet);
 }
 
+// Функция createBottomNav удалена - нижняя навигация больше не используется
+/*
 function createBottomNav() {
     try {
         const existing = document.getElementById('bottom-nav');
-        if (existing) existing.remove();
+        if (existing) {
+            console.log('[createBottomNav] Уже существует, пропускаем');
+            return; // Не удаляем, просто выходим
+        }
 
         const nav = document.createElement('div');
         nav.id = 'bottom-nav';
@@ -309,3 +314,4 @@ function createBottomNav() {
         console.warn('Bottom nav init failed:', e);
     }
 }
+*/

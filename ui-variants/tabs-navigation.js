@@ -494,7 +494,7 @@ export function initTabsNavigation(appVersion) {
     statsBtn.style.padding = '0 10px';
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
     statsBtn.addEventListener('click', async () => {
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.30');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -982,6 +982,9 @@ export function initTabsNavigation(appVersion) {
             localStorage.removeItem('sessionToken');
             localStorage.removeItem('currentUser');
             localStorage.removeItem('qaSessionUser');
+            // Также очищаем qaUserCards чтобы не было дублей
+            localStorage.removeItem('qaUserCards');
+            localStorage.removeItem('localDataTimestamp');
             console.log('[Logout] Session cleared. User must login again to access data.');
         }
 
@@ -2237,6 +2240,14 @@ async function saveMergedToServer() {
         // Отправляем событие успешной синхронизации
         window.dispatchEvent(new Event('sync-success'));
         
+        // ОБНОВЛЯЕМ qaUserCards в localStorage
+        try {
+            localStorage.setItem('qaUserCards', JSON.stringify(merged));
+            console.log('[saveMergedToServer] qaUserCards обновлён:', merged.length, 'карточек');
+        } catch (e) {
+            console.warn('[saveMergedToServer] Не удалось обновить qaUserCards:', e);
+        }
+        
         // Принудительная перезагрузка данных через 50мс
         setTimeout(() => {
             console.log('[saveMergedToServer] Dispatch forceReloadData');
@@ -2971,7 +2982,7 @@ export function displayQuestions(questions, title) {
                     // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
                     overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
                     setOverrides(overrides);
-                    
+
                     // Если карточка была в избранном — обновляем ключ в избранном
                     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
                     if (favorites.has(oldQuestion)) {
@@ -2979,8 +2990,16 @@ export function displayQuestions(questions, title) {
                         favorites.add(newQuestion);
                         localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
                         console.log('[Edit] Обновлено избранное:', { oldQuestion, newQuestion });
+                        
+                        // Отправляем обновлённое избранное на сервер
+                        import('../srs/storage.js').then(({ syncFavorite }) => {
+                            try {
+                                syncFavorite(newQuestion, true);
+                                console.log('[Edit] Отправлено на сервер');
+                            } catch (e) {}
+                        }).catch(()=>{});
                     }
-                    
+
                     // После сохранения — перерисовка с карандашом и меню
                     displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
                     const rowEl = resultItem.querySelector('.question-row');

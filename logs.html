@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логи сервера - QA Helper</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Consolas', monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; font-size: 13px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #444; }
+        h1 { font-size: 20px; color: #4ec9b0; }
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .control-group { display: flex; align-items: center; gap: 5px; }
+        label { color: #9cdcfe; font-size: 12px; }
+        select, input, button { background: #2d2d2d; border: 1px solid #444; color: #d4d4d4; padding: 6px 10px; border-radius: 4px; font-family: inherit; font-size: 12px; }
+        button { cursor: pointer; background: #0e639c; border: none; color: white; padding: 6px 14px; }
+        button:hover { background: #1177bb; }
+        button.danger { background: #c72e2e; }
+        button.danger:hover { background: #e04040; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: #2d2d2d; border: 1px solid #444; border-radius: 6px; padding: 12px; }
+        .stat-card .label { font-size: 11px; color: #808080; margin-bottom: 4px; }
+        .stat-card .value { font-size: 18px; color: #4ec9b0; font-weight: bold; }
+        .log-container { background: #1e1e1e; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
+        .log-header { display: grid; grid-template-columns: 180px 80px 120px 1fr; gap: 10px; padding: 10px; background: #2d2d2d; border-bottom: 1px solid #444; font-weight: bold; color: #9cdcfe; font-size: 12px; }
+        .log-list { max-height: 70vh; overflow-y: auto; }
+        .log-item { display: grid; grid-template-columns: 180px 80px 120px 1fr; gap: 10px; padding: 8px 10px; border-bottom: 1px solid #2d2d2d; font-size: 12px; }
+        .log-item:hover { background: #2a2d2e; }
+        .log-time { color: #808080; }
+        .log-level { font-weight: bold; text-transform: uppercase; font-size: 11px; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+        .log-level.DEBUG { background: #6a6a6a; color: #fff; }
+        .log-level.INFO { background: #0e639c; color: #fff; }
+        .log-level.WARN { background: #d19a0e; color: #000; }
+        .log-level.ERROR { background: #c72e2e; color: #fff; }
+        .log-context { color: #dcdcaa; }
+        .log-message { color: #d4d4d4; word-break: break-word; }
+        .log-data { grid-column: 2 / -1; background: #1a1a1a; padding: 8px; border-radius: 4px; margin-top: 5px; font-size: 11px; color: #9cdcfe; overflow-x: auto; white-space: pre-wrap; }
+        .loading { text-align: center; padding: 40px; color: #808080; }
+        .refresh-info { display: flex; align-items: center; gap: 10px; color: #808080; font-size: 11px; }
+        .auto-refresh { display: flex; align-items: center; gap: 5px; }
+        .auto-refresh input[type="checkbox"] { width: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Логи сервера QA Helper</h1>
+            <div class="refresh-info">
+                <span id="last-update">Обновлено: никогда</span>
+                <div class="auto-refresh">
+                    <input type="checkbox" id="auto-refresh" checked>
+                    <label for="auto-refresh">Автообновление (10с)</label>
+                </div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="level-filter">Уровень:</label>
+                <select id="level-filter">
+                    <option value="DEBUG">DEBUG</option>
+                    <option value="INFO">INFO</option>
+                    <option value="WARN">WARN</option>
+                    <option value="ERROR">ERROR</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="context-filter">Контекст:</label>
+                <select id="context-filter">
+                    <option value="">Все</option>
+                    <option value="Save">Save</option>
+                    <option value="Load">Load</option>
+                    <option value="server">server</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="search-input">Поиск:</label>
+                <input type="text" id="search-input" placeholder="Текст сообщения...">
+            </div>
+            <div class="control-group">
+                <label for="limit-select">Лимит:</label>
+                <select id="limit-select">
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                    <option value="1000" selected>1000</option>
+                    <option value="5000">5000</option>
+                    <option value="10000">10000</option>
+                </select>
+            </div>
+            <button id="refresh-btn">🔄 Обновить</button>
+            <button id="clear-btn" class="danger">🗑️ Очистить</button>
+        </div>
+
+        <div class="stats" id="stats-container"></div>
+
+        <div class="log-container">
+            <div class="log-header">
+                <div>Время</div>
+                <div>Уровень</div>
+                <div>Контекст</div>
+                <div>Сообщение</div>
+            </div>
+            <div class="log-list" id="log-list"><div class="loading">Загрузка...</div></div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+
+        function formatTime(iso) {
+            return new Date(iso).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        async function loadLogs() {
+            const level = document.getElementById('level-filter').value;
+            const context = document.getElementById('context-filter').value;
+            const search = document.getElementById('search-input').value;
+            const limit = document.getElementById('limit-select').value;
+            const params = new URLSearchParams({ level, limit });
+            if (context) params.append('context', context);
+            if (search) params.append('search', search);
+
+            try {
+                const res = await fetch(`/api/logs?${params}`);
+                const data = await res.json();
+                if (data.ok) renderLogs(data.logs);
+                updateLastUpdate();
+            } catch (e) {
+                document.getElementById('log-list').innerHTML = `<div class="loading">Ошибка: ${e.message}</div>`;
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/logs/stats');
+                const data = await res.json();
+                if (data.ok) {
+                    const sizeKB = (data.stats.totalSizeBytes / 1024).toFixed(1);
+                    document.getElementById('stats-container').innerHTML = `
+                        <div class="stat-card"><div class="label">Файлов</div><div class="value">${data.stats.files}</div></div>
+                        <div class="stat-card"><div class="label">Размер</div><div class="value">${sizeKB} KB</div></div>
+                    `;
+                }
+            } catch (e) {}
+        }
+
+        function renderLogs(logs) {
+            const container = document.getElementById('log-list');
+            if (logs.length === 0) { container.innerHTML = '<div class="loading">Логи пусты</div>'; return; }
+            container.innerHTML = logs.map(log => `
+                <div class="log-item">
+                    <div class="log-time">${formatTime(log.timestamp)}</div>
+                    <div><span class="log-level ${log.level}">${log.level}</span></div>
+                    <div class="log-context">${log.context}</div>
+                    <div class="log-message">${escapeHtml(log.message)}</div>
+                    ${log.data ? `<div class="log-data">${escapeHtml(JSON.stringify(log.data, null, 2))}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function updateLastUpdate() {
+            document.getElementById('last-update').textContent = 'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        async function clearLogs() {
+            if (!confirm('Удалить все логи?')) return;
+            try {
+                const res = await fetch('/api/logs/clear', { method: 'POST' });
+                const data = await res.json();
+                if (data.ok) { loadLogs(); loadStats(); }
+            } catch (e) { alert('Ошибка: ' + e.message); }
+        }
+
+        document.getElementById('refresh-btn').addEventListener('click', () => { loadLogs(); loadStats(); });
+        document.getElementById('clear-btn').addEventListener('click', clearLogs);
+        document.getElementById('level-filter').addEventListener('change', loadLogs);
+        document.getElementById('context-filter').addEventListener('change', loadLogs);
+        document.getElementById('search-input').addEventListener('input', loadLogs);
+        document.getElementById('limit-select').addEventListener('change', loadLogs);
+
+        document.getElementById('auto-refresh').addEventListener('change', (e) => {
+            if (e.target.checked) startAutoRefresh(); else stopAutoRefresh();
+        });
+
+        function startAutoRefresh() { if (autoRefreshInterval) return; autoRefreshInterval = setInterval(() => { loadLogs(); loadStats(); }, 10000); }
+        function stopAutoRefresh() { if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; } }
+
+        loadLogs(); loadStats(); startAutoRefresh();
+    </script>
+</body>
+</html>

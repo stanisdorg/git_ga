@@ -433,7 +433,8 @@ async function initializeData() {
         // Сначала пробуем загрузить данные пользователя из localStorage
         const userCardsLoaded = loadUserCardsFromStorage();
 
-        // Если данные пользователя не загружены, загружаем из JSON файлов
+        // Если данные пользователя загружены, НЕ применяем overrides
+        // (они уже применены в qaUserCards)
         if (!userCardsLoaded) {
             console.log('[all-data] Данные пользователя не найдены, загружаем global.json');
             const jsonData = await loadJsonData();
@@ -446,12 +447,14 @@ async function initializeData() {
                 if (validData.length > 0) {
                     uniqueQaData = validData;
                     console.log(`Всего загружено ${uniqueQaData.length} вопросов из global.json`);
+                    
+                    // Применяем локальные overrides и новые карточки (только для global.json)
+                    applyAdminOverridesAndNewItems();
                 }
             }
+        } else {
+            console.log('[all-data] Используем данные пользователя из localStorage');
         }
-
-        // Применяем локальные overrides и новые карточки (если они есть)
-        applyAdminOverridesAndNewItems();
 
         console.log(`[all-data] Итоговое количество карточек: ${uniqueQaData.length}`);
 
@@ -464,6 +467,13 @@ async function initializeData() {
 
 // Запускаем загрузку данных при загрузке страницы
 window.addEventListener('DOMContentLoaded', initializeData);
+
+// Экспортируем uniqueQaData в window для stats-ui.js
+Object.defineProperty(window, 'uniqueQaData', {
+    get: () => uniqueQaData,
+    enumerable: true,
+    configurable: true
+});
 
 // Принудительная перезагрузка данных после успешного сохранения
 window.addEventListener('forceReloadData', () => {
