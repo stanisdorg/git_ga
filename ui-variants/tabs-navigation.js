@@ -2330,19 +2330,32 @@ async function saveMergedToServer() {
                 if (userCardsRaw) {
                     const userCards = JSON.parse(userCardsRaw);
                     if (Array.isArray(userCards)) {
+                        let addedCount = 0;
+                        let checkedCount = 0;
                         userCards.forEach(uc => {
-                            const isDeleted = deletedMap[uc.question] || serverTrashSet.has(uc.question);
+                            checkedCount++;
+                            // 🔥 ИСПРАВЛЕНИЕ: Дубликаты (с "копия" в названии) не должны считаться удалёнными
+                            // если они только что созданы и их нет в deletedMap
+                            const isInServerTrash = serverTrashSet.has(uc.question);
+                            const isInLocalDeleted = deletedMap[uc.question];
+                            const isDeleted = isInLocalDeleted || (isInServerTrash && !uc.question.includes('копия'));
+                            
                             const isAlreadyAdded = seen.has(uc.question);
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
-                            
+
                             // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
                                 const ov = overrides[uc.question];
                                 merged.push(ov ? { ...uc, ...ov } : uc);
                                 seen.add(uc.question);
+                                addedCount++;
                             }
                         });
+                        console.log('[saveMergedToServer] Проверено карточек:', checkedCount, 'Добавлено:', addedCount);
+                        if (addedCount > 0) {
+                            console.log('[saveMergedToServer] Добавлено пользовательских карточек:', addedCount);
+                        }
                     }
                 }
             }
@@ -3320,10 +3333,18 @@ export function displayQuestions(questions, title) {
                             const userCardsRaw = localStorage.getItem('qaUserCards');
                             if (userCardsRaw) {
                                 const userCards = JSON.parse(userCardsRaw);
-                                const originalIndex = userCards.findIndex(c => c.question === item.question);
+                                // Ищем оригинал по вопросу (может отличаться от item.question если были изменения)
+                                const originalIndex = userCards.findIndex(c => 
+                                    c.question === item.question || 
+                                    (c.category === item.category && c.subcategory === item.subcategory && c.answer === item.answer)
+                                );
                                 if (originalIndex >= 0) {
                                     // Вставляем дубликат после оригинала
                                     userCards.splice(originalIndex + 1, 0, duplicatedItem);
+                                    localStorage.setItem('qaUserCards', JSON.stringify(userCards));
+                                } else {
+                                    // Если не нашли, добавляем в конец
+                                    userCards.push(duplicatedItem);
                                     localStorage.setItem('qaUserCards', JSON.stringify(userCards));
                                 }
                             }
@@ -3332,7 +3353,7 @@ export function displayQuestions(questions, title) {
                         // Track duplication on server
                         trackServerDuplication(item.question, copyQ).then(trackOk => {
                             if (trackOk) {
-                                // Update UI, сохраняя текущую категорию
+                                // 🔥 Обновляем UI сразу, без forceReloadData, чтобы сохранить порядок карточек
                                 const activeTab = document.querySelector('.tabs-container .tab.active');
                                 if (activeTab) {
                                     if (activeTab.dataset.category === 'all') {
@@ -3352,7 +3373,7 @@ export function displayQuestions(questions, title) {
                                 }
                                 setInlineSaveStatus(rowEl, 'success');
 
-                                // Save to server
+                                // Сохраняем на сервер БЕЗ forceReloadData
                                 saveMergedToServer().then(saveOk => {
                                     if (!saveOk) {
                                         setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
