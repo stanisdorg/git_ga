@@ -1009,27 +1009,6 @@ const STATS_STYLES = `
   .st-cat-list { display: flex !important; }
   .st-cat-more-btn { display: none !important; }
   .st-cat-item-hidden { display: block !important; }
-
-  /* Mobile styles for st-main */
-  .st-main {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-  }
-  .st-block-1,
-  .st-block-achievements,
-  .st-block-2,
-  .st-block-3,
-  .st-block-4,
-  .st-block-5 {
-    grid-column: auto !important;
-    grid-row: auto !important;
-    width: 100% !important;
-  }
-  .st-block-achievements {
-    max-height: none !important;
-    overflow-y: visible !important;
-  }
 }
 `;
 
