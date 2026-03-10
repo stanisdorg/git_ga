@@ -186,9 +186,32 @@ function setInlineSaveStatus(rowEl, status, message = '') {
 
 // Генератор уникального текста вопроса для копий
 function genUniqueQuestionGlobal(baseQ) {
-    const exists = (q) => uniqueQaData.some(i => i.question === q) || getNewItems().some(i => i.question === q);
-    let i = 1; let candidate = `${baseQ} (копия)`;
-    while (exists(candidate)) { candidate = `${baseQ} (копия ${i++})`; }
+    // Очищаем базовый вопрос от суффиксов копий
+    const cleanBase = baseQ.replace(/ \(копия( \d+)?\)$/, '');
+    
+    const exists = (q) => {
+        // Проверяем в uniqueQaData
+        if (uniqueQaData.some(i => i.question === q)) return true;
+        // Проверяем в newItems
+        if (getNewItems().some(i => i.question === q)) return true;
+        // Проверяем в qaUserCards
+        try {
+            const userCardsRaw = localStorage.getItem('qaUserCards');
+            if (userCardsRaw) {
+                const userCards = JSON.parse(userCardsRaw);
+                if (Array.isArray(userCards) && userCards.some(i => i.question === q)) return true;
+            }
+        } catch (e) {}
+        return false;
+    };
+    
+    // Ищем все существующие копии
+    let i = 1;
+    let candidate = `${cleanBase} (копия)`;
+    while (exists(candidate)) {
+        i++;
+        candidate = `${cleanBase} (копия ${i})`;
+    }
     return candidate;
 }
 // Плейсхолдеры для отображаемых названий подкатегорий (по категориям)
@@ -2271,7 +2294,7 @@ function setSaveStatus(state, msg) {
 // Флаг для предотвращения циклической синхронизации
 let isSyncing = false;
 
-async function saveMergedToServer() {
+async function saveMergedToServer(skipReload = false) {
     // Защита от рекурсивных вызовов
     if (isSyncing) {
         console.log('[saveMergedToServer] Пропуск — уже идёт синхронизация');
@@ -2432,7 +2455,7 @@ async function saveMergedToServer() {
         // Принудительна�� перезагрузка данных через 50мс
         setTimeout(() => {
             console.log('[saveMergedToServer] Dispatch forceReloadData');
-            window.dispatchEvent(new Event('forceReloadData'));
+            if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
         }, 50);
 
         return true;
@@ -2701,11 +2724,17 @@ function renderTrashPanel() {
                         console.log('[restore-click] Карточка уже присутствует в ����анных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
                     }
                     try { window.__lastRestoredQuestion = q; } catch (_) {}
-                    // После успешного восстановления сразу сохраняем объединённые данные на сервер,
-                    // чтобы карточка не пропадала после очистки данных сайта.
-                    try { const saved = await saveMergedToServer(); console.log('[restore-click] Сохранение после восстановления завершено', { ok: saved }); } catch (e) { console.error('[restore-click] Ошибка сохранения после восстановления', e); }
-                    setSaveStatus('success', 'Карточка восстановлена');
-                    restoreBtn.textContent = 'Готово'; setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
+                    // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                    saveMergedToServer(true).then(saveOk => {
+                        if (saveOk) {
+                            setSaveStatus('success', 'Карточка восстановлена');
+                            restoreBtn.textContent = 'Готово';
+                            setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
+                        } else {
+                            setSaveStatus('error', 'Ошибка сохранения');
+                            restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
+                        }
+                    });
                 } else {
                     try { await refreshServerTrash(); } catch (_) {}
                     setSaveStatus('error', 'Ошибка восстановления на сервере');
@@ -3245,12 +3274,8 @@ export function displayQuestions(questions, title) {
 
             // Кнопка карандаша удалена: редактирование доступно через меню ⋮
 
-            const genUniqueQuestion = (baseQ) => {
-                const exists = (q) => uniqueQaData.some(i => i.question === q) || getNewItems().some(i => i.question === q);
-                let i = 1; let candidate = `${baseQ} (копия)`;
-                while (exists(candidate)) { candidate = `${baseQ} (копия ${i++})`; }
-                return candidate;
-            };
+            // 🔥 Используем глобальную функцию с проверкой qaUserCards
+            const genUniqueQuestion = (baseQ) => genUniqueQuestionGlobal(baseQ);
 
             kebabBtn.addEventListener('click', (ev) => {
                 ev.stopPropagation();
@@ -3311,8 +3336,8 @@ export function displayQuestions(questions, title) {
                                 setInlineSaveStatus(rowEl, 'success');
                                 setSaveStatus('success', 'Карточка перемещена в корзину');
 
-                                // Сохраняем объединённые данные на сервер
-                                saveMergedToServer().then(saveOk => {
+                                // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                saveMergedToServer(true).then(saveOk => {
                                     if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
                                 });
                             } else {
@@ -3372,9 +3397,9 @@ export function displayQuestions(questions, title) {
                                     showAllQuestions();
                                 }
                                 setInlineSaveStatus(rowEl, 'success');
-
-                                // Сохраняем на сервер БЕЗ forceReloadData
-                                saveMergedToServer().then(saveOk => {
+                                
+                                // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                saveMergedToServer(true).then(saveOk => {
                                     if (!saveOk) {
                                         setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
                                     }
