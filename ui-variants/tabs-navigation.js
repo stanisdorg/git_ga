@@ -463,7 +463,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=26');
+                module = await import('../srs/learn-ui.js?v=2.00');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -1010,8 +1010,10 @@ export function initTabsNavigation(appVersion) {
         updateLoginBtnState();
         // Показать/скрыть админские кнопки в зависимости от роли
         try {
-            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-            editToggleBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может создавать пользователей
+            // editToggleBtn доступен admin и editor
+            editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
+            // genStatsBtn доступен только admin
             genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
         } catch {}
         try { migrateDeviceRecordsToUser(); } catch {}

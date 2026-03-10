@@ -73,8 +73,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 🔒 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ АДМИНА
-  function checkAdmin(req, res) {
+  // 🔒 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ ПРАВ
+  // isEditor: true для проверки прав editor/admin, false для проверки только admin
+  function checkUserPermissions(req, res, requireAdmin = false) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username') || urlObj.searchParams.get('user');
     
@@ -92,19 +93,34 @@ const server = http.createServer((req, res) => {
       const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
       const user = users.find(u => u.username === username);
       
-      if (!user || user.role !== 'admin') {
+      if (!user) {
+        return { authorized: false, reason: 'user not found' };
+      }
+      
+      // Если требуется admin, проверяем только admin
+      if (requireAdmin && user.role !== 'admin') {
         return { authorized: false, reason: 'admin access required' };
       }
       
-      return { authorized: true, user };
+      // Для editor: разрешаем admin и editor
+      if (!requireAdmin && !['admin', 'editor'].includes(user.role)) {
+        return { authorized: false, reason: 'editor or admin access required' };
+      }
+      
+      return { authorized: true, user, role: user.role };
     } catch (e) {
       return { authorized: false, reason: 'error checking permissions' };
     }
   }
+  
+  // Для обратной совместимости
+  function checkAdmin(req, res) {
+    return checkUserPermissions(req, res, true); // requireAdmin = true
+  }
 
   // API: Логи (ТОЛЬКО ДЛЯ АДМИНОВ!)
   if (req.method === 'GET' && req.url.startsWith('/api/logs')) {
-    const adminCheck = checkAdmin(req, res);
+    const adminCheck = checkAdmin(req, res); // requireAdmin = true
     if (!adminCheck.authorized) {
       logger.warn('Доступ к логам без авторизации', { 
         username: new URL(req.url, `http://${req.headers.host}`).searchParams.get('username'),
