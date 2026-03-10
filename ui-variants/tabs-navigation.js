@@ -1,11 +1,11 @@
 // Вариант 3: Табы для категорий и карточки для подкатегорий
 
 // Импортируем данные и генератор категорий
-import { uniqueQaData } from '../all-data.js?v=4.17';
-import { buildCategoriesFromData } from '../computed-categories.js?v=1.61';
-import { setNormalizationDisabled } from '../load-json-data.js?v=1.61';
-import { getProgressMap } from '../srs/stats-utils.js?v=1.61';
-import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js?v=1.61';
+import { uniqueQaData } from '../all-data.js';
+import { buildCategoriesFromData } from '../computed-categories.js';
+import { setNormalizationDisabled } from '../load-json-data.js';
+import { getProgressMap } from '../srs/stats-utils.js';
+import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
@@ -1785,12 +1785,30 @@ export function initTabsNavigation(appVersion) {
                     wasDeletedLocally: !!getDeletedItems()[q]
                 });
                 restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
+                
+                // Находим карточку в serverTrashItems, чтобы получить её данные
+                const trashItem = serverTrashItems.find(t => t.item?.question === q);
+                const itemData = trashItem?.item;
+                
                 // Удаляем из локального кэша корзины сразу
                 serverTrashSet.delete(q);
                 serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
                 // Очищаем локальную карту удалений для этой карточки, если была помечена
                 const delMap = getDeletedItems();
                 if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
+                
+                // 🔥 ВАЖНО: Если карточки нет в uniqueQaData (дубликат), добавляем её в qaNewItems
+                const isInUnique = !!uniqueQaData.find(i => i.question === q);
+                if (!isInUnique && itemData) {
+                    const newItems = getNewItems();
+                    // Проверяем, нет ли уже такой карточки в newItems
+                    if (!newItems.some(n => n.question === q)) {
+                        newItems.push(itemData);
+                        localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+                        console.log('[restore-click(inner)] Дубликат добавлен в qaNewItems');
+                    }
+                }
+                
                 console.log('[restore-click(inner)] Локальные кеши обновлены', {
                     serverTrashSetSize: serverTrashSet.size,
                     delMapSize: Object.keys(getDeletedItems()).length
@@ -1807,26 +1825,7 @@ export function initTabsNavigation(appVersion) {
                     setSaveStatus('error', 'Сервер восстановления недоступен');
                     restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                 } else {
-                    try { await refreshServerTrash(); } catch (_) {}
-                    // Если восстановленной карточки нет в базовом наборе и среди новых — добавим в новые для сохранения
-                    const baseHas = !!uniqueQaData.find(i => i.question === q);
-                    const newItemsArr = getNewItems();
-                    const newHas = !!newItemsArr.find(i => i.question === q);
-                    if (!baseHas && !newHas && it) {
-                        newItemsArr.push({ ...it });
-                        setLS('qaNewItems', newItemsArr);
-                        console.log('[restore-click(inner)] Карточка добавлена в qaNewItems для сохранения', { question: q });
-                    } else {
-                        console.log('[restore-click(inner)] Карточка уже присутствует, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
-                    }
-                    try { window.__lastRestoredQuestion = q; } catch (_) {}
-                    // Сохраняем объединённые данные на сервер, чтобы восстановленная карточка стала частью основного файла
-                    try {
-                        const saved = await saveMergedToServer();
-                        console.log('[restore-click(inner)] Сохранение после восстановления завершено', { ok: saved });
-                    } catch (e) {
-                        console.error('[restore-click(inner)] Ошибка сохранения после восстановления', e);
-                    }
+                    // Карточка уже восстановлена
                     setSaveStatus('success', 'Карточка восстановлена');
                     restoreBtn.textContent = 'Готово'; setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
                 }
@@ -2203,8 +2202,18 @@ function setSaveStatus(state, msg) {
 // --- Global helpers (accessible from outside initTabsNavigation) ---
 // These mirror the inner helpers so that actions in displayQuestions can call them.
 
+// Флаг для предотвращения циклической синхронизации
+let isSyncing = false;
+
 async function saveMergedToServer() {
+    // Защита от рекурсивных вызовов
+    if (isSyncing) {
+        console.log('[saveMergedToServer] Пропуск — уже идёт синхронизация');
+        return false;
+    }
+
     try {
+        isSyncing = true;
         // Отправляем событие начала синхронизации
         console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ ===');
         window.dispatchEvent(new Event('sync-start'));
@@ -2222,6 +2231,7 @@ async function saveMergedToServer() {
             serverTrashCount: serverTrashSet.size
         });
 
+        // Сначала добавляем базовые карточки из global.json
         uniqueQaData.forEach(item => {
             if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
             const ov = overrides[item.question];
@@ -2230,13 +2240,49 @@ async function saveMergedToServer() {
             seen.add(item.question);
         });
 
+        // Добавляем новые элементы (дубликаты, созданные пользователем)
+        // Важно: проверяем по точному совпадению вопроса, чтобы не потерять дубликаты
         newItems.forEach(n => {
-            if (!seen.has(n.question) && !deletedMap[n.question] && !serverTrashSet.has(n.question)) {
-                const ov = overrides[n.question];
-                merged.push(ov ? { ...n, ...ov } : n);
-                seen.add(n.question);
-            }
+            const isDeleted = deletedMap[n.question] || serverTrashSet.has(n.question);
+            const isAlreadyAdded = seen.has(n.question);
+            
+            // Пропускаем удалённые и уже добавленные
+            if (isDeleted || isAlreadyAdded) return;
+            
+            // Добавляем новый элемент с применёнными overrides
+            const ov = overrides[n.question];
+            merged.push(ov ? { ...n, ...ov } : n);
+            seen.add(n.question);
         });
+        
+        // Также проверяем qaUserCards на наличие элементов, которых нет ни в base, ни в newItems
+        // Это нужно для случаев, когда дубликаты уже сохранены в localStorage
+        try {
+            const sessionUserRaw = localStorage.getItem('qaSessionUser');
+            if (sessionUserRaw) {
+                const userCardsRaw = localStorage.getItem('qaUserCards');
+                if (userCardsRaw) {
+                    const userCards = JSON.parse(userCardsRaw);
+                    if (Array.isArray(userCards)) {
+                        userCards.forEach(uc => {
+                            const isDeleted = deletedMap[uc.question] || serverTrashSet.has(uc.question);
+                            const isAlreadyAdded = seen.has(uc.question);
+                            const isInBase = uniqueQaData.some(b => b.question === uc.question);
+                            const isNewItem = newItems.some(n => n.question === uc.question);
+                            
+                            // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
+                            if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
+                                const ov = overrides[uc.question];
+                                merged.push(ov ? { ...uc, ...ov } : uc);
+                                seen.add(uc.question);
+                            }
+                        });
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('[saveMergedToServer] Не удалось добавить дополнительные карточки:', e);
+        }
         const lastRestored = typeof window !== 'undefined' ? window.__lastRestoredQuestion : null;
         console.log('[saveMergedToServer] Сформировано данных', {
             mergedCount: merged.length,
@@ -2244,9 +2290,9 @@ async function saveMergedToServer() {
         });
 
         // Получаем username для отправки на сервер
-        const sessionUserRaw = localStorage.getItem('qaSessionUser');
         let username = null;
         try {
+            const sessionUserRaw = localStorage.getItem('qaSessionUser');
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
         } catch {}
@@ -2286,16 +2332,30 @@ async function saveMergedToServer() {
         try {
             localStorage.setItem('qaUserCards', JSON.stringify(merged));
             console.log('[saveMergedToServer] qaUserCards обновлён:', merged.length, 'карточек');
+            
+            // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
+            const newItems = getNewItems();
+            if (Array.isArray(newItems) && newItems.length > 0) {
+                localStorage.setItem('qaNewItems', JSON.stringify([]));
+                console.log('[saveMergedToServer] qaNewItems очищен:', newItems.length, 'элементов перенесено');
+            }
+            
+            // Очищаем qaDeletedItems после успешной синхронизации
+            const deletedItems = getDeletedItems();
+            if (Object.keys(deletedItems).length > 0) {
+                localStorage.setItem('qaDeletedItems', JSON.stringify({}));
+                console.log('[saveMergedToServer] qaDeletedItems очищён:', Object.keys(deletedItems).length, 'элементов');
+            }
         } catch (e) {
-            console.warn('[saveMergedToServer] Не удалось обновить qaUserCards:', e);
+            console.warn('[saveMergedToServer] Не удалось обновить localStorage:', e);
         }
-        
+
         // Принудительная перезагрузка данных через 50мс
         setTimeout(() => {
             console.log('[saveMergedToServer] Dispatch forceReloadData');
             window.dispatchEvent(new Event('forceReloadData'));
         }, 50);
-        
+
         return true;
     } catch (e) {
         console.error('[saveMergedToServer] Ошибка сохранения:', e);
@@ -2303,6 +2363,9 @@ async function saveMergedToServer() {
         // Отправляем событие ошибки синхронизации
         window.dispatchEvent(new Event('sync-error'));
         return false;
+    } finally {
+        // Сбрасываем флаг синхронизации
+        isSyncing = false;
     }
 }
 
@@ -2407,27 +2470,37 @@ async function getServerMetadata() {
 
 async function refreshServerTrash() {
     try {
-        // 🔒 СНАЧАЛА пробуем загрузить из localStorage (после загрузки с сервера)
-        const localTrash = localStorage.getItem('qaUserTrash');
-        if (localTrash) {
-            const trash = JSON.parse(localTrash);
-            serverTrashItems = Array.isArray(trash) ? trash : [];
-            serverTrashSet = new Set(serverTrashItems.map(t => t.item?.question).filter(Boolean));
-            console.log('[refreshServerTrash] Загружено из localStorage', { size: serverTrashSet.size });
-            return;
-        }
-        
-        // Если нет в localStorage, пробуем загрузить с сервера
+        // 🔒 Загружаем корзину с сервера (теперь /metadata возвращает trash_bin)
         const resp = await fetchWithAuth('/metadata');
         if (resp.ok) {
             const data = await resp.json();
             const bin = Array.isArray(data.trash_bin) ? data.trash_bin : [];
             serverTrashItems = bin;
             serverTrashSet = new Set(bin.map(t => t.item?.question).filter(Boolean));
+            // 🔒 Сохраняем в localStorage для офлайн-работы
+            localStorage.setItem('qaUserTrash', JSON.stringify(serverTrashItems));
             console.log('[refreshServerTrash] Обновлено с сервера', { size: serverTrashSet.size });
+            return;
+        }
+
+        // Фолбэк: если сервер недоступен, загружаем из localStorage
+        const localTrash = localStorage.getItem('qaUserTrash');
+        if (localTrash) {
+            const trash = JSON.parse(localTrash);
+            serverTrashItems = Array.isArray(trash) ? trash : [];
+            serverTrashSet = new Set(serverTrashItems.map(t => t.item?.question).filter(Boolean));
+            console.log('[refreshServerTrash] Загружено из localStorage (фолбэк)', { size: serverTrashSet.size });
         }
     } catch (e) {
         console.error('Failed to refresh server trash:', e);
+        // Фолбэк: загружаем из localStorage при ошибке
+        const localTrash = localStorage.getItem('qaUserTrash');
+        if (localTrash) {
+            const trash = JSON.parse(localTrash);
+            serverTrashItems = Array.isArray(trash) ? trash : [];
+            serverTrashSet = new Set(serverTrashItems.map(t => t.item?.question).filter(Boolean));
+            console.log('[refreshServerTrash] Загружено из localStorage (ошибка)', { size: serverTrashSet.size });
+        }
     }
 }
 

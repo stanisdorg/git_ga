@@ -2031,30 +2031,6 @@
       "subcategory": "Функциональное тестирование",
       "question": "Функциональное от нефункционального уточнить",
       "answer": "Функциональное — соответствие требованиям, логике, GUI. Нефункциональное — надежность, юзабилити, переносимость.\n\n--- Дополнительный ответ ---\nфункц.- соответствие требованиям, логике, GUI(кнопка при наведении)\n    нефункц.- надежности, юзабилити, переносимость и т.д."
-    },
-    {
-      "category": "DevOps",
-      "subcategory": "CI/CD",
-      "question": "CI CD? (копия)",
-      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
-    },
-    {
-      "category": "DevOps",
-      "subcategory": "CI/CD",
-      "question": "CI CD? (копия 1)",
-      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
-    },
-    {
-      "category": "DevOps",
-      "subcategory": "CI/CD",
-      "question": "CI CD? (копия 2)",
-      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
-    },
-    {
-      "category": "DevOps",
-      "subcategory": "CI/CD",
-      "question": "CI CD? (копия) (копия 1)",
-      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
     }
   ],
   "_achievements": {
@@ -2064,7 +2040,10 @@
   "_favorites": [
     "CI CD?",
     "Из чего состоит Kafka и как работает?",
-    "брокеры?"
+    "брокеры?",
+    "Отказоустойчивость",
+    "брокеры, кафка, как взаимодействовали сервисы?",
+    "как отправлял сообщения в кафке ручками?"
   ],
   "_srsProgress": {
     "kafka отличие партиций от топика": {
@@ -3179,16 +3158,163 @@
       "lastReviewed": "2026-03-10",
       "lastReviewedTime": 18,
       "question": "Серый ящик"
+    },
+    "Как релизится бэк и фронт, вместе или раздельно?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163064079,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163064079,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "Как релизится бэк и фронт, вместе или раздельно?"
+    },
+    "Накладные расходы": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163064373,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163064373,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "Накладные расходы"
+    },
+    "Масштабируемость": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163064612,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163064612,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "Масштабируемость"
+    },
+    "Фронтенд vs Бэкенд?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163064847,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163064847,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "Фронтенд vs Бэкенд?"
+    },
+    "Медленный деплой": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163065032,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163065032,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "Медленный деплой"
+    },
+    "пример для чего подмена запросов?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163065227,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163065227,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "пример для чего подмена запросов?"
+    },
+    "Сложность": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773163067333,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773163067333,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 23,
+      "question": "Сложность"
     }
   },
   "_stats": {
-    "total": 53,
-    "timeSpent": 25162,
+    "total": 60,
+    "timeSpent": 29894,
     "points": 265
   },
   "_meta": {
-    "cardsCount": 320,
-    "lastLoginAt": "2026-03-10T12:19:36.218Z",
-    "lastSavedAt": "2026-03-10T12:19:36.218Z"
+    "cardsCount": 316,
+    "lastLoginAt": "2026-03-10T18:06:02.946Z",
+    "lastSavedAt": "2026-03-10T18:06:02.946Z"
   }
 }

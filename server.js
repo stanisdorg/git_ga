@@ -765,6 +765,7 @@ const server = http.createServer((req, res) => {
     }
 
     const metaPath = path.join(__dirname, 'data', `user_${username}_metadata.json`);
+    const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
 
     let meta = {};
     try {
@@ -772,6 +773,15 @@ const server = http.createServer((req, res) => {
         meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
       }
     } catch (e) { console.error('Error reading metadata:', e); }
+
+    // Добавляем корзину в ответ
+    try {
+      if (fs.existsSync(trashPath)) {
+        meta.trash_bin = JSON.parse(fs.readFileSync(trashPath, 'utf-8'));
+      } else {
+        meta.trash_bin = [];
+      }
+    } catch (e) { console.error('Error reading trash:', e); meta.trash_bin = []; }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(meta));
