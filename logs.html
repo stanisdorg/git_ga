@@ -90,6 +90,7 @@
             </div>
             <button id="refresh-btn">🔄 Обновить</button>
             <button id="clear-btn" class="danger">🗑️ Очистить</button>
+            <button id="reverse-btn">🔃 Сортировка: Новые сверху</button>
         </div>
 
         <div class="stats" id="stats-container"></div>
@@ -107,6 +108,7 @@
 
     <script>
         let autoRefreshInterval = null;
+        let reverseOrder = true; // По умолчанию новые сверху
 
         function formatTime(iso) {
             return new Date(iso).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -124,7 +126,11 @@
             try {
                 const res = await fetch(`/api/logs?${params}`);
                 const data = await res.json();
-                if (data.ok) renderLogs(data.logs);
+                if (data.ok) {
+                    let logs = data.logs;
+                    if (reverseOrder) logs = logs.reverse(); // Реверсим если нужно
+                    renderLogs(logs);
+                }
                 updateLastUpdate();
             } catch (e) {
                 document.getElementById('log-list').innerHTML = `<div class="loading">Ошибка: ${e.message}</div>`;
@@ -183,6 +189,15 @@
         document.getElementById('context-filter').addEventListener('change', loadLogs);
         document.getElementById('search-input').addEventListener('input', loadLogs);
         document.getElementById('limit-select').addEventListener('change', loadLogs);
+        
+        // Кнопка реверса порядка
+        document.getElementById('reverse-btn').addEventListener('click', () => {
+            reverseOrder = !reverseOrder;
+            document.getElementById('reverse-btn').textContent = reverseOrder 
+                ? '🔃 Сортировка: Новые сверху' 
+                : '🔃 Сортировка: Старые сверху';
+            loadLogs();
+        });
 
         document.getElementById('auto-refresh').addEventListener('change', (e) => {
             if (e.target.checked) startAutoRefresh(); else stopAutoRefresh();
