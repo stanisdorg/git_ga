@@ -73,8 +73,48 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API: Логи
+  // 🔒 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ АДМИНА
+  function checkAdmin(req, res) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('username') || urlObj.searchParams.get('user');
+    
+    // 🔒 ВАЛИДАЦИЯ username (только буквы, цифры, _)
+    if (username && !/^[a-zA-Z0-9_]{1,50}$/.test(username)) {
+      return { authorized: false, reason: 'invalid username format' };
+    }
+    
+    if (!username) {
+      return { authorized: false, reason: 'username required' };
+    }
+    
+    try {
+      const usersPath = path.join(__dirname, 'data', 'users.json');
+      const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+      const user = users.find(u => u.username === username);
+      
+      if (!user || user.role !== 'admin') {
+        return { authorized: false, reason: 'admin access required' };
+      }
+      
+      return { authorized: true, user };
+    } catch (e) {
+      return { authorized: false, reason: 'error checking permissions' };
+    }
+  }
+
+  // API: Логи (ТОЛЬКО ДЛЯ АДМИНОВ!)
   if (req.method === 'GET' && req.url.startsWith('/api/logs')) {
+    const adminCheck = checkAdmin(req, res);
+    if (!adminCheck.authorized) {
+      logger.warn('Доступ к логам без авторизации', { 
+        username: new URL(req.url, `http://${req.headers.host}`).searchParams.get('username'),
+        reason: adminCheck.reason 
+      }, 'Security');
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: adminCheck.reason }));
+      return;
+    }
+    
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const limit = parseInt(urlObj.searchParams.get('limit') || '100');
     const level = urlObj.searchParams.get('level') || 'DEBUG';
@@ -87,6 +127,12 @@ const server = http.createServer((req, res) => {
   }
 
   if (req.method === 'POST' && req.url === '/api/logs/clear') {
+    const adminCheck = checkAdmin(req, res);
+    if (!adminCheck.authorized) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'admin access required' }));
+      return;
+    }
     const result = logger.clearLogs();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
@@ -94,6 +140,12 @@ const server = http.createServer((req, res) => {
   }
 
   if (req.method === 'GET' && req.url === '/api/logs/stats') {
+    const adminCheck = checkAdmin(req, res);
+    if (!adminCheck.authorized) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'admin access required' }));
+      return;
+    }
     const stats = logger.getStats();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, stats }));
@@ -110,34 +162,110 @@ const server = http.createServer((req, res) => {
   //   return activeTokens.get(token) || null;
   // };
   const activeTokens = new Map(); // Keep for future use
+  
+  // 🔒 RATE LIMITING ДЛЯ LOGIN (защита от brute-force)
+  const loginAttempts = new Map(); // IP → { count, lastAttempt }
+  const MAX_ATTEMPTS = 5;
+  const BLOCK_TIME_MS = 15 * 60 * 1000; // 15 минут блокировки
+
+  function checkRateLimit(ip) {
+    const now = Date.now();
+    const attempt = loginAttempts.get(ip);
+    
+    if (attempt) {
+      // Если прошло больше BLOCK_TIME_MS, сбрасываем счётчик
+      if (now - attempt.lastAttempt > BLOCK_TIME_MS) {
+        loginAttempts.delete(ip);
+        return { allowed: true };
+      }
+      
+      // Если превышен лимит попыток
+      if (attempt.count >= MAX_ATTEMPTS) {
+        const remainingTime = Math.ceil((BLOCK_TIME_MS - (now - attempt.lastAttempt)) / 60000);
+        return { allowed: false, remainingMinutes: remainingTime };
+      }
+      
+      // Увеличиваем счётчик
+      attempt.count++;
+      attempt.lastAttempt = now;
+      loginAttempts.set(ip, attempt);
+      return { allowed: true };
+    }
+    
+    // Первая попытка
+    loginAttempts.set(ip, { count: 1, lastAttempt: now });
+    return { allowed: true };
+  }
+
+  function resetRateLimit(ip) {
+    loginAttempts.delete(ip);
+  }
 
   // POST /api/login - Login and get username (token disabled)
   if (req.method === 'POST' && req.url === '/api/login') {
+    // Получаем IP клиента для rate limiting
+    const clientIP = req.headers['x-forwarded-for']?.split(',')[0] || 
+                     req.headers['x-real-ip'] || 
+                     req.socket.remoteAddress || 
+                     'unknown';
+    
+    // 🔒 ПРОВЕРКА RATE LIMIT
+    const rateLimit = checkRateLimit(clientIP);
+    if (!rateLimit.allowed) {
+      logger.warn('Brute-force атака (превышен лимит)', { 
+        ip: clientIP, 
+        remainingMinutes: rateLimit.remainingMinutes 
+      }, 'Security');
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        ok: false, 
+        error: `Too many login attempts. Try again in ${rateLimit.remainingMinutes} minutes.` 
+      }));
+      return;
+    }
+    
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        logger.info('Тело запроса', { 
-          body: body.substring(0, 5000),
-          bodyLength: body.length
-        }, 'HTTP');
-        console.log('[Login] Request body:', body);
+        // ВАЖНО: Не логируем тело запроса чтобы не сохранять пароли!
+        logger.info('Login запрос', { username: '***' }, 'Auth');
         if (!body) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false, error: 'Empty body' }));
           return;
         }
         const parsed = JSON.parse(body);
-        console.log('[Login] Parsed:', parsed);
         const username = parsed.username;
         const password = parsed.password;
+
+        // 🔒 ВАЛИДАЦИЯ ВХОДНЫХ ДАННЫХ
+        if (typeof username !== 'string' || typeof password !== 'string') {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'invalid input type' }));
+          return;
+        }
         
+        // Проверяем длину (защита от переполнения)
+        if (username.length > 50 || password.length > 100) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'input too long' }));
+          return;
+        }
+        
+        // Проверяем формат username (только буквы, цифры, _)
+        if (!/^[a-zA-Z0-9_]{1,50}$/.test(username)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'invalid username format' }));
+          return;
+        }
+
         if (!username || !password) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false, error: 'username and password required' }));
           return;
         }
-        
+
         const usersPath = path.join(__dirname, 'data', 'users.json');
 
         if (!fs.existsSync(usersPath)) {
@@ -147,15 +275,19 @@ const server = http.createServer((req, res) => {
         }
 
         const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-        
+
         // Ищем пользователя и проверяем хеш пароля
         const user = users.find(u => u.username === username);
-        
+
         if (!user || !verifyPassword(password, user.password)) {
+          logger.warn('Неверный пароль', { username, ip: clientIP }, 'Auth');
           res.writeHead(401, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false, error: 'Invalid credentials' }));
           return;
         }
+        
+        // Успешный вход — сбрасываем счётчик попыток
+        resetRateLimit(clientIP);
 
         // Update lastLoginAt in users.json
         const userIndex = users.findIndex(u => u.username === username);
@@ -901,6 +1033,14 @@ const server = http.createServer((req, res) => {
   }
 
   // Нормализуем URL
+  // 🔒 СНАЧАЛА ПРОВЕРЯЕМ НА PATH TRAVERSAL (до декодирования!)
+  if (req.url.includes('..') || req.url.includes('\\') || req.url.includes('%2e%2e') || req.url.includes('%252e')) {
+    logger.warn('Попытка Path Traversal', { url: req.url }, 'Security');
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: false, error: 'Forbidden: Invalid path' }));
+    return;
+  }
+  
   // Декодируем URL для поддержки кириллических имен файлов
   let requestUrl;
   try {
@@ -910,21 +1050,40 @@ const server = http.createServer((req, res) => {
     requestUrl = req.url;
   }
 
+  // ============================================
+  // Обработка статических файлов (с защитой!)
+  // ============================================
+
   // Удаляем параметры запроса (например ?t=...)
   const queryIndex = requestUrl.indexOf('?');
   if (queryIndex !== -1) {
     requestUrl = requestUrl.substring(0, queryIndex);
   }
 
-  let filePath = '.' + requestUrl;
-  if (filePath === './') {
-    filePath = './index.html';
+  // 🔒 ПОВТОРНАЯ ПРОВЕРКА ПОСЛЕ ДЕКОДИРОВАНИЯ
+  if (requestUrl.includes('..') || requestUrl.includes('\\')) {
+    logger.warn('Попытка Path Traversal (после декодирования)', { url: req.url, decoded: requestUrl }, 'Security');
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: false, error: 'Forbidden: Invalid path' }));
+    return;
   }
 
-  console.log('Request:', req.url);
-  console.log('Decoded:', requestUrl);
-  console.log('FilePath:', filePath);
+  // Разрешаем только безопасные пути
+  const allowedPaths = ['/', '/index.html', '/logs.html', '/style.css', '/custom-styles.css', '/manifest.json'];
+  const isStaticFile = allowedPaths.some(p => requestUrl === p) || 
+                       requestUrl.startsWith('/icons/') ||
+                       requestUrl.startsWith('/data/') ||
+                       requestUrl.startsWith('/srs/') ||
+                       requestUrl.startsWith('/ui-variants/');
+  
+  if (!isStaticFile && !requestUrl.startsWith('/api/') && !requestUrl.startsWith('/save') && !requestUrl.startsWith('/load') && !requestUrl.startsWith('/metadata') && !requestUrl.startsWith('/trash') && !requestUrl.startsWith('/restore') && !requestUrl.startsWith('/duplicate')) {
+    logger.warn('Доступ к неизвестному пути', { url: req.url }, 'Security');
+  }
 
+  let filePath = '.' + requestUrl;
+  if (filePath === './' || filePath === './index.html') {
+    filePath = './index.html';
+  }
 
   // Получаем расширение файла
   const extname = path.extname(filePath);
