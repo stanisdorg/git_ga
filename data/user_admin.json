@@ -5,7 +5,7 @@
     "createdAt": "2026-03-08T12:00:00Z",
     "lastLoginAt": "2026-03-10T23:43:45.502Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-10T23:43:45.502Z"
+    "lastSavedAt": "2026-03-10T23:48:38.151Z"
   },
   "_cards": [
     {
@@ -1483,7 +1483,7 @@
       "category": "Технические",
       "subcategory": "API и Сети",
       "question": "PUT vs PATCH? (пример неидемпотентного PATCH)",
-      "answer": "Оба метода изменяют информацию. PUT — (идемпотентный) например, создание новой карточки, передаем все поля. PATCH — (неидемпотентный) редактирование уже существующего объекта. Пример: запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным.\n\n--- Дополнительный ответ ---\nоба метода меняют информацию\n    put - (идемпот+?)например создание новой карточки, передаем все поля\n    patch - (не идемпот)редактирование уже существующего о��ъе��та\n    PUT-о��но��ле��ие, PATCH-ч��стич��о�� обновление, пример:\n    Запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным."
+      "answer": "Оба метода изменяют информацию. PUT — (идемпотентный) например, создание новой карточки, передаем все поля. PATCH — (неидемпотентный) редактирование уже существующего объекта. Пример: запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным.\n\n--- Дополнительный ответ ---\nоба метода меняют информацию\n    put - (идемпот+?)например создание новой карточки, передаем все поля\n    patch - (не идемп��т)редактирование уже существующего о��ъе��та\n    PUT-о��но��ле��ие, PATCH-ч��стич��о�� обновление, пример:\n    Запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным."
     },
     {
       "category": "Технические",
@@ -2046,140 +2046,160 @@
     "nightOwl": true
   },
   "_stats": {
-    "total": 6,
-    "timeSpent": 2760,
-    "points": 30
+    "total": 7,
+    "timeSpent": 2043,
+    "points": 35
   },
   "_srsProgress": {
-    "Из чего состоит Kafka и как работает?": {
+    "charlies proxy": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773181539230,
+      "lastReviewDate": 1773186515752,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773181539230,
+          "date": 1773186515752,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "Из чего состоит Kafka и как работает?"
+      "lastReviewedTime": 5,
+      "question": "charlies proxy"
     },
-    "пример для чего подмена запросов?": {
+    "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773181539591,
+      "lastReviewDate": 1773186516047,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773181539591,
+          "date": 1773186516047,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "пример для чего подмена запросов?"
+      "lastReviewedTime": 5,
+      "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
     },
-    "Что такое gRPC?": {
+    "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773181539854,
+      "lastReviewDate": 1773186516425,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773181539854,
+          "date": 1773186516425,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "Что такое gRPC?"
+      "lastReviewedTime": 5,
+      "question": "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается"
     },
-    "для чего виртуальное окружение?": {
+    "что в Elements смотришь обычно?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773181540247,
+      "lastReviewDate": 1773186516632,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773181540247,
+          "date": 1773186516632,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "для чего виртуальное окружение?"
+      "lastReviewedTime": 5,
+      "question": "что в Elements смотришь обычно?"
     },
-    "Access Token": {
+    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773181540475,
+      "lastReviewDate": 1773186516846,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773181540475,
+          "date": 1773186516846,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "Access Token"
+      "lastReviewedTime": 5,
+      "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
     },
-    "docker команды?": {
+    "Local Storage:": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773181540639,
+      "lastReviewDate": 1773186517035,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773181540639,
+          "date": 1773186517035,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "docker команды?"
+      "lastReviewedTime": 5,
+      "question": "Local Storage:"
+    },
+    "postman, swagger": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773186517249,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773186517249,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-11",
+      "lastReviewedTime": 5,
+      "question": "postman, swagger"
     }
   },
   "_favorites": [
-    "Из чего состоит Kafka и как работает?",
-    "CI CD?"
+    "Gitlab Ci/Jenkins"
   ]
 }

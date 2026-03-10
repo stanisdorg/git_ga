@@ -861,7 +861,7 @@ const STATS_STYLES = `
     grid-column: 2; 
     grid-row: 1 / span 2;
     overflow-y: auto;
-    max-height: calc(100vh - 300px);
+    max-height: 600px;
     min-width: 280px;
   }
   .st-block-2 { 
@@ -885,6 +885,29 @@ const STATS_STYLES = `
     min-width: 280px;
   }
 
+  /* Фиксированная высота блоков */
+  .st-compact-card {
+    height: 180px;
+  }
+  
+  .training-modes-block {
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+    flex: 1;
+  }
+  
+  .st-diff-section {
+    height: 280px;
+  }
+
   /* Tablet: 2 колонки */
   @media (max-width: 1024px) {
     .st-main {
@@ -898,7 +921,7 @@ const STATS_STYLES = `
     .st-block-achievements { 
       grid-column: 1 / span 2; 
       grid-row: 2;
-      max-height: 400px;
+      max-height: 600px;
     }
     .st-block-2 { 
       grid-column: 2; 
@@ -931,7 +954,7 @@ const STATS_STYLES = `
     .st-block-achievements { 
       grid-column: 1; 
       grid-row: auto;
-      max-height: 300px;
+      max-height: none;
     }
     .st-block-2 { 
       grid-column: 1; 
@@ -948,6 +971,14 @@ const STATS_STYLES = `
     .st-block-5 { 
       grid-column: 1; 
       grid-row: auto;
+    }
+    
+    /* Mobile: убираем фиксированную высоту */
+    .st-compact-card,
+    .training-modes-block,
+    .st-diff-section {
+      height: auto;
+      min-height: 150px;
     }
   }
 
@@ -1267,9 +1298,9 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
-          <div class="st-cat-section">
-            <div class="st-col-title">Режимы тренировки</div>
-            <div class="st-mode-grid">
+          <div class="training-modes-block">
+            <div class="st-col-title" style="padding: 12px 12px 0;">Режимы тренировки</div>
+            <div class="modes-grid">
               <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
                 <span class="st-mode-icon">⏱️</span>
                 <span class="st-mode-title">Тайм-атака</span>
