@@ -289,8 +289,27 @@ function verifyCredentialsWithSupabase(email, password) {
 // Глобальный индикатор сохранения (элемент верхней панели)
 let globalSaveStatusEl = null;
 
+// ========== Функции управления анимацией загрузки ==========
+function showLoading() {
+    const loadingContainer = document.getElementById('loading-container');
+    const resultsList = document.getElementById('results-list');
+    if (loadingContainer) loadingContainer.style.display = 'flex';
+    if (resultsList) resultsList.classList.add('loading');
+}
+
+function hideLoading() {
+    const loadingContainer = document.getElementById('loading-container');
+    const resultsList = document.getElementById('results-list');
+    if (loadingContainer) loadingContainer.style.display = 'none';
+    if (resultsList) resultsList.classList.remove('loading');
+}
+// ===========================================================
+
 export function initTabsNavigation(appVersion) {
     console.log('Initializing Tabs Navigation...');
+    
+    // Показываем анимацию загрузки при старте
+    showLoading();
 
     try {
         const container = document.querySelector('.container');
@@ -353,6 +372,10 @@ export function initTabsNavigation(appVersion) {
     document.addEventListener('dataLoaded', (e) => {
         const data = e.detail?.data;
         console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
+        
+        // Скрываем анимацию загрузки
+        hideLoading();
+        
         if (data && data.length > 0) {
             // Перестраиваем табы категорий с новыми данными
             refreshCategoriesTabs();
