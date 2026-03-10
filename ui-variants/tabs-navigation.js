@@ -853,6 +853,14 @@ export function initTabsNavigation(appVersion) {
         console.error('Main container not found, cannot insert navigation');
     }
 
+    // Слушаем dataLoaded для обновления корзины после загрузки данных
+    document.addEventListener('dataLoaded', () => {
+        refreshServerTrash();
+    });
+
+    // Делаем refreshServerTrash глобально доступной
+    window.refreshServerTrash = refreshServerTrash;
+
     // Привязываем глобальную ссылку на индикатор сохранения
     // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
 
@@ -862,7 +870,7 @@ export function initTabsNavigation(appVersion) {
             if (Array.isArray(meta.categoryOrder)) setCategoryOrder(meta.categoryOrder);
             if (meta.subcategoryOrder && typeof meta.subcategoryOrder === 'object') setSubcategoryOrderMap(meta.subcategoryOrder);
             if (meta.orderOverrides && typeof meta.orderOverrides === 'object') setLS('qaOrderOverrides', meta.orderOverrides);
-            await refreshServerTrash();
+            // refreshServerTrash() вызывается ПОСЛЕ загрузки данных с сервера (в loadFromServer)
             refreshCategoriesTabs();
         } catch {}
     })();
@@ -1825,8 +1833,17 @@ export function initTabsNavigation(appVersion) {
             // Окончательное удаление
             purgeBtn.addEventListener('click', async () => {
                 purgeBtn.textContent = 'Удаление...'; purgeBtn.disabled = true;
+                
+                // 🔒 Получаем username
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                let username = 'guest';
                 try {
-                    const resp = await fetch(`${BACKEND_URL}/delete-permanent`, {
+                    const u = JSON.parse(sessionUserRaw);
+                    if (u && u.username) username = u.username;
+                } catch {}
+                
+                try {
+                    const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ questions: [q] })
@@ -1835,18 +1852,31 @@ export function initTabsNavigation(appVersion) {
                         // Удаляем из серверной корзины и локальных кэшей
                         serverTrashSet.delete(q);
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                        // Помечаем как удалённый локально, чтобы не вернулся после очистки корзины
+                        // Помечаем как удалённый локально
                         const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
                         // Если карточка была среди новых, удалим её
                         const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
+                        
+                        // 🔒 Обновляем localStorage с корзиной
+                        const localTrash = localStorage.getItem('qaUserTrash');
+                        if (localTrash) {
+                            const trash = JSON.parse(localTrash);
+                            const newTrash = trash.filter(t => t.item?.question !== q);
+                            localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
+                        }
+                        
+                        // Обновляем UI
                         renderTrashPanel();
                         refreshCurrentContext();
                         try { await saveMergedToServer(); } catch {}
                         setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
-                        setSaveStatus('error', 'Ошибка окончательного удаления');
+                        const error = await resp.text();
+                        console.error('[delete-permanent] Ошибка:', resp.status, error);
+                        setSaveStatus('error', 'Ошибка: ' + error);
                     }
                 } catch (e) {
+                    console.error('[delete-permanent] Ошибка:', e);
                     setSaveStatus('error', 'Сервер удаления недоступен');
                 }
                 purgeBtn.textContent = 'Удалить навсегда'; purgeBtn.disabled = false;
@@ -2039,7 +2069,17 @@ export function initTabsNavigation(appVersion) {
 
     async function trackServerDuplication(originalQuestion, newQuestion) {
         try {
-            const resp = await fetch('http://localhost:8085/duplicate', {
+            // Получаем username из сессии
+            const sessionUserRaw = localStorage.getItem('qaSessionUser');
+            let username = 'anonymous';
+            if (sessionUserRaw) {
+                try {
+                    const user = JSON.parse(sessionUserRaw);
+                    if (user && user.username) username = user.username;
+                } catch {}
+            }
+            
+            const resp = await fetch(`/duplicate?user=${encodeURIComponent(username)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2047,7 +2087,7 @@ export function initTabsNavigation(appVersion) {
                         original_question: originalQuestion,
                         new_question: newQuestion
                     }],
-                    duplicated_by: loggedInUser?.email || 'anonymous'
+                    duplicated_by: username
                 })
             });
             return resp.ok;
@@ -2268,23 +2308,29 @@ async function moveToServerTrash(items) {
     try {
         // Получаем username для отправки на сервер
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
-        let username = null;
+        let username = 'guest';
         try {
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
         } catch {}
 
-        const resp = await fetch(`${BACKEND_URL}/trash?user=${encodeURIComponent(username || 'guest')}`, {
+        const resp = await fetch(`${BACKEND_URL}/trash?user=${encodeURIComponent(username)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 items: items,
-                deleted_by: loggedInUser?.email || 'anonymous'
+                deleted_by: username
             })
         });
+        
+        if (!resp.ok) {
+            const error = await resp.text();
+            console.error('[moveToServerTrash] Ошибка сервера:', resp.status, error);
+        }
+        
         return resp.ok;
     } catch (e) {
-        console.error('Trash operation failed:', e);
+        console.error('[moveToServerTrash] Ошибка:', e);
         return false;
     }
 }
@@ -2359,13 +2405,24 @@ async function getServerMetadata() {
 
 async function refreshServerTrash() {
     try {
+        // 🔒 СНАЧАЛА пробуем загрузить из localStorage (после загрузки с сервера)
+        const localTrash = localStorage.getItem('qaUserTrash');
+        if (localTrash) {
+            const trash = JSON.parse(localTrash);
+            serverTrashItems = Array.isArray(trash) ? trash : [];
+            serverTrashSet = new Set(serverTrashItems.map(t => t.item?.question).filter(Boolean));
+            console.log('[refreshServerTrash] Загружено из localStorage', { size: serverTrashSet.size });
+            return;
+        }
+        
+        // Если нет в localStorage, пробуем загрузить с сервера
         const resp = await fetchWithAuth('/metadata');
         if (resp.ok) {
             const data = await resp.json();
             const bin = Array.isArray(data.trash_bin) ? data.trash_bin : [];
             serverTrashItems = bin;
             serverTrashSet = new Set(bin.map(t => t.item?.question).filter(Boolean));
-            console.log('[refreshServerTrash] Обновлено', { size: serverTrashSet.size });
+            console.log('[refreshServerTrash] Обновлено с сервера', { size: serverTrashSet.size });
         }
     } catch (e) {
         console.error('Failed to refresh server trash:', e);
@@ -2505,8 +2562,17 @@ function renderTrashPanel() {
             // Окончательное удаление (вторая ветка)
             purgeBtn2.addEventListener('click', async () => {
                 purgeBtn2.textContent = 'Удаление...'; purgeBtn2.disabled = true;
+                
+                // 🔒 Получаем username
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                let username = 'guest';
                 try {
-                    const resp = await fetch(`${BACKEND_URL}/delete-permanent`, {
+                    const u = JSON.parse(sessionUserRaw);
+                    if (u && u.username) username = u.username;
+                } catch {}
+                
+                try {
+                    const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ questions: [q] })
@@ -2516,14 +2582,26 @@ function renderTrashPanel() {
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
                         const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
                         const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
+                        
+                        // 🔒 Обновляем localStorage с корзиной
+                        const localTrash = localStorage.getItem('qaUserTrash');
+                        if (localTrash) {
+                            const trash = JSON.parse(localTrash);
+                            const newTrash = trash.filter(t => t.item?.question !== q);
+                            localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
+                        }
+                        
                         renderTrashPanel();
                         refreshCurrentContext();
                         try { await saveMergedToServer(); } catch {}
                         setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
-                        setSaveStatus('error', 'Ошибка окончательного удаления');
+                        const error = await resp.text();
+                        console.error('[delete-permanent] Ошибка:', resp.status, error);
+                        setSaveStatus('error', 'Ошибка: ' + error);
                     }
                 } catch (e) {
+                    console.error('[delete-permanent] Ошибка:', e);
                     setSaveStatus('error', 'Сервер удаления недоступен');
                 }
                 purgeBtn2.textContent = 'Удалить навсегда'; purgeBtn2.disabled = false;
@@ -2702,10 +2780,12 @@ export function displayQuestions(questions, title) {
     };
 
     // Формируем текст счетчика
-    const totalCount = uniqueQaData ? uniqueQaData.length : 0;
+    // 🔒 Используем getRuntimeData() для консистентности
+    const runtimeData = getRuntimeData();
+    const totalCount = runtimeData.length;
     const isFiltered = questions.length !== totalCount;
-    const countText = isFiltered 
-        ? `Найдено: ${questions.length} из ${totalCount}` 
+    const countText = isFiltered
+        ? `Найдено: ${questions.length} из ${totalCount}`
         : `Всего карточек: ${questions.length}`;
 
     countContainer.innerHTML = `
@@ -3089,38 +3169,39 @@ export function displayQuestions(questions, title) {
                         // Show visual indicator
                         const rowEl = resultItem.querySelector('.question-row');
                         setInlineSaveStatus(rowEl, 'saving');
-                        
+
                         const newItems = getNewItems();
                         const copyQ = genUniqueQuestion(item.question);
                         const duplicatedItem = { ...item, question: copyQ };
-                        
+
                         // Track duplication on server first
                         trackServerDuplication(item.question, copyQ).then(trackOk => {
                             if (trackOk) {
                                 // Then update local state
                                 newItems.push(duplicatedItem);
                                 setLS('qaNewItems', newItems);
-                                
-                        // Update UI, сохраняя текущую категорию
-                        const activeTab = tabsContainer.querySelector('.tab.active');
-                        if (activeTab) {
-                            if (activeTab.dataset.category === 'all') {
-                                showAllQuestions();
-                            } else if (activeTab.dataset.category === 'favorites') {
-                                showFavorites();
-                            } else {
-                                const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
-                                if (selectedCategory) {
-                                    filterQuestionsByCategory(selectedCategory.name);
+
+                                // Update UI, сохраняя текущую категорию
+                                // Используем document.querySelector вместо tabsContainer
+                                const activeTab = document.querySelector('.tabs-container .tab.active');
+                                if (activeTab) {
+                                    if (activeTab.dataset.category === 'all') {
+                                        showAllQuestions();
+                                    } else if (activeTab.dataset.category === 'favorites') {
+                                        showFavorites();
+                                    } else {
+                                        const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
+                                        if (selectedCategory) {
+                                            filterQuestionsByCategory(selectedCategory.name);
+                                        } else {
+                                            showAllQuestions();
+                                        }
+                                    }
                                 } else {
                                     showAllQuestions();
                                 }
-                            }
-                        } else {
-                            showAllQuestions();
-                        }
-                        setInlineSaveStatus(rowEl, 'success');
-                                
+                                setInlineSaveStatus(rowEl, 'success');
+
                                 // Save to server
                                 saveMergedToServer().then(saveOk => {
                                     if (!saveOk) {

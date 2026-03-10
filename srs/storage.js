@@ -155,12 +155,25 @@ export async function loadFromServer() {
             console.log('[loadFromServer] Сохранено', data.qaFavorites.length, 'избранных');
         }
         if (data.studyAchievements) localStorage.setItem('studyAchievements', JSON.stringify(data.studyAchievements));
+        
+        // 🔒 Сохраняем корзину
+        if (data.userTrash) {
+            localStorage.setItem('qaUserTrash', JSON.stringify(data.userTrash));
+            console.log('[loadFromServer] Сохранено', data.userTrash.length, 'карточек в корзину');
+        }
 
         console.log('[loadFromServer] === ДАННЫЕ УСПЕШНО ЗАГРУЖЕНЫ ===');
         // Dispatch events to update UI
         window.dispatchEvent(new Event('xpUpdated'));
         window.dispatchEvent(new Event('favoritesUpdated'));
         window.dispatchEvent(new Event('dataLoaded'));
+        
+        // 🔒 Обновляем корзину ПОСЛЕ сохранения в localStorage
+        setTimeout(() => {
+            if (typeof refreshServerTrash === 'function') {
+                refreshServerTrash();
+            }
+        }, 100);
     } catch (e) {
         console.error('[loadFromServer] Ошибка загрузки:', e.message);
         // При ошибке используем локальные данные

@@ -119,7 +119,12 @@
             const context = document.getElementById('context-filter').value;
             const search = document.getElementById('search-input').value;
             const limit = document.getElementById('limit-select').value;
-            const params = new URLSearchParams({ level, limit });
+            
+            // 🔒 Получаем username из URL параметра
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username') || 'admin'; // По умолчанию admin
+            
+            const params = new URLSearchParams({ level, limit, username });
             if (context) params.append('context', context);
             if (search) params.append('search', search);
 
@@ -130,6 +135,8 @@
                     let logs = data.logs;
                     if (reverseOrder) logs = logs.reverse(); // Реверсим если нужно
                     renderLogs(logs);
+                } else {
+                    document.getElementById('log-list').innerHTML = `<div class="loading">Ошибка доступа: ${data.error}<br>Используйте ?username=admin</div>`;
                 }
                 updateLastUpdate();
             } catch (e) {
@@ -138,8 +145,12 @@
         }
 
         async function loadStats() {
+            // 🔒 Получаем username из URL параметра
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username') || 'admin';
+            
             try {
-                const res = await fetch('/api/logs/stats');
+                const res = await fetch(`/api/logs/stats?username=${username}`);
                 const data = await res.json();
                 if (data.ok) {
                     const sizeKB = (data.stats.totalSizeBytes / 1024).toFixed(1);

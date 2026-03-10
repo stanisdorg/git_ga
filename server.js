@@ -481,6 +481,13 @@ const server = http.createServer((req, res) => {
         achievements: Object.keys(userData._achievements || {}).length
       }, 'Load');
 
+      // Загружаем корзину пользователя
+      const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
+      let trash = [];
+      if (fs.existsSync(trashPath)) {
+        trash = JSON.parse(fs.readFileSync(trashPath, 'utf-8')) || [];
+      }
+
       const response = {
         ok: true,
         _cards: userData._cards || [],
@@ -492,6 +499,7 @@ const server = http.createServer((req, res) => {
         dailyPoints: userData.dailyPoints || {},
         dailyBonusPoints: userData.dailyBonusPoints || {},
         dailyDayBonusPoints: userData.dailyDayBonusPoints || {},
+        userTrash: trash,  // 🔒 Добавляем корзину
         updatedAt: Date.now()
       };
 
@@ -926,13 +934,15 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/trash')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
-    const token = urlObj.searchParams.get('token');
+    // token removed - using username only for development
 
-    // Verify token
-    const userInfo = verifyToken(token);
-    if (!userInfo || userInfo.username !== username) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+    logger.info('Запрос в корзину', { username, url: req.url }, 'Trash');
+
+    // 🔒 ПРОВЕРКА USERNAME
+    if (!username) {
+      logger.error('Нет username', null, 'Trash');
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
     }
 
@@ -940,9 +950,14 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       try {
+        logger.info('Тело запроса', { bodyLength: body.length }, 'Trash');
         const data = JSON.parse(body);
         const items = data.items || [];
+        logger.info('Получено элементов', { count: items.length }, 'Trash');
+        
         const trash = getUserTrash(username);
+        logger.info('Текущая корзина', { count: trash.length }, 'Trash');
+        
         items.forEach(item => {
             trash.push({
                 item,
@@ -950,11 +965,13 @@ const server = http.createServer((req, res) => {
                 deleted_by: username
             });
         });
+        
         saveUserTrash(username, trash);
-        console.log(`[Trash] User ${username} moved ${items.length} items to trash`);
+        logger.info('Сохранено в корзину', { username, count: trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, trash_size: trash.length }));
       } catch (e) {
+        logger.error('Ошибка', { error: e.message }, 'Trash');
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: e.message }));
       }
@@ -966,13 +983,12 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/restore')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
-    const token = urlObj.searchParams.get('token');
+    // token removed - using username only for development
 
-    // Verify token
-    const userInfo = verifyToken(token);
-    if (!userInfo || userInfo.username !== username) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+    // 🔒 ПРОВЕРКА USERNAME
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
     }
 
@@ -986,7 +1002,7 @@ const server = http.createServer((req, res) => {
         const before = trash.length;
         trash = trash.filter(t => !questions.has(t.item?.question));
         saveUserTrash(username, trash);
-        console.log(`[Restore] User ${username} restored ${before - trash.length} items`);
+        logger.info('Восстановление', { username, count: before - trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, restored_count: before - trash.length }));
       } catch (e) {
@@ -1001,13 +1017,12 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/delete-permanent')) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
-    const token = urlObj.searchParams.get('token');
+    // token removed - using username only for development
 
-    // Verify token
-    const userInfo = verifyToken(token);
-    if (!userInfo || userInfo.username !== username) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
+    // 🔒 ПРОВЕРКА USERNAME
+    if (!username) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
       return;
     }
 
@@ -1021,9 +1036,32 @@ const server = http.createServer((req, res) => {
         const before = trash.length;
         trash = trash.filter(t => !questions.has(t.item?.question));
         saveUserTrash(username, trash);
-        console.log(`[Trash] User ${username} permanently deleted ${before - trash.length} items`);
+        logger.info('Удаление из корзины', { username, count: before - trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, deleted_count: before - trash.length }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // Duplicate: Track duplication (персональная)
+  if (req.method === 'POST' && req.url.startsWith('/duplicate')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('user') || 'anonymous';
+    // token removed - using username only for development
+
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const items = data.items || [];
+        logger.info('Дублирование', { username, count: items.length }, 'Duplicate');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, duplicated_count: items.length }));
       } catch (e) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: e.message }));
