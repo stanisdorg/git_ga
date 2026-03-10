@@ -846,21 +846,26 @@ const STATS_STYLES = `
   .st-main {
     grid-area: main;
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto auto auto;
     column-gap: 24px;
     row-gap: 24px;
-    grid-template-areas:
-      "progress activity activity activity activity activity activity activity activity difficulty difficulty difficulty"
-      "progress categories categories categories categories categories categories categories categories diff2 diff2 diff2"
-      "achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements";
+    height: 100%;
   }
-  .st-progress { grid-area: progress; }
-  .st-activity { grid-area: activity; }
-  .st-categories { grid-area: categories; }
-  .st-difficulty { grid-area: difficulty; }
-  .st-difficulty2 { grid-area: diff2; }
-  .st-achievements { grid-area: achievements; height: auto; min-height: 140px; display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; }
+  .st-block-1 { grid-column: 1; grid-row: 1; }
+  .st-block-achievements { 
+    grid-column: 2; 
+    grid-row: 1 / span 2;
+    overflow-y: auto;
+    max-height: calc(100vh - 300px);
+  }
+  .st-block-2 { grid-column: 3; grid-row: 1; }
+  .st-block-3 { grid-column: 1; grid-row: 2; }
+  .st-block-4 { grid-column: 3; grid-row: 2; }
+  .st-block-5 { 
+    grid-column: 1 / span 3; 
+    grid-row: 3; 
+  }
 
   .st-activity-section { background: var(--st-surf); padding: 20px; border-radius: 16px; border: 1px solid var(--st-border); height: 320px; }
   .st-activity-section { overflow: hidden; }
@@ -900,6 +905,27 @@ const STATS_STYLES = `
   .st-cat-list { display: flex !important; }
   .st-cat-more-btn { display: none !important; }
   .st-cat-item-hidden { display: block !important; }
+
+  /* Mobile styles for st-main */
+  .st-main {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .st-block-1,
+  .st-block-achievements,
+  .st-block-2,
+  .st-block-3,
+  .st-block-4,
+  .st-block-5 {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    width: 100% !important;
+  }
+  .st-block-achievements {
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
 }
 `;
 
@@ -1103,32 +1129,9 @@ function renderStats() {
       <!-- Кнопка продолжить на всю ширину -->
       <button class="st-cta-btn st-continue-mobile" id="st-continue-btn">Продолжить обучение</button>
 
-      <div class="st-sidebar">
-        <div class="st-cat-section">
-          <div class="st-col-title">Режимы тренировки</div>
-          <div class="st-mode-grid">
-            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
-              <span class="st-mode-icon">⏱️</span>
-              <span class="st-mode-title">Тайм-атака</span>
-            </div>
-            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="Игра до первой ошибки.">
-              <span class="st-mode-icon">☠️</span>
-              <span class="st-mode-title">Внезапная смерть</span>
-            </div>
-            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="Только карты с низким коэффициентом.">
-              <span class="st-mode-icon">🧠</span>
-              <span class="st-mode-title">Зубрежка сложных</span>
-            </div>
-            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="Изучение свежего материала.">
-              <span class="st-mode-icon">🌱</span>
-              <span class="st-mode-title">Только новые</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="st-main">
-        <div class="st-progress">
+        <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
+        <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика">
             <div class="stc-top">
               <div class="stc-left">
@@ -1169,7 +1172,8 @@ function renderStats() {
           </div>
         </div>
 
-        <div class="st-categories">
+        <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
+        <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
             <div class="st-cat-progress-title">📊 Прогресс по категориям</div>
             <div class="st-cat-progress-list" id="st-cat-progress-list">
@@ -1178,125 +1182,128 @@ function renderStats() {
           </div>
         </div>
 
-        <div class="activity-card activity">
-          <div class="activity-header">
-            <div class="period-switch">
-              <div class="${currentXpMode==='week'?'active':''}" onclick="window.changeXpMode('week')">Неделя</div>
-              <div class="${currentXpMode==='month'?'active':''}" onclick="window.changeXpMode('month')">Месяц</div>
-              <div class="${currentXpMode==='year'?'active':''}" onclick="window.changeXpMode('year')">Год</div>
+        <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
+        <div class="st-block-2">
+          <div class="st-cat-section">
+            <div class="st-col-title">Режимы тренировки</div>
+            <div class="st-mode-grid">
+              <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
+                <span class="st-mode-icon">⏱️</span>
+                <span class="st-mode-title">Тайм-атака</span>
+              </div>
+              <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="Игра до первой ошибки.">
+                <span class="st-mode-icon">☠️</span>
+                <span class="st-mode-title">Внезапная смерть</span>
+              </div>
+              <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="Только карты с низким коэффициентом.">
+                <span class="st-mode-icon">🧠</span>
+                <span class="st-mode-title">Зубрежка сложных</span>
+              </div>
+              <div class="st-mode-card" onclick="window.startMode('new_cards')" title="Изучение свежего материала.">
+                <span class="st-mode-icon">🌱</span>
+                <span class="st-mode-title">Только новые</span>
+              </div>
             </div>
-            <div class="month-switch"><span id="st-month-label"></span></div>
-          </div>
-          <div class="chart-wrapper">
-            <svg class="chart" id="st-activity-chart"></svg>
           </div>
         </div>
 
-        <div class="st-diff-section st-difficulty">
-          <div class="st-col-title">Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
-          <div class="st-diff-list" style="margin-top:0">
-            ${segs.map((s, i) => `
-              <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
-                <div style="display:flex;align-items:center">
-                  <div class="st-diff-dot" style="background:${s.color}"></div>
-                  <div class="st-diff-name">${s.label} ${s.hearts}</div>
+        <!-- Блок 3: График активности (левый нижний, 33%) -->
+        <div class="st-block-3">
+          <div class="activity-card activity">
+            <div class="activity-header">
+              <div class="period-switch">
+                <div class="${currentXpMode==='week'?'active':''}" onclick="window.changeXpMode('week')">Неделя</div>
+                <div class="${currentXpMode==='month'?'active':''}" onclick="window.changeXpMode('month')">Месяц</div>
+                <div class="${currentXpMode==='year'?'active':''}" onclick="window.changeXpMode('year')">Год</div>
+              </div>
+              <div class="month-switch"><span id="st-month-label"></span></div>
+            </div>
+            <div class="chart-wrapper">
+              <svg class="chart" id="st-activity-chart"></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Блок 4: Сложность карточек (правый нижний, 33%) -->
+        <div class="st-block-4">
+          <div class="st-diff-section">
+            <div class="st-col-title">Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
+            <div class="st-diff-list" style="margin-top:0">
+              ${segs.map((s, i) => `
+                <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
+                  <div style="display:flex;align-items:center">
+                    <div class="st-diff-dot" style="background:${s.color}"></div>
+                    <div class="st-diff-name">${s.label} ${s.hearts}</div>
+                  </div>
+                  <div class="st-diff-count">${s.count}</div>
+                  <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
                 </div>
-                <div class="st-diff-count">${s.count}</div>
-                <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
-              </div>
-            `).join('')}
-            <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="Избранное">
-              <div style="display:flex;align-items:center">
-                <div class="st-diff-dot" style="background:#ffd700"></div>
-                <div class="st-diff-name">Избранное</div>
-              </div>
-              <div class="st-diff-count">${favCount}</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="st-diff-section st-difficulty2">
-          <div class="st-col-title">Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
-          <div class="st-diff-list" style="margin-top:0">
-            ${segs.map((s, i) => `
-              <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
+              `).join('')}
+              <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="Избранное">
                 <div style="display:flex;align-items:center">
-                  <div class="st-diff-dot" style="background:${s.color}"></div>
-                  <div class="st-diff-name">${s.label} ${s.hearts}</div>
+                  <div class="st-diff-dot" style="background:#ffd700"></div>
+                  <div class="st-diff-name">Избранное</div>
                 </div>
-                <div class="st-diff-count">${s.count}</div>
-                <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
+                <div class="st-diff-count">${favCount}</div>
               </div>
-            `).join('')}
-            <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="Избранное">
-              <div style="display:flex;align-items:center">
-                <div class="st-diff-dot" style="background:#ffd700"></div>
-                <div class="st-diff-name">Избранное</div>
-              </div>
-              <div class="st-diff-count">${favCount}</div>
             </div>
           </div>
         </div>
 
-        <div class="st-ach-section st-achievements">
-          <div class="st-ach-scroll">
-            <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="🏁 Первый шаг: Заверши первый урок" style="cursor: help;">
-              <div class="st-ach-icon">🏁</div>
-              <div class="st-ach-title">Первый шаг</div>
-            </div>
-            <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}" title="🔥 Неделя в огне: 7 дней подряд" style="cursor: help;">
-              <div class="st-ach-icon">🔥</div>
-              <div class="st-ach-title">Неделя в огне</div>
-            </div>
-            <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}" title="🏃 Марафонец: 30 дней подряд" style="cursor: help;">
-              <div class="st-ach-icon">🏃</div>
-              <div class="st-ach-title">Марафонец</div>
-            </div>
-            <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}" title="🎯 Снайпер: Точность 90%+" style="cursor: help;">
-              <div class="st-ach-icon">🎯</div>
-              <div class="st-ach-title">Снайпер</div>
-            </div>
-            <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}" title="💯 Центурион: 100 карточек" style="cursor: help;">
-              <div class="st-ach-icon">💯</div>
-              <div class="st-ach-title">Центурион</div>
-            </div>
-            <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}" title="👑 Мастер: Уровень 10" style="cursor: help;">
-              <div class="st-ach-icon">👑</div>
-              <div class="st-ach-title">Мастер</div>
-            </div>
-            <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}" title="📈 Прогресс: 10 сложных → легкие" style="cursor: help;">
-              <div class="st-ach-icon">📈</div>
-              <div class="st-ach-title">Прогресс</div>
-            </div>
-            <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}" title="🧘 Стабильность: 14 дней подряд" style="cursor: help;">
-              <div class="st-ach-icon">🧘</div>
-              <div class="st-ach-title">Стабильность</div>
-            </div>
-            <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}" title="🦅 Возвращение: После перерыва" style="cursor: help;">
-              <div class="st-ach-icon">🦅</div>
-              <div class="st-ach-title">Возвращение</div>
-            </div>
-            <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}" title="🌅 Жаворонок: Занятие до 9 утра" style="cursor: help;">
-              <div class="st-ach-icon">🌅</div>
-              <div class="st-ach-title">Жаворонок</div>
-            </div>
-            <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}" title="🦉 Сова: Занятие после 23:00" style="cursor: help;">
-              <div class="st-ach-icon">🦉</div>
-              <div class="st-ach-title">Сова</div>
+        <!-- Блок 5: Достижения (нижний, 100% ширины) -->
+        <div class="st-block-5">
+          <div class="st-ach-section">
+            <div class="st-ach-scroll">
+              <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="🏁 Первый шаг: Заверши первый урок" style="cursor: help;">
+                <div class="st-ach-icon">🏁</div>
+                <div class="st-ach-title">Первый шаг</div>
+              </div>
+              <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}" title="🔥 Неделя в огне: 7 дней подряд" style="cursor: help;">
+                <div class="st-ach-icon">🔥</div>
+                <div class="st-ach-title">Неделя в огне</div>
+              </div>
+              <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}" title="🏃 Марафонец: 30 дней подряд" style="cursor: help;">
+                <div class="st-ach-icon">🏃</div>
+                <div class="st-ach-title">Марафонец</div>
+              </div>
+              <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}" title="🎯 Снайпер: Точность 90%+" style="cursor: help;">
+                <div class="st-ach-icon">🎯</div>
+                <div class="st-ach-title">Снайпер</div>
+              </div>
+              <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}" title="💯 Центурион: 100 карточек" style="cursor: help;">
+                <div class="st-ach-icon">💯</div>
+                <div class="st-ach-title">Центурион</div>
+              </div>
+              <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}" title="👑 Мастер: Уровень 10" style="cursor: help;">
+                <div class="st-ach-icon">👑</div>
+                <div class="st-ach-title">Мастер</div>
+              </div>
+              <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}" title="📈 Прогресс: 10 сложных → легкие" style="cursor: help;">
+                <div class="st-ach-icon">📈</div>
+                <div class="st-ach-title">Прогресс</div>
+              </div>
+              <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}" title="🧘 Стабильность: 14 дней подряд" style="cursor: help;">
+                <div class="st-ach-icon">🧘</div>
+                <div class="st-ach-title">Стабильность</div>
+              </div>
+              <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}" title="🦅 Возвращение: После перерыва" style="cursor: help;">
+                <div class="st-ach-icon">🦅</div>
+                <div class="st-ach-title">Возвращение</div>
+              </div>
+              <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}" title="🌅 Жаворонок: Занятие до 9 утра" style="cursor: help;">
+                <div class="st-ach-icon">🌅</div>
+                <div class="st-ach-title">Жаворонок</div>
+              </div>
+              <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}" title="🦉 Сова: Занятие после 23:00" style="cursor: help;">
+                <div class="st-ach-icon">🦉</div>
+                <div class="st-ach-title">Сова</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   `;
-
-  // Перемещаем .progress перед .st-sidebar для правильной grid структуры
-  const progress = container.querySelector('.progress');
-  const sidebar = container.querySelector('.st-sidebar');
-  const wrapper = container.querySelector('.st-wrapper');
-  if (progress && sidebar && wrapper) {
-    wrapper.insertBefore(progress, sidebar);
-  }
 
   const levelCont = container.querySelector('.st-level-inline');
   if (levelCont) {
