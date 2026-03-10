@@ -130,10 +130,14 @@ export async function loadFromServer() {
         // Check if server data is newer than local last sync
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
         console.log('[loadFromServer] Сравнение timestamp: локальный=', localTS, 'серверный=', data.updatedAt);
-        
-        if (data.updatedAt && data.updatedAt <= localTS) {
-            // Local data is fresher or equal, do not overwrite
-            console.log('[loadFromServer] Локальные данные свежее или равны - не перезаписываем');
+
+        // 🔒 Получаем локальное количество карточек
+        const localCardsCount = JSON.parse(localStorage.getItem('qaUserCards') || '[]').length;
+        console.log('[loadFromServer] Сравнение карточек: локальные=', localCardsCount, 'серверные=', data._cards?.length || 0);
+
+        // Не перезаписываем если локальные данные свежее ИЛИ если локальных карточек больше
+        if ((data.updatedAt && data.updatedAt <= localTS) || (data._cards && data._cards.length <= localCardsCount)) {
+            console.log('[loadFromServer] Локальные данные свежее или больше - не перезаписываем');
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }

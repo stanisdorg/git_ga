@@ -599,8 +599,8 @@
     {
       "category": "Архитектура",
       "subcategory": "Архитектура",
-      "question": "Синхронность — это выполнение операций по очереди, где каждая операция должна завершиться перед началом следующей. Асинхронность позволяет выполнять операции как одним потоком, так и параллельно, и результаты могут быть получены позже, чем они были запрошены, или не получены вовсе, но это не повлияет на другие потоки",
-      "answer": ""
+      "question": "синхронность и асинхронность",
+      "answer": "Синхронность — это выполнение операций по очереди, где каждая операция должна завершиться перед началом следующей. Асинхронность позволяет выполнять операции как одним потоком, так и параллельно, и результаты могут быть получены позже, чем они были запрошены, или не получены вовсе, но это не повлияет на другие потоки"
     },
     {
       "category": "Архитектура",
@@ -915,8 +915,8 @@
       "answer": "Чек-лист, тест-кейс, отчет о тестировании."
     },
     {
-      "category": "Документация",
-      "subcategory": "Типы тре��������������������������ований",
+      "category": "Д��кументация",
+      "subcategory": "Типы тре����������������������ований",
       "question": "Какие виды требований знаете?",
       "answer": "Функциональные — это как работает система. Нефункциональные — это про UI, UX, дизайн, насколько удобно пользователю, например, доступность не менее 99,9% времени в год.\n\n--- Дополнительный ответ ---\nфункц-то как работает система, нефункц-про ui, ux, дизайн, про то насколько удобно пользователю, нефункц- по нагрузке, например: доступность не менее 99,9% времени в год"
     },
@@ -2037,6 +2037,24 @@
       "subcategory": "CI/CD",
       "question": "CI CD? (копия)",
       "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
+    },
+    {
+      "category": "DevOps",
+      "subcategory": "CI/CD",
+      "question": "CI CD? (копия 1)",
+      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
+    },
+    {
+      "category": "DevOps",
+      "subcategory": "CI/CD",
+      "question": "CI CD? (копия 2)",
+      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
+    },
+    {
+      "category": "DevOps",
+      "subcategory": "CI/CD",
+      "question": "CI CD? (копия) (копия 1)",
+      "answer": "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
     }
   ],
   "_achievements": {
@@ -2846,16 +2864,331 @@
       "lastReviewed": "2026-03-10",
       "lastReviewedTime": 9,
       "question": "devtools что смотришь?"
+    },
+    "Приемочное": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773113538897,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773113538897,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 9,
+      "question": "Приемочное"
+    },
+    "Белый ящик": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773113539241,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773113539241,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 9,
+      "question": "Белый ящик"
+    },
+    "Транзакции": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773113539484,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773113539484,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 9,
+      "question": "Транзакции"
+    },
+    "2/3ех/многоуровневая": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773113539662,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773113539662,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 9,
+      "question": "2/3ех/многоуровневая"
+    },
+    "User story": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773113542193,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773113542193,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 9,
+      "question": "User story"
+    },
+    "502 Bad Gateway": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773113542475,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773113542475,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 9,
+      "question": "502 Bad Gateway"
+    },
+    "Сервер не хранит состояние, это может делать только клиент - для сервера каждый запрос\nсамодостаточный, он не знает сколько раз клиент обращался и на каком этапе находится клиент": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144994890,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144994890,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "Сервер не хранит состояние, это может делать только клиент - для сервера каждый запрос\nсамодостаточный, он не знает сколько раз клиент обращался и на каком этапе находится клиент"
+    },
+    "БД правильно взаимодействует с другими\nсистемами и приложениями": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144995233,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144995233,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "БД правильно взаимодействует с другими\nсистемами и приложениями"
+    },
+    "Производительность": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144995482,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144995482,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "Производительность"
+    },
+    "CI CD?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144995692,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144995692,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "CI CD?"
+    },
+    "Проблемы масштабирования": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144995881,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144995881,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "Проблемы масштабирования"
+    },
+    "запрос не может быть выполнен из-за конфликтного обращения к ресурсу.": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144999391,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144999391,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "запрос не может быть выполнен из-за конфликтного обращения к ресурсу."
+    },
+    "аспекты качества продукта": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773144999689,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773144999689,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "аспекты качества продукта"
+    },
+    "Сервер (Бизнес логика)": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773145000108,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773145000108,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "Сервер (Бизнес логика)"
+    },
+    "Серый ящик": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773145000279,
+      "nextReviewDate": 1773190800000,
+      "dueDate": "2026-03-11T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773145000279,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-10",
+      "lastReviewedTime": 18,
+      "question": "Серый ящик"
     }
   },
   "_stats": {
-    "total": 38,
-    "timeSpent": 19398,
-    "points": 190
+    "total": 53,
+    "timeSpent": 25162,
+    "points": 265
   },
   "_meta": {
-    "cardsCount": 317,
-    "lastLoginAt": "2026-03-10T02:48:41.784Z",
-    "lastSavedAt": "2026-03-10T02:48:41.784Z"
+    "cardsCount": 320,
+    "lastLoginAt": "2026-03-10T12:19:36.218Z",
+    "lastSavedAt": "2026-03-10T12:19:36.218Z"
   }
 }
