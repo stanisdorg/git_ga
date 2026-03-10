@@ -2449,10 +2449,10 @@ async function saveMergedToServer(skipReload = false) {
         // Успешное сохранение
         console.log('[saveMergedToServer] Успешно сохранено', merged.length, 'карточек');
         setSaveStatus('success');
-        
+
         // Отправляем событие успешной синхронизации
         window.dispatchEvent(new Event('sync-success'));
-        
+
         // ОБНОВЛЯЕМ qaUserCards в localStorage
         try {
             localStorage.setItem('qaUserCards', JSON.stringify(merged));
