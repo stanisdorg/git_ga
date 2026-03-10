@@ -2035,7 +2035,8 @@
   ],
   "_achievements": {
     "firstSessionCompleted": true,
-    "earlyBird": true
+    "earlyBird": true,
+    "nightOwl": true
   },
   "_favorites": [
     "CI CD?",
@@ -2045,7 +2046,8 @@
     "брокеры, кафка, как взаимодействовали сервисы?",
     "как отправлял сообщения в кафке ручками?",
     "Фронтенд vs Бэкенд?",
-    "Как релизится бэк и фронт, вместе или раздельно?"
+    "Как релизится бэк и фронт, вместе или раздельно?",
+    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
   ],
   "_srsProgress": {
     "kafka отличие партиций от топика": {
@@ -3307,16 +3309,80 @@
       "lastReviewed": "2026-03-10",
       "lastReviewedTime": 23,
       "question": "Сложность"
+    },
+    "система знает как реагировать ДАЖЕ\nна ошибки пользователя": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773180088938,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1773180088938,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-11",
+      "lastReviewedTime": 4,
+      "question": "система знает как реагировать ДАЖЕ\nна ошибки пользователя"
+    },
+    "Микросервис недоступен, что делать?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773180092035,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1773180092035,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-11",
+      "lastReviewedTime": 4,
+      "question": "Микросервис недоступен, что делать?"
+    },
+    "Клиент и сервер не зависимы друг от друга - к серверу может обращаться множество клиентов и\nему не важно кто это, так же как и клиенту не важно что за сервер": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1773180092751,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1773180092751,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-11",
+      "lastReviewedTime": 4,
+      "question": "Клиент и сервер не зависимы друг от друга - к серверу может обращаться множество клиентов и\nему не важно кто это, так же как и клиенту не важно что за сервер"
     }
   },
   "_stats": {
-    "total": 60,
-    "timeSpent": 29894,
-    "points": 265
+    "total": 63,
+    "timeSpent": 36710,
+    "points": 290,
+    "correct": 2
   },
   "_meta": {
     "cardsCount": 316,
-    "lastLoginAt": "2026-03-10T21:41:30.087Z",
-    "lastSavedAt": "2026-03-10T21:41:30.087Z"
+    "lastLoginAt": "2026-03-10T22:02:35.616Z",
+    "lastSavedAt": "2026-03-10T22:02:35.616Z"
   }
 }
