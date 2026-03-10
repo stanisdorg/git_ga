@@ -3311,19 +3311,28 @@ export function displayQuestions(questions, title) {
                         const rowEl = resultItem.querySelector('.question-row');
                         setInlineSaveStatus(rowEl, 'saving');
 
-                        const newItems = getNewItems();
                         const copyQ = genUniqueQuestion(item.question);
                         const duplicatedItem = { ...item, question: copyQ };
 
-                        // Track duplication on server first
+                        // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
+                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                        if (sessionUserRaw) {
+                            const userCardsRaw = localStorage.getItem('qaUserCards');
+                            if (userCardsRaw) {
+                                const userCards = JSON.parse(userCardsRaw);
+                                const originalIndex = userCards.findIndex(c => c.question === item.question);
+                                if (originalIndex >= 0) {
+                                    // Вставляем дубликат после оригинала
+                                    userCards.splice(originalIndex + 1, 0, duplicatedItem);
+                                    localStorage.setItem('qaUserCards', JSON.stringify(userCards));
+                                }
+                            }
+                        }
+
+                        // Track duplication on server
                         trackServerDuplication(item.question, copyQ).then(trackOk => {
                             if (trackOk) {
-                                // Then update local state
-                                newItems.push(duplicatedItem);
-                                setLS('qaNewItems', newItems);
-
                                 // Update UI, сохраняя текущую категорию
-                                // Используем document.querySelector вместо tabsContainer
                                 const activeTab = document.querySelector('.tabs-container .tab.active');
                                 if (activeTab) {
                                     if (activeTab.dataset.category === 'all') {
