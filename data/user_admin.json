@@ -3,9 +3,9 @@
     "username": "admin",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-10T22:03:37.599Z",
-    "cardsCount": 317,
-    "lastSavedAt": "2026-03-10T22:05:39.454Z"
+    "lastLoginAt": "2026-03-10T22:25:51.201Z",
+    "cardsCount": 316,
+    "lastSavedAt": "2026-03-10T22:26:00.118Z"
   },
   "_cards": [
     {
@@ -2039,12 +2039,6 @@
       "subcategory": "Функциональное тестирование",
       "question": "Функциональное от нефункционального уточнить",
       "answer": "Функциональное — соответствие требованиям, логике, GUI. Нефункциональное — надежность, юзабилити, переносимость.\n\n--- Дополнительный ответ ---\nфункц.- соответствие требованиям, логике, GUI(кнопка при наведении)\n    нефункц.- надежности, юзабилити, переносимость и т.д."
-    },
-    {
-      "category": "Архитектура",
-      "subcategory": "Архитектура",
-      "question": "Синхронность — это выполнение операций по очереди, где каждая операция должна завершиться перед началом следующей. Асинхронность позволяет выполнять операции как одним потоком, так и параллельно, и результаты могут быть получены позже, чем они были запрошены, или не получены вовсе, но это не повлияет на другие потоки",
-      "answer": ""
     }
   ],
   "_achievements": {
@@ -2052,178 +2046,52 @@
     "nightOwl": true
   },
   "_stats": {
-    "total": 15,
-    "timeSpent": 5915,
-    "points": 75
+    "total": 6,
+    "timeSpent": 2760,
+    "points": 30
   },
   "_srsProgress": {
-    "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095735839,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095735839,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
-    },
-    "charlies proxy": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095736070,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095736070,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "charlies proxy"
-    },
-    "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095736240,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095736240,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?"
-    },
-    "docker swarm?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095736773,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095736773,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "docker swarm?"
-    },
     "Из чего состоит Kafka и как работает?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773095736960,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
+      "lastReviewDate": 1773181539230,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773095736960,
+          "date": 1773181539230,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-10",
+      "lastReviewed": "2026-03-11",
       "lastReviewedTime": 4,
       "question": "Из чего состоит Kafka и как работает?"
     },
-    "Gitlab Ci/Jenkins": {
+    "пример для чего подмена запросов?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773095737277,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
+      "lastReviewDate": 1773181539591,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773095737277,
+          "date": 1773181539591,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-10",
+      "lastReviewed": "2026-03-11",
       "lastReviewedTime": 4,
-      "question": "Gitlab Ci/Jenkins"
-    },
-    "Access Token": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095793557,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095793557,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "Access Token"
-    },
-    "как с kibana работал?  уровни ошибок ?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095793856,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095793856,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "как с kibana работал?  уровни ошибок ?"
+      "question": "пример для чего подмена запросов?"
     },
     "Что такое gRPC?": {
       "interval": 1,
@@ -2231,157 +2099,87 @@
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773095794532,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
+      "lastReviewDate": 1773181539854,
+      "nextReviewDate": 1773277200000,
+      "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773095794532,
+          "date": 1773181539854,
           "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-10",
+      "lastReviewed": "2026-03-11",
       "lastReviewedTime": 4,
       "question": "Что такое gRPC?"
     },
-    "сущности в докере?": {
+    "для чего виртуальное окружение?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773095794811,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095794811,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "сущности в докере?"
-    },
-    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773095795002,
-      "nextReviewDate": 1773190800000,
-      "dueDate": "2026-03-11T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773095795002,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-10",
-      "lastReviewedTime": 4,
-      "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
-    },
-    "что в Elements смотришь обычно?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773180227882,
+      "lastReviewDate": 1773181540247,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773180227882,
+          "date": 1773181540247,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
       "lastReviewedTime": 4,
-      "question": "что в Elements смотришь обычно?"
+      "question": "для чего виртуальное окружение?"
     },
-    "CI CD?": {
+    "Access Token": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773180228262,
+      "lastReviewDate": 1773181540475,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773180228262,
+          "date": 1773181540475,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
       "lastReviewedTime": 4,
-      "question": "CI CD?"
+      "question": "Access Token"
     },
-    "Белый ящик": {
+    "docker команды?": {
       "interval": 1,
       "easeFactor": 1.9499999999999997,
       "streak": 0,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1773180228517,
+      "lastReviewDate": 1773181540639,
       "nextReviewDate": 1773277200000,
       "dueDate": "2026-03-12T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
-          "date": 1773180228517,
+          "date": 1773181540639,
           "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-11",
       "lastReviewedTime": 4,
-      "question": "Белый ящик"
-    },
-    "User story": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773180228707,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1773180228707,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 4,
-      "question": "User story"
+      "question": "docker команды?"
     }
   },
   "_favorites": [
     "Из чего состоит Kafka и как работает?",
-    "брокеры? admin",
-    "брокеры",
-    "брокеры?",
-    "CI CD???",
-    "CI CD? (копия)",
-    "брокеры, кафка, как взаимодействовали сервисы?",
-    "CI CD??",
     "CI CD?"
   ]
 }

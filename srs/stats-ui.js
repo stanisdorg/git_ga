@@ -125,6 +125,79 @@ const STATS_STYLES = `
 .st-q-val { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px; }
 .st-q-label { font-size: 13px; color: var(--st-muted); }
 
+/* Category Progress Cards */
+.st-cat-progress-wrap {
+  background: var(--st-surf);
+  border: 1px solid var(--st-border);
+  border-radius: 16px;
+  padding: 20px;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.st-cat-progress-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--st-text);
+  margin-bottom: 16px;
+}
+.st-cat-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+.st-cat-progress-list::-webkit-scrollbar {
+  width: 6px;
+}
+.st-cat-progress-list::-webkit-scrollbar-track {
+  background: var(--st-surf-h);
+  border-radius: 3px;
+}
+.st-cat-progress-list::-webkit-scrollbar-thumb {
+  background: var(--st-muted);
+  border-radius: 3px;
+}
+.st-cat-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #0f3460;
+  border-radius: 8px;
+  border: 1px solid #1a3a5c;
+}
+.st-cat-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.st-cat-progress-name {
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 500;
+}
+.st-cat-progress-value {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 700;
+}
+.st-cat-progress-track {
+  height: 6px;
+  background: #1a1a2e;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.st-cat-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #ffffff);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
 /* Hearts Bar */
 .st-hearts-wrap { margin: 20px 0; }
 .st-hearts-title { font-size: 14px; color: var(--st-text); margin-bottom: 8px; font-weight: 600; display: flex; justify-content: space-between; }
@@ -774,16 +847,20 @@ const STATS_STYLES = `
     grid-area: main;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto auto 140px;
+    grid-template-rows: auto auto auto;
     column-gap: 24px;
     row-gap: 24px;
     grid-template-areas:
-      "activity activity activity activity activity activity activity activity difficulty difficulty difficulty difficulty"
+      "progress activity activity activity activity activity activity activity activity difficulty difficulty difficulty"
+      "progress categories categories categories categories categories categories categories categories diff2 diff2 diff2"
       "achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements achievements";
   }
-  .activity { grid-area: activity; }
-  .difficulty { grid-area: difficulty; }
-  .achievements { grid-area: achievements; height: 140px; display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; }
+  .st-progress { grid-area: progress; }
+  .st-activity { grid-area: activity; }
+  .st-categories { grid-area: categories; }
+  .st-difficulty { grid-area: difficulty; }
+  .st-difficulty2 { grid-area: diff2; }
+  .st-achievements { grid-area: achievements; height: auto; min-height: 140px; display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; }
 
   .st-activity-section { background: var(--st-surf); padding: 20px; border-radius: 16px; border: 1px solid var(--st-border); height: 320px; }
   .st-activity-section { overflow: hidden; }
@@ -1051,7 +1128,7 @@ function renderStats() {
       </div>
 
       <div class="st-main">
-        <div class="progress">
+        <div class="st-progress">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика">
             <div class="stc-top">
               <div class="stc-left">
@@ -1092,6 +1169,15 @@ function renderStats() {
           </div>
         </div>
 
+        <div class="st-categories">
+          <div class="st-cat-progress-wrap">
+            <div class="st-cat-progress-title">📊 Прогресс по категориям</div>
+            <div class="st-cat-progress-list" id="st-cat-progress-list">
+              <!-- Заполняется динамически -->
+            </div>
+          </div>
+        </div>
+
         <div class="activity-card activity">
           <div class="activity-header">
             <div class="period-switch">
@@ -1106,7 +1192,7 @@ function renderStats() {
           </div>
         </div>
 
-        <div class="st-diff-section difficulty">
+        <div class="st-diff-section st-difficulty">
           <div class="st-col-title">Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
           <div class="st-diff-list" style="margin-top:0">
             ${segs.map((s, i) => `
@@ -1129,7 +1215,30 @@ function renderStats() {
           </div>
         </div>
 
-        <div class="st-ach-section achievements">
+        <div class="st-diff-section st-difficulty2">
+          <div class="st-col-title">Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
+          <div class="st-diff-list" style="margin-top:0">
+            ${segs.map((s, i) => `
+              <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
+                <div style="display:flex;align-items:center">
+                  <div class="st-diff-dot" style="background:${s.color}"></div>
+                  <div class="st-diff-name">${s.label} ${s.hearts}</div>
+                </div>
+                <div class="st-diff-count">${s.count}</div>
+                <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
+              </div>
+            `).join('')}
+            <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="Избранное">
+              <div style="display:flex;align-items:center">
+                <div class="st-diff-dot" style="background:#ffd700"></div>
+                <div class="st-diff-name">Избранное</div>
+              </div>
+              <div class="st-diff-count">${favCount}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="st-ach-section st-achievements">
           <div class="st-ach-scroll">
             <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="🏁 Первый шаг: Заверши первый урок" style="cursor: help;">
               <div class="st-ach-icon">🏁</div>
@@ -1398,6 +1507,10 @@ function renderStats() {
   }
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
+  
+  // Рендерим прогресс по категориям
+  renderCategoryProgress();
+  
   if (chartEl) {
       const data = getActivitySeries(currentXpMode);
       const maxHearts = Math.max(...data.map(d => d.hearts || 0), 1);
@@ -1512,7 +1625,7 @@ function renderXpChart(data) {
     const xpH = Math.max(xpHRaw, d.xp > 0 ? 2 : 0);
     const heartsH = Math.min(Math.max(heartsHRaw, 0), Math.max(0, 100 - xpHRaw));
     return `
-      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤️ ${(d.hearts||0)}">
+      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤�� ${(d.hearts||0)}">
          <div class="st-bar-xp" style="height:${xpH}%"></div>
          <div class="st-bar-heart" style="height:${heartsH}%; bottom:${xpHRaw}%"></div>
          <div class="st-xp-label">${d.label}</div>
@@ -1788,6 +1901,57 @@ window.startMode = (modeId) => {
         startLearnSession(candidates, options);
     }
 };
+
+// ========== Функция для рендеринга прогресса по категориям ==========
+function renderCategoryProgress() {
+    const currentCards = getCurrentCards();
+    if (!currentCards || currentCards.length === 0) return;
+    
+    const progress = getProgressMap();
+    
+    // Группируем по категориям
+    const categoryStats = {};
+    currentCards.forEach(card => {
+        const cat = card.category || 'Без категории';
+        if (!categoryStats[cat]) {
+            categoryStats[cat] = { total: 0, heartsFilled: 0 };
+        }
+        categoryStats[cat].total++;
+        
+        // Считаем заполненные сердечки (SRS прогресс)
+        const cardProgress = progress[card.question] || progress[card.question.trim()];
+        if (cardProgress) {
+            const hearts = getDifficultyLevel(cardProgress.easeFactor);
+            categoryStats[cat].heartsFilled += hearts;
+        }
+    });
+    
+    // Рассчитываем проценты и сортируем
+    const categoryProgress = Object.entries(categoryStats)
+        .map(([name, stats]) => {
+            const maxHearts = stats.total * 5; // Максимум 5 сердечек на карточку
+            const percentage = maxHearts > 0 ? Math.round((stats.heartsFilled / maxHearts) * 100) : 0;
+            return { name, percentage, total: stats.total };
+        })
+        .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
+    
+    // Рендерим
+    const container = document.getElementById('st-cat-progress-list');
+    if (!container) return;
+    
+    container.innerHTML = categoryProgress.map(cat => `
+        <div class="st-cat-progress-item">
+            <div class="st-cat-progress-header">
+                <span class="st-cat-progress-name">${cat.name}</span>
+                <span class="st-cat-progress-value">${cat.percentage}%</span>
+            </div>
+            <div class="st-cat-progress-track">
+                <div class="st-cat-progress-fill" style="width: ${cat.percentage}%"></div>
+            </div>
+        </div>
+    `).join('');
+}
+// ======================================================================
 
 function getXpSeries(mode) {
   // Вспомогательная функция для получения даты по MSK (UTC+3)
