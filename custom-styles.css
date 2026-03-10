@@ -1835,7 +1835,7 @@ body.learning-mode #bottom-nav {
 .loading-dots .dot {
     width: 14px;
     height: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #ffffff;
     border-radius: 50%;
     animation: loading-pulse 1.4s infinite ease-in-out both;
 }
