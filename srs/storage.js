@@ -171,7 +171,9 @@ export async function loadFromServer() {
         window.dispatchEvent(new Event('xpUpdated'));
         window.dispatchEvent(new Event('favoritesUpdated'));
         window.dispatchEvent(new Event('dataLoaded'));
-        
+        // 🔥 Событие для исправления кодировки
+        window.dispatchEvent(new Event('qaDataLoadedFromServer'));
+
         // 🔒 Обновляем корзину ПОСЛЕ сохранения в localStorage
         setTimeout(() => {
             if (typeof refreshServerTrash === 'function') {

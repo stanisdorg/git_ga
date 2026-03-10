@@ -1164,8 +1164,8 @@ const server = http.createServer((req, res) => {
             res.end('Ошибка сервера: ' + err.code);
             return;
           }
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(content, 'utf-8');
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(content);
         });
       } else {
         // Другая ошибка сервера
@@ -1177,7 +1177,7 @@ const server = http.createServer((req, res) => {
 
     // Успешный ответ
     res.writeHead(200, { 'Content-Type': contentType });
-    res.end(content, 'utf-8');
+    res.end(content);
   });
 });
 

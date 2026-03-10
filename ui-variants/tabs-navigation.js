@@ -53,7 +53,7 @@ function getRuntimeData() {
     } catch (e) {
         console.warn('[getRuntimeData] Ошибка загрузки userCards:', e);
     }
-    
+
     const base = baseData.map(item => ({ ...item }));
     const overrides = getOverrides();
     const newItems = getNewItems();
@@ -94,6 +94,59 @@ function getRuntimeData() {
     // Исключаем удалённые
     const merged = Array.from(byQuestion.values()).filter(i => !deleted[i.question] && !serverTrashSet.has(i.question));
     return merged;
+}
+
+// 🔥 Функция исправления кодировки в карточках
+function fixEncodingIssues(data) {
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    if (!sessionUserRaw) return;
+    
+    const userCardsRaw = localStorage.getItem('qaUserCards');
+    if (!userCardsRaw) return;
+    
+    let userCards = [];
+    try {
+        userCards = JSON.parse(userCardsRaw);
+    } catch (e) {
+        return;
+    }
+    
+    let changed = false;
+    const fixedCards = userCards.map(card => {
+        const originalCategory = card.category;
+        const originalSubcategory = card.subcategory;
+        
+        // Исправляем искажённую кодировку в category
+        // Символ  (U+FFFD) появляется при неправильной кодировке UTF-8
+        if (card.category && card.category.includes('')) {
+            // Если категория похожа на "Документация" с искажённой кодировкой
+            if (card.category.includes('кумент') || card.category.includes('Д') || card.category.includes('кументация')) {
+                card.category = 'Документация';
+                changed = true;
+            }
+        }
+        
+        // Исправляем искажённую кодировку в subcategory
+        if (card.subcategory && card.subcategory.includes('')) {
+            // Если подкатегория похожа на "Типы требований" с искажённой кодировкой
+            if (card.subcategory.includes('Типы тре') || (card.subcategory.includes('тре') && card.subcategory.includes('ований'))) {
+                card.subcategory = 'Типы требований';
+                changed = true;
+            }
+        }
+        
+        return card;
+    });
+    
+    if (changed) {
+        const fixedCount = userCards.filter((c, i) => 
+            c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
+        ).length;
+        console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount);
+        localStorage.setItem('qaUserCards', JSON.stringify(fixedCards));
+        // Синхронизируем с сервером
+        saveMergedToServer();
+    }
 }
 
 function getCategoryPlaceholders() { return getLS('qaCategoryPlaceholders', '{}'); }
@@ -285,8 +338,16 @@ export function initTabsNavigation(appVersion) {
         }
     });
     
+    // 🔥 ИСПРАВЛЕНИЕ КОДИРОВКИ: После загрузки данных с сервера
+    // Вызываем после loadFromServer, когда данные уже в localStorage
+    window.addEventListener('qaDataLoadedFromServer', () => {
+        fixEncodingIssues();
+        refreshCategoriesTabs();
+        refreshCurrentContext();
+    });
+    
     // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
-    const categories = buildCategoriesFromData(getRuntimeData());
+    let categories = buildCategoriesFromData(getRuntimeData());
 
     // Создаем контейнер для табов
     const tabsContainer = document.createElement('div');
@@ -1193,7 +1254,7 @@ export function initTabsNavigation(appVersion) {
                 const u = ov.querySelector('#new-username').value.trim();
                 const p = ov.querySelector('#new-password').value;
                 const r = ov.querySelector('#new-role').value;
-                if (!u || !p) { alert('Логин и пароль обязательны'); return; }
+                if (!u || !p) { alert('Логин и ��ароль обязательны'); return; }
                 const client = window.__supabaseClient;
                 (async () => {
                     if (client) {
@@ -1371,6 +1432,9 @@ export function initTabsNavigation(appVersion) {
 
     // Перерисовка табов категорий
     function refreshCategoriesTabs(oldName = null, newName = null) {
+        // 🔥 Обновляем categories из актуальных данных
+        categories = buildCategoriesFromData(getRuntimeData());
+        
         const active = tabsContainer.querySelector('.tab.active');
         const activeId = active?.dataset?.category || 'all';
         tabsContainer.innerHTML = '';
@@ -2352,7 +2416,7 @@ async function saveMergedToServer() {
             console.warn('[saveMergedToServer] Не удалось обновить localStorage:', e);
         }
 
-        // Принудительная перезагрузка данных через 50мс
+        // Принудительна�� перезагрузка данных через 50мс
         setTimeout(() => {
             console.log('[saveMergedToServer] Dispatch forceReloadData');
             window.dispatchEvent(new Event('forceReloadData'));
