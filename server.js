@@ -12,10 +12,10 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
 
 const MIME_TYPES = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpg',
   '.svg': 'image/svg+xml',

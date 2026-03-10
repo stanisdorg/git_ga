@@ -278,7 +278,9 @@ export function initTabsNavigation(appVersion) {
         const data = e.detail?.data;
         console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
         if (data && data.length > 0) {
-            // Обновляем UI только если данные изменились
+            // Перестраиваем табы категорий с новыми данными
+            refreshCategoriesTabs();
+            // Обновляем текущий контекст
             refreshCurrentContext();
         }
     });
