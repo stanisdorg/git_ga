@@ -892,41 +892,11 @@ const STATS_STYLES = `
     height: 180px !important;
     min-height: 180px !important;
   }
-  
+
   .st-compact-card {
-    height: calc(180px - 2px) !important;  /* Вычитаем border */
-    background: var(--st-surf) !important;
-    border: 1px solid var(--st-border) !important;
-    border-radius: 16px !important;
-    padding: 16px !important;
-    box-sizing: border-box !important;
+    height: 100% !important;
   }
-  
-  .training-modes-block {
-    height: calc(180px - 2px) !important;  /* Вычитаем border */
-    background: var(--st-surf) !important;
-    border: 1px solid var(--st-border) !important;
-    border-radius: 16px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-  
-  .training-modes-block .st-col-title {
-    padding: 12px 16px 8px !important;
-    margin: 0 !important;
-    border-bottom: 1px solid var(--st-border) !important;
-    background: var(--st-surf) !important;
-  }
-  
-  .modes-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
-    padding: 12px !important;
-    flex: 1 !important;
-  }
-  
+
   .st-diff-section,
   .st-block-4 {
     height: 320px !important;
@@ -1338,25 +1308,23 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
-          <div class="training-modes-block">
-            <div class="st-col-title" style="padding: 12px 12px 0;">Режимы тренировки</div>
-            <div class="modes-grid">
-              <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
-                <span class="st-mode-icon">⏱️</span>
-                <span class="st-mode-title">Тайм-атака</span>
-              </div>
-              <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="Игра до первой ошибки.">
-                <span class="st-mode-icon">☠️</span>
-                <span class="st-mode-title">Внезапная смерть</span>
-              </div>
-              <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="Только карты с низким коэффициентом.">
-                <span class="st-mode-icon">🧠</span>
-                <span class="st-mode-title">Зубрежка сложных</span>
-              </div>
-              <div class="st-mode-card" onclick="window.startMode('new_cards')" title="Изучение свежего материала.">
-                <span class="st-mode-icon">🌱</span>
-                <span class="st-mode-title">Только новые</span>
-              </div>
+          <div class="st-col-title" style="padding: 12px 12px 0;">Режимы тренировки</div>
+          <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px;">
+            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
+              <span class="st-mode-icon">⏱️</span>
+              <span class="st-mode-title">Тайм-атака</span>
+            </div>
+            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="Игра до первой ошибки.">
+              <span class="st-mode-icon">☠️</span>
+              <span class="st-mode-title">Внезапная смерть</span>
+            </div>
+            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="Только карты с низким коэффициентом.">
+              <span class="st-mode-icon">🧠</span>
+              <span class="st-mode-title">Зубрежка сложных</span>
+            </div>
+            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="Изучение свежего материала.">
+              <span class="st-mode-icon">🌱</span>
+              <span class="st-mode-title">Только новые</span>
             </div>
           </div>
         </div>
