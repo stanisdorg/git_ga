@@ -896,6 +896,17 @@ const STATS_STYLES = `
     height: 180px !important;
     display: flex !important;
     flex-direction: column !important;
+    background: var(--st-surf) !important;
+    border: 1px solid var(--st-border) !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  .training-modes-block .st-col-title {
+    padding: 12px 16px 8px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid var(--st-border) !important;
   }
   
   .modes-grid {
