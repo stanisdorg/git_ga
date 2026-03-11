@@ -6,30 +6,30 @@ import { startLearnSession } from './learn-ui.js?v=2.00';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
-    try {
-        const sessionUserRaw = localStorage.getItem('qaSessionUser');
-        if (sessionUserRaw) {
-            const userCardsRaw = localStorage.getItem('qaUserCards');
-            if (userCardsRaw) {
-                const userCards = JSON.parse(userCardsRaw);
-                if (Array.isArray(userCards) && userCards.length > 0) {
-                    console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
-                    return userCards;
-                }
-            }
+  try {
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    if (sessionUserRaw) {
+      const userCardsRaw = localStorage.getItem('qaUserCards');
+      if (userCardsRaw) {
+        const userCards = JSON.parse(userCardsRaw);
+        if (Array.isArray(userCards) && userCards.length > 0) {
+          console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
+          return userCards;
         }
-    } catch (e) {
-        console.warn('[stats-ui] Ошибка загрузки userCards:', e);
+      }
     }
-    
-    // Fallback: читаем из all-data.js через window
-    if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
-        console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
-        return window.uniqueQaData;
-    }
-    
-    console.log('[getCurrentCards] Нет данных');
-    return [];
+  } catch (e) {
+    console.warn('[stats-ui] Ошибка загрузки userCards:', e);
+  }
+
+  // Fallback: читаем из all-data.js через window
+  if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
+    console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
+    return window.uniqueQaData;
+  }
+
+  console.log('[getCurrentCards] Нет данных');
+  return [];
 }
 
 let statsContainer = null;
@@ -903,11 +903,9 @@ const STATS_STYLES = `
   }
 
   .modes-grid {
-    height: calc(180px - 2px) !important;  /* Вычитаем border у родителя */
+    height: calc(200px - 2px) !important;  /* Вычитаем border у родителя */
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
-    padding: 12px !important;
     box-sizing: border-box !important;
   }
 
@@ -1074,19 +1072,19 @@ export function initStatsPage(appVersion) {
     statsContainer = document.createElement('div');
     statsContainer.id = 'stats-container';
     appWrapper.appendChild(statsContainer);
-    
+
     const styleEl = document.createElement('style');
     styleEl.textContent = STATS_STYLES;
     document.head.appendChild(styleEl);
   }
-  
+
   mainContainer = document.querySelector('.container');
   if (mainContainer) mainContainer.style.display = 'none';
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) sidebar.style.display = 'none';
-  
+
   renderStats();
-  
+
   if (!window._statsXpListener) {
     window._statsXpListener = () => {
       if (document.getElementById('stats-container')) renderStats();
@@ -1102,15 +1100,15 @@ export function initStatsPage(appVersion) {
 
 export function hideStatsPage() {
   if (statsContainer) statsContainer.remove();
-  
+
   if (!mainContainer) mainContainer = document.querySelector('.container');
   if (mainContainer) mainContainer.style.display = '';
-  
+
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) sidebar.style.display = '';
-  
+
   if (location.hash && location.hash.includes('stats')) {
-      location.hash = '';
+    location.hash = '';
   }
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
 }
@@ -1120,22 +1118,22 @@ function renderStats() {
   try { level = getCurrentLevel(); } catch { level = { level: 1, xp: 0, remaining: 100, progress: 0 }; }
   try { metrics = getMetrics(uniqueQaData); } catch { metrics = { streakCurrent: 0, studiedCount: 0 }; }
   try { achievements = checkAchievements(); } catch { achievements = {}; }
-  try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5=[]; rest=[]; }
-  
+  try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5 = []; rest = []; }
+
   // Daily Plan
   let planMins = 0;
   let sessionCount = 0;
   let todaysSession = [];
   try {
-      todaysSession = getTodaysSession(uniqueQaData || []);
-      sessionCount = todaysSession.length;
-      planMins = Math.ceil(sessionCount * 1.5);
-  } catch {}
+    todaysSession = getTodaysSession(uniqueQaData || []);
+    sessionCount = todaysSession.length;
+    planMins = Math.ceil(sessionCount * 1.5);
+  } catch { }
 
   const totalCards = uniqueQaData ? uniqueQaData.length : 0;
   const studiedCards = metrics.studiedCount || 0;
   const remainingCards = Math.max(0, totalCards - studiedCards);
-  
+
   // Forecast
   const activeDaysForSpeed = metrics.studiedCount > 0 ? (metrics.xp / 50) : 1; // Approx
   const speed = 12; // Hardcoded fallback or calc
@@ -1162,33 +1160,33 @@ function renderStats() {
   const todayStr = new Date(Date.now() + mskOffset).toISOString().split('T')[0];
   console.log('[STATS.UI] todayStr (MSK):', todayStr, 'UTC:', new Date().toISOString());
   let cardsDoneToday = 0;
-  
+
   // Forecast calculations
   let dueTomorrow = 0;
   let dueWeek = 0;
   const now = new Date();
-  const tomorrowStart = new Date(now); tomorrowStart.setDate(now.getDate() + 1); tomorrowStart.setHours(0,0,0,0);
-  const tomorrowEnd = new Date(tomorrowStart); tomorrowEnd.setHours(23,59,59,999);
-  const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7); weekEnd.setHours(23,59,59,999);
+  const tomorrowStart = new Date(now); tomorrowStart.setDate(now.getDate() + 1); tomorrowStart.setHours(0, 0, 0, 0);
+  const tomorrowEnd = new Date(tomorrowStart); tomorrowEnd.setHours(23, 59, 59, 999);
+  const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7); weekEnd.setHours(23, 59, 59, 999);
 
   const currentCards = getCurrentCards();
   console.log('[STATS.UI] Текущих карточек:', currentCards.length);
 
   currentCards.forEach(q => {
-      const p = progressMap[q.question] || progressMap[q.question.trim()];
-      if (p && p.nextReviewDate) {
-          const d = new Date(p.nextReviewDate);
-          if (d >= tomorrowStart && d <= tomorrowEnd) dueTomorrow++;
-          if (d >= now && d <= weekEnd) dueWeek++;
-      }
+    const p = progressMap[q.question] || progressMap[q.question.trim()];
+    if (p && p.nextReviewDate) {
+      const d = new Date(p.nextReviewDate);
+      if (d >= tomorrowStart && d <= tomorrowEnd) dueTomorrow++;
+      if (d >= now && d <= weekEnd) dueWeek++;
+    }
   });
 
   // Calculate Difficulty Distribution (ordered: Easy, Standard, Hard, Very Hard) with single palette
   const segs = [
-      { label: 'Легкие', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: '❤️❤️❤️❤️🤍' },
-      { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: '#2f81f7', hearts: '❤️❤️❤️🤍🤍' },
-      { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: '❤️❤️🤍🤍🤍' },
-      { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: '❤️🤍🤍🤍🤍' }
+    { label: 'Легкие', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: '❤️❤️❤️❤️🤍' },
+    { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: '#2f81f7', hearts: '❤️❤️❤️🤍🤍' },
+    { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: '❤️❤️🤍🤍🤍' },
+    { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: '❤️🤍🤍🤍🤍' }
   ];
 
   let totalRated = 0;
@@ -1196,27 +1194,27 @@ function renderStats() {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
 
   currentCards.forEach(q => {
-     if (favorites.has(q.question)) favCount++;
+    if (favorites.has(q.question)) favCount++;
 
-     let p = progressMap[q.question];
-     if (!p && q.question) p = progressMap[q.question.trim()];
+    let p = progressMap[q.question];
+    if (!p && q.question) p = progressMap[q.question.trim()];
 
-     if (p && p.lastReviewed === todayStr) {
-         cardsDoneToday++;
-     }
+    if (p && p.lastReviewed === todayStr) {
+      cardsDoneToday++;
+    }
 
-     if (p && p.easeFactor !== undefined) {
-         const ef = p.easeFactor;
-         if (ef >= 2.4) segs[0].count++;
-         else if (ef >= 2.1) segs[1].count++;
-         else if (ef >= 1.7) segs[2].count++;
-         else segs[3].count++;
-         totalRated++;
-     }
+    if (p && p.easeFactor !== undefined) {
+      const ef = p.easeFactor;
+      if (ef >= 2.4) segs[0].count++;
+      else if (ef >= 2.1) segs[1].count++;
+      else if (ef >= 1.7) segs[2].count++;
+      else segs[3].count++;
+      totalRated++;
+    }
   });
-  
+
   segs.forEach(s => {
-     s.pct = totalRated > 0 ? (s.count / totalRated) * 100 : 0;
+    s.pct = totalRated > 0 ? (s.count / totalRated) * 100 : 0;
   });
 
   // Calculate Hearts Distribution (New)
@@ -1228,7 +1226,7 @@ function renderStats() {
   // Check login status
   const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
   const authTitle = user ? `Выйти (${user.email})` : 'Вход';
-  const authIcon = user 
+  const authIcon = user
     ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5z"/><path d="M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>'
     : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>';
 
@@ -1313,7 +1311,7 @@ function renderStats() {
         <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
-            <div class="st-cat-progress-title">📊 Прогресс по категориям</div>
+            <div class="st-cat-progress-title"> Прогресс по категориям</div>
             <div class="st-cat-progress-list" id="st-cat-progress-list">
               <!-- Заполняется динамически -->
             </div>
@@ -1322,7 +1320,7 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
-          <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px;">
+          <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
               <span class="st-mode-icon">⏱️</span>
               <span class="st-mode-title">Тайм-атака</span>
@@ -1347,9 +1345,9 @@ function renderStats() {
           <div class="activity-card activity">
             <div class="activity-header">
               <div class="period-switch">
-                <div class="${currentXpMode==='week'?'active':''}" onclick="window.changeXpMode('week')">Неделя</div>
-                <div class="${currentXpMode==='month'?'active':''}" onclick="window.changeXpMode('month')">Месяц</div>
-                <div class="${currentXpMode==='year'?'active':''}" onclick="window.changeXpMode('year')">Год</div>
+                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">Неделя</div>
+                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">Месяц</div>
+                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Год</div>
               </div>
               <div class="month-switch"><span id="st-month-label"></span></div>
             </div>
@@ -1362,7 +1360,8 @@ function renderStats() {
         <!-- Блок 4: Сложность карточек (правый нижний, 33%) -->
         <div class="st-block-4">
           <div class="st-diff-section">
-            <div class="st-col-title">Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
+            <div class="st-col-title"   style="margin-bottom: 5px;"
+              >Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
             <div class="st-diff-list" style="margin-top:0">
               ${segs.map((s, i) => `
                 <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
@@ -1449,7 +1448,7 @@ function renderStats() {
     usernameSpan.style.fontSize = '13px';
     usernameSpan.style.color = '#4ec9b0';
     usernameSpan.style.fontWeight = '600';
-    
+
     try {
       const sessionUserRaw = localStorage.getItem('qaSessionUser');
       if (sessionUserRaw) {
@@ -1468,9 +1467,9 @@ function renderStats() {
       usernameSpan.textContent = 'Гость';
       usernameSpan.style.color = '#808080';
     }
-    
+
     levelCont.parentNode.insertBefore(usernameSpan, levelCont);
-    
+
     try {
       const d = getCurrentLevel();
       const box = document.createElement('div');
@@ -1505,11 +1504,11 @@ function renderStats() {
           const cc = Math.max(0, Math.round((dd.xp - dd.prevThreshold)));
           const tt = dd.nextThreshold === Infinity ? cc : Math.round(dd.nextThreshold - dd.prevThreshold);
           if (t) t.textContent = `XP:${dd.xp}  ${cc}/${tt}`;
-        } catch {}
+        } catch { }
       };
       window.addEventListener('xpUpdated', upd);
       window.addEventListener('statsClosed', upd);
-    } catch {}
+    } catch { }
   }
 
   // Ensure "39 карточек ≈ 59 минут" stays on one line; reduce font-size by up to 2px if needed
@@ -1526,55 +1525,33 @@ function renderStats() {
         tries += 1;
       }
     }
-  } catch {}
+  } catch { }
 
   const topRight = container.querySelector('.st-top-right');
 
   const homeBtn = container.querySelector('.st-home-btn');
   if (homeBtn) {
-      homeBtn.addEventListener('click', () => {
-          location.hash = '';
-          hideStatsPage();
-          const mainNav = document.getElementById('bottom-nav');
-          if (mainNav) {
-             const homeNav = mainNav.querySelector('#bn-home');
-             if (homeNav) homeNav.click();
-          }
-      });
+    homeBtn.addEventListener('click', () => {
+      location.hash = '';
+      hideStatsPage();
+      const mainNav = document.getElementById('bottom-nav');
+      if (mainNav) {
+        const homeNav = mainNav.querySelector('#bn-home');
+        if (homeNav) homeNav.click();
+      }
+    });
   }
 
   const continueBtn = container.querySelector('#st-continue-btn');
   if (continueBtn) {
-      continueBtn.addEventListener('click', () => {
-          const questions = (window.currentQuestions && window.currentQuestions.length > 0)
-              ? window.currentQuestions
-              : getCurrentCards();
-
-          if (!questions || questions.length === 0) {
-              alert('Нет вопросов для изучения');
-              return;
-          }
-
-          hideStatsPage();
-          startLearnSession(questions);
-
-          const mainNav = document.getElementById('bottom-nav');
-          if (mainNav) {
-              const learnNav = mainNav.querySelector('#bn-learn');
-              if (learnNav) learnNav.click();
-          }
-      });
-  }
-
-  // Функция для кнопки "Продолжить обучение" в шапке
-  window.startDailySession = () => {
+    continueBtn.addEventListener('click', () => {
       const questions = (window.currentQuestions && window.currentQuestions.length > 0)
-          ? window.currentQuestions
-          : uniqueQaData;
+        ? window.currentQuestions
+        : getCurrentCards();
 
       if (!questions || questions.length === 0) {
-          alert('Нет вопросов для изучения');
-          return;
+        alert('Нет вопросов для изучения');
+        return;
       }
 
       hideStatsPage();
@@ -1582,179 +1559,201 @@ function renderStats() {
 
       const mainNav = document.getElementById('bottom-nav');
       if (mainNav) {
-          const learnNav = mainNav.querySelector('#bn-learn');
-          if (learnNav) learnNav.click();
+        const learnNav = mainNav.querySelector('#bn-learn');
+        if (learnNav) learnNav.click();
       }
+    });
+  }
+
+  // Функция для кнопки "Продолжить обучение" в шапке
+  window.startDailySession = () => {
+    const questions = (window.currentQuestions && window.currentQuestions.length > 0)
+      ? window.currentQuestions
+      : uniqueQaData;
+
+    if (!questions || questions.length === 0) {
+      alert('Нет вопросов для изучения');
+      return;
+    }
+
+    hideStatsPage();
+    startLearnSession(questions);
+
+    const mainNav = document.getElementById('bottom-nav');
+    if (mainNav) {
+      const learnNav = mainNav.querySelector('#bn-learn');
+      if (learnNav) learnNav.click();
+    }
   };
 
   const startTodayLink = container.querySelector('#st-start-today');
   if (startTodayLink) {
-      startTodayLink.addEventListener('click', () => {
-          const questions = (window.currentQuestions && window.currentQuestions.length > 0) 
-              ? window.currentQuestions 
-              : uniqueQaData;
-          
-          if (!questions || questions.length === 0) {
-              alert('Нет вопросов для изучения');
-              return;
-          }
-          
-          hideStatsPage();
-          startLearnSession(questions);
-          
-          const mainNav = document.getElementById('bottom-nav');
-          if (mainNav) {
-              const learnNav = mainNav.querySelector('#bn-learn');
-              if (learnNav) learnNav.click();
-          }
-      });
+    startTodayLink.addEventListener('click', () => {
+      const questions = (window.currentQuestions && window.currentQuestions.length > 0)
+        ? window.currentQuestions
+        : uniqueQaData;
+
+      if (!questions || questions.length === 0) {
+        alert('Нет вопросов для изучения');
+        return;
+      }
+
+      hideStatsPage();
+      startLearnSession(questions);
+
+      const mainNav = document.getElementById('bottom-nav');
+      if (mainNav) {
+        const learnNav = mainNav.querySelector('#bn-learn');
+        if (learnNav) learnNav.click();
+      }
+    });
   }
 
   const authBtn = container.querySelector('.st-auth-btn');
   if (authBtn) {
-      authBtn.addEventListener('click', () => {
-          const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
-          if (user) {
-             const username = user.username || user.email || 'пользователь';
-             if (confirm(`Выйти из аккаунта ${username}?`)) {
-                 if (window.qaAuth.logout) window.qaAuth.logout();
-                 renderStats();
-             }
-          } else {
-              if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
-                  window.qaAuth.openLogin();
-              } else {
-                  alert('Окно входа недоступно');
-              }
-          }
-      });
+    authBtn.addEventListener('click', () => {
+      const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
+      if (user) {
+        const username = user.username || user.email || 'пользователь';
+        if (confirm(`Выйти из аккаунта ${username}?`)) {
+          if (window.qaAuth.logout) window.qaAuth.logout();
+          renderStats();
+        }
+      } else {
+        if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
+          window.qaAuth.openLogin();
+        } else {
+          alert('Окно входа недоступно');
+        }
+      }
+    });
   }
   const statsBtn = container.querySelector('.st-stats-btn');
   if (statsBtn) {
-      statsBtn.addEventListener('click', () => { });
+    statsBtn.addEventListener('click', () => { });
   }
   const learnMainBtn = container.querySelector('.st-learn-btn');
   if (learnMainBtn) {
-      learnMainBtn.addEventListener('click', () => {
-          const qs = (window.currentQuestions && window.currentQuestions.length > 0) ? window.currentQuestions : uniqueQaData;
-          if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
-          hideStatsPage();
-          startLearnSession(qs);
-          const mainNav = document.getElementById('bottom-nav');
-          if (mainNav) {
-              const learnNav = mainNav.querySelector('#bn-learn');
-              if (learnNav) learnNav.click();
-          }
-      });
+    learnMainBtn.addEventListener('click', () => {
+      const qs = (window.currentQuestions && window.currentQuestions.length > 0) ? window.currentQuestions : uniqueQaData;
+      if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
+      hideStatsPage();
+      startLearnSession(qs);
+      const mainNav = document.getElementById('bottom-nav');
+      if (mainNav) {
+        const learnNav = mainNav.querySelector('#bn-learn');
+        if (learnNav) learnNav.click();
+      }
+    });
   }
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
-  
+
   // Рендерим прогресс по категориям
   renderCategoryProgress();
-  
-  if (chartEl) {
-      const data = getActivitySeries(currentXpMode);
-      const maxHearts = Math.max(...data.map(d => d.hearts || 0), 1);
-      const maxCards = Math.max(...data.map(d => d.cards || 0), 1);
-      const rawMax = Math.max(maxHearts, maxCards);
-      const maxVal = currentXpMode==='week' ? rawMax * 1.2
-                    : currentXpMode==='month' ? rawMax * 1.15
-                    : rawMax * 1.2;
-      const h = chartEl.clientHeight || 280;
-      const bottomPad = 16;
-      const topPad = 20;
-      const leftMargin = 40;
-      const innerH = h - bottomPad - topPad;
-      const ticks = currentXpMode==='week'
-        ? [0, maxVal*0.25, maxVal*0.5, maxVal*0.75, maxVal]
-        : (currentXpMode==='month'
-           ? [0, maxVal*0.33, maxVal*0.66, maxVal]
-           : [0, maxVal*0.25, maxVal*0.5, maxVal*0.75, maxVal]);
 
-      const now = new Date();
-      const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-      const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
-      monthLabel.textContent = mName;
-      const cfg = currentXpMode==='week' ? {bar:18,gap:8,count:14,labelStep:2}
-                 : currentXpMode==='month' ? {bar:12,gap:6,count:data.length,labelStep:4}
-                 : {bar:28,gap:16,count:12,labelStep:1};
-      const width = chartEl.clientWidth || 600;
-      const wideBarW = 14;
-      const narrowBarW = 8;
-      const innerGap = 0;
-      const groupW = wideBarW;
-      const colsW = cfg.count*groupW + (cfg.count-1)*cfg.gap + leftMargin;
-      chartEl.setAttribute('viewBox', `0 0 ${Math.max(width, colsW)} ${h}`);
-      const grid = ticks.map(t=>{
-         const y = (innerH/maxVal)*t;
-         return `<line class="chart-grid-line" x1="${leftMargin}" y1="${topPad + (innerH - y)}" x2="${Math.max(width, colsW)}" y2="${topPad + (innerH - y)}"/>`;
-      }).join('');
-      const yLabels = ticks.map(t=>{
-         const y = (innerH/maxVal)*t;
-         const yy = topPad + (innerH - y) + 4;
-         return `<text class="chart-label" x="${leftMargin - 8}" y="${yy}" text-anchor="end">${Math.round(t)}</text>`;
-      }).join('');
-      const bars = [];
-      const defs = [];
-      let x = leftMargin;
-      const hcMax = rawMax;
-      const toRgb = (hex) => { const h = hex.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; };
-      const lerp = (a,b,t) => Math.round(a + (b - a) * t);
-      const lerpHex = (h1,h2,t) => { const [r1,g1,b1]=toRgb(h1), [r2,g2,b2]=toRgb(h2); const r=lerp(r1,r2,t).toString(16).padStart(2,'0'); const g=lerp(g1,g2,t).toString(16).padStart(2,'0'); const b=lerp(b1,b2,t).toString(16).padStart(2,'0'); return `#${r}${g}${b}`; };
-      const redDark = '#8B0000'; const redBright = '#FF3B3B';
-      const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
-      data.forEach((d, idx) => {
-         const labelOk = currentXpMode==='year' ? true : (idx % cfg.labelStep === 0);
-         const cardsH = Math.max(2, Math.min(innerH, (innerH/hcMax) * (d.cards || 0)));
-         const yCards = topPad + (innerH - cardsH);
-         const tCards = Math.max(0, Math.min(1, (d.cards || 0) / hcMax));
-         const topOrange = lerpHex(orangeDark, orangeBright, tCards);
-         defs.push(`<linearGradient id="go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`);
-         const rWide = Math.round(wideBarW/2);
-         const pathCards = `M ${x} ${yCards + cardsH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + wideBarW} ${yCards + rWide} L ${x + wideBarW} ${yCards + cardsH} Z`;
-         bars.push(`<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}" fill="url(#go${idx})"/>`);
-         
-         const heartsH = Math.max(2, Math.min(innerH, (innerH/hcMax) * (d.hearts || 0)));
-         const yHearts = topPad + (innerH - heartsH);
-         const heartsX = x + Math.round((wideBarW - narrowBarW)/2);
-         const tHearts = Math.max(0, Math.min(1, (d.hearts || 0) / hcMax));
-         const topRed = lerpHex(redDark, redBright, tHearts);
-         defs.push(`<linearGradient id="gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`);
-         const rNarrow = Math.round(narrowBarW/2);
-         const pathHearts = `M ${heartsX} ${yHearts + heartsH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${yHearts + heartsH} Z`;
-         bars.push(`<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${d.hearts||0}" data-cards="${d.cards||0}" fill="url(#gh${idx})"/>`);
-         if (labelOk) {
-           bars.push(`<text class="chart-label" x="${x + groupW/2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
-         }
-         x += groupW + cfg.gap;
-      });
-      chartEl.innerHTML = `<defs>${defs.join('')}</defs>${grid}${yLabels}${bars.join('')}`;
-      let tip = document.querySelector('.tooltip');
-      if (!tip) {
-         tip = document.createElement('div');
-         tip.className = 'tooltip';
-         document.body.appendChild(tip);
+  if (chartEl) {
+    const data = getActivitySeries(currentXpMode);
+    const maxHearts = Math.max(...data.map(d => d.hearts || 0), 1);
+    const maxCards = Math.max(...data.map(d => d.cards || 0), 1);
+    const rawMax = Math.max(maxHearts, maxCards);
+    const maxVal = currentXpMode === 'week' ? rawMax * 1.2
+      : currentXpMode === 'month' ? rawMax * 1.15
+        : rawMax * 1.2;
+    const h = chartEl.clientHeight || 280;
+    const bottomPad = 16;
+    const topPad = 20;
+    const leftMargin = 40;
+    const innerH = h - bottomPad - topPad;
+    const ticks = currentXpMode === 'week'
+      ? [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]
+      : (currentXpMode === 'month'
+        ? [0, maxVal * 0.33, maxVal * 0.66, maxVal]
+        : [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]);
+
+    const now = new Date();
+    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+    monthLabel.textContent = mName;
+    const cfg = currentXpMode === 'week' ? { bar: 18, gap: 8, count: 14, labelStep: 2 }
+      : currentXpMode === 'month' ? { bar: 12, gap: 6, count: data.length, labelStep: 4 }
+        : { bar: 28, gap: 16, count: 12, labelStep: 1 };
+    const width = chartEl.clientWidth || 600;
+    const wideBarW = 14;
+    const narrowBarW = 8;
+    const innerGap = 0;
+    const groupW = wideBarW;
+    const colsW = cfg.count * groupW + (cfg.count - 1) * cfg.gap + leftMargin;
+    chartEl.setAttribute('viewBox', `0 0 ${Math.max(width, colsW)} ${h}`);
+    const grid = ticks.map(t => {
+      const y = (innerH / maxVal) * t;
+      return `<line class="chart-grid-line" x1="${leftMargin}" y1="${topPad + (innerH - y)}" x2="${Math.max(width, colsW)}" y2="${topPad + (innerH - y)}"/>`;
+    }).join('');
+    const yLabels = ticks.map(t => {
+      const y = (innerH / maxVal) * t;
+      const yy = topPad + (innerH - y) + 4;
+      return `<text class="chart-label" x="${leftMargin - 8}" y="${yy}" text-anchor="end">${Math.round(t)}</text>`;
+    }).join('');
+    const bars = [];
+    const defs = [];
+    let x = leftMargin;
+    const hcMax = rawMax;
+    const toRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
+    const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+    const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
+    const redDark = '#8B0000'; const redBright = '#FF3B3B';
+    const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
+    data.forEach((d, idx) => {
+      const labelOk = currentXpMode === 'year' ? true : (idx % cfg.labelStep === 0);
+      const cardsH = Math.max(2, Math.min(innerH, (innerH / hcMax) * (d.cards || 0)));
+      const yCards = topPad + (innerH - cardsH);
+      const tCards = Math.max(0, Math.min(1, (d.cards || 0) / hcMax));
+      const topOrange = lerpHex(orangeDark, orangeBright, tCards);
+      defs.push(`<linearGradient id="go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`);
+      const rWide = Math.round(wideBarW / 2);
+      const pathCards = `M ${x} ${yCards + cardsH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + wideBarW} ${yCards + rWide} L ${x + wideBarW} ${yCards + cardsH} Z`;
+      bars.push(`<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#go${idx})"/>`);
+
+      const heartsH = Math.max(2, Math.min(innerH, (innerH / hcMax) * (d.hearts || 0)));
+      const yHearts = topPad + (innerH - heartsH);
+      const heartsX = x + Math.round((wideBarW - narrowBarW) / 2);
+      const tHearts = Math.max(0, Math.min(1, (d.hearts || 0) / hcMax));
+      const topRed = lerpHex(redDark, redBright, tHearts);
+      defs.push(`<linearGradient id="gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`);
+      const rNarrow = Math.round(narrowBarW / 2);
+      const pathHearts = `M ${heartsX} ${yHearts + heartsH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${yHearts + heartsH} Z`;
+      bars.push(`<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#gh${idx})"/>`);
+      if (labelOk) {
+        bars.push(`<text class="chart-label" x="${x + groupW / 2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
       }
-      const showTip = (ev, tgt) => {
-        const date = tgt.getAttribute('data-date');
-        const hearts = tgt.getAttribute('data-hearts');
-        const cards = tgt.getAttribute('data-cards');
-        const type = tgt.getAttribute('data-type');
-        const typeLabel = type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (оранжевый)';
-        tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'})}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
-        tip.style.display = 'block';
-        const bb = tgt.getBoundingClientRect();
-        tip.style.left = Math.round(bb.left + window.scrollX + (bb.width/2) + 12) + 'px';
-        tip.style.top = Math.round(bb.top + window.scrollY - 8) + 'px';
-      };
-      const moveTip = () => {};
-      const hideTip = () => { tip.style.display = 'none'; };
-      chartEl.querySelectorAll('.bar-hearts,.bar-cards').forEach(el=>{
-        el.addEventListener('mouseenter', (e)=>{ showTip(e, e.currentTarget); e.currentTarget.style.filter='brightness(1.2)'; });
-        el.addEventListener('mousemove', moveTip);
-        el.addEventListener('mouseleave', (e)=>{ hideTip(); e.currentTarget.style.filter=''; });
-      });
+      x += groupW + cfg.gap;
+    });
+    chartEl.innerHTML = `<defs>${defs.join('')}</defs>${grid}${yLabels}${bars.join('')}`;
+    let tip = document.querySelector('.tooltip');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.className = 'tooltip';
+      document.body.appendChild(tip);
+    }
+    const showTip = (ev, tgt) => {
+      const date = tgt.getAttribute('data-date');
+      const hearts = tgt.getAttribute('data-hearts');
+      const cards = tgt.getAttribute('data-cards');
+      const type = tgt.getAttribute('data-type');
+      const typeLabel = type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (оранжевый)';
+      tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
+      tip.style.display = 'block';
+      const bb = tgt.getBoundingClientRect();
+      tip.style.left = Math.round(bb.left + window.scrollX + (bb.width / 2) + 12) + 'px';
+      tip.style.top = Math.round(bb.top + window.scrollY - 8) + 'px';
+    };
+    const moveTip = () => { };
+    const hideTip = () => { tip.style.display = 'none'; };
+    chartEl.querySelectorAll('.bar-hearts,.bar-cards').forEach(el => {
+      el.addEventListener('mouseenter', (e) => { showTip(e, e.currentTarget); e.currentTarget.style.filter = 'brightness(1.2)'; });
+      el.addEventListener('mousemove', moveTip);
+      el.addEventListener('mouseleave', (e) => { hideTip(); e.currentTarget.style.filter = ''; });
+    });
   }
 }
 
@@ -1767,7 +1766,7 @@ function renderXpChart(data) {
     const xpH = Math.max(xpHRaw, d.xp > 0 ? 2 : 0);
     const heartsH = Math.min(Math.max(heartsHRaw, 0), Math.max(0, 100 - xpHRaw));
     return `
-      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤�� ${(d.hearts||0)}">
+      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤�� ${(d.hearts || 0)}">
          <div class="st-bar-xp" style="height:${xpH}%"></div>
          <div class="st-bar-heart" style="height:${heartsH}%; bottom:${xpHRaw}%"></div>
          <div class="st-xp-label">${d.label}</div>
@@ -1780,7 +1779,7 @@ function renderImpChart(data) {
   if (!data || data.length === 0) return '';
   // Find max amplitude
   const maxVal = Math.max(...data.map(d => Math.max(d.improved, d.regressed)), 5);
-  
+
   return data.map(d => {
     const hPos = (d.improved / maxVal) * 50; // Max 50% height
     const hNeg = (d.regressed / maxVal) * 50; // Max 50% height
@@ -1796,22 +1795,22 @@ function renderImpChart(data) {
 
 function renderHearts(dist, total) {
   if (total === 0) return '<div class="st-hearts-bar" style="background:#333;justify-content:center;align-items:center;color:#666;font-size:12px">Нет данных</div>';
-  
+
   const hearts = [
-     { val: 1, count: dist[1], icon: '💔' },
-     { val: 2, count: dist[2], icon: '❤️' },
-     { val: 3, count: dist[3], icon: '🧡' },
-     { val: 4, count: dist[4], icon: '💛' },
-     { val: 5, count: dist[5], icon: '💚' }
+    { val: 1, count: dist[1], icon: '💔' },
+    { val: 2, count: dist[2], icon: '❤️' },
+    { val: 3, count: dist[3], icon: '🧡' },
+    { val: 4, count: dist[4], icon: '💛' },
+    { val: 5, count: dist[5], icon: '💚' }
   ];
-  
+
   return `
     <div class="st-hearts-bar">
        ${hearts.map(h => {
-          const pct = (h.count / total) * 100;
-          if (pct < 1) return '';
-          return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} карт"><span class="st-hb-icon">${h.icon}</span></div>`;
-       }).join('')}
+    const pct = (h.count / total) * 100;
+    if (pct < 1) return '';
+    return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} карт"><span class="st-hb-icon">${h.icon}</span></div>`;
+  }).join('')}
     </div>
   `;
 }
@@ -1822,10 +1821,10 @@ window.changeXpMode = (mode) => {
   renderStats();
 };
 window.openDiffInfoModal = (event) => {
-   if (event) event.stopPropagation();
-   const overlay = document.createElement('div');
-   overlay.className = 'st-modal-overlay';
-   overlay.innerHTML = `
+  if (event) event.stopPropagation();
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.innerHTML = `
      <div class="st-modal">
         <div class="st-modal-header">
            <div class="st-modal-title">Сложность карточек</div>
@@ -1856,16 +1855,16 @@ window.openDiffInfoModal = (event) => {
         </div>
      </div>
    `;
-   document.body.appendChild(overlay);
+  document.body.appendChild(overlay);
 };
 
 function getHeartsForEf(ef) {
-    if (ef === undefined || ef === null) return '🆕'; // New cards
-    if (ef < 1.7) return '❤️🤍🤍🤍🤍';
-    if (ef < 2.1) return '❤️❤️🤍🤍🤍';
-    if (ef < 2.4) return '❤️❤️❤️🤍🤍';
-    if (ef < 2.9) return '❤️❤️❤️❤️🤍';
-    return '❤️❤️❤️❤️❤️';
+  if (ef === undefined || ef === null) return '🆕'; // New cards
+  if (ef < 1.7) return '❤️🤍🤍🤍🤍';
+  if (ef < 2.1) return '❤️❤️🤍🤍🤍';
+  if (ef < 2.4) return '❤️❤️❤️🤍🤍';
+  if (ef < 2.9) return '❤️❤️❤️❤️🤍';
+  return '❤️❤️❤️❤️❤️';
 }
 
 window.openDiffModal = (index) => {
@@ -1875,35 +1874,35 @@ window.openDiffModal = (index) => {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   const currentCards = getCurrentCards();
 
-  console.log('[openDiffModal] Избранное:', { 
-    favCount: favorites.size, 
+  console.log('[openDiffModal] Избранное:', {
+    favCount: favorites.size,
     favQuestions: Array.from(favorites),
     totalCards: currentCards.length
   });
 
   if (index === 'favorites') {
-     list = currentCards.filter(q => favorites.has(q.question));
-     label = 'Избранное';
-     console.log('[openDiffModal] Найдено карточек в избранном:', list.length, list.map(q => q.question));
+    list = currentCards.filter(q => favorites.has(q.question));
+    label = 'Избранное';
+    console.log('[openDiffModal] Найдено карточек в избранном:', list.length, list.map(q => q.question));
   } else {
-     const i = parseInt(index);
-     const ranges = [
-        { min: 2.4, max: 999, label: 'Легкие' },
-        { min: 2.1, max: 2.4, label: 'Стандарт' },
-        { min: 1.7, max: 2.1, label: 'Трудные' },
-        { min: 0,   max: 1.7, label: 'Очень трудные' }
-     ];
-     const r = ranges[i];
-     label = r.label;
-     list = currentCards.filter(q => {
-        const p = prog[q.question] || prog[q.question.trim()];
-        if (!p || p.easeFactor === undefined) return false;
-        return p.easeFactor >= r.min && p.easeFactor < r.max;
-     });
+    const i = parseInt(index);
+    const ranges = [
+      { min: 2.4, max: 999, label: 'Легкие' },
+      { min: 2.1, max: 2.4, label: 'Стандарт' },
+      { min: 1.7, max: 2.1, label: 'Трудные' },
+      { min: 0, max: 1.7, label: 'Очень трудные' }
+    ];
+    const r = ranges[i];
+    label = r.label;
+    list = currentCards.filter(q => {
+      const p = prog[q.question] || prog[q.question.trim()];
+      if (!p || p.easeFactor === undefined) return false;
+      return p.easeFactor >= r.min && p.easeFactor < r.max;
+    });
   }
 
   console.log('[openDiffModal] Карточек:', list.length, 'из', currentCards.length);
-  
+
   // Show Modal
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
@@ -1916,12 +1915,12 @@ window.openDiffModal = (index) => {
        <div class="st-modal-body">
           <ul class="st-modal-list">
              ${list.slice(0, 50).map(q => {
-                const p = prog[q.question] || prog[q.question.trim()];
-                const ef = p ? p.easeFactor : undefined;
-                const hearts = getHeartsForEf(ef);
-                const isFav = favorites.has(q.question);
-                
-                return `
+    const p = prog[q.question] || prog[q.question.trim()];
+    const ef = p ? p.easeFactor : undefined;
+    const hearts = getHeartsForEf(ef);
+    const isFav = favorites.has(q.question);
+
+    return `
                 <li class="st-modal-item">
                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
                        <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
@@ -1933,7 +1932,7 @@ window.openDiffModal = (index) => {
                    <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${q.answer.substring(0, 80)}${q.answer.length > 80 ? '...' : ''}</div>
                 </li>
                 `;
-             }).join('')}
+  }).join('')}
              ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и ещ�� ${list.length - 50}</li>` : ''}
           </ul>
        </div>
@@ -1951,31 +1950,31 @@ window.startFilteredSession = (index) => {
   const currentCards = getCurrentCards();
   let cards = [];
   if (index === 'favorites') {
-      const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-      cards = currentCards.filter(q => favorites.has(q.question));
+    const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+    cards = currentCards.filter(q => favorites.has(q.question));
   } else {
-      const i = parseInt(index);
-      const ranges = [
-         { min: 2.4, max: 999 },
-         { min: 2.1, max: 2.4 },
-         { min: 1.7, max: 2.1 },
-         { min: 0,   max: 1.7 }
-      ];
-      const r = ranges[i];
-      const prog = getProgressMap();
+    const i = parseInt(index);
+    const ranges = [
+      { min: 2.4, max: 999 },
+      { min: 2.1, max: 2.4 },
+      { min: 1.7, max: 2.1 },
+      { min: 0, max: 1.7 }
+    ];
+    const r = ranges[i];
+    const prog = getProgressMap();
 
-      cards = currentCards.filter(q => {
-         const p = prog[q.question] || prog[q.question.trim()];
-         if (!p || p.easeFactor === undefined) return false;
-         return p.easeFactor >= r.min && p.easeFactor < r.max;
-      });
+    cards = currentCards.filter(q => {
+      const p = prog[q.question] || prog[q.question.trim()];
+      if (!p || p.easeFactor === undefined) return false;
+      return p.easeFactor >= r.min && p.easeFactor < r.max;
+    });
   }
 
   console.log('[startFilteredSession] Карточек:', cards.length);
 
   if (cards.length === 0) {
-      alert('Нет карт в этой категории');
-      return;
+    alert('Нет карт в этой категории');
+    return;
   }
 
   hideStatsPage();
@@ -1983,105 +1982,113 @@ window.startFilteredSession = (index) => {
 };
 
 window.startRiskSession = (catName) => {
-   const currentCards = getCurrentCards();
-   const riskZones = getRiskZones(currentCards);
-   const zone = riskZones.find(z => z.cat === catName);
-   if (!zone || !zone.items || zone.items.length === 0) return;
+  const currentCards = getCurrentCards();
+  const riskZones = getRiskZones(currentCards);
+  const zone = riskZones.find(z => z.cat === catName);
+  if (!zone || !zone.items || zone.items.length === 0) return;
 
-   hideStatsPage();
-   startLearnSession(zone.items, { mode: 'cram' });
+  hideStatsPage();
+  startLearnSession(zone.items, { mode: 'cram' });
 };
 
 window.startMode = (modeId) => {
-    console.log('[Stats] Starting mode:', modeId);
+  console.log('[Stats] Starting mode:', modeId);
 
-    const currentCards = getCurrentCards();
-    if (!currentCards || currentCards.length === 0) {
-        alert('Данные не загружены');
-        return;
+  const currentCards = getCurrentCards();
+  if (!currentCards || currentCards.length === 0) {
+    alert('Данные не загружены');
+    return;
+  }
+
+  const progress = getProgressMap();
+  let candidates = [];
+  let options = { mode: modeId };
+
+  if (modeId === 'time_attack' || modeId === 'sudden_death') {
+    const valid = uniqueQaData.filter(q => q && q.question && q.answer);
+    if (valid.length === 0) {
+      alert('Нет доступных карточек');
+      return;
     }
+    candidates = [...valid].sort(() => 0.5 - Math.random()).slice(0, 50);
 
-    const progress = getProgressMap();
-    let candidates = [];
-    let options = { mode: modeId };
+  } else if (modeId === 'cram_hard') {
+    candidates = uniqueQaData.filter(q => {
+      const p = progress[q.question] || progress[q.question.trim()];
+      return p && p.easeFactor !== undefined && p.easeFactor < 2.2;
+    });
 
-    if (modeId === 'time_attack' || modeId === 'sudden_death') {
-        const valid = uniqueQaData.filter(q => q && q.question && q.answer);
-        if (valid.length === 0) {
-             alert('Нет доступных карточек');
-             return;
-        }
-        candidates = [...valid].sort(() => 0.5 - Math.random()).slice(0, 50);
-        
-    } else if (modeId === 'cram_hard') {
-        candidates = uniqueQaData.filter(q => {
-             const p = progress[q.question] || progress[q.question.trim()];
-             return p && p.easeFactor !== undefined && p.easeFactor < 2.2;
-        });
-        
-        if (candidates.length === 0) {
-             alert('Нет карточек со сложностью ниже 2.2');
-             return;
-        }
-        options.mode = 'cram'; 
-        
-    } else if (modeId === 'new_cards') {
-        candidates = uniqueQaData.filter(q => {
-             const p = progress[q.question] || progress[q.question.trim()];
-             return !p || !p.lastReviewed;
-        });
-        
-        if (candidates.length === 0) {
-             alert('Нет новых карточек');
-             return;
-        }
-        options.mode = 'cram';
+    if (candidates.length === 0) {
+      alert('Нет карточек со сложностью ниже 2.2');
+      return;
     }
+    options.mode = 'cram';
 
-    if (candidates.length > 0) {
-        hideStatsPage();
-        startLearnSession(candidates, options);
+  } else if (modeId === 'new_cards') {
+    candidates = uniqueQaData.filter(q => {
+      const p = progress[q.question] || progress[q.question.trim()];
+      return !p || !p.lastReviewed;
+    });
+
+    if (candidates.length === 0) {
+      alert('Нет новых карточек');
+      return;
     }
+    options.mode = 'cram';
+  }
+
+  if (candidates.length > 0) {
+    hideStatsPage();
+    startLearnSession(candidates, options);
+  }
 };
 
 // ========== Функция для рендеринга прогресса по категориям ==========
 function renderCategoryProgress() {
-    const currentCards = getCurrentCards();
-    if (!currentCards || currentCards.length === 0) return;
-    
-    const progress = getProgressMap();
-    
-    // Группируем по категориям
-    const categoryStats = {};
-    currentCards.forEach(card => {
-        const cat = card.category || 'Без категории';
-        if (!categoryStats[cat]) {
-            categoryStats[cat] = { total: 0, heartsFilled: 0 };
-        }
-        categoryStats[cat].total++;
-        
-        // Считаем заполненные сердечки (SRS прогресс)
-        const cardProgress = progress[card.question] || progress[card.question.trim()];
-        if (cardProgress) {
-            const hearts = getDifficultyLevel(cardProgress.easeFactor);
-            categoryStats[cat].heartsFilled += hearts;
-        }
-    });
-    
-    // Рассчитываем проценты и сортируем
-    const categoryProgress = Object.entries(categoryStats)
-        .map(([name, stats]) => {
-            const maxHearts = stats.total * 5; // Максимум 5 сердечек на карточку
-            const percentage = maxHearts > 0 ? Math.round((stats.heartsFilled / maxHearts) * 100) : 0;
-            return { name, percentage, total: stats.total };
-        })
-        .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
-    
-    // Рендерим
-    const container = document.getElementById('st-cat-progress-list');
-    if (!container) return;
-    
-    container.innerHTML = categoryProgress.map(cat => `
+  const currentCards = getCurrentCards();
+  if (!currentCards || currentCards.length === 0) return;
+
+  const progress = getProgressMap();
+
+  // Функция для получения количества сердечек по EF
+  const getHeartsCount = (ef) => {
+    if (ef >= 2.4) return 5;      // EASY
+    if (ef >= 2.1) return 4;      // STANDARD
+    if (ef >= 1.7) return 3;      // HARD
+    return 1;                      // VERY HARD
+  };
+
+  // Группируем по категориям
+  const categoryStats = {};
+  currentCards.forEach(card => {
+    const cat = card.category || 'Без категории';
+    if (!categoryStats[cat]) {
+      categoryStats[cat] = { total: 0, heartsFilled: 0 };
+    }
+    categoryStats[cat].total++;
+
+    // Считаем заполненные сердечки (SRS прогресс)
+    const cardProgress = progress[card.question] || progress[card.question.trim()];
+    if (cardProgress && cardProgress.easeFactor !== undefined) {
+      const hearts = getHeartsCount(cardProgress.easeFactor);
+      categoryStats[cat].heartsFilled += hearts;
+    }
+  });
+
+  // Рассчитываем проценты и сортируем
+  const categoryProgress = Object.entries(categoryStats)
+    .map(([name, stats]) => {
+      const maxHearts = stats.total * 5; // Максимум 5 сердечек на карточку
+      const percentage = maxHearts > 0 ? Math.round((stats.heartsFilled / maxHearts) * 100) : 0;
+      return { name, percentage, total: stats.total };
+    })
+    .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
+
+  // Рендерим
+  const container = document.getElementById('st-cat-progress-list');
+  if (!container) return;
+
+  container.innerHTML = categoryProgress.map(cat => `
         <div class="st-cat-progress-item">
             <div class="st-cat-progress-header">
                 <span class="st-cat-progress-name">${cat.name}</span>
@@ -2112,7 +2119,7 @@ function getXpSeries(mode) {
         revCounts.set(p.lastReviewed, (revCounts.get(p.lastReviewed) || 0) + 1);
       }
     });
-  } catch {}
+  } catch { }
   const today = new Date();
   const todayStr = getMSKDate(today);
   console.log('[CHART.XP] todayStr (MSK):', todayStr);
@@ -2127,14 +2134,14 @@ function getXpSeries(mode) {
       console.log(`[CHART.XP] Day ${i}:`, { date: s, xp: entry.xp, isToday: s === todayStr });
     }
     res.push({
-       date: s,
-       label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
-       xp: entry.xp,
-       hearts: entry.dayBonus || entry.bonus || revCounts.get(s) || 0,
-       isToday: i === 0
+      date: s,
+      label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
+      xp: entry.xp,
+      hearts: entry.dayBonus || entry.bonus || revCounts.get(s) || 0,
+      isToday: i === 0
     });
   }
-  const trimmed = res.filter(e => (e.xp + (e.hearts||0)) > 0 || e.isToday);
+  const trimmed = res.filter(e => (e.xp + (e.hearts || 0)) > 0 || e.isToday);
   return trimmed.length ? trimmed : res;
 }
 
@@ -2155,15 +2162,15 @@ function getActivitySeries(mode) {
   const imp = getDailyImprovements(400);
   const impMap = new Map(imp.map(d => [d.date, d]));
   const today = new Date();
-  const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth()+1, 0).getDate() : 365);
+  const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 365);
   const res = [];
   if (mode === 'year') {
     for (let m = 0; m < 12; m++) {
       const y = today.getFullYear();
       const start = new Date(y, m, 1);
-      const end = new Date(y, m+1, 0);
+      const end = new Date(y, m + 1, 0);
       let xp = 0, hearts = 0, cards = 0;
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const s = getMSKDate(d);
         const de = daily.find(x => x.date === s);
         const im = impMap.get(s);
@@ -2171,7 +2178,7 @@ function getActivitySeries(mode) {
         hearts += im ? (im.regressed || 0) : 0;
         cards += im ? (im.reviewed || 0) : 0;
       }
-      res.push({ date: getMSKDate(new Date(y,m,1)), label: new Date(y,m,1).toLocaleString('ru-RU',{month:'short'}), xp, hearts, cards });
+      res.push({ date: getMSKDate(new Date(y, m, 1)), label: new Date(y, m, 1).toLocaleString('ru-RU', { month: 'short' }), xp, hearts, cards });
     }
     return res;
   }
@@ -2181,10 +2188,10 @@ function getActivitySeries(mode) {
     if (mode === 'month' && d.getMonth() !== today.getMonth()) continue;
     const s = getMSKDate(d);
     const de = daily.find(x => x.date === s) || { xp: 0 };
-    const im = impMap.get(s) || { improved:0, regressed:0, reviewed:0 };
+    const im = impMap.get(s) || { improved: 0, regressed: 0, reviewed: 0 };
     res.push({
       date: s,
-      label: mode==='week' ? d.toLocaleDateString('ru-RU',{ day:'numeric' }) : d.getDate().toString(),
+      label: mode === 'week' ? d.toLocaleDateString('ru-RU', { day: 'numeric' }) : d.getDate().toString(),
       xp: de.xp || 0,
       hearts: im.regressed || 0,
       cards: im.reviewed || 0
