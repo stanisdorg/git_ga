@@ -166,7 +166,7 @@ const STATS_STYLES = `
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 10px 12px;
+  padding: 2px 12px 5px !important;
   background: #0f3460;
   border-radius: 8px;
   border: 1px solid #1a3a5c;
