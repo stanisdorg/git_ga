@@ -891,10 +891,24 @@ const STATS_STYLES = `
   .st-block-2 {
     height: 180px !important;
     min-height: 180px !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .st-compact-card {
     height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .modes-grid {
+    height: calc(180px - 2px) !important;  /* Вычитаем border у родителя */
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
   }
 
   .st-diff-section,
