@@ -131,10 +131,11 @@ const STATS_STYLES = `
   border: 1px solid var(--st-border);
   border-radius: 16px;
   padding: 20px;
-  height: 100%;
+  max-height: 600px !important;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
 }
 .st-cat-progress-title {
   font-size: 16px;
@@ -887,25 +888,34 @@ const STATS_STYLES = `
 
   /* Фиксированная высота блоков */
   .st-compact-card {
-    height: 180px;
+    height: 180px !important;
   }
   
-  .training-modes-block {
-    height: 180px;
-    display: flex;
-    flex-direction: column;
+  .training-modes-block,
+  .st-block-2 {
+    height: 180px !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   
   .modes-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 12px;
-    flex: 1;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    padding: 12px !important;
+    flex: 1 !important;
   }
   
-  .st-diff-section {
-    height: 280px;
+  .st-diff-section,
+  .st-block-4 {
+    height: 280px !important;
+  }
+  
+  /* Центральный блок — КРИТИЧНО! */
+  .st-block-achievements,
+  .st-cat-progress-wrap {
+    max-height: 600px !important;
+    overflow-y: auto !important;
   }
 
   /* Tablet: 2 колонки */
