@@ -890,27 +890,33 @@ const STATS_STYLES = `
   .st-block-1,
   .st-block-2 {
     height: 180px !important;
+    min-height: 180px !important;
   }
   
   .st-compact-card {
-    height: 100% !important;
+    height: calc(180px - 2px) !important;  /* Вычитаем border */
+    background: var(--st-surf) !important;
+    border: 1px solid var(--st-border) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
   }
   
   .training-modes-block {
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
+    height: calc(180px - 2px) !important;  /* Вычитаем border */
     background: var(--st-surf) !important;
     border: 1px solid var(--st-border) !important;
     border-radius: 16px !important;
     padding: 0 !important;
     overflow: hidden !important;
+    box-sizing: border-box !important;
   }
   
   .training-modes-block .st-col-title {
     padding: 12px 16px 8px !important;
     margin: 0 !important;
     border-bottom: 1px solid var(--st-border) !important;
+    background: var(--st-surf) !important;
   }
   
   .modes-grid {
