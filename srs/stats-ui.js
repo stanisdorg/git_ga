@@ -1308,7 +1308,6 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
-          <div class="st-col-title" style="padding: 12px 12px 0;">Режимы тренировки</div>
           <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px;">
             <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
               <span class="st-mode-icon">⏱️</span>
