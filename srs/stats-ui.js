@@ -908,7 +908,16 @@ const STATS_STYLES = `
   
   .st-diff-section,
   .st-block-4 {
-    height: 280px !important;
+    height: 320px !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Стили для карточек в modes-grid */
+  .modes-grid .st-mode-card {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
   }
   
   /* Центральный блок — КРИТИЧНО! */
