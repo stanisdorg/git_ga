@@ -887,13 +887,17 @@ const STATS_STYLES = `
   }
 
   /* Фиксированная высота блоков */
-  .st-compact-card {
+  .st-block-1,
+  .st-block-2 {
     height: 180px !important;
   }
   
-  .training-modes-block,
-  .st-block-2 {
-    height: 180px !important;
+  .st-compact-card {
+    height: 100% !important;
+  }
+  
+  .training-modes-block {
+    height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     background: var(--st-surf) !important;
