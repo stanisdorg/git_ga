@@ -18,5 +18,17 @@
     "password": "eb653343d706617af1347831b5717c2609ffa4502217ab88a20acf1b9b9dd21c",
     "role": "user",
     "createdAt": "2026-03-08T12:00:00Z"
+  },
+  {
+    "username": "autotest_user1",
+    "password": "b8381db1812641a30c6db74127898413acf437d480e000b1a705aa6f78356f8e",
+    "role": "user",
+    "createdAt": "2026-03-12T09:09:39.147Z"
+  },
+  {
+    "username": "autotest_user2",
+    "password": "11adf58fe971f56751ea7c5d9e28b12f599efde2bdb067f2fb1dd8ef6dc1e13b",
+    "role": "user",
+    "createdAt": "2026-03-12T09:09:39.149Z"
   }
 ]

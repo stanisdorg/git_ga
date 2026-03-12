@@ -1,0 +1,15 @@
+{
+  "_cards": [
+    {
+      "question": "Автотест: Вопрос User 1",
+      "answer": "Автотест: Ответ User 1",
+      "category": "Автотесты",
+      "subcategory": "Изоляция"
+    }
+  ],
+  "_meta": {
+    "cardsCount": 1,
+    "lastLoginAt": "2026-03-12T09:09:39.203Z",
+    "lastSavedAt": "2026-03-12T09:09:39.203Z"
+  }
+}
