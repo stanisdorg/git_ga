@@ -1825,37 +1825,35 @@ window.openDiffInfoModal = (event) => {
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
   overlay.innerHTML = `
-     <div class="st-modal">
+     <div class="st-modal" style="max-width:600px;">
         <div class="st-modal-header">
-           <div class="st-modal-title">Сложность карточек</div>
+           <div class="st-modal-title">💖 Тренажёр сердечек</div>
            <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
         </div>
-        <div class="st-modal-body" style="padding:16px">
-           <p style="margin-bottom:12px;color:var(--st-text-sec)">Количество сердечек показывает, насколько хорошо вы помните карточку (Ease Factor):</p>
-           
-           <div style="margin-bottom:16px">
-              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ 🤍 🤍 🤍 🤍 Очень трудные (1 ❤️)</div>
-              <div style="font-size:13px;color:var(--st-text-sec)">Вы часто ошибаетесь. Карточки повторяются часто.</div>
+        <div class="st-modal-body" style="padding:16px;">
+           <div id="sim-hearts" style="display:flex;justify-content:center;gap:4px;margin-bottom:12px;"></div>
+           <div style="text-align:center;margin-bottom:16px;">
+              <div style="font-size:20px;font-weight:700;color:#fff;"><span id="sim-value">3.00</span> / 5 ❤️</div>
+              <div style="font-size:13px;color:var(--st-text-sec);">Уровень: <span id="sim-level">Стандарт</span></div>
            </div>
-           
-           <div style="margin-bottom:16px">
-              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ ❤️ 🤍 🤍 🤍 Трудные (2 ❤️)</div>
-              <div style="font-size:13px;color:var(--st-text-sec)">Требуют усилий. Интервалы растут медленно.</div>
+           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
+              <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😫</div><div style="font-size:11px;">Снова</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
+              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😐</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
+              <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😊</div><div style="font-size:11px;">Хорошо</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
+              <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">🚀</div><div style="font-size:11px;">Легко</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
            </div>
-           
-           <div style="margin-bottom:16px">
-              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ ❤️ ❤️ 🤍 🤍 Стандарт (3 ❤️)</div>
-              <div style="font-size:13px;color:var(--st-text-sec)">Обычный режим. Новые карточки начинаются здесь.</div>
-           </div>
-           
-           <div>
-              <div style="color:#fff;font-weight:600;margin-bottom:4px">❤️ ❤️ ❤️ ❤️ ❤️ Легкие (4-5 ❤️)</div>
-              <div style="font-size:13px;color:var(--st-text-sec)">Вы помните их отлично. Интервалы растут быстро.</div>
-           </div>
+           <button onclick="simReset()" style="width:100%;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--st-border);padding:10px;border-radius:8px;cursor:pointer;">🔄 Сбросить</button>
+           <div id="sim-msg" style="margin-top:12px;font-size:13px;color:var(--st-text-sec);text-align:center;min-height:18px;"></div>
         </div>
      </div>
    `;
   document.body.appendChild(overlay);
+  window.simValue = 3.0;
+  window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
+  window.simReset = () => { window.simValue = 3.0; updateSim(); };
+  function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="'+id+'"><stop offset="'+fillPercent+'%" stop-color="#ff4d4d"/><stop offset="'+fillPercent+'%" stop-color="#444"/></linearGradient></defs><path fill="url(#'+id+')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
+  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
+  updateSim();
 };
 
 function getHeartsForEf(ef) {
