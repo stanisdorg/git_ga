@@ -20,6 +20,49 @@ let serverTrashItems = [];
 // По умолчанию используем порт 8765, так как локальный сервер запущен там
 const BACKEND_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('qaBackendUrl')) || window.location.origin;
 
+// 🔒 HELPER: User-specific localStorage keys (ИСПРАВЛЕНИЕ: у каждого пользователя свой ключ)
+function getQaUserCardsKey() {
+    try {
+        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+        if (sessionUserRaw) {
+            const user = JSON.parse(sessionUserRaw);
+            if (user && user.username) {
+                return `qaUserCards_${user.username}`;
+            }
+        }
+    } catch (e) {}
+    return 'qaUserCards_guest';
+}
+
+function getQaUserCards() {
+    try {
+        const key = getQaUserCardsKey();
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function setQaUserCards(cards) {
+    try {
+        const key = getQaUserCardsKey();
+        localStorage.setItem(key, JSON.stringify(cards));
+    } catch (e) {
+        console.error('[setQaUserCards] Error:', e);
+    }
+}
+
+function clearQaUserCards() {
+    try {
+        const key = getQaUserCardsKey();
+        localStorage.removeItem(key);
+        localStorage.removeItem('qaUserCards'); // Clean up old shared key
+    } catch (e) {
+        console.error('[clearQaUserCards] Error:', e);
+    }
+}
+
 // Локальные хелперы для storage
 function getLS(key, fallback) {
     try { return JSON.parse(localStorage.getItem(key) || fallback); } catch { return JSON.parse(fallback); }
@@ -39,16 +82,10 @@ function getRuntimeData() {
     // Сначала пробуем загрузить данные пользователя из localStorage
     let baseData = uniqueQaData;
     try {
-        const sessionUserRaw = localStorage.getItem('qaSessionUser');
-        if (sessionUserRaw) {
-            const userCardsRaw = localStorage.getItem('qaUserCards');
-            if (userCardsRaw) {
-                const userCards = JSON.parse(userCardsRaw);
-                if (Array.isArray(userCards) && userCards.length > 0) {
-                    baseData = userCards;
-                    console.log('[getRuntimeData] Используем qaUserCards:', userCards.length, 'карточек');
-                }
-            }
+        const userCards = getQaUserCards();
+        if (userCards && Array.isArray(userCards) && userCards.length > 0) {
+            baseData = userCards;
+            console.log('[getRuntimeData] Используем qaUserCards:', userCards.length, 'карточек');
         }
     } catch (e) {
         console.warn('[getRuntimeData] Ошибка загрузки userCards:', e);
@@ -139,11 +176,11 @@ function fixEncodingIssues(data) {
     });
     
     if (changed) {
-        const fixedCount = userCards.filter((c, i) => 
+        const fixedCount = userCards.filter((c, i) =>
             c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
         ).length;
         console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount);
-        localStorage.setItem('qaUserCards', JSON.stringify(fixedCards));
+        setQaUserCards(fixedCards);
         // Синхронизируем с сервером
         saveMergedToServer();
     }
@@ -1100,7 +1137,7 @@ export function initTabsNavigation(appVersion) {
             localStorage.removeItem('currentUser');
             localStorage.removeItem('qaSessionUser');
             // Также очищаем qaUserCards чтобы не было дублей
-            localStorage.removeItem('qaUserCards');
+            clearQaUserCards();
             localStorage.removeItem('localDataTimestamp');
             console.log('[Logout] Session cleared. User must login again to access data.');
         }
@@ -1239,7 +1276,7 @@ export function initTabsNavigation(appVersion) {
                     const match = users.find(x => x.username === u && x.password === p);
                     if (match) {
                         setLoggedUser({ username: match.username, role: match.role });
-                        // Сохраняем credentials для автозагрузки
+                        // Сохраняем credentials д��������я автозагрузки
                         if (remember) {
                             localStorage.setItem('qaUsername', u);
                             localStorage.setItem('qaPassword', p);
@@ -2400,7 +2437,7 @@ async function saveMergedToServer(skipReload = false) {
                         });
                         console.log('[saveMergedToServer] Проверено карточек:', checkedCount, 'Добавлено:', addedCount);
                         if (addedCount > 0) {
-                            console.log('[saveMergedToServer] Добавлено пользовательских карточек:', addedCount);
+                            console.log('[saveMergedToServer] Добавлено пользовательских карточ��к:', addedCount);
                         }
                     }
                 }
@@ -2455,7 +2492,7 @@ async function saveMergedToServer(skipReload = false) {
 
         // ОБНОВЛЯЕМ qaUserCards в localStorage
         try {
-            localStorage.setItem('qaUserCards', JSON.stringify(merged));
+            setQaUserCards(merged);
             console.log('[saveMergedToServer] qaUserCards обновлён:', merged.length, 'карточек');
             
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
@@ -3378,22 +3415,21 @@ export function displayQuestions(questions, title) {
                         // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
                         const sessionUserRaw = localStorage.getItem('qaSessionUser');
                         if (sessionUserRaw) {
-                            const userCardsRaw = localStorage.getItem('qaUserCards');
-                            if (userCardsRaw) {
-                                const userCards = JSON.parse(userCardsRaw);
+                            const userCards = getQaUserCards();
+                            if (userCards) {
                                 // Ищем оригинал по вопросу (может отличаться от item.question если были изменения)
-                                const originalIndex = userCards.findIndex(c => 
-                                    c.question === item.question || 
+                                const originalIndex = userCards.findIndex(c =>
+                                    c.question === item.question ||
                                     (c.category === item.category && c.subcategory === item.subcategory && c.answer === item.answer)
                                 );
                                 if (originalIndex >= 0) {
                                     // Вставляем дубликат после оригинала
                                     userCards.splice(originalIndex + 1, 0, duplicatedItem);
-                                    localStorage.setItem('qaUserCards', JSON.stringify(userCards));
+                                    setQaUserCards(userCards);
                                 } else {
                                     // Если не нашли, добавляем в конец
                                     userCards.push(duplicatedItem);
-                                    localStorage.setItem('qaUserCards', JSON.stringify(userCards));
+                                    setQaUserCards(userCards);
                                 }
                             }
                         }
