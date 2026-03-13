@@ -880,13 +880,14 @@ const STATS_STYLES = `
     width: 100%;
     height: 100%;
     min-height: 200px;
-    background: linear-gradient(135deg, var(--st-surf) 0%, var(--st-surf-h) 100%);
+    background: linear-gradient(135deg, var(--st-surf) 0%, var(--st-surf-h) 100%) !important;
     border: 1px solid var(--st-border);
     border-radius: 16px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    box-shadow: none !important;
   }
   
   .stc-top {
