@@ -748,7 +748,7 @@ body.learning-mode #bottom-nav {
 .summary-box #sum-xp.xp-line {
     text-align: center;
     font-size: 12px;
-    color: var(--prim);
+    color: #ff9f1c;
     margin-bottom: 20px;
     padding: 10px;
     background: rgba(255, 159, 28, 0.08);
