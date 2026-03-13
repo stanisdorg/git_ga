@@ -150,6 +150,13 @@ const STATS_STYLES = `
   border-color: var(--st-prim);
 }
 
+/* Активные кнопки в модальном окне */
+.week-btn.active, .month-btn.active, .year-btn.active {
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* NEW METRICS STYLES */
 .st-meta-state {
   background: linear-gradient(90deg, rgba(46,196,182,0.1), rgba(46,196,182,0.02));
@@ -2285,24 +2292,27 @@ function renderHeartsSvg(fillPercentages, prefix) {
 window.openChartModal = () => {
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 0.3s ease';
   overlay.innerHTML = `
-    <div class="st-modal" style="max-width:80%;width:80%;height:80vh;">
+    <div class="st-modal" style="max-width:80%;width:80%;height:80vh;transform:scale(0.95);transition:transform 0.3s ease;">
        <div class="st-modal-header">
           <div class="st-modal-title">📈 График активности</div>
-          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+          <button class="st-modal-close" onclick="window.closeChartModal()">×</button>
        </div>
        <div class="st-modal-body" style="padding:24px;height:calc(80vh - 80px);">
           <div class="activity-card" style="height:100%;width:100%;transform:none;box-shadow:none;">
             <div class="activity-header">
               <div class="period-switch">
-                <div class="week-active" onclick="window.changeXpMode('week')">Неделя</div>
-                <div class="month-active" onclick="window.changeXpMode('month')">Месяц</div>
-                <div class="year-active" onclick="window.changeXpMode('year')">Год</div>
+                <div class="week-btn" onclick="window.changeModalXpMode('week')">Неделя</div>
+                <div class="month-btn" onclick="window.changeModalXpMode('month')">Месяц</div>
+                <div class="year-btn" onclick="window.changeModalXpMode('year')">Год</div>
               </div>
               <div class="month-switch"><span id="st-modal-month-label"></span></div>
             </div>
             <div class="chart-wrapper">
               <svg class="chart" id="st-modal-activity-chart"></svg>
+              <div id="st-modal-tooltip" class="tooltip"></div>
             </div>
           </div>
        </div>
@@ -2310,20 +2320,185 @@ window.openChartModal = () => {
   `;
   document.body.appendChild(overlay);
   
-  // Клонируем график в модальное окно
+  // Плавное появление
   setTimeout(() => {
-    const originalChart = document.getElementById('st-activity-chart');
-    const modalChart = document.getElementById('st-modal-activity-chart');
-    if (originalChart && modalChart) {
-      modalChart.innerHTML = originalChart.innerHTML;
+    overlay.style.opacity = '1';
+    overlay.querySelector('.st-modal').style.transform = 'scale(1)';
+  }, 10);
+  
+  // Закрытие по клику на фон
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      window.closeChartModal();
     }
-    // Обновляем лейбл месяца
-    const originalLabel = document.getElementById('st-month-label');
-    const modalLabel = document.getElementById('st-modal-month-label');
-    if (originalLabel && modalLabel) {
-      modalLabel.textContent = originalLabel.textContent;
+  });
+  
+  // Закрытие по Escape
+  const escHandler = (e) => {
+    if (e.key === 'Escape') {
+      window.closeChartModal();
+      document.removeEventListener('keydown', escHandler);
     }
+  };
+  document.addEventListener('keydown', escHandler);
+  
+  // Сохраняем ссылку на overlay для закрытия
+  window.chartModalOverlay = overlay;
+  
+  // Клонируем и увеличиваем график
+  setTimeout(() => {
+    window.renderModalChart();
   }, 100);
+};
+
+// Закрытие модального окна
+window.closeChartModal = () => {
+  const overlay = window.chartModalOverlay;
+  if (overlay) {
+    overlay.style.opacity = '0';
+    overlay.querySelector('.st-modal').style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      overlay.remove();
+      window.chartModalOverlay = null;
+    }, 300);
+  }
+};
+
+// Переключение режима в модальном окне
+window.modalXpMode = 'week';
+window.changeModalXpMode = (mode) => {
+  window.modalXpMode = mode;
+  window.renderModalChart();
+};
+
+// Рендер графика в модальном окне
+window.renderModalChart = () => {
+  const mode = window.modalXpMode;
+  const data = window.getXpSeriesForModal(mode);
+  
+  // Обновляем активную кнопку
+  document.querySelectorAll('.week-btn, .month-btn, .year-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`.${mode}-btn`)?.classList.add('active');
+  
+  // Обновляем лейбл месяца
+  const originalLabel = document.getElementById('st-month-label');
+  const modalLabel = document.getElementById('st-modal-month-label');
+  if (originalLabel && modalLabel) {
+    modalLabel.textContent = originalLabel.textContent;
+  }
+  
+  // Рисуем увеличенный график
+  const svg = document.getElementById('st-modal-activity-chart');
+  if (!svg) return;
+  
+  const width = svg.clientWidth || 800;
+  const height = svg.clientHeight || 400;
+  const padding = { top: 20, right: 30, bottom: 40, left: 50 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  
+  // Увеличенные параметры
+  const barWidth = Math.max(20, (innerWidth / data.length) * 0.6);
+  const gap = (innerWidth - (barWidth * data.length)) / (data.length + 1);
+  const fontSize = 14; // Увеличенный шрифт
+  
+  // Находим максимум
+  const maxValue = Math.max(...data.map(d => d.hearts || d.cards || d.xp), 1);
+  
+  // Генерируем SVG
+  let content = '';
+  
+  // Сетка
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + (innerHeight / 4) * i;
+    content += `<line class="chart-grid-line" x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
+    const value = Math.round(maxValue - (maxValue / 4) * i);
+    content += `<text class="chart-label" x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="${fontSize}">${value}</text>`;
+  }
+  
+  // Бары
+  data.forEach((d, i) => {
+    const x = padding.left + gap + i * (barWidth + gap);
+    const barHeight = ((d.hearts || d.cards || d.xp) / maxValue) * innerHeight;
+    const y = padding.top + innerHeight - barHeight;
+    
+    content += `<rect class="bar-hearts" x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="var(--st-sec)" rx="3"/>`;
+    
+    // Подпись
+    content += `<text class="chart-label" x="${x + barWidth/2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
+  });
+  
+  svg.innerHTML = content;
+  
+  // Tooltip
+  const tooltip = document.getElementById('st-modal-tooltip');
+  svg.querySelectorAll('.bar-hearts').forEach((bar, i) => {
+    bar.addEventListener('mouseenter', (e) => {
+      const d = data[i];
+      tooltip.innerHTML = `
+        <div style="font-weight:700">${d.label}</div>
+        <div>XP: ${d.xp}</div>
+        <div>Карточек: ${d.cards}</div>
+        <div>Сердечек: ${d.hearts}</div>
+        <div class="tip-arrow"></div>
+      `;
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${e.offsetX - 80}px`;
+      tooltip.style.top = `${e.offsetY - 100}px`;
+    });
+    bar.addEventListener('mousemove', (e) => {
+      tooltip.style.left = `${e.offsetX - 80}px`;
+      tooltip.style.top = `${e.offsetY - 100}px`;
+    });
+    bar.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
+  });
+};
+
+// Получение данных для модального окна
+window.getXpSeriesForModal = (mode) => {
+  // Копируем логику из getXpSeries
+  const getMSKDate = (date) => {
+    const mskOffset = 3 * 60 * 60 * 1000;
+    return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+  };
+  
+  const data = window.getDailyPointsAll ? window.getDailyPointsAll() : [];
+  const today = new Date();
+  const todayStr = getMSKDate(today);
+  
+  const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
+  const res = [];
+  
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const s = getMSKDate(d);
+    const entry = data.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
+    
+    let label;
+    if (mode === 'week') {
+      label = d.toLocaleDateString('ru-RU', { weekday: 'short' });
+    } else if (mode === 'month') {
+      label = d.getDate().toString();
+    } else {
+      label = d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' });
+    }
+    
+    res.push({
+      date: s,
+      xp: entry.xp,
+      cards: Math.floor(entry.xp / 5),
+      hearts: entry.bonus || entry.dayBonus || 0,
+      label: label,
+      isToday: s === todayStr
+    });
+  }
+  
+  return res;
 };
 
 window.openDiffModal = (index) => {
