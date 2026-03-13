@@ -14,6 +14,17 @@ function getCurrentCards() {
         const userCards = JSON.parse(userCardsRaw);
         if (Array.isArray(userCards) && userCards.length > 0) {
           console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
+          
+          // 🔧 Исправляем кодировку на лету
+          userCards.forEach(card => {
+            if (card.category === 'Документация' || card.category === 'Дкументация') {
+              card.category = 'Документация';
+            }
+            if (card.subcategory === 'Типы требований' || card.subcategory === 'Типы треований') {
+              card.subcategory = 'Типы требований';
+            }
+          });
+          
           return userCards;
         }
       }
