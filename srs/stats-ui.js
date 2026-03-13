@@ -388,6 +388,14 @@ const STATS_STYLES = `
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+  .level-inline:hover {
+    background: rgba(255,159,28,0.15);
+    box-shadow: 0 0 12px rgba(255,159,28,0.4);
+    transform: translateX(2px);
   }
   .lv-label {
     font-weight: 700;
@@ -403,6 +411,11 @@ const STATS_STYLES = `
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid var(--st-border);
+    transition: all 0.2s ease;
+  }
+  .level-inline:hover .level-inline-bar {
+    border-color: var(--st-prim);
+    box-shadow: 0 0 8px rgba(255,159,28,0.3);
   }
   .level-inline-fill {
     height: 100%;
@@ -1920,7 +1933,7 @@ function renderStats() {
       const box = document.createElement('div');
       box.className = 'level-inline';
       box.style.cursor = 'pointer';
-      box.title = 'Нажмите ����ля подробной информации об уровнях';
+      box.title = 'Уровни и XP';
       box.onclick = () => window.openLevelInfoModal();
       const lbl = document.createElement('div');
       lbl.className = 'lv-label';
@@ -2535,7 +2548,7 @@ window.openLevelInfoModal = () => {
           <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
             <span style="font-size:20px;">⚡</span> Как получить XP
           </h3>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
             <div style="background:rgba(46,196,182,0.1);border-left:3px solid var(--st-sec);padding:16px;border-radius:12px;">
               <div style="font-size:24px;margin-bottom:8px;">📚</div>
               <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Изучение карточек</div>
@@ -2599,12 +2612,12 @@ window.openLevelInfoModal = () => {
             </div>
             <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
               <div style="font-size:24px;margin-bottom:8px;">🔥</div>
-              <div style="font-size:20px;font-weight:700;color:#fff;">${streak.current}</div>
+              <div style="font-size:20px;font-weight:700;color:#fff;">${streak.current || 0}</div>
               <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Дней подряд</div>
             </div>
             <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
               <div style="font-size:24px;margin-bottom:8px;">🏆</div>
-              <div style="font-size:20px;font-weight:700;color:#FF9F1C;">${streak.best}</div>
+              <div style="font-size:20px;font-weight:700;color:#FF9F1C;">${streak.best || 0}</div>
               <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Лучшая серия</div>
             </div>
           </div>
