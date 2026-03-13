@@ -1983,7 +1983,6 @@ window.openDiffModal = (index) => {
                 </li>
                 `;
   }).join('')}
-             ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и ещ�� ${list.length - 50}</li>` : ''}
           </ul>
        </div>
        <div class="st-modal-footer">
