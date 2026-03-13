@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.06');
+                module = await import('../srs/learn-ui.js?v=2.07');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -1291,7 +1291,7 @@ export function initTabsNavigation(appVersion) {
                         if (loginRes.ok) {
                             const loginData = await loginRes.json();
                             if (loginData.ok) {
-                                // Сохраняем username/password ������������ля последующей загрузки данных
+                                // Сохраняем username/password ��������������ля последующей загрузки данных
                                 if (remember) {
                                     localStorage.setItem('qaUsername', u);
                                     localStorage.setItem('qaPassword', p);
@@ -2462,7 +2462,7 @@ async function saveMergedToServer(skipReload = false) {
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
 
-                            // Добавляе�� только е��ли эт�� пользовательская карточка, которой нет в базе и новых элементах
+                            // Добав��яе�� только е��ли эт�� пользовательская карточка, которой нет в базе и новых элементах
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
                                 const ov = overrides[uc.question];
                                 merged.push(ov ? { ...uc, ...ov } : uc);

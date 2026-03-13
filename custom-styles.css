@@ -689,6 +689,10 @@ body.learning-mode #bottom-nav {
     border-radius: 10px;
     padding: 14px 10px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     transition: all 0.3s ease;
 }
 
@@ -698,6 +702,8 @@ body.learning-mode #bottom-nav {
     color: #fff;
     margin-bottom: 4px;
     display: block;
+    text-align: center;
+    width: 100%;
 }
 
 .summary-box .stat-item .stat-label {
@@ -706,6 +712,9 @@ body.learning-mode #bottom-nav {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     display: block;
+    text-align: center;
+    width: 100%;
+    line-height: 1.3;
 }
 
 /* Number count-up animation */
