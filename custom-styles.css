@@ -735,6 +735,15 @@ body.learning-mode #bottom-nav {
     to { opacity: 1; }
 }
 
+/* Motivation */
+.summary-box .motivation {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-sec);
+    margin-bottom: 16px;
+    min-height: 36px;
+}
+
 /* XP line */
 .summary-box #sum-xp.xp-line {
     text-align: center;
@@ -742,7 +751,7 @@ body.learning-mode #bottom-nav {
     color: var(--prim);
     margin-bottom: 20px;
     padding: 10px;
-    background: rgba(255,159,28,0.08);
+    background: rgba(255, 159, 28, 0.08);
     border-radius: 8px;
 }
 .summary-box .level-progress-fill-earned { z-index: 2; }
