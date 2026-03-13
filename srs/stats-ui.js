@@ -1272,15 +1272,6 @@ function renderStats() {
     return svg;
   }
 
-  // Функция для получения количества сердечек по EF
-  function getHeartsCountForEf(ef) {
-    if (ef === undefined || ef === null) return 0;
-    if (ef >= 2.4) return 5;      // EASY
-    if (ef >= 2.1) return 4;      // STANDARD
-    if (ef >= 1.7) return 3;      // HARD
-    return 1;                      // VERY HARD
-  }
-
   // Render HTML
   const container = document.getElementById('stats-container');
   if (!container) return;
@@ -1914,6 +1905,15 @@ function getHeartsForEf(ef) {
   if (ef < 2.4) return '❤️❤️❤️🤍🤍';
   if (ef < 2.9) return '❤️❤️❤️❤️🤍';
   return '❤️❤️❤️❤️❤️';
+}
+
+// Функция для получения количества сердечек по EF (для SVG)
+function getHeartsCountForEf(ef) {
+  if (ef === undefined || ef === null) return 0;
+  if (ef >= 2.4) return 5;      // EASY
+  if (ef >= 2.1) return 4;      // STANDARD
+  if (ef >= 1.7) return 3;      // HARD
+  return 1;                      // VERY HARD
 }
 
 window.openDiffModal = (index) => {
