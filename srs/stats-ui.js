@@ -101,6 +101,14 @@ const STATS_STYLES = `
   transform: scale(1.025);
   z-index: 10;
 }
+
+/* Hover effects for other blocks */
+.st-cat-progress-wrap:hover,
+.st-diff-section:hover,
+.st-compact-card:hover {
+  transform: scale(1.025);
+  z-index: 10;
+}
 .activity-header {
   display: flex;
   align-items: center;
@@ -202,6 +210,7 @@ const STATS_STYLES = `
   display: flex !important;
   flex-direction: column !important;
   height: 100% !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .st-cat-progress-title {
   font-size: 16px;
@@ -1120,6 +1129,7 @@ const STATS_STYLES = `
     flex-direction: column;
     gap: 16px;
     box-shadow: none !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .stc-header-with-info {
@@ -1505,8 +1515,8 @@ const STATS_STYLES = `
   .st-col-title { font-size: 16px; }
 
   /* Right Column Stack */
-  .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
-  .st-risk-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
+  .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .st-risk-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
   /* Primary Stats */
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
@@ -1757,7 +1767,7 @@ function renderStats() {
         <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика">
             <div class="stc-header-with-info">
-              <span class="stc-block-title">📊 Прогресс</span>
+              <span class="stc-block-title"> Прогресс</span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?">i</button>
             </div>
             <div class="stc-top">
@@ -1802,7 +1812,7 @@ function renderStats() {
         <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
-            <div class="st-cat-progress-title"> Прогресс по категориям</div>
+            <div class="st-cat-progress-title"> Категории</div>
             <div class="st-cat-progress-list" id="st-cat-progress-list">
               <!-- Заполняется динамически -->
             </div>
@@ -2476,7 +2486,7 @@ window.openLevelInfoModal = () => {
   const streak = getStudyStreak();
   const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
   const studiedCount = Object.values(getProgressMap()).filter(p => p.lastReviewed).length;
-  
+
   // Генерируем таблицу уровней 1-20
   let levelsTable = '';
   for (let lvl = 1; lvl <= 20; lvl++) {
@@ -2487,14 +2497,14 @@ window.openLevelInfoModal = () => {
     const isFuture = lvl > levelInfo.level;
     const needed = nextXP - levelInfo.xp;
     const progress = levelInfo.xp >= nextXP ? 100 : levelInfo.xp <= prevXP ? 0 : Math.round(((levelInfo.xp - prevXP) / (nextXP - prevXP)) * 100);
-    
+
     levelsTable += `
       <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:${isCurrent ? 'rgba(255,159,28,0.15)' : isPassed ? 'rgba(76,175,80,0.1)' : 'rgba(255,255,255,0.03)'};border:${isCurrent ? '2px solid var(--st-prim)' : '1px solid var(--st-border)'};">
         <div style="width:50px;font-weight:700;color:${isPassed ? '#4CAF50' : isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${lvl}</div>
         <div style="flex:1;">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
             <span style="font-size:12px;color:var(--st-text-sec);">${prevXP.toLocaleString()} → ${nextXP.toLocaleString()} XP</span>
-            <span style="font-size:12px;color:${isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${isPassed ? '✅' : isCurrent ? `${needed.toLocaleString()} XP до ${lvl+1}` : '🔒'}</span>
+            <span style="font-size:12px;color:${isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${isPassed ? '✅' : isCurrent ? `${needed.toLocaleString()} XP до ${lvl + 1}` : '🔒'}</span>
           </div>
           <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
             <div style="width:${isPassed ? '100%' : progress}%;height:100%;background:${isPassed ? '#4CAF50' : isCurrent ? 'linear-gradient(90deg,#FF9F1C,#FFB142)' : 'rgba(255,255,255,0.2)'};border-radius:3px;transition:width 0.5s;"></div>
@@ -2503,14 +2513,14 @@ window.openLevelInfoModal = () => {
       </div>
     `;
   }
-  
+
   // График XP за последние 30 дней
   const last30Days = daily.slice(-30);
   const maxXP = Math.max(...last30Days.map(d => d.xp), 1);
   let xpChart = '';
   last30Days.forEach(d => {
     const h = Math.round((d.xp / maxXP) * 60);
-    const date = new Date(d.date).toLocaleDateString('ru-RU', {day: 'numeric', month: 'numeric'});
+    const date = new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
     xpChart += `
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
         <div style="width:100%;height:${h}px;background:${d.xp > 0 ? 'linear-gradient(180deg,#FF9F1C 0%,#FF6B35 100%)' : 'rgba(255,255,255,0.1)'};border-radius:4px 4px 0 0;min-height:4px;"></div>
@@ -2518,7 +2528,7 @@ window.openLevelInfoModal = () => {
       </div>
     `;
   });
-  
+
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
   overlay.innerHTML = `
@@ -2655,7 +2665,7 @@ window.openLevelInfoModal = () => {
     </div>
   `;
   document.body.appendChild(overlay);
-  
+
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
@@ -3139,7 +3149,7 @@ window.openCategoryModal = (categoryName) => {
   const maxHearts = total * 5;
   const percentage = maxHearts > 0 ? Math.round((heartsFilled / maxHearts) * 100) : 0;
 
-  console.log('[openCategoryModal] Категория:', categoryName, 'Карточек:', list.length);
+  console.log('[openCategoryModal] Катег��рия:', categoryName, 'Карточек:', list.length);
 
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
