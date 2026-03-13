@@ -876,8 +876,8 @@ function showStats(stats, results, total) {
         
         // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
-            overlay.remove();
             location.hash = '#/stats';
+            setTimeout(() => overlay.remove(), 100);
         });
         
         // Кнопка "Продолжить" - следующий круг обучения
