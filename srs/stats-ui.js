@@ -2035,6 +2035,95 @@ window.openDiffModal = (index) => {
   document.body.appendChild(overlay);
 };
 
+// Модальное окно для категории
+window.openCategoryModal = (categoryName) => {
+  const currentCards = getCurrentCards();
+  const progress = getProgressMap();
+  const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+  
+  // Фильтруем карточки по категории
+  let list = currentCards.filter(q => q.category === categoryName);
+  
+  // Сортируем по прогрессу (сначала трудные/сначала лёгкие) - по возрастанию EF
+  list.sort((a, b) => {
+    const pA = progress[a.question] || progress[a.question.trim()];
+    const pB = progress[b.question] || progress[b.question.trim()];
+    const efA = pA ? pA.easeFactor : 0;
+    const efB = pB ? pB.easeFactor : 0;
+    return efA - efB; // Сначала трудные (низкий EF)
+  });
+  
+  // Считаем проценты
+  const total = list.length;
+  let heartsFilled = 0;
+  list.forEach(q => {
+    const p = progress[q.question] || progress[q.question.trim()];
+    if (p && p.easeFactor !== undefined) {
+      heartsFilled += getHeartsCountForEf(p.easeFactor);
+    }
+  });
+  const maxHearts = total * 5;
+  const percentage = maxHearts > 0 ? Math.round((heartsFilled / maxHearts) * 100) : 0;
+  
+  console.log('[openCategoryModal] Категория:', categoryName, 'Карточек:', list.length);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.innerHTML = `
+    <div class="st-modal">
+       <div class="st-modal-header">
+          <div class="st-modal-title">${categoryName} (${list.length}) - ${percentage}%</div>
+          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+       </div>
+       <div class="st-modal-body">
+          <ul class="st-modal-list">
+             ${list.map((q, idx) => {
+    const p = prog[q.question] || prog[q.question.trim()];
+    const ef = p ? p.easeFactor : undefined;
+    const heartFills = getHeartFillPercentages(ef);
+    const heartsSvg = renderHeartsSvg(heartFills, 'cat-'+idx);
+    const isFav = favorites.has(q.question);
+
+    return `
+                <li class="st-modal-item">
+                   <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
+                       <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
+                       <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
+                          <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
+                          ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
+                       </div>
+                   </div>
+                   <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${q.answer.substring(0, 80)}${q.answer.length > 80 ? '...' : ''}</div>
+                </li>
+                `;
+  }).join('')}
+          </ul>
+       </div>
+       <div class="st-modal-footer">
+          <button class="st-modal-btn" onclick="window.startCategorySession('${categoryName.replace(/'/g, "\\'")}')">Тренировать эту категорию</button>
+       </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+};
+
+window.startCategorySession = (categoryName) => {
+  document.querySelector('.st-modal-overlay')?.remove();
+  
+  const currentCards = getCurrentCards();
+  const cards = currentCards.filter(q => q.category === categoryName);
+  
+  console.log('[startCategorySession] Категория:', categoryName, 'Карточек:', cards.length);
+  
+  if (cards.length === 0) {
+    alert('Нет карт в этой категории');
+    return;
+  }
+  
+  hideStatsPage();
+  startLearnSession(cards, { mode: 'cram' });
+};
+
 window.startFilteredSession = (index) => {
   document.querySelector('.st-modal-overlay')?.remove();
 
@@ -2180,10 +2269,10 @@ function renderCategoryProgress() {
   if (!container) return;
 
   container.innerHTML = categoryProgress.map(cat => `
-        <div class="st-cat-progress-item">
+        <div class="st-cat-progress-item" onclick="window.openCategoryModal('${cat.name.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Нажмите для просмотра карточек">
             <div class="st-cat-progress-header">
                 <span class="st-cat-progress-name">${cat.name}</span>
-                <span class="st-cat-progress-value">${cat.percentage}%</span>
+                <span class="st-cat-progress-value">${cat.percentage}% (${cat.total})</span>
             </div>
             <div class="st-cat-progress-track">
                 <div class="st-cat-progress-fill" style="width: ${cat.percentage}%"></div>
