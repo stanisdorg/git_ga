@@ -3,9 +3,9 @@
     "username": "stas",
     "role": "user",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-13T21:38:16.256Z",
+    "lastLoginAt": "2026-03-13T23:52:01.856Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-13T21:38:16.256Z"
+    "lastSavedAt": "2026-03-13T23:52:01.856Z"
   },
   "_cards": [
     {
@@ -2047,19 +2047,19 @@
     "fiftyCards": true
   },
   "_stats": {
-    "total": 85,
-    "timeSpent": 28487,
-    "points": 800,
+    "total": 91,
+    "timeSpent": 33603,
+    "points": 845,
     "correct": 70
   },
   "_srsProgress": {
     "Из чего состоит Kafka и как работает?": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.35,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1773437481726,
+      "repetitionCount": 5,
+      "history": 5,
+      "lastReviewDate": 1773445959280,
       "nextReviewDate": 1773536400000,
       "dueDate": "2026-03-15T01:00:00.000Z",
       "repetitions": 0,
@@ -2071,20 +2071,32 @@
         {
           "date": 1773437481726,
           "grade": 2
+        },
+        {
+          "date": 1773445934768,
+          "grade": 2
+        },
+        {
+          "date": 1773445942844,
+          "grade": 2
+        },
+        {
+          "date": 1773445959280,
+          "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-14",
-      "lastReviewedTime": 3,
+      "lastReviewedTime": 5,
       "question": "Из чего состоит Kafka и как работает?"
     },
     "брокеры?": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.35,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1773437480975,
+      "repetitionCount": 5,
+      "history": 5,
+      "lastReviewDate": 1773445958569,
       "nextReviewDate": 1773536400000,
       "dueDate": "2026-03-15T01:00:00.000Z",
       "repetitions": 0,
@@ -2096,11 +2108,23 @@
         {
           "date": 1773437480975,
           "grade": 2
+        },
+        {
+          "date": 1773445933803,
+          "grade": 2
+        },
+        {
+          "date": 1773445942371,
+          "grade": 2
+        },
+        {
+          "date": 1773445958569,
+          "grade": 2
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-14",
-      "lastReviewedTime": 3,
+      "lastReviewedTime": 5,
       "question": "брокеры?"
     },
     "4) Прикладной": {

@@ -644,6 +644,14 @@ export function initTabsNavigation(appVersion) {
         if (location.hash === '#/stats') {
             const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
             initStatsPage(appVersion);
+        } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
+            // Переход на главную - закрываем статистику если открыта
+            console.log('[HASH CHANGE] Navigating to home');
+            // Очищаем состояние обучения если есть
+            if (window.__lastCandidates) {
+                window.__lastCandidates = null;
+                console.log('[HASH CHANGE] Cleared __lastCandidates');
+            }
         }
     });
 
