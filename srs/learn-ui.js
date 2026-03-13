@@ -1134,16 +1134,24 @@ function showStats(stats, results, total) {
         totalEl.style.display = ''; 
         totalEl.classList.add('fade-in'); 
         console.log('[MODAL.ANIM] totalEl fade-in added');
+        // Animate numbers counting up
+        animateValue(totalEl.querySelector('.stat-value'), 0, parseInt(totalEl.querySelector('.stat-value').textContent) || 0, 1000);
     }
     if (accWrap) { 
         accWrap.style.display = ''; 
         accWrap.classList.add('fade-in'); 
         console.log('[MODAL.ANIM] accWrap fade-in added');
+        // Animate accuracy percentage
+        const accValue = accWrap.querySelector('.stat-value');
+        const accNum = parseInt(accValue.textContent) || 0;
+        animateValue(accValue, 0, accNum, 1000, '%');
     }
     if (streakWrap) { 
         streakWrap.style.display = ''; 
         streakWrap.classList.add('fade-in'); 
         console.log('[MODAL.ANIM] streakWrap fade-in added');
+        // Animate streak number
+        animateValue(streakWrap.querySelector('.stat-value'), 0, parseInt(streakWrap.querySelector('.stat-value').textContent) || 0, 1000);
     }
 
     // Fade-in elements (originally hidden by CSS opacity: 0)
@@ -1162,6 +1170,28 @@ function showStats(stats, results, total) {
         actions.classList.add('fade-in'); 
         console.log('[MODAL.ANIM] actions fade-in added');
     }
+}
+
+// Helper function to animate numbers counting up
+function animateValue(el, start, end, duration, suffix = '') {
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function (easeOutQuart)
+        const ease = 1 - Math.pow(1 - progress, 4);
+        
+        const current = Math.floor(start + (end - start) * ease);
+        el.textContent = current + suffix;
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
 }
 
 // Helper function to get level from XP

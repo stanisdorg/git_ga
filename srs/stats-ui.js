@@ -2,7 +2,7 @@
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
-import { startLearnSession } from './learn-ui.js?v=2.02';
+import { startLearnSession } from './learn-ui.js?v=2.03';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
