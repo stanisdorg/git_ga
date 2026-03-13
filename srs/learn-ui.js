@@ -1008,18 +1008,24 @@ function showStats(stats, results, total) {
         oldEl.style.width = `${oldW}%`;
         earnEl.style.left = `${oldW}%`;
         bonusEl.style.left = `${oldW}%`;
-        // Запуск анимаций (замедлить до ~1.5s)
+        
+        // Запуск анимаций: последовательно, но суммарно 1500ms
+        const totalDuration = 1500;
+        const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
+        const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
+        
         earnEl.classList.add('animate');
         bonusEl.classList.add('animate');
-        earnEl.style.transition = 'width 1500ms ease';
-        bonusEl.style.transition = 'width 1500ms ease';
+        earnEl.style.transition = `width ${earnDuration}ms ease`;
+        bonusEl.style.transition = `width ${bonusDuration}ms ease`;
+        
         setTimeout(() => {
             earnEl.style.width = `${earnW}%`;
             setTimeout(() => {
                 bonusEl.style.left = `${oldW + earnW}%`;
                 bonusEl.style.width = `${bonusW}%`;
-            }, 1500);
-        }, 100); // небольшая задержка перед началом
+            }, earnDuration);
+        }, 100);
     }).catch(() => {});
     // Animate overlay and stats
     overlay.classList.add('show');
