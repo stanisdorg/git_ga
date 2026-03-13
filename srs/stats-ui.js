@@ -94,12 +94,11 @@ const STATS_STYLES = `
   padding: 16px 16px 12px;
   grid-column: span 8;
   height: 320px;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 .activity-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  transform: scale(1.025);
   z-index: 10;
 }
 .activity-header {
