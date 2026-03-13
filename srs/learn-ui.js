@@ -972,28 +972,39 @@ function showStats(stats, results, total) {
     syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
     try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
     
+    console.log('[MODAL.ANIM] === START ANIMATION ===');
+    console.log('[MODAL.ANIM] startXP:', session.startXP, 'earned:', earned, 'bonus:', bonus);
+    
     // Level info on top
     import('./stats-utils.js?v=3').then(({ getCurrentLevel }) => {
         const lvl = getCurrentLevel();
+        console.log('[MODAL.ANIM] Current level:', lvl.level, 'XP:', lvl.xp);
+        
         overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
         const earned = session.stats.pointsEarned || 0;
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
         const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
         const bonus = Math.min(100, (st.current || 0) * 5);
+        
+        console.log('[MODAL.ANIM] startXP:', startXP, 'earned:', earned, 'bonus:', bonus);
 
         // Определяем, было ли повышение уровня
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
+        
+        console.log('[MODAL.ANIM] startLevel:', startLevel, 'endLevel:', endLevel, 'leveledUp:', leveledUp);
 
         const bar = overlay.querySelector('.level-progress-bar');
         const oldEl = bar.querySelector('.level-progress-fill-old');
         const earnEl = bar.querySelector('.level-progress-fill-earned');
         const bonusEl = bar.querySelector('.level-progress-fill-bonus');
+        
+        console.log('[MODAL.ANIM] Elements found:', { bar: !!bar, oldEl: !!oldEl, earnEl: !!earnEl, bonusEl: !!bonusEl });
 
         if (leveledUp) {
-            // === АНИМАЦИЯ ПОВЫШЕНИЯ УРОВНЯ ===
+            console.log('[MODAL.ANIM] === LEVEL UP ANIMATION ===');
             
             // 1. Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
@@ -1005,24 +1016,31 @@ function showStats(stats, results, total) {
             earnEl.style.left = '100%';
             bonusEl.style.left = '100%';
             
+            console.log('[MODAL.ANIM] Step 1: Set to 100% (transition: none)');
+            
             // 2. Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
+                console.log('[MODAL.ANIM] Step 2: Enable transition');
                 
                 // 3. Вспышка уровня
                 const levelEl = overlay.querySelector('#sum-level');
                 levelEl.classList.add('flash');
                 levelEl.textContent = `LV:${endLevel}!`;
+                console.log('[MODAL.ANIM] Step 3: Flash level');
                 
                 setTimeout(() => {
                     levelEl.classList.remove('flash');
                     levelEl.textContent = `LV:${endLevel} • ${lvl.xp} XP`;
+                    console.log('[MODAL.ANIM] Step 4: Remove flash');
                     
                     // 4. Быстрое сжатие (200ms)
                     oldEl.style.transition = 'width 0.2s ease';
                     oldEl.style.width = '0%';
+                    console.log('[MODAL.ANIM] Step 5: Shrink old (200ms)');
                     
                     setTimeout(() => {
+                        console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
                         // 5. Заполнение нового уровня (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
@@ -1034,6 +1052,8 @@ function showStats(stats, results, total) {
                         const earnedPct = totalForLevel > 0 ? (earnedInLevel / totalForLevel) * 100 : 0;
                         const bonusPct = totalForLevel > 0 ? (bonus / totalForLevel) * 100 : 0;
                         
+                        console.log('[MODAL.ANIM] earnedPct:', earnedPct, 'bonusPct:', bonusPct);
+                        
                         earnEl.style.width = `${Math.min(100, earnedPct)}%`;
                         bonusEl.style.width = `${Math.min(100, bonusPct)}%`;
                     }, 200);
@@ -1041,7 +1061,7 @@ function showStats(stats, results, total) {
             }, 50);
             
         } else {
-            // === ОБЫЧНАЯ АНИМАЦИЯ (без повышения уровня) ===
+            console.log('[MODAL.ANIM] === NORMAL ANIMATION (no level up) ===');
             
             // Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
@@ -1059,23 +1079,31 @@ function showStats(stats, results, total) {
             bonusEl.style.left = `${startPct * 100}%`;
             bonusEl.style.width = '0%';
             
+            console.log('[MODAL.ANIM] Step 1: Set startPct:', startPct * 100);
+            
             // Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
+                console.log('[MODAL.ANIM] Step 2: Enable transition');
                 
                 setTimeout(() => {
+                    console.log('[MODAL.ANIM] Step 3: Fill earned + bonus (1.5s)');
                     earnEl.style.transition = 'width 1.5s ease';
                     bonusEl.style.transition = 'width 1.5s ease';
                     
                     const earnedPct = Math.max(0, pct(startXP + earned) - startPct) * 100;
                     const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned)) * 100;
                     
+                    console.log('[MODAL.ANIM] earnedPct:', earnedPct, 'bonusPct:', bonusPct);
+                    
                     earnEl.style.width = `${earnedPct}%`;
                     bonusEl.style.width = `${bonusPct}%`;
                 }, 500);
             }, 50);
         }
-    }).catch(() => {});
+    }).catch((err) => {
+        console.error('[MODAL.ANIM] Error:', err);
+    });
     
     // Animate overlay and stats
     overlay.classList.add('show');
