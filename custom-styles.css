@@ -1578,6 +1578,47 @@ body.learning-mode #bottom-nav {
 .rate-good { background: #4caf50; }
 .rate-easy { background: #2196f3; }
 
+/* Summary overlay action buttons */
+.summary-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+}
+.summary-actions .btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.summary-actions .btn-primary {
+    background: var(--st-prim);
+    color: #000;
+    border-color: var(--st-prim);
+}
+.summary-actions .btn-primary:hover {
+    background: #ffb142;
+    border-color: #ffb142;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,159,28,0.3);
+}
+.summary-actions .btn-secondary {
+    background: var(--st-surf-h);
+    color: var(--st-text);
+    border-color: var(--st-border);
+}
+.summary-actions .btn-secondary:hover {
+    background: var(--st-surf);
+    border-color: var(--st-prim);
+    transform: translateY(-2px);
+}
+
 #learn-stats {
     text-align: center;
     color: var(--color-text);

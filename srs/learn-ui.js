@@ -857,21 +857,24 @@ function showStats(stats, results, total) {
                 <div class="motivation" id="sum-motivation"></div>
                 <div id="sum-xp" class="xp-line"></div>
                 <div class="summary-actions">
-                    <button id="sum-continue" class="btn btn-green" title="Продолжить" aria-label="Продолжить">Продолжить</button>
-                    <button id="sum-exit" class="btn btn-red" title="Выйти" aria-label="Выйти">Выйти</button>
-                    <button id="sum-stats" class="btn btn-dark" title="Статистика" aria-label="Статистика">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                          <rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/>
-                        </svg>
+                    <button id="sum-continue" class="btn btn-primary" title="Продолжить обучение" aria-label="Продолжить">
+                        <span>▶</span> Продолжить
+                    </button>
+                    <button id="sum-exit" class="btn btn-secondary" title="Перейти к статистике" aria-label="Перейти к статистике">
+                        📊 Статистика
                     </button>
                 </div>
             </div>
         `;
         container.appendChild(overlay);
+        
+        // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
-            stopLearnSession();
             overlay.remove();
+            location.hash = '#/stats';
         });
+        
+        // Кнопка "Продолжить" - следующий круг обучения
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
             overlay.classList.remove('show');
             if (window.__lastCandidates) {
@@ -895,24 +898,6 @@ function showStats(stats, results, total) {
             document.removeEventListener('keydown', enterHandler);
             originalRemove();
         };
-
-        overlay.querySelector('#sum-stats').addEventListener('click', async () => {
-            overlay.classList.remove('show');
-            window.__overlayActive = true;
-            // Скрываем контейнер обучения, чтобы статистика была поверх
-            if (container) container.style.display = 'none';
-            const { initStatsPage } = await import('./stats-ui.js?v=6');
-            location.hash = '#/stats';
-            initStatsPage();
-        });
-        window.addEventListener('statsClosed', () => {
-            if (window.__overlayActive) {
-                // Возвращаем контейнер обучения и модалку
-                if (container) container.style.display = 'flex';
-                overlay.classList.add('show');
-                window.__overlayActive = false;
-            }
-        }, { once: true });
     }
     const statsRaw = localStorage.getItem('studyStats') || '{}';
     const s = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
