@@ -87,7 +87,21 @@ const STATS_STYLES = `
 .st-auth-btn svg { width: 20px; height: 20px; }
 .st-top-actions .nav-icon-btn { padding: 0; }
 .st-top-actions .tab { width: 36px; height: 36px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 0; display:flex; align-items:center; justify-content:center; box-sizing: border-box; }
-.activity-card { background: var(--st-surf); border: 1px solid var(--st-border); border-radius: 16px; padding: 16px 16px 12px; grid-column: span 8; height: 320px; }
+.activity-card {
+  background: var(--st-surf);
+  border: 1px solid var(--st-border);
+  border-radius: 16px;
+  padding: 16px 16px 12px;
+  grid-column: span 8;
+  height: 320px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  position: relative;
+}
+.activity-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  z-index: 10;
+}
 .activity-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .period-switch { display: flex; gap: 12px; font-size: 12px; color: var(--st-muted); }
 .period-switch .active { color: #fff; font-weight: 600; }
@@ -101,6 +115,35 @@ const STATS_STYLES = `
 .chart-grid-line { stroke: rgba(255,255,255,0.06); stroke-width: 1; }
 .tooltip { position: absolute; width: 160px; padding: 8px 10px; font-size: 12px; border-radius: 8px; background: var(--st-surf-h); color: var(--st-text); border: 1px solid var(--st-border); display: none; pointer-events: none; z-index: 3000; }
 .tooltip .tip-arrow { position: absolute; bottom: -6px; left: calc(50% - 6px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid var(--st-surf-h); }
+
+/* Кнопка развёртывания графика */
+.st-expand-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--st-border);
+  color: var(--st-text-sec);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.activity-card:hover .st-expand-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+.st-expand-btn:hover {
+  background: var(--st-prim);
+  color: #000;
+  border-color: var(--st-prim);
+}
 
 /* NEW METRICS STYLES */
 .st-meta-state {
@@ -1656,6 +1699,11 @@ function renderStats() {
             <div class="chart-wrapper">
               <svg class="chart" id="st-activity-chart"></svg>
             </div>
+            <button class="st-expand-btn" onclick="window.openChartModal()" title="Развернуть график">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -2227,6 +2275,51 @@ function renderHeartsSvg(fillPercentages, prefix) {
   }
   return svg;
 }
+
+// Модальное окно для графика активности
+window.openChartModal = () => {
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.innerHTML = `
+    <div class="st-modal" style="max-width:80%;width:80%;height:80vh;">
+       <div class="st-modal-header">
+          <div class="st-modal-title">📈 График активности</div>
+          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+       </div>
+       <div class="st-modal-body" style="padding:24px;height:calc(80vh - 80px);">
+          <div class="activity-card" style="height:100%;width:100%;transform:none;box-shadow:none;">
+            <div class="activity-header">
+              <div class="period-switch">
+                <div class="week-active" onclick="window.changeXpMode('week')">Неделя</div>
+                <div class="month-active" onclick="window.changeXpMode('month')">Месяц</div>
+                <div class="year-active" onclick="window.changeXpMode('year')">Год</div>
+              </div>
+              <div class="month-switch"><span id="st-modal-month-label"></span></div>
+            </div>
+            <div class="chart-wrapper">
+              <svg class="chart" id="st-modal-activity-chart"></svg>
+            </div>
+          </div>
+       </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  
+  // Клонируем график в модальное окно
+  setTimeout(() => {
+    const originalChart = document.getElementById('st-activity-chart');
+    const modalChart = document.getElementById('st-modal-activity-chart');
+    if (originalChart && modalChart) {
+      modalChart.innerHTML = originalChart.innerHTML;
+    }
+    // Обновляем лейбл месяца
+    const originalLabel = document.getElementById('st-month-label');
+    const modalLabel = document.getElementById('st-modal-month-label');
+    if (originalLabel && modalLabel) {
+      modalLabel.textContent = originalLabel.textContent;
+    }
+  }, 100);
+};
 
 window.openDiffModal = (index) => {
   let list = [];
