@@ -1,10 +1,10 @@
-п»їimport { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.01';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.01';
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
 import { startLearnSession } from './learn-ui.js?v=2.00';
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ Р°РєС‚СѓР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С… (РІСЃРµРіРґР° РёР· localStorage РґР»СЏ Р°РІС‚РѕСЂРёР·РѕРІР°РЅРЅС‹С…)
+// Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -13,15 +13,15 @@ function getCurrentCards() {
       if (userCardsRaw) {
         const userCards = JSON.parse(userCardsRaw);
         if (Array.isArray(userCards) && userCards.length > 0) {
-          console.log('[getCurrentCards] РСЃРїРѕР»СЊР·СѓРµРј qaUserCards:', userCards.length, 'РєР°СЂС‚РѕС‡РµРє');
+          console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
           
-          // рџ”§ РСЃРїСЂР°РІР»СЏРµРј РєРѕРґРёСЂРѕРІРєСѓ РЅР° Р»РµС‚Сѓ
+          // ?? Исправляем кодировку на лету
           userCards.forEach(card => {
-            if (card.category === 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ' || card.category === 'Р”РєСѓРјРµРЅС‚Р°С†РёСЏ') {
-              card.category = 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ';
+            if (card.category === 'Документация' || card.category === 'Дкументация') {
+              card.category = 'Документация';
             }
-            if (card.subcategory === 'РўРёРїС‹ С‚СЂРµР±РѕРІР°РЅРёР№' || card.subcategory === 'РўРёРїС‹ С‚СЂРµРѕРІР°РЅРёР№') {
-              card.subcategory = 'РўРёРїС‹ С‚СЂРµР±РѕРІР°РЅРёР№';
+            if (card.subcategory === 'Типы требований' || card.subcategory === 'Типы треований') {
+              card.subcategory = 'Типы требований';
             }
           });
           
@@ -30,16 +30,16 @@ function getCurrentCards() {
       }
     }
   } catch (e) {
-    console.warn('[stats-ui] РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё userCards:', e);
+    console.warn('[stats-ui] Ошибка загрузки userCards:', e);
   }
 
-  // Fallback: С‡РёС‚Р°РµРј РёР· all-data.js С‡РµСЂРµР· window
+  // Fallback: читаем из all-data.js через window
   if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
-    console.log('[getCurrentCards] РСЃРїРѕР»СЊР·СѓРµРј window.uniqueQaData:', window.uniqueQaData.length, 'РєР°СЂС‚РѕС‡РµРє');
+    console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
     return window.uniqueQaData;
   }
 
-  console.log('[getCurrentCards] РќРµС‚ РґР°РЅРЅС‹С…');
+  console.log('[getCurrentCards] Нет данных');
   return [];
 }
 
@@ -348,7 +348,7 @@ const STATS_STYLES = `
   background: var(--st-border); color: var(--st-muted);
   text-transform: uppercase; font-weight: 700;
 }
-/* Tooltip РґР»СЏ СЂРµР¶РёРјРѕРІ СЃ РѕРїРёСЃР°РЅРёРµРј */
+/* Tooltip для режимов с описанием */
 .st-mode-card[title]:hover::after {
   content: attr(title);
   position: absolute;
@@ -918,7 +918,7 @@ const STATS_STYLES = `
     min-width: 280px;
   }
 
-  /* Р¤РёРєСЃРёСЂРѕРІР°РЅРЅР°СЏ РІС‹СЃРѕС‚Р° Р±Р»РѕРєРѕРІ */
+  /* Фиксированная высота блоков */
   .st-block-1,
   .st-block-2 {
     height: 180px !important;
@@ -935,7 +935,7 @@ const STATS_STYLES = `
   }
 
   .modes-grid {
-    height: calc(200px - 2px) !important;  /* Р’С‹С‡РёС‚Р°РµРј border Сѓ СЂРѕРґРёС‚РµР»СЏ */
+    height: calc(200px - 2px) !important;  /* Вычитаем border у родителя */
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     box-sizing: border-box !important;
@@ -947,7 +947,7 @@ const STATS_STYLES = `
     overflow-y: auto !important;
   }
   
-  /* РЎС‚РёР»Рё РґР»СЏ РєР°СЂС‚РѕС‡РµРє РІ modes-grid */
+  /* Стили для карточек в modes-grid */
   .modes-grid .st-mode-card {
     height: 100% !important;
     display: flex !important;
@@ -955,14 +955,14 @@ const STATS_STYLES = `
     justify-content: center !important;
   }
   
-  /* Р¦РµРЅС‚СЂР°Р»СЊРЅС‹Р№ Р±Р»РѕРє вЂ” РљР РРўРР§РќРћ! */
+  /* Центральный блок — КРИТИЧНО! */
   .st-block-achievements,
   .st-cat-progress-wrap {
     max-height: 600px !important;
     overflow-y: auto !important;
   }
 
-  /* Tablet: 2 РєРѕР»РѕРЅРєРё */
+  /* Tablet: 2 колонки */
   @media (max-width: 1024px) {
     .st-main {
       grid-template-columns: repeat(2, 1fr);
@@ -995,7 +995,7 @@ const STATS_STYLES = `
     }
   }
 
-  /* Mobile: 1 РєРѕР»РѕРЅРєР° */
+  /* Mobile: 1 колонка */
   @media (max-width: 768px) {
     .st-main {
       grid-template-columns: 1fr;
@@ -1027,7 +1027,7 @@ const STATS_STYLES = `
       grid-row: auto;
     }
     
-    /* Mobile: СѓР±РёСЂР°РµРј С„РёРєСЃРёСЂРѕРІР°РЅРЅСѓСЋ РІС‹СЃРѕС‚Сѓ */
+    /* Mobile: убираем фиксированную высоту */
     .st-compact-card,
     .training-modes-block,
     .st-diff-section {
@@ -1046,7 +1046,7 @@ const STATS_STYLES = `
   }
   .st-activity-section { overflow: hidden; }
   
-  /* РђРґР°РїС‚РёРІРЅРѕСЃС‚СЊ РґР»СЏ activity-section */
+  /* Адаптивность для activity-section */
   @media (max-width: 1024px) {
     .st-activity-section {
       min-height: 280px;
@@ -1202,7 +1202,7 @@ function renderStats() {
   const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7); weekEnd.setHours(23, 59, 59, 999);
 
   const currentCards = getCurrentCards();
-  console.log('[STATS.UI] РўРµРєСѓС‰РёС… РєР°СЂС‚РѕС‡РµРє:', currentCards.length);
+  console.log('[STATS.UI] Текущих карточек:', currentCards.length);
 
   currentCards.forEach(q => {
     const p = progressMap[q.question] || progressMap[q.question.trim()];
@@ -1215,10 +1215,10 @@ function renderStats() {
 
   // Calculate Difficulty Distribution (ordered: Easy, Standard, Hard, Very Hard) with single palette
   const segs = [
-    { label: 'Р›РµРіРєРёРµ', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: 4 },
-    { label: 'РЎС‚Р°РЅРґР°СЂС‚', min: 2.1, max: 2.4, count: 0, color: '#2f81f7', hearts: 3 },
-    { label: 'РўСЂСѓРґРЅС‹Рµ', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: 2 },
-    { label: 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: 1 }
+    { label: 'Легкие', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: 4 },
+    { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: '#2f81f7', hearts: 3 },
+    { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: 2 },
+    { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: 1 }
   ];
 
   let totalRated = 0;
@@ -1257,7 +1257,7 @@ function renderStats() {
 
   // Check login status
   const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
-  const authTitle = user ? `Р’С‹Р№С‚Рё (${user.email})` : 'Р’С…РѕРґ';
+  const authTitle = user ? `Выйти (${user.email})` : 'Вход';
   const authIcon = user
     ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5z"/><path d="M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>'
     : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>';
@@ -1273,7 +1273,7 @@ function renderStats() {
         <div class="st-top-right" style="grid-column:1 / span 12;display:flex;align-items:center;gap:10px;justify-content:flex-start;width:100%">
           <div class="st-top-actions" style="display:flex;align-items:center;gap:10px;">
             <button class="nav-icon-btn login-main-btn tab st-auth-btn" title="${authTitle}" style="min-width:auto;background-color:var(--color-card);">${authIcon}</button>
-            <button class="nav-icon-btn st-home-btn tab" title="Р”РѕРјРѕР№" style="min-width:auto;background-color:var(--color-card);">
+            <button class="nav-icon-btn st-home-btn tab" title="Домой" style="min-width:auto;background-color:var(--color-card);">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 3l9 8-1.5 1.5L12 6 4.5 12.5 3 11z"/>
                 <path d="M5 13v8h6v-6h2v6h6v-8l-7-6z"/>
@@ -1282,25 +1282,25 @@ function renderStats() {
           </div>
           <div class="app-version-display" style="font-size:11px;color:#555;font-weight:bold;margin-left:10px;">v${window.currentAppVersion || ''}</div>
           <div class="st-top-metrics">
-            <div class="metric"><span>рџ”Ґ</span> ${metrics.streakCurrent}</div>
-            <div class="metric"><span>вљЎ</span> ${easyCount}</div>
-            <div class="metric"><span>вќ¤пёЏ</span> ${cardsDoneToday}</div>
+            <div class="metric"><span>??</span> ${metrics.streakCurrent}</div>
+            <div class="metric"><span>?</span> ${easyCount}</div>
+            <div class="metric"><span>??</span> ${cardsDoneToday}</div>
           </div>
-          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 12px;height:32px;font-size:12px;font-weight:600;">в–¶ РћР±СѓС‡РµРЅРёРµ</button>
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 12px;height:32px;font-size:12px;font-weight:600;">? Обучение</button>
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
 
-      <!-- РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Р±СѓРґРµС‚ РґРѕР±Р°РІР»РµРЅРѕ С‡РµСЂРµР· JS -->
+      <!-- Отображение имени пользователя будет добавлено через JS -->
       <div class="st-username-placeholder" style="display:none"></div>
 
-      <!-- РљРЅРѕРїРєР° РїСЂРѕРґРѕР»Р¶РёС‚СЊ РЅР° РІСЃСЋ С€РёСЂРёРЅСѓ -->
-      <button class="st-cta-btn st-continue-mobile" id="st-continue-btn">РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ</button>
+      <!-- Кнопка продолжить на всю ширину -->
+      <button class="st-cta-btn st-continue-mobile" id="st-continue-btn">Продолжить обучение</button>
 
       <div class="st-main">
-        <!-- Р‘Р»РѕРє 1: РџСЂРѕРіСЂРµСЃСЃ/СЃС‚Р°С‚РёСЃС‚РёРєР° (Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№, 33%) -->
+        <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
-          <div class="st-compact-card" role="group" aria-label="РљСЂР°С‚РєР°СЏ СЃС‚Р°С‚РёСЃС‚РёРєР°">
+          <div class="st-compact-card" role="group" aria-label="Краткая статистика">
             <div class="stc-top">
               <div class="stc-left">
                 <div class="stc-row">
@@ -1309,20 +1309,20 @@ function renderStats() {
                       <path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2Z" fill="currentColor" opacity="0.95"/>
                     </svg>
                   </span>
-                  <span class="stc-label">Р­С‚Р°Рї:</span>
+                  <span class="stc-label">Этап:</span>
                   <span class="stc-value stage-value stc-orange">${learningStage.stage}</span>
                 </div>
                 <div class="stc-row">
-                  <span class="stc-label index-label">РРЅРґРµРєСЃ СѓРґРµСЂР¶Р°РЅРёСЏ:</span>
+                  <span class="stc-label index-label">Индекс удержания:</span>
                   <span class="stc-value index-value stc-red stc-strong">${understandingIndex}%</span>
                 </div>
               </div>
               <div class="stc-right">
                 <div class="stc-row">
-                  <span class="stc-label stc-today">РЎРµРіРѕРґРЅСЏ:</span>
+                  <span class="stc-label stc-today">Сегодня:</span>
                 </div>
                 <div class="stc-row">
-                  <span class="stc-today-line"><span class="stc-value stc-strong">${sessionCount}</span> РєР°СЂС‚РѕС‡РµРє <span class="muted">в‰€</span> <span class="approx">${planMins} РјРёРЅСѓС‚</span></span>
+                  <span class="stc-today-line"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">?</span> <span class="approx">${planMins} минут</span></span>
                 </div>
               </div>
             </div>
@@ -1333,53 +1333,53 @@ function renderStats() {
                     <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
-                <span class="key">РџСЂРѕРіРЅРѕР·:</span>
+                <span class="key">Прогноз:</span>
                 <span class="date">${finishDateStr}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє РґРѕСЃС‚РёР¶РµРЅРёР№ РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј (С†РµРЅС‚СЂР°Р»СЊРЅС‹Р№, span 2 СЂСЏРґР°, 33%) -->
+        <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
-            <div class="st-cat-progress-title"> РџСЂРѕРіСЂРµСЃСЃ РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј</div>
+            <div class="st-cat-progress-title"> Прогресс по категориям</div>
             <div class="st-cat-progress-list" id="st-cat-progress-list">
-              <!-- Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ РґРёРЅР°РјРёС‡РµСЃРєРё -->
+              <!-- Заполняется динамически -->
             </div>
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 2: Р РµР¶РёРјС‹ С‚СЂРµРЅРёСЂРѕРІРєРё (РїСЂР°РІС‹Р№ РІРµСЂС…РЅРёР№, 33%) -->
+        <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
           <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="вЏ±пёЏ РўР°Р№Рј-Р°С‚Р°РєР°\n\n5 СЃРµРєСѓРЅРґ РЅР° РѕС‚РІРµС‚.\n\nРћС€РёР±РєРё РЅРµРґРѕРїСѓСЃС‚РёРјС‹ вЂ” Р»СЋР±Р°СЏ РѕС€РёР±РєР° Р·Р°РІРµСЂС€Р°РµС‚ СЃРµСЃСЃРёСЋ. РРґРµР°Р»СЊРЅРѕ РґР»СЏ РїСЂРѕРІРµСЂРєРё Р·РЅР°РЅРёР№ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ.">
-              <span class="st-mode-icon">вЏ±пёЏ</span>
-              <span class="st-mode-title">РўР°Р№Рј-Р°С‚Р°РєР°</span>
+            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="?? Тайм-атака\n\n5 секунд на ответ.\n\nОшибки недопустимы — любая ошибка завершает сессию. Идеально для проверки знаний на скорость.">
+              <span class="st-mode-icon">??</span>
+              <span class="st-mode-title">Тайм-атака</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="в пёЏ Р’РЅРµР·Р°РїРЅР°СЏ СЃРјРµСЂС‚СЊ\n\nРРіСЂР° РґРѕ РїРµСЂРІРѕР№ РѕС€РёР±РєРё.\n\nРњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃР»РѕР¶РЅРѕСЃС‚СЊ вЂ” РѕРґРЅР° РѕС€РёР±РєР° Рё СЃРµСЃСЃРёСЏ Р·Р°РІРµСЂС€РµРЅР°. РџСЂРѕРІРµСЂСЊ СЃРІРѕСЋ РІС‹РґРµСЂР¶РєСѓ!">
-              <span class="st-mode-icon">в пёЏ</span>
-              <span class="st-mode-title">Р’РЅРµР·Р°РїРЅР°СЏ СЃРјРµСЂС‚СЊ</span>
+            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="?? Внезапная смерть\n\nИгра до первой ошибки.\n\nМаксимальная сложность — одна ошибка и сессия завершена. Проверь свою выдержку!">
+              <span class="st-mode-icon">??</span>
+              <span class="st-mode-title">Внезапная смерть</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="рџ§  Р—СѓР±СЂРµР¶РєР° СЃР»РѕР¶РЅС‹С…\n\nРўРѕР»СЊРєРѕ РєР°СЂС‚С‹ СЃ РЅРёР·РєРёРј РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРј Р·Р°РїРѕРјРёРЅР°РЅРёСЏ.\n\nР¤РѕРєСѓСЃ РЅР° СЃР»Р°Р±С‹С… РјРµСЃС‚Р°С… вЂ” СЃРёСЃС‚РµРјР° РїРѕРєР°Р¶РµС‚ С‚РѕР»СЊРєРѕ С‚Рµ РєР°СЂС‚РѕС‡РєРё, РєРѕС‚РѕСЂС‹Рµ РІС‹ Р·Р°Р±С‹РІР°РµС‚Рµ.">
-              <span class="st-mode-icon">рџ§ </span>
-              <span class="st-mode-title">Р—СѓР±СЂРµР¶РєР° СЃР»РѕР¶РЅС‹С…</span>
+            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="?? Зубрежка сложных\n\nТолько карты с низким коэффициентом запоминания.\n\nФокус на слабых местах — система покажет только те карточки, которые вы забываете.">
+              <span class="st-mode-icon">??</span>
+              <span class="st-mode-title">Зубрежка сложных</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="рџЊ± РўРѕР»СЊРєРѕ РЅРѕРІС‹Рµ\n\nРР·СѓС‡РµРЅРёРµ СЃРІРµР¶РµРіРѕ РјР°С‚РµСЂРёР°Р»Р°.\n\nРџРѕРєР°Р·С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РєР°СЂС‚РѕС‡РєРё, РєРѕС‚РѕСЂС‹Рµ РІС‹ РµС‰С‘ РЅРµ РЅР°С‡РёРЅР°Р»Рё СѓС‡РёС‚СЊ.">
-              <span class="st-mode-icon">рџЊ±</span>
-              <span class="st-mode-title">РўРѕР»СЊРєРѕ РЅРѕРІС‹Рµ</span>
+            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="?? Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+              <span class="st-mode-icon">??</span>
+              <span class="st-mode-title">Только новые</span>
             </div>
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 3: Р“СЂР°С„РёРє Р°РєС‚РёРІРЅРѕСЃС‚Рё (Р»РµРІС‹Р№ РЅРёР¶РЅРёР№, 33%) -->
+        <!-- Блок 3: График активности (левый нижний, 33%) -->
         <div class="st-block-3">
           <div class="activity-card activity">
             <div class="activity-header">
               <div class="period-switch">
-                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">РќРµРґРµР»СЏ</div>
-                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">РњРµСЃСЏС†</div>
-                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Р“РѕРґ</div>
+                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">Неделя</div>
+                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">Месяц</div>
+                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Год</div>
               </div>
               <div class="month-switch"><span id="st-month-label"></span></div>
             </div>
@@ -1389,11 +1389,11 @@ function renderStats() {
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 4: РЎР»РѕР¶РЅРѕСЃС‚СЊ РєР°СЂС‚РѕС‡РµРє (РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№, 33%) -->
+        <!-- Блок 4: Сложность карточек (правый нижний, 33%) -->
         <div class="st-block-4">
           <div class="st-diff-section">
             <div class="st-col-title"   style="margin-bottom: 5px;"
-              >РЎР»РѕР¶РЅРѕСЃС‚СЊ <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="РљР°Рє С„РѕСЂРјРёСЂСѓСЋС‚СЃСЏ СѓСЂРѕРІРЅРё СЃР»РѕР¶РЅРѕСЃС‚Рё?">i</button></div>
+              >Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
             <div class="st-diff-list" style="margin-top:0">
               ${segs.map((s, i) => `
                 <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
@@ -1405,10 +1405,10 @@ function renderStats() {
                   <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
                 </div>
               `).join('')}
-              <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="РР·Р±СЂР°РЅРЅРѕРµ">
+              <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="Избранное">
                 <div style="display:flex;align-items:center">
                   <div class="st-diff-dot" style="background:#ffd700"></div>
-                  <div class="st-diff-name">РР·Р±СЂР°РЅРЅРѕРµ</div>
+                  <div class="st-diff-name">Избранное</div>
                 </div>
                 <div class="st-diff-count">${favCount}</div>
               </div>
@@ -1416,53 +1416,53 @@ function renderStats() {
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 5: Р”РѕСЃС‚РёР¶РµРЅРёСЏ (РЅРёР¶РЅРёР№, 100% С€РёСЂРёРЅС‹) -->
+        <!-- Блок 5: Достижения (нижний, 100% ширины) -->
         <div class="st-block-5">
           <div class="st-ach-section">
             <div class="st-ach-scroll">
-              <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="рџЏЃ РџРµСЂРІС‹Р№ С€Р°Рі: Р—Р°РІРµСЂС€Рё РїРµСЂРІС‹Р№ СѓСЂРѕРє" style="cursor: help;">
-                <div class="st-ach-icon">рџЏЃ</div>
-                <div class="st-ach-title">РџРµСЂРІС‹Р№ С€Р°Рі</div>
+              <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="?? Первый шаг: Заверши первый урок" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Первый шаг</div>
               </div>
-              <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}" title="рџ”Ґ РќРµРґРµР»СЏ РІ РѕРіРЅРµ: 7 РґРЅРµР№ РїРѕРґСЂСЏРґ" style="cursor: help;">
-                <div class="st-ach-icon">рџ”Ґ</div>
-                <div class="st-ach-title">РќРµРґРµР»СЏ РІ РѕРіРЅРµ</div>
+              <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}" title="?? Неделя в огне: 7 дней подряд" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Неделя в огне</div>
               </div>
-              <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}" title="рџЏѓ РњР°СЂР°С„РѕРЅРµС†: 30 РґРЅРµР№ РїРѕРґСЂСЏРґ" style="cursor: help;">
-                <div class="st-ach-icon">рџЏѓ</div>
-                <div class="st-ach-title">РњР°СЂР°С„РѕРЅРµС†</div>
+              <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}" title="?? Марафонец: 30 дней подряд" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Марафонец</div>
               </div>
-              <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}" title="рџЋЇ РЎРЅР°Р№РїРµСЂ: РўРѕС‡РЅРѕСЃС‚СЊ 90%+" style="cursor: help;">
-                <div class="st-ach-icon">рџЋЇ</div>
-                <div class="st-ach-title">РЎРЅР°Р№РїРµСЂ</div>
+              <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}" title="?? Снайпер: Точность 90%+" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Снайпер</div>
               </div>
-              <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}" title="рџ’Ї Р¦РµРЅС‚СѓСЂРёРѕРЅ: 100 РєР°СЂС‚РѕС‡РµРє" style="cursor: help;">
-                <div class="st-ach-icon">рџ’Ї</div>
-                <div class="st-ach-title">Р¦РµРЅС‚СѓСЂРёРѕРЅ</div>
+              <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}" title="?? Центурион: 100 карточек" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Центурион</div>
               </div>
-              <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}" title="рџ‘‘ РњР°СЃС‚РµСЂ: РЈСЂРѕРІРµРЅСЊ 10" style="cursor: help;">
-                <div class="st-ach-icon">рџ‘‘</div>
-                <div class="st-ach-title">РњР°СЃС‚РµСЂ</div>
+              <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}" title="?? Мастер: Уровень 10" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Мастер</div>
               </div>
-              <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}" title="рџ“€ РџСЂРѕРіСЂРµСЃСЃ: 10 СЃР»РѕР¶РЅС‹С… в†’ Р»РµРіРєРёРµ" style="cursor: help;">
-                <div class="st-ach-icon">рџ“€</div>
-                <div class="st-ach-title">РџСЂРѕРіСЂРµСЃСЃ</div>
+              <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}" title="?? Прогресс: 10 сложных > легкие" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Прогресс</div>
               </div>
-              <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}" title="рџ§ РЎС‚Р°Р±РёР»СЊРЅРѕСЃС‚СЊ: 14 РґРЅРµР№ РїРѕРґСЂСЏРґ" style="cursor: help;">
-                <div class="st-ach-icon">рџ§</div>
-                <div class="st-ach-title">РЎС‚Р°Р±РёР»СЊРЅРѕСЃС‚СЊ</div>
+              <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}" title="?? Стабильность: 14 дней подряд" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Стабильность</div>
               </div>
-              <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}" title="рџ¦… Р’РѕР·РІСЂР°С‰РµРЅРёРµ: РџРѕСЃР»Рµ РїРµСЂРµСЂС‹РІР°" style="cursor: help;">
-                <div class="st-ach-icon">рџ¦…</div>
-                <div class="st-ach-title">Р’РѕР·РІСЂР°С‰РµРЅРёРµ</div>
+              <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}" title="?? Возвращение: После перерыва" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Возвращение</div>
               </div>
-              <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}" title="рџЊ… Р–Р°РІРѕСЂРѕРЅРѕРє: Р—Р°РЅСЏС‚РёРµ РґРѕ 9 СѓС‚СЂР°" style="cursor: help;">
-                <div class="st-ach-icon">рџЊ…</div>
-                <div class="st-ach-title">Р–Р°РІРѕСЂРѕРЅРѕРє</div>
+              <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}" title="?? Жаворонок: Занятие до 9 утра" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Жаворонок</div>
               </div>
-              <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}" title="рџ¦‰ РЎРѕРІР°: Р—Р°РЅСЏС‚РёРµ РїРѕСЃР»Рµ 23:00" style="cursor: help;">
-                <div class="st-ach-icon">рџ¦‰</div>
-                <div class="st-ach-title">РЎРѕРІР°</div>
+              <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}" title="?? Сова: Занятие после 23:00" style="cursor: help;">
+                <div class="st-ach-icon">??</div>
+                <div class="st-ach-title">Сова</div>
               </div>
             </div>
           </div>
@@ -1473,7 +1473,7 @@ function renderStats() {
 
   const levelCont = container.querySelector('.st-level-inline');
   if (levelCont) {
-    // Р”РѕР±Р°РІР»СЏРµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРµСЂРµРґ СѓСЂРѕРІРЅРµРј
+    // Добавляем имя пользователя перед уровнем
     const usernameSpan = document.createElement('span');
     usernameSpan.className = 'st-username-display';
     usernameSpan.style.marginRight = '8px';
@@ -1488,15 +1488,15 @@ function renderStats() {
         if (user && user.username) {
           usernameSpan.textContent = user.username;
         } else {
-          usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+          usernameSpan.textContent = 'Гость';
           usernameSpan.style.color = '#808080';
         }
       } else {
-        usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+        usernameSpan.textContent = 'Гость';
         usernameSpan.style.color = '#808080';
       }
     } catch (e) {
-      usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+      usernameSpan.textContent = 'Гость';
       usernameSpan.style.color = '#808080';
     }
 
@@ -1543,7 +1543,7 @@ function renderStats() {
     } catch { }
   }
 
-  // Ensure "39 РєР°СЂС‚РѕС‡РµРє в‰€ 59 РјРёРЅСѓС‚" stays on one line; reduce font-size by up to 2px if needed
+  // Ensure "39 карточек ? 59 минут" stays on one line; reduce font-size by up to 2px if needed
   try {
     const todayLine = container.querySelector('.stc-today-line');
     if (todayLine) {
@@ -1582,7 +1582,7 @@ function renderStats() {
         : getCurrentCards();
 
       if (!questions || questions.length === 0) {
-        alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ');
+        alert('Нет вопросов для изучения');
         return;
       }
 
@@ -1597,14 +1597,14 @@ function renderStats() {
     });
   }
 
-  // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РєРЅРѕРїРєРё "РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ" РІ С€Р°РїРєРµ
+  // Функция для кнопки "Продолжить обучение" в шапке
   window.startDailySession = () => {
     const questions = (window.currentQuestions && window.currentQuestions.length > 0)
       ? window.currentQuestions
       : uniqueQaData;
 
     if (!questions || questions.length === 0) {
-      alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ');
+      alert('Нет вопросов для изучения');
       return;
     }
 
@@ -1626,7 +1626,7 @@ function renderStats() {
         : uniqueQaData;
 
       if (!questions || questions.length === 0) {
-        alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ');
+        alert('Нет вопросов для изучения');
         return;
       }
 
@@ -1646,8 +1646,8 @@ function renderStats() {
     authBtn.addEventListener('click', () => {
       const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
       if (user) {
-        const username = user.username || user.email || 'РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ';
-        if (confirm(`Р’С‹Р№С‚Рё РёР· Р°РєРєР°СѓРЅС‚Р° ${username}?`)) {
+        const username = user.username || user.email || 'пользователь';
+        if (confirm(`Выйти из аккаунта ${username}?`)) {
           if (window.qaAuth.logout) window.qaAuth.logout();
           renderStats();
         }
@@ -1655,7 +1655,7 @@ function renderStats() {
         if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
           window.qaAuth.openLogin();
         } else {
-          alert('РћРєРЅРѕ РІС…РѕРґР° РЅРµРґРѕСЃС‚СѓРїРЅРѕ');
+          alert('Окно входа недоступно');
         }
       }
     });
@@ -1668,7 +1668,7 @@ function renderStats() {
   if (learnMainBtn) {
     learnMainBtn.addEventListener('click', () => {
       const qs = (window.currentQuestions && window.currentQuestions.length > 0) ? window.currentQuestions : uniqueQaData;
-      if (!qs || qs.length === 0) { alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ'); return; }
+      if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
       hideStatsPage();
       startLearnSession(qs);
       const mainNav = document.getElementById('bottom-nav');
@@ -1681,7 +1681,7 @@ function renderStats() {
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
 
-  // Р РµРЅРґРµСЂРёРј РїСЂРѕРіСЂРµСЃСЃ РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј
+  // Рендерим прогресс по категориям
   renderCategoryProgress();
 
   if (chartEl) {
@@ -1704,7 +1704,7 @@ function renderStats() {
         : [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]);
 
     const now = new Date();
-    const monthNames = ['РЇРЅРІР°СЂСЊ', 'Р¤РµРІСЂР°Р»СЊ', 'РњР°СЂС‚', 'РђРїСЂРµР»СЊ', 'РњР°Р№', 'РСЋРЅСЊ', 'РСЋР»СЊ', 'РђРІРіСѓСЃС‚', 'РЎРµРЅС‚СЏР±СЂСЊ', 'РћРєС‚СЏР±СЂСЊ', 'РќРѕСЏР±СЂСЊ', 'Р”РµРєР°Р±СЂСЊ'];
+    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
     monthLabel.textContent = mName;
     const cfg = currentXpMode === 'week' ? { bar: 18, gap: 8, count: 14, labelStep: 2 }
@@ -1772,8 +1772,8 @@ function renderStats() {
       const hearts = tgt.getAttribute('data-hearts');
       const cards = tgt.getAttribute('data-cards');
       const type = tgt.getAttribute('data-type');
-      const typeLabel = type === 'hearts' ? 'РЎРµСЂРґРµС‡РєРё (РєСЂР°СЃРЅС‹Р№)' : 'РљР°СЂС‚РѕС‡РєРё (РѕСЂР°РЅР¶РµРІС‹Р№)';
-      tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>вќ¤пёЏ: ${hearts}</div><div>рџ“љ: ${cards}</div><div class="tip-arrow"></div>`;
+      const typeLabel = type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (оранжевый)';
+      tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>??: ${hearts}</div><div>??: ${cards}</div><div class="tip-arrow"></div>`;
       tip.style.display = 'block';
       const bb = tgt.getBoundingClientRect();
       tip.style.left = Math.round(bb.left + window.scrollX + (bb.width / 2) + 12) + 'px';
@@ -1798,7 +1798,7 @@ function renderXpChart(data) {
     const xpH = Math.max(xpHRaw, d.xp > 0 ? 2 : 0);
     const heartsH = Math.min(Math.max(heartsHRaw, 0), Math.max(0, 100 - xpHRaw));
     return `
-      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, вќ¤пїЅпїЅ ${(d.hearts || 0)}">
+      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ??? ${(d.hearts || 0)}">
          <div class="st-bar-xp" style="height:${xpH}%"></div>
          <div class="st-bar-heart" style="height:${heartsH}%; bottom:${xpHRaw}%"></div>
          <div class="st-xp-label">${d.label}</div>
@@ -1826,14 +1826,14 @@ function renderImpChart(data) {
 }
 
 function renderHearts(dist, total) {
-  if (total === 0) return '<div class="st-hearts-bar" style="background:#333;justify-content:center;align-items:center;color:#666;font-size:12px">РќРµС‚ РґР°РЅРЅС‹С…</div>';
+  if (total === 0) return '<div class="st-hearts-bar" style="background:#333;justify-content:center;align-items:center;color:#666;font-size:12px">Нет данных</div>';
 
   const hearts = [
-    { val: 1, count: dist[1], icon: 'рџ’”' },
-    { val: 2, count: dist[2], icon: 'вќ¤пёЏ' },
-    { val: 3, count: dist[3], icon: 'рџ§Ў' },
-    { val: 4, count: dist[4], icon: 'рџ’›' },
-    { val: 5, count: dist[5], icon: 'рџ’љ' }
+    { val: 1, count: dist[1], icon: '??' },
+    { val: 2, count: dist[2], icon: '??' },
+    { val: 3, count: dist[3], icon: '??' },
+    { val: 4, count: dist[4], icon: '??' },
+    { val: 5, count: dist[5], icon: '??' }
   ];
 
   return `
@@ -1841,7 +1841,7 @@ function renderHearts(dist, total) {
        ${hearts.map(h => {
     const pct = (h.count / total) * 100;
     if (pct < 1) return '';
-    return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} РєР°СЂС‚"><span class="st-hb-icon">${h.icon}</span></div>`;
+    return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} карт"><span class="st-hb-icon">${h.icon}</span></div>`;
   }).join('')}
     </div>
   `;
@@ -1859,22 +1859,22 @@ window.openDiffInfoModal = (event) => {
   overlay.innerHTML = `
      <div class="st-modal" style="max-width:600px;">
         <div class="st-modal-header">
-           <div class="st-modal-title">рџ’– РўСЂРµРЅР°Р¶С‘СЂ СЃРµСЂРґРµС‡РµРє</div>
-           <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+           <div class="st-modal-title">?? Тренажёр сердечек</div>
+           <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">?</button>
         </div>
         <div class="st-modal-body" style="padding:16px;">
            <div id="sim-hearts" style="display:flex;justify-content:center;gap:4px;margin-bottom:12px;"></div>
            <div style="text-align:center;margin-bottom:16px;">
-              <div style="font-size:20px;font-weight:700;color:#fff;"><span id="sim-value">3.00</span> / 5 вќ¤пёЏ</div>
-              <div style="font-size:13px;color:var(--st-text-sec);">РЈСЂРѕРІРµРЅСЊ: <span id="sim-level">РЎС‚Р°РЅРґР°СЂС‚</span></div>
+              <div style="font-size:20px;font-weight:700;color:#fff;"><span id="sim-value">3.00</span> / 5 ??</div>
+              <div style="font-size:13px;color:var(--st-text-sec);">Уровень: <span id="sim-level">Стандарт</span></div>
            </div>
            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
-              <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџ«</div><div style="font-size:11px;">РЎРЅРѕРІР°</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
-              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџђ</div><div style="font-size:11px;">РўСЂСѓРґРЅРѕ</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
-              <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџЉ</div><div style="font-size:11px;">РҐРѕСЂРѕС€Рѕ</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
-              <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџљЂ</div><div style="font-size:11px;">Р›РµРіРєРѕ</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
+              <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">??</div><div style="font-size:11px;">Снова</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
+              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">??</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
+              <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">??</div><div style="font-size:11px;">Хорошо</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
+              <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">??</div><div style="font-size:11px;">Легко</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
            </div>
-           <button onclick="simReset()" style="width:100%;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--st-border);padding:10px;border-radius:8px;cursor:pointer;">рџ”„ РЎР±СЂРѕСЃРёС‚СЊ</button>
+           <button onclick="simReset()" style="width:100%;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--st-border);padding:10px;border-radius:8px;cursor:pointer;">?? Сбросить</button>
            <div id="sim-msg" style="margin-top:12px;font-size:13px;color:var(--st-text-sec);text-align:center;min-height:18px;"></div>
         </div>
      </div>
@@ -1884,20 +1884,20 @@ window.openDiffInfoModal = (event) => {
   window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
   window.simReset = () => { window.simValue = 3.0; updateSim(); };
   function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="'+id+'"><stop offset="'+fillPercent+'%" stop-color="#ff4d4d"/><stop offset="'+fillPercent+'%" stop-color="#444"/></linearGradient></defs><path fill="url(#'+id+')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
-  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ', 'РўСЂСѓРґРЅС‹Рµ', 'РЎС‚Р°РЅРґР°СЂС‚', 'РЎС‚Р°РЅРґР°СЂС‚', 'Р›РµРіРєРёРµ']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = 'вљ пёЏ 0 СЃРµСЂРґРµС‡РµРє вЂ” РЅР°С‡РЅРёС‚Рµ Р·Р°РЅРѕРІРѕ!'; else if (v >= 5) msg.textContent = 'рџЋ‰ 5 СЃРµСЂРґРµС‡РµРє вЂ” РєР°СЂС‚РѕС‡РєР° РІ РїР°РјСЏС‚Рё!'; else msg.textContent = ''; }
+  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '?? 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '?? 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
   updateSim();
 };
 
 function getHeartsForEf(ef) {
-  if (ef === undefined || ef === null) return 'рџ†•'; // New cards
-  if (ef < 1.7) return 'вќ¤пёЏрџ¤Ќрџ¤Ќрџ¤Ќрџ¤Ќ';
-  if (ef < 2.1) return 'вќ¤пёЏвќ¤пёЏрџ¤Ќрџ¤Ќрџ¤Ќ';
-  if (ef < 2.4) return 'вќ¤пёЏвќ¤пёЏвќ¤пёЏрџ¤Ќрџ¤Ќ';
-  if (ef < 2.9) return 'вќ¤пёЏвќ¤пёЏвќ¤пёЏвќ¤пёЏрџ¤Ќ';
-  return 'вќ¤пёЏвќ¤пёЏвќ¤пёЏвќ¤пёЏвќ¤пёЏ';
+  if (ef === undefined || ef === null) return '??'; // New cards
+  if (ef < 1.7) return '??????????';
+  if (ef < 2.1) return '??????????';
+  if (ef < 2.4) return '??????????';
+  if (ef < 2.9) return '??????????';
+  return '??????????';
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° СЃРµСЂРґРµС‡РµРє РїРѕ EF (РґР»СЏ SVG)
+// Функция для получения количества сердечек по EF (для SVG)
 function getHeartsCountForEf(ef) {
   if (ef === undefined || ef === null) return 0;
   if (ef >= 2.4) return 5;      // EASY
@@ -1906,7 +1906,7 @@ function getHeartsCountForEf(ef) {
   return 1;                      // VERY HARD
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РіРµРЅРµСЂР°С†РёРё SVG СЃРµСЂРґРµС‡РµРє СЃ РїР»Р°РІРЅС‹Рј РіСЂР°РґРёРµРЅС‚РѕРј
+// Функция для генерации SVG сердечек с плавным градиентом
 function renderHeartsSvg(count, prefix) {
   let svg = '';
   for (let i = 1; i <= 5; i++) {
@@ -1923,7 +1923,7 @@ window.openDiffModal = (index) => {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   const currentCards = getCurrentCards();
 
-  console.log('[openDiffModal] РР·Р±СЂР°РЅРЅРѕРµ:', {
+  console.log('[openDiffModal] Избранное:', {
     favCount: favorites.size,
     favQuestions: Array.from(favorites),
     totalCards: currentCards.length
@@ -1931,15 +1931,15 @@ window.openDiffModal = (index) => {
 
   if (index === 'favorites') {
     list = currentCards.filter(q => favorites.has(q.question));
-    label = 'РР·Р±СЂР°РЅРЅРѕРµ';
-    console.log('[openDiffModal] РќР°Р№РґРµРЅРѕ РєР°СЂС‚РѕС‡РµРє РІ РёР·Р±СЂР°РЅРЅРѕРј:', list.length, list.map(q => q.question));
+    label = 'Избранное';
+    console.log('[openDiffModal] Найдено карточек в избранном:', list.length, list.map(q => q.question));
   } else {
     const i = parseInt(index);
     const ranges = [
-      { min: 2.4, max: 999, label: 'Р›РµРіРєРёРµ' },
-      { min: 2.1, max: 2.4, label: 'РЎС‚Р°РЅРґР°СЂС‚' },
-      { min: 1.7, max: 2.1, label: 'РўСЂСѓРґРЅС‹Рµ' },
-      { min: 0, max: 1.7, label: 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ' }
+      { min: 2.4, max: 999, label: 'Легкие' },
+      { min: 2.1, max: 2.4, label: 'Стандарт' },
+      { min: 1.7, max: 2.1, label: 'Трудные' },
+      { min: 0, max: 1.7, label: 'Очень трудные' }
     ];
     const r = ranges[i];
     label = r.label;
@@ -1950,7 +1950,7 @@ window.openDiffModal = (index) => {
     });
   }
 
-  console.log('[openDiffModal] РљР°СЂС‚РѕС‡РµРє:', list.length, 'РёР·', currentCards.length);
+  console.log('[openDiffModal] Карточек:', list.length, 'из', currentCards.length);
 
   // Show Modal
   const overlay = document.createElement('div');
@@ -1959,11 +1959,11 @@ window.openDiffModal = (index) => {
     <div class="st-modal">
        <div class="st-modal-header">
           <div class="st-modal-title">${label} (${list.length})</div>
-          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">?</button>
        </div>
        <div class="st-modal-body">
           <ul class="st-modal-list">
-             ${list.slice(0, 50).map((q, idx) => {
+             ${list.map((q, idx) => {
     const p = prog[q.question] || prog[q.question.trim()];
     const ef = p ? p.easeFactor : undefined;
     const heartsCount = getHeartsCountForEf(ef);
@@ -1976,18 +1976,18 @@ window.openDiffModal = (index) => {
                        <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
                        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
                           <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
-                          ${isFav ? '<span style="color:#ffd700; font-size:14px">в…</span>' : ''}
+                          ${isFav ? '<span style="color:#ffd700; font-size:14px">?</span>' : ''}
                        </div>
                    </div>
                    <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${q.answer.substring(0, 80)}${q.answer.length > 80 ? '...' : ''}</div>
                 </li>
                 `;
   }).join('')}
-             ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...Рё РµС‰пїЅпїЅ ${list.length - 50}</li>` : ''}
+             ${list.length > 50 ? `<li class="st-modal-item" style="text-align:center;color:var(--st-muted)">...и ещ?? ${list.length - 50}</li>` : ''}
           </ul>
        </div>
        <div class="st-modal-footer">
-          <button class="st-modal-btn" onclick="window.startFilteredSession('${index}')">РўСЂРµРЅРёСЂРѕРІР°С‚СЊ СЌС‚Сѓ РіСЂСѓРїРїСѓ</button>
+          <button class="st-modal-btn" onclick="window.startFilteredSession('${index}')">Тренировать эту группу</button>
        </div>
     </div>
   `;
@@ -2020,10 +2020,10 @@ window.startFilteredSession = (index) => {
     });
   }
 
-  console.log('[startFilteredSession] РљР°СЂС‚РѕС‡РµРє:', cards.length);
+  console.log('[startFilteredSession] Карточек:', cards.length);
 
   if (cards.length === 0) {
-    alert('РќРµС‚ РєР°СЂС‚ РІ СЌС‚РѕР№ РєР°С‚РµРіРѕСЂРёРё');
+    alert('Нет карт в этой категории');
     return;
   }
 
@@ -2046,7 +2046,7 @@ window.startMode = (modeId) => {
 
   const currentCards = getCurrentCards();
   if (!currentCards || currentCards.length === 0) {
-    alert('Р”Р°РЅРЅС‹Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹');
+    alert('Данные не загружены');
     return;
   }
 
@@ -2057,7 +2057,7 @@ window.startMode = (modeId) => {
   if (modeId === 'time_attack' || modeId === 'sudden_death') {
     const valid = uniqueQaData.filter(q => q && q.question && q.answer);
     if (valid.length === 0) {
-      alert('РќРµС‚ РґРѕСЃС‚СѓРїРЅС‹С… РєР°СЂС‚РѕС‡РµРє');
+      alert('Нет доступных карточек');
       return;
     }
     candidates = [...valid].sort(() => 0.5 - Math.random()).slice(0, 50);
@@ -2069,7 +2069,7 @@ window.startMode = (modeId) => {
     });
 
     if (candidates.length === 0) {
-      alert('РќРµС‚ РєР°СЂС‚РѕС‡РµРє СЃРѕ СЃР»РѕР¶РЅРѕСЃС‚СЊСЋ РЅРёР¶Рµ 2.2');
+      alert('Нет карточек со сложностью ниже 2.2');
       return;
     }
     options.mode = 'cram';
@@ -2081,7 +2081,7 @@ window.startMode = (modeId) => {
     });
 
     if (candidates.length === 0) {
-      alert('РќРµС‚ РЅРѕРІС‹С… РєР°СЂС‚РѕС‡РµРє');
+      alert('Нет новых карточек');
       return;
     }
     options.mode = 'cram';
@@ -2093,14 +2093,14 @@ window.startMode = (modeId) => {
   }
 };
 
-// ========== Р¤СѓРЅРєС†РёСЏ РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР° РїСЂРѕРіСЂРµСЃСЃР° РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј ==========
+// ========== Функция для рендеринга прогресса по категориям ==========
 function renderCategoryProgress() {
   const currentCards = getCurrentCards();
   if (!currentCards || currentCards.length === 0) return;
 
   const progress = getProgressMap();
 
-  // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° СЃРµСЂРґРµС‡РµРє РїРѕ EF
+  // Функция для получения количества сердечек по EF
   const getHeartsCount = (ef) => {
     if (ef >= 2.4) return 5;      // EASY
     if (ef >= 2.1) return 4;      // STANDARD
@@ -2108,16 +2108,16 @@ function renderCategoryProgress() {
     return 1;                      // VERY HARD
   };
 
-  // Р“СЂСѓРїРїРёСЂСѓРµРј РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј
+  // Группируем по категориям
   const categoryStats = {};
   currentCards.forEach(card => {
-    const cat = card.category || 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё';
+    const cat = card.category || 'Без категории';
     if (!categoryStats[cat]) {
       categoryStats[cat] = { total: 0, heartsFilled: 0 };
     }
     categoryStats[cat].total++;
 
-    // РЎС‡РёС‚Р°РµРј Р·Р°РїРѕР»РЅРµРЅРЅС‹Рµ СЃРµСЂРґРµС‡РєРё (SRS РїСЂРѕРіСЂРµСЃСЃ)
+    // Считаем заполненные сердечки (SRS прогресс)
     const cardProgress = progress[card.question] || progress[card.question.trim()];
     if (cardProgress && cardProgress.easeFactor !== undefined) {
       const hearts = getHeartsCount(cardProgress.easeFactor);
@@ -2125,16 +2125,16 @@ function renderCategoryProgress() {
     }
   });
 
-  // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РїСЂРѕС†РµРЅС‚С‹ Рё СЃРѕСЂС‚РёСЂСѓРµРј
+  // Рассчитываем проценты и сортируем
   const categoryProgress = Object.entries(categoryStats)
     .map(([name, stats]) => {
-      const maxHearts = stats.total * 5; // РњР°РєСЃРёРјСѓРј 5 СЃРµСЂРґРµС‡РµРє РЅР° РєР°СЂС‚РѕС‡РєСѓ
+      const maxHearts = stats.total * 5; // Максимум 5 сердечек на карточку
       const percentage = maxHearts > 0 ? Math.round((stats.heartsFilled / maxHearts) * 100) : 0;
       return { name, percentage, total: stats.total };
     })
-    .sort((a, b) => b.percentage - a.percentage); // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ СѓР±С‹РІР°РЅРёСЋ РїСЂРѕРіСЂРµСЃСЃР°
+    .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
 
-  // Р РµРЅРґРµСЂРёРј
+  // Рендерим
   const container = document.getElementById('st-cat-progress-list');
   if (!container) return;
 
@@ -2153,7 +2153,7 @@ function renderCategoryProgress() {
 // ======================================================================
 
 function getXpSeries(mode) {
-  // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°С‚С‹ РїРѕ MSK (UTC+3)
+  // Вспомогательная функция для получения даты по MSK (UTC+3)
   const getMSKDate = (date) => {
     const mskOffset = 3 * 60 * 60 * 1000;
     return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
@@ -2196,7 +2196,7 @@ function getXpSeries(mode) {
 }
 
 function getActivitySeries(mode) {
-  // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°С‚С‹ РїРѕ MSK
+  // Вспомогательная функция для получения даты по MSK
   const getMSKDate = (date) => {
     try {
       const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
