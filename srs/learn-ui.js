@@ -971,6 +971,7 @@ function showStats(stats, results, total) {
     localStorage.setItem('dailyDayBonusPoints', JSON.stringify(dDay));
     syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
     try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
+    
     // Level info on top
     import('./stats-utils.js?v=3').then(({ getCurrentLevel }) => {
         const lvl = getCurrentLevel();
@@ -980,107 +981,99 @@ function showStats(stats, results, total) {
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
         const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
         const bonus = Math.min(100, (st.current || 0) * 5);
-        
+
         // Определяем, было ли повышение уровня
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
-        
+
         const bar = overlay.querySelector('.level-progress-bar');
         const oldEl = bar.querySelector('.level-progress-fill-old');
         const earnEl = bar.querySelector('.level-progress-fill-earned');
         const bonusEl = bar.querySelector('.level-progress-fill-bonus');
-        
+
         if (leveledUp) {
             // === АНИМАЦИЯ ПОВЫШЕНИЯ УРОВНЯ ===
-            // Показываем новый уровень с яркой вспышкой
             
-            // 1. Скрываем все сегменты
-            oldEl.style.width = '0%';
+            // 1. Отключаем transition для мгновенной установки
+            oldEl.style.transition = 'none';
+            earnEl.style.transition = 'none';
+            bonusEl.style.transition = 'none';
+            oldEl.style.width = '100%';
             earnEl.style.width = '0%';
             bonusEl.style.width = '0%';
-            earnEl.style.left = '0%';
-            bonusEl.style.left = '0%';
+            earnEl.style.left = '100%';
+            bonusEl.style.left = '100%';
             
-            // 2. Яркая вспышка номера уровня
-            const levelEl = overlay.querySelector('#sum-level');
-            levelEl.style.transition = 'all 0.3s ease';
-            levelEl.style.transform = 'scale(1.5)';
-            levelEl.style.color = '#FF9F1C';
-            levelEl.style.textShadow = '0 0 20px rgba(255,159,28,0.8)';
-            
+            // 2. Включаем transition и запускаем анимацию
             setTimeout(() => {
-                levelEl.style.transform = 'scale(1)';
-                levelEl.style.color = '';
-                levelEl.style.textShadow = '';
-            }, 300);
-            
-            // 3. Заполняем бар с начала нового уровня
-            const prev = lvl.prevThreshold;
-            const next = lvl.nextThreshold;
-            const totalForLevel = next - prev;
-            const earnedInLevel = Math.max(0, lvl.xp - prev);
-            const bonusInLevel = bonus;
-            
-            const earnedPct = totalForLevel > 0 ? (earnedInLevel / totalForLevel) * 100 : 0;
-            const bonusPct = totalForLevel > 0 ? (bonusInLevel / totalForLevel) * 100 : 0;
-            
-            const earnW = Math.round(earnedPct);
-            const bonusW = Math.round(bonusPct);
-            
-            const totalDuration = 1500;
-            const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
-            const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
-            
-            earnEl.style.transition = `width ${earnDuration}ms ease`;
-            bonusEl.style.transition = `width ${bonusDuration}ms ease`;
-            
-            setTimeout(() => {
-                earnEl.style.width = `${earnW}%`;
+                oldEl.style.transition = 'width 0.5s ease';
+                
+                // 3. Вспышка уровня
+                const levelEl = overlay.querySelector('#sum-level');
+                levelEl.classList.add('flash');
+                levelEl.textContent = `LV:${endLevel}!`;
                 
                 setTimeout(() => {
-                    bonusEl.style.left = `${earnW}%`;
-                    bonusEl.style.width = `${bonusW}%`;
-                }, earnDuration);
-            }, 100);
+                    levelEl.classList.remove('flash');
+                    levelEl.textContent = `LV:${endLevel} • ${lvl.xp} XP`;
+                    
+                    // 4. Быстрое сжатие (200ms)
+                    oldEl.style.transition = 'width 0.2s ease';
+                    oldEl.style.width = '0%';
+                    
+                    setTimeout(() => {
+                        // 5. Заполнение нового уровня (1.5s)
+                        earnEl.style.transition = 'width 1.5s ease';
+                        bonusEl.style.transition = 'width 1.5s ease';
+                        earnEl.style.left = '0%';
+                        bonusEl.style.left = '0%';
+                        
+                        const totalForLevel = lvl.nextThreshold - lvl.prevThreshold;
+                        const earnedInLevel = Math.max(0, lvl.xp - lvl.prevThreshold);
+                        const earnedPct = totalForLevel > 0 ? (earnedInLevel / totalForLevel) * 100 : 0;
+                        const bonusPct = totalForLevel > 0 ? (bonus / totalForLevel) * 100 : 0;
+                        
+                        earnEl.style.width = `${Math.min(100, earnedPct)}%`;
+                        bonusEl.style.width = `${Math.min(100, bonusPct)}%`;
+                    }, 200);
+                }, 300);
+            }, 50);
             
         } else {
             // === ОБЫЧНАЯ АНИМАЦИЯ (без повышения уровня) ===
+            
+            // Отключаем transition для мгновенной установки
+            oldEl.style.transition = 'none';
+            earnEl.style.transition = 'none';
+            bonusEl.style.transition = 'none';
+            
             const prev = lvl.prevThreshold;
             const next = lvl.nextThreshold;
             const pct = (v) => next === Infinity ? 1 : Math.max(0, Math.min(1, (v - prev) / (next - prev)));
             const startPct = pct(startXP);
-            const earnedPct = Math.max(0, pct(startXP + earned) - startPct);
-            const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned));
             
-            const oldW = Math.round(startPct * 100);
-            const earnW = Math.round(earnedPct * 100);
-            const bonusW = Math.round(bonusPct * 100);
+            oldEl.style.width = `${startPct * 100}%`;
+            earnEl.style.left = `${startPct * 100}%`;
+            earnEl.style.width = '0%';
+            bonusEl.style.left = `${startPct * 100}%`;
+            bonusEl.style.width = '0%';
             
-            // Устанавливаем начальные позиции
-            oldEl.style.width = `${oldW}%`;
-            oldEl.style.left = `0px`;
-            earnEl.style.left = `${oldW}%`;
-            earnEl.style.width = `0%`;
-            bonusEl.style.left = `${oldW + earnW}%`;
-            bonusEl.style.width = `0%`;
-            
-            // Запуск анимаций: последовательно, суммарно 1500ms
-            const totalDuration = 1500;
-            const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
-            const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
-            
-            earnEl.style.transition = `width ${earnDuration}ms ease`;
-            bonusEl.style.transition = `width ${bonusDuration}ms ease`;
-            
+            // Включаем transition и запускаем анимацию
             setTimeout(() => {
-                earnEl.style.width = `${earnW}%`;
+                oldEl.style.transition = 'width 0.5s ease';
                 
                 setTimeout(() => {
-                    bonusEl.style.left = `${oldW + earnW}%`;
-                    bonusEl.style.width = `${bonusW}%`;
-                }, earnDuration);
-            }, 100);
+                    earnEl.style.transition = 'width 1.5s ease';
+                    bonusEl.style.transition = 'width 1.5s ease';
+                    
+                    const earnedPct = Math.max(0, pct(startXP + earned) - startPct) * 100;
+                    const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned)) * 100;
+                    
+                    earnEl.style.width = `${earnedPct}%`;
+                    bonusEl.style.width = `${bonusPct}%`;
+                }, 500);
+            }, 50);
         }
     }).catch(() => {});
     

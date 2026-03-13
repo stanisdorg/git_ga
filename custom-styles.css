@@ -664,9 +664,18 @@ body.learning-mode #bottom-nav {
     left: 0;
     top: 0;
     height: 100%;
-    transition: none;  /* Убрано, чтобы не перебивать JS анимацию */
+    transition: width 1.5s ease, left 1.5s ease;
     display: block;
 }
+
+/* Level flash animation */
+.summary-box #sum-level.flash {
+    transform: scale(1.5);
+    color: #FF9F1C;
+    text-shadow: 0 0 20px rgba(255,159,28,0.8);
+    transition: all 0.3s ease;
+}
+
 .summary-box .level-progress-fill-old    { z-index: 1; }
 .summary-box .level-progress-fill-earned { z-index: 2; }
 .summary-box .level-progress-fill-bonus  { z-index: 3; }
