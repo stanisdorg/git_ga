@@ -813,7 +813,16 @@ const STATS_STYLES = `
   background: rgba(46, 196, 182, 0.05);
   border-color: var(--st-sec);
 }
-.st-ach-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.st-ach-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  justify-content: space-evenly;
+  padding-left: 8px;
+  padding-right: 8px;
+}
 .st-info-btn {
   background: rgba(255,255,255,0.1); 
   border: none; 
