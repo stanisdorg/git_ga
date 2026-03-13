@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест - Level Up с накоплением XP</title>
+    <style>
+        :root {
+            --bg: #0E1117;
+            --card: #161B22;
+            --card-h: #1F2630;
+            --border: #222938;
+            --text: #E6EDF3;
+            --text-sec: #8B949E;
+            --prim: #FF9F1C;
+            --sec: #2EC4B6;
+            --danger: #E5533D;
+            --success: #4CAF50;
+            --old: #fb923c;
+            --earned: #3b82f6;
+            --bonus: #10b981;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        p.subtitle {
+            text-align: center;
+            color: var(--text-sec);
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        
+        .test-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .test-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .test-card h3 {
+            font-size: 15px;
+            padding: 16px 20px;
+            margin: 0;
+            background: rgba(255,159,28,0.1);
+            color: var(--prim);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .test-card p {
+            font-size: 11px;
+            padding: 10px 20px;
+            margin: 0;
+            color: var(--text-sec);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        /* Modal Content */
+        .modal-content {
+            padding: 24px;
+        }
+        
+        /* Level Display */
+        .level-display {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .level-display.flash {
+            transform: scale(1.5);
+            color: var(--prim);
+            text-shadow: 0 0 20px rgba(255,159,28,0.8);
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            height: 20px;
+            background: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            transition: width 1.5s ease, left 1.5s ease; /* FIX: transition in CSS */
+        }
+        
+        .fill-old { background: var(--old); z-index: 1; }
+        .fill-earned { background: var(--earned); z-index: 2; }
+        .fill-bonus { background: var(--bonus); z-index: 3; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Motivation */
+        .motivation {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-sec);
+            margin-bottom: 16px;
+            min-height: 36px;
+        }
+        
+        .motivation strong {
+            color: var(--text);
+        }
+        
+        /* XP Line */
+        .xp-line {
+            text-align: center;
+            font-size: 12px;
+            color: var(--prim);
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255,159,28,0.08);
+            border-radius: 8px;
+        }
+        
+        /* Actions */
+        .summary-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--prim);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: #ffb142;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--card-h);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--prim);
+        }
+        
+        /* Control Buttons */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-xp {
+            background: var(--earned);
+            color: #fff;
+        }
+        
+        .btn-xp:hover {
+            background: #2563eb;
+        }
+        
+        .btn-bonus {
+            background: var(--bonus);
+            color: #fff;
+        }
+        
+        .btn-bonus:hover {
+            background: #059669;
+        }
+        
+        .btn-reset {
+            background: var(--danger);
+            color: #fff;
+        }
+        
+        .btn-reset:hover {
+            background: #dc2626;
+        }
+        
+        /* Info Panel */
+        .info-panel {
+            background: var(--card-h);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+        
+        .info-label {
+            color: var(--text-sec);
+        }
+        
+        .info-value {
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Level Up - Тест с накоплением XP</h1>
+    <p class="subtitle">Нажимайте кнопки чтобы добавлять XP и видеть переходы между уровнями</p>
+    
+    <div class="test-container">
+        
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <div class="info-row">
+                <span class="info-label">Текущий уровень:</span>
+                <span class="info-value" id="info-level">LV:1</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Всего XP:</span>
+                <span class="info-value" id="info-xp">0 XP</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">До следующего уровня:</span>
+                <span class="info-value" id="info-remaining">625 XP</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Прогресс уровня:</span>
+                <span class="info-value" id="info-progress">0%</span>
+            </div>
+        </div>
+        
+        <!-- Modal -->
+        <div class="test-card">
+            <h3>3️⃣ Метрики с анимацией чисел</h3>
+            <p>Числа "набегают" от 0 до значения + Level Up анимация</p>
+            
+            <div class="modal-content">
+                <div class="level-display" id="level">LV:1 • 0 XP</div>
+                <div class="progress-bar">
+                    <div class="progress-fill fill-old" style="width: 0%"></div>
+                    <div class="progress-fill fill-earned" style="left: 0%; width: 0%"></div>
+                    <div class="progress-fill fill-bonus" style="left: 0%; width: 0%"></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-repeated">0</div>
+                        <div class="stat-label">Повторено</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-accuracy">0%</div>
+                        <div class="stat-label">Точность</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-streak">0</div>
+                        <div class="stat-label">Дней подряд</div>
+                    </div>
+                </div>
+                <div class="motivation" id="motivation"></div>
+                <div class="xp-line" id="xp-line"></div>
+                <div class="summary-actions">
+                    <button class="btn btn-primary"><span>▶</span> Продолжить</button>
+                    <button class="btn btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"/>
+                        </svg>
+                        Статистика
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn btn-xp" onclick="addXP(100)">+100 XP</button>
+            <button class="control-btn btn-bonus" onclick="addXP(500)">+500 XP</button>
+            <button class="control-btn btn-reset" onclick="resetAll()">Сброс</button>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn btn-xp" onclick="addXP(625)">+1 Уровень (625 XP)</button>
+            <button class="control-btn btn-bonus" onclick="addXP(1250)">+2 Уровня (1250 XP)</button>
+        </div>
+        
+    </div>
+    
+    <script>
+        // State
+        let state = {
+            level: 1,
+            xp: 0,
+            repeated: 0,
+            accuracy: 0,
+            streak: 0
+        };
+        
+        // Level thresholds: XP = 625 * (level - 1)^2
+        function getLevelFromXP(xp) {
+            return Math.floor(Math.sqrt(xp / 625)) + 1;
+        }
+        
+        function getXPForLevel(level) {
+            return 625 * Math.pow(level - 1, 2);
+        }
+        
+        function getLevelProgress(xp) {
+            const level = getLevelFromXP(xp);
+            const prevThreshold = getXPForLevel(level);
+            const nextThreshold = getXPForLevel(level + 1);
+            const progress = (xp - prevThreshold) / (nextThreshold - prevThreshold);
+            const remaining = nextThreshold - xp;
+            return { level, progress, remaining, prevThreshold, nextThreshold };
+        }
+        
+        function updateInfo() {
+            const info = getLevelProgress(state.xp);
+            document.getElementById('info-level').textContent = `LV:${info.level}`;
+            document.getElementById('info-xp').textContent = `${state.xp} XP`;
+            document.getElementById('info-remaining').textContent = `${Math.max(0, info.remaining).toLocaleString()} XP`;
+            document.getElementById('info-progress').textContent = `${Math.round(info.progress * 100)}%`;
+        }
+        
+        function countUp(el, target, duration) {
+            const start = parseInt(el.textContent) || 0;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                
+                const current = Math.floor(start + (target - start) * easeOut);
+                el.textContent = current;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+        
+        function animateLevelUp(oldXP, newXP, earnedXP, bonusXP) {
+            const levelEl = document.getElementById('level');
+            const bar = document.querySelector('.progress-bar');
+            const old = bar.querySelector('.fill-old');
+            const earned = bar.querySelector('.fill-earned');
+            const bonus = bar.querySelector('.fill-bonus');
+            
+            const oldInfo = getLevelProgress(oldXP);
+            const newInfo = getLevelProgress(newXP);
+            
+            const leveledUp = newInfo.level > oldInfo.level;
+            
+            if (leveledUp) {
+                // === LEVEL UP ANIMATION ===
+                
+                // 1. Отключаем transition для мгновенной установки
+                old.style.transition = 'none';
+                earned.style.transition = 'none';
+                bonus.style.transition = 'none';
+                old.style.width = '100%';
+                earned.style.width = '0%';
+                bonus.style.width = '0%';
+                earned.style.left = '100%';
+                bonus.style.left = '100%';
+                
+                // 2. Включаем transition обратно и запускаем анимацию
+                setTimeout(() => {
+                    old.style.transition = 'width 0.5s ease';
+                    
+                    // 3. Flash level
+                    levelEl.classList.add('flash');
+                    levelEl.textContent = `LV:${newInfo.level}!`;
+                    
+                    setTimeout(() => {
+                        levelEl.classList.remove('flash');
+                        levelEl.textContent = `LV:${newInfo.level} • ${newXP} XP`;
+                        
+                        // 4. Quick shrink (200ms)
+                        old.style.transition = 'width 0.2s ease';
+                        old.style.width = '0%';
+                        
+                        setTimeout(() => {
+                            // 5. Fill new level (1.5s via CSS)
+                            earned.style.transition = 'width 1.5s ease';
+                            bonus.style.transition = 'width 1.5s ease';
+                            earned.style.left = '0%';
+                            bonus.style.left = '0%';
+                            
+                            const earnedInLevel = earnedXP / (newInfo.nextThreshold - newInfo.prevThreshold);
+                            const bonusInLevel = bonusXP / (newInfo.nextThreshold - newInfo.prevThreshold);
+                            
+                            earned.style.width = `${Math.min(100, earnedInLevel * 100)}%`;
+                            bonus.style.width = `${Math.min(100, bonusInLevel * 100)}%`;
+                        }, 200);
+                    }, 300);
+                }, 50);
+                
+            } else {
+                // === NO LEVEL UP - Just fill progress ===
+                
+                // Отключаем transition для мгновенной установки
+                old.style.transition = 'none';
+                earned.style.transition = 'none';
+                bonus.style.transition = 'none';
+                
+                const startPct = oldInfo.progress * 100;
+                old.style.width = `${startPct}%`;
+                earned.style.left = `${startPct}%`;
+                earned.style.width = '0%';
+                bonus.style.left = `${startPct}%`;
+                bonus.style.width = '0%';
+                
+                // Включаем transition и запускаем анимацию
+                setTimeout(() => {
+                    old.style.transition = 'width 0.5s ease';
+                    
+                    setTimeout(() => {
+                        earned.style.transition = 'width 1.5s ease';
+                        bonus.style.transition = 'width 1.5s ease';
+                        
+                        const earnedPct = (earnedXP / (oldInfo.nextThreshold - oldInfo.prevThreshold)) * 100;
+                        const bonusPct = (bonusXP / (oldInfo.nextThreshold - oldInfo.prevThreshold)) * 100;
+                        
+                        earned.style.width = `${earnedPct}%`;
+                        bonus.style.width = `${bonusPct}%`;
+                    }, 500);
+                }, 50);
+            }
+        }
+        
+        function addXP(amount) {
+            const oldXP = state.xp;
+            const oldLevel = state.level;
+            
+            // Add XP
+            state.xp += amount;
+            state.level = getLevelFromXP(state.xp);
+            
+            // Update stats (simulate)
+            state.repeated += Math.floor(amount / 10);
+            state.accuracy = Math.min(100, state.accuracy + 5);
+            state.streak = Math.min(30, state.streak + 1);
+            
+            // Calculate earned and bonus XP
+            const earnedXP = amount;
+            const bonusXP = Math.floor(amount * 0.1); // 10% bonus
+            
+            // Update info panel
+            updateInfo();
+            
+            // Update level display
+            const levelEl = document.getElementById('level');
+            levelEl.textContent = `LV:${state.level} • ${state.xp} XP`;
+            
+            // Animate progress bar
+            animateLevelUp(oldXP, state.xp, earnedXP, bonusXP);
+            
+            // Animate stats with counting
+            setTimeout(() => {
+                const repeatedEl = document.getElementById('stat-repeated');
+                const accuracyEl = document.getElementById('stat-accuracy');
+                const streakEl = document.getElementById('stat-streak');
+                
+                repeatedEl.parentElement.classList.add('fade-in');
+                setTimeout(() => repeatedEl.parentElement.classList.remove('fade-in'), 500);
+                countUp(repeatedEl, state.repeated, 1000);
+                
+                setTimeout(() => {
+                    accuracyEl.parentElement.classList.add('fade-in');
+                    setTimeout(() => accuracyEl.parentElement.classList.remove('fade-in'), 500);
+                    countUp(accuracyEl, state.accuracy, 1000);
+                    setTimeout(() => accuracyEl.textContent += '%', 1000);
+                }, 300);
+                
+                setTimeout(() => {
+                    streakEl.parentElement.classList.add('fade-in');
+                    setTimeout(() => streakEl.parentElement.classList.remove('fade-in'), 500);
+                    countUp(streakEl, state.streak, 1000);
+                }, 600);
+            }, 1000);
+            
+            // Update motivation and XP line
+            setTimeout(() => {
+                const motEl = document.getElementById('motivation');
+                const xpEl = document.getElementById('xp-line');
+                
+                motEl.classList.add('fade-in');
+                setTimeout(() => motEl.classList.remove('fade-in'), 500);
+                
+                if (state.level > oldLevel) {
+                    motEl.innerHTML = `<strong>🎉 Новый уровень!</strong> Вы достигли уровня ${state.level}!`;
+                } else {
+                    motEl.innerHTML = `<strong>Отлично!</strong> Вы уверенно идете к цели!`;
+                }
+                
+                xpEl.classList.add('fade-in');
+                setTimeout(() => xpEl.classList.remove('fade-in'), 500);
+                xpEl.textContent = `+${earnedXP} XP • бонусы: день +5 XP, стрик +${state.streak * 5} XP`;
+            }, 1500);
+        }
+        
+        function resetAll() {
+            state = {
+                level: 1,
+                xp: 0,
+                repeated: 0,
+                accuracy: 0,
+                streak: 0
+            };
+            
+            updateInfo();
+            
+            const levelEl = document.getElementById('level');
+            levelEl.textContent = 'LV:1 • 0 XP';
+            
+            const bar = document.querySelector('.progress-bar');
+            bar.querySelector('.fill-old').style.width = '0%';
+            bar.querySelector('.fill-earned').style.width = '0%';
+            bar.querySelector('.fill-bonus').style.width = '0%';
+            
+            document.getElementById('stat-repeated').textContent = '0';
+            document.getElementById('stat-accuracy').textContent = '0%';
+            document.getElementById('stat-streak').textContent = '0';
+            document.getElementById('motivation').textContent = '';
+            document.getElementById('xp-line').textContent = '';
+        }
+        
+        // Initialize
+        updateInfo();
+    </script>
+</body>
+</html>

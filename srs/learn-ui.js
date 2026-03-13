@@ -817,6 +817,8 @@ function wireSegmentsInteractions(sess) {
 }
 
 function showStats(stats, results, total) {
+    console.log('[MODAL.TEMPLATE] === CREATING MODAL ===');
+    
     // Update segments one last time to show the final card's result
     if (results && total) {
         updateSegments(results, total);
@@ -840,18 +842,18 @@ function showStats(stats, results, total) {
                     <div class="level-progress-fill level-progress-fill-earned" style="left:0;width:0%"></div>
                     <div class="level-progress-fill level-progress-fill-bonus" style="left:0;width:0%"></div>
                 </div>
-                <div class="stats">
-                    <div class="stat" id="stat-total">
+                <div class="stats-grid">
+                    <div class="stat-item" id="stat-total">
                         <div class="stat-value" id="sum-total">0</div>
                         <div class="stat-label">Повторено</div>
                     </div>
-                    <div class="stat" id="stat-accuracy">
+                    <div class="stat-item" id="stat-accuracy">
                         <div class="stat-value" id="sum-accuracy">0%</div>
                         <div class="stat-label">Точность</div>
                     </div>
-                    <div class="stat" id="stat-streak">
+                    <div class="stat-item" id="stat-streak">
                         <div class="stat-value" id="sum-streak">0</div>
-                        <div class="stat-label">Дней<br/>подряд</div>
+                        <div class="stat-label">Дней подряд</div>
                     </div>
                 </div>
                 <div class="motivation" id="sum-motivation"></div>
@@ -869,6 +871,7 @@ function showStats(stats, results, total) {
                 </div>
             </div>
         `;
+        console.log('[MODAL.TEMPLATE] New template created with .stats-grid and .stat-item');
         container.appendChild(overlay);
         
         // Кнопка "Статистика" - переход на страницу статистики
@@ -1107,6 +1110,7 @@ function showStats(stats, results, total) {
     
     // Animate overlay and stats
     overlay.classList.add('show');
+    console.log('[MODAL.ANIM] Overlay show class added');
     
     // Show all stats immediately (without staggered delay)
     const totalEl = overlay.querySelector('#stat-total');
@@ -1115,16 +1119,49 @@ function showStats(stats, results, total) {
     const motEl = overlay.querySelector('#sum-motivation');
     const xpEl = overlay.querySelector('#sum-xp');
     const actions = overlay.querySelector('.summary-actions');
+    
+    console.log('[MODAL.ANIM] Elements found:', {
+        total: !!totalEl,
+        accuracy: !!accWrap,
+        streak: !!streakWrap,
+        motivation: !!motEl,
+        xp: !!xpEl,
+        actions: !!actions
+    });
 
     // Apply animations simultaneously
-    if (totalEl) { totalEl.style.display = ''; totalEl.classList.add('glitch-in'); }
-    if (accWrap) { accWrap.style.display = ''; accWrap.classList.add('glitch-in'); }
-    if (streakWrap) { streakWrap.style.display = ''; streakWrap.classList.add('glitch-in'); }
+    if (totalEl) { 
+        totalEl.style.display = ''; 
+        totalEl.classList.add('fade-in'); 
+        console.log('[MODAL.ANIM] totalEl fade-in added');
+    }
+    if (accWrap) { 
+        accWrap.style.display = ''; 
+        accWrap.classList.add('fade-in'); 
+        console.log('[MODAL.ANIM] accWrap fade-in added');
+    }
+    if (streakWrap) { 
+        streakWrap.style.display = ''; 
+        streakWrap.classList.add('fade-in'); 
+        console.log('[MODAL.ANIM] streakWrap fade-in added');
+    }
 
     // Fade-in elements (originally hidden by CSS opacity: 0)
-    if (motEl) { motEl.style.display = ''; motEl.classList.add('fade-in'); }
-    if (xpEl) { xpEl.style.display = ''; xpEl.classList.add('fade-in'); }
-    if (actions) { actions.style.display = ''; actions.classList.add('fade-in'); }
+    if (motEl) { 
+        motEl.style.display = ''; 
+        motEl.classList.add('fade-in'); 
+        console.log('[MODAL.ANIM] motEl fade-in added');
+    }
+    if (xpEl) { 
+        xpEl.style.display = ''; 
+        xpEl.classList.add('fade-in'); 
+        console.log('[MODAL.ANIM] xpEl fade-in added');
+    }
+    if (actions) { 
+        actions.style.display = ''; 
+        actions.classList.add('fade-in'); 
+        console.log('[MODAL.ANIM] actions fade-in added');
+    }
 }
 
 // Helper function to get level from XP
