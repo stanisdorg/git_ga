@@ -1009,9 +1009,13 @@ function showStats(stats, results, total) {
         // Устанавливаем начальные позиции
         oldEl.style.width = `${oldW}%`;
         oldEl.style.left = `0px`;
+        
+        // earned начинается сразу за old
         earnEl.style.left = `${oldW}%`;
         earnEl.style.width = `0%`;
-        bonusEl.style.left = `${oldW}%`;
+        
+        // bonus ждёт НА ПОЗИЦИИ где закончится earned
+        bonusEl.style.left = `${oldW + earnW}%`;
         bonusEl.style.width = `0%`;
         
         // Запуск анимаций: последовательно, суммарно 1500ms
@@ -1022,15 +1026,14 @@ function showStats(stats, results, total) {
         earnEl.classList.add('animate');
         bonusEl.classList.add('animate');
         earnEl.style.transition = `width ${earnDuration}ms ease`;
-        bonusEl.style.transition = `width ${bonusDuration}ms ease, left ${bonusDuration}ms ease`;
+        bonusEl.style.transition = `width ${bonusDuration}ms ease`;
         
         // 1. Сначала заполняется earned
         setTimeout(() => {
             earnEl.style.width = `${earnW}%`;
             
-            // 2. Когда earned закончил, сдвигаем bonus и заполняем его
+            // 2. Когда earned закончил, заполняется bonus (он уже на правильной позиции)
             setTimeout(() => {
-                bonusEl.style.left = `${oldW + earnW}%`;
                 bonusEl.style.width = `${bonusW}%`;
             }, earnDuration);
         }, 100);
