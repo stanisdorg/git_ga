@@ -14,7 +14,7 @@ function getCurrentCards() {
         const userCards = JSON.parse(userCardsRaw);
         if (Array.isArray(userCards) && userCards.length > 0) {
           console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
-          
+
           // 🔧 Исправляем кодировку на лету
           userCards.forEach(card => {
             if (card.category === 'Документация' || card.category === 'Дкументация') {
@@ -24,7 +24,7 @@ function getCurrentCards() {
               card.subcategory = 'Типы требований';
             }
           });
-          
+
           return userCards;
         }
       }
@@ -858,8 +858,6 @@ const STATS_STYLES = `
 .st-ach-scroll-wrap {
   display: flex;
   gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
   padding-bottom: 8px;
   scrollbar-width: thin;
   scrollbar-color: var(--st-prim) var(--st-surf-h);
@@ -1589,8 +1587,8 @@ function renderStats() {
   let level, metrics, achievements, progress, top5, rest;
   try { level = getCurrentLevel(); } catch { level = { level: 1, xp: 0, remaining: 100, progress: 0 }; }
   try { metrics = getMetrics(uniqueQaData); } catch { metrics = { streakCurrent: 0, studiedCount: 0 }; }
-  try { 
-    const achResult = checkAchievements(); 
+  try {
+    const achResult = checkAchievements();
     achievements = achResult.achievements || {};
     progress = achResult.progress || {};
   } catch { achievements = {}; progress = {}; }
@@ -1846,7 +1844,7 @@ function renderStats() {
                 <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
                   <div style="display:flex;align-items:center">
                     <div class="st-diff-dot" style="background:${s.color}"></div>
-                    <div class="st-diff-name">${s.label} ${renderHeartsSvg(s.hearts, 'diff-'+i)}</div>
+                    <div class="st-diff-name">${s.label} ${renderHeartsSvg(s.hearts, 'diff-' + i)}</div>
                   </div>
                   <div class="st-diff-count">${s.count}</div>
                   <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
@@ -1921,6 +1919,9 @@ function renderStats() {
       const d = getCurrentLevel();
       const box = document.createElement('div');
       box.className = 'level-inline';
+      box.style.cursor = 'pointer';
+      box.title = 'Нажмите ����ля подробной информации об уровнях';
+      box.onclick = () => window.openLevelInfoModal();
       const lbl = document.createElement('div');
       lbl.className = 'lv-label';
       lbl.textContent = `LV:${d.level}`;
@@ -2156,7 +2157,7 @@ function renderStats() {
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
       // Минимальная высота для визуального отображения пустых слотов
-      const cardsH = cardsVal > 0 
+      const cardsH = cardsVal > 0
         ? Math.max(baseBarHeight, Math.min(innerH, (innerH / hcMax) * cardsVal))
         : baseBarHeight;
       const yCards = topPad + (innerH - cardsH);
@@ -2304,15 +2305,15 @@ window.openDiffInfoModal = (event) => {
      </div>
    `;
   document.body.appendChild(overlay);
-  
+
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
-  
+
   window.simValue = 3.0;
   window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
   window.simReset = () => { window.simValue = 3.0; updateSim(); };
-  function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="'+id+'"><stop offset="'+fillPercent+'%" stop-color="#ff4d4d"/><stop offset="'+fillPercent+'%" stop-color="#444"/></linearGradient></defs><path fill="url(#'+id+')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
+  function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="' + id + '"><stop offset="' + fillPercent + '%" stop-color="#ff4d4d"/><stop offset="' + fillPercent + '%" stop-color="#444"/></linearGradient></defs><path fill="url(#' + id + ')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
   function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
   updateSim();
 };
@@ -2425,6 +2426,199 @@ window.openStatsInfoModal = (event) => {
     </div>
   `;
   document.body.appendChild(overlay);
+
+  // Закрытие по ESC
+  const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
+  document.addEventListener('keydown', escHandler);
+};
+
+// Модальное окно с информацией об уровнях и XP
+window.openLevelInfoModal = () => {
+  const levelInfo = getCurrentLevel();
+  const stats = getStudyStats();
+  const daily = getDailyPointsAll();
+  const streak = getStudyStreak();
+  const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+  const studiedCount = Object.values(getProgressMap()).filter(p => p.lastReviewed).length;
+  
+  // Генерируем таблицу уровней 1-20
+  let levelsTable = '';
+  for (let lvl = 1; lvl <= 20; lvl++) {
+    const prevXP = lvl === 1 ? 0 : Math.ceil(625 * Math.pow(lvl - 1, 2));
+    const nextXP = Math.ceil(625 * Math.pow(lvl, 2));
+    const isCurrent = lvl === levelInfo.level;
+    const isPassed = lvl < levelInfo.level;
+    const isFuture = lvl > levelInfo.level;
+    const needed = nextXP - levelInfo.xp;
+    const progress = levelInfo.xp >= nextXP ? 100 : levelInfo.xp <= prevXP ? 0 : Math.round(((levelInfo.xp - prevXP) / (nextXP - prevXP)) * 100);
+    
+    levelsTable += `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:${isCurrent ? 'rgba(255,159,28,0.15)' : isPassed ? 'rgba(76,175,80,0.1)' : 'rgba(255,255,255,0.03)'};border:${isCurrent ? '2px solid var(--st-prim)' : '1px solid var(--st-border)'};">
+        <div style="width:50px;font-weight:700;color:${isPassed ? '#4CAF50' : isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${lvl}</div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:12px;color:var(--st-text-sec);">${prevXP.toLocaleString()} → ${nextXP.toLocaleString()} XP</span>
+            <span style="font-size:12px;color:${isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${isPassed ? '✅' : isCurrent ? `${needed.toLocaleString()} XP до ${lvl+1}` : '🔒'}</span>
+          </div>
+          <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+            <div style="width:${isPassed ? '100%' : progress}%;height:100%;background:${isPassed ? '#4CAF50' : isCurrent ? 'linear-gradient(90deg,#FF9F1C,#FFB142)' : 'rgba(255,255,255,0.2)'};border-radius:3px;transition:width 0.5s;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // График XP за последние 30 дней
+  const last30Days = daily.slice(-30);
+  const maxXP = Math.max(...last30Days.map(d => d.xp), 1);
+  let xpChart = '';
+  last30Days.forEach(d => {
+    const h = Math.round((d.xp / maxXP) * 60);
+    const date = new Date(d.date).toLocaleDateString('ru-RU', {day: 'numeric', month: 'numeric'});
+    xpChart += `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+        <div style="width:100%;height:${h}px;background:${d.xp > 0 ? 'linear-gradient(180deg,#FF9F1C 0%,#FF6B35 100%)' : 'rgba(255,255,255,0.1)'};border-radius:4px 4px 0 0;min-height:4px;"></div>
+        <span style="font-size:9px;color:var(--st-text-sec);transform:rotate(-45deg);transform-origin:left top;white-space:nowrap;">${date.split('.')[0]}</span>
+      </div>
+    `;
+  });
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.innerHTML = `
+    <div class="st-modal" style="max-width:800px;max-height:85vh;overflow-y:auto;">
+      <div class="st-modal-header">
+        <div class="st-modal-title">🎯 Уровни и опыт</div>
+        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+      </div>
+      <div class="st-modal-body" style="padding:20px;">
+        
+        <!-- Текущий прогресс -->
+        <div style="margin-bottom:24px;">
+          <div style="background:linear-gradient(135deg,rgba(255,159,28,0.2) 0%,rgba(255,159,28,0.05) 100%);border:2px solid var(--st-prim);border-radius:16px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <div>
+                <div style="font-size:14px;color:var(--st-text-sec);margin-bottom:4px;">Текущий уровень</div>
+                <div style="font-size:36px;font-weight:800;color:#FF9F1C;">Уровень ${levelInfo.level}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:14px;color:var(--st-text-sec);margin-bottom:4px;">Всего XP</div>
+                <div style="font-size:28px;font-weight:700;color:#fff;">${levelInfo.xp.toLocaleString()}</div>
+              </div>
+            </div>
+            
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:13px;color:var(--st-text-sec);">Прогресс до уровня ${levelInfo.level + 1}</span>
+                <span style="font-size:13px;color:#FF9F1C;font-weight:700;">${Math.round(levelInfo.progress * 100)}%</span>
+              </div>
+              <div style="height:12px;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;">
+                <div style="width:${Math.round(levelInfo.progress * 100)}%;height:100%;background:linear-gradient(90deg,#FF9F1C 0%,#FFB142 100%);border-radius:6px;transition:width 0.5s;"></div>
+              </div>
+            </div>
+            
+            <div style="display:flex;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
+              <div style="flex:1;">
+                <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:4px;">Осталось XP</div>
+                <div style="font-size:18px;font-weight:700;color:#fff;">${levelInfo.remaining.toLocaleString()}</div>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:4px;">След. уровень</div>
+                <div style="font-size:18px;font-weight:700;color:#FF9F1C;">${levelInfo.nextThreshold.toLocaleString()} XP</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Как получить XP -->
+        <div style="margin-bottom:24px;">
+          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;">⚡</span> Как получить XP
+          </h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+            <div style="background:rgba(46,196,182,0.1);border-left:3px solid var(--st-sec);padding:16px;border-radius:12px;">
+              <div style="font-size:24px;margin-bottom:8px;">📚</div>
+              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Изучение карточек</div>
+              <div style="font-size:12px;color:var(--st-text-sec);">+10 XP за каждую карточку</div>
+            </div>
+            <div style="background:rgba(229,83,61,0.1);border-left:3px solid #E5533D;padding:16px;border-radius:12px;">
+              <div style="font-size:24px;margin-bottom:8px;">❤️</div>
+              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Сердечки</div>
+              <div style="font-size:12px;color:var(--st-text-sec);">+1-5 XP за ответ</div>
+            </div>
+            <div style="background:rgba(255,159,28,0.1);border-left:3px solid var(--st-prim);padding:16px;border-radius:12px;">
+              <div style="font-size:24px;margin-bottom:8px;">🔥</div>
+              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Серия дней</div>
+              <div style="font-size:12px;color:var(--st-text-sec);">Бонус за серию</div>
+            </div>
+            <div style="background:rgba(168,85,247,0.1);border-left:3px solid #A855F7;padding:16px;border-radius:12px;">
+              <div style="font-size:24px;margin-bottom:8px;">🎯</div>
+              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Точность</div>
+              <div style="font-size:12px;color:var(--st-text-sec);">Бонус за % правильных</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- График XP за 30 дней -->
+        <div style="margin-bottom:24px;">
+          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;">📈</span> XP за последние 30 дней
+          </h3>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:16px;">
+            <div style="display:flex;gap:4px;align-items:flex-end;height:80px;">
+              ${xpChart}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Таблица уровней -->
+        <div style="margin-bottom:24px;">
+          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;">🏆</span> Уровни 1-20
+          </h3>
+          <div style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;padding-right:8px;">
+            ${levelsTable}
+          </div>
+        </div>
+        
+        <!-- Статистика за всё время -->
+        <div style="margin-bottom:24px;">
+          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:20px;">📊</span> Статистика за всё время
+          </h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
+              <div style="font-size:24px;margin-bottom:8px;">📚</div>
+              <div style="font-size:20px;font-weight:700;color:#fff;">${studiedCount}</div>
+              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Изучено карт</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
+              <div style="font-size:24px;margin-bottom:8px;">🎯</div>
+              <div style="font-size:20px;font-weight:700;color:#fff;">${accuracy}%</div>
+              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Точность</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
+              <div style="font-size:24px;margin-bottom:8px;">🔥</div>
+              <div style="font-size:20px;font-weight:700;color:#fff;">${streak.current}</div>
+              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Дней подряд</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
+              <div style="font-size:24px;margin-bottom:8px;">🏆</div>
+              <div style="font-size:20px;font-weight:700;color:#FF9F1C;">${streak.best}</div>
+              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Лучшая серия</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Кнопка начать учиться -->
+        <button onclick="document.querySelector('.st-modal-overlay')?.remove();window.startDailySession()" style="width:100%;background:var(--st-prim);color:#000;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;">
+          ▶ Начать учиться
+        </button>
+        
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
   
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -2455,19 +2649,19 @@ function getHeartFillPercentages(ef) {
   if (ef === undefined || ef === null) {
     return [0, 0, 0, 0, 0];
   }
-  
+
   // EF range: 1.3 (min) to 2.9 (max) = 1.6 range
   // 5 hearts, so each heart = 0.32 EF range
   // Heart 1: 1.3-1.62, Heart 2: 1.62-1.94, Heart 3: 1.94-2.26, Heart 4: 2.26-2.58, Heart 5: 2.58-2.9
-  
+
   const minEF = 1.3;
   const maxEF = 2.9;
   const heartRange = (maxEF - minEF) / 5; // 0.32
-  
+
   for (let i = 0; i < 5; i++) {
     const heartMin = minEF + (i * heartRange);
     const heartMax = minEF + ((i + 1) * heartRange);
-    
+
     if (ef >= heartMax) {
       fills.push(100);
     } else if (ef <= heartMin) {
@@ -2478,7 +2672,7 @@ function getHeartFillPercentages(ef) {
       fills.push(Math.round(percent));
     }
   }
-  
+
   return fills;
 }
 
@@ -2493,10 +2687,10 @@ function renderHeartsSvg(fillPercentages, prefix) {
       fillPercentages.push(i < count ? 100 : 0);
     }
   }
-  
+
   for (let i = 0; i < 5; i++) {
     const fillPercent = fillPercentages[i] || 0;
-    svg += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;"><defs><linearGradient id="${prefix}-grad-${i+1}"><stop offset="${fillPercent}%" stop-color="#ff4d4d"/><stop offset="${fillPercent}%" stop-color="#444"/></linearGradient></defs><path fill="url(#${prefix}-grad-${i+1})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+    svg += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;"><defs><linearGradient id="${prefix}-grad-${i + 1}"><stop offset="${fillPercent}%" stop-color="#ff4d4d"/><stop offset="${fillPercent}%" stop-color="#444"/></linearGradient></defs><path fill="url(#${prefix}-grad-${i + 1})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
   }
   return svg;
 }
@@ -2532,20 +2726,20 @@ window.openChartModal = () => {
     </div>
   `;
   document.body.appendChild(overlay);
-  
+
   // Плавное появление
   setTimeout(() => {
     overlay.style.opacity = '1';
     overlay.querySelector('.st-modal').style.transform = 'scale(1)';
   }, 10);
-  
+
   // Закрытие по клику на фон
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
       window.closeChartModal();
     }
   });
-  
+
   // Закрытие по Escape
   const escHandler = (e) => {
     if (e.key === 'Escape') {
@@ -2554,10 +2748,10 @@ window.openChartModal = () => {
     }
   };
   document.addEventListener('keydown', escHandler);
-  
+
   // Сохраняем ссылку на overlay для закрытия
   window.chartModalOverlay = overlay;
-  
+
   // Клонируем и увеличиваем график
   setTimeout(() => {
     window.renderModalChart();
@@ -2588,59 +2782,59 @@ window.changeModalXpMode = (mode) => {
 window.renderModalChart = () => {
   const mode = window.modalXpMode;
   const data = window.getXpSeriesForModal(mode);
-  
+
   console.log('[MODAL.CHART] Рендерим график, режим:', mode, 'данных:', data.length);
-  
+
   // Обновляем активную кнопку
   document.querySelectorAll('.week-btn, .month-btn, .year-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   document.querySelector(`.${mode}-btn`)?.classList.add('active');
-  
+
   // Обновляем лейбл месяца
   const originalLabel = document.getElementById('st-month-label');
   const modalLabel = document.getElementById('st-modal-month-label');
   if (originalLabel && modalLabel) {
     modalLabel.textContent = originalLabel.textContent;
   }
-  
+
   // Рисуем увеличенный график
   const svg = document.getElementById('st-modal-activity-chart');
   if (!svg) {
     console.error('[MODAL.CHART] SVG не найден!');
     return;
   }
-  
+
   const width = svg.clientWidth || 800;
   const height = svg.clientHeight || 400;
   const padding = { top: 20, right: 30, bottom: 40, left: 50 };
   const innerWidth = width - padding.left - padding.right;
   const innerHeight = height - padding.top - padding.bottom;
-  
+
   // Увеличенные параметры (как в оригинале)
   const cfg = mode === 'week' ? { bar: 28, gap: 8, count: 14, labelStep: 2 }
     : (mode === 'month' ? { bar: 20, gap: 6, count: data.length, labelStep: 2 }
-    : { bar: 46, gap: 28, count: 12, labelStep: 1 });
-  
+      : { bar: 46, gap: 28, count: 12, labelStep: 1 });
+
   const barWidth = cfg.bar;
   const gap = mode === 'year' ? cfg.gap : (innerWidth - (cfg.bar * data.length)) / (data.length + 1);
   const fontSize = 14;
-  
+
   // Находим максимум
   const maxValue = Math.max(...data.map(d => (d.cards || 0) + (d.hearts || 0)), 1);
-  
+
   // Градиенты
   const toRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
   const lerp = (a, b, t) => Math.round(a + (b - a) * t);
   const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
   const redDark = '#8B0000'; const redBright = '#FF3B3B';
   const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
-  
+
   // Генерируем SVG
   let defs = '';
   let content = '';
   let bars = '';
-  
+
   // Сетка
   for (let i = 0; i <= 4; i++) {
     const y = padding.top + (innerHeight / 4) * i;
@@ -2648,14 +2842,14 @@ window.renderModalChart = () => {
     const value = Math.round(maxValue - (maxValue / 4) * i);
     content += `<text class="chart-label" x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="${fontSize}">${value}</text>`;
   }
-  
+
   // Бары
   const baseBarHeight = 5; // Минимальная высота бара для пустых значений
   let x = padding.left + gap;
   data.forEach((d, idx) => {
     const cardsVal = d.cards || 0;
     const heartsVal = d.hearts || 0;
-    
+
     // Cards (оранжевый, широкий) - всегда рисуем, даже если 0
     const cardsH = cardsVal > 0
       ? Math.max(baseBarHeight, (innerHeight / maxValue) * cardsVal)
@@ -2685,14 +2879,14 @@ window.renderModalChart = () => {
     // Подпись
     const labelOk = mode === 'year' ? true : (idx % cfg.labelStep === 0);
     if (labelOk) {
-      bars += `<text class="chart-label" x="${x + barWidth/2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
+      bars += `<text class="chart-label" x="${x + barWidth / 2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
     }
 
     x += barWidth + gap;
   });
-  
+
   svg.innerHTML = `<defs>${defs}</defs>${content}${bars}`;
-  
+
   // Tooltip
   const tooltip = document.getElementById('st-modal-tooltip');
   svg.querySelectorAll('.bar-hearts,.bar-cards').forEach((bar) => {
@@ -2743,9 +2937,9 @@ window.getXpSeriesForModal = (mode) => {
   const imp = typeof getDailyImprovements === 'function' ? getDailyImprovements(400) : [];
   const impMap = new Map(imp.map(d => [d.date, d]));
   const today = new Date();
-  
+
   console.log('[MODAL.DATA] daily:', daily.length, 'imp:', imp.length);
-  
+
   if (mode === 'year') {
     // 12 месяцев
     const res = [];
@@ -2773,18 +2967,18 @@ window.getXpSeriesForModal = (mode) => {
     console.log('[MODAL.DATA] Year:', res);
     return res;
   }
-  
+
   // Неделя (14 дней) или Месяц (все дни)
   const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
   const res = [];
-  
+
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const s = getMSKDate(d);
     const entry = daily.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
     const im = impMap.get(s);
-    
+
     res.push({
       date: s,
       label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
@@ -2793,7 +2987,7 @@ window.getXpSeriesForModal = (mode) => {
       cards: im ? im.reviewed : 0
     });
   }
-  
+
   console.log('[MODAL.DATA] Week/Month:', res.slice(0, 5));
   return res;
 };
@@ -2849,7 +3043,7 @@ window.openDiffModal = (index) => {
     const p = prog[q.question] || prog[q.question.trim()];
     const ef = p ? p.easeFactor : undefined;
     const heartFills = getHeartFillPercentages(ef);
-    const heartsSvg = renderHeartsSvg(heartFills, 'modal-'+idx);
+    const heartsSvg = renderHeartsSvg(heartFills, 'modal-' + idx);
     const isFav = favorites.has(q.question);
 
     return `
@@ -2873,7 +3067,7 @@ window.openDiffModal = (index) => {
     </div>
   `;
   document.body.appendChild(overlay);
-  
+
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
@@ -2925,7 +3119,7 @@ window.openCategoryModal = (categoryName) => {
     const p = progress[q.question] || progress[q.question.trim()];
     const ef = p ? p.easeFactor : undefined;
     const heartFills = getHeartFillPercentages(ef);
-    const heartsSvg = renderHeartsSvg(heartFills, 'cat-'+idx);
+    const heartsSvg = renderHeartsSvg(heartFills, 'cat-' + idx);
     const isFav = favorites.has(q.question);
 
     return `
@@ -2949,7 +3143,7 @@ window.openCategoryModal = (categoryName) => {
     </div>
   `;
   document.body.appendChild(overlay);
-  
+
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
@@ -2957,17 +3151,17 @@ window.openCategoryModal = (categoryName) => {
 
 window.startCategorySession = (categoryName) => {
   document.querySelector('.st-modal-overlay')?.remove();
-  
+
   const currentCards = getCurrentCards();
   const cards = currentCards.filter(q => q.category === categoryName);
-  
+
   console.log('[startCategorySession] Категория:', categoryName, 'Карточек:', cards.length);
-  
+
   if (cards.length === 0) {
     alert('Нет карт в этой категории');
     return;
   }
-  
+
   hideStatsPage();
   startLearnSession(cards, { mode: 'cram' });
 };
