@@ -806,12 +806,22 @@ const STATS_STYLES = `
   text-align: center;
   opacity: 0.4;
   filter: grayscale(100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.st-ach-card:hover {
+  border-color: rgba(255,215,0,0.5);
+  box-shadow: 0 0 20px rgba(255,215,0,0.2);
 }
 .st-ach-card.unlocked {
   opacity: 1;
   filter: none;
-  background: rgba(46, 196, 182, 0.05);
-  border-color: var(--st-sec);
+  background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(46,196,182,0.05) 100%);
+  border: 1px solid rgba(255,215,0,0.3);
+}
+.st-ach-card.unlocked:hover {
+  background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.08) 100%);
+  border-color: rgba(255,215,0,0.6);
+  box-shadow: 0 0 24px rgba(255,215,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 .st-ach-scroll {
   display: flex;
