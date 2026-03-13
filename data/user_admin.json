@@ -3,9 +3,9 @@
     "username": "admin",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-13T01:29:38.731Z",
+    "lastLoginAt": "2026-03-13T02:36:41.151Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-13T01:29:38.731Z"
+    "lastSavedAt": "2026-03-13T02:36:41.151Z"
   },
   "_cards": [
     {
@@ -2043,159 +2043,193 @@
   ],
   "_achievements": {
     "firstSessionCompleted": true,
-    "nightOwl": true
+    "nightOwl": true,
+    "earlyBird": true
   },
   "_stats": {
-    "total": 7,
-    "timeSpent": 2043,
-    "points": 35
+    "total": 15,
+    "timeSpent": 8190,
+    "points": 165,
+    "correct": 8
   },
   "_srsProgress": {
     "charlies proxy": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186515752,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369412309,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186515752,
           "grade": 2
+        },
+        {
+          "date": 1773369412309,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "charlies proxy"
     },
     "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186516047,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369413073,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186516047,
           "grade": 2
+        },
+        {
+          "date": 1773369413073,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
     },
     "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186516425,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369412820,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186516425,
           "grade": 2
+        },
+        {
+          "date": 1773369412820,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается"
     },
     "что в Elements смотришь обычно?": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186516632,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369411990,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186516632,
           "grade": 2
+        },
+        {
+          "date": 1773369411990,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "что в Elements смотришь обычно?"
     },
     "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186516846,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369411565,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186516846,
           "grade": 2
+        },
+        {
+          "date": 1773369411565,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
     },
     "Local Storage:": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186517035,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369413513,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186517035,
           "grade": 2
+        },
+        {
+          "date": 1773369413286,
+          "grade": 4
+        },
+        {
+          "date": 1773369413513,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "Local Storage:"
     },
     "postman, swagger": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773186517249,
-      "nextReviewDate": 1773277200000,
-      "dueDate": "2026-03-12T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773369412585,
+      "nextReviewDate": 1773450000000,
+      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1773186517249,
           "grade": 2
+        },
+        {
+          "date": 1773369412585,
+          "grade": 4
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-11",
-      "lastReviewedTime": 5,
+      "lastReviewed": "2026-03-13",
+      "lastReviewedTime": 8,
       "question": "postman, swagger"
     }
   },

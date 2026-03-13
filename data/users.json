@@ -4,14 +4,14 @@
     "password": "eb653343d706617af1347831b5717c2609ffa4502217ab88a20acf1b9b9dd21c",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-13T01:29:26.171Z"
+    "lastLoginAt": "2026-03-13T02:36:40.546Z"
   },
   {
     "username": "jeff",
     "password": "5f5e0acd67ae0c44f570ebf1e0b0194b3c523d33a970ad200cb7cd73d9601d23",
     "role": "editor",
     "createdAt": "2026-03-10T02:30:00Z",
-    "lastLoginAt": "2026-03-13T00:37:25.415Z"
+    "lastLoginAt": "2026-03-13T02:36:24.993Z"
   },
   {
     "username": "stas",
