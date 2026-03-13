@@ -2371,10 +2371,12 @@ window.changeModalXpMode = (mode) => {
   window.renderModalChart();
 };
 
-// Рендер графика в модальном окне
+// Рендер графика в модальном окне (копия renderActivityChart с увеличенными параметрами)
 window.renderModalChart = () => {
   const mode = window.modalXpMode;
   const data = window.getXpSeriesForModal(mode);
+  
+  console.log('[MODAL.CHART] Рендерим график, режим:', mode, 'данных:', data.length);
   
   // Обновляем активную кнопку
   document.querySelectorAll('.week-btn, .month-btn, .year-btn').forEach(btn => {
@@ -2391,7 +2393,10 @@ window.renderModalChart = () => {
   
   // Рисуем увеличенный график
   const svg = document.getElementById('st-modal-activity-chart');
-  if (!svg) return;
+  if (!svg) {
+    console.error('[MODAL.CHART] SVG не найден!');
+    return;
+  }
   
   const width = svg.clientWidth || 800;
   const height = svg.clientHeight || 400;
@@ -2399,16 +2404,29 @@ window.renderModalChart = () => {
   const innerWidth = width - padding.left - padding.right;
   const innerHeight = height - padding.top - padding.bottom;
   
-  // Увеличенные параметры
-  const barWidth = Math.max(20, (innerWidth / data.length) * 0.6);
-  const gap = (innerWidth - (barWidth * data.length)) / (data.length + 1);
-  const fontSize = 14; // Увеличенный шрифт
+  // Увеличенные параметры (как в оригинале)
+  const cfg = mode === 'week' ? { bar: 28, gap: 8, count: 14, labelStep: 2 }
+    : (mode === 'month' ? { bar: 20, gap: 6, count: data.length, labelStep: 2 }
+    : { bar: 46, gap: 28, count: 12, labelStep: 1 });
+  
+  const barWidth = cfg.bar;
+  const gap = mode === 'year' ? cfg.gap : (innerWidth - (cfg.bar * data.length)) / (data.length + 1);
+  const fontSize = 14;
   
   // Находим максимум
-  const maxValue = Math.max(...data.map(d => d.hearts || d.cards || d.xp), 1);
+  const maxValue = Math.max(...data.map(d => (d.cards || 0) + (d.hearts || 0)), 1);
+  
+  // Градиенты
+  const toRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
+  const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+  const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
+  const redDark = '#8B0000'; const redBright = '#FF3B3B';
+  const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
   
   // Генерируем SVG
+  let defs = '';
   let content = '';
+  let bars = '';
   
   // Сетка
   for (let i = 0; i <= 4; i++) {
@@ -2419,34 +2437,65 @@ window.renderModalChart = () => {
   }
   
   // Бары
-  data.forEach((d, i) => {
-    const x = padding.left + gap + i * (barWidth + gap);
-    const barHeight = ((d.hearts || d.cards || d.xp) / maxValue) * innerHeight;
-    const y = padding.top + innerHeight - barHeight;
+  let x = padding.left + gap;
+  data.forEach((d, idx) => {
+    const hasValue = (d.cards || 0) > 0 || (d.hearts || 0) > 0;
     
-    content += `<rect class="bar-hearts" x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="var(--st-sec)" rx="3"/>`;
+    if (hasValue) {
+      // Cards (оранжевый, широкий)
+      const cardsH = Math.max(2, (innerHeight / maxValue) * (d.cards || 0));
+      const yCards = padding.top + innerHeight - cardsH;
+      const tCards = Math.max(0, Math.min(1, (d.cards || 0) / maxValue));
+      const topOrange = lerpHex(orangeDark, orangeBright, tCards);
+      defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`;
+      const rWide = Math.round(barWidth / 2);
+      const pathCards = `M ${x} ${yCards + cardsH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + barWidth} ${yCards + rWide} L ${x + barWidth} ${yCards + cardsH} Z`;
+      bars += `<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#modal-go${idx})" style="cursor:pointer"/>`;
+      
+      // Hearts (красный, узкий, по центру)
+      const heartsH = Math.max(2, (innerHeight / maxValue) * (d.hearts || 0));
+      const yHearts = padding.top + innerHeight - heartsH;
+      const narrowBarW = Math.round(barWidth * 0.4);
+      const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
+      const tHearts = Math.max(0, Math.min(1, (d.hearts || 0) / maxValue));
+      const topRed = lerpHex(redDark, redBright, tHearts);
+      defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`;
+      const rNarrow = Math.round(narrowBarW / 2);
+      const pathHearts = `M ${heartsX} ${yHearts + heartsH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${yHearts + heartsH} Z`;
+      bars += `<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#modal-gh${idx})" style="cursor:pointer"/>`;
+    }
     
     // Подпись
-    content += `<text class="chart-label" x="${x + barWidth/2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
+    const labelOk = mode === 'year' ? true : (idx % cfg.labelStep === 0);
+    if (labelOk) {
+      bars += `<text class="chart-label" x="${x + barWidth/2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
+    }
+    
+    x += barWidth + gap;
   });
   
-  svg.innerHTML = content;
+  svg.innerHTML = `<defs>${defs}</defs>${content}${bars}`;
   
   // Tooltip
   const tooltip = document.getElementById('st-modal-tooltip');
-  svg.querySelectorAll('.bar-hearts').forEach((bar, i) => {
+  svg.querySelectorAll('.bar-hearts,.bar-cards').forEach((bar) => {
     bar.addEventListener('mouseenter', (e) => {
-      const d = data[i];
+      const date = bar.getAttribute('data-date');
+      const hearts = bar.getAttribute('data-hearts');
+      const cards = bar.getAttribute('data-cards');
+      const type = bar.getAttribute('data-type');
+      const typeLabel = type === 'hearts' ? '❤️ Сердечки' : '📚 Карточки';
       tooltip.innerHTML = `
-        <div style="font-weight:700">${d.label}</div>
-        <div>XP: ${d.xp}</div>
-        <div>Карточек: ${d.cards}</div>
-        <div>Сердечек: ${d.hearts}</div>
+        <div style="font-weight:700">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</div>
+        <div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div>
+        <div>❤️: ${hearts}</div>
+        <div>📚: ${cards}</div>
         <div class="tip-arrow"></div>
       `;
       tooltip.style.display = 'block';
       tooltip.style.left = `${e.offsetX - 80}px`;
       tooltip.style.top = `${e.offsetY - 100}px`;
+      bar.style.filter = 'brightness(1.2)';
     });
     bar.addEventListener('mousemove', (e) => {
       tooltip.style.left = `${e.offsetX - 80}px`;
@@ -2454,11 +2503,12 @@ window.renderModalChart = () => {
     });
     bar.addEventListener('mouseleave', () => {
       tooltip.style.display = 'none';
+      bar.style.filter = '';
     });
   });
 };
 
-// Получение данных для модального окна (копируем логику getActivitySeries)
+// Получение данных для модального окна (полная копия getActivitySeries)
 window.getXpSeriesForModal = (mode) => {
   const getMSKDate = (date) => {
     try {
@@ -2470,11 +2520,14 @@ window.getXpSeriesForModal = (mode) => {
       return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
     }
   };
-  
-  const daily = window.getDailyPointsAll ? window.getDailyPointsAll() : [];
-  const imp = window.getDailyImprovements ? window.getDailyImprovements(400) : [];
+
+  // Используем функции из stats-utils
+  const daily = typeof getDailyPointsAll === 'function' ? getDailyPointsAll() : [];
+  const imp = typeof getDailyImprovements === 'function' ? getDailyImprovements(400) : [];
   const impMap = new Map(imp.map(d => [d.date, d]));
   const today = new Date();
+  
+  console.log('[MODAL.DATA] daily:', daily.length, 'imp:', imp.length);
   
   if (mode === 'year') {
     // 12 месяцев
@@ -2500,6 +2553,7 @@ window.getXpSeriesForModal = (mode) => {
         cards
       });
     }
+    console.log('[MODAL.DATA] Year:', res);
     return res;
   }
   
@@ -2523,6 +2577,7 @@ window.getXpSeriesForModal = (mode) => {
     });
   }
   
+  console.log('[MODAL.DATA] Week/Month:', res.slice(0, 5));
   return res;
 };
 
