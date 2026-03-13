@@ -1005,11 +1005,16 @@ function showStats(stats, results, total) {
         const oldEl = bar.querySelector('.level-progress-fill-old');
         const earnEl = bar.querySelector('.level-progress-fill-earned');
         const bonusEl = bar.querySelector('.level-progress-fill-bonus');
-        oldEl.style.width = `${oldW}%`;
-        earnEl.style.left = `${oldW}%`;
-        bonusEl.style.left = `${oldW}%`;
         
-        // Запуск анимаций: последовательно, но суммарно 1500ms
+        // Устанавливаем начальные позиции
+        oldEl.style.width = `${oldW}%`;
+        oldEl.style.left = `0px`;
+        earnEl.style.left = `${oldW}%`;
+        earnEl.style.width = `0%`;
+        bonusEl.style.left = `${oldW}%`;
+        bonusEl.style.width = `0%`;
+        
+        // Запуск анимаций: последовательно, суммарно 1500ms
         const totalDuration = 1500;
         const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
         const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
@@ -1017,10 +1022,13 @@ function showStats(stats, results, total) {
         earnEl.classList.add('animate');
         bonusEl.classList.add('animate');
         earnEl.style.transition = `width ${earnDuration}ms ease`;
-        bonusEl.style.transition = `width ${bonusDuration}ms ease`;
+        bonusEl.style.transition = `width ${bonusDuration}ms ease, left ${bonusDuration}ms ease`;
         
+        // 1. Сначала заполняется earned
         setTimeout(() => {
             earnEl.style.width = `${earnW}%`;
+            
+            // 2. Когда earned закончил, сдвигаем bonus и заполняем его
             setTimeout(() => {
                 bonusEl.style.left = `${oldW + earnW}%`;
                 bonusEl.style.width = `${bonusW}%`;
