@@ -874,7 +874,145 @@ const STATS_STYLES = `
 
   /* Progress - 50% width */
   .progress { grid-area: progress; }
-  .st-compact-card { width: 100%; height: 100%; min-height: 200px; }
+  
+  /* Compact Card - Краткая статистика */
+  .st-compact-card {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    background: linear-gradient(135deg, var(--st-surf) 0%, var(--st-surf-h) 100%);
+    border: 1px solid var(--st-border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .stc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex: 1;
+  }
+  
+  .stc-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  
+  .stc-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  
+  .stc-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--st-prim);
+  }
+  
+  .stc-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .stc-label {
+    color: var(--st-text-sec);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  
+  .stc-label.index-label {
+    font-size: 13px;
+  }
+  
+  .stc-label.stc-today {
+    font-size: 13px;
+    color: var(--st-text-sec);
+  }
+  
+  .stc-value {
+    font-weight: 600;
+    color: var(--st-text);
+    font-size: 14px;
+  }
+  
+  .stc-value.stc-strong {
+    font-weight: 700;
+    font-size: 16px;
+  }
+  
+  .stc-value.stc-orange {
+    color: var(--st-prim);
+  }
+  
+  .stc-value.stc-red {
+    color: var(--st-danger);
+  }
+  
+  .stc-value.index-value {
+    font-size: 18px;
+  }
+  
+  .stc-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+    text-align: right;
+  }
+  
+  .stc-today-line {
+    white-space: nowrap;
+  }
+  
+  .stc-today-line .muted {
+    color: var(--st-text-sec);
+    font-weight: 400;
+  }
+  
+  .stc-today-line .approx {
+    color: var(--st-sec);
+    font-weight: 600;
+  }
+  
+  .stc-bottom {
+    border-top: 1px solid var(--st-border);
+    padding-top: 12px;
+  }
+  
+  .stc-forecast {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  
+  .stc-forecast .stc-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--st-sec);
+  }
+  
+  .stc-forecast .key {
+    color: var(--st-text-sec);
+    font-size: 13px;
+  }
+  
+  .stc-forecast .date {
+    color: var(--st-text);
+    font-weight: 600;
+    font-size: 14px;
+  }
   
   /* Sidebar with modes - 50% width */
   .st-sidebar { 
