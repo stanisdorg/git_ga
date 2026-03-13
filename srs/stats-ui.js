@@ -911,12 +911,6 @@ const STATS_STYLES = `
 .st-ach-card.unlocked {
   opacity: 1;
   filter: none;
-  animation: achUnlock 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes achUnlock {
-  0% { transform: scale(0.8) rotate(-5deg); opacity: 0.5; }
-  50% { transform: scale(1.1) rotate(3deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 /* Rarity tiers */
 .st-ach-card.common.unlocked {
