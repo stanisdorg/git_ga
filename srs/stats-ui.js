@@ -1069,6 +1069,7 @@ const STATS_STYLES = `
     grid-row: 1;
     min-width: 280px;
     background: transparent !important;
+    box-shadow: none !important;
   }
   .st-block-achievements { 
     grid-column: 2; 
@@ -1106,6 +1107,7 @@ const STATS_STYLES = `
     display: flex !important;
     flex-direction: column !important;
     background: transparent !important;
+    box-shadow: none !important;
   }
 
   .st-compact-card {
