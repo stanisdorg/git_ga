@@ -2283,6 +2283,11 @@ window.openDiffInfoModal = (event) => {
      </div>
    `;
   document.body.appendChild(overlay);
+  
+  // Закрытие по ESC
+  const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
+  document.addEventListener('keydown', escHandler);
+  
   window.simValue = 3.0;
   window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
   window.simReset = () => { window.simValue = 3.0; updateSim(); };
@@ -2733,6 +2738,10 @@ window.openDiffModal = (index) => {
     </div>
   `;
   document.body.appendChild(overlay);
+  
+  // Закрытие по ESC
+  const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
+  document.addEventListener('keydown', escHandler);
 };
 
 // Модальное окно для категории
@@ -2740,10 +2749,10 @@ window.openCategoryModal = (categoryName) => {
   const currentCards = getCurrentCards();
   const progress = getProgressMap();
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-  
+
   // Фильтруем карточки по категории
   let list = currentCards.filter(q => q.category === categoryName);
-  
+
   // Сортируем по прогрессу (сначала трудные/сначала лёгкие) - по возрастанию EF
   list.sort((a, b) => {
     const pA = progress[a.question] || progress[a.question.trim()];
@@ -2752,7 +2761,7 @@ window.openCategoryModal = (categoryName) => {
     const efB = pB ? pB.easeFactor : 0;
     return efA - efB; // Сначала трудные (низкий EF)
   });
-  
+
   // Считаем проценты
   const total = list.length;
   let heartsFilled = 0;
@@ -2764,7 +2773,7 @@ window.openCategoryModal = (categoryName) => {
   });
   const maxHearts = total * 5;
   const percentage = maxHearts > 0 ? Math.round((heartsFilled / maxHearts) * 100) : 0;
-  
+
   console.log('[openCategoryModal] Категория:', categoryName, 'Карточек:', list.length);
 
   const overlay = document.createElement('div');
@@ -2805,6 +2814,10 @@ window.openCategoryModal = (categoryName) => {
     </div>
   `;
   document.body.appendChild(overlay);
+  
+  // Закрытие по ESC
+  const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
+  document.addEventListener('keydown', escHandler);
 };
 
 window.startCategorySession = (categoryName) => {
