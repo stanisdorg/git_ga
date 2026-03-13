@@ -41,7 +41,8 @@ export function initUI() {
 
     // Загружаем прогресс с локального сервера ПОСЛЕ инициализации табов
     // dataLoaded не диспатчим здесь — loadFromServer сам диспатчит
-    loadFromServer().catch(e => console.error('Failed to load progress:', e));
+    // forceReload=true для принудительной перезаписи с правильной кодировкой
+    loadFromServer(true).catch(e => console.error('Failed to load progress:', e));
 
     // Обновляем UI при изменении данных (только для админских изменений)
     const reinit = () => {

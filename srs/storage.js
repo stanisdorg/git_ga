@@ -78,9 +78,9 @@ export async function syncWithServer() {
     }, 1000);
 }
 
-export async function loadFromServer() {
+export async function loadFromServer(forceReload = false) {
     console.log('[loadFromServer] === ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ===');
-    
+
     // Only load if we have a logged-in user
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
@@ -101,7 +101,7 @@ export async function loadFromServer() {
     try {
         const url = `/api/progress?username=${encodeURIComponent(username)}`;
         console.log('[loadFromServer] GET', url);
-        
+
         const res = await fetch(url);
 
         // Если сервер недоступен (404, 500, network error) - загружаем локальные данные
@@ -135,11 +135,16 @@ export async function loadFromServer() {
         const localCardsCount = JSON.parse(localStorage.getItem('qaUserCards') || '[]').length;
         console.log('[loadFromServer] Сравнение карточек: локальные=', localCardsCount, 'серверные=', data._cards?.length || 0);
 
-        // Не перезаписываем если локальные данные свежее ИЛИ если локальных карточек больше
-        if ((data.updatedAt && data.updatedAt <= localTS) || (data._cards && data._cards.length <= localCardsCount)) {
-            console.log('[loadFromServer] Локальные данные свежее или больше - не перезаписываем');
-            window.dispatchEvent(new Event('dataLoaded'));
-            return;
+        // 🔥 ПРИНУДИТЕЛЬНАЯ ПЕРЕЗАПИСЬ при forceReload
+        if (forceReload) {
+            console.log('[loadFromServer] Принудительная перезапись данных с сервера...');
+        } else {
+            // Не перезаписываем если локальные данные свежее ИЛИ если локальных карточек больше
+            if ((data.updatedAt && data.updatedAt <= localTS) || (data._cards && data._cards.length <= localCardsCount)) {
+                console.log('[loadFromServer] Локальные данные свежее или больше - не перезаписываем');
+                window.dispatchEvent(new Event('dataLoaded'));
+                return;
+            }
         }
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
