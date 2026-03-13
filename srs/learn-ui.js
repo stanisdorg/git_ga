@@ -876,8 +876,13 @@ function showStats(stats, results, total) {
         
         // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
+            console.log('[STATS BUTTON] Clicked! Current hash:', location.hash);
             location.hash = '#/stats';
-            setTimeout(() => overlay.remove(), 100);
+            console.log('[STATS BUTTON] Hash changed to:', location.hash);
+            setTimeout(() => {
+                console.log('[STATS BUTTON] Removing overlay...');
+                overlay.remove();
+            }, 100);
         });
         
         // Кнопка "Продолжить" - следующий круг обучения
