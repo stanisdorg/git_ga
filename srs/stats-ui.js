@@ -1,4 +1,4 @@
-﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap } from './stats-utils.js?v=2.01';
+﻿import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=2.01';
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
