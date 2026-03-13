@@ -2078,7 +2078,7 @@ window.openCategoryModal = (categoryName) => {
        <div class="st-modal-body">
           <ul class="st-modal-list">
              ${list.map((q, idx) => {
-    const p = prog[q.question] || prog[q.question.trim()];
+    const p = progress[q.question] || progress[q.question.trim()];
     const ef = p ? p.easeFactor : undefined;
     const heartFills = getHeartFillPercentages(ef);
     const heartsSvg = renderHeartsSvg(heartFills, 'cat-'+idx);
