@@ -664,7 +664,7 @@ const STATS_STYLES = `
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 7px 12px;
   background: linear-gradient(135deg, rgba(22,27,34,0.6) 0%, rgba(22,27,34,0.4) 100%);
   border-radius: 8px;
   border: 1px solid rgba(34,41,51,0.5);
@@ -772,19 +772,25 @@ const STATS_STYLES = `
   cursor: help;
 }
 .st-ach-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .st-ach-card.unlocked {
   opacity: 1;
   filter: none;
-  background: linear-gradient(135deg, rgba(46,196,182,0.1) 0%, rgba(46,196,182,0.05) 100%);
-  border-color: var(--st-sec);
+  background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(255,159,28,0.05) 100%);
+  border-color: var(--st-prim);
 }
 .st-ach-card.unlocked:hover {
-  background: linear-gradient(135deg, rgba(46,196,182,0.2) 0%, rgba(46,196,182,0.1) 100%);
-  border-color: var(--st-sec);
-  box-shadow: 0 8px 24px rgba(46,196,182,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: linear-gradient(135deg, rgba(255,159,28,0.25) 0%, rgba(255,159,28,0.1) 100%);
+  border-color: var(--st-prim);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,159,28,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.st-ach-card.unlocked .st-ach-title {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
 }
 .st-ach-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .st-info-btn {
