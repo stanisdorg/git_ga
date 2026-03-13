@@ -101,14 +101,6 @@ const STATS_STYLES = `
   transform: scale(1.025);
   z-index: 10;
 }
-
-/* Hover effects for other blocks */
-.st-cat-progress-wrap:hover,
-.st-diff-section:hover,
-.st-compact-card:hover {
-  transform: scale(1.025);
-  z-index: 10;
-}
 .activity-header {
   display: flex;
   align-items: center;
@@ -210,7 +202,6 @@ const STATS_STYLES = `
   display: flex !important;
   flex-direction: column !important;
   height: 100% !important;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .st-cat-progress-title {
   font-size: 16px;
@@ -1129,7 +1120,6 @@ const STATS_STYLES = `
     flex-direction: column;
     gap: 16px;
     box-shadow: none !important;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .stc-header-with-info {
@@ -1515,8 +1505,8 @@ const STATS_STYLES = `
   .st-col-title { font-size: 16px; }
 
   /* Right Column Stack */
-  .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  .st-risk-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
+  .st-risk-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
 
   /* Primary Stats */
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
