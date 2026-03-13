@@ -339,6 +339,47 @@ const STATS_STYLES = `
   overflow: hidden;
 }
 .st-mode-card:hover { border-color: var(--st-prim); background: var(--st-surf-h); transform: translateY(-2px); }
+
+/* Большие карточки режимов */
+.st-mode-card-large {
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid var(--st-border);
+  background: linear-gradient(135deg, var(--st-surf) 0%, var(--st-surf-h) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.st-mode-card-large:hover {
+  border-color: var(--st-prim);
+  background: linear-gradient(135deg, var(--st-surf-h) 0%, rgba(255,159,28,0.1) 100%);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(255,159,28,0.2);
+}
+.st-mode-card-large .st-mode-icon { 
+  font-size: 48px; 
+  margin-bottom: 12px; 
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(255,159,28,0.3));
+}
+.st-mode-card-large .st-mode-title { 
+  font-weight: 700; 
+  font-size: 18px; 
+  margin-bottom: 8px; 
+  color: #fff; 
+  display: block;
+  text-align: center;
+}
+.st-mode-card-large .st-mode-desc { 
+  font-size: 13px; 
+  color: var(--st-text-sec); 
+  display: block; 
+  line-height: 1.5;
+  text-align: center;
+  max-width: 90%;
+}
+
 .st-mode-icon { font-size: 20px; margin-bottom: 6px; display: block; }
 .st-mode-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; color: #fff; display: block; }
 .st-mode-desc { font-size: 10px; color: var(--st-muted); display: block; line-height: 1.3; }
@@ -1352,22 +1393,16 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
-          <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="⏱️ Тайм-атака\n\n5 секунд на ответ.\n\nОшибки недопустимы — любая ошибка завершает сессию. Идеально для проверки знаний на скорость.">
-              <span class="st-mode-icon">⏱️</span>
-              <span class="st-mode-title">Тайм-атака</span>
-            </div>
-            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="☠️ Внезапная смерть\n\nИгра до первой ошибки.\n\nМаксимальная сложность — одна ошибка и сессия завершена. Проверь свою выдержку!">
-              <span class="st-mode-icon">☠️</span>
-              <span class="st-mode-title">Внезапная смерть</span>
-            </div>
-            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="🧠 Зубрежка сложных\n\nТолько карты с низким коэффициентом запоминания.\n\nФокус на слабых местах — система покажет только те карточки, которые вы забываете.">
+          <div class="modes-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="🧠 Зубрежка сложных\n\nТолько карты с низким коэффициентом запоминания.\n\nФокус на слабых местах — система покажет только те карточки, которые вы забываете.">
               <span class="st-mode-icon">🧠</span>
               <span class="st-mode-title">Зубрежка сложных</span>
+              <span class="st-mode-desc">Карточки с низким EF для проработки слабых мест</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
               <span class="st-mode-icon">🌱</span>
               <span class="st-mode-title">Только новые</span>
+              <span class="st-mode-desc">Карточки, которые вы ещё не начинали учить</span>
             </div>
           </div>
         </div>
