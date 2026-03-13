@@ -178,9 +178,20 @@ const STATS_STYLES = `
   flex-direction: column;
   gap: 6px;
   padding: 2px 12px 5px !important;
-  background: #0f3460;
+  background: linear-gradient(135deg, rgba(15,52,96,0.6) 0%, rgba(15,52,96,0.4) 100%);
   border-radius: 8px;
-  border: 1px solid #1a3a5c;
+  border: 1px solid rgba(26,58,92,0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.st-cat-progress-item:hover {
+  background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(15,52,96,0.6) 100%);
+  border-color: var(--st-prim);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255,159,28,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.st-cat-progress-item:active {
+  transform: translateX(2px) scale(0.98);
 }
 .st-cat-progress-header {
   display: flex;
