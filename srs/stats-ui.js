@@ -2458,43 +2458,68 @@ window.renderModalChart = () => {
   });
 };
 
-// Получение данных для модального окна
+// Получение данных для модального окна (копируем логику getActivitySeries)
 window.getXpSeriesForModal = (mode) => {
-  // Копируем логику из getXpSeries
   const getMSKDate = (date) => {
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+    try {
+      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+      const parts = fmt.formatToParts(date);
+      return `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}`;
+    } catch {
+      const mskOffset = 3 * 60 * 60 * 1000;
+      return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+    }
   };
   
-  const data = window.getDailyPointsAll ? window.getDailyPointsAll() : [];
+  const daily = window.getDailyPointsAll ? window.getDailyPointsAll() : [];
+  const imp = window.getDailyImprovements ? window.getDailyImprovements(400) : [];
+  const impMap = new Map(imp.map(d => [d.date, d]));
   const today = new Date();
-  const todayStr = getMSKDate(today);
   
-  const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : 365);
+  if (mode === 'year') {
+    // 12 месяцев
+    const res = [];
+    for (let m = 0; m < 12; m++) {
+      const y = today.getFullYear();
+      const start = new Date(y, m, 1);
+      const end = new Date(y, m + 1, 0);
+      let xp = 0, hearts = 0, cards = 0;
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const s = getMSKDate(d);
+        const de = daily.find(x => x.date === s);
+        const im = impMap.get(s);
+        xp += de ? (de.xp || 0) : 0;
+        hearts += im ? (im.regressed || 0) : 0;
+        cards += im ? (im.reviewed || 0) : 0;
+      }
+      res.push({
+        date: getMSKDate(new Date(y, m, 1)),
+        label: new Date(y, m, 1).toLocaleString('ru-RU', { month: 'short' }),
+        xp,
+        hearts,
+        cards
+      });
+    }
+    return res;
+  }
+  
+  // Неделя (14 дней) или Месяц (все дни)
+  const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
   const res = [];
   
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const s = getMSKDate(d);
-    const entry = data.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
-    
-    let label;
-    if (mode === 'week') {
-      label = d.toLocaleDateString('ru-RU', { weekday: 'short' });
-    } else if (mode === 'month') {
-      label = d.getDate().toString();
-    } else {
-      label = d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric' });
-    }
+    const entry = daily.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
+    const im = impMap.get(s);
     
     res.push({
       date: s,
+      label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
       xp: entry.xp,
-      cards: Math.floor(entry.xp / 5),
-      hearts: entry.bonus || entry.dayBonus || 0,
-      label: label,
-      isToday: s === todayStr
+      hearts: entry.dayBonus || entry.bonus || (im ? im.regressed : 0),
+      cards: im ? im.reviewed : 0
     });
   }
   
