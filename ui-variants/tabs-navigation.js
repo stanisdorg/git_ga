@@ -887,9 +887,21 @@ export function initTabsNavigation(appVersion) {
         box.style.borderRadius = '8px';
         box.title = 'Уровни и XP';
         box.onclick = () => {
-          import('../srs/stats-ui.js').then(({ openLevelInfoModal }) => {
-            if (openLevelInfoModal) openLevelInfoModal();
-          });
+          // Сначала пробуем через window (если stats-ui загружен)
+          if (window.openLevelInfoModal) {
+            window.openLevelInfoModal();
+          } else {
+            // Иначе загружаем stats-ui
+            import('../srs/stats-ui.js').then(() => {
+              if (window.openLevelInfoModal) {
+                window.openLevelInfoModal();
+              } else {
+                console.error('openLevelInfoModal not available');
+              }
+            }).catch(err => {
+              console.error('Failed to load stats-ui.js:', err);
+            });
+          }
         };
         box.onmouseover = () => {
           box.style.background = 'rgba(255,159,28,0.15)';
@@ -2450,7 +2462,7 @@ async function saveMergedToServer(skipReload = false) {
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
 
-                            // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
+                            // Добавляем только если эт�� пользовательская карточка, которой нет в базе и новых элементах
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
                                 const ov = overrides[uc.question];
                                 merged.push(ov ? { ...uc, ...ov } : uc);
