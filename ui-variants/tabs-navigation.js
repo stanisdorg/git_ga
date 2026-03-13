@@ -153,23 +153,16 @@ function fixEncodingIssues(data) {
         const originalCategory = card.category;
         const originalSubcategory = card.subcategory;
         
-        // Исправляем искажённую кодировку в category
-        // Символ  (U+FFFD) появляется при неправильной кодировке UTF-8
-        if (card.category && card.category.includes('')) {
-            // Если категория похожа на "Документация" с искажённой кодировкой
-            if (card.category.includes('кумент') || card.category.includes('Д') || card.category.includes('кументация')) {
-                card.category = 'Документация';
-                changed = true;
-            }
+        // 🔧 Исправляем искажённую кодировку в category
+        if (card.category === 'Документация' || card.category === 'Дкументация' || card.category === 'Дкументация') {
+            card.category = 'Документация';
+            changed = true;
         }
-        
-        // Исправляем искажённую кодировку в subcategory
-        if (card.subcategory && card.subcategory.includes('')) {
-            // Если подкатегория похожа на "Типы требований" с искажённой кодировкой
-            if (card.subcategory.includes('Типы тре') || (card.subcategory.includes('тре') && card.subcategory.includes('ований'))) {
-                card.subcategory = 'Типы требований';
-                changed = true;
-            }
+
+        // 🔧 Исправляем искажённую кодировку в subcategory
+        if (card.subcategory === 'Типы требований' || card.subcategory === 'Типы треований' || card.subcategory === 'Типы треований') {
+            card.subcategory = 'Типы требований';
+            changed = true;
         }
         
         return card;
