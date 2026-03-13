@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.08');
+                module = await import('../srs/learn-ui.js?v=2.09');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -636,6 +636,15 @@ export function initTabsNavigation(appVersion) {
         const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
         location.hash = '#/stats';
         initStatsPage(appVersion);
+    });
+    
+    // Обработчик изменения hash (для перехода из модалки)
+    window.addEventListener('hashchange', async () => {
+        console.log('[HASH CHANGE] New hash:', location.hash);
+        if (location.hash === '#/stats') {
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
+            initStatsPage(appVersion);
+        }
     });
 
     // Кнопка профиля / Войти
