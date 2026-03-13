@@ -102,7 +102,13 @@ const STATS_STYLES = `
   box-shadow: 0 12px 40px rgba(0,0,0,0.5);
   z-index: 10;
 }
-.activity-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-right: 40px; /* Место для кнопки развёртывания */
+}
 .period-switch { display: flex; gap: 12px; font-size: 12px; color: var(--st-muted); }
 .period-switch .active { color: #fff; font-weight: 600; }
 .month-switch { font-size: 12px; color: var(--st-text-sec); }
