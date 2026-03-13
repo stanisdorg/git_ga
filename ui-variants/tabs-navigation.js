@@ -878,9 +878,39 @@ export function initTabsNavigation(appVersion) {
         }
         
         levelContainer.appendChild(usernameSpan);
-        
+
         const box = document.createElement('div');
         box.className = 'level-inline';
+        box.style.cursor = 'pointer';
+        box.style.transition = 'all 0.2s ease';
+        box.style.padding = '4px 8px';
+        box.style.borderRadius = '8px';
+        box.title = 'Уровни и XP';
+        box.onclick = () => {
+          import('../srs/stats-ui.js').then(({ openLevelInfoModal }) => {
+            if (openLevelInfoModal) openLevelInfoModal();
+          });
+        };
+        box.onmouseover = () => {
+          box.style.background = 'rgba(255,159,28,0.15)';
+          box.style.boxShadow = '0 0 12px rgba(255,159,28,0.4)';
+          box.style.transform = 'translateX(2px)';
+          const bar = box.querySelector('.level-inline-bar');
+          if (bar) {
+            bar.style.borderColor = 'var(--st-prim)';
+            bar.style.boxShadow = '0 0 8px rgba(255,159,28,0.3)';
+          }
+        };
+        box.onmouseout = () => {
+          box.style.background = '';
+          box.style.boxShadow = '';
+          box.style.transform = '';
+          const bar = box.querySelector('.level-inline-bar');
+          if (bar) {
+            bar.style.borderColor = '';
+            bar.style.boxShadow = '';
+          }
+        };
         const data = getCurrentLevel();
         const label = document.createElement('div');
         label.className = 'lv-label';
