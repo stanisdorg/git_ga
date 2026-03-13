@@ -2065,26 +2065,35 @@ function renderStats() {
     const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
     const redDark = '#8B0000'; const redBright = '#FF3B3B';
     const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
+    const baseBarHeight = 4; // Минимальная высота бара (пиксели) для пустых значений
     data.forEach((d, idx) => {
       const labelOk = currentXpMode === 'year' ? true : (idx % cfg.labelStep === 0);
-      const cardsH = Math.max(2, Math.min(innerH, (innerH / hcMax) * (d.cards || 0)));
+      const cardsVal = d.cards || 0;
+      const heartsVal = d.hearts || 0;
+      // Минимальная высота для визуального отображения пустых слотов
+      const cardsH = cardsVal > 0 
+        ? Math.max(baseBarHeight, Math.min(innerH, (innerH / hcMax) * cardsVal))
+        : baseBarHeight;
       const yCards = topPad + (innerH - cardsH);
-      const tCards = Math.max(0, Math.min(1, (d.cards || 0) / hcMax));
+      const tCards = cardsVal > 0 ? Math.max(0, Math.min(1, cardsVal / hcMax)) : 0.15;
       const topOrange = lerpHex(orangeDark, orangeBright, tCards);
       defs.push(`<linearGradient id="go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`);
+      // Прямоугольник со скруглением только сверху
       const rWide = Math.round(wideBarW / 2);
-      const pathCards = `M ${x} ${yCards + cardsH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + wideBarW} ${yCards + rWide} L ${x + wideBarW} ${yCards + cardsH} Z`;
-      bars.push(`<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#go${idx})"/>`);
+      const pathCards = `M ${x} ${topPad + innerH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + wideBarW} ${yCards + rWide} L ${x + wideBarW} ${topPad + innerH} Z`;
+      bars.push(`<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#go${idx})" opacity="${cardsVal > 0 ? '0.9' : '0.3'}"/>`);
 
-      const heartsH = Math.max(2, Math.min(innerH, (innerH / hcMax) * (d.hearts || 0)));
+      const heartsH = heartsVal > 0
+        ? Math.max(baseBarHeight, Math.min(innerH, (innerH / hcMax) * heartsVal))
+        : baseBarHeight;
       const yHearts = topPad + (innerH - heartsH);
       const heartsX = x + Math.round((wideBarW - narrowBarW) / 2);
-      const tHearts = Math.max(0, Math.min(1, (d.hearts || 0) / hcMax));
+      const tHearts = heartsVal > 0 ? Math.max(0, Math.min(1, heartsVal / hcMax)) : 0.15;
       const topRed = lerpHex(redDark, redBright, tHearts);
       defs.push(`<linearGradient id="gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`);
       const rNarrow = Math.round(narrowBarW / 2);
-      const pathHearts = `M ${heartsX} ${yHearts + heartsH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${yHearts + heartsH} Z`;
-      bars.push(`<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#gh${idx})"/>`);
+      const pathHearts = `M ${heartsX} ${topPad + innerH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${topPad + innerH} Z`;
+      bars.push(`<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#gh${idx})" opacity="${heartsVal > 0 ? '1' : '0.25'}"/>`);
       if (labelOk) {
         bars.push(`<text class="chart-label" x="${x + groupW / 2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
       }
@@ -2437,40 +2446,44 @@ window.renderModalChart = () => {
   }
   
   // Бары
+  const baseBarHeight = 5; // Минимальная высота бара для пустых значений
   let x = padding.left + gap;
   data.forEach((d, idx) => {
-    const hasValue = (d.cards || 0) > 0 || (d.hearts || 0) > 0;
+    const cardsVal = d.cards || 0;
+    const heartsVal = d.hearts || 0;
     
-    if (hasValue) {
-      // Cards (оранжевый, широкий)
-      const cardsH = Math.max(2, (innerHeight / maxValue) * (d.cards || 0));
-      const yCards = padding.top + innerHeight - cardsH;
-      const tCards = Math.max(0, Math.min(1, (d.cards || 0) / maxValue));
-      const topOrange = lerpHex(orangeDark, orangeBright, tCards);
-      defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`;
-      const rWide = Math.round(barWidth / 2);
-      const pathCards = `M ${x} ${yCards + cardsH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + barWidth} ${yCards + rWide} L ${x + barWidth} ${yCards + cardsH} Z`;
-      bars += `<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#modal-go${idx})" style="cursor:pointer"/>`;
-      
-      // Hearts (красный, узкий, по центру)
-      const heartsH = Math.max(2, (innerHeight / maxValue) * (d.hearts || 0));
-      const yHearts = padding.top + innerHeight - heartsH;
-      const narrowBarW = Math.round(barWidth * 0.4);
-      const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
-      const tHearts = Math.max(0, Math.min(1, (d.hearts || 0) / maxValue));
-      const topRed = lerpHex(redDark, redBright, tHearts);
-      defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`;
-      const rNarrow = Math.round(narrowBarW / 2);
-      const pathHearts = `M ${heartsX} ${yHearts + heartsH} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${yHearts + heartsH} Z`;
-      bars += `<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${d.hearts || 0}" data-cards="${d.cards || 0}" fill="url(#modal-gh${idx})" style="cursor:pointer"/>`;
-    }
-    
+    // Cards (оранжевый, широкий) - всегда рисуем, даже если 0
+    const cardsH = cardsVal > 0
+      ? Math.max(baseBarHeight, (innerHeight / maxValue) * cardsVal)
+      : baseBarHeight;
+    const yCards = padding.top + innerHeight - cardsH;
+    const tCards = cardsVal > 0 ? Math.max(0, Math.min(1, cardsVal / maxValue)) : 0.15;
+    const topOrange = lerpHex(orangeDark, orangeBright, tCards);
+    defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`;
+    const rWide = Math.round(barWidth / 2);
+    const pathCards = `M ${x} ${padding.top + innerHeight} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + barWidth} ${yCards + rWide} L ${x + barWidth} ${padding.top + innerHeight} Z`;
+    bars += `<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="${cardsVal > 0 ? '0.9' : '0.3'}"/>`;
+
+    // Hearts (красный, узкий, по центру) - всегда рисуем, даже если 0
+    const heartsH = heartsVal > 0
+      ? Math.max(baseBarHeight, (innerHeight / maxValue) * heartsVal)
+      : baseBarHeight;
+    const yHearts = padding.top + innerHeight - heartsH;
+    const narrowBarW = Math.round(barWidth * 0.4);
+    const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
+    const tHearts = heartsVal > 0 ? Math.max(0, Math.min(1, heartsVal / maxValue)) : 0.15;
+    const topRed = lerpHex(redDark, redBright, tHearts);
+    defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`;
+    const rNarrow = Math.round(narrowBarW / 2);
+    const pathHearts = `M ${heartsX} ${padding.top + innerHeight} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${padding.top + innerHeight} Z`;
+    bars += `<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-gh${idx})" style="cursor:pointer" opacity="${heartsVal > 0 ? '1' : '0.25'}"/>`;
+
     // Подпись
     const labelOk = mode === 'year' ? true : (idx % cfg.labelStep === 0);
     if (labelOk) {
       bars += `<text class="chart-label" x="${x + barWidth/2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
     }
-    
+
     x += barWidth + gap;
   });
   
