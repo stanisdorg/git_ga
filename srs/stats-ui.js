@@ -1111,6 +1111,22 @@ const STATS_STYLES = `
     box-shadow: none !important;
   }
   
+  .stc-header-with-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .stc-block-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
   .stc-top {
     display: flex;
     justify-content: space-between;
@@ -1728,6 +1744,10 @@ function renderStats() {
         <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика">
+            <div class="stc-header-with-info">
+              <span class="stc-block-title">📊 Прогресс</span>
+              <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?">i</button>
+            </div>
             <div class="stc-top">
               <div class="stc-left">
                 <div class="stc-row">
@@ -2294,6 +2314,120 @@ window.openDiffInfoModal = (event) => {
   function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="'+id+'"><stop offset="'+fillPercent+'%" stop-color="#ff4d4d"/><stop offset="'+fillPercent+'%" stop-color="#444"/></linearGradient></defs><path fill="url(#'+id+')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
   function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
   updateSim();
+};
+
+// Модальное окно с объяснением статистики
+window.openStatsInfoModal = (event) => {
+  if (event) event.stopPropagation();
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.innerHTML = `
+    <div class="st-modal" style="max-width:700px;">
+      <div class="st-modal-header">
+        <div class="st-modal-title">📊 Как рассчитывается статистика?</div>
+        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
+      </div>
+      <div class="st-modal-body" style="padding:20px;">
+        
+        <!-- Этап обучения -->
+        <div style="margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="font-size:24px;">🎯</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">Этап обучения</h3>
+          </div>
+          <div style="background:rgba(255,159,28,0.1);border-left:3px solid var(--st-prim);padding:12px;border-radius:8px;">
+            <p style="margin:0 0 10px 0;font-size:14px;color:var(--st-text);">
+              Показывает, на какой стадии находится изучение материала:
+            </p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">
+              <div style="background:rgba(229,83,61,0.15);padding:10px;border-radius:6px;">
+                <div style="font-size:12px;color:#ff6b6b;font-weight:700;">🔥 Active Learning</div>
+                <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Более 50% карточек сложные. Фокус на проработке трудных тем.</div>
+              </div>
+              <div style="background:rgba(46,196,182,0.15);padding:10px;border-radius:6px;">
+                <div style="font-size:12px;color:#4ec9b0;font-weight:700;">🌱 Consolidation</div>
+                <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Закрепление материала. Баланс между сложным и лёгким.</div>
+              </div>
+              <div style="background:rgba(76,175,80,0.15);padding:10px;border-radius:6px;">
+                <div style="font-size:12px;color:#81c784;font-weight:700;">💚 Retention</div>
+                <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Более 60% карточек лёгкие. Поддержание знаний в памяти.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Индекс удержания -->
+        <div style="margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="font-size:24px;">❤️</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">Индекс удержания</h3>
+          </div>
+          <div style="background:rgba(229,83,61,0.1);border-left:3px solid #E5533D;padding:12px;border-radius:8px;">
+            <p style="margin:0 0 12px 0;font-size:14px;color:var(--st-text);">
+              Показывает, насколько хорошо материал усвоен (от 0% до 100%).
+            </p>
+            <div style="background:linear-gradient(90deg,#E5533D 0%,#FF9F1C 50%,#4CAF50 100%);height:24px;border-radius:12px;position:relative;margin-bottom:10px;">
+              <div style="position:absolute;left:0%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">0%</div>
+              <div style="position:absolute;left:25%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">25%</div>
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">50%</div>
+              <div style="position:absolute;left:75%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">75%</div>
+              <div style="position:absolute;left:100%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">100%</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center;font-size:10px;color:var(--st-text-sec);">
+              <div>💔<br>1❤️</div>
+              <div>❤️<br>2❤️</div>
+              <div>🧡<br>3❤️</div>
+              <div>💛<br>4❤️</div>
+              <div>💚<br>5❤️</div>
+            </div>
+            <p style="margin:10px 0 0 0;font-size:12px;color:var(--st-text-sec);">
+              Каждая карточка имеет от 1 до 5 сердечек. Индекс рассчитывается как средний процент заполненности всех сердечек.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Сегодня -->
+        <div style="margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="font-size:24px;">⏱️</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">План на сегодня</h3>
+          </div>
+          <div style="background:rgba(46,196,182,0.1);border-left:3px solid var(--st-sec);padding:12px;border-radius:8px;">
+            <p style="margin:0 0 10px 0;font-size:14px;color:var(--st-text);">
+              Система рассчитывает количество карточек для повторения на основе алгоритма интервальных повторений:
+            </p>
+            <ul style="margin:0;padding-left:20px;font-size:13px;color:var(--st-text-sec);line-height:1.6;">
+              <li>Карточки, которые пора повторить сегодня</li>
+              <li>Новые карточки для изучения</li>
+              <li>Время рассчитывается как <strong style="color:#fff;">~1.5 минуты на карточку</strong></li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Прогноз -->
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="font-size:24px;">📅</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">Прогноз завершения</h3>
+          </div>
+          <div style="background:rgba(155,163,175,0.1);border-left:3px solid var(--st-muted);padding:12px;border-radius:8px;">
+            <p style="margin:0;font-size:14px;color:var(--st-text);">
+              Дата, когда все карточки будут изучены и доведены до уровня "Легко".
+            </p>
+            <p style="margin:8px 0 0 0;font-size:12px;color:var(--st-text-sec);">
+              Рассчитывается на основе вашей текущей скорости обучения (в среднем 12 карточек в день).
+            </p>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  
+  // Закрытие по ESC
+  const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
+  document.addEventListener('keydown', escHandler);
 };
 
 function getHeartsForEf(ef) {
