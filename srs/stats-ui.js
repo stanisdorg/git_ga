@@ -1906,12 +1906,54 @@ function getHeartsCountForEf(ef) {
   return 1;                      // VERY HARD
 }
 
+// Функция для получения процента заполнения для каждого сердечка (0-100%)
+function getHeartFillPercentages(ef) {
+  const fills = [];
+  if (ef === undefined || ef === null) {
+    return [0, 0, 0, 0, 0];
+  }
+  
+  // EF range: 1.3 (min) to 2.9 (max) = 1.6 range
+  // 5 hearts, so each heart = 0.32 EF range
+  // Heart 1: 1.3-1.62, Heart 2: 1.62-1.94, Heart 3: 1.94-2.26, Heart 4: 2.26-2.58, Heart 5: 2.58-2.9
+  
+  const minEF = 1.3;
+  const maxEF = 2.9;
+  const heartRange = (maxEF - minEF) / 5; // 0.32
+  
+  for (let i = 0; i < 5; i++) {
+    const heartMin = minEF + (i * heartRange);
+    const heartMax = minEF + ((i + 1) * heartRange);
+    
+    if (ef >= heartMax) {
+      fills.push(100);
+    } else if (ef <= heartMin) {
+      fills.push(0);
+    } else {
+      // Partial fill
+      const percent = ((ef - heartMin) / heartRange) * 100;
+      fills.push(Math.round(percent));
+    }
+  }
+  
+  return fills;
+}
+
 // Функция для генерации SVG сердечек с плавным градиентом
-function renderHeartsSvg(count, prefix) {
+function renderHeartsSvg(fillPercentages, prefix) {
   let svg = '';
-  for (let i = 1; i <= 5; i++) {
-    const fillPercent = i <= count ? 100 : 0;
-    svg += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;"><defs><linearGradient id="${prefix}-grad-${i}"><stop offset="${fillPercent}%" stop-color="#ff4d4d"/><stop offset="${fillPercent}%" stop-color="#444"/></linearGradient></defs><path fill="url(#${prefix}-grad-${i})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+  // Если передано число (для обратной совместимости), конвертируем в массив
+  if (typeof fillPercentages === 'number') {
+    const count = fillPercentages;
+    fillPercentages = [];
+    for (let i = 0; i < 5; i++) {
+      fillPercentages.push(i < count ? 100 : 0);
+    }
+  }
+  
+  for (let i = 0; i < 5; i++) {
+    const fillPercent = fillPercentages[i] || 0;
+    svg += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;"><defs><linearGradient id="${prefix}-grad-${i+1}"><stop offset="${fillPercent}%" stop-color="#ff4d4d"/><stop offset="${fillPercent}%" stop-color="#444"/></linearGradient></defs><path fill="url(#${prefix}-grad-${i+1})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
   }
   return svg;
 }
@@ -1966,8 +2008,8 @@ window.openDiffModal = (index) => {
              ${list.map((q, idx) => {
     const p = prog[q.question] || prog[q.question.trim()];
     const ef = p ? p.easeFactor : undefined;
-    const heartsCount = getHeartsCountForEf(ef);
-    const heartsSvg = renderHeartsSvg(heartsCount, 'modal-'+idx);
+    const heartFills = getHeartFillPercentages(ef);
+    const heartsSvg = renderHeartsSvg(heartFills, 'modal-'+idx);
     const isFav = favorites.has(q.question);
 
     return `
