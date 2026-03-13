@@ -329,6 +329,44 @@ const STATS_STYLES = `
     gap: 4px !important;
     flex-shrink: 0 !important;
   }
+  .level-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lv-label {
+    font-weight: 700;
+    color: var(--st-prim);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .level-inline-bar {
+    position: relative;
+    width: 140px;
+    height: 20px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--st-border);
+  }
+  .level-inline-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--st-prim) 0%, #FFB142 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    min-width: 2px;
+  }
+  .level-inline-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    white-space: nowrap;
+  }
 }
 
 /* Game Modes */
