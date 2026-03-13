@@ -1868,18 +1868,18 @@ function renderStats() {
         <div class="st-block-5">
           <div class="st-ach-section">
             <div class="st-ach-scroll-wrap">
-              ${renderAchCard('firstSession', '🏁', 'Первый шаг', progress.firstSession, 1, 'common', 'Завершите свой первый урок')}
-              ${renderAchCard('sevenDayStreak', '🔥', 'Неделя в огне', progress.streak7, 7, 'rare', 'Учитесь 7 дней подряд')}
-              ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare', 'Учитесь 14 дней подряд')}
-              ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic', 'Учитесь 30 дней подряд')}
-              ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare', 'Превратите 10 сложных карточек в лёгкие')}
-              ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common', 'Изучите 50 карточек')}
-              ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic', 'Изучите 100 карточек')}
-              ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic', 'Достигните точности 90%+')}
-              ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary', 'Достигните уровня 10')}
-              ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare', 'Изучите 25 карточек до 9:00 утра')}
-              ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic', 'Изучите 50 карточек после 23:00')}
-              ${renderAchCard('comeback', '🔄', 'Возвращение', progress.comebackCards, 10, 'legendary', 'Вернитесь после 7+ дней перерыва и изучите 10 карточек')}
+              ${renderAchCard('firstSession', '🏁', 'Первый шаг', progress.firstSession, 1, 'common', 'Пройдите хотя бы один урок')}
+              ${renderAchCard('sevenDayStreak', '🔥', 'Неделя в огне', progress.streak7, 7, 'rare', '7 дней подряд заходите в приложение и учитесь')}
+              ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare', '14 дней подряд без пропусков')}
+              ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic', '30 дней подряд — целый месяц без пропусков!')}
+              ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare', '10 карточек, которые были сложными, стали лёгкими (5 сердечек)')}
+              ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common', '50 карточек изучено (пройдено хотя бы один раз)')}
+              ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic', '100 карточек изучено — вы знаете больше половины базы!')}
+              ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic', '90%+ правильных ответов за всё время — почти без ошибок!')}
+              ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary', 'Уровень 10 — накопите 56250 XP')}
+              ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare', '25 карточек, пройденных до 9:00 утра')}
+              ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic', '50 карточек, пройденных после 23:00 (ночью)')}
+              ${renderAchCard('comeback', '🔄', 'Возвращение', progress.comebackCards, 10, 'legendary', 'Сделайте перерыв 7+ дней, затем вернитесь и пройдите 10 карточек')}
             </div>
           </div>
         </div>
