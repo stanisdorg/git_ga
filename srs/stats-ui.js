@@ -1780,10 +1780,10 @@ function renderStats() {
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
           <div class="modes-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="🧠 Зубрежка сложных\n\nТолько карты с низким коэффициентом запоминания.\n\nФокус на слабых местах — система покажет только те карточки, которые вы забываете.">
-              <span class="st-mode-icon">🧠</span>
-              <span class="st-mode-title">Зубрежка сложных</span>
-              <span class="st-mode-desc">Карточки с низким EF для проработки слабых мест</span>
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
+              <span class="st-mode-icon">📝</span>
+              <span class="st-mode-title">Работа над ошибками</span>
+              <span class="st-mode-desc">Карточки с низкой точностью ответов</span>
             </div>
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
               <span class="st-mode-icon">🌱</span>
