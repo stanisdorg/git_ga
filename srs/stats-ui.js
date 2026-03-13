@@ -855,39 +855,34 @@ const STATS_STYLES = `
   border: 1px solid var(--st-border);
   margin-top: 0;
 }
-.st-ach-groups {
+.st-ach-scroll-wrap {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.st-ach-group {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--st-prim) var(--st-surf-h);
 }
-.st-ach-group-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--st-prim);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.st-ach-scroll-wrap::-webkit-scrollbar {
+  height: 6px;
 }
-.st-ach-scroll {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-start;
+.st-ach-scroll-wrap::-webkit-scrollbar-track {
+  background: var(--st-surf-h);
+  border-radius: 3px;
+}
+.st-ach-scroll-wrap::-webkit-scrollbar-thumb {
+  background: var(--st-prim);
+  border-radius: 3px;
 }
 .st-ach-card {
-  width: 86px;
-  height: 100px;
+  width: 76px;
+  height: 92px;
+  flex-shrink: 0;
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 12px;
-  padding: 10px 8px;
+  padding: 8px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -899,7 +894,7 @@ const STATS_STYLES = `
   overflow: hidden;
 }
 .st-ach-card:hover {
-  transform: translateY(-3px) scale(1.03);
+  transform: translateY(-3px) scale(1.05);
   z-index: 10;
 }
 .st-ach-card.unlocked {
@@ -933,12 +928,12 @@ const STATS_STYLES = `
   background: rgba(22,27,34,0.5);
 }
 .st-ach-icon {
-  font-size: 28px;
+  font-size: 26px;
   margin-bottom: 4px;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 .st-ach-title {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   color: #fff;
   text-align: center;
@@ -949,11 +944,11 @@ const STATS_STYLES = `
 }
 .st-ach-progress-wrap {
   width: 100%;
-  height: 4px;
+  height: 3px;
   background: rgba(255,255,255,0.1);
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 .st-ach-progress-fill {
   height: 100%;
@@ -1850,53 +1845,19 @@ function renderStats() {
         <!-- Блок 5: Достижения (нижний, 100% ширины) -->
         <div class="st-block-5">
           <div class="st-ach-section">
-            <div class="st-ach-groups">
-              <!-- Серия -->
-              <div class="st-ach-group">
-                <div class="st-ach-group-title">🔥 Серия</div>
-                <div class="st-ach-scroll">
-                  ${renderAchCard('firstSession', '🏁', 'Первый шаг', progress.firstSession, 1, 'common')}
-                  ${renderAchCard('sevenDayStreak', '🔥', 'Неделя в огне', progress.streak7, 7, 'rare')}
-                  ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare')}
-                  ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic')}
-                </div>
-              </div>
-              
-              <!-- Прогресс -->
-              <div class="st-ach-group">
-                <div class="st-ach-group-title">📊 Прогресс</div>
-                <div class="st-ach-scroll">
-                  ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare')}
-                  ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common')}
-                  ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic')}
-                </div>
-              </div>
-              
-              <!-- Мастерство -->
-              <div class="st-ach-group">
-                <div class="st-ach-group-title">🎯 Мастерство</div>
-                <div class="st-ach-scroll">
-                  ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic')}
-                  ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary')}
-                </div>
-              </div>
-              
-              <!-- Время суток -->
-              <div class="st-ach-group">
-                <div class="st-ach-group-title">🌙 Время</div>
-                <div class="st-ach-scroll">
-                  ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare')}
-                  ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic')}
-                </div>
-              </div>
-              
-              <!-- Особые -->
-              <div class="st-ach-group">
-                <div class="st-ach-group-title">💫 Особые</div>
-                <div class="st-ach-scroll">
-                  ${renderAchCard('comeback', '🔄', 'Возвращение', progress.comebackCards, 10, 'legendary')}
-                </div>
-              </div>
+            <div class="st-ach-scroll-wrap">
+              ${renderAchCard('firstSession', '🏁', 'Первый шаг', progress.firstSession, 1, 'common')}
+              ${renderAchCard('sevenDayStreak', '🔥', 'Неделя в огне', progress.streak7, 7, 'rare')}
+              ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare')}
+              ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic')}
+              ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare')}
+              ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common')}
+              ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic')}
+              ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic')}
+              ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary')}
+              ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare')}
+              ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic')}
+              ${renderAchCard('comeback', '🔄', 'Возвращение', progress.comebackCards, 10, 'legendary')}
             </div>
           </div>
         </div>
