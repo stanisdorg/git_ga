@@ -1573,10 +1573,9 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
   const lockedClass = isUnlocked ? 'unlocked' : 'locked';
   const rarityClass = rarity || 'common';
   const desc = description || '';
-  const tooltipDesc = desc ? `\\n\\n${desc}` : '';
 
   return `
-    <div class="st-ach-card ${lockedClass} ${rarityClass}" title="${title}: ${current}/${target}${tooltipDesc}">
+    <div class="st-ach-card ${lockedClass} ${rarityClass}" title="${title}: ${current}/${target}${desc ? ' — ' + desc : ''}">
       <div class="st-ach-icon">${icon}</div>
       <div class="st-ach-title">${title}</div>
       <div class="st-ach-progress-wrap">
