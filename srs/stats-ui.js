@@ -1262,16 +1262,6 @@ function renderStats() {
     ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5z"/><path d="M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>'
     : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>';
 
-  // Функция для генерации SVG сердечек с плавным градиентом
-  function renderHeartsSvg(count, prefix) {
-    let svg = '';
-    for (let i = 1; i <= 5; i++) {
-      const fillPercent = i <= count ? 100 : 0;
-      svg += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;"><defs><linearGradient id="${prefix}-grad-${i}"><stop offset="${fillPercent}%" stop-color="#ff4d4d"/><stop offset="${fillPercent}%" stop-color="#444"/></linearGradient></defs><path fill="url(#${prefix}-grad-${i})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-    }
-    return svg;
-  }
-
   // Render HTML
   const container = document.getElementById('stats-container');
   if (!container) return;
@@ -1914,6 +1904,16 @@ function getHeartsCountForEf(ef) {
   if (ef >= 2.1) return 4;      // STANDARD
   if (ef >= 1.7) return 3;      // HARD
   return 1;                      // VERY HARD
+}
+
+// Функция для генерации SVG сердечек с плавным градиентом
+function renderHeartsSvg(count, prefix) {
+  let svg = '';
+  for (let i = 1; i <= 5; i++) {
+    const fillPercent = i <= count ? 100 : 0;
+    svg += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;"><defs><linearGradient id="${prefix}-grad-${i}"><stop offset="${fillPercent}%" stop-color="#ff4d4d"/><stop offset="${fillPercent}%" stop-color="#444"/></linearGradient></defs><path fill="url(#${prefix}-grad-${i})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+  }
+  return svg;
 }
 
 window.openDiffModal = (index) => {
