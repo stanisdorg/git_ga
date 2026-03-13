@@ -201,98 +201,102 @@ export function checkAchievements() {
   const prog = getProgressMap();
   const studiedCount = Object.values(prog).filter(p => p.repetitions > 0).length;
   const accuracy = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
+
+  // --- Progress tracking for achievements ---
+  const progress = {};
   
-  // --- New Logic for Requested Achievements ---
+  // Streak progress
+  progress.streak7 = Math.min(7, streak.current || 0);
+  progress.streak14 = Math.min(14, streak.current || 0);
+  progress.streak30 = Math.min(30, streak.current || 0);
+  progress.streak100 = Math.min(100, streak.current || 0);
   
-  // 1. Hard -> Easy (10 cards improved)
-  // We approximate this by counting cards that are currently EASY (EF > 2.4) 
-  // but have at least one 'Again' or 'Hard' in their history.
+  // Cards progress
+  progress.cards50 = Math.min(50, studiedCount);
+  progress.cards100 = Math.min(100, studiedCount);
+  
+  // Accuracy progress
+  progress.accuracy90 = Math.min(90, Math.round(accuracy));
+  
+  // Level progress
+  const levelInfo = getCurrentLevel();
+  progress.level5 = Math.min(5, levelInfo.level);
+  progress.level10 = Math.min(10, levelInfo.level);
+  
+  // Hard to Easy progress
   let hardToEasyCount = 0;
   Object.values(prog).forEach(p => {
-     if ((p.easeFactor || 0) >= 2.4 && p.historyArray) {
-        const hasBadHistory = p.historyArray.some(h => h.grade === 1 || h.grade === 2);
-        if (hasBadHistory) hardToEasyCount++;
-     }
+    if ((p.easeFactor || 0) >= 2.4 && p.historyArray) {
+      const hasBadHistory = p.historyArray.some(h => h.grade === 1 || h.grade === 2);
+      if (hasBadHistory) hardToEasyCount++;
+    }
   });
+  progress.hardToEasy = Math.min(10, hardToEasyCount);
   if (!ach.hardToEasy && hardToEasyCount >= 10) ach.hardToEasy = true;
 
-  // 2. Category Master (all cards easy in category)
-  // We need to group by category first
-  const catStats = {};
-  Object.values(prog).forEach(p => {
-     // We need category from the question data, but prog map might not have it directly if structure differs.
-     // Ideally we should iterate uniqueQaData, but here we only have prog map.
-     // Let's assume we can't easily get it here without passing allData.
-     // However, stats-ui passes nothing to checkAchievements().
-     // Let's rely on what we can. 
-     // We can skip this or try to infer.
-     // Actually, let's use the 'master' achievement as 'Category Master' if we can't distinguishing.
-     // Wait, the user wants "Category Master".
-     // I'll skip complex category logic inside checkAchievements to avoid perf hit or dependency hell,
-     // OR I can use the 'mastered' state count.
-  });
-  
-  // 3. Comeback (resumed after break)
-  const todayStr = getMSKDate();
-  // Find a card reviewed today
-  const reviewedToday = Object.values(prog).filter(p => p.lastReviewed === todayStr);
-  if (!ach.comeback && reviewedToday.length > 0) {
-     // Check if there was a gap before today
-     // This requires global daily history.
-     const daily = JSON.parse(localStorage.getItem('dailyPoints') || '{}');
-     const dates = Object.keys(daily).sort();
-     if (dates.length >= 2) {
-        const last = new Date(dates[dates.length-1]);
-        const prev = new Date(dates[dates.length-2]);
-        const diff = (last - prev) / (1000 * 60 * 60 * 24);
-        if (diff > 14) ach.comeback = true; // > 2 weeks break
-     }
-  }
-
-  // 4. Consistency (Stable Understanding Index) -> We'll map this to 'Marathoner' (30 days streak)
-  // or add a new one for 14 days streak.
-  if (!ach.consistency && (streak.current || 0) >= 14) ach.consistency = true;
-
-  // --- Existing Logic ---
-  // Check for time-based achievements using lastReviewed (timestamp) or lastReviewDate
-  let earlyBird = false;
-  let weekendWarrior = false;
+  // --- Time-based achievements (using MSK time) ---
+  let earlyBirdCount = 0; // Cards reviewed before 9:00
+  let nightRaiderCount = 0; // Cards reviewed after 23:00
   
   Object.values(prog).forEach(p => {
     if (p.lastReviewDate) {
       const d = new Date(p.lastReviewDate);
       const h = d.getHours();
-      const day = d.getDay();
-      if (h >= 4 && h < 9) earlyBird = true; // 4 AM - 9 AM
-      if (day === 0 || day === 6) weekendWarrior = true; // Sun or Sat
+      if (h >= 4 && h < 9) earlyBirdCount++;
+      if (h >= 23 || h < 4) nightRaiderCount++;
     }
   });
+  
+  // Ранняя пташка: 25+ карточек до 9:00
+  progress.earlyBird = Math.min(25, earlyBirdCount);
+  if (!ach.earlyBird && earlyBirdCount >= 25) ach.earlyBird = true;
+  
+  // Ночной рейдер: 50+ карточек после 23:00
+  progress.nightRaider = Math.min(50, nightRaiderCount);
+  if (!ach.nightRaider && nightRaiderCount >= 50) ach.nightRaider = true;
 
-  const nightOwl = Object.values(prog).some(p => {
-     if (!p.lastReviewDate) return false;
-     const h = new Date(p.lastReviewDate).getHours();
-     return h >= 23 || h < 4;
-  });
+  // --- Comeback achievement (7+ days break, then 10+ cards) ---
+  const todayStr = getMSKDate();
+  const reviewedToday = Object.values(prog).filter(p => p.lastReviewed === todayStr);
+  if (!ach.comeback && reviewedToday.length >= 10) {
+    // Check if there was a gap of 7+ days before today
+    const daily = JSON.parse(localStorage.getItem('dailyPoints') || '{}');
+    const dates = Object.keys(daily).sort();
+    if (dates.length >= 2) {
+      const last = new Date(dates[dates.length - 1]);
+      const prev = new Date(dates[dates.length - 2]);
+      const diff = (last - prev) / (1000 * 60 * 60 * 24);
+      if (diff >= 7) ach.comeback = true;
+    }
+  }
+  // Progress for comeback (days since last activity if on break)
+  progress.comebackDays = 0;
+  progress.comebackCards = Math.min(10, reviewedToday.length);
 
+  // --- Standard achievements ---
   if (!ach.firstSessionCompleted && stats.total > 0) ach.firstSessionCompleted = true;
+  progress.firstSession = stats.total > 0 ? 1 : 0;
+  
   if (!ach.sevenDayStreak && (streak.current || 0) >= 7) ach.sevenDayStreak = true;
+  if (!ach.consistency && (streak.current || 0) >= 14) ach.consistency = true;
   if (!ach.marathoner && (streak.current || 0) >= 30) ach.marathoner = true;
   if (!ach.unstoppable && (streak.current || 0) >= 100) ach.unstoppable = true;
+  
   if (!ach.ninetyAccuracy && accuracy >= 90) ach.ninetyAccuracy = true;
+  
   if (!ach.fiftyCards && studiedCount >= 50) ach.fiftyCards = true;
   if (!ach.century && studiedCount >= 100) ach.century = true;
   
-  const levelInfo = getCurrentLevel();
   if (!ach.guru && levelInfo.level >= 5) ach.guru = true;
   if (!ach.master && levelInfo.level >= 10) ach.master = true;
-  
-  if (!ach.nightOwl && nightOwl) ach.nightOwl = true;
-  if (!ach.earlyBird && earlyBird) ach.earlyBird = true;
-  if (!ach.weekendWarrior && weekendWarrior) ach.weekendWarrior = true;
 
+  // Removed: earlyBird (old), nightOwl, weekendWarrior, comeback (old)
+  // Keep legacy keys for backward compatibility but don't check them
+  
   localStorage.setItem('studyAchievements', JSON.stringify(ach));
+  localStorage.setItem('achievementProgress', JSON.stringify(progress));
   syncWithServer(); // Sync achievements to server
-  return ach;
+  return { achievements: ach, progress };
 }
 
 export function getCurrentLevel() {

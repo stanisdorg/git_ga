@@ -848,47 +848,129 @@ const STATS_STYLES = `
 .st-cat-fill { height: 100%; background: var(--st-sec); border-radius: 3px; }
 
 /* Achievements */
-.st-ach-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.st-ach-section {
+  background: var(--st-surf);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--st-border);
+  margin-top: 0;
+}
+.st-ach-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.st-ach-group {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
+.st-ach-group-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--st-prim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.st-ach-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
 .st-ach-card {
+  width: 86px;
+  height: 100px;
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  opacity: 0.4;
-  filter: grayscale(100%);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0.5;
+  filter: grayscale(80%);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 .st-ach-card:hover {
-  border-color: rgba(255,215,0,0.6);
-  background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.05) 100%);
-  box-shadow: 0 0 20px rgba(255,215,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: translateY(-3px) scale(1.03);
+  z-index: 10;
 }
 .st-ach-card.unlocked {
   opacity: 1;
   filter: none;
-  background: rgba(46, 196, 182, 0.05);
-  border-color: var(--st-sec);
+  animation: achUnlock 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.st-ach-scroll {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 4px;
-  justify-content: space-evenly;
-  padding-left: 8px;
-  padding-right: 8px;
+@keyframes achUnlock {
+  0% { transform: scale(0.8) rotate(-5deg); opacity: 0.5; }
+  50% { transform: scale(1.1) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+/* Rarity tiers */
+.st-ach-card.common.unlocked {
+  border-color: #4A5568;
+  box-shadow: 0 0 10px rgba(74,85,104,0.4);
+}
+.st-ach-card.rare.unlocked {
+  border-color: #3B82F6;
+  box-shadow: 0 0 12px rgba(59,130,246,0.5);
+}
+.st-ach-card.epic.unlocked {
+  border-color: #A855F7;
+  box-shadow: 0 0 15px rgba(168,85,247,0.6);
+}
+.st-ach-card.legendary.unlocked {
+  border-color: #F59E0B;
+  box-shadow: 0 0 20px rgba(245,158,11,0.7);
+}
+.st-ach-card.locked {
+  background: rgba(22,27,34,0.5);
+}
+.st-ach-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.st-ach-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+.st-ach-progress-wrap {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.st-ach-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--st-prim), #FFB142);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.st-ach-card.unlocked .st-ach-progress-fill {
+  background: linear-gradient(90deg, var(--st-sec), #4ADE80);
+}
+.st-ach-desc {
+  display: none;
 }
 .st-info-btn {
-  background: rgba(255,255,255,0.1); 
-  border: none; 
+  background: rgba(255,255,255,0.1);
+  border: none;
   color: var(--st-text-sec);
-  width: 24px; height: 24px; border-radius: 50%;
   width: 24px; height: 24px; border-radius: 50%;
   font-size: 14px; line-height: 24px; text-align: center;
   margin-left: 10px; cursor: pointer; display: inline-flex;
@@ -897,9 +979,6 @@ const STATS_STYLES = `
   flex-shrink: 0;
 }
 .st-info-btn:hover { background: var(--st-sec); color: #fff; transform: scale(1.1); }
-.st-ach-icon { font-size: 24px; margin-bottom: 6px; }
-.st-ach-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-.st-ach-desc { font-size: 10px; color: var(--st-muted); }
 
 /* Modal */
 .st-modal-overlay {
@@ -1476,11 +1555,33 @@ export function hideStatsPage() {
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
 }
 
+// Helper function to render achievement card
+function renderAchCard(key, icon, title, current, target, rarity) {
+  const isUnlocked = current >= target;
+  const pct = target > 0 ? Math.round((current / target) * 100) : 0;
+  const lockedClass = isUnlocked ? 'unlocked' : 'locked';
+  const rarityClass = rarity || 'common';
+  
+  return `
+    <div class="st-ach-card ${lockedClass} ${rarityClass}" title="${title}: ${current}/${target}">
+      <div class="st-ach-icon">${icon}</div>
+      <div class="st-ach-title">${title}</div>
+      <div class="st-ach-progress-wrap">
+        <div class="st-ach-progress-fill" style="width:${pct}%"></div>
+      </div>
+    </div>
+  `;
+}
+
 function renderStats() {
-  let level, metrics, achievements, top5, rest;
+  let level, metrics, achievements, progress, top5, rest;
   try { level = getCurrentLevel(); } catch { level = { level: 1, xp: 0, remaining: 100, progress: 0 }; }
   try { metrics = getMetrics(uniqueQaData); } catch { metrics = { streakCurrent: 0, studiedCount: 0 }; }
-  try { achievements = checkAchievements(); } catch { achievements = {}; }
+  try { 
+    const achResult = checkAchievements(); 
+    achievements = achResult.achievements || {};
+    progress = achResult.progress || {};
+  } catch { achievements = {}; progress = {}; }
   try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5 = []; rest = []; }
 
   // Daily Plan
@@ -1749,50 +1850,52 @@ function renderStats() {
         <!-- Блок 5: Достижения (нижний, 100% ширины) -->
         <div class="st-block-5">
           <div class="st-ach-section">
-            <div class="st-ach-scroll">
-              <div class="st-ach-card ${achievements.firstSessionCompleted ? 'unlocked' : ''}" title="🏁 Первый шаг: Заверши первый урок" style="cursor: help;">
-                <div class="st-ach-icon">🏁</div>
-                <div class="st-ach-title">Первый шаг</div>
+            <div class="st-ach-groups">
+              <!-- Серия -->
+              <div class="st-ach-group">
+                <div class="st-ach-group-title">🔥 Серия</div>
+                <div class="st-ach-scroll">
+                  ${renderAchCard('firstSession', '🏁', 'Первый шаг', progress.firstSession, 1, 'common')}
+                  ${renderAchCard('sevenDayStreak', '🔥', 'Неделя в огне', progress.streak7, 7, 'rare')}
+                  ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare')}
+                  ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic')}
+                </div>
               </div>
-              <div class="st-ach-card ${achievements.sevenDayStreak ? 'unlocked' : ''}" title="🔥 Неделя в огне: 7 дней подряд" style="cursor: help;">
-                <div class="st-ach-icon">🔥</div>
-                <div class="st-ach-title">Неделя в огне</div>
+              
+              <!-- Прогресс -->
+              <div class="st-ach-group">
+                <div class="st-ach-group-title">📊 Прогресс</div>
+                <div class="st-ach-scroll">
+                  ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare')}
+                  ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common')}
+                  ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic')}
+                </div>
               </div>
-              <div class="st-ach-card ${achievements.marathoner ? 'unlocked' : ''}" title="🏃 Марафонец: 30 дней подряд" style="cursor: help;">
-                <div class="st-ach-icon">🏃</div>
-                <div class="st-ach-title">Марафонец</div>
+              
+              <!-- Мастерство -->
+              <div class="st-ach-group">
+                <div class="st-ach-group-title">🎯 Мастерство</div>
+                <div class="st-ach-scroll">
+                  ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic')}
+                  ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary')}
+                </div>
               </div>
-              <div class="st-ach-card ${achievements.ninetyAccuracy ? 'unlocked' : ''}" title="🎯 Снайпер: Точность 90%+" style="cursor: help;">
-                <div class="st-ach-icon">🎯</div>
-                <div class="st-ach-title">Снайпер</div>
+              
+              <!-- Время суток -->
+              <div class="st-ach-group">
+                <div class="st-ach-group-title">🌙 Время</div>
+                <div class="st-ach-scroll">
+                  ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare')}
+                  ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic')}
+                </div>
               </div>
-              <div class="st-ach-card ${achievements.century ? 'unlocked' : ''}" title="💯 Центурион: 100 карточек" style="cursor: help;">
-                <div class="st-ach-icon">💯</div>
-                <div class="st-ach-title">Центурион</div>
-              </div>
-              <div class="st-ach-card ${achievements.master ? 'unlocked' : ''}" title="👑 Мастер: Уровень 10" style="cursor: help;">
-                <div class="st-ach-icon">👑</div>
-                <div class="st-ach-title">Мастер</div>
-              </div>
-              <div class="st-ach-card ${achievements.hardToEasy ? 'unlocked' : ''}" title="📈 Прогресс: 10 сложных → легкие" style="cursor: help;">
-                <div class="st-ach-icon">📈</div>
-                <div class="st-ach-title">Прогресс</div>
-              </div>
-              <div class="st-ach-card ${achievements.consistency ? 'unlocked' : ''}" title="🧘 Стабильность: 14 дней подряд" style="cursor: help;">
-                <div class="st-ach-icon">🧘</div>
-                <div class="st-ach-title">Стабильность</div>
-              </div>
-              <div class="st-ach-card ${achievements.comeback ? 'unlocked' : ''}" title="🦅 Возвращение: После перерыва" style="cursor: help;">
-                <div class="st-ach-icon">🦅</div>
-                <div class="st-ach-title">Возвращение</div>
-              </div>
-              <div class="st-ach-card ${achievements.earlyBird ? 'unlocked' : ''}" title="🌅 Жаворонок: Занятие до 9 утра" style="cursor: help;">
-                <div class="st-ach-icon">🌅</div>
-                <div class="st-ach-title">Жаворонок</div>
-              </div>
-              <div class="st-ach-card ${achievements.nightOwl ? 'unlocked' : ''}" title="🦉 Сова: Занятие после 23:00" style="cursor: help;">
-                <div class="st-ach-icon">🦉</div>
-                <div class="st-ach-title">Сова</div>
+              
+              <!-- Особые -->
+              <div class="st-ach-group">
+                <div class="st-ach-group-title">💫 Особые</div>
+                <div class="st-ach-scroll">
+                  ${renderAchCard('comeback', '🔄', 'Возвращение', progress.comebackCards, 10, 'legendary')}
+                </div>
               </div>
             </div>
           </div>
