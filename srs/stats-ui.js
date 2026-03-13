@@ -1064,10 +1064,11 @@ const STATS_STYLES = `
     height: 100%;
     min-height: calc(100vh - 200px);
   }
-  .st-block-1 { 
-    grid-column: 1; 
+  .st-block-1 {
+    grid-column: 1;
     grid-row: 1;
     min-width: 280px;
+    background: transparent !important;
   }
   .st-block-achievements { 
     grid-column: 2; 
@@ -1104,6 +1105,7 @@ const STATS_STYLES = `
     min-height: 180px !important;
     display: flex !important;
     flex-direction: column !important;
+    background: transparent !important;
   }
 
   .st-compact-card {
