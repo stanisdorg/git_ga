@@ -861,7 +861,10 @@ function showStats(stats, results, total) {
                         <span>▶</span> Продолжить
                     </button>
                     <button id="sum-exit" class="btn btn-secondary" title="Перейти к статистике" aria-label="Перейти к статистике">
-                        📊 Статистика
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"/>
+                        </svg>
+                        Статистика
                     </button>
                 </div>
             </div>
@@ -977,52 +980,110 @@ function showStats(stats, results, total) {
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
         const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
         const bonus = Math.min(100, (st.current || 0) * 5);
-        const prev = lvl.prevThreshold;
-        const next = lvl.nextThreshold;
-        const pct = (v) => next === Infinity ? 1 : Math.max(0, Math.min(1, (v - prev) / (next - prev)));
-        const startPct = pct(startXP);
-        const earnedPct = Math.max(0, pct(startXP + earned) - startPct);
-        const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned));
+        
+        // Определяем, было ли повышение уровня
+        const startLevel = getLevelFromXP(startXP);
+        const endLevel = lvl.level;
+        const leveledUp = endLevel > startLevel;
+        
         const bar = overlay.querySelector('.level-progress-bar');
-        const oldW = Math.round(startPct * 100);
-        const earnW = Math.round(earnedPct * 100);
-        const bonusW = Math.round(bonusPct * 100);
         const oldEl = bar.querySelector('.level-progress-fill-old');
         const earnEl = bar.querySelector('.level-progress-fill-earned');
         const bonusEl = bar.querySelector('.level-progress-fill-bonus');
         
-        // Устанавливаем начальные позиции
-        oldEl.style.width = `${oldW}%`;
-        oldEl.style.left = `0px`;
-        
-        // earned начинается сразу за old
-        earnEl.style.left = `${oldW}%`;
-        earnEl.style.width = `0%`;
-        
-        // bonus ждёт НА ПОЗИЦИИ где закончится earned
-        bonusEl.style.left = `${oldW + earnW}%`;
-        bonusEl.style.width = `0%`;
-        
-        // Запуск анимаций: последовательно, суммарно 1500ms
-        const totalDuration = 1500;
-        const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
-        const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
-        
-        earnEl.classList.add('animate');
-        bonusEl.classList.add('animate');
-        earnEl.style.transition = `width ${earnDuration}ms ease`;
-        bonusEl.style.transition = `width ${bonusDuration}ms ease`;
-        
-        // 1. Сначала заполняется earned
-        setTimeout(() => {
-            earnEl.style.width = `${earnW}%`;
+        if (leveledUp) {
+            // === АНИМАЦИЯ ПОВЫШЕНИЯ УРОВНЯ ===
+            // Показываем новый уровень с яркой вспышкой
             
-            // 2. Когда earned закончил, заполняется bonus (он уже на правильной позиции)
+            // 1. Скрываем все сегменты
+            oldEl.style.width = '0%';
+            earnEl.style.width = '0%';
+            bonusEl.style.width = '0%';
+            earnEl.style.left = '0%';
+            bonusEl.style.left = '0%';
+            
+            // 2. Яркая вспышка номера уровня
+            const levelEl = overlay.querySelector('#sum-level');
+            levelEl.style.transition = 'all 0.3s ease';
+            levelEl.style.transform = 'scale(1.5)';
+            levelEl.style.color = '#FF9F1C';
+            levelEl.style.textShadow = '0 0 20px rgba(255,159,28,0.8)';
+            
             setTimeout(() => {
-                bonusEl.style.width = `${bonusW}%`;
-            }, earnDuration);
-        }, 100);
+                levelEl.style.transform = 'scale(1)';
+                levelEl.style.color = '';
+                levelEl.style.textShadow = '';
+            }, 300);
+            
+            // 3. Заполняем бар с начала нового уровня
+            const prev = lvl.prevThreshold;
+            const next = lvl.nextThreshold;
+            const totalForLevel = next - prev;
+            const earnedInLevel = Math.max(0, lvl.xp - prev);
+            const bonusInLevel = bonus;
+            
+            const earnedPct = totalForLevel > 0 ? (earnedInLevel / totalForLevel) * 100 : 0;
+            const bonusPct = totalForLevel > 0 ? (bonusInLevel / totalForLevel) * 100 : 0;
+            
+            const earnW = Math.round(earnedPct);
+            const bonusW = Math.round(bonusPct);
+            
+            const totalDuration = 1500;
+            const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
+            const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
+            
+            earnEl.style.transition = `width ${earnDuration}ms ease`;
+            bonusEl.style.transition = `width ${bonusDuration}ms ease`;
+            
+            setTimeout(() => {
+                earnEl.style.width = `${earnW}%`;
+                
+                setTimeout(() => {
+                    bonusEl.style.left = `${earnW}%`;
+                    bonusEl.style.width = `${bonusW}%`;
+                }, earnDuration);
+            }, 100);
+            
+        } else {
+            // === ОБЫЧНАЯ АНИМАЦИЯ (без повышения уровня) ===
+            const prev = lvl.prevThreshold;
+            const next = lvl.nextThreshold;
+            const pct = (v) => next === Infinity ? 1 : Math.max(0, Math.min(1, (v - prev) / (next - prev)));
+            const startPct = pct(startXP);
+            const earnedPct = Math.max(0, pct(startXP + earned) - startPct);
+            const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned));
+            
+            const oldW = Math.round(startPct * 100);
+            const earnW = Math.round(earnedPct * 100);
+            const bonusW = Math.round(bonusPct * 100);
+            
+            // Устанавливаем начальные позиции
+            oldEl.style.width = `${oldW}%`;
+            oldEl.style.left = `0px`;
+            earnEl.style.left = `${oldW}%`;
+            earnEl.style.width = `0%`;
+            bonusEl.style.left = `${oldW + earnW}%`;
+            bonusEl.style.width = `0%`;
+            
+            // Запуск анимаций: последовательно, суммарно 1500ms
+            const totalDuration = 1500;
+            const earnDuration = earnedPct > 0 ? Math.round(totalDuration * (earnedPct / (earnedPct + bonusPct || 1))) : 0;
+            const bonusDuration = bonusPct > 0 ? totalDuration - earnDuration : 0;
+            
+            earnEl.style.transition = `width ${earnDuration}ms ease`;
+            bonusEl.style.transition = `width ${bonusDuration}ms ease`;
+            
+            setTimeout(() => {
+                earnEl.style.width = `${earnW}%`;
+                
+                setTimeout(() => {
+                    bonusEl.style.left = `${oldW + earnW}%`;
+                    bonusEl.style.width = `${bonusW}%`;
+                }, earnDuration);
+            }, 100);
+        }
     }).catch(() => {});
+    
     // Animate overlay and stats
     overlay.classList.add('show');
     
@@ -1038,11 +1099,16 @@ function showStats(stats, results, total) {
     if (totalEl) { totalEl.style.display = ''; totalEl.classList.add('glitch-in'); }
     if (accWrap) { accWrap.style.display = ''; accWrap.classList.add('glitch-in'); }
     if (streakWrap) { streakWrap.style.display = ''; streakWrap.classList.add('glitch-in'); }
-    
+
     // Fade-in elements (originally hidden by CSS opacity: 0)
     if (motEl) { motEl.style.display = ''; motEl.classList.add('fade-in'); }
     if (xpEl) { xpEl.style.display = ''; xpEl.classList.add('fade-in'); }
     if (actions) { actions.style.display = ''; actions.classList.add('fade-in'); }
+}
+
+// Helper function to get level from XP
+function getLevelFromXP(xp) {
+    return Math.floor(Math.sqrt(xp / 625)) + 1;
 }
 
 function updateTimerDisplay() {
