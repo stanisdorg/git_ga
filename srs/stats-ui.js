@@ -1272,6 +1272,15 @@ function renderStats() {
     return svg;
   }
 
+  // Функция для получения количества сердечек по EF
+  function getHeartsCountForEf(ef) {
+    if (ef === undefined || ef === null) return 0;
+    if (ef >= 2.4) return 5;      // EASY
+    if (ef >= 2.1) return 4;      // STANDARD
+    if (ef >= 1.7) return 3;      // HARD
+    return 1;                      // VERY HARD
+  }
+
   // Render HTML
   const container = document.getElementById('stats-container');
   if (!container) return;
@@ -1954,10 +1963,11 @@ window.openDiffModal = (index) => {
        </div>
        <div class="st-modal-body">
           <ul class="st-modal-list">
-             ${list.slice(0, 50).map(q => {
+             ${list.slice(0, 50).map((q, idx) => {
     const p = prog[q.question] || prog[q.question.trim()];
     const ef = p ? p.easeFactor : undefined;
-    const hearts = getHeartsForEf(ef);
+    const heartsCount = getHeartsCountForEf(ef);
+    const heartsSvg = renderHeartsSvg(heartsCount, 'modal-'+idx);
     const isFav = favorites.has(q.question);
 
     return `
@@ -1965,7 +1975,7 @@ window.openDiffModal = (index) => {
                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
                        <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
                        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
-                          <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${hearts}</span>
+                          <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
                           ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
                        </div>
                    </div>
