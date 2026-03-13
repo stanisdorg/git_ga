@@ -331,11 +331,32 @@ const STATS_STYLES = `
 .st-mode-icon { font-size: 20px; margin-bottom: 6px; display: block; }
 .st-mode-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; color: #fff; display: block; }
 .st-mode-desc { font-size: 10px; color: var(--st-muted); display: block; line-height: 1.3; }
-.st-mode-tag { 
-  position: absolute; top: 8px; right: 8px; 
-  font-size: 9px; padding: 2px 6px; border-radius: 4px; 
-  background: var(--st-border); color: var(--st-muted); 
+.st-mode-tag {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 9px; padding: 2px 6px; border-radius: 4px;
+  background: var(--st-border); color: var(--st-muted);
   text-transform: uppercase; font-weight: 700;
+}
+/* Tooltip для режимов с описанием */
+.st-mode-card[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.95);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--st-border);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-line;
+  z-index: 1000;
+  width: max-content;
+  max-width: 260px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  margin-bottom: 8px;
 }
 
 /* Daily Improvements Chart */
@@ -1321,19 +1342,19 @@ function renderStats() {
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2">
           <div class="modes-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="5 секунд на ответ. Ошибки недопустимы.">
+            <div class="st-mode-card" onclick="window.startMode('time_attack')" title="⏱️ Тайм-атака\n\n5 секунд на ответ.\n\nОшибки недопустимы — любая ошибка завершает сессию. Идеально для проверки знаний на скорость.">
               <span class="st-mode-icon">⏱️</span>
               <span class="st-mode-title">Тайм-атака</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="Игра до первой ошибки.">
+            <div class="st-mode-card" onclick="window.startMode('sudden_death')" title="☠️ Внезапная смерть\n\nИгра до первой ошибки.\n\nМаксимальная сложность — одна ошибка и сессия завершена. Проверь свою выдержку!">
               <span class="st-mode-icon">☠️</span>
               <span class="st-mode-title">Внезапная смерть</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="Только карты с низким коэффициентом.">
+            <div class="st-mode-card" onclick="window.startMode('cram_hard')" title="🧠 Зубрежка сложных\n\nТолько карты с низким коэффициентом запоминания.\n\nФокус на слабых местах — система покажет только те карточки, которые вы забываете.">
               <span class="st-mode-icon">🧠</span>
               <span class="st-mode-title">Зубрежка сложных</span>
             </div>
-            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="Изучение свежего материала.">
+            <div class="st-mode-card" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
               <span class="st-mode-icon">🌱</span>
               <span class="st-mode-title">Только новые</span>
             </div>
