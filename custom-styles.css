@@ -739,7 +739,7 @@ body.learning-mode #bottom-nav {
 .summary-box .motivation {
     text-align: center;
     font-size: 13px;
-    color: var(--text-sec);
+    color: #8B949E;
     margin-bottom: 16px;
     min-height: 36px;
 }
