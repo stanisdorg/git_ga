@@ -676,7 +676,7 @@ body.learning-mode #bottom-nav {
     transition: all 0.3s ease;
 }
 
-/* New stats grid - GOLDEN BACKGROUND */
+/* New stats grid - NO BACKGROUND for stat items */
 .summary-box .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -685,27 +685,20 @@ body.learning-mode #bottom-nav {
 }
 
 .summary-box .stat-item {
-    /* Golden gradient background */
-    background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(255,159,28,0.05) 100%);
-    border: 1px solid rgba(255,159,28,0.3);
-    border-radius: 12px;
-    padding: 16px 12px !important;
+    /* NO background - clean look */
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 8px !important;
     text-align: center;
     transition: all 0.3s ease;
-}
-
-.summary-box .stat-item:hover {
-    background: linear-gradient(135deg, rgba(255,159,28,0.2) 0%, rgba(255,159,28,0.08) 100%);
-    border-color: rgba(255,159,28,0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,159,28,0.2);
 }
 
 .summary-box .stat-item .stat-value {
     font-size: 32px !important;
     font-weight: 800 !important;
     color: #fff !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 4px !important;
     display: block !important;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     line-height: 1.2;
@@ -736,6 +729,19 @@ body.learning-mode #bottom-nav {
 
 @keyframes fadeIn {
     to { opacity: 1; }
+}
+
+/* XP line - GOLDEN BACKGROUND */
+.summary-box #sum-xp.xp-line {
+    background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(255,159,28,0.05) 100%);
+    border: 1px solid rgba(255,159,28,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--prim);
+    font-weight: 600;
+    margin-bottom: 16px;
 }
 .summary-box .level-progress-fill-earned { z-index: 2; }
 .summary-box .level-progress-fill-bonus  { z-index: 3; }

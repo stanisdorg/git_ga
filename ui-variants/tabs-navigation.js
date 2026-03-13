@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.04');
+                module = await import('../srs/learn-ui.js?v=2.05');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -1291,7 +1291,7 @@ export function initTabsNavigation(appVersion) {
                         if (loginRes.ok) {
                             const loginData = await loginRes.json();
                             if (loginData.ok) {
-                                // Сохраняем username/password ��������ля последующей загрузки данных
+                                // Сохраняем username/password ����������ля последующей загрузки данных
                                 if (remember) {
                                     localStorage.setItem('qaUsername', u);
                                     localStorage.setItem('qaPassword', p);
