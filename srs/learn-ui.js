@@ -888,9 +888,25 @@ function showStats(stats, results, total) {
         
         // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
-            console.log('[STATS BUTTON] Clicked! Current hash:', location.hash);
+            console.log('[STATS BUTTON] Clicked!');
+            
+            // Завершаем сессию обучения
+            if (currentScheduler) {
+                currentScheduler = null;
+                console.log('[STATS BUTTON] Cleared currentScheduler');
+            }
+            
+            // Убираем класс learning-mode
+            document.body.classList.remove('learning-mode');
+            const bottomNav = document.getElementById('bottom-nav');
+            if (bottomNav) bottomNav.style.display = 'flex';
+            
+            console.log('[STATS BUTTON] Removed learning-mode, showed bottomNav');
+            
+            // Переходим на статистику
             location.hash = '#/stats';
             console.log('[STATS BUTTON] Hash changed to:', location.hash);
+            
             setTimeout(() => {
                 console.log('[STATS BUTTON] Removing overlay...');
                 overlay.remove();
