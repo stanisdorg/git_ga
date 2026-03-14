@@ -602,9 +602,9 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.28');
+                module = await import('../srs/learn-ui.js?v=2.13');
             } catch (e1) {
-                console.warn('[Learn] Import v28 failed, trying plain import', e1);
+                console.warn('[Learn] Import v2.13 failed, trying plain import', e1);
                 try {
                     module = await import('../srs/learn-ui.js');
                 } catch (e2) {
