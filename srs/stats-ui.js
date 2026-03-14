@@ -2018,36 +2018,16 @@ function renderStats() {
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
       console.log('[HOME BTN] Clicked!');
-      console.log('[HOME BTN] document.body.classList:', document.body.classList.toString());
       
-      // Проверяем, запущено ли обучение
-      const isLearning = document.body.classList.contains('learning-mode');
-      console.log('[HOME BTN] isLearning:', isLearning);
-      
-      if (isLearning) {
-        console.log('[HOME BTN] BLOCKED - learning in progress!');
-        alert('Сначала завершите обучение!');
-        return;
-      }
-      
-      // Устанавливаем флаг что переходим на главную
-      window.__navigatingToHome = true;
-      console.log('[HOME BTN] Set __navigatingToHome = true');
-      
-      // Очищаем состояние обучения ПЕРЕД переходом на главную
+      // Очищаем состояние обучения
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
         console.log('[HOME BTN] Cleared __lastCandidates');
       }
-      location.hash = '';
-      hideStatsPage();
-      console.log('[HOME BTN] Calling homeNav.click()');
-      const mainNav = document.getElementById('bottom-nav');
-      if (mainNav) {
-        const homeNav = mainNav.querySelector('#bn-home');
-        console.log('[HOME BTN] homeNav found:', !!homeNav);
-        if (homeNav) homeNav.click();
-      }
+      
+      // Просто меняем hash на главную
+      location.hash = '#/';
+      console.log('[HOME BTN] Hash changed to:', location.hash);
     });
   }
 
