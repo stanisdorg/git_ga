@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Варианты отображения уровней</title>
+    <style>
+        :root {
+            --st-bg: #1a1a1a;
+            --st-surface: #242424;
+            --st-surface-2: #2a2a2a;
+            --st-prim: #FF9F1C;
+            --st-prim-light: rgba(255, 159, 28, 0.15);
+            --st-border: #333333;
+            --st-text: #ffffff;
+            --st-text-sec: rgba(255, 255, 255, 0.7);
+            --st-muted: rgba(255, 255, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--st-bg);
+            color: var(--st-text);
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            color: var(--st-text);
+            border-bottom: 2px solid var(--st-prim);
+            padding-bottom: 8px;
+        }
+
+        .variant {
+            background: var(--st-surface);
+            border: 1px solid var(--st-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .variant-desc {
+            font-size: 14px;
+            color: var(--st-text-sec);
+            margin-bottom: 15px;
+        }
+
+        /* Вариант 1: Компактная сетка */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+
+        .level-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .level-badge.current {
+            background: var(--st-prim-light);
+            border-color: var(--st-prim);
+        }
+
+        .level-badge .level-num {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--st-prim);
+        }
+
+        .level-badge .level-xp {
+            font-size: 10px;
+            color: var(--st-text-sec);
+            margin-top: 4px;
+        }
+
+        /* Вариант 2: Горизонтальный скролл */
+        .levels-horizontal {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .level-card {
+            min-width: 120px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .level-card.current {
+            background: linear-gradient(135deg, var(--st-prim-light) 0%, rgba(255, 159, 28, 0.05) 100%);
+            border-color: var(--st-prim);
+        }
+
+        .level-card .level-num {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--st-prim);
+        }
+
+        .level-card .level-range {
+            font-size: 11px;
+            color: var(--st-text-sec);
+            margin: 8px 0;
+        }
+
+        .level-card .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .level-card .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF9F1C, #FFB142);
+            border-radius: 2px;
+        }
+
+        /* Вариант 3: Аккордеон */
+        .levels-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .level-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .level-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .level-row.current {
+            background: var(--st-prim-light);
+            border-color: var(--st-prim);
+        }
+
+        .level-row .level-num {
+            width: 40px;
+            font-weight: 700;
+            color: var(--st-prim);
+            font-size: 14px;
+        }
+
+        .level-row .level-info {
+            flex: 1;
+            font-size: 12px;
+            color: var(--st-text-sec);
+        }
+
+        .level-row .level-icon {
+            font-size: 16px;
+        }
+
+        /* Вариант 4: Круговые бейджи */
+        .levels-circles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .level-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--st-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .level-circle.current {
+            border-color: var(--st-prim);
+            background: var(--st-prim-light);
+        }
+
+        .level-circle .level-num {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--st-prim);
+        }
+
+        .level-circle .level-tooltip {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--st-text-sec);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .level-circle:hover .level-tooltip {
+            opacity: 1;
+        }
+
+        /* Вариант 5: Мини-список с группировкой */
+        .levels-grouped {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .level-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .level-group-title {
+            font-size: 12px;
+            color: var(--st-text-sec);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .level-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .level-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .level-group-item .lvl {
+            font-weight: 700;
+            color: var(--st-prim);
+            font-size: 13px;
+        }
+
+        .level-group-item .xp {
+            font-size: 11px;
+            color: var(--st-text-sec);
+        }
+
+        /* Вариант 6: Временная шкала */
+        .levels-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .levels-timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--st-border);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--st-border);
+            border: 2px solid var(--st-bg);
+            z-index: 1;
+        }
+
+        .timeline-dot.current {
+            background: var(--st-prim);
+            box-shadow: 0 0 10px var(--st-prim);
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+
+        .timeline-content .lvl {
+            font-weight: 700;
+            color: var(--st-prim);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Варианты отображения уровней (1-20)</h1>
+
+    <h2>Вариант 1: Компактная сетка</h2>
+    <div class="variant">
+        <div class="variant-desc">
+            📊 Занимает мало места, все уровни видны сразу. Идеально для быстрого обзора.
+        </div>
+        <div class="levels-grid">
+            <div class="level-badge current">
+                <div class="level-num">1</div>
+                <div class="level-xp">0 XP</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">2</div>
+                <div class="level-xp">625 XP</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">3</div>
+                <div class="level-xp">2.5K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">4</div>
+                <div class="level-xp">5.6K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">5</div>
+                <div class="level-xp">10K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">6</div>
+                <div class="level-xp">15.6K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">7</div>
+                <div class="level-xp">22.5K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">8</div>
+                <div class="level-xp">30.6K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">9</div>
+                <div class="level-xp">40K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">10</div>
+                <div class="level-xp">50.6K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">11</div>
+                <div class="level-xp">62.5K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">12</div>
+                <div class="level-xp">75.6K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">13</div>
+                <div class="level-xp">90K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">14</div>
+                <div class="level-xp">105K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">15</div>
+                <div class="level-xp">122K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">16</div>
+                <div class="level-xp">140K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">17</div>
+                <div class="level-xp">160K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">18</div>
+                <div class="level-xp">180K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">19</div>
+                <div class="level-xp">202K</div>
+            </div>
+            <div class="level-badge">
+                <div class="level-num">20</div>
+                <div class="level-xp">225K</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Вариант 2: Горизонтальный скролл</h2>
+    <div class="variant">
+        <div class="variant-desc">
+            📱 Горизонтальная прокрутка. Хорошо для мобильных устройств.
+        </div>
+        <div class="levels-horizontal">
+            <div class="level-card current">
+                <div class="level-num">1</div>
+                <div class="level-range">0 → 625 XP</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">2</div>
+                <div class="level-range">625 → 2.5K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">3</div>
+                <div class="level-range">2.5K → 5.6K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">4</div>
+                <div class="level-range">5.6K → 10K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">5</div>
+                <div class="level-range">10K → 15.6K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">6</div>
+                <div class="level-range">15.6K → 22.5K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">7</div>
+                <div class="level-range">22.5K → 30.6K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">8</div>
+                <div class="level-range">30.6K → 40K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">9</div>
+                <div class="level-range">40K → 50.6K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="level-card">
+                <div class="level-num">10</div>
+                <div class="level-range">50.6K → 62.5K</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Вариант 3: Компактный список</h2>
+    <div class="variant">
+        <div class="variant-desc">
+            📋 Вертикальный список с иконками. Занимает в 3 раза меньше места оригинала.
+        </div>
+        <div class="levels-accordion">
+            <div class="level-row current">
+                <div class="level-num">1</div>
+                <div class="level-info">0 → 625 XP</div>
+                <div class="level-icon">👑</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">2</div>
+                <div class="level-info">625 → 2,500 XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">3</div>
+                <div class="level-info">2.5K → 5.6K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">4</div>
+                <div class="level-info">5.6K → 10K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">5</div>
+                <div class="level-info">10K → 15.6K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">6</div>
+                <div class="level-info">15.6K → 22.5K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">7</div>
+                <div class="level-info">22.5K → 30.6K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">8</div>
+                <div class="level-info">30.6K → 40K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">9</div>
+                <div class="level-info">40K → 50.6K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+            <div class="level-row">
+                <div class="level-num">10</div>
+                <div class="level-info">50.6K → 62.5K XP</div>
+                <div class="level-icon">🔒</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Вариант 4: Круговые бейджи</h2>
+    <div class="variant">
+        <div class="variant-desc">
+            ⭕ Компактные круглые иконки с тултипами при наведении.
+        </div>
+        <div class="levels-circles">
+            <div class="level-circle current">
+                <div class="level-num">1</div>
+                <div class="level-tooltip">0 XP</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">2</div>
+                <div class="level-tooltip">625 XP</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">3</div>
+                <div class="level-tooltip">2.5K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">4</div>
+                <div class="level-tooltip">5.6K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">5</div>
+                <div class="level-tooltip">10K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">6</div>
+                <div class="level-tooltip">15.6K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">7</div>
+                <div class="level-tooltip">22.5K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">8</div>
+                <div class="level-tooltip">30.6K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">9</div>
+                <div class="level-tooltip">40K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">10</div>
+                <div class="level-tooltip">50.6K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">11</div>
+                <div class="level-tooltip">62.5K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">12</div>
+                <div class="level-tooltip">75.6K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">13</div>
+                <div class="level-tooltip">90K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">14</div>
+                <div class="level-tooltip">105K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">15</div>
+                <div class="level-tooltip">122K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">16</div>
+                <div class="level-tooltip">140K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">17</div>
+                <div class="level-tooltip">160K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">18</div>
+                <div class="level-tooltip">180K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">19</div>
+                <div class="level-tooltip">202K</div>
+            </div>
+            <div class="level-circle">
+                <div class="level-num">20</div>
+                <div class="level-tooltip">225K</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Вариант 5: Группировка по 5 уровней</h2>
+    <div class="variant">
+        <div class="variant-desc">
+            📦 Уровни сгруппированы по 5 в блоках. Компактно и структурировано.
+        </div>
+        <div class="levels-grouped">
+            <div class="level-group">
+                <div class="level-group-title">🥉 Уровни 1-5</div>
+                <div class="level-group-item">
+                    <span class="lvl">1</span>
+                    <span class="xp">0 → 625</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">2</span>
+                    <span class="xp">625 → 2.5K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">3</span>
+                    <span class="xp">2.5K → 5.6K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">4</span>
+                    <span class="xp">5.6K → 10K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">5</span>
+                    <span class="xp">10K → 15.6K</span>
+                </div>
+            </div>
+            <div class="level-group">
+                <div class="level-group-title">🥈 Уровни 6-10</div>
+                <div class="level-group-item">
+                    <span class="lvl">6</span>
+                    <span class="xp">15.6K → 22.5K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">7</span>
+                    <span class="xp">22.5K → 30.6K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">8</span>
+                    <span class="xp">30.6K → 40K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">9</span>
+                    <span class="xp">40K → 50.6K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">10</span>
+                    <span class="xp">50.6K → 62.5K</span>
+                </div>
+            </div>
+            <div class="level-group">
+                <div class="level-group-title">🥇 Уровни 11-15</div>
+                <div class="level-group-item">
+                    <span class="lvl">11</span>
+                    <span class="xp">62.5K → 75.6K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">12</span>
+                    <span class="xp">75.6K → 90K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">13</span>
+                    <span class="xp">90K → 105K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">14</span>
+                    <span class="xp">105K → 122K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">15</span>
+                    <span class="xp">122K → 140K</span>
+                </div>
+            </div>
+            <div class="level-group">
+                <div class="level-group-title">👑 Уровни 16-20</div>
+                <div class="level-group-item">
+                    <span class="lvl">16</span>
+                    <span class="xp">140K → 160K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">17</span>
+                    <span class="xp">160K → 180K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">18</span>
+                    <span class="xp">180K → 202K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">19</span>
+                    <span class="xp">202K → 225K</span>
+                </div>
+                <div class="level-group-item">
+                    <span class="lvl">20</span>
+                    <span class="xp">225K → 250K</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Вариант 6: Временная шкала</h2>
+    <div class="variant">
+        <div class="variant-desc">
+            📅 Вертикальная timeline с точками прогресса.
+        </div>
+        <div class="levels-timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot current"></div>
+                <div class="timeline-content">
+                    <span class="lvl">Уровень 1</span> — 0 → 625 XP
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="lvl">Уровень 2</span> — 625 → 2,500 XP
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="lvl">Уровень 3</span> — 2.5K → 5.6K XP
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="lvl">Уровень 4</span> — 5.6K → 10K XP
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="lvl">Уровень 5</span> — 10K → 15.6K XP
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Добавим интерактивности для демонстрации
+        document.querySelectorAll('.level-row').forEach(row => {
+            row.addEventListener('click', () => {
+                document.querySelectorAll('.level-row').forEach(r => r.classList.remove('current'));
+                row.classList.add('current');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1520,6 +1520,82 @@ const STATS_STYLES = `
   .st-cat-list { display: flex !important; }
   .st-cat-more-btn { display: none !important; }
   .st-cat-item-hidden { display: block !important; }
+
+  /* Levels Horizontal Scroll */
+  .levels-horizontal {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 4px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  .levels-horizontal::-webkit-scrollbar {
+    height: 6px;
+  }
+  .levels-horizontal::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+  }
+  .levels-horizontal::-webkit-scrollbar-thumb {
+    background: var(--st-prim);
+    border-radius: 3px;
+  }
+  .level-card {
+    min-width: 140px;
+    max-width: 140px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--st-border);
+    border-radius: 10px;
+    padding: 15px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .level-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--st-muted);
+  }
+  .level-card.current {
+    background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(255,159,28,0.05) 100%);
+    border-color: var(--st-prim);
+  }
+  .level-card .level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .level-card .level-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--st-prim);
+  }
+  .level-card .level-icon {
+    font-size: 18px;
+  }
+  .level-card .level-range {
+    font-size: 11px;
+    color: var(--st-text-sec);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .level-card .progress-label {
+    font-size: 10px;
+    color: var(--st-text-sec);
+    margin-bottom: 4px;
+  }
+  .level-card .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .level-card .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF9F1C, #FFB142);
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
 }
 `;
 
@@ -2547,28 +2623,27 @@ window.openLevelInfoModal = () => {
   const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
   const studiedCount = Object.values(getProgressMap()).filter(p => p.lastReviewed).length;
 
-  // Генерируем таблицу уровней 1-20
-  let levelsTable = '';
+  // Генерируем горизонтальный скролл уровней 1-20
+  let levelsHorizontal = '';
   for (let lvl = 1; lvl <= 20; lvl++) {
     const prevXP = lvl === 1 ? 0 : Math.ceil(625 * Math.pow(lvl - 1, 2));
     const nextXP = Math.ceil(625 * Math.pow(lvl, 2));
     const isCurrent = lvl === levelInfo.level;
     const isPassed = lvl < levelInfo.level;
-    const isFuture = lvl > levelInfo.level;
     const needed = nextXP - levelInfo.xp;
     const progress = levelInfo.xp >= nextXP ? 100 : levelInfo.xp <= prevXP ? 0 : Math.round(((levelInfo.xp - prevXP) / (nextXP - prevXP)) * 100);
+    const icon = isPassed ? '✅' : isCurrent ? '👑' : '🔒';
 
-    levelsTable += `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:${isCurrent ? 'rgba(255,159,28,0.15)' : isPassed ? 'rgba(76,175,80,0.1)' : 'rgba(255,255,255,0.03)'};border:${isCurrent ? '2px solid var(--st-prim)' : '1px solid var(--st-border)'};">
-        <div style="width:50px;font-weight:700;color:${isPassed ? '#4CAF50' : isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${lvl}</div>
-        <div style="flex:1;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-size:12px;color:var(--st-text-sec);">${prevXP.toLocaleString()} → ${nextXP.toLocaleString()} XP</span>
-            <span style="font-size:12px;color:${isCurrent ? '#FF9F1C' : 'var(--st-text-sec)'};">${isPassed ? '✅' : isCurrent ? `${needed.toLocaleString()} XP до ${lvl + 1}` : '🔒'}</span>
-          </div>
-          <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
-            <div style="width:${isPassed ? '100%' : progress}%;height:100%;background:${isPassed ? '#4CAF50' : isCurrent ? 'linear-gradient(90deg,#FF9F1C,#FFB142)' : 'rgba(255,255,255,0.2)'};border-radius:3px;transition:width 0.5s;"></div>
-          </div>
+    levelsHorizontal += `
+      <div class="level-card${isCurrent ? ' current' : ''}" data-level="${lvl}">
+        <div class="level-header">
+          <div class="level-num">${lvl}</div>
+          <div class="level-icon">${icon}</div>
+        </div>
+        <div class="level-range">${prevXP.toLocaleString()} → ${nextXP.toLocaleString()} XP</div>
+        <div class="progress-label">${isPassed ? 'Пройдено' : isCurrent ? `${needed.toLocaleString()} XP до ${lvl + 1}` : 'Закрыто'}</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${isPassed ? '100%' : progress}%;background:${isPassed ? '#4CAF50' : 'linear-gradient(90deg,#FF9F1C,#FFB142)'}"></div>
         </div>
       </div>
     `;
@@ -2650,13 +2725,23 @@ window.openLevelInfoModal = () => {
           </div>
         </div>
 
-        <!-- Таблица уровней -->
+        <!-- Уровни: горизонтальный скролл -->
         <div style="margin-bottom:24px;">
           <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
             <span style="font-size:20px;">🏆</span> Уровни 1-20
           </h3>
-          <div style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;padding-right:8px;">
-            ${levelsTable}
+          <div style="position:relative;">
+            <div class="levels-horizontal" id="levelsScroll" style="display:flex;gap:10px;overflow-x:auto;padding:10px 4px;scroll-behavior:smooth;">
+              ${levelsHorizontal}
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button onclick="document.getElementById('levelsScroll').scrollBy({left:-280,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;">
+                ← Назад
+              </button>
+              <button onclick="document.getElementById('levelsScroll').scrollBy({left:280,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;">
+                Вперед →
+              </button>
+            </div>
           </div>
         </div>
         
