@@ -891,19 +891,32 @@ function showStats(stats, results, total) {
             console.log('========================================');
             console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
             console.log('[STATS BUTTON] Timestamp:', new Date().toISOString());
+            console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
+            console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
             
-            // Завершаем сессию обучения
+            // ПРИНУДИТЕЛЬНО завершаем сессию обучения
             if (currentScheduler) {
                 currentScheduler = null;
                 console.log('[STATS BUTTON] Cleared currentScheduler');
             }
             
-            // Убираем класс learning-mode
+            // ПРИНУДИТЕЛЬНО убираем класс learning-mode
             document.body.classList.remove('learning-mode');
-            const bottomNav = document.getElementById('bottom-nav');
-            if (bottomNav) bottomNav.style.display = 'flex';
+            console.log('[STATS BUTTON] Removed learning-mode');
             
-            console.log('[STATS BUTTON] Removed learning-mode, showed bottomNav');
+            // ПРИНУДИТЕЛЬНО показываем навигацию
+            const bottomNav = document.getElementById('bottom-nav');
+            if (bottomNav) {
+                bottomNav.style.display = 'flex';
+                console.log('[STATS BUTTON] Showed bottomNav');
+            }
+            
+            // ПРИНУДИТЕЛЬНО скрываем контейнер обучения
+            const learnContainer = document.getElementById('learn-container');
+            if (learnContainer) {
+                learnContainer.style.display = 'none';
+                console.log('[STATS BUTTON] Hid learn-container');
+            }
             
             // Закрываем модалку
             overlay.remove();
