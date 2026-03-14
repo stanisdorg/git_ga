@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.20');
+                module = await import('../srs/learn-ui.js?v=2.21');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -638,20 +638,27 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.76');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.77');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
     
     // Обработчик изменения hash (для перехода из модалки)
     window.addEventListener('hashchange', async () => {
+        console.log('========================================');
+        console.log('[HASH CHANGE] ========== HASH CHANGE ==========');
         console.log('[HASH CHANGE] New hash:', location.hash);
+        console.log('[HASH CHANGE] window.__lastCandidates:', window.__lastCandidates);
+        console.log('[HASH CHANGE] Timestamp:', new Date().toISOString());
+        
         if (location.hash === '#/stats') {
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.76');
+            console.log('[HASH CHANGE] Detected #/stats - initializing stats page');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.77');
             initStatsPage(appVersion);
+            console.log('[HASH CHANGE] initStatsPage called');
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
             // Переход на главную - закрываем статистику если открыта
-            console.log('[HASH CHANGE] Navigating to home');
+            console.log('[HASH CHANGE] Detected home hash - navigating to home');
             
             // Очищаем состояние обучения если есть
             if (window.__lastCandidates) {
@@ -661,6 +668,7 @@ export function initTabsNavigation(appVersion) {
             
             // Закрываем статистику если открыта
             const statsContainer = document.getElementById('stats-container');
+            console.log('[HASH CHANGE] stats-container element:', statsContainer);
             if (statsContainer) {
                 statsContainer.remove();
                 console.log('[HASH CHANGE] Removed stats container');
@@ -668,15 +676,19 @@ export function initTabsNavigation(appVersion) {
             
             // Показываем главный контейнер
             const mainContainer = document.querySelector('.container');
+            console.log('[HASH CHANGE] main container element:', mainContainer);
             if (mainContainer) {
                 mainContainer.style.display = '';
                 console.log('[HASH CHANGE] Showed main container');
             }
             
             // Обновляем текущий контекст
+            console.log('[HASH CHANGE] Calling refreshCurrentContext()');
             refreshCurrentContext();
             console.log('[HASH CHANGE] Refreshed current context');
         }
+        console.log('[HASH CHANGE] ========== END HASH CHANGE ==========');
+        console.log('========================================');
     });
 
     // Кнопка профиля / Войти

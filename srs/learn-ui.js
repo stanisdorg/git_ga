@@ -888,7 +888,12 @@ function showStats(stats, results, total) {
         
         // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', async () => {
-            console.log('[STATS BUTTON] Clicked!');
+            console.log('========================================');
+            console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
+            console.log('[STATS BUTTON] Timestamp:', new Date().toISOString());
+            console.log('[STATS BUTTON] Current location.hash:', location.hash);
+            console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
+            console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
             
             // Завершаем сессию обучения
             if (currentScheduler) {
@@ -905,6 +910,7 @@ function showStats(stats, results, total) {
             
             // Закрываем модалку
             overlay.remove();
+            console.log('[STATS BUTTON] Removed overlay');
             
             // Переходим на статистику
             location.hash = '#/stats';
@@ -912,8 +918,10 @@ function showStats(stats, results, total) {
             
             // Инициализируем страницу статистики
             const { initStatsPage } = await import('./stats-ui.js?v=6');
-            initStatsPage('4.73');
+            initStatsPage('4.76');
             console.log('[STATS BUTTON] initStatsPage called');
+            console.log('[STATS BUTTON] ========== END STATS BUTTON ==========');
+            console.log('========================================');
         });
         
         // Кнопка "Продолжить" - следующий круг обучения

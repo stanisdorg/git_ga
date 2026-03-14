@@ -2014,20 +2014,27 @@ function renderStats() {
   const topRight = container.querySelector('.st-top-right');
 
   const homeBtn = container.querySelector('.st-home-btn');
-  console.log('[STATS PAGE] homeBtn found:', !!homeBtn);
+  console.log('========================================');
+  console.log('[HOME BTN SETUP] homeBtn found:', !!homeBtn);
+  console.log('[HOME BTN SETUP] location.hash:', location.hash);
+  console.log('========================================');
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
-      console.log('[HOME BTN] Clicked!');
+      console.log('========================================');
+      console.log('[HOME BTN CLICK] Clicked!');
+      console.log('[HOME BTN CLICK] Current location.hash:', location.hash);
+      console.log('[HOME BTN CLICK] window.__lastCandidates:', window.__lastCandidates);
       
       // Очищаем состояние обучения
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
-        console.log('[HOME BTN] Cleared __lastCandidates');
+        console.log('[HOME BTN CLICK] Cleared __lastCandidates');
       }
       
       // Просто меняем hash на главную
       location.hash = '#/';
-      console.log('[HOME BTN] Hash changed to:', location.hash);
+      console.log('[HOME BTN CLICK] Hash changed to:', location.hash);
+      console.log('========================================');
     });
   }
 
