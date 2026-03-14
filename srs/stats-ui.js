@@ -2010,6 +2010,11 @@ function renderStats() {
   const homeBtn = container.querySelector('.st-home-btn');
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
+      // Очищаем состояние обучения ПЕРЕД переходом на главную
+      if (window.__lastCandidates) {
+        window.__lastCandidates = null;
+        console.log('[HOME BTN] Cleared __lastCandidates');
+      }
       location.hash = '';
       hideStatsPage();
       const mainNav = document.getElementById('bottom-nav');
