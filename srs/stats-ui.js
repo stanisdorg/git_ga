@@ -2668,6 +2668,17 @@ window.openLevelInfoModal = () => {
 
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
+  // Принудительные стили для overlay
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.right = '0';
+  overlay.style.bottom = '0';
+  overlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '9999';
   overlay.innerHTML = `
     <div class="st-modal" style="max-width:900px;max-height:75vh;overflow:hidden;display:flex;flex-direction:column;">
       <div class="st-modal-header" style="flex-shrink:0;">
