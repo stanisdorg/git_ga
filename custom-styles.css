@@ -1489,16 +1489,16 @@ body.learning-mode #bottom-nav {
 /* Верхняя часть с вопросом на back стороне */
 .flashcard-back-question {
     position: absolute;
-    top: 35px; /* Опушено вниз для разделения с сердечками */
+    top: 35px;
     left: 0;
     right: 0;
-    padding: 15px 40px;
+    padding: 5px 10px 10px;
     font-size: 16px;
     color: var(--color-text-secondary);
     font-weight: 500;
     border-bottom: 2px solid var(--color-border);
     background: var(--color-card);
-    z-index: 5; /* Ниже кнопки избранного */
+    z-index: 5;
 }
 
 /* Кнопка избранного на карточке обучения */
