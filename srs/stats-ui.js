@@ -1558,6 +1558,7 @@ export function initStatsPage(appVersion) {
 
 export function hideStatsPage() {
   console.log('[hideStatsPage] Called!');
+  console.log('[hideStatsPage] __navigatingToHome:', window.__navigatingToHome);
   
   if (statsContainer) statsContainer.remove();
 
@@ -3253,6 +3254,10 @@ window.startFilteredSession = (index) => {
     console.log('[startFilteredSession] Cleared __lastCandidates');
   }
 
+  // Сбрасываем флаг навигации
+  window.__navigatingToHome = false;
+  console.log('[startFilteredSession] Set __navigatingToHome = false');
+
   hideStatsPage();
   startLearnSession(cards, { mode: 'cram' });
 };
@@ -3268,6 +3273,10 @@ window.startRiskSession = (catName) => {
     window.__lastCandidates = null;
     console.log('[startRiskSession] Cleared __lastCandidates');
   }
+
+  // Сбрасываем флаг навигации
+  window.__navigatingToHome = false;
+  console.log('[startRiskSession] Set __navigatingToHome = false');
 
   hideStatsPage();
   startLearnSession(zone.items, { mode: 'cram' });
@@ -3325,6 +3334,9 @@ window.startMode = (modeId) => {
       window.__lastCandidates = null;
       console.log('[startMode] Cleared __lastCandidates');
     }
+    // Сбрасываем флаг навигации
+    window.__navigatingToHome = false;
+    console.log('[startMode] Set __navigatingToHome = false');
     hideStatsPage();
     startLearnSession(candidates, options);
   }
