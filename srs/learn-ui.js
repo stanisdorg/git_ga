@@ -310,6 +310,10 @@ function handleKeydown(e) {
  * @param {Array} candidateQuestions 
  */
 export function startLearnSession(candidateQuestions, options = {}) {
+    console.log('=== [startLearnSession] === CALLED ===');
+    console.log('[startLearnSession] candidateQuestions:', candidateQuestions ? candidateQuestions.length : 'null');
+    console.log('[startLearnSession] Stack trace:', new Error().stack);
+    
     initLearnUI(); // Ensure UI exists
 
     // Скрываем навигацию и добавляем класс на body
@@ -887,8 +891,11 @@ function showStats(stats, results, total) {
         
         // Кнопка "Продолжить" - следующий круг обучения
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
+            console.log('[CONTINUE BTN] Clicked!');
+            console.log('[CONTINUE BTN] __lastCandidates:', window.__lastCandidates ? 'EXISTS' : 'null');
             overlay.classList.remove('show');
             if (window.__lastCandidates) {
+                console.log('[CONTINUE BTN] Starting session with __lastCandidates');
                 startLearnSession(window.__lastCandidates);
             }
         });

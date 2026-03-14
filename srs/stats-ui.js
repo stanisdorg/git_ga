@@ -2008,8 +2008,11 @@ function renderStats() {
   const topRight = container.querySelector('.st-top-right');
 
   const homeBtn = container.querySelector('.st-home-btn');
+  console.log('[STATS PAGE] homeBtn found:', !!homeBtn);
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
+      console.log('[HOME BTN] Clicked!');
+      console.log('[HOME BTN] __lastCandidates before:', window.__lastCandidates ? 'EXISTS' : 'null');
       // Очищаем состояние обучения ПЕРЕД переходом на главную
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
@@ -2017,9 +2020,11 @@ function renderStats() {
       }
       location.hash = '';
       hideStatsPage();
+      console.log('[HOME BTN] Calling homeNav.click()');
       const mainNav = document.getElementById('bottom-nav');
       if (mainNav) {
         const homeNav = mainNav.querySelector('#bn-home');
+        console.log('[HOME BTN] homeNav found:', !!homeNav);
         if (homeNav) homeNav.click();
       }
     });
