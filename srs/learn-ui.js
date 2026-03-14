@@ -938,6 +938,13 @@ function showStats(stats, results, total) {
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
+    // Убираем класс learning-mode
+    document.body.classList.remove('learning-mode');
+    const bottomNav = document.getElementById('bottom-nav');
+    if (bottomNav) bottomNav.style.display = 'flex';
+    
+    console.log('[showStats] Removed learning-mode, showed bottomNav');
+
     // Motivational Message Logic (Expert Psychology)
     let motivation = 'Продолжайте в том же духе!';
     if (currentScheduler) {
