@@ -887,13 +887,10 @@ function showStats(stats, results, total) {
         container.appendChild(overlay);
         
         // Кнопка "Статистика" - переход на страницу статистики
-        overlay.querySelector('#sum-exit').addEventListener('click', async () => {
+        overlay.querySelector('#sum-exit').addEventListener('click', () => {
             console.log('========================================');
             console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
             console.log('[STATS BUTTON] Timestamp:', new Date().toISOString());
-            console.log('[STATS BUTTON] Current location.hash:', location.hash);
-            console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
-            console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
             
             // Завершаем сессию обучения
             if (currentScheduler) {
@@ -912,14 +909,9 @@ function showStats(stats, results, total) {
             overlay.remove();
             console.log('[STATS BUTTON] Removed overlay');
             
-            // Переходим на статистику
+            // ПРОСТО МЕНЯЕМ HASH - hashchange handler сам вызовет initStatsPage()!
             location.hash = '#/stats';
             console.log('[STATS BUTTON] Hash changed to:', location.hash);
-            
-            // Инициализируем страницу статистики
-            const { initStatsPage } = await import('./stats-ui.js?v=6');
-            initStatsPage('4.76');
-            console.log('[STATS BUTTON] initStatsPage called');
             console.log('[STATS BUTTON] ========== END STATS BUTTON ==========');
             console.log('========================================');
         });
