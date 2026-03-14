@@ -887,7 +887,7 @@ function showStats(stats, results, total) {
         container.appendChild(overlay);
         
         // Кнопка "Статистика" - переход на страницу статистики
-        overlay.querySelector('#sum-exit').addEventListener('click', () => {
+        overlay.querySelector('#sum-exit').addEventListener('click', async () => {
             console.log('[STATS BUTTON] Clicked!');
             
             // Завершаем сессию обучения
@@ -903,14 +903,17 @@ function showStats(stats, results, total) {
             
             console.log('[STATS BUTTON] Removed learning-mode, showed bottomNav');
             
+            // Закрываем модалку
+            overlay.remove();
+            
             // Переходим на статистику
             location.hash = '#/stats';
             console.log('[STATS BUTTON] Hash changed to:', location.hash);
             
-            setTimeout(() => {
-                console.log('[STATS BUTTON] Removing overlay...');
-                overlay.remove();
-            }, 100);
+            // Инициализируем страницу статистики
+            const { initStatsPage } = await import('./stats-ui.js?v=6');
+            initStatsPage('4.73');
+            console.log('[STATS BUTTON] initStatsPage called');
         });
         
         // Кнопка "Продолжить" - следующий круг обучения
