@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.65');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -647,7 +647,7 @@ export function initTabsNavigation(appVersion) {
     window.addEventListener('hashchange', async () => {
         console.log('[HASH CHANGE] New hash:', location.hash);
         if (location.hash === '#/stats') {
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.65');
             initStatsPage(appVersion);
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
             // Переход на главную - закрываем статистику если открыта
