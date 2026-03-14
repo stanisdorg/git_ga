@@ -2694,6 +2694,28 @@ window.openLevelInfoModal = () => {
   console.log('========================================');
   console.log('[OPENLEVELINFOMODAL] Функция вызвана!');
   console.log('[OPENLEVELINFOMODAL] Timestamp:', new Date().toISOString());
+  console.log('[OPENLEVELINFOMODAL] location.hash:', location.hash);
+  console.log('[OPENLEVELINFOMODAL] document.querySelector(".app-wrapper"):', document.querySelector('.app-wrapper'));
+  console.log('[OPENLEVELINFOMODAL] document.querySelector(".sidebar"):', document.querySelector('.sidebar'));
+  console.log('[OPENLEVELINFOMODAL] document.querySelector(".container"):', document.querySelector('.container'));
+  
+  // Проверяем есть ли стили STATS_STYLES в DOM
+  const stylesInDom = document.querySelector('style');
+  console.log('[OPENLEVELINFOMODAL] Первый style элемент:', stylesInDom);
+  console.log('[OPENLEVELINFOMODAL] stylesInDom.textContent (первые 200 символов):', stylesInDom?.textContent?.substring(0, 200));
+  
+  // ДОБАВЛЯЕМ СТИЛИ ЕСЛИ ИХ НЕТ
+  let styleEl = document.getElementById('stats-modal-styles');
+  if (!styleEl) {
+    console.log('[OPENLEVELINFOMODAL] Стили не найдены, добавляем STATS_STYLES...');
+    styleEl = document.createElement('style');
+    styleEl.id = 'stats-modal-styles';
+    styleEl.textContent = STATS_STYLES;
+    document.head.appendChild(styleEl);
+    console.log('[OPENLEVELINFOMODAL] Стили добавлены!');
+  } else {
+    console.log('[OPENLEVELINFOMODAL] Стили уже есть в DOM');
+  }
   
   const levelInfo = getCurrentLevel();
   const stats = getStudyStats();
@@ -2868,6 +2890,12 @@ window.openLevelInfoModal = () => {
   
   console.log('[OPENLEVELINFOMODAL] Модальное окно создано и добавлено в DOM!');
   console.log('[OPENLEVELINFOMODAL] overlay element:', overlay);
+  console.log('[OPENLEVELINFOMODAL] overlay.style:', overlay.style);
+  console.log('[OPENLEVELINFOMODAL] overlay.className:', overlay.className);
+  console.log('[OPENLEVELINFOMODAL] getComputedStyle(overlay):', window.getComputedStyle(overlay));
+  console.log('[OPENLEVELINFOMODAL] overlay.children[0]:', overlay.children[0]);
+  console.log('[OPENLEVELINFOMODAL] overlay.children[0].className:', overlay.children[0]?.className);
+  console.log('[OPENLEVELINFOMODAL] getComputedStyle(modal):', overlay.children[0] ? window.getComputedStyle(overlay.children[0]) : 'N/A');
   console.log('========================================');
 
   // Закрытие по ESC
