@@ -271,6 +271,9 @@ export function initLearnUI() {
                 console.log('  - background:', window.getComputedStyle(btn).background);
                 console.log('  - outline:', window.getComputedStyle(btn).outline);
                 if (session) session.rate(grade);
+                // Сбрасываем фокус с кнопки чтобы не было обводки
+                btn.blur();
+                console.log('[RATE BUTTON CLICK] Focus blurred from button');
                 // Проверяем стили после клика
                 setTimeout(() => {
                     console.log('[RATE BUTTON CLICK] Button styles after 100ms:');

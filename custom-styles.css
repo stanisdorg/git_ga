@@ -1663,6 +1663,7 @@ body.learning-mode #bottom-nav {
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    outline: none; /* Убираем стандартную обводку фокуса */
 }
 
 /* Светящиеся края - вариант 23 */
@@ -1696,6 +1697,10 @@ body.learning-mode #bottom-nav {
 .rate-btn:active {
     transform: translateY(0);
     filter: brightness(1.1);
+}
+
+.rate-btn:focus {
+    outline: none; /* Убираем обводку при фокусе */
 }
 
 .rate-btn:disabled {
