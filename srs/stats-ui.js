@@ -1558,13 +1558,6 @@ export function initStatsPage(appVersion) {
 
 export function hideStatsPage() {
   console.log('[hideStatsPage] Called!');
-  console.log('[hideStatsPage] __lastCandidates before:', window.__lastCandidates ? 'EXISTS' : 'null');
-  
-  // Очищаем состояние обучения при закрытии статистики
-  if (window.__lastCandidates) {
-    window.__lastCandidates = null;
-    console.log('[hideStatsPage] Cleared __lastCandidates');
-  }
   
   if (statsContainer) statsContainer.remove();
 
@@ -3250,6 +3243,12 @@ window.startFilteredSession = (index) => {
     return;
   }
 
+  // Очищаем состояние обучения ПЕРЕД запуском нового
+  if (window.__lastCandidates) {
+    window.__lastCandidates = null;
+    console.log('[startFilteredSession] Cleared __lastCandidates');
+  }
+
   hideStatsPage();
   startLearnSession(cards, { mode: 'cram' });
 };
@@ -3259,6 +3258,12 @@ window.startRiskSession = (catName) => {
   const riskZones = getRiskZones(currentCards);
   const zone = riskZones.find(z => z.cat === catName);
   if (!zone || !zone.items || zone.items.length === 0) return;
+
+  // Очищаем состояние обучения ПЕРЕД запуском нового
+  if (window.__lastCandidates) {
+    window.__lastCandidates = null;
+    console.log('[startRiskSession] Cleared __lastCandidates');
+  }
 
   hideStatsPage();
   startLearnSession(zone.items, { mode: 'cram' });
@@ -3311,6 +3316,11 @@ window.startMode = (modeId) => {
   }
 
   if (candidates.length > 0) {
+    // Очищаем состояние обучения ПЕРЕД запуском нового
+    if (window.__lastCandidates) {
+      window.__lastCandidates = null;
+      console.log('[startMode] Cleared __lastCandidates');
+    }
     hideStatsPage();
     startLearnSession(candidates, options);
   }
