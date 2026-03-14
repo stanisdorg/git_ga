@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.83');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.84');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -652,19 +652,14 @@ export function initTabsNavigation(appVersion) {
         console.log('[HASH CHANGE] Timestamp:', new Date().toISOString());
         
         if (location.hash === '#/stats') {
-            console.log('[HASH CHANGE] Detected #/stats - initializing stats page');
-            
-            // ПРИНУДИТЕЛЬНО скрываем главный контейнер
+            console.log('[HASH CHANGE] Detected #/stats - stats already initialized by button click');
+            // НЕ вызываем initStatsPage() - он уже вызван кнопкой!
+            // Просто скрываем главный контейнер
             const mainContainer = document.querySelector('.container');
             if (mainContainer) {
                 mainContainer.style.display = 'none';
                 console.log('[HASH CHANGE] Hid main container');
             }
-            
-            // ПРИНУДИТЕЛЬНО показываем статистику
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.83');
-            initStatsPage(appVersion);
-            console.log('[HASH CHANGE] initStatsPage called');
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
             // Переход на главную - закрываем статистику если открыта
             console.log('[HASH CHANGE] Detected home hash - navigating to home');
