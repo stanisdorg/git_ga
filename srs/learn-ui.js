@@ -938,6 +938,13 @@ function showStats(stats, results, total) {
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
+    // Завершаем сессию обучения
+    console.log('[showStats] Ending learning session...');
+    if (currentScheduler) {
+        currentScheduler = null;
+        console.log('[showStats] Cleared currentScheduler');
+    }
+    
     // Убираем класс learning-mode
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
