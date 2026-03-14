@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.21');
+                module = await import('../srs/learn-ui.js?v=2.22');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.77');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.78');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -653,7 +653,7 @@ export function initTabsNavigation(appVersion) {
         
         if (location.hash === '#/stats') {
             console.log('[HASH CHANGE] Detected #/stats - initializing stats page');
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.77');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.78');
             initStatsPage(appVersion);
             console.log('[HASH CHANGE] initStatsPage called');
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
@@ -2981,26 +2981,38 @@ function showFavorites() {
 
 // Универсальная перерисовка текущего контекста без сброса на «Все вопросы»
 function refreshCurrentContext() {
+    console.log('========================================');
+    console.log('[refreshCurrentContext] Called!');
+    console.log('[refreshCurrentContext] currentContextKey:', currentContextKey);
+    console.log('[refreshCurrentContext] location.hash:', location.hash);
+    console.log('[refreshCurrentContext] Stack:', new Error().stack);
+    console.log('========================================');
     try {
         const key = currentContextKey || 'all';
         if (key === 'all') {
+            console.log('[refreshCurrentContext] Calling showAllQuestions()');
             return showAllQuestions();
         }
         if (key === 'favorites') {
+            console.log('[refreshCurrentContext] Calling showFavorites()');
             return showFavorites();
         }
         if (key.startsWith('category:')) {
             const name = key.slice('category:'.length);
+            console.log('[refreshCurrentContext] Calling filterQuestionsByCategory:', name);
             return filterQuestionsByCategory(name);
         }
         if (key.startsWith('subcategory:')) {
             const payload = key.slice('subcategory:'.length);
             const [cat, sub] = payload.split('#');
+            console.log('[refreshCurrentContext] Calling filterQuestionsBySubcategory:', cat, sub);
             return filterQuestionsBySubcategory(cat, sub);
         }
         // fallback
+        console.log('[refreshCurrentContext] Fallback to showAllQuestions()');
         showAllQuestions();
-    } catch (_) {
+    } catch (e) {
+        console.error('[refreshCurrentContext] Error:', e);
         showAllQuestions();
     }
 }
