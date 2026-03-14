@@ -2071,7 +2071,20 @@ function renderStats() {
       box.style.padding = '4px 8px';
       box.style.borderRadius = '8px';
       box.title = 'Уровни и XP';
-      box.onclick = () => window.openLevelInfoModal();
+      box.onclick = () => {
+        console.log('========================================');
+        console.log('[LEVEL BOX CLICK] Клик по блоку уровня!');
+        console.log('[LEVEL BOX CLICK] Timestamp:', new Date().toISOString());
+        console.log('[LEVEL BOX CLICK] window.openLevelInfoModal:', typeof window.openLevelInfoModal);
+        console.log('[LEVEL BOX CLICK] Вызываем openLevelInfoModal()...');
+        if (window.openLevelInfoModal) {
+          window.openLevelInfoModal();
+          console.log('[LEVEL BOX CLICK] Модальное окно открыто!');
+        } else {
+          console.error('[LEVEL BOX CLICK] ❌ window.openLevelInfoModal НЕ НАЙДЕН!');
+        }
+        console.log('========================================');
+      };
       box.onmouseover = () => {
         box.style.background = 'rgba(255,159,28,0.15)';
         box.style.boxShadow = '0 0 12px rgba(255,159,28,0.4)';
@@ -2616,6 +2629,10 @@ window.openStatsInfoModal = (event) => {
 
 // Модальное окно с информацией об уровнях и XP
 window.openLevelInfoModal = () => {
+  console.log('========================================');
+  console.log('[OPENLEVELINFOMODAL] Функция вызвана!');
+  console.log('[OPENLEVELINFOMODAL] Timestamp:', new Date().toISOString());
+  
   const levelInfo = getCurrentLevel();
   const stats = getStudyStats();
   const daily = getDailyPointsAll();
@@ -2775,6 +2792,10 @@ window.openLevelInfoModal = () => {
     </div>
   `;
   document.body.appendChild(overlay);
+  
+  console.log('[OPENLEVELINFOMODAL] Модальное окно создано и добавлено в DOM!');
+  console.log('[OPENLEVELINFOMODAL] overlay element:', overlay);
+  console.log('========================================');
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
