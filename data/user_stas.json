@@ -3,9 +3,9 @@
     "username": "stas",
     "role": "user",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-14T08:37:22.950Z",
+    "lastLoginAt": "2026-03-14T13:15:09.352Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-14T08:37:22.950Z"
+    "lastSavedAt": "2026-03-14T13:15:09.352Z"
   },
   "_cards": [
     {
@@ -923,7 +923,7 @@
       "answer": "Чек-лист, тест-кейс, отчет о тестировании."
     },
     {
-      "category": "Д��кументация",
+      "category": "Д����кументация",
       "subcategory": "Чек-листы и тест-планы",
       "question": "Как вы пишете чек-листы и тест-планы?",
       "answer": "На основе требований и функциональных характеристик системы, обеспечивая полное покрытие всех функций и сценариев использования. Чек-листы включают в себя списки проверок, а тест-планы описывают подробности тестирования, стратегии и ресурсы."
@@ -1483,7 +1483,7 @@
       "category": "Технические",
       "subcategory": "API и Сети",
       "question": "GET vs POST?",
-      "answer": "GET — получаем информацию от сервера (идемпотентный), не имеет тела (есть query params). POST — метод, отправляющий информацию на сервер, информация в body (неидемпотентный).\n\n--- Дополнительный ответ ---\nget - получаем инфу от сервера(идемпот+?), не имеет тела(есть query params)\n    post - метод отправляющий информацию на сервер, информация в body, (не идемпот)"
+      "answer": "GET — получаем информацию от сервера (идемпотентный), не имеет тела (есть query params). POST — метод, отправляющий информацию на сервер, информация в body (неидемпотентный).\n\n--- Дополнительный отв��т ---\nget - получаем инфу от сервера(идемпот+?), не имеет тела(есть query params)\n    post - метод отправляющий информацию на сервер, информация в body, (не идемпот)"
     },
     {
       "category": "Технические",
@@ -2047,22 +2047,22 @@
     "fiftyCards": true
   },
   "_stats": {
-    "total": 93,
-    "timeSpent": 35755,
-    "points": 860,
-    "correct": 70
+    "total": 105,
+    "timeSpent": 119886,
+    "points": 970,
+    "correct": 74
   },
   "_srsProgress": {
     "Из чего состоит Kafka и как работает?": {
-      "interval": 1,
-      "easeFactor": 1.3,
-      "streak": 0,
-      "repetitionCount": 6,
-      "history": 6,
-      "lastReviewDate": 1773477436797,
-      "nextReviewDate": 1773536400000,
-      "dueDate": "2026-03-15T01:00:00.000Z",
-      "repetitions": 0,
+      "interval": 3,
+      "easeFactor": 1.4000000000000001,
+      "streak": 2,
+      "repetitionCount": 12,
+      "history": 12,
+      "lastReviewDate": 1773493984152,
+      "nextReviewDate": 1773709200000,
+      "dueDate": "2026-03-17T01:00:00.000Z",
+      "repetitions": 2,
       "historyArray": [
         {
           "date": 1773437414720,
@@ -2087,23 +2087,47 @@
         {
           "date": 1773477436797,
           "grade": 2
+        },
+        {
+          "date": 1773492990750,
+          "grade": 2
+        },
+        {
+          "date": 1773493071202,
+          "grade": 2
+        },
+        {
+          "date": 1773493941463,
+          "grade": 2
+        },
+        {
+          "date": 1773493947849,
+          "grade": 2
+        },
+        {
+          "date": 1773493969266,
+          "grade": 3
+        },
+        {
+          "date": 1773493984152,
+          "grade": 3
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-14",
-      "lastReviewedTime": 14,
+      "lastReviewedTime": 19,
       "question": "Из чего состоит Kafka и как работает?"
     },
     "брокеры?": {
-      "interval": 1,
-      "easeFactor": 1.3,
-      "streak": 0,
-      "repetitionCount": 6,
-      "history": 6,
-      "lastReviewDate": 1773477436238,
-      "nextReviewDate": 1773536400000,
-      "dueDate": "2026-03-15T01:00:00.000Z",
-      "repetitions": 0,
+      "interval": 3,
+      "easeFactor": 1.4000000000000001,
+      "streak": 2,
+      "repetitionCount": 12,
+      "history": 12,
+      "lastReviewDate": 1773493985632,
+      "nextReviewDate": 1773709200000,
+      "dueDate": "2026-03-17T01:00:00.000Z",
+      "repetitions": 2,
       "historyArray": [
         {
           "date": 1773437415408,
@@ -2128,11 +2152,35 @@
         {
           "date": 1773477436238,
           "grade": 2
+        },
+        {
+          "date": 1773492990085,
+          "grade": 2
+        },
+        {
+          "date": 1773493070536,
+          "grade": 2
+        },
+        {
+          "date": 1773493942973,
+          "grade": 2
+        },
+        {
+          "date": 1773493949389,
+          "grade": 2
+        },
+        {
+          "date": 1773493970800,
+          "grade": 3
+        },
+        {
+          "date": 1773493985632,
+          "grade": 3
         }
       ],
       "state": "learning",
       "lastReviewed": "2026-03-14",
-      "lastReviewedTime": 14,
+      "lastReviewedTime": 19,
       "question": "брокеры?"
     },
     "4) Прикладной": {

@@ -602,9 +602,9 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.26');
+                module = await import('../srs/learn-ui.js?v=2.28');
             } catch (e1) {
-                console.warn('[Learn] Import v26 failed, trying plain import', e1);
+                console.warn('[Learn] Import v28 failed, trying plain import', e1);
                 try {
                     module = await import('../srs/learn-ui.js');
                 } catch (e2) {
@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.84');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.50-beta');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -650,15 +650,33 @@ export function initTabsNavigation(appVersion) {
         console.log('[HASH CHANGE] New hash:', location.hash);
         console.log('[HASH CHANGE] window.__lastCandidates:', window.__lastCandidates);
         console.log('[HASH CHANGE] Timestamp:', new Date().toISOString());
-        
+
         if (location.hash === '#/stats') {
-            console.log('[HASH CHANGE] Detected #/stats - stats already initialized by button click');
-            // НЕ вызываем initStatsPage() - он уже вызван кнопкой!
-            // Просто скрываем главный контейнер
+            console.log('[HASH CHANGE] Detected #/stats');
+            
+            // ПРОВЕРЯЕМ: существует ли stats-container
+            const statsContainerExists = document.getElementById('stats-container');
+            console.log('[HASH CHANGE] stats-container exists:', !!statsContainerExists);
+            
+            // Если stats-container НЕ существует, создаем его
+            if (!statsContainerExists) {
+                console.log('[HASH CHANGE] stats-container NOT found - calling initStatsPage()');
+                const { initStatsPage } = await import('../srs/stats-ui.js');
+                initStatsPage(appVersion);
+            } else {
+                console.log('[HASH CHANGE] stats-container already exists');
+            }
+            
+            // Скрываем главный контейнер и sidebar
             const mainContainer = document.querySelector('.container');
             if (mainContainer) {
                 mainContainer.style.display = 'none';
                 console.log('[HASH CHANGE] Hid main container');
+            }
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.style.display = 'none';
+                console.log('[HASH CHANGE] Hid sidebar');
             }
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
             // Переход на главную - закрываем статистику если открыта

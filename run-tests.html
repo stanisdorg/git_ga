@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Автотесты: Статистика из тренировки</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #667eea; }
+        .test-result {
+            background: #242424;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #ddd;
+        }
+        .test-result.passed { border-left-color: #4caf50; }
+        .test-result.failed { border-left-color: #f44336; }
+        .test-result.running { border-left-color: #2196f3; }
+        .test-name { font-weight: bold; margin-bottom: 10px; }
+        .test-log {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .log-entry { margin: 3px 0; }
+        .log-info { color: #4fc3f7; }
+        .log-success { color: #81c784; }
+        .log-error { color: #e57373; }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 5px 10px 0;
+        }
+        .btn:hover { opacity: 0.9; }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .summary-card {
+            background: #242424;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card .num { font-size: 36px; font-weight: bold; }
+        .summary-card .label { font-size: 12px; text-transform: uppercase; color: #888; }
+        #app-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Автотесты: Переход на статистику из тренировки</h1>
+        
+        <div>
+            <button class="btn" onclick="runTestsInApp()">▶️ Запустить тесты в приложении</button>
+            <button class="btn" onclick="openApp()">🚀 Открыть приложение</button>
+            <button class="btn" onclick="clearResults()">🗑️ Очистить</button>
+        </div>
+        
+        <div class="summary">
+            <div class="summary-card">
+                <div class="num" id="total">0</div>
+                <div class="label">Всего</div>
+            </div>
+            <div class="summary-card">
+                <div class="num" id="passed">0</div>
+                <div class="label">Пройдено</div>
+            </div>
+            <div class="summary-card">
+                <div class="num" id="failed">0</div>
+                <div class="label">Провалено</div>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+        
+        <iframe id="app-frame" src="index.html"></iframe>
+    </div>
+
+    <script type="module">
+        const resultsDiv = document.getElementById('results');
+        let testCount = 0, passCount = 0, failCount = 0;
+
+        function addResult(name, status, logs = []) {
+            const div = document.createElement('div');
+            div.className = `test-result ${status}`;
+            
+            const statusText = status === 'passed' ? '✅' : status === 'failed' ? '❌' : '⏳';
+            div.innerHTML = `
+                <div class="test-name">${statusText} ${name}</div>
+                <div class="test-log">
+                    ${logs.map(l => `<div class="log-entry log-${l.type}">${escapeHtml(l.msg)}</div>`).join('')}
+                </div>
+            `;
+            resultsDiv.appendChild(div);
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function updateSummary() {
+            document.getElementById('total').textContent = testCount;
+            document.getElementById('passed').textContent = passCount;
+            document.getElementById('failed').textContent = failCount;
+        }
+
+        window.runTestsInApp = async function() {
+            const frame = document.getElementById('app-frame');
+            const frameWindow = frame.contentWindow;
+            
+            resultsDiv.innerHTML = '';
+            testCount = passCount = failCount = 0;
+            updateSummary();
+
+            // Ждем загрузки приложения
+            addResult('Загрузка приложения', 'running', [{type: 'info', msg: 'Ожидание загрузки index.html...'}]);
+            
+            await new Promise(resolve => {
+                frame.onload = resolve;
+                setTimeout(resolve, 3000);
+            });
+
+            // Даем время на инициализацию
+            await sleep(2000);
+
+            // Выполняем тесты в контексте фрейма
+            const tests = [
+                { name: 'Контейнеры ДО перехода', code: `
+                    const main = document.querySelector('.container');
+                    const sidebar = document.querySelector('.sidebar');
+                    const stats = document.getElementById('stats-container');
+                    const learn = document.getElementById('learn-container');
+                    return {
+                        mainExists: !!main,
+                        sidebarExists: !!sidebar,
+                        statsExists: !!stats,
+                        learnExists: !!learn,
+                        mainDisplay: main?.style.display,
+                        sidebarDisplay: sidebar?.style.display
+                    };
+                `},
+                { name: 'Инициализация статистики', code: `
+                    const { initStatsPage } = await import('./srs/stats-ui.js');
+                    initStatsPage('test');
+                    await new Promise(r => setTimeout(r, 200));
+                    
+                    const stats = document.getElementById('stats-container');
+                    const main = document.querySelector('.container');
+                    const sidebar = document.querySelector('.sidebar');
+                    
+                    return {
+                        statsExists: !!stats,
+                        statsDisplay: stats?.style.display,
+                        statsComputed: window.getComputedStyle(stats || document.body).display,
+                        mainHidden: main?.style.display === 'none',
+                        sidebarHidden: sidebar?.style.display === 'none'
+                    };
+                `},
+                { name: 'Проверка z-index', code: `
+                    const stats = document.getElementById('stats-container');
+                    const sidebar = document.querySelector('.sidebar');
+                    return {
+                        statsZIndex: stats ? window.getComputedStyle(stats).zIndex : 'N/A',
+                        sidebarZIndex: sidebar ? window.getComputedStyle(sidebar).zIndex : 'N/A'
+                    };
+                `},
+                { name: 'Скрытие статистики', code: `
+                    const { hideStatsPage } = await import('./srs/stats-ui.js');
+                    hideStatsPage();
+                    await new Promise(r => setTimeout(r, 200));
+                    
+                    const stats = document.getElementById('stats-container');
+                    const main = document.querySelector('.container');
+                    
+                    return {
+                        statsRemoved: !stats,
+                        mainShown: main?.style.display === 'block' || main?.style.display === ''
+                    };
+                `},
+                { name: 'Полный цикл: тренировка → статистика', code: `
+                    // Симулируем режим обучения
+                    document.body.classList.add('learning-mode');
+                    const learn = document.getElementById('learn-container');
+                    if (learn) learn.style.display = 'block';
+                    
+                    // Инициализируем статистику
+                    const { initStatsPage } = await import('./srs/stats-ui.js');
+                    initStatsPage('test');
+                    await new Promise(r => setTimeout(r, 300));
+                    
+                    const stats = document.getElementById('stats-container');
+                    const sidebar = document.querySelector('.sidebar');
+                    const main = document.querySelector('.container');
+                    
+                    // Очищаем
+                    document.body.classList.remove('learning-mode');
+                    
+                    return {
+                        statsVisible: stats?.style.display === 'block',
+                        sidebarHidden: sidebar?.style.display === 'none',
+                        mainHidden: main?.style.display === 'none',
+                        learningModeOff: !document.body.classList.contains('learning-mode')
+                    };
+                `}
+            ];
+
+            for (const test of tests) {
+                testCount++;
+                addResult(test.name, 'running', [{type: 'info', msg: 'Выполнение...'}]);
+                
+                try {
+                    const resultDiv = resultsDiv.lastElementChild;
+                    const logs = [];
+                    
+                    // Выполняем тест в контексте фрейма
+                    const result = await frameWindow.eval(`(async () => {
+                        const logs = [];
+                        const originalLog = console.log;
+                        console.log = (...args) => {
+                            logs.push({type: 'info', msg: args.join(' ')});
+                            originalLog.apply(console, args);
+                        };
+                        
+                        try {
+                            ${test.code}
+                        } finally {
+                            console.log = originalLog;
+                        }
+                        
+                        return result;
+                    })()`);
+                    
+                    logs.push({type: 'success', msg: 'Результат: ' + JSON.stringify(result, null, 2)});
+                    
+                    // Проверяем результат
+                    let passed = true;
+                    if (test.name.includes('Инициализация')) {
+                        passed = result.statsExists && result.statsDisplay === 'block';
+                    } else if (test.name.includes('z-index')) {
+                        passed = parseInt(result.statsZIndex) >= 1000;
+                    } else if (test.name.includes('Скрытие')) {
+                        passed = result.statsRemoved;
+                    } else if (test.name.includes('Полный')) {
+                        passed = result.statsVisible && result.sidebarHidden;
+                    }
+                    
+                    if (passed) {
+                        passCount++;
+                        resultDiv.className = 'test-result passed';
+                        resultDiv.querySelector('.test-name').innerHTML = '✅ ' + test.name;
+                    } else {
+                        failCount++;
+                        resultDiv.className = 'test-result failed';
+                        resultDiv.querySelector('.test-name').innerHTML = '❌ ' + test.name;
+                        logs.push({type: 'error', msg: 'ПРОВЕРЕНО:Assertion failed - тест не прошел'});
+                    }
+                    
+                    resultDiv.querySelector('.test-log').innerHTML = 
+                        logs.map(l => `<div class="log-entry log-${l.type}">${escapeHtml(l.msg)}</div>`).join('');
+                    
+                } catch (error) {
+                    failCount++;
+                    const resultDiv = resultsDiv.lastElementChild;
+                    resultDiv.className = 'test-result failed';
+                    resultDiv.querySelector('.test-name').innerHTML = '❌ ' + test.name;
+                    resultDiv.querySelector('.test-log').innerHTML = 
+                        `<div class="log-entry log-error">Ошибка: ${escapeHtml(error.message)}</div>`;
+                }
+                
+                updateSummary();
+                await sleep(500);
+            }
+        };
+
+        window.openApp = function() {
+            window.open('index.html', '_blank');
+        };
+
+        window.clearResults = function() {
+            resultsDiv.innerHTML = '';
+            testCount = passCount = failCount = 0;
+            updateSummary();
+        };
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Экспортируем для глобального доступа
+        window.runTestsInApp = runTestsInApp;
+        window.openApp = openApp;
+        window.clearResults = clearResults;
+    </script>
+</body>
+</html>

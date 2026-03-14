@@ -921,10 +921,21 @@ function showStats(stats, results, total) {
             // Закрываем модалку
             overlay.remove();
             console.log('[STATS BUTTON] Removed overlay');
+
+            // ИСПРАВЛЕНИЕ: Вызываем initStatsPage() напрямую, а не через hashchange
+            // Потому что если hash уже #/stats, событие hashchange не сработает
+            console.log('[STATS BUTTON] Calling initStatsPage() directly...');
+
+            // learn-container уже скрыт выше (строка 915), но на всякий случай проверим
+            // const learnContainer уже объявлена выше, не нужно объявлять снова
+
+            // Импортируем и вызываем initStatsPage
+            import('./stats-ui.js?v=4.50-beta').then(({ initStatsPage }) => {
+                initStatsPage(window.currentAppVersion || '4.50-beta');
+            }).catch(err => {
+                console.error('[STATS BUTTON] Failed to load stats-ui:', err);
+            });
             
-            // ПРОСТО МЕНЯЕМ HASH - hashchange handler сам вызовет initStatsPage()!
-            location.hash = '#/stats';
-            console.log('[STATS BUTTON] Hash changed to:', location.hash);
             console.log('[STATS BUTTON] ========== END STATS BUTTON ==========');
             console.log('========================================');
         });

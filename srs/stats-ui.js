@@ -2,7 +2,7 @@
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
-import { startLearnSession } from './learn-ui.js?v=2.11';
+import { startLearnSession } from './learn-ui.js?v=2.13';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
@@ -1529,18 +1529,18 @@ export function initStatsPage(appVersion) {
     console.log('[STATS INIT] Timestamp:', new Date().toISOString());
     console.log('[STATS INIT] appVersion:', appVersion);
     console.log('[STATS INIT] Current location.hash:', location.hash);
-    
+
     if (appVersion) window.currentAppVersion = appVersion;
-    
+
     // Проверяем текущее состояние контейнеров
     let statsContainerEl = document.getElementById('stats-container');
     const mainContainer = document.querySelector('.container');
     const learnContainer = document.getElementById('learn-container');
-    
+
     console.log('[STATS INIT] stats-container exists:', !!statsContainerEl);
     console.log('[STATS INIT] main container display:', mainContainer ? mainContainer.style.display : 'N/A');
     console.log('[STATS INIT] learn container display:', learnContainer ? learnContainer.style.display : 'N/A');
-    
+
     // ПРИНУДИТЕЛЬНО скрываем всё остальное
     if (mainContainer) {
         mainContainer.style.display = 'none';
@@ -1551,33 +1551,41 @@ export function initStatsPage(appVersion) {
         console.log('[STATS INIT] Hid learn container');
     }
     const sidebar = document.querySelector('.sidebar');
-    if (sidebar) sidebar.style.display = 'none';
-    
+    if (sidebar) {
+        sidebar.style.display = 'none';
+        console.log('[STATS INIT] Hid sidebar');
+    }
+
     // Создаём контейнер статистики если не существует
     if (!statsContainerEl) {
         console.log('[STATS INIT] Creating stats-container...');
         statsContainerEl = document.createElement('div');
         statsContainerEl.id = 'stats-container';
-        
+
         const appWrapper = document.querySelector('.app-wrapper') || document.body;
         appWrapper.appendChild(statsContainerEl);
-        
+
         const styleEl = document.createElement('style');
         styleEl.textContent = STATS_STYLES;
         document.head.appendChild(styleEl);
-        
+
         console.log('[STATS INIT] stats-container created');
     } else {
         console.log('[STATS INIT] stats-container already exists');
     }
-    
+
     // Показываем статистику
     statsContainerEl.style.display = 'block';
     console.log('[STATS INIT] stats-container display set to block');
-    
+
     // Инициализируем глобальную переменную
     statsContainer = statsContainerEl;
     
+    // Проверяем что контейнер действительно виден
+    const computedStyle = window.getComputedStyle(statsContainerEl);
+    console.log('[STATS INIT] stats-container computed display:', computedStyle.display);
+    console.log('[STATS INIT] stats-container computed zIndex:', computedStyle.zIndex);
+
     console.log('[STATS INIT] Calling renderStats()...');
     renderStats();
     console.log('[STATS INIT] ========== END initStatsPage ==========');
@@ -1599,21 +1607,31 @@ export function initStatsPage(appVersion) {
 export function hideStatsPage() {
   console.log('[hideStatsPage] Called!');
   console.log('[hideStatsPage] __navigatingToHome:', window.__navigatingToHome);
-  
-  if (statsContainer) statsContainer.remove();
+
+  if (statsContainer) {
+      statsContainer.remove();
+      statsContainer = null; // Очищаем ссылку на удаленный элемент
+      console.log('[hideStatsPage] stats-container removed and reference cleared');
+  }
 
   if (!mainContainer) mainContainer = document.querySelector('.container');
-  if (mainContainer) mainContainer.style.display = '';
+  if (mainContainer) {
+      mainContainer.style.display = 'block'; // Явно показываем главный контейнер
+      console.log('[hideStatsPage] mainContainer display set to block');
+  }
 
   const sidebar = document.querySelector('.sidebar');
-  if (sidebar) sidebar.style.display = '';
+  if (sidebar) {
+      sidebar.style.display = ''; // Возвращаем стандартное отображение
+      console.log('[hideStatsPage] sidebar display reset');
+  }
 
   // НЕ меняем hash здесь! Это вызывается из startFilteredSession
   // if (location.hash && location.hash.includes('stats')) {
   //     location.hash = '';
   // }
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
-  
+
   console.log('[hideStatsPage] Done!');
 }
 
