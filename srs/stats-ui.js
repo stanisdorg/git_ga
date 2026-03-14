@@ -1521,6 +1521,68 @@ const STATS_STYLES = `
   .st-cat-more-btn { display: none !important; }
   .st-cat-item-hidden { display: block !important; }
 
+  /* Compact Modal Styles */
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--st-border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .current-level-card {
+    background: linear-gradient(135deg, rgba(255,159,28,0.2) 0%, rgba(255,159,28,0.05) 100%);
+    border: 2px solid var(--st-prim);
+  }
+  .xp-source {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    border-left: 3px solid transparent;
+  }
+  .stat-item {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .levels-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--st-border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .levels-nav-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--st-border);
+    color: var(--st-text);
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .levels-nav-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--st-prim);
+  }
+  .start-btn {
+    background: var(--st-prim);
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .start-btn:hover {
+    background: #FFB142;
+    transform: translateY(-2px);
+  }
+
   /* Levels Horizontal Scroll */
   .levels-horizontal {
     display: flex;
