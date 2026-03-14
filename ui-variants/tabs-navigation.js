@@ -633,6 +633,11 @@ export function initTabsNavigation(appVersion) {
     statsBtn.style.padding = '0 10px';
     statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
     statsBtn.addEventListener('click', async () => {
+        // Очищаем состояние обучения ПЕРЕД переходом на статистику
+        if (window.__lastCandidates) {
+            window.__lastCandidates = null;
+            console.log('[STATS BUTTON] Cleared __lastCandidates');
+        }
         const { initStatsPage } = await import('../srs/stats-ui.js?v=4.44');
         location.hash = '#/stats';
         initStatsPage(appVersion);
