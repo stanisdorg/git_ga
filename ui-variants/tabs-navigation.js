@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.25');
+                module = await import('../srs/learn-ui.js?v=2.26');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.81');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.82');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -653,7 +653,16 @@ export function initTabsNavigation(appVersion) {
         
         if (location.hash === '#/stats') {
             console.log('[HASH CHANGE] Detected #/stats - initializing stats page');
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.81');
+            
+            // ПРИНУДИТЕЛЬНО скрываем главный контейнер
+            const mainContainer = document.querySelector('.container');
+            if (mainContainer) {
+                mainContainer.style.display = 'none';
+                console.log('[HASH CHANGE] Hid main container');
+            }
+            
+            // ПРИНУДИТЕЛЬНО показываем статистику
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.82');
             initStatsPage(appVersion);
             console.log('[HASH CHANGE] initStatsPage called');
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
