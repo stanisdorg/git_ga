@@ -2017,6 +2017,10 @@ function renderStats() {
     homeBtn.addEventListener('click', () => {
       console.log('[HOME BTN] Clicked!');
       
+      // Устанавливаем флаг что переходим на главную
+      window.__navigatingToHome = true;
+      console.log('[HOME BTN] Set __navigatingToHome = true');
+      
       // Очищаем состояние обучения ПЕРЕД переходом на главную
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
