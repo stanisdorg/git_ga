@@ -2574,21 +2574,6 @@ window.openLevelInfoModal = () => {
     `;
   }
 
-  // График XP за последние 30 дней
-  const last30Days = daily.slice(-30);
-  const maxXP = Math.max(...last30Days.map(d => d.xp), 1);
-  let xpChart = '';
-  last30Days.forEach(d => {
-    const h = Math.round((d.xp / maxXP) * 60);
-    const date = new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
-    xpChart += `
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-        <div style="width:100%;height:${h}px;background:${d.xp > 0 ? 'linear-gradient(180deg,#FF9F1C 0%,#FF6B35 100%)' : 'rgba(255,255,255,0.1)'};border-radius:4px 4px 0 0;min-height:4px;"></div>
-        <span style="font-size:9px;color:var(--st-text-sec);transform:rotate(-45deg);transform-origin:left top;white-space:nowrap;">${date.split('.')[0]}</span>
-      </div>
-    `;
-  });
-
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
   overlay.innerHTML = `
@@ -2664,19 +2649,7 @@ window.openLevelInfoModal = () => {
             </div>
           </div>
         </div>
-        
-        <!-- График XP за 30 дней -->
-        <div style="margin-bottom:24px;">
-          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:20px;">📈</span> XP за последние 30 дней
-          </h3>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:16px;">
-            <div style="display:flex;gap:4px;align-items:flex-end;height:80px;">
-              ${xpChart}
-            </div>
-          </div>
-        </div>
-        
+
         <!-- Таблица уровней -->
         <div style="margin-bottom:24px;">
           <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">

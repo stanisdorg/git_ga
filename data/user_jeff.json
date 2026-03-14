@@ -915,7 +915,7 @@
       "answer": "Чек-лист, тест-кейс, отчет о тестировании."
     },
     {
-      "category": "Д������кументация",
+      "category": "Д��������кументация",
       "subcategory": "Чек-листы и тест-планы",
       "question": "Как вы пишете чек-листы и тест-планы?",
       "answer": "На основе требований и функциональных характеристик системы, обеспечивая полное покрытие всех функций и сценариев использования. Чек-листы включают в себя списки проверок, а тест-планы описывают подробности тестирования, стратегии и ресурсы."
@@ -2039,7 +2039,11 @@
     "nightRaider": true,
     "fiftyCards": true
   },
-  "_favorites": [],
+  "_favorites": [
+    "CI CD?",
+    "Из чего состоит Kafka и как работает?",
+    "брокеры?"
+  ],
   "_srsProgress": {
     "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
       "interval": 1,
@@ -2148,44 +2152,52 @@
     },
     "Gitlab Ci/Jenkins": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434109197,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497288631,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434109197,
           "grade": 3
+        },
+        {
+          "date": 1773497288631,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "Gitlab Ci/Jenkins"
     },
     "как отправлял сообщения в кафке ручками?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434109369,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497284244,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434109369,
           "grade": 3
+        },
+        {
+          "date": 1773497284244,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "как отправлял сообщения в кафке ручками?"
     },
     "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
@@ -2211,23 +2223,31 @@
     },
     "Из чего состоит Kafka и как работает?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434109745,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1773497279241,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434109745,
           "grade": 3
+        },
+        {
+          "date": 1773497274000,
+          "grade": 2
+        },
+        {
+          "date": 1773497279241,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "Из чего состоит Kafka и как работает?"
     },
     "PCT/IP": {
@@ -2295,44 +2315,52 @@
     },
     "Как вы работали с Docker и TeamCity?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434110312,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497284858,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434110312,
           "grade": 3
+        },
+        {
+          "date": 1773497284858,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "Как вы работали с Docker и TeamCity?"
     },
     "4) Прикладной": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434110487,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497285157,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434110487,
           "grade": 3
+        },
+        {
+          "date": 1773497285157,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "4) Прикладной"
     },
     "Что такое gRPC?": {
@@ -2379,44 +2407,52 @@
     },
     "Как происходит тестирование локально с помощью Docker?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434110966,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497288330,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434110966,
           "grade": 3
+        },
+        {
+          "date": 1773497288330,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "Как происходит тестирование локально с помощью Docker?"
     },
     "Access Token": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434111156,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497284570,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434111156,
           "grade": 3
+        },
+        {
+          "date": 1773497284570,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "Access Token"
     },
     "для чего виртуальное окружение?": {
@@ -2463,23 +2499,31 @@
     },
     "брокеры?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434111700,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1773497278840,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434111700,
           "grade": 3
+        },
+        {
+          "date": 1773497275050,
+          "grade": 2
+        },
+        {
+          "date": 1773497278840,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "брокеры?"
     },
     "Foreign Key": {
@@ -2547,23 +2591,31 @@
     },
     "CI CD?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434112417,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1773497278430,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434112417,
           "grade": 3
+        },
+        {
+          "date": 1773497274557,
+          "grade": 2
+        },
+        {
+          "date": 1773497278430,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "CI CD?"
     },
     "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
@@ -2631,44 +2683,52 @@
     },
     "логи кафка": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434113133,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497288860,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434113133,
           "grade": 3
+        },
+        {
+          "date": 1773497288860,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "логи кафка"
     },
     "как с kibana работал?  уровни ошибок ?": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434113322,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497285670,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434113322,
           "grade": 3
+        },
+        {
+          "date": 1773497285670,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "как с kibana работал?  уровни ошибок ?"
     },
     "что в Elements смотришь обычно?": {
@@ -2820,23 +2880,27 @@
     },
     "Kubernetes": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434114882,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773497285390,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434114882,
           "grade": 3
+        },
+        {
+          "date": 1773497285390,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 20,
       "question": "Kubernetes"
     },
     "Что такое GraphQL?": {
@@ -3723,14 +3787,14 @@
     }
   },
   "_stats": {
-    "total": 80,
-    "timeSpent": 23019,
+    "total": 95,
+    "timeSpent": 30265,
     "correct": 78,
-    "points": 800
+    "points": 885
   },
   "_meta": {
     "cardsCount": 316,
-    "lastLoginAt": "2026-03-13T21:30:02.055Z",
-    "lastSavedAt": "2026-03-13T21:30:02.055Z"
+    "lastLoginAt": "2026-03-14T14:07:47.077Z",
+    "lastSavedAt": "2026-03-14T14:07:47.077Z"
   }
 }
