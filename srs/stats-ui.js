@@ -2017,6 +2017,17 @@ function renderStats() {
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
       console.log('[HOME BTN] Clicked!');
+      console.log('[HOME BTN] document.body.classList:', document.body.classList.toString());
+      
+      // Проверяем, запущено ли обучение
+      const isLearning = document.body.classList.contains('learning-mode');
+      console.log('[HOME BTN] isLearning:', isLearning);
+      
+      if (isLearning) {
+        console.log('[HOME BTN] BLOCKED - learning in progress!');
+        alert('Сначала завершите обучение!');
+        return;
+      }
       
       // Устанавливаем флаг что переходим на главную
       window.__navigatingToHome = true;
