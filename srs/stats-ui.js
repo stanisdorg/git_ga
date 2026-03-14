@@ -1557,6 +1557,15 @@ export function initStatsPage(appVersion) {
 }
 
 export function hideStatsPage() {
+  console.log('[hideStatsPage] Called!');
+  console.log('[hideStatsPage] __lastCandidates before:', window.__lastCandidates ? 'EXISTS' : 'null');
+  
+  // Очищаем состояние обучения при закрытии статистики
+  if (window.__lastCandidates) {
+    window.__lastCandidates = null;
+    console.log('[hideStatsPage] Cleared __lastCandidates');
+  }
+  
   if (statsContainer) statsContainer.remove();
 
   if (!mainContainer) mainContainer = document.querySelector('.container');
@@ -1569,6 +1578,8 @@ export function hideStatsPage() {
     location.hash = '';
   }
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
+  
+  console.log('[hideStatsPage] Done!');
 }
 
 // Helper function to render achievement card
