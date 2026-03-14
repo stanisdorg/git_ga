@@ -1568,9 +1568,10 @@ export function hideStatsPage() {
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) sidebar.style.display = '';
 
-  if (location.hash && location.hash.includes('stats')) {
-    location.hash = '';
-  }
+  // НЕ меняем hash здесь! Это вызывается из startFilteredSession
+  // if (location.hash && location.hash.includes('stats')) {
+  //     location.hash = '';
+  // }
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
   
   console.log('[hideStatsPage] Done!');
