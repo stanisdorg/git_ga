@@ -254,11 +254,38 @@ export function initLearnUI() {
 
         // Rating buttons
         const rates = container.querySelectorAll('.rate-btn');
-        rates.forEach(btn => {
+        console.log('[LEARN-UI] Найдено кнопок оценки:', rates.length);
+        rates.forEach((btn, index) => {
+            console.log(`[LEARN-UI] Кнопка ${index}:`, btn.className, btn.dataset.grade);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const grade = parseInt(btn.dataset.grade);
+                console.log('========================================');
+                console.log('[RATE BUTTON CLICK] Клик по кнопке!');
+                console.log('[RATE BUTTON CLICK] Grade:', grade);
+                console.log('[RATE BUTTON CLICK] Button:', btn.className);
+                console.log('[RATE BUTTON CLICK] Button styles before:');
+                console.log('  - border:', window.getComputedStyle(btn).border);
+                console.log('  - border-top:', window.getComputedStyle(btn).borderTop);
+                console.log('  - box-shadow:', window.getComputedStyle(btn).boxShadow);
+                console.log('  - background:', window.getComputedStyle(btn).background);
+                console.log('  - outline:', window.getComputedStyle(btn).outline);
                 if (session) session.rate(grade);
+                // Проверяем стили после клика
+                setTimeout(() => {
+                    console.log('[RATE BUTTON CLICK] Button styles after 100ms:');
+                    console.log('  - border:', window.getComputedStyle(btn).border);
+                    console.log('  - box-shadow:', window.getComputedStyle(btn).boxShadow);
+                    console.log('  - outline:', window.getComputedStyle(btn).outline);
+                    
+                    // Проверяем все кнопки
+                    rates.forEach((r, i) => {
+                        console.log(`[RATE BUTTON CLICK] Кнопка ${i} (${r.dataset.grade}):`);
+                        console.log('  - border:', window.getComputedStyle(r).border);
+                        console.log('  - box-shadow:', window.getComputedStyle(r).boxShadow);
+                    });
+                }, 100);
+                console.log('========================================');
             });
         });
 
