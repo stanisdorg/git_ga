@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.82');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.83');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -662,7 +662,7 @@ export function initTabsNavigation(appVersion) {
             }
             
             // ПРИНУДИТЕЛЬНО показываем статистику
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.82');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.83');
             initStatsPage(appVersion);
             console.log('[HASH CHANGE] initStatsPage called');
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {

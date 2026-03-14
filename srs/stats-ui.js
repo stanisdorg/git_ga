@@ -2,7 +2,7 @@
 import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
-import { startLearnSession } from './learn-ui.js?v=2.09';
+import { startLearnSession } from './learn-ui.js?v=2.10';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
@@ -1524,36 +1524,76 @@ const STATS_STYLES = `
 `;
 
 export function initStatsPage(appVersion) {
-  if (appVersion) window.currentAppVersion = appVersion;
-  if (!document.getElementById('stats-container')) {
-    const appWrapper = document.querySelector('.app-wrapper') || document.body;
-    statsContainer = document.createElement('div');
-    statsContainer.id = 'stats-container';
-    appWrapper.appendChild(statsContainer);
+    console.log('========================================');
+    console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
+    console.log('[STATS INIT] Timestamp:', new Date().toISOString());
+    console.log('[STATS INIT] appVersion:', appVersion);
+    console.log('[STATS INIT] Current location.hash:', location.hash);
+    
+    if (appVersion) window.currentAppVersion = appVersion;
+    
+    // Проверяем текущее состояние контейнеров
+    let statsContainerEl = document.getElementById('stats-container');
+    const mainContainer = document.querySelector('.container');
+    const learnContainer = document.getElementById('learn-container');
+    
+    console.log('[STATS INIT] stats-container exists:', !!statsContainerEl);
+    console.log('[STATS INIT] main container display:', mainContainer ? mainContainer.style.display : 'N/A');
+    console.log('[STATS INIT] learn container display:', learnContainer ? learnContainer.style.display : 'N/A');
+    
+    // ПРИНУДИТЕЛЬНО скрываем всё остальное
+    if (mainContainer) {
+        mainContainer.style.display = 'none';
+        console.log('[STATS INIT] Hid main container');
+    }
+    if (learnContainer) {
+        learnContainer.style.display = 'none';
+        console.log('[STATS INIT] Hid learn container');
+    }
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) sidebar.style.display = 'none';
+    
+    // Создаём контейнер статистики если не существует
+    if (!statsContainerEl) {
+        console.log('[STATS INIT] Creating stats-container...');
+        statsContainerEl = document.createElement('div');
+        statsContainerEl.id = 'stats-container';
+        
+        const appWrapper = document.querySelector('.app-wrapper') || document.body;
+        appWrapper.appendChild(statsContainerEl);
+        
+        const styleEl = document.createElement('style');
+        styleEl.textContent = STATS_STYLES;
+        document.head.appendChild(styleEl);
+        
+        console.log('[STATS INIT] stats-container created');
+    } else {
+        console.log('[STATS INIT] stats-container already exists');
+    }
+    
+    // Показываем статистику
+    statsContainerEl.style.display = 'block';
+    console.log('[STATS INIT] stats-container display set to block');
+    
+    // Инициализируем глобальную переменную
+    statsContainer = statsContainerEl;
+    
+    console.log('[STATS INIT] Calling renderStats()...');
+    renderStats();
+    console.log('[STATS INIT] ========== END initStatsPage ==========');
+    console.log('========================================');
 
-    const styleEl = document.createElement('style');
-    styleEl.textContent = STATS_STYLES;
-    document.head.appendChild(styleEl);
-  }
+    if (!window._statsXpListener) {
+        window._statsXpListener = () => {
+            if (document.getElementById('stats-container')) renderStats();
+        };
+        window.addEventListener('xpUpdated', window._statsXpListener);
+        window.addEventListener('dataLoaded', window._statsXpListener);
+    }
 
-  mainContainer = document.querySelector('.container');
-  if (mainContainer) mainContainer.style.display = 'none';
-  const sidebar = document.querySelector('.sidebar');
-  if (sidebar) sidebar.style.display = 'none';
-
-  renderStats();
-
-  if (!window._statsXpListener) {
-    window._statsXpListener = () => {
-      if (document.getElementById('stats-container')) renderStats();
-    };
-    window.addEventListener('xpUpdated', window._statsXpListener);
-    window.addEventListener('dataLoaded', window._statsXpListener);
-  }
-
-  if (!location.hash || !location.hash.includes('stats')) {
-    location.hash = '#/stats';
-  }
+    if (!location.hash || !location.hash.includes('stats')) {
+        location.hash = '#/stats';
+    }
 }
 
 export function hideStatsPage() {
