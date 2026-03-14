@@ -270,22 +270,30 @@ export function initLearnUI() {
                 console.log('  - box-shadow:', window.getComputedStyle(btn).boxShadow);
                 console.log('  - background:', window.getComputedStyle(btn).background);
                 console.log('  - outline:', window.getComputedStyle(btn).outline);
+                
+                // Добавляем класс для сброса hover эффекта
+                btn.classList.add('clicked');
+                console.log('[RATE BUTTON CLICK] Added .clicked class');
+                
                 if (session) session.rate(grade);
                 // Сбрасываем фокус с кнопки чтобы не было обводки
                 btn.blur();
                 console.log('[RATE BUTTON CLICK] Focus blurred from button');
+                
                 // Проверяем стили после клика
                 setTimeout(() => {
                     console.log('[RATE BUTTON CLICK] Button styles after 100ms:');
                     console.log('  - border:', window.getComputedStyle(btn).border);
                     console.log('  - box-shadow:', window.getComputedStyle(btn).boxShadow);
                     console.log('  - outline:', window.getComputedStyle(btn).outline);
+                    console.log('  - classList:', btn.classList);
                     
                     // Проверяем все кнопки
                     rates.forEach((r, i) => {
                         console.log(`[RATE BUTTON CLICK] Кнопка ${i} (${r.dataset.grade}):`);
                         console.log('  - border:', window.getComputedStyle(r).border);
                         console.log('  - box-shadow:', window.getComputedStyle(r).boxShadow);
+                        console.log('  - classList:', r.classList);
                     });
                 }, 100);
                 console.log('========================================');
@@ -526,6 +534,11 @@ function renderCardState(state) {
     }
 
     if (!container) return; // Guard against missing container
+
+    // Сбрасываем класс .clicked со всех кнопок при новой карточке
+    const rates = container.querySelectorAll('.rate-btn.clicked');
+    rates.forEach(btn => btn.classList.remove('clicked'));
+    console.log('[renderCardState] Reset .clicked class from buttons');
 
     const cardEl = container.querySelector('.flashcard');
     const front = container.querySelector('.flashcard-front');
