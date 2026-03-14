@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30 Вариантов кнопок оценки</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --card-bg: #1a1a2e;
+            --text: #ffffff;
+            --text-muted: #8888aa;
+            
+            /* Цвета кнопок */
+            --again-color: #ff4757;      /* Красный - Снова */
+            --hard-color: #ffa502;       /* Желтый - Трудно */
+            --good-color: #2ed573;       /* Зеленый - Хорошо */
+            --easy-color: #1e90ff;       /* Синий - Легко */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #1e90ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.info {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .variants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .variant-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #333;
+        }
+
+        .variant-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+
+        .flashcard-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* ==================== БАЗОВЫЕ СТИЛИ ==================== */
+        
+        /* Вариант 1: Классический неон */
+        .variant-1 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px currentColor;
+        }
+        .variant-1 .rate-again { border-color: var(--again-color); color: var(--again-color); }
+        .variant-1 .rate-hard { border-color: var(--hard-color); color: var(--hard-color); }
+        .variant-1 .rate-good { border-color: var(--good-color); color: var(--good-color); }
+        .variant-1 .rate-easy { border-color: var(--easy-color); color: var(--easy-color); }
+        .variant-1 .rate-btn:hover {
+            background: currentColor;
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px currentColor;
+        }
+        .variant-1 .rate-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
+        /* Вариант 2: Градиентный неон */
+        .variant-2 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .variant-2 .rate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .variant-2 .rate-btn:hover::before {
+            left: 100%;
+        }
+        .variant-2 .rate-again { border-bottom: 3px solid var(--again-color); }
+        .variant-2 .rate-hard { border-bottom: 3px solid var(--hard-color); }
+        .variant-2 .rate-good { border-bottom: 3px solid var(--good-color); }
+        .variant-2 .rate-easy { border-bottom: 3px solid var(--easy-color); }
+        .variant-2 .rate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .variant-2 .rate-again:hover { box-shadow: 0 5px 20px rgba(255,71,87,0.4); }
+        .variant-2 .rate-hard:hover { box-shadow: 0 5px 20px rgba(255,165,2,0.4); }
+        .variant-2 .rate-good:hover { box-shadow: 0 5px 20px rgba(46,213,115,0.4); }
+        .variant-2 .rate-easy:hover { box-shadow: 0 5px 20px rgba(30,144,255,0.4); }
+
+        /* Вариант 3: Свечение изнутри */
+        .variant-3 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-3 .rate-again:hover {
+            background: var(--again-color);
+            box-shadow: 0 0 30px var(--again-color);
+            border-color: var(--again-color);
+        }
+        .variant-3 .rate-hard:hover {
+            background: var(--hard-color);
+            box-shadow: 0 0 30px var(--hard-color);
+            border-color: var(--hard-color);
+        }
+        .variant-3 .rate-good:hover {
+            background: var(--good-color);
+            box-shadow: 0 0 30px var(--good-color);
+            border-color: var(--good-color);
+        }
+        .variant-3 .rate-easy:hover {
+            background: var(--easy-color);
+            box-shadow: 0 0 30px var(--easy-color);
+            border-color: var(--easy-color);
+        }
+
+        /* Вариант 4: Пульсация */
+        .variant-4 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-4 .rate-again { border-color: var(--again-color); }
+        .variant-4 .rate-hard { border-color: var(--hard-color); }
+        .variant-4 .rate-good { border-color: var(--good-color); }
+        .variant-4 .rate-easy { border-color: var(--easy-color); }
+        .variant-4 .rate-btn:hover {
+            animation: pulse 0.6s ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .variant-4 .rate-again:hover { background: var(--again-color); box-shadow: 0 0 25px var(--again-color); }
+        .variant-4 .rate-hard:hover { background: var(--hard-color); box-shadow: 0 0 25px var(--hard-color); }
+        .variant-4 .rate-good:hover { background: var(--good-color); box-shadow: 0 0 25px var(--good-color); }
+        .variant-4 .rate-easy:hover { background: var(--easy-color); box-shadow: 0 0 25px var(--easy-color); }
+
+        /* Вариант 5: Глассморфизм */
+        .variant-5 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-5 .rate-again:hover {
+            background: rgba(255,71,87,0.3);
+            border-color: var(--again-color);
+            box-shadow: 0 5px 15px rgba(255,71,87,0.3);
+        }
+        .variant-5 .rate-hard:hover {
+            background: rgba(255,165,2,0.3);
+            border-color: var(--hard-color);
+            box-shadow: 0 5px 15px rgba(255,165,2,0.3);
+        }
+        .variant-5 .rate-good:hover {
+            background: rgba(46,213,115,0.3);
+            border-color: var(--good-color);
+            box-shadow: 0 5px 15px rgba(46,213,115,0.3);
+        }
+        .variant-5 .rate-easy:hover {
+            background: rgba(30,144,255,0.3);
+            border-color: var(--easy-color);
+            box-shadow: 0 5px 15px rgba(30,144,255,0.3);
+        }
+
+        /* Вариант 6: 3D эффект */
+        .variant-6 .rate-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            transform: translateY(0);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .variant-6 .rate-again { background: var(--again-color); }
+        .variant-6 .rate-hard { background: var(--hard-color); }
+        .variant-6 .rate-good { background: var(--good-color); }
+        .variant-6 .rate-easy { background: var(--easy-color); }
+        .variant-6 .rate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+        }
+        .variant-6 .rate-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Вариант 7: Линейный градиент */
+        .variant-7 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #000;
+        }
+        .variant-7 .rate-again { background: linear-gradient(135deg, #ff6b7a, #ff4757); }
+        .variant-7 .rate-hard { background: linear-gradient(135deg, #ffc048, #ffa502); }
+        .variant-7 .rate-good { background: linear-gradient(135deg, #7bed9f, #2ed573); }
+        .variant-7 .rate-easy { background: linear-gradient(135deg, #70a1ff, #1e90ff); }
+        .variant-7 .rate-btn:hover {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+        }
+
+        /* Вариант 8: Контур с заполнением */
+        .variant-8 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .variant-8 .rate-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+        .variant-8 .rate-again { border-color: var(--again-color); }
+        .variant-8 .rate-again::after { background: var(--again-color); }
+        .variant-8 .rate-hard { border-color: var(--hard-color); }
+        .variant-8 .rate-hard::after { background: var(--hard-color); }
+        .variant-8 .rate-good { border-color: var(--good-color); }
+        .variant-8 .rate-good::after { background: var(--good-color); }
+        .variant-8 .rate-easy { border-color: var(--easy-color); }
+        .variant-8 .rate-easy::after { background: var(--easy-color); }
+        .variant-8 .rate-btn:hover::after {
+            left: 0;
+        }
+        .variant-8 .rate-btn:hover {
+            color: #000;
+        }
+
+        /* Вариант 9: Минимализм с подчеркиванием */
+        .variant-9 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-9 .rate-again:hover { color: var(--again-color); border-bottom-color: var(--again-color); }
+        .variant-9 .rate-hard:hover { color: var(--hard-color); border-bottom-color: var(--hard-color); }
+        .variant-9 .rate-good:hover { color: var(--good-color); border-bottom-color: var(--good-color); }
+        .variant-9 .rate-easy:hover { color: var(--easy-color); border-bottom-color: var(--easy-color); }
+
+        /* Вариант 10: Радужная обводка */
+        .variant-10 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                        linear-gradient(135deg, var(--again-color), var(--hard-color), var(--good-color), var(--easy-color)) border-box;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-10 .rate-btn:hover {
+            background: linear-gradient(135deg, rgba(255,71,87,0.2), rgba(255,165,2,0.2), rgba(46,213,115,0.2), rgba(30,144,255,0.2)) padding-box,
+                        linear-gradient(135deg, var(--again-color), var(--hard-color), var(--good-color), var(--easy-color)) border-box;
+        }
+
+        /* Вариант 11: Мягкое свечение */
+        .variant-11 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-11 .rate-again:hover { background: var(--again-color); box-shadow: 0 0 40px rgba(255,71,87,0.5); }
+        .variant-11 .rate-hard:hover { background: var(--hard-color); box-shadow: 0 0 40px rgba(255,165,2,0.5); }
+        .variant-11 .rate-good:hover { background: var(--good-color); box-shadow: 0 0 40px rgba(46,213,115,0.5); }
+        .variant-11 .rate-easy:hover { background: var(--easy-color); box-shadow: 0 0 40px rgba(30,144,255,0.5); }
+
+        /* Вариант 12: Киберпанк */
+        .variant-12 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid;
+            border-radius: 0;
+            background: rgba(0,0,0,0.5);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        .variant-12 .rate-again { border-color: var(--again-color); color: var(--again-color); }
+        .variant-12 .rate-hard { border-color: var(--hard-color); color: var(--hard-color); }
+        .variant-12 .rate-good { border-color: var(--good-color); color: var(--good-color); }
+        .variant-12 .rate-easy { border-color: var(--easy-color); color: var(--easy-color); }
+        .variant-12 .rate-btn:hover {
+            background: currentColor;
+            color: #000;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        /* Вариант 13: Двойная обводка */
+        .variant-13 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 3px double;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-13 .rate-again { border-color: var(--again-color); }
+        .variant-13 .rate-hard { border-color: var(--hard-color); }
+        .variant-13 .rate-good { border-color: var(--good-color); }
+        .variant-13 .rate-easy { border-color: var(--easy-color); }
+        .variant-13 .rate-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Вариант 14: Точечная обводка */
+        .variant-14 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px dashed;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-14 .rate-again { border-color: var(--again-color); }
+        .variant-14 .rate-hard { border-color: var(--hard-color); }
+        .variant-14 .rate-good { border-color: var(--good-color); }
+        .variant-14 .rate-easy { border-color: var(--easy-color); }
+        .variant-14 .rate-btn:hover {
+            border-style: solid;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Вариант 15: Скошенный угол */
+        .variant-15 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 0 80%);
+        }
+        .variant-15 .rate-again { background: var(--again-color); }
+        .variant-15 .rate-hard { background: var(--hard-color); }
+        .variant-15 .rate-good { background: var(--good-color); }
+        .variant-15 .rate-easy { background: var(--easy-color); }
+        .variant-15 .rate-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        /* Вариант 16: Анимированный градиент */
+        .variant-16 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background-size: 200% 200%;
+            color: #000;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-16 .rate-again { background-image: linear-gradient(45deg, #ff6b7a 0%, #ff4757 50%, #ff6b7a 100%); }
+        .variant-16 .rate-hard { background-image: linear-gradient(45deg, #ffc048 0%, #ffa502 50%, #ffc048 100%); }
+        .variant-16 .rate-good { background-image: linear-gradient(45deg, #7bed9f 0%, #2ed573 50%, #7bed9f 100%); }
+        .variant-16 .rate-easy { background-image: linear-gradient(45deg, #70a1ff 0%, #1e90ff 50%, #70a1ff 100%); }
+        .variant-16 .rate-btn:hover {
+            background-position: right center;
+            transform: scale(1.05);
+        }
+
+        /* Вариант 17: Внутренняя тень */
+        .variant-17 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+        .variant-17 .rate-again:hover { 
+            background: var(--again-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 20px var(--again-color);
+        }
+        .variant-17 .rate-hard:hover { 
+            background: var(--hard-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 20px var(--hard-color);
+        }
+        .variant-17 .rate-good:hover { 
+            background: var(--good-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 20px var(--good-color);
+        }
+        .variant-17 .rate-easy:hover { 
+            background: var(--easy-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 20px var(--easy-color);
+        }
+
+        /* Вариант 18: Плоский с тенью */
+        .variant-18 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .variant-18 .rate-again { background: var(--again-color); }
+        .variant-18 .rate-hard { background: var(--hard-color); }
+        .variant-18 .rate-good { background: var(--good-color); }
+        .variant-18 .rate-easy { background: var(--easy-color); }
+        .variant-18 .rate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        /* Вариант 19: Кольцевое свечение */
+        .variant-19 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid;
+            border-radius: 50px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-19 .rate-again { border-color: var(--again-color); }
+        .variant-19 .rate-hard { border-color: var(--hard-color); }
+        .variant-19 .rate-good { border-color: var(--good-color); }
+        .variant-19 .rate-easy { border-color: var(--easy-color); }
+        .variant-19 .rate-btn:hover {
+            background: currentColor;
+            color: #000;
+            box-shadow: 0 0 30px currentColor, inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        /* Вариант 20: Металлический блеск */
+        .variant-20 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(0,0,0,0.2));
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .variant-20 .rate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent);
+            border-radius: 8px 8px 0 0;
+        }
+        .variant-20 .rate-again { border-bottom: 3px solid var(--again-color); }
+        .variant-20 .rate-hard { border-bottom: 3px solid var(--hard-color); }
+        .variant-20 .rate-good { border-bottom: 3px solid var(--good-color); }
+        .variant-20 .rate-easy { border-bottom: 3px solid var(--easy-color); }
+        .variant-20 .rate-btn:hover {
+            filter: brightness(1.2);
+        }
+
+        /* Вариант 21: Неоновая трубка */
+        .variant-21 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid;
+            border-radius: 20px;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px currentColor;
+        }
+        .variant-21 .rate-again { border-color: var(--again-color); color: var(--again-color); }
+        .variant-21 .rate-hard { border-color: var(--hard-color); color: var(--hard-color); }
+        .variant-21 .rate-good { border-color: var(--good-color); color: var(--good-color); }
+        .variant-21 .rate-easy { border-color: var(--easy-color); color: var(--easy-color); }
+        .variant-21 .rate-btn:hover {
+            background: currentColor;
+            color: #000;
+            box-shadow: 0 0 30px currentColor, inset 0 0 20px currentColor;
+        }
+
+        /* Вариант 22: Пиксельный стиль */
+        .variant-22 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 3px solid;
+            border-radius: 0;
+            background: #000;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s step-end;
+            image-rendering: pixelated;
+        }
+        .variant-22 .rate-again { border-color: var(--again-color); color: var(--again-color); }
+        .variant-22 .rate-hard { border-color: var(--hard-color); color: var(--hard-color); }
+        .variant-22 .rate-good { border-color: var(--good-color); color: var(--good-color); }
+        .variant-22 .rate-easy { border-color: var(--easy-color); color: var(--easy-color); }
+        .variant-22 .rate-btn:hover {
+            background: currentColor;
+            color: #000;
+        }
+
+        /* Вариант 23: Мягкий градиент */
+        .variant-23 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+        .variant-23 .rate-again { background: linear-gradient(135deg, #ff7675, #d63031); }
+        .variant-23 .rate-hard { background: linear-gradient(135deg, #fdcb6e, #e17055); }
+        .variant-23 .rate-good { background: linear-gradient(135deg, #55efc4, #00b894); }
+        .variant-23 .rate-easy { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+        .variant-23 .rate-btn:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Вариант 24: Объемный с тенью */
+        .variant-24 .rate-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.4), 0 10px 10px rgba(0,0,0,0.3);
+        }
+        .variant-24 .rate-again { background: var(--again-color); }
+        .variant-24 .rate-hard { background: var(--hard-color); }
+        .variant-24 .rate-good { background: var(--good-color); }
+        .variant-24 .rate-easy { background: var(--easy-color); }
+        .variant-24 .rate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 rgba(0,0,0,0.4), 0 12px 15px rgba(0,0,0,0.3);
+        }
+        .variant-24 .rate-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 5px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Вариант 25: Прозрачный с цветным текстом */
+        .variant-25 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.2);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .variant-25 .rate-again { color: var(--again-color); }
+        .variant-25 .rate-hard { color: var(--hard-color); }
+        .variant-25 .rate-good { color: var(--good-color); }
+        .variant-25 .rate-easy { color: var(--easy-color); }
+        .variant-25 .rate-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.05);
+        }
+
+        /* Вариант 26: Ретро стиль */
+        .variant-26 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid;
+            border-radius: 4px;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .variant-26 .rate-again { border-color: var(--again-color); color: var(--again-color); }
+        .variant-26 .rate-hard { border-color: var(--hard-color); color: var(--hard-color); }
+        .variant-26 .rate-good { border-color: var(--good-color); color: var(--good-color); }
+        .variant-26 .rate-easy { border-color: var(--easy-color); color: var(--easy-color); }
+        .variant-26 .rate-btn:hover {
+            background: currentColor;
+            color: #000;
+        }
+
+        /* Вариант 27: Светящиеся углы */
+        .variant-27 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .variant-27 .rate-btn::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--again-color), var(--hard-color), var(--good-color), var(--easy-color));
+            border-radius: 8px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .variant-27 .rate-btn:hover::before {
+            opacity: 1;
+            animation: gradient-rotate 3s linear infinite;
+        }
+        @keyframes gradient-rotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        /* Вариант 28: Минимализм с иконкой */
+        .variant-28 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .variant-28 .rate-btn::before {
+            content: '●';
+            font-size: 8px;
+        }
+        .variant-28 .rate-again:hover { color: var(--again-color); background: rgba(255,71,87,0.1); }
+        .variant-28 .rate-hard:hover { color: var(--hard-color); background: rgba(255,165,2,0.1); }
+        .variant-28 .rate-good:hover { color: var(--good-color); background: rgba(46,213,115,0.1); }
+        .variant-28 .rate-easy:hover { color: var(--easy-color); background: rgba(30,144,255,0.1); }
+
+        /* Вариант 29: Геймерский стиль */
+        .variant-29 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            background: linear-gradient(180deg, rgba(30,30,40,0.9), rgba(10,10,15,0.9));
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px currentColor;
+        }
+        .variant-29 .rate-again:hover { 
+            border-color: var(--again-color);
+            color: var(--again-color);
+            box-shadow: 0 0 20px rgba(255,71,87,0.4);
+        }
+        .variant-29 .rate-hard:hover { 
+            border-color: var(--hard-color);
+            color: var(--hard-color);
+            box-shadow: 0 0 20px rgba(255,165,2,0.4);
+        }
+        .variant-29 .rate-good:hover { 
+            border-color: var(--good-color);
+            color: var(--good-color);
+            box-shadow: 0 0 20px rgba(46,213,115,0.4);
+        }
+        .variant-29 .rate-easy:hover { 
+            border-color: var(--easy-color);
+            color: var(--easy-color);
+            box-shadow: 0 0 20px rgba(30,144,255,0.4);
+        }
+
+        /* Вариант 30: Футуристичный */
+        .variant-30 .rate-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.4);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .variant-30 .rate-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .variant-30 .rate-again { border-color: var(--again-color); color: var(--again-color); }
+        .variant-30 .rate-hard { border-color: var(--hard-color); color: var(--hard-color); }
+        .variant-30 .rate-good { border-color: var(--good-color); color: var(--good-color); }
+        .variant-30 .rate-easy { border-color: var(--easy-color); color: var(--easy-color); }
+        .variant-30 .rate-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        .variant-30 .rate-btn:hover {
+            background: currentColor;
+            color: #000;
+        }
+
+        /* Locked state для всех вариантов */
+        .rate-btn:disabled,
+        .rate-btn[style*="opacity: 0.5"] {
+            opacity: 0.3 !important;
+            cursor: not-allowed !important;
+            filter: grayscale(100%) !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 30 Вариантов кнопок оценки</h1>
+    <p class="info">Наведите на кнопки чтобы увидеть hover-эффекты<br>Красный = Снова | Желтый = Трудно | Зеленый = Хорошо | Синий = Легко</p>
+
+    <div class="variants-grid">
+        <!-- Вариант 1 -->
+        <div class="variant-card variant-1">
+            <div class="variant-title">1. Классический неон</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 2 -->
+        <div class="variant-card variant-2">
+            <div class="variant-title">2. Градиентный неон + блик</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 3 -->
+        <div class="variant-card variant-3">
+            <div class="variant-title">3. Свечение изнутри</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 4 -->
+        <div class="variant-card variant-4">
+            <div class="variant-title">4. Пульсация</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 5 -->
+        <div class="variant-card variant-5">
+            <div class="variant-title">5. Глассморфизм</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 6 -->
+        <div class="variant-card variant-6">
+            <div class="variant-title">6. 3D эффект</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 7 -->
+        <div class="variant-card variant-7">
+            <div class="variant-title">7. Линейный градиент</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 8 -->
+        <div class="variant-card variant-8">
+            <div class="variant-title">8. Контур с заполнением</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 9 -->
+        <div class="variant-card variant-9">
+            <div class="variant-title">9. Минимализм с подчеркиванием</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 10 -->
+        <div class="variant-card variant-10">
+            <div class="variant-title">10. Радужная обводка</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 11 -->
+        <div class="variant-card variant-11">
+            <div class="variant-title">11. Мягкое свечение</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 12 -->
+        <div class="variant-card variant-12">
+            <div class="variant-title">12. Киберпанк</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 13 -->
+        <div class="variant-card variant-13">
+            <div class="variant-title">13. Двойная обводка</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 14 -->
+        <div class="variant-card variant-14">
+            <div class="variant-title">14. Точечная обводка</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 15 -->
+        <div class="variant-card variant-15">
+            <div class="variant-title">15. Скошенный угол</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 16 -->
+        <div class="variant-card variant-16">
+            <div class="variant-title">16. Анимированный градиент</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 17 -->
+        <div class="variant-card variant-17">
+            <div class="variant-title">17. Внутренняя тень</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 18 -->
+        <div class="variant-card variant-18">
+            <div class="variant-title">18. Плоский с тенью</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 19 -->
+        <div class="variant-card variant-19">
+            <div class="variant-title">19. Кольцевое свечение</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 20 -->
+        <div class="variant-card variant-20">
+            <div class="variant-title">20. Металлический блеск</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 21 -->
+        <div class="variant-card variant-21">
+            <div class="variant-title">21. Неоновая трубка</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 22 -->
+        <div class="variant-card variant-22">
+            <div class="variant-title">22. Пиксельный стиль</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 23 -->
+        <div class="variant-card variant-23">
+            <div class="variant-title">23. Мягкий градиент</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 24 -->
+        <div class="variant-card variant-24">
+            <div class="variant-title">24. Объемный с тенью</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 25 -->
+        <div class="variant-card variant-25">
+            <div class="variant-title">25. Прозрачный с цветным текстом</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 26 -->
+        <div class="variant-card variant-26">
+            <div class="variant-title">26. Ретро стиль</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 27 -->
+        <div class="variant-card variant-27">
+            <div class="variant-title">27. Светящиеся углы</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 28 -->
+        <div class="variant-card variant-28">
+            <div class="variant-title">28. Минимализм с иконкой</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 29 -->
+        <div class="variant-card variant-29">
+            <div class="variant-title">29. Геймерский стиль</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+
+        <!-- Вариант 30 -->
+        <div class="variant-card variant-30">
+            <div class="variant-title">30. Футуристичный</div>
+            <div class="flashcard-actions">
+                <button class="rate-btn rate-again">Снова (1)</button>
+                <button class="rate-btn rate-hard">Трудно (2)</button>
+                <button class="rate-btn rate-good">Хорошо (3)</button>
+                <button class="rate-btn rate-easy" disabled>Легко 🔒 (4)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Добавляем интерактивности - клик по кнопке показывает какой вариант выбран
+        document.querySelectorAll('.rate-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const variant = this.closest('.variant-card').querySelector('.variant-title').textContent;
+                console.log(`Выбран: ${variant} - ${this.textContent}`);
+            });
+        });
+    </script>
+</body>
+</html>
