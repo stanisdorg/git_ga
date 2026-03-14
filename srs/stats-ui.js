@@ -2016,7 +2016,7 @@ function renderStats() {
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
       console.log('[HOME BTN] Clicked!');
-      console.log('[HOME BTN] __lastCandidates before:', window.__lastCandidates ? 'EXISTS' : 'null');
+      
       // Очищаем состояние обучения ПЕРЕД переходом на главную
       if (window.__lastCandidates) {
         window.__lastCandidates = null;

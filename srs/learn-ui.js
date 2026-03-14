@@ -312,8 +312,15 @@ function handleKeydown(e) {
 export function startLearnSession(candidateQuestions, options = {}) {
     console.log('=== [startLearnSession] === CALLED ===');
     console.log('[startLearnSession] candidateQuestions:', candidateQuestions ? candidateQuestions.length : 'null');
+    console.log('[startLearnSession] location.hash:', location.hash);
     console.log('[startLearnSession] Stack trace:', new Error().stack);
     
+    // Проверяем, не перешли ли мы на главную во время запуска
+    if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
+        console.log('[startLearnSession] ABORTED - navigating to home!');
+        return;
+    }
+
     initLearnUI(); // Ensure UI exists
 
     // Скрываем навигацию и добавляем класс на body
