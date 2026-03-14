@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.22');
+                module = await import('../srs/learn-ui.js?v=2.23');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.78');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.79');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -653,7 +653,7 @@ export function initTabsNavigation(appVersion) {
         
         if (location.hash === '#/stats') {
             console.log('[HASH CHANGE] Detected #/stats - initializing stats page');
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.78');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.79');
             initStatsPage(appVersion);
             console.log('[HASH CHANGE] initStatsPage called');
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
@@ -674,11 +674,13 @@ export function initTabsNavigation(appVersion) {
                 console.log('[HASH CHANGE] Removed stats container');
             }
             
-            // Показываем главный контейнер
+            // Показываем главный контейнер (ПРИНУДИТЕЛЬНО!)
             const mainContainer = document.querySelector('.container');
             console.log('[HASH CHANGE] main container element:', mainContainer);
+            console.log('[HASH CHANGE] main container style.display before:', mainContainer ? mainContainer.style.display : 'N/A');
             if (mainContainer) {
-                mainContainer.style.display = '';
+                mainContainer.style.display = 'block';  // ПРИНУДИТЕЛЬНО!
+                console.log('[HASH CHANGE] main container style.display after:', mainContainer.style.display);
                 console.log('[HASH CHANGE] Showed main container');
             }
             
