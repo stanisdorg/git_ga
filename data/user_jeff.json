@@ -2727,7 +2727,7 @@
       "state": "learning",
       "lastReviewed": "2026-03-14",
       "lastReviewedTime": 0,
-      "question": "брокер сообщений, рест, отличие синхронного и асинхронного ��заимодействия, как это правильно протестировать?"
+      "question": "брокер сообщений, рест, отличие синхронного и асинхронного ����заимодействия, как это правильно протестировать?"
     },
     "логи кафка": {
       "interval": 1,
@@ -3036,44 +3036,52 @@
     },
     "Медленный деплой": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
+      "easeFactor": 1.7999999999999998,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434206157,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514250271,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434206157,
           "grade": 2
+        },
+        {
+          "date": 1773514250271,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "Медленный деплой"
     },
     "Гибкость разработки": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434206912,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514250811,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434206912,
           "grade": 3
+        },
+        {
+          "date": 1773514250811,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "Гибкость разработки"
     },
     "Белый ящик": {
@@ -3334,23 +3342,27 @@
     },
     "Под (Pod):": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434210069,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514248601,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434210069,
           "grade": 3
+        },
+        {
+          "date": 1773514248601,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "Под (Pod):"
     },
     "Накладные расходы": {
@@ -3464,23 +3476,27 @@
     },
     "Отладка и мониторинг": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434211294,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514249631,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434211294,
           "grade": 3
+        },
+        {
+          "date": 1773514249631,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "Отладка и мониторинг"
     },
     "UAT пользовательское": {
@@ -3552,23 +3568,27 @@
     },
     "Инсталляционное": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434212122,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514246552,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434212122,
           "grade": 3
+        },
+        {
+          "date": 1773514246552,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "Инсталляционное"
     },
     "Session Storage:": {
@@ -3703,23 +3723,27 @@
     },
     "id, module, title, str, OP, attachment": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434213711,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514249180,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434213711,
           "grade": 3
+        },
+        {
+          "date": 1773514249180,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "id, module, title, str, OP, attachment"
     },
     "Масштабируемость": {
@@ -3745,23 +3769,27 @@
     },
     "Приемочное": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1773434214109,
-      "nextReviewDate": 1773450000000,
-      "dueDate": "2026-03-14T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1773514247825,
+      "nextReviewDate": 1773536400000,
+      "dueDate": "2026-03-15T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1773434214109,
           "grade": 3
+        },
+        {
+          "date": 1773514247825,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-13",
-      "lastReviewedTime": 2,
+      "lastReviewed": "2026-03-14",
+      "lastReviewedTime": 0,
       "question": "Приемочное"
     },
     "Use-cases": {
@@ -3875,14 +3903,14 @@
     }
   },
   "_stats": {
-    "total": 117,
-    "timeSpent": 97610,
+    "total": 124,
+    "timeSpent": 103957,
     "correct": 83,
-    "points": 1020
+    "points": 1055
   },
   "_meta": {
     "cardsCount": 316,
-    "lastLoginAt": "2026-03-14T17:33:35.512Z",
-    "lastSavedAt": "2026-03-14T17:33:35.512Z"
+    "lastLoginAt": "2026-03-14T18:50:41.385Z",
+    "lastSavedAt": "2026-03-14T18:50:41.385Z"
   }
 }
