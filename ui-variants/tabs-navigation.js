@@ -602,7 +602,7 @@ export function initTabsNavigation(appVersion) {
 
             let module;
             try {
-                module = await import('../srs/learn-ui.js?v=2.19');
+                module = await import('../srs/learn-ui.js?v=2.20');
             } catch (e1) {
                 console.warn('[Learn] Import v26 failed, trying plain import', e1);
                 try {
@@ -638,7 +638,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.75');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.76');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -647,16 +647,35 @@ export function initTabsNavigation(appVersion) {
     window.addEventListener('hashchange', async () => {
         console.log('[HASH CHANGE] New hash:', location.hash);
         if (location.hash === '#/stats') {
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.75');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.76');
             initStatsPage(appVersion);
         } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
             // Переход на главную - закрываем статистику если открыта
             console.log('[HASH CHANGE] Navigating to home');
+            
             // Очищаем состояние обучения если есть
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
                 console.log('[HASH CHANGE] Cleared __lastCandidates');
             }
+            
+            // Закрываем статистику если открыта
+            const statsContainer = document.getElementById('stats-container');
+            if (statsContainer) {
+                statsContainer.remove();
+                console.log('[HASH CHANGE] Removed stats container');
+            }
+            
+            // Показываем главный контейнер
+            const mainContainer = document.querySelector('.container');
+            if (mainContainer) {
+                mainContainer.style.display = '';
+                console.log('[HASH CHANGE] Showed main container');
+            }
+            
+            // Обновляем текущий контекст
+            refreshCurrentContext();
+            console.log('[HASH CHANGE] Refreshed current context');
         }
     });
 
@@ -2452,7 +2471,7 @@ async function saveMergedToServer(skipReload = false) {
             const isDeleted = deletedMap[n.question] || serverTrashSet.has(n.question);
             const isAlreadyAdded = seen.has(n.question);
             
-            // Пропускаем удалённые и уже добавленные
+            // Пропускаем ������далённые и уже добавленные
             if (isDeleted || isAlreadyAdded) return;
             
             // Добавляем новый элемент с применёнными overrides
