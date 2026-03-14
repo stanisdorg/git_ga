@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Компактное модальное окно - Оптимизированное</title>
+    <style>
+        :root {
+            --st-bg: #0E1117;
+            --st-surf: #161B22;
+            --st-surf-h: #1F2630;
+            --st-prim: #FF9F1C;
+            --st-sec: #2EC4B6;
+            --st-danger: #E5533D;
+            --st-muted: #8B949E;
+            --st-text: #E6EDF3;
+            --st-text-sec: #9BA3AF;
+            --st-border: #222938;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--st-bg);
+            color: var(--st-text);
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .info {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--st-text-sec);
+        }
+
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: var(--st-surf);
+            border: 1px solid var(--st-border);
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 1000px;
+            width: 1000px;
+            max-height: 75vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--st-text-sec);
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Трехколоночная раскладка */
+        .modal-body {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 16px;
+            align-items: start;
+        }
+
+        /* Колонки */
+        .col-left, .col-right {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .col-center {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Карточки */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--st-text);
+        }
+
+        /* Текущий уровень - левая колонка */
+        .current-level-card {
+            background: linear-gradient(135deg, rgba(255,159,28,0.2) 0%, rgba(255,159,28,0.05) 100%);
+            border: 2px solid var(--st-prim);
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .level-badge {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--st-prim);
+        }
+
+        .xp-display {
+            text-align: right;
+        }
+
+        .xp-label {
+            font-size: 10px;
+            color: var(--st-text-sec);
+        }
+
+        .xp-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .progress-wrap {
+            margin-bottom: 12px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 11px;
+            color: var(--st-text-sec);
+        }
+
+        .progress-bg {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF9F1C, #FFB142);
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .level-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-box-label {
+            font-size: 9px;
+            color: var(--st-text-sec);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-box-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--st-prim);
+        }
+
+        /* Источники XP - центр верх */
+        .xp-sources {
+            grid-column: 1 / -1;
+        }
+
+        .xp-sources-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .xp-source {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid transparent;
+        }
+
+        .xp-source:nth-child(1) { border-left-color: var(--st-sec); }
+        .xp-source:nth-child(2) { border-left-color: var(--st-danger); }
+        .xp-source:nth-child(3) { border-left-color: var(--st-prim); }
+        .xp-source:nth-child(4) { border-left-color: #A855F7; }
+
+        .xp-source-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .xp-source-label {
+            font-size: 11px;
+            color: var(--st-text-sec);
+            margin-bottom: 2px;
+        }
+
+        .xp-source-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--st-text);
+        }
+
+        /* Уровни - центр */
+        .levels-section {
+            grid-column: 1 / -1;
+        }
+
+        .levels-horizontal {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 4px;
+            scroll-behavior: smooth;
+        }
+
+        .levels-horizontal::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .levels-horizontal::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .levels-horizontal::-webkit-scrollbar-thumb {
+            background: var(--st-prim);
+            border-radius: 3px;
+        }
+
+        .level-card {
+            min-width: 110px;
+            max-width: 110px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--st-border);
+            border-radius: 8px;
+            padding: 10px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .level-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .level-card.current {
+            background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(255,159,28,0.05) 100%);
+            border-color: var(--st-prim);
+        }
+
+        .level-card .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .level-card .level-num {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--st-prim);
+        }
+
+        .level-card .level-icon {
+            font-size: 14px;
+        }
+
+        .level-card .level-range {
+            font-size: 9px;
+            color: var(--st-text-sec);
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .level-card .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .level-card .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF9F1C, #FFB142);
+            border-radius: 2px;
+        }
+
+        .levels-nav {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .levels-nav-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--st-border);
+            color: var(--st-text);
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .levels-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--st-prim);
+        }
+
+        /* Статистика - правая колонка */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--st-text);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--st-text-sec);
+            margin-top: 2px;
+        }
+
+        /* Кнопка */
+        .start-btn {
+            grid-column: 1 / -1;
+            background: var(--st-prim);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+
+        .start-btn:hover {
+            background: #FFB142;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h2>🎯 Компактное модальное окно - Оптимизированная раскладка</h2>
+    
+    <div class="info">
+        📊 3 колонки: Левая (уровень) + Центр (XP источники + уровни) + Правая (статистика)<br>
+        Размеры: 1000×550px — все данные в одном экране без прокрутки!
+    </div>
+
+    <div class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">🎯 Уровни и опыт</div>
+                <button class="modal-close">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Левая колонка: Текущий уровень -->
+                <div class="col-left">
+                    <div class="card current-level-card">
+                        <div class="level-header">
+                            <div class="level-badge">Уровень 1</div>
+                            <div class="xp-display">
+                                <div class="xp-label">Всего XP</div>
+                                <div class="xp-value">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-wrap">
+                            <div class="progress-info">
+                                <span>Прогресс до уровня 2</span>
+                                <span style="color: var(--st-prim); font-weight: 700;">0%</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="level-stats">
+                            <div class="stat-box">
+                                <div class="stat-box-label">Осталось XP</div>
+                                <div class="stat-box-value">625</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-box-label">След. уровень</div>
+                                <div class="stat-box-value">625</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Пустое пространство для баланса -->
+                    <div style="flex: 1;"></div>
+                </div>
+
+                <!-- Центральная колонка: XP источники + Уровни -->
+                <div class="col-center">
+                    <!-- Источники XP -->
+                    <div class="card xp-sources">
+                        <div class="card-title">
+                            <span>⚡</span> Как получить XP
+                        </div>
+                        <div class="xp-sources-grid">
+                            <div class="xp-source">
+                                <div class="xp-source-icon">📚</div>
+                                <div class="xp-source-label">Изучение</div>
+                                <div class="xp-source-value">+10 XP</div>
+                            </div>
+                            <div class="xp-source">
+                                <div class="xp-source-icon">❤️</div>
+                                <div class="xp-source-label">Сердечки</div>
+                                <div class="xp-source-value">+1-5 XP</div>
+                            </div>
+                            <div class="xp-source">
+                                <div class="xp-source-icon">🔥</div>
+                                <div class="xp-source-label">Серия</div>
+                                <div class="xp-source-value">Бонус</div>
+                            </div>
+                            <div class="xp-source">
+                                <div class="xp-source-icon">🎯</div>
+                                <div class="xp-source-label">Точность</div>
+                                <div class="xp-source-value">% бонус</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Уровни -->
+                    <div class="card levels-section">
+                        <div class="card-title">
+                            <span>🏆</span> Уровни 1-20
+                        </div>
+                        
+                        <div class="levels-horizontal" id="levelsScroll">
+                            <div class="level-card current">
+                                <div class="level-header">
+                                    <div class="level-num">1</div>
+                                    <div class="level-icon">👑</div>
+                                </div>
+                                <div class="level-range">0 → 625 XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">2</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">625 → 2.5K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">3</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">2.5K → 5.6K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">4</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">5.6K → 10K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">5</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">10K → 15.6K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">6</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">15.6K → 22.5K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">7</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">22.5K → 30.6K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">8</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">30.6K → 40K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">9</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">40K → 50.6K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">10</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">50.6K → 62.5K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">11</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">62.5K → 75.6K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">12</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">75.6K → 90K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">13</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">90K → 105K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">14</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">105K → 122K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">15</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">122K → 140K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">16</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">140K → 160K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">17</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">160K → 180K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">18</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">180K → 202K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">19</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">202K → 225K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="level-card">
+                                <div class="level-header">
+                                    <div class="level-num">20</div>
+                                    <div class="level-icon">🔒</div>
+                                </div>
+                                <div class="level-range">225K → 250K XP</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="levels-nav">
+                            <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:-220,behavior:'smooth'})">← Назад</button>
+                            <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:220,behavior:'smooth'})">Вперед →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка: Статистика -->
+                <div class="col-right">
+                    <div class="card">
+                        <div class="card-title">
+                            <span>📊</span> Статистика
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-icon">📚</div>
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">Изучено</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-value">0%</div>
+                                <div class="stat-label">Точность</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">🔥</div>
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">Серия</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">🏆</div>
+                                <div class="stat-value" style="color: var(--st-prim);">0</div>
+                                <div class="stat-label">Лучшая</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопка -->
+                <button class="start-btn">
+                    ▶ Начать учиться
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.level-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

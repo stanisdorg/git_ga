@@ -2652,133 +2652,125 @@ window.openLevelInfoModal = () => {
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
   overlay.innerHTML = `
-    <div class="st-modal" style="max-width:800px;max-height:85vh;overflow-y:auto;">
-      <div class="st-modal-header">
+    <div class="st-modal" style="max-width:900px;max-height:75vh;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="st-modal-header" style="flex-shrink:0;">
         <div class="st-modal-title">🎯 Уровни и опыт</div>
         <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
       </div>
-      <div class="st-modal-body" style="padding:20px;">
-        
-        <!-- Текущий прогресс -->
-        <div style="margin-bottom:24px;">
-          <div style="background:linear-gradient(135deg,rgba(255,159,28,0.2) 0%,rgba(255,159,28,0.05) 100%);border:2px solid var(--st-prim);border-radius:16px;padding:20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <div>
-                <div style="font-size:14px;color:var(--st-text-sec);margin-bottom:4px;">Текущий уровень</div>
-                <div style="font-size:36px;font-weight:800;color:#FF9F1C;">Уровень ${levelInfo.level}</div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-size:14px;color:var(--st-text-sec);margin-bottom:4px;">Всего XP</div>
-                <div style="font-size:28px;font-weight:700;color:#fff;">${levelInfo.xp.toLocaleString()}</div>
-              </div>
-            </div>
-            
-            <div style="margin-bottom:12px;">
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                <span style="font-size:13px;color:var(--st-text-sec);">Прогресс до уровня ${levelInfo.level + 1}</span>
-                <span style="font-size:13px;color:#FF9F1C;font-weight:700;">${Math.round(levelInfo.progress * 100)}%</span>
-              </div>
-              <div style="height:12px;background:rgba(255,255,255,0.1);border-radius:6px;overflow:hidden;">
-                <div style="width:${Math.round(levelInfo.progress * 100)}%;height:100%;background:linear-gradient(90deg,#FF9F1C 0%,#FFB142 100%);border-radius:6px;transition:width 0.5s;"></div>
+      <div class="st-modal-body" style="padding:20px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0;">
+
+        <!-- ВЕРХНЯЯ СЕКЦИЯ: 3 блока в ряд -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex-shrink:0;">
+          
+          <!-- Блок 1: Текущий уровень -->
+          <div class="card current-level-card" style="background:linear-gradient(135deg,rgba(255,159,28,0.2) 0%,rgba(255,159,28,0.05) 100%);border:2px solid var(--st-prim);border-radius:12px;padding:14px;">
+            <div class="level-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <div class="level-badge" style="font-size:24px;font-weight:800;color:var(--st-prim);">Уровень ${levelInfo.level}</div>
+              <div class="xp-display" style="text-align:right;">
+                <div class="xp-label" style="font-size:10px;color:var(--st-text-sec);">Всего XP</div>
+                <div class="xp-value" style="font-size:20px;font-weight:700;">${levelInfo.xp.toLocaleString()}</div>
               </div>
             </div>
-            
-            <div style="display:flex;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
-              <div style="flex:1;">
-                <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:4px;">Осталось XP</div>
-                <div style="font-size:18px;font-weight:700;color:#fff;">${levelInfo.remaining.toLocaleString()}</div>
+            <div class="progress-wrap" style="margin-bottom:12px;">
+              <div class="progress-info" style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;color:var(--st-text-sec);">
+                <span>Прогресс до уровня ${levelInfo.level + 1}</span>
+                <span style="color:var(--st-prim);font-weight:700;">${Math.round(levelInfo.progress * 100)}%</span>
               </div>
-              <div style="flex:1;">
-                <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:4px;">След. уровень</div>
-                <div style="font-size:18px;font-weight:700;color:#FF9F1C;">${levelInfo.nextThreshold.toLocaleString()} XP</div>
+              <div class="progress-bg" style="height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;">
+                <div class="progress-fill" style="height:100%;background:linear-gradient(90deg,#FF9F1C,#FFB142);border-radius:4px;transition:width 0.5s;width:${Math.round(levelInfo.progress * 100)}%;"></div>
+              </div>
+            </div>
+            <div class="level-stats" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);">
+              <div class="stat-box" style="text-align:center;">
+                <div class="stat-box-label" style="font-size:9px;color:var(--st-text-sec);text-transform:uppercase;margin-bottom:4px;">Осталось XP</div>
+                <div class="stat-box-value" style="font-size:14px;font-weight:700;color:var(--st-prim);">${levelInfo.remaining.toLocaleString()}</div>
+              </div>
+              <div class="stat-box" style="text-align:center;">
+                <div class="stat-box-label" style="font-size:9px;color:var(--st-text-sec);text-transform:uppercase;margin-bottom:4px;">След. уровень</div>
+                <div class="stat-box-value" style="font-size:14px;font-weight:700;color:var(--st-prim);">${levelInfo.nextThreshold.toLocaleString()}</div>
               </div>
             </div>
           </div>
+
+          <!-- Блок 2: Источники XP -->
+          <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;">
+            <div class="card-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+              <span>⚡</span> Как получить XP
+            </div>
+            <div class="xp-sources-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid var(--st-sec);">
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">📚</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Изучение</div>
+                <div class="xp-source-value" style="font-size:11px;font-weight:600;">+10 XP</div>
+              </div>
+              <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid var(--st-danger);">
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">❤️</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Сердечки</div>
+                <div class="xp-source-value" style="font-size:11px;font-weight:600;">+1-5 XP</div>
+              </div>
+              <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid var(--st-prim);">
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">🔥</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Серия</div>
+                <div class="xp-source-value" style="font-size:11px;font-weight:600;">Бонус</div>
+              </div>
+              <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid #A855F7;">
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">🎯</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Точность</div>
+                <div class="xp-source-value" style="font-size:11px;font-weight:600;">% бонус</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Блок 3: Статистика -->
+          <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;">
+            <div class="card-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+              <span>📊</span> Статистика
+            </div>
+            <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">📚</div>
+                <div class="stat-value" style="font-size:16px;font-weight:700;">${studiedCount}</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Изучено</div>
+              </div>
+              <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🎯</div>
+                <div class="stat-value" style="font-size:16px;font-weight:700;">${accuracy}%</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Точность</div>
+              </div>
+              <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🔥</div>
+                <div class="stat-value" style="font-size:16px;font-weight:700;">${streak.current || 0}</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Серия</div>
+              </div>
+              <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🏆</div>
+                <div class="stat-value" style="font-size:16px;font-weight:700;color:var(--st-prim);">${streak.best || 0}</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Лучшая</div>
+              </div>
+            </div>
+          </div>
+
         </div>
-        
-        <!-- Как получить XP -->
-        <div style="margin-bottom:24px;">
-          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:20px;">⚡</span> Как получить XP
-          </h3>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
-            <div style="background:rgba(46,196,182,0.1);border-left:3px solid var(--st-sec);padding:16px;border-radius:12px;">
-              <div style="font-size:24px;margin-bottom:8px;">📚</div>
-              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Изучение карточек</div>
-              <div style="font-size:12px;color:var(--st-text-sec);">+10 XP за каждую карточку</div>
+
+        <!-- НИЖНЯЯ СЕКЦИЯ: Уровни 1-20 -->
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column;">
+          <div class="levels-section" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;flex:1;min-height:0;">
+            <div class="levels-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+              <span>🏆</span> Уровни 1-20
             </div>
-            <div style="background:rgba(229,83,61,0.1);border-left:3px solid #E5533D;padding:16px;border-radius:12px;">
-              <div style="font-size:24px;margin-bottom:8px;">❤️</div>
-              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Сердечки</div>
-              <div style="font-size:12px;color:var(--st-text-sec);">+1-5 XP за ответ</div>
+            <div class="levels-horizontal" id="levelsScroll" style="display:flex;gap:8px;overflow-x:auto;padding:8px 4px;scroll-behavior:smooth;flex:1;min-height:0;">
+              ${levelsHorizontal}
             </div>
-            <div style="background:rgba(255,159,28,0.1);border-left:3px solid var(--st-prim);padding:16px;border-radius:12px;">
-              <div style="font-size:24px;margin-bottom:8px;">🔥</div>
-              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Серия дней</div>
-              <div style="font-size:12px;color:var(--st-text-sec);">Бонус за серию</div>
-            </div>
-            <div style="background:rgba(168,85,247,0.1);border-left:3px solid #A855F7;padding:16px;border-radius:12px;">
-              <div style="font-size:24px;margin-bottom:8px;">🎯</div>
-              <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">Точность</div>
-              <div style="font-size:12px;color:var(--st-text-sec);">Бонус за % правильных</div>
+            <div class="levels-nav" style="display:flex;gap:8px;margin-top:8px;flex-shrink:0;">
+              <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:-200,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">← Назад</button>
+              <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:200,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">Вперед →</button>
             </div>
           </div>
         </div>
 
-        <!-- Уровни: горизонтальный скролл -->
-        <div style="margin-bottom:24px;">
-          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:20px;">🏆</span> Уровни 1-20
-          </h3>
-          <div style="position:relative;">
-            <div class="levels-horizontal" id="levelsScroll" style="display:flex;gap:10px;overflow-x:auto;padding:10px 4px;scroll-behavior:smooth;">
-              ${levelsHorizontal}
-            </div>
-            <div style="display:flex;gap:8px;margin-top:12px;">
-              <button onclick="document.getElementById('levelsScroll').scrollBy({left:-280,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;">
-                ← Назад
-              </button>
-              <button onclick="document.getElementById('levelsScroll').scrollBy({left:280,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;">
-                Вперед →
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Статистика за всё время -->
-        <div style="margin-bottom:24px;">
-          <h3 style="font-size:16px;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:20px;">📊</span> Статистика за всё время
-          </h3>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
-            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
-              <div style="font-size:24px;margin-bottom:8px;">📚</div>
-              <div style="font-size:20px;font-weight:700;color:#fff;">${studiedCount}</div>
-              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Изучено карт</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
-              <div style="font-size:24px;margin-bottom:8px;">🎯</div>
-              <div style="font-size:20px;font-weight:700;color:#fff;">${accuracy}%</div>
-              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Точность</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
-              <div style="font-size:24px;margin-bottom:8px;">🔥</div>
-              <div style="font-size:20px;font-weight:700;color:#fff;">${streak.current || 0}</div>
-              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Дней подряд</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.05);padding:16px;border-radius:12px;text-align:center;">
-              <div style="font-size:24px;margin-bottom:8px;">🏆</div>
-              <div style="font-size:20px;font-weight:700;color:#FF9F1C;">${streak.best || 0}</div>
-              <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Лучшая серия</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Кнопка начать учиться -->
-        <button onclick="document.querySelector('.st-modal-overlay')?.remove();window.startDailySession()" style="width:100%;background:var(--st-prim);color:#000;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;">
-          ▶ Начать учиться
-        </button>
-        
+        <!-- Кнопка -->
+        <button onclick="document.querySelector('.st-modal-overlay')?.remove();window.startDailySession()" class="start-btn" style="background:var(--st-prim);color:#000;border:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:12px;flex-shrink:0;">▶ Начать учиться</button>
+
       </div>
     </div>
   `;
