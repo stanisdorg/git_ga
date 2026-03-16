@@ -351,11 +351,14 @@ const STATS_STYLES = `
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     gap: 8px !important;
-    overflow-x: auto !important;
-    justify-content: flex-end !important;
+    overflow-x: visible !important; /* Изменено с auto на visible для кнопок */
+    justify-content: flex-start !important; /* Изменено с flex-end на flex-start */
   }
   .st-top-actions {
     flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
   }
   .app-version-display {
     display: none !important;
