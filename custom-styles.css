@@ -942,8 +942,14 @@ body.learning-mode #bottom-nav {
         margin: 0 10px 8px 10px;
         gap: 8px;
     }
+    /* top-actions-bar теперь виден на мобильных для доступа к статистике и аккаунту */
     .top-actions-bar {
-        display: none !important;
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 10px 0 10px;
+        background: var(--color-card);
+        border-bottom: 1px solid var(--color-border);
     }
     .tabs-container {
         flex-wrap: nowrap;
