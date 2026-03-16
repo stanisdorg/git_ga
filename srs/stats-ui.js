@@ -614,10 +614,16 @@ const STATS_STYLES = `
     margin-bottom: 24px; /* Отступ после блока категорий */
   }
   .st-mode-card {
-    margin-bottom: 16px; /* Отступ после каждой карточки режима */
+    margin-bottom: 8px; /* Отступ после каждой карточки режима (уменьшено с 16px до 8px) */
+  }
+  .st-mode-card:last-child {
+    margin-bottom: 24px; /* Отступ после последней карточки режима перед графиками */
   }
   .activity-card {
     margin-bottom: 24px; /* Отступ после графика активности */
+  }
+  .st-ach-section {
+    margin-bottom: 24px; /* Отступ после блока достижений */
   }
   .st-diff-section {
     margin-top: 16px; /* Отступ перед блоком сложности */
