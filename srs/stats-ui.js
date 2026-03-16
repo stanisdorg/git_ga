@@ -1537,34 +1537,6 @@ const STATS_STYLES = `
       height: auto;
       min-height: 150px;
     }
-
-    /* Mobile: 2 карточки в ряд */
-    .modes-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-      /* DEBUG MARKER */
-      background: rgba(255,0,0,0.1) !important;
-    }
-    .modes-grid .st-mode-card {
-      padding: 12px 8px !important;
-      width: auto !important;
-    }
-    .modes-grid .st-mode-card-large {
-      padding: 12px 8px !important;
-    }
-    .modes-grid .st-mode-card-large .st-mode-icon {
-      font-size: 32px !important;
-      margin-bottom: 8px !important;
-    }
-    .modes-grid .st-mode-card-large .st-mode-title {
-      font-size: 13px !important;
-      margin-bottom: 4px !important;
-    }
-    .modes-grid .st-mode-card-large .st-mode-desc {
-      font-size: 10px !important;
-      line-height: 1.3 !important;
-    }
   }
 
   .st-activity-section { 
@@ -1610,6 +1582,35 @@ const STATS_STYLES = `
   /* Primary Stats */
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
   .st-mode-desc { display: none; }
+
+  /* Mobile: 2 карточки в ряд - ПЕРЕМЕЩЕНО В КОНЕЦ */
+  @media (max-width: 768px) {
+    .modes-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+      background: rgba(255,0,0,0.1) !important; /* DEBUG MARKER */
+    }
+    .modes-grid .st-mode-card {
+      padding: 12px 8px !important;
+      width: auto !important;
+    }
+    .modes-grid .st-mode-card-large {
+      padding: 12px 8px !important;
+    }
+    .modes-grid .st-mode-card-large .st-mode-icon {
+      font-size: 32px !important;
+      margin-bottom: 8px !important;
+    }
+    .modes-grid .st-mode-card-large .st-mode-title {
+      font-size: 13px !important;
+      margin-bottom: 4px !important;
+    }
+    .modes-grid .st-mode-card-large .st-mode-desc {
+      font-size: 10px !important;
+      line-height: 1.3 !important;
+    }
+  }
 
   /* Achievements: Full Width at Bottom */
   .st-ach-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
