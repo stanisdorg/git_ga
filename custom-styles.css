@@ -958,6 +958,37 @@ body.learning-mode #bottom-nav {
     .learn-main-btn {
         display: none !important;
     }
+    
+    /* Мобильная версия обучения: два ряда */
+    .learn-header {
+        flex-wrap: wrap;
+        margin-bottom: 3px !important;
+        gap: 8px;
+    }
+    #learn-exit-btn {
+        /* Выход в первом ряду */
+        order: 1;
+    }
+    .learn-progress {
+        /* Progress bar + counter */
+        order: 3;
+        width: 100%;
+        margin: 3px 0 0 0 !important;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    #learn-counter {
+        /* Learn Counter в первом ряду (внутри learn-progress) */
+        order: 1;
+        align-self: flex-end;
+    }
+    .learn-progress-bar {
+        /* Визуализация карточек во втором ряду */
+        order: 2;
+        width: 100%;
+    }
+    
     #results-list {
         grid-template-columns: 1fr !important;
         gap: 12px;
