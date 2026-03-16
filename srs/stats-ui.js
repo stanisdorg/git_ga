@@ -602,7 +602,7 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 0 16px 80px; /* Уменьшены боковые отступы с 20px до 16px для мобильных */
+  padding: 0 16px 120px; /* Увеличен нижний отступ с 80px до 120px для достижений */
   display: flex;
   flex-direction: column;
   gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
@@ -626,10 +626,16 @@ const STATS_STYLES = `
     margin-bottom: 24px; /* Отступ между режимами и достижениями */
   }
   .st-ach-section {
-    margin-bottom: 16px; /* Отступ после блока достижений (уменьшено с 32px) */
+    margin-bottom: 24px; /* Отступ после блока достижений */
   }
   .st-diff-section {
-    margin-top: 16px !important; /* Отступ перед блоком сложности */
+    margin-top: 24px !important; /* Отступ перед блоком сложности */
+  }
+  .st-block-4 {
+    margin-bottom: 24px !important; /* Отступ после блока сложности (перед достижениями) */
+  }
+  .st-block-5 {
+    margin-top: 0px; /* Достижения в самом низу */
   }
 }
 
