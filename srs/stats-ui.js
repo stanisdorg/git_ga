@@ -622,12 +622,6 @@ const STATS_STYLES = `
   .st-cat-progress-wrap {
     margin-bottom: 24px; /* Отступ после блока категорий */
   }
-  .st-mode-card {
-    margin-bottom: 8px; /* Отступ после каждой карточки режима (уменьшено с 16px до 8px) */
-  }
-  .st-mode-card:last-child {
-    margin-bottom: 24px; /* Отступ после последней карточки режима перед графиками */
-  }
   .activity-card {
     margin-bottom: 24px; /* Отступ после графика активности */
   }
@@ -1626,9 +1620,15 @@ const STATS_STYLES = `
   
   /* ДОБАВЛЕНО: Карточки одинаковой высоты */
   .st-block-2 .modes-grid .st-mode-card-large {
+    height: 120px !important;
     min-height: 120px !important;
+    max-height: 120px !important;
     align-items: center !important;
     justify-content: center !important;
+  }
+  
+  .st-block-2 .modes-grid {
+    align-items: stretch !important;
   }
 
   /* Achievements: Full Width at Bottom */
