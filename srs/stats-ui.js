@@ -1608,6 +1608,15 @@ const STATS_STYLES = `
     }
   }
 
+  /* ДОБАВЛЕНО: Правило вне media query для принудительного применения */
+  .st-block-2 .modes-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    background: rgba(255,0,0,0.1) !important;
+    height: auto !important;
+  }
+
   /* Achievements: Full Width at Bottom */
   .st-ach-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
   .st-ach-scroll { display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; }
