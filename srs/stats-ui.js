@@ -2456,9 +2456,9 @@ function renderStats() {
     });
   }
 
-  const authBtn = container.querySelector('.st-auth-btn');
-  if (authBtn) {
-    authBtn.addEventListener('click', () => {
+  const authBtnSetup = container.querySelector('.st-auth-btn');
+  if (authBtnSetup) {
+    authBtnSetup.addEventListener('click', () => {
       const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
       if (user) {
         const username = user.username || user.email || 'пользователь';
@@ -3149,7 +3149,7 @@ function getHeartsForEf(ef) {
   return '❤️❤️❤️❤️❤️';
 }
 
-// Функция для получения количества сердечек по EF (для SVG)
+// Функция для получения количе��тва сердечек по EF (для SVG)
 function getHeartsCountForEf(ef) {
   if (ef === undefined || ef === null) return 0;
   if (ef >= 2.4) return 5;      // EASY
