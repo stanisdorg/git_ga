@@ -1508,9 +1508,11 @@ const STATS_STYLES = `
       grid-row: auto;
       max-height: none;
     }
-    .st-block-2 { 
-      grid-column: 1; 
+    .st-block-2 {
+      grid-column: 1;
       grid-row: auto;
+      display: flex !important; /* ДОБАВЛЕНО: чтобы .modes-grid мог быть grid */
+      flex-direction: column !important;
     }
     .st-block-3 { 
       grid-column: 1; 
