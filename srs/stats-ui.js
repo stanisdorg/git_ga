@@ -888,24 +888,32 @@ const STATS_STYLES = `
   display: flex;
   gap: 8px;
   padding-bottom: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--st-prim) var(--st-surf-h);
+  scroll-snap-type: x mandatory; /* Прилипание по горизонтали */
 }
+/* Стилизованный скроллбар */
 .st-ach-scroll-wrap::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
 .st-ach-scroll-wrap::-webkit-scrollbar-track {
   background: var(--st-surf-h);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 .st-ach-scroll-wrap::-webkit-scrollbar-thumb {
-  background: var(--st-prim);
-  border-radius: 3px;
+  background: linear-gradient(90deg, var(--st-prim), #FFB142);
+  border-radius: 4px;
+}
+.st-ach-scroll-wrap::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #FFB142, var(--st-prim));
 }
 .st-ach-card {
   width: 76px;
   height: 92px;
   flex-shrink: 0;
+  scroll-snap-align: start; /* Прилипание карточек */
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 12px;
@@ -919,6 +927,35 @@ const STATS_STYLES = `
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+}
+
+/* Mobile: 2 rows with snap scroll */
+@media (max-width: 768px) {
+  .st-ach-scroll-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 карточки в ряду */
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 8px;
+    margin: -8px; /* Компенсация padding для выравнивания */
+  }
+  .st-ach-card {
+    scroll-snap-align: start;
+    width: 100%; /* Адаптивная ширина */
+  }
+  /* Скроллбар для мобильных */
+  .st-ach-scroll-wrap::-webkit-scrollbar {
+    height: 6px;
+  }
+  .st-ach-scroll-wrap::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+  }
+  .st-ach-scroll-wrap::-webkit-scrollbar-thumb {
+    background: var(--st-prim);
+    border-radius: 3px;
+  }
 }
 .st-ach-card:hover {
   transform: translateY(-3px) scale(1.05);
