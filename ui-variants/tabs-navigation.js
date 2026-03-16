@@ -1433,6 +1433,7 @@ export function initTabsNavigation(appVersion) {
                         <input id="new-password" placeholder="Пароль" type="password" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
                         <select id="new-role" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff">
                             <option value="user">Пользователь</option>
+                            <option value="editor">Редактор</option>
                             <option value="admin">Администратор</option>
                         </select>
                         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
