@@ -1586,7 +1586,6 @@ const STATS_STYLES = `
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important; /* Изменено с 1fr 1fr на repeat(2, 1fr) */
       gap: 8px !important;
-      background: rgba(255,0,0,0.1) !important; /* DEBUG MARKER */
       height: auto !important; /* Изменено с calc(200px - 2px) */
     }
     .modes-grid .st-mode-card {
@@ -1615,7 +1614,7 @@ const STATS_STYLES = `
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
-    background: rgba(255,0,0,0.1) !important;
+    background: transparent !important;
     height: auto !important;
   }
   
@@ -1623,6 +1622,13 @@ const STATS_STYLES = `
   .st-block-2 {
     display: flex !important;
     flex-direction: column !important;
+  }
+  
+  /* ДОБАВЛЕНО: Карточки одинаковой высоты */
+  .st-block-2 .modes-grid .st-mode-card-large {
+    min-height: 120px !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   /* Achievements: Full Width at Bottom */
@@ -2066,7 +2072,7 @@ function renderStats() {
         </div>
       </div>
 
-      <!-- Отображение имени пользователя будет добавлено через JS -->
+      <!-- Отображение имени п��льзователя будет добавлено через JS -->
       <div class="st-username-placeholder" style="display:none"></div>
 
       <!-- Кнопка продолжить на всю ширину -->
@@ -2131,7 +2137,7 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
-          <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; background: rgba(255,0,0,0.1) !important;">
+          <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
               <span class="st-mode-icon">📝</span>
               <span class="st-mode-title">Работа над ошибками</span>
