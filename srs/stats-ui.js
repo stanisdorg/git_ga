@@ -605,7 +605,23 @@ const STATS_STYLES = `
   padding: 0 16px 80px; /* Уменьшены боковые отступы с 20px до 16px для мобильных */
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Увеличено с 16px до 20px для отступов между блоками */
+  gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
+}
+
+/* Дополнительные отступы для мобильных между конкретными блоками */
+@media (max-width: 768px) {
+  .st-cat-progress-wrap {
+    margin-bottom: 24px; /* Отступ после блока категорий */
+  }
+  .st-mode-card {
+    margin-bottom: 16px; /* Отступ после каждой карточки режима */
+  }
+  .activity-card {
+    margin-bottom: 24px; /* Отступ после графика активности */
+  }
+  .st-diff-section {
+    margin-top: 16px; /* Отступ перед блоком сложности */
+  }
 }
 
 /* Header */
@@ -2013,7 +2029,7 @@ function renderStats() {
               <span class="st-mode-title">Работа над ошибками</span>
               <span class="st-mode-desc">Карточки с низкой точностью ответов</span>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
               <span class="st-mode-icon">🌱</span>
               <span class="st-mode-title">Только новые</span>
               <span class="st-mode-desc">Карточки, которые вы ещё не начинали учить</span>
