@@ -943,8 +943,12 @@ body.learning-mode #bottom-nav {
         gap: 8px;
     }
     /* top-actions-bar теперь виден на мобильных для доступа к статистике и аккаунту */
-    .top-actions-bar {
+    .top-actions-bar,
+    body .top-actions-bar,
+    .app-wrapper .top-actions-bar {
         display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
         flex-wrap: wrap;
         gap: 8px;
         padding: 8px 10px 0 10px;
