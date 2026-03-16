@@ -2389,9 +2389,9 @@ function renderStats() {
     });
   }
 
-  const continueBtn = container.querySelector('#st-continue-btn');
-  if (continueBtn) {
-    continueBtn.addEventListener('click', () => {
+  const continueBtnBottom = container.querySelector('#st-continue-btn');
+  if (continueBtnBottom) {
+    continueBtnBottom.addEventListener('click', () => {
       const questions = (window.currentQuestions && window.currentQuestions.length > 0)
         ? window.currentQuestions
         : getCurrentCards();
