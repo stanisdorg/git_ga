@@ -622,11 +622,14 @@ const STATS_STYLES = `
   .activity-card {
     margin-bottom: 24px; /* Отступ после графика активности */
   }
+  .st-modes-section {
+    margin-bottom: 24px; /* Отступ между режимами и достижениями */
+  }
   .st-ach-section {
-    margin-bottom: 32px !important; /* Отступ после блока достижений (увеличено!) */
+    margin-bottom: 16px; /* Отступ после блока достижений (уменьшено с 32px) */
   }
   .st-diff-section {
-    margin-top: 24px !important; /* Отступ перед блоком сложности (увеличено!) */
+    margin-top: 16px !important; /* Отступ перед блоком сложности */
   }
 }
 
@@ -2047,7 +2050,7 @@ function renderStats() {
                     <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
-                <span class="key">Прогноз:</span>
+                <span class="key">����рогноз:</span>
                 <span class="date">${finishDateStr}</span>
               </div>
             </div>
@@ -2065,7 +2068,7 @@ function renderStats() {
         </div>
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
-        <div class="st-block-2">
+        <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
               <span class="st-mode-icon">📝</span>
