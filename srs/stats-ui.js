@@ -344,7 +344,7 @@ const STATS_STYLES = `
   }
   /* Compact header on mobile */
   .st-top {
-    padding: 12px 8px !important; /* Уменьшено с 16px до 8px для мобильных */
+    padding: 12px 0 !important; /* Убраны боковые отступы */
   }
   .st-top-right {
     display: flex !important;
