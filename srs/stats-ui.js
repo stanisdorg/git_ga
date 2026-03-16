@@ -1540,6 +1540,7 @@ const STATS_STYLES = `
 
     /* Mobile: 2 карточки в ряд */
     .modes-grid {
+      display: grid !important;
       grid-template-columns: 1fr 1fr !important;
       gap: 8px !important;
     }
@@ -2439,6 +2440,9 @@ function renderStats() {
   console.log('📦 MODES-GRID DEBUG');
   console.log('========================================');
   
+  console.log('\n📏 window.innerWidth:', window.innerWidth);
+  console.log('   Media query (max-width: 768px):', window.innerWidth <= 768 ? 'ДА' : 'НЕТ');
+  
   const modesGrid = container.querySelector('.modes-grid');
   console.log('\n🔍 .modes-grid:', modesGrid ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (modesGrid) {
@@ -2449,6 +2453,23 @@ function renderStats() {
     console.log('   width:', mgStyles.width);
     console.log('   height:', mgStyles.height);
     console.log('   inline style:', modesGrid.getAttribute('style'));
+    
+    // Проверка CSS rules
+    console.log('\n📜 CSS RULES CHECK:');
+    const styleSheets = document.styleSheets;
+    for (let i = 0; i < styleSheets.length; i++) {
+      try {
+        const rules = styleSheets[i].cssRules || styleSheets[i].rules;
+        for (let j = 0; j < rules.length; j++) {
+          const rule = rules[j];
+          if (rule.selectorText && rule.selectorText.includes('.modes-grid')) {
+            console.log(`   Rule ${j}: ${rule.selectorText} -> display: ${rule.style.display}, grid-template-columns: ${rule.style.gridTemplateColumns}`);
+          }
+        }
+      } catch (e) {
+        // Cross-origin stylesheet
+      }
+    }
     
     // Количество дочерних элементов
     console.log('   children count:', modesGrid.children.length);
@@ -3182,7 +3203,7 @@ window.openLevelInfoModal = () => {
             </div>
           </div>
 
-          <!-- Блок 3: Статистика -->
+          <!-- Блок 3: Статист��ка -->
           <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;">
             <div class="card-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
               <span>📊</span> Статистика
