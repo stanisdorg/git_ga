@@ -350,15 +350,21 @@ const STATS_STYLES = `
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    gap: 8px !important;
-    overflow-x: visible !important; /* Изменено с auto на visible для кнопок */
-    justify-content: flex-start !important; /* Изменено с flex-end на flex-start */
+    gap: 6px !important; /* Уменьшено с 8px до 6px */
+    overflow-x: visible !important;
+    justify-content: flex-start !important;
   }
   .st-top-actions {
     flex-shrink: 0 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 6px !important; /* Уменьшено с 8px до 6px */
+  }
+  .st-auth-btn, .st-home-btn {
+    width: 32px !important; /* Уменьшено с 36px */
+    height: 32px !important; /* Уменьшено с 36px */
+    padding: 0 !important;
+    min-width: 32px !important;
   }
   .app-version-display {
     display: none !important;
@@ -366,13 +372,13 @@ const STATS_STYLES = `
   .st-top-metrics {
     display: flex !important;
     flex-direction: row !important;
-    gap: 6px !important;
+    gap: 4px !important; /* Уменьшено с 6px до 4px */
     flex-shrink: 0 !important;
   }
   .st-top-metrics .metric {
     display: flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 2px !important; /* Уменьшено с 4px до 2px */
     font-size: 11px !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
@@ -390,8 +396,8 @@ const STATS_STYLES = `
   .level-inline {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 8px;
+    gap: 6px; /* Уменьшено с 8px до 6px */
+    padding: 4px 6px; /* Уменьшено с 4px 8px */
     border-radius: 8px;
     transition: all 0.2s ease;
   }
@@ -408,7 +414,7 @@ const STATS_STYLES = `
   }
   .level-inline-bar {
     position: relative;
-    width: 140px;
+    width: 100px; /* Уменьшено с 140px для мобильных */
     height: 20px;
     background: rgba(0,0,0,0.3);
     border-radius: 10px;
