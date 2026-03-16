@@ -3556,6 +3556,14 @@ export function displayQuestions(questions, title) {
                                     setQaUserCards(userCards);
                                 }
                             }
+                            
+                            // 🔥 ДОБАВЛЯЕМ в qaNewItems чтобы синхронизация видела новую карточку
+                            const newItems = getNewItems();
+                            if (!newItems.some(n => n.question === copyQ)) {
+                                newItems.push(duplicatedItem);
+                                localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+                                console.log('[duplicate] Дубликат добавлен в qaNewItems:', copyQ);
+                            }
                         }
 
                         // Track duplication on server
