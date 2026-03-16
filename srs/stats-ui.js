@@ -1730,84 +1730,84 @@ const STATS_STYLES = `
 `;
 
 export function initStatsPage(appVersion) {
-    console.log('========================================');
-    console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
-    console.log('[STATS INIT] Timestamp:', new Date().toISOString());
-    console.log('[STATS INIT] appVersion:', appVersion);
-    console.log('[STATS INIT] Current location.hash:', location.hash);
+  console.log('========================================');
+  console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
+  console.log('[STATS INIT] Timestamp:', new Date().toISOString());
+  console.log('[STATS INIT] appVersion:', appVersion);
+  console.log('[STATS INIT] Current location.hash:', location.hash);
 
-    if (appVersion) window.currentAppVersion = appVersion;
+  if (appVersion) window.currentAppVersion = appVersion;
 
-    // Проверяем текущее состояние контейнеров
-    let statsContainerEl = document.getElementById('stats-container');
-    const mainContainer = document.querySelector('.container');
-    const learnContainer = document.getElementById('learn-container');
+  // Проверяем текущее состояние контейнеров
+  let statsContainerEl = document.getElementById('stats-container');
+  const mainContainer = document.querySelector('.container');
+  const learnContainer = document.getElementById('learn-container');
 
-    console.log('[STATS INIT] stats-container exists:', !!statsContainerEl);
-    console.log('[STATS INIT] main container display:', mainContainer ? mainContainer.style.display : 'N/A');
-    console.log('[STATS INIT] learn container display:', learnContainer ? learnContainer.style.display : 'N/A');
+  console.log('[STATS INIT] stats-container exists:', !!statsContainerEl);
+  console.log('[STATS INIT] main container display:', mainContainer ? mainContainer.style.display : 'N/A');
+  console.log('[STATS INIT] learn container display:', learnContainer ? learnContainer.style.display : 'N/A');
 
-    // ПРИНУДИТЕЛЬНО скрываем всё остальное
-    if (mainContainer) {
-        mainContainer.style.display = 'none';
-        console.log('[STATS INIT] Hid main container');
-    }
-    if (learnContainer) {
-        learnContainer.style.display = 'none';
-        console.log('[STATS INIT] Hid learn container');
-    }
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar) {
-        sidebar.style.display = 'none';
-        console.log('[STATS INIT] Hid sidebar');
-    }
+  // ПРИНУДИТЕЛЬНО скрываем всё остальное
+  if (mainContainer) {
+    mainContainer.style.display = 'none';
+    console.log('[STATS INIT] Hid main container');
+  }
+  if (learnContainer) {
+    learnContainer.style.display = 'none';
+    console.log('[STATS INIT] Hid learn container');
+  }
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    sidebar.style.display = 'none';
+    console.log('[STATS INIT] Hid sidebar');
+  }
 
-    // Создаём контейнер статистики если не существует
-    if (!statsContainerEl) {
-        console.log('[STATS INIT] Creating stats-container...');
-        statsContainerEl = document.createElement('div');
-        statsContainerEl.id = 'stats-container';
+  // Создаём контейнер статистики если не существует
+  if (!statsContainerEl) {
+    console.log('[STATS INIT] Creating stats-container...');
+    statsContainerEl = document.createElement('div');
+    statsContainerEl.id = 'stats-container';
 
-        const appWrapper = document.querySelector('.app-wrapper') || document.body;
-        appWrapper.appendChild(statsContainerEl);
+    const appWrapper = document.querySelector('.app-wrapper') || document.body;
+    appWrapper.appendChild(statsContainerEl);
 
-        const styleEl = document.createElement('style');
-        styleEl.textContent = STATS_STYLES;
-        document.head.appendChild(styleEl);
+    const styleEl = document.createElement('style');
+    styleEl.textContent = STATS_STYLES;
+    document.head.appendChild(styleEl);
 
-        console.log('[STATS INIT] stats-container created');
-    } else {
-        console.log('[STATS INIT] stats-container already exists');
-    }
+    console.log('[STATS INIT] stats-container created');
+  } else {
+    console.log('[STATS INIT] stats-container already exists');
+  }
 
-    // Показываем статистику
-    statsContainerEl.style.display = 'block';
-    console.log('[STATS INIT] stats-container display set to block');
+  // Показываем статистику
+  statsContainerEl.style.display = 'block';
+  console.log('[STATS INIT] stats-container display set to block');
 
-    // Инициализируем глобальную переменную
-    statsContainer = statsContainerEl;
-    
-    // Проверяем что контейнер действительно виден
-    const computedStyle = window.getComputedStyle(statsContainerEl);
-    console.log('[STATS INIT] stats-container computed display:', computedStyle.display);
-    console.log('[STATS INIT] stats-container computed zIndex:', computedStyle.zIndex);
+  // Инициализируем глобальную переменную
+  statsContainer = statsContainerEl;
 
-    console.log('[STATS INIT] Calling renderStats()...');
-    renderStats();
-    console.log('[STATS INIT] ========== END initStatsPage ==========');
-    console.log('========================================');
+  // Проверяем что контейнер действительно виден
+  const computedStyle = window.getComputedStyle(statsContainerEl);
+  console.log('[STATS INIT] stats-container computed display:', computedStyle.display);
+  console.log('[STATS INIT] stats-container computed zIndex:', computedStyle.zIndex);
 
-    if (!window._statsXpListener) {
-        window._statsXpListener = () => {
-            if (document.getElementById('stats-container')) renderStats();
-        };
-        window.addEventListener('xpUpdated', window._statsXpListener);
-        window.addEventListener('dataLoaded', window._statsXpListener);
-    }
+  console.log('[STATS INIT] Calling renderStats()...');
+  renderStats();
+  console.log('[STATS INIT] ========== END initStatsPage ==========');
+  console.log('========================================');
 
-    if (!location.hash || !location.hash.includes('stats')) {
-        location.hash = '#/stats';
-    }
+  if (!window._statsXpListener) {
+    window._statsXpListener = () => {
+      if (document.getElementById('stats-container')) renderStats();
+    };
+    window.addEventListener('xpUpdated', window._statsXpListener);
+    window.addEventListener('dataLoaded', window._statsXpListener);
+  }
+
+  if (!location.hash || !location.hash.includes('stats')) {
+    location.hash = '#/stats';
+  }
 }
 
 export function hideStatsPage() {
@@ -1815,21 +1815,21 @@ export function hideStatsPage() {
   console.log('[hideStatsPage] __navigatingToHome:', window.__navigatingToHome);
 
   if (statsContainer) {
-      statsContainer.remove();
-      statsContainer = null; // Очищаем ссылку на удаленный элемент
-      console.log('[hideStatsPage] stats-container removed and reference cleared');
+    statsContainer.remove();
+    statsContainer = null; // Очищаем ссылку на удаленный элемент
+    console.log('[hideStatsPage] stats-container removed and reference cleared');
   }
 
   if (!mainContainer) mainContainer = document.querySelector('.container');
   if (mainContainer) {
-      mainContainer.style.display = 'block'; // Явно показываем главный контейнер
-      console.log('[hideStatsPage] mainContainer display set to block');
+    mainContainer.style.display = 'block'; // Явно показываем главный контейнер
+    console.log('[hideStatsPage] mainContainer display set to block');
   }
 
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
-      sidebar.style.display = ''; // Возвращаем стандартное отображение
-      console.log('[hideStatsPage] sidebar display reset');
+    sidebar.style.display = ''; // Возвращаем стандартное отображение
+    console.log('[hideStatsPage] sidebar display reset');
   }
 
   // НЕ меняем hash здесь! Это вызывается из startFilteredSession
@@ -2056,7 +2056,7 @@ function renderStats() {
                     <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
-                <span class="key">������рогноз:</span>
+                <span class="key">Прогноз:</span>
                 <span class="date">${finishDateStr}</span>
               </div>
             </div>
@@ -2288,7 +2288,81 @@ function renderStats() {
     }
   } catch { }
 
+  // ============================================
+  // DEBUG: Логирование шапки статистики
+  // ============================================
+  console.log('========================================');
+  console.log('📱 STATS HEADER DEBUG');
+  console.log('========================================');
+  
   const topRight = container.querySelector('.st-top-right');
+  console.log('\n🔍 st-top-right:', topRight ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+  if (topRight) {
+    const topRightStyles = window.getComputedStyle(topRight);
+    console.log('   display:', topRightStyles.display);
+    console.log('   visibility:', topRightStyles.visibility);
+    console.log('   opacity:', topRightStyles.opacity);
+    console.log('   width:', topRightStyles.width);
+    console.log('   height:', topRightStyles.height);
+    console.log('   flex-wrap:', topRightStyles.flexWrap);
+    console.log('   gap:', topRightStyles.gap);
+    console.log('   justify-content:', topRightStyles.justifyContent);
+    console.log('   overflow:', topRightStyles.overflow);
+  }
+  
+  // Проверка кнопок
+  const authBtn = container.querySelector('.st-auth-btn');
+  const homeBtn = container.querySelector('.st-home-btn');
+  const continueBtn = container.querySelector('#st-continue-top-btn');
+  
+  console.log('\n📦 КНОПКИ:');
+  console.log('   .st-auth-btn:', authBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
+  console.log('   .st-home-btn:', homeBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
+  console.log('   #st-continue-top-btn:', continueBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
+  
+  if (authBtn) {
+    const authStyles = window.getComputedStyle(authBtn);
+    console.log('   auth-btn display:', authStyles.display, ', width:', authStyles.width, ', visibility:', authStyles.visibility);
+  }
+  if (homeBtn) {
+    const homeStyles = window.getComputedStyle(homeBtn);
+    console.log('   home-btn display:', homeStyles.display, ', width:', homeStyles.width, ', visibility:', homeStyles.visibility);
+  }
+  if (continueBtn) {
+    const contStyles = window.getComputedStyle(continueBtn);
+    console.log('   continue-btn display:', contStyles.display, ', width:', contStyles.width, ', visibility:', contStyles.visibility);
+  }
+  
+  // Проверка видимости кнопок
+  function isElementVisible(el) {
+    if (!el) return false;
+    const styles = window.getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
+    return styles.display !== 'none' && 
+           styles.visibility !== 'hidden' && 
+           styles.opacity !== '0' && 
+           rect.width > 0 && 
+           rect.height > 0;
+  }
+  
+  console.log('\n👁️ ПРОВЕРКА ВИДИМОСТИ:');
+  console.log('   auth-btn видима:', isElementVisible(authBtn));
+  console.log('   home-btn видима:', isElementVisible(homeBtn));
+  console.log('   continue-btn видима:', isElementVisible(continueBtn));
+  
+  // Проверка .st-top-actions
+  const topActions = container.querySelector('.st-top-actions');
+  console.log('\n📦 .st-top-actions:', topActions ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+  if (topActions) {
+    const actionsStyles = window.getComputedStyle(topActions);
+    console.log('   display:', actionsStyles.display);
+    console.log('   visibility:', actionsStyles.visibility);
+  }
+  
+  console.log('\n========================================');
+  // ============================================
+  // КОНЕЦ DEBUG шапки
+  // ============================================
 
   const homeBtn = container.querySelector('.st-home-btn');
   console.log('========================================');
@@ -2301,13 +2375,13 @@ function renderStats() {
       console.log('[HOME BTN CLICK] Clicked!');
       console.log('[HOME BTN CLICK] Current location.hash:', location.hash);
       console.log('[HOME BTN CLICK] window.__lastCandidates:', window.__lastCandidates);
-      
+
       // Очищаем состояние обучения
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
         console.log('[HOME BTN CLICK] Cleared __lastCandidates');
       }
-      
+
       // Просто меняем hash на главную
       location.hash = '#/';
       console.log('[HOME BTN CLICK] Hash changed to:', location.hash);
@@ -2652,7 +2726,7 @@ window.debugMobileStats = () => {
   console.log('========================================');
   console.log('📱 MOBILE LAYOUT DEBUG (width:', window.innerWidth, 'px)');
   console.log('========================================');
-  
+
   const blocks = {
     '.st-block-1': 'Прогресс',
     '.st-block-achievements': 'Категории',
@@ -2661,7 +2735,7 @@ window.debugMobileStats = () => {
     '.st-block-4': 'Сложность',
     '.st-block-5': 'Достижения'
   };
-  
+
   Object.entries(blocks).forEach(([selector, name]) => {
     const el = document.querySelector(selector);
     if (el) {
@@ -2676,15 +2750,15 @@ window.debugMobileStats = () => {
       console.log(`\n❌ ${name} (${selector}) - NOT FOUND`);
     }
   });
-  
+
   // Проверка specific элементов с отступами
   const achSection = document.querySelector('.st-ach-section');
   const modesSection = document.querySelector('.st-modes-section');
   const diffSection = document.querySelector('.st-diff-section');
   const wrapper = document.querySelector('.st-wrapper');
-  
+
   console.log('\n🔍 ПРОВЕРКА ОТСТУПОВ:');
-  
+
   if (modesSection) {
     const modesStyles = window.getComputedStyle(modesSection);
     console.log(`   .st-modes-section margin-bottom: ${modesStyles.marginBottom}`);
@@ -2692,7 +2766,7 @@ window.debugMobileStats = () => {
   } else {
     console.log(`   ❌ .st-modes-section - НЕ НАЙДЕН`);
   }
-  
+
   if (achSection) {
     const achStyles = window.getComputedStyle(achSection);
     console.log(`   .st-ach-section margin-bottom: ${achStyles.marginBottom}`);
@@ -2700,7 +2774,7 @@ window.debugMobileStats = () => {
   } else {
     console.log(`   ❌ .st-ach-section - НЕ НАЙДЕН`);
   }
-  
+
   if (diffSection) {
     const diffStyles = window.getComputedStyle(diffSection);
     console.log(`   .st-diff-section margin-top: ${diffStyles.marginTop}`);
@@ -2708,24 +2782,24 @@ window.debugMobileStats = () => {
   } else {
     console.log(`   ❌ .st-diff-section - НЕ НАЙДЕН`);
   }
-  
+
   // Проверка пустого пространства внизу
   const bodyHeight = document.body.scrollHeight;
   const htmlHeight = document.documentElement.scrollHeight;
-  
+
   console.log('\n📏 ОБЩАЯ ВЫСОТА:');
   console.log(`   document.body.scrollHeight: ${bodyHeight}`);
   console.log(`   document.documentElement.scrollHeight: ${htmlHeight}`);
   console.log(`   window.innerHeight: ${window.innerHeight}`);
   console.log(`   Пустое пространство внизу: ${(bodyHeight - window.innerHeight).toFixed(1)}px`);
-  
+
   if (wrapper) {
     const wrapperStyles = window.getComputedStyle(wrapper);
     console.log(`\n   .st-wrapper padding-bottom: ${wrapperStyles.paddingBottom}`);
     console.log(`   .st-wrapper margin-bottom: ${wrapperStyles.marginBottom}`);
     console.log(`   .st-wrapper element:`, wrapper);
   }
-  
+
   // Проверка gap в .st-main
   const stMain = document.querySelector('.st-main');
   if (stMain) {
@@ -2733,7 +2807,7 @@ window.debugMobileStats = () => {
     console.log(`\n   .st-main gap: ${mainStyles.gap}`);
     console.log(`   .st-main display: ${mainStyles.display}`);
   }
-  
+
   console.log('\n========================================');
   console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
   console.log('========================================');
@@ -2861,12 +2935,12 @@ window.openLevelInfoModal = () => {
   console.log('[OPENLEVELINFOMODAL] document.querySelector(".app-wrapper"):', document.querySelector('.app-wrapper'));
   console.log('[OPENLEVELINFOMODAL] document.querySelector(".sidebar"):', document.querySelector('.sidebar'));
   console.log('[OPENLEVELINFOMODAL] document.querySelector(".container"):', document.querySelector('.container'));
-  
+
   // Проверяем есть ли стили STATS_STYLES в DOM
   const stylesInDom = document.querySelector('style');
   console.log('[OPENLEVELINFOMODAL] Первый style элемент:', stylesInDom);
   console.log('[OPENLEVELINFOMODAL] stylesInDom.textContent (первые 200 символов):', stylesInDom?.textContent?.substring(0, 200));
-  
+
   // ДОБАВЛЯЕМ СТИЛИ ЕСЛИ ИХ НЕТ
   let styleEl = document.getElementById('stats-modal-styles');
   if (!styleEl) {
@@ -2879,7 +2953,7 @@ window.openLevelInfoModal = () => {
   } else {
     console.log('[OPENLEVELINFOMODAL] Стили уже есть в DOM');
   }
-  
+
   const levelInfo = getCurrentLevel();
   const stats = getStudyStats();
   const daily = getDailyPointsAll();
@@ -3050,7 +3124,7 @@ window.openLevelInfoModal = () => {
     </div>
   `;
   document.body.appendChild(overlay);
-  
+
   console.log('[OPENLEVELINFOMODAL] Модальное окно создано и добавлено в DOM!');
   console.log('[OPENLEVELINFOMODAL] overlay element:', overlay);
   console.log('[OPENLEVELINFOMODAL] overlay.style:', overlay.style);
