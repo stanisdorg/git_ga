@@ -1543,6 +1543,8 @@ const STATS_STYLES = `
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
       gap: 8px !important;
+      /* DEBUG MARKER */
+      background: rgba(255,0,0,0.1) !important;
     }
     .modes-grid .st-mode-card {
       padding: 12px 8px !important;
