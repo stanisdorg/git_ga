@@ -799,9 +799,9 @@ export function initTabsNavigation(appVersion) {
     console.log('[MOBILE DEBUG] isMobile:', isMobile);
     
     // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
-    topActions.appendChild(statsBtn);
-    topActions.appendChild(learnBtn); /* Перемещено: кнопка "Начать обучение" после статистики */
-    topActions.appendChild(loginMainBtn);
+    topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
+    topActions.appendChild(statsBtn); /* Статистика - второй */
+    topActions.appendChild(learnBtn); /* Обучение - третий */
     topActions.appendChild(levelContainer);
     
     if (isMobile) {
