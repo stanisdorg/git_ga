@@ -571,6 +571,38 @@ function renderCardState(state) {
         console.log('      display:', backStyles.display);
     }
     
+    // Проверка перекрытия front/back
+    console.log('\n🔄 FRONT/BACK OVERLAP CHECK:');
+    if (front && back) {
+        const frontStyles = window.getComputedStyle(front);
+        const backStyles = window.getComputedStyle(back);
+        const frontRect = front.getBoundingClientRect();
+        const backRect = back.getBoundingClientRect();
+        
+        console.log('   .flashcard-front:');
+        console.log('      display:', frontStyles.display);
+        console.log('      position:', frontStyles.position);
+        console.log('      z-index:', frontStyles.zIndex);
+        console.log('      transform:', frontStyles.transform);
+        console.log('      opacity:', frontStyles.opacity);
+        console.log('      rect:', frontRect);
+        
+        console.log('   .flashcard-back:');
+        console.log('      display:', backStyles.display);
+        console.log('      position:', backStyles.position);
+        console.log('      z-index:', backStyles.zIndex);
+        console.log('      transform:', backStyles.transform);
+        console.log('      opacity:', backStyles.opacity);
+        console.log('      rect:', backRect);
+        
+        console.log('   .flashcard (parent):');
+        const cardStyles = window.getComputedStyle(cardEl);
+        console.log('      display:', cardStyles.display);
+        console.log('      position:', cardStyles.position);
+        console.log('      perspective:', cardStyles.perspective);
+        console.log('      transform-style:', cardStyles.transformStyle);
+    }
+    
     // Проверка custom-styles.css
     console.log('\n📜 CUSTOM-styles.css CHECK:');
     const allStyles = Array.from(document.styleSheets);
