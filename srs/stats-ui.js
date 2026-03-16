@@ -2431,6 +2431,50 @@ function renderStats() {
   // КОНЕЦ DEBUG шапки
   // ============================================
 
+  // ============================================
+  // DEBUG: modes-grid (карточки режимов)
+  // ============================================
+  console.log('\n========================================');
+  console.log('📦 MODES-GRID DEBUG');
+  console.log('========================================');
+  
+  const modesGrid = container.querySelector('.modes-grid');
+  console.log('\n🔍 .modes-grid:', modesGrid ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+  if (modesGrid) {
+    const mgStyles = window.getComputedStyle(modesGrid);
+    console.log('   display:', mgStyles.display);
+    console.log('   grid-template-columns:', mgStyles.gridTemplateColumns);
+    console.log('   gap:', mgStyles.gap);
+    console.log('   width:', mgStyles.width);
+    console.log('   height:', mgStyles.height);
+    console.log('   inline style:', modesGrid.getAttribute('style'));
+    
+    // Количество дочерних элементов
+    console.log('   children count:', modesGrid.children.length);
+    
+    // Проверка каждого child
+    Array.from(modesGrid.children).forEach((child, i) => {
+      const childStyles = window.getComputedStyle(child);
+      console.log(`   child[${i}]:`, child.className);
+      console.log(`      display: ${childStyles.display}, width: ${childStyles.width}`);
+      console.log(`      grid-column: ${childStyles.gridColumn}`);
+    });
+  }
+  
+  // Проверка .st-block-2
+  const block2 = container.querySelector('.st-block-2');
+  console.log('\n📦 .st-block-2:', block2 ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+  if (block2) {
+    const b2Styles = window.getComputedStyle(block2);
+    console.log('   display:', b2Styles.display);
+    console.log('   width:', b2Styles.width);
+  }
+  
+  console.log('\n========================================');
+  // ============================================
+  // КОНЕЦ DEBUG modes-grid
+  // ============================================
+
   // homeBtn уже объявлен выше в debug-секции
   console.log('========================================');
   console.log('[HOME BTN SETUP] homeBtn found:', !!homeBtn);
