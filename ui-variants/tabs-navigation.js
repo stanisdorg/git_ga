@@ -2070,6 +2070,19 @@ export function initTabsNavigation(appVersion) {
                     }
                 }
                 
+                // 🔥 ВОЗВРАЩАЕМ карточку в qaUserCards если она была удалена
+                const userCards = getQaUserCards();
+                if (userCards && !userCards.some(c => c.question === q) && itemData) {
+                    // Ищем позицию где была карточка (по индексу в serverTrashItems)
+                    const trashIndex = serverTrashItems.findIndex(t => t.item?.question === q);
+                    if (trashIndex >= 0) {
+                        // Вставляем на примерную позицию
+                        userCards.push(itemData);
+                        setQaUserCards(userCards);
+                        console.log('[restore-click(inner)] Карточка возвращена в qaUserCards');
+                    }
+                }
+
                 console.log('[restore-click(inner)] Локальные кеши обновлены', {
                     serverTrashSetSize: serverTrashSet.size,
                     delMapSize: Object.keys(getDeletedItems()).length
