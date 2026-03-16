@@ -602,7 +602,7 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 0 16px 120px; /* Увеличен нижний отступ с 80px до 120px для достижений */
+  padding: 0 16px 40px; /* Нижний отступ для достижений (уменьшено с 120px до 40px) */
   display: flex;
   flex-direction: column;
   gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
