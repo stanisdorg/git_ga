@@ -26,6 +26,12 @@ export function initLearnUI() {
     // Check if container already exists (from previous session or reload)
     container = document.getElementById('learn-container');
 
+    console.log('========================================');
+    console.log('🎴 LEARN MODE DEBUG');
+    console.log('========================================');
+    console.log('window.innerWidth:', window.innerWidth);
+    console.log('Is mobile (≤480px):', window.innerWidth <= 480);
+    
     // Create Learn Container if not exists
     if (!container) {
         const appWrapper = document.querySelector('.app-wrapper') || document.body;
@@ -549,6 +555,43 @@ function renderCardState(state) {
     if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
     
+    // DEBUG: Логируем стили ответа
+    console.log('\n📦 FLASHCARD ANSWER DEBUG:');
+    console.log('   #learn-answer элемент:', aEl);
+    if (aEl) {
+        const styles = window.getComputedStyle(aEl);
+        console.log('   padding-top:', styles.paddingTop);
+        console.log('   margin-top:', styles.marginTop);
+        console.log('   font-size:', styles.fontSize);
+        console.log('   display:', styles.display);
+        console.log('   align-items:', styles.alignItems);
+        console.log('   Parent (.flashcard-back) styles:');
+        const backStyles = window.getComputedStyle(back);
+        console.log('      padding:', backStyles.padding);
+        console.log('      display:', backStyles.display);
+    }
+    
+    // Проверка custom-styles.css
+    console.log('\n📜 CUSTOM-styles.css CHECK:');
+    const allStyles = Array.from(document.styleSheets);
+    console.log('   Всего style sheets:', allStyles.length);
+    allStyles.forEach((sheet, i) => {
+        try {
+            const rules = Array.from(sheet.cssRules || []);
+            const hasFlashcardBack = rules.some(r => r.selectorText && r.selectorText.includes('.flashcard-back'));
+            if (hasFlashcardBack) {
+                console.log(`   Sheet ${i}: содержит .flashcard-back правила`);
+                rules.forEach(r => {
+                    if (r.selectorText && r.selectorText.includes('.flashcard-back .flashcard-content')) {
+                        console.log(`      Rule: ${r.selectorText} -> padding-top: ${r.style.paddingTop}, margin-top: ${r.style.marginTop}`);
+                    }
+                });
+            }
+        } catch(e) {
+            // CORS
+        }
+    });
+
     // Обновляем вопрос на back-стороне
     const backQuestionEl = document.getElementById('learn-back-question');
     if (backQuestionEl && state.card) {
