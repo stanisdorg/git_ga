@@ -1552,7 +1552,7 @@ body.learning-mode #bottom-nav {
 
 .flashcard-back .flashcard-content {
     margin-top: 0 !important;
-    padding-top: 120px !important; /* Увеличено с 20px до 120px */
+    padding-top: 80px !important; /* Увеличено с 20px до 80px */
 }
 
 /* Sync Indicator Widget */
@@ -1633,7 +1633,7 @@ body.learning-mode #bottom-nav {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    padding-top: 120px !important; /* Увеличено с 20px до 120px */
+    padding-top: 80px !important; /* Увеличено с 20px до 80px */
     margin-top: 0 !important;
     overflow-y: auto;
     max-height: calc(100vh - 200px);
@@ -1805,7 +1805,7 @@ body.learning-mode #bottom-nav {
     }
     .flashcard-back .flashcard-content {
         font-size: 16px;
-        padding-top: 120px !important; /* Увеличено с 40px до 120px для мобильных */
+        padding-top: 80px !important; /* Увеличено с 20px до 80px для мобильных */
         margin-top: 0 !important;
     }
     .flashcard-hint {
