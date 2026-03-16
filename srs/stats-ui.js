@@ -2350,6 +2350,40 @@ function renderStats() {
   console.log('   home-btn видима:', isElementVisible(homeBtn));
   console.log('   continue-btn видима:', isElementVisible(continueBtn));
   
+  // Проверка z-index и position
+  console.log('\n📊 Z-INDEX И POSITION:');
+  if (authBtn) {
+    const authStyles = window.getComputedStyle(authBtn);
+    console.log('   auth-btn z-index:', authStyles.zIndex, ', position:', authStyles.position);
+  }
+  if (homeBtn) {
+    const homeStyles = window.getComputedStyle(homeBtn);
+    console.log('   home-btn z-index:', homeStyles.zIndex, ', position:', homeStyles.position);
+  }
+  if (topRight) {
+    const trStyles = window.getComputedStyle(topRight);
+    console.log('   st-top-right z-index:', trStyles.zIndex, ', position:', trStyles.position);
+  }
+  
+  // Проверка на перекрытие через elementFromPoint
+  console.log('\n🎯 ПРОВЕРКА НА ПЕРЕКРЫТИЕ:');
+  if (authBtn) {
+    const authRect = authBtn.getBoundingClientRect();
+    const centerX = authRect.left + authRect.width / 2;
+    const centerY = authRect.top + authRect.height / 2;
+    const topElement = document.elementFromPoint(centerX, centerY);
+    console.log('   auth-btn: элемент в центре кнопки:', topElement ? topElement.className : 'null');
+    console.log('   auth-btn: совпадает ли с кнопкой:', topElement === authBtn || (topElement && topElement.closest('.st-auth-btn')));
+  }
+  if (homeBtn) {
+    const homeRect = homeBtn.getBoundingClientRect();
+    const centerX = homeRect.left + homeRect.width / 2;
+    const centerY = homeRect.top + homeRect.height / 2;
+    const topElement = document.elementFromPoint(centerX, centerY);
+    console.log('   home-btn: элемент в центре кнопки:', topElement ? topElement.className : 'null');
+    console.log('   home-btn: совпадает ли с кнопкой:', topElement === homeBtn || (topElement && topElement.closest('.st-home-btn')));
+  }
+  
   // Проверка .st-top-actions
   const topActions = container.querySelector('.st-top-actions');
   console.log('\n📦 .st-top-actions:', topActions ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
