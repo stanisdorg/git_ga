@@ -623,10 +623,10 @@ const STATS_STYLES = `
     margin-bottom: 24px; /* Отступ после графика активности */
   }
   .st-ach-section {
-    margin-bottom: 24px; /* Отступ после блока достижений */
+    margin-bottom: 32px !important; /* Отступ после блока достижений (увеличено!) */
   }
   .st-diff-section {
-    margin-top: 16px; /* Отступ перед блоком сложности */
+    margin-top: 24px !important; /* Отступ перед блоком сложности (увеличено!) */
   }
 }
 
