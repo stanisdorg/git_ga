@@ -2050,7 +2050,7 @@ function renderStats() {
                     <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
-                <span class="key">����рогноз:</span>
+                <span class="key">������рогноз:</span>
                 <span class="date">${finishDateStr}</span>
               </div>
             </div>
@@ -2638,6 +2638,101 @@ window.openDiffInfoModal = (event) => {
 };
 
 // Модальное окно с объяснением статистики
+
+// ============================================
+// DEBUG ФУНКЦИЯ ДЛЯ МОБИЛЬНОЙ ВЁРСТКИ
+// ============================================
+window.debugMobileStats = () => {
+  console.log('========================================');
+  console.log('📱 MOBILE LAYOUT DEBUG (width:', window.innerWidth, 'px)');
+  console.log('========================================');
+  
+  const blocks = {
+    '.st-block-1': 'Прогресс',
+    '.st-block-achievements': 'Категории',
+    '.st-block-2': 'Режимы',
+    '.st-block-3': 'График',
+    '.st-block-4': 'Сложность',
+    '.st-block-5': 'Достижения'
+  };
+  
+  Object.entries(blocks).forEach(([selector, name]) => {
+    const el = document.querySelector(selector);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const styles = window.getComputedStyle(el);
+      console.log(`\n📦 ${name} (${selector}):`);
+      console.log(`   Position: top=${rect.top.toFixed(1)}, bottom=${rect.bottom.toFixed(1)}, height=${rect.height.toFixed(1)}`);
+      console.log(`   Margin: top=${styles.marginTop}, bottom=${styles.marginBottom}`);
+      console.log(`   Padding: top=${styles.paddingTop}, bottom=${styles.paddingBottom}`);
+      console.log(`   Class list: ${el.className}`);
+    } else {
+      console.log(`\n❌ ${name} (${selector}) - NOT FOUND`);
+    }
+  });
+  
+  // Проверка specific элементов с отступами
+  const achSection = document.querySelector('.st-ach-section');
+  const modesSection = document.querySelector('.st-modes-section');
+  const diffSection = document.querySelector('.st-diff-section');
+  const wrapper = document.querySelector('.st-wrapper');
+  
+  console.log('\n🔍 ПРОВЕРКА ОТСТУПОВ:');
+  
+  if (modesSection) {
+    const modesStyles = window.getComputedStyle(modesSection);
+    console.log(`   .st-modes-section margin-bottom: ${modesStyles.marginBottom}`);
+    console.log(`   .st-modes-section элемент:`, modesSection);
+  } else {
+    console.log(`   ❌ .st-modes-section - НЕ НАЙДЕН`);
+  }
+  
+  if (achSection) {
+    const achStyles = window.getComputedStyle(achSection);
+    console.log(`   .st-ach-section margin-bottom: ${achStyles.marginBottom}`);
+    console.log(`   .st-ach-section элемент:`, achSection);
+  } else {
+    console.log(`   ❌ .st-ach-section - НЕ НАЙДЕН`);
+  }
+  
+  if (diffSection) {
+    const diffStyles = window.getComputedStyle(diffSection);
+    console.log(`   .st-diff-section margin-top: ${diffStyles.marginTop}`);
+    console.log(`   .st-diff-section элемент:`, diffSection);
+  } else {
+    console.log(`   ❌ .st-diff-section - НЕ НАЙДЕН`);
+  }
+  
+  // Проверка пустого пространства внизу
+  const bodyHeight = document.body.scrollHeight;
+  const htmlHeight = document.documentElement.scrollHeight;
+  
+  console.log('\n📏 ОБЩАЯ ВЫСОТА:');
+  console.log(`   document.body.scrollHeight: ${bodyHeight}`);
+  console.log(`   document.documentElement.scrollHeight: ${htmlHeight}`);
+  console.log(`   window.innerHeight: ${window.innerHeight}`);
+  console.log(`   Пустое пространство внизу: ${(bodyHeight - window.innerHeight).toFixed(1)}px`);
+  
+  if (wrapper) {
+    const wrapperStyles = window.getComputedStyle(wrapper);
+    console.log(`\n   .st-wrapper padding-bottom: ${wrapperStyles.paddingBottom}`);
+    console.log(`   .st-wrapper margin-bottom: ${wrapperStyles.marginBottom}`);
+    console.log(`   .st-wrapper element:`, wrapper);
+  }
+  
+  // Проверка gap в .st-main
+  const stMain = document.querySelector('.st-main');
+  if (stMain) {
+    const mainStyles = window.getComputedStyle(stMain);
+    console.log(`\n   .st-main gap: ${mainStyles.gap}`);
+    console.log(`   .st-main display: ${mainStyles.display}`);
+  }
+  
+  console.log('\n========================================');
+  console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
+  console.log('========================================');
+};
+
 window.openStatsInfoModal = (event) => {
   if (event) event.stopPropagation();
   const overlay = document.createElement('div');
@@ -3632,6 +3727,18 @@ window.startMode = (modeId) => {
     startLearnSession(candidates, options);
   }
 };
+
+// ============================================
+// АВТОМАТИЧЕСКИЙ ВЫЗОВ DEBUG НА МОБИЛЬНЫХ
+// ============================================
+if (window.innerWidth <= 768) {
+  setTimeout(() => {
+    console.log('📱 MOBILE STATS LOADED - running debug...');
+    if (window.debugMobileStats) {
+      window.debugMobileStats();
+    }
+  }, 1000);
+}
 
 // ========== Функция для рендеринга прогресса по категориям ==========
 function renderCategoryProgress() {
