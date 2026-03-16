@@ -794,32 +794,37 @@ export function initTabsNavigation(appVersion) {
     // Removed manual styles to match app style
     cloudBtn.addEventListener('click', openCloudOverview);
 
-    // Добавляем кнопки: на мобильных внутри списка табов, на desktop — в верхнюю панель
+    // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    console.log('[MOBILE DEBUG] isMobile:', isMobile);
+    
+    // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
+    topActions.appendChild(statsBtn);
+    topActions.appendChild(loginMainBtn);
+    topActions.appendChild(levelContainer);
+    
     if (isMobile) {
-        // Sticky right for profile
+        // Mobile: дополнительные кнопки в topActions
         loginMainBtn.style.position = 'sticky';
         loginMainBtn.style.right = '0';
         loginMainBtn.style.zIndex = '10';
         loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
 
-        // Порядок: Learn -> Stats -> Edit -> Admin -> Profile (Sticky Right)
-        tabsContainer.appendChild(learnBtn);
-        tabsContainer.appendChild(statsBtn);
-        tabsContainer.appendChild(editToggleBtn);
-        tabsContainer.appendChild(adminUsersBtn);
-        tabsContainer.appendChild(loginMainBtn);
+        topActions.appendChild(learnBtn);
+        topActions.appendChild(editToggleBtn);
+        topActions.appendChild(adminUsersBtn);
+        
+        console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
     } else {
-        // Desktop: показываем статические кнопки в верхней панели действий
+        // Desktop: дополнительные кнопки в topActions
         // Order: Login -> Stats -> Learn -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
-        topActions.appendChild(loginMainBtn);
-        topActions.appendChild(statsBtn);
         topActions.appendChild(learnBtn);
         topActions.appendChild(verEl);
         topActions.appendChild(editToggleBtn);
         topActions.appendChild(cloudBtn);
         topActions.appendChild(adminUsersBtn);
-        topActions.appendChild(levelContainer);
+        
+        console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (desktop mode)');
     }
 
     // Добавляем контейнер табов в навигацию напрямую
@@ -1295,9 +1300,9 @@ export function initTabsNavigation(appVersion) {
             }
         } catch {}
         updateLoginBtnState();
-        // Показать/скрыть админские кнопки в зависимости от роли
+        // Показать/скрыть админ��кие кнопки в зависимости от роли
         try {
-            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может создавать пользователей
+            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может созда��ать пользователей
             // editToggleBtn доступен admin и editor
             editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
             // genStatsBtn доступен только admin
