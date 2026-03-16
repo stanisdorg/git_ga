@@ -364,6 +364,9 @@ export function initTabsNavigation(appVersion) {
     topActions.style.alignItems = 'center';
     topActions.style.justifyContent = 'flex-start';
     topActions.style.padding = '4px 0';
+    console.log('[MOBILE DEBUG] top-actions-bar создан:', topActions);
+    console.log('[MOBILE DEBUG] window.innerWidth:', window.innerWidth);
+    console.log('[MOBILE DEBUG] topActions.style.display после создания:', topActions.style.display);
     // keep full-width behavior horizontally
     
     // Версия приложения
@@ -403,9 +406,19 @@ export function initTabsNavigation(appVersion) {
         const data = e.detail?.data;
         console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
         
+        // Проверяем top-actions-bar после загрузки данных
+        const topBar = document.querySelector('.top-actions-bar');
+        if (topBar) {
+            console.log('[MOBILE DEBUG] После dataLoaded - top-actions-bar:', topBar);
+            console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
+        }
+
         // Скрываем анимацию загрузки
         hideLoading();
-        
+
         if (data && data.length > 0) {
             // Перестраиваем табы категорий с новыми данными
             refreshCategoriesTabs();
@@ -424,6 +437,22 @@ export function initTabsNavigation(appVersion) {
     
     // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
     let categories = buildCategoriesFromData(getRuntimeData());
+
+    // Проверяем top-actions-bar в конце инициализации
+    setTimeout(() => {
+        const topBar = document.querySelector('.top-actions-bar');
+        if (topBar) {
+            console.log('[MOBILE DEBUG] В конце initTabsNavigation - top-actions-bar:', topBar);
+            console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).height:', window.getComputedStyle(topBar).height);
+            console.log('[MOBILE DEBUG] getComputedStyle(topBar).width:', window.getComputedStyle(topBar).width);
+        } else {
+            console.error('[MOBILE DEBUG] top-actions-bar НЕ НАЙДЕН в DOM!');
+        }
+    }, 500);
 
     // Создаем контейнер для табов
     const tabsContainer = document.createElement('div');

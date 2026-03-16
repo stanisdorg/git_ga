@@ -942,21 +942,7 @@ body.learning-mode #bottom-nav {
         margin: 0 10px 8px 10px;
         gap: 8px;
     }
-    /* top-actions-bar теперь виден на мобильных для доступа к статистике и аккаунту */
-    .top-actions-bar,
-    body .top-actions-bar,
-    .app-wrapper .top-actions-bar {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 8px 10px 0 10px;
-        background: var(--color-card);
-        border-bottom: 1px solid var(--color-border);
-        position: relative;
-        z-index: 100;
-    }
+    /* TODO: debug mobile header visibility */
     .tabs-container {
         flex-wrap: nowrap;
         overflow-x: auto;
