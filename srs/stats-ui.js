@@ -1618,6 +1618,12 @@ const STATS_STYLES = `
     background: rgba(255,0,0,0.1) !important;
     height: auto !important;
   }
+  
+  /* ДОБАВЛЕНО: .st-block-2 должен быть flex для работы .modes-grid */
+  .st-block-2 {
+    display: flex !important;
+    flex-direction: column !important;
+  }
 
   /* Achievements: Full Width at Bottom */
   .st-ach-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
