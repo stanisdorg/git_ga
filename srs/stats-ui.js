@@ -1810,6 +1810,7 @@ export function initStatsPage(appVersion) {
     appWrapper.appendChild(statsContainerEl);
 
     const styleEl = document.createElement('style');
+    styleEl.setAttribute('data-stats-style', 'true');
     styleEl.textContent = STATS_STYLES;
     document.head.appendChild(styleEl);
 
@@ -2446,6 +2447,65 @@ function renderStats() {
   console.log('\n📏 window.innerWidth:', window.innerWidth);
   console.log('   Media query (max-width: 768px):', window.innerWidth <= 768 ? 'ДА' : 'НЕТ');
   
+  // Проверка STATS_STYLES
+  console.log('\n📄 ПРОВЕРКА STATS_STYLES:');
+  if (typeof STATS_STYLES !== 'undefined') {
+    const hasModesGrid = STATS_STYLES.includes('.modes-grid');
+    const hasMedia768 = STATS_STYLES.includes('@media (max-width: 768px)');
+    console.log('   STATS_STYLES существует:', true);
+    console.log('   Содержит .modes-grid:', hasModesGrid);
+    console.log('   Содержит @media (max-width: 768px):', hasMedia768);
+    if (hasModesGrid) {
+      const startIdx = STATS_STYLES.indexOf('.modes-grid');
+      const snippet = STATS_STYLES.substring(startIdx, startIdx + 200);
+      console.log('   Фрагмент CSS:', snippet.replace(/\n/g, '\\n'));
+    }
+  } else {
+    console.log('   STATS_STYLES НЕ НАЙДЕН!');
+  }
+  
+  // Проверка style элемента
+  console.log('\n🔍 ПРОВЕРКА <style> ЭЛЕМЕНТА:');
+  const styleEl = document.querySelector('style[data-stats-style]') || document.querySelector('style');
+  if (styleEl) {
+    const styleContent = styleEl.textContent;
+    const hasModesGrid = styleContent.includes('.modes-grid');
+    console.log('   <style> элемент:', 'НАЙДЕН');
+    console.log('   Длина CSS:', styleContent.length, 'символов');
+    console.log('   Содержит .modes-grid:', hasModesGrid);
+    if (hasModesGrid) {
+      const startIdx = styleContent.indexOf('.modes-grid');
+      const snippet = styleContent.substring(startIdx, startIdx + 200);
+      console.log('   Фрагмент:', snippet.replace(/\n/g, '\\n'));
+    }
+  } else {
+    console.log('   <style> элемент:', 'НЕ НАЙДЕН!');
+  }
+  
+  // Проверка всех stylesheet
+  console.log('\n📜 ПРОВЕРКА ВСЕХ STYLE SHEETS:');
+  const allRules = [];
+  for (let i = 0; i < document.styleSheets.length; i++) {
+    try {
+      const rules = document.styleSheets[i].cssRules || document.styleSheets[i].rules;
+      for (let j = 0; j < rules.length; j++) {
+        const rule = rules[j];
+        if (rule.selectorText && rule.selectorText.includes('.modes-grid')) {
+          console.log(`   ✅ Rule: ${rule.selectorText}`);
+          console.log(`      display: ${rule.style.display}`);
+          console.log(`      grid-template-columns: ${rule.style.gridTemplateColumns}`);
+          console.log(`      background: ${rule.style.background}`);
+          allRules.push(rule.selectorText);
+        }
+      }
+    } catch (e) {
+      console.log(`   ⚠️ StyleSheet ${i}: CORS error`);
+    }
+  }
+  if (allRules.length === 0) {
+    console.log('   ❌ Правила для .modes-grid НЕ НАЙДЕНЫ!');
+  }
+  
   const modesGrid = container.querySelector('.modes-grid');
   console.log('\n🔍 .modes-grid:', modesGrid ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (modesGrid) {
@@ -2455,24 +2515,8 @@ function renderStats() {
     console.log('   gap:', mgStyles.gap);
     console.log('   width:', mgStyles.width);
     console.log('   height:', mgStyles.height);
+    console.log('   background:', mgStyles.background);
     console.log('   inline style:', modesGrid.getAttribute('style'));
-    
-    // Проверка CSS rules
-    console.log('\n📜 CSS RULES CHECK:');
-    const styleSheets = document.styleSheets;
-    for (let i = 0; i < styleSheets.length; i++) {
-      try {
-        const rules = styleSheets[i].cssRules || styleSheets[i].rules;
-        for (let j = 0; j < rules.length; j++) {
-          const rule = rules[j];
-          if (rule.selectorText && rule.selectorText.includes('.modes-grid')) {
-            console.log(`   Rule ${j}: ${rule.selectorText} -> display: ${rule.style.display}, grid-template-columns: ${rule.style.gridTemplateColumns}`);
-          }
-        }
-      } catch (e) {
-        // Cross-origin stylesheet
-      }
-    }
     
     // Количество дочерних элементов
     console.log('   children count:', modesGrid.children.length);
