@@ -1437,19 +1437,14 @@ const STATS_STYLES = `
     justify-content: space-between !important;
   }
 
-  .modes-grid {
-    height: calc(200px - 2px) !important;  /* Вычитаем border у родителя */
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    box-sizing: border-box !important;
-  }
+  /* .modes-grid удалено - теперь только в @media (max-width: 768px) */
 
   .st-diff-section,
   .st-block-4 {
     height: 320px !important;
     overflow-y: auto !important;
   }
-  
+
   /* Стили для карточек в modes-grid */
   .modes-grid .st-mode-card {
     height: 100% !important;
