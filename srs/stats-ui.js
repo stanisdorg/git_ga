@@ -1545,6 +1545,7 @@ const STATS_STYLES = `
     }
     .modes-grid .st-mode-card {
       padding: 12px 8px !important;
+      width: auto !important;
     }
     .modes-grid .st-mode-card-large {
       padding: 12px 8px !important;
@@ -2108,7 +2109,7 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
-          <div class="modes-grid" style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+          <div class="modes-grid">
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
               <span class="st-mode-icon">📝</span>
               <span class="st-mode-title">Работа над ошибками</span>
@@ -3190,7 +3191,7 @@ window.openLevelInfoModal = () => {
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
                 <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">📚</div>
                 <div class="stat-value" style="font-size:16px;font-weight:700;">${studiedCount}</div>
-                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Изучено</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Из��чено</div>
               </div>
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
                 <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🎯</div>
