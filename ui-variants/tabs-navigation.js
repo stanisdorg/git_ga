@@ -800,6 +800,7 @@ export function initTabsNavigation(appVersion) {
     
     // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
     topActions.appendChild(statsBtn);
+    topActions.appendChild(learnBtn); /* Перемещено: кнопка "Начать обучение" после статистики */
     topActions.appendChild(loginMainBtn);
     topActions.appendChild(levelContainer);
     
@@ -817,13 +818,12 @@ export function initTabsNavigation(appVersion) {
         console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
     } else {
         // Desktop: дополнительные кнопки в topActions
-        // Order: Login -> Stats -> Learn -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
-        topActions.appendChild(learnBtn);
+        // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
         topActions.appendChild(verEl);
         topActions.appendChild(editToggleBtn);
         topActions.appendChild(cloudBtn);
         topActions.appendChild(adminUsersBtn);
-        
+
         console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (desktop mode)');
     }
 
