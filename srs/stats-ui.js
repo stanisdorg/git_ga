@@ -1537,6 +1537,30 @@ const STATS_STYLES = `
       height: auto;
       min-height: 150px;
     }
+
+    /* Mobile: 2 карточки в ряд */
+    .modes-grid {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    .modes-grid .st-mode-card {
+      padding: 12px 8px !important;
+    }
+    .modes-grid .st-mode-card-large {
+      padding: 12px 8px !important;
+    }
+    .modes-grid .st-mode-card-large .st-mode-icon {
+      font-size: 32px !important;
+      margin-bottom: 8px !important;
+    }
+    .modes-grid .st-mode-card-large .st-mode-title {
+      font-size: 13px !important;
+      margin-bottom: 4px !important;
+    }
+    .modes-grid .st-mode-card-large .st-mode-desc {
+      font-size: 10px !important;
+      line-height: 1.3 !important;
+    }
   }
 
   .st-activity-section { 
