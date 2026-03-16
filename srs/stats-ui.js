@@ -2131,7 +2131,7 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
-          <div class="modes-grid">
+          <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; background: rgba(255,0,0,0.1) !important;">
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
               <span class="st-mode-icon">📝</span>
               <span class="st-mode-title">Работа над ошибками</span>
