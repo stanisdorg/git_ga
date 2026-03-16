@@ -1587,9 +1587,10 @@ const STATS_STYLES = `
   @media (max-width: 768px) {
     .modes-grid {
       display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
+      grid-template-columns: repeat(2, 1fr) !important; /* Изменено с 1fr 1fr на repeat(2, 1fr) */
       gap: 8px !important;
       background: rgba(255,0,0,0.1) !important; /* DEBUG MARKER */
+      height: auto !important; /* Изменено с calc(200px - 2px) */
     }
     .modes-grid .st-mode-card {
       padding: 12px 8px !important;
