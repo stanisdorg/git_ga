@@ -602,10 +602,10 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 0 20px 80px; /* Top aligned with main page, keep side/bottom */
+  padding: 0 16px 80px; /* Уменьшены боковые отступы с 20px до 16px для мобильных */
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Reduced from 24px */
+  gap: 20px; /* Увеличено с 16px до 20px для отступов между блоками */
 }
 
 /* Header */
