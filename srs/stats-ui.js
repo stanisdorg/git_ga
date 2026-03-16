@@ -2364,7 +2364,7 @@ function renderStats() {
   // КОНЕЦ DEBUG шапки
   // ============================================
 
-  const homeBtn = container.querySelector('.st-home-btn');
+  // homeBtn уже объявлен выше в debug-секции
   console.log('========================================');
   console.log('[HOME BTN SETUP] homeBtn found:', !!homeBtn);
   console.log('[HOME BTN SETUP] location.hash:', location.hash);
