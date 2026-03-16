@@ -1802,6 +1802,8 @@ body.learning-mode #bottom-nav {
     }
     .flashcard-back .flashcard-content {
         font-size: 16px;
+        padding-top: 40px !important; /* Увеличено с 20px до 40px для мобильных */
+        margin-top: 0 !important;
     }
     .flashcard-hint {
         font-size: 12px;
