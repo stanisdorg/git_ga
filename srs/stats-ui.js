@@ -1818,6 +1818,10 @@ export function initStatsPage(appVersion) {
     styleEl.setAttribute('data-stats-style', 'true');
     styleEl.textContent = STATS_STYLES;
     document.head.appendChild(styleEl);
+    
+    console.log('[STATS INIT] Style element created:', styleEl);
+    console.log('[STATS INIT] Style length:', STATS_STYLES.length);
+    console.log('[STATS INIT] Contains .st-block-2 .modes-grid:', STATS_STYLES.includes('.st-block-2 .modes-grid'));
 
     console.log('[STATS INIT] stats-container created');
   } else {
