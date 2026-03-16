@@ -950,6 +950,8 @@ body.learning-mode #bottom-nav {
         padding: 8px 10px 0 10px;
         background: var(--color-card);
         border-bottom: 1px solid var(--color-border);
+        position: relative;
+        z-index: 100;
     }
     .tabs-container {
         flex-wrap: nowrap;
