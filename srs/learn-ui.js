@@ -1026,7 +1026,7 @@ function showStats(stats, results, total) {
             // const learnContainer уже объявлена выше, не нужно объявлять снова
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=4.55-beta-2').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=4.56-beta').then(({ initStatsPage }) => {
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);

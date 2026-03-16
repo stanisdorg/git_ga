@@ -667,7 +667,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.55-beta-2');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.56-beta');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -690,7 +690,7 @@ export function initTabsNavigation(appVersion) {
             // Если stats-container НЕ существует, создаем его
             if (!statsContainerExists) {
                 console.log('[HASH CHANGE] stats-container NOT found - calling initStatsPage()');
-                const { initStatsPage } = await import('../srs/stats-ui.js?v=4.55-beta-2');
+                const { initStatsPage } = await import('../srs/stats-ui.js?v=4.56-beta');
                 initStatsPage(appVersion);
             } else {
                 console.log('[HASH CHANGE] stats-container already exists');
@@ -1003,7 +1003,7 @@ export function initTabsNavigation(appVersion) {
             window.openLevelInfoModal();
           } else {
             // Иначе загружаем stats-ui
-            import('../srs/stats-ui.js?v=4.55-beta-2').then(() => {
+            import('../srs/stats-ui.js?v=4.56-beta').then(() => {
               if (window.openLevelInfoModal) {
                 window.openLevelInfoModal();
               } else {
