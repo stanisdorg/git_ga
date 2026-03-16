@@ -1234,6 +1234,7 @@ body.learning-mode #bottom-nav {
 
 .st-compact-card {
     width: min(400px, calc(100% - 24px));
+    margin: 0 auto; /* Центрирование по горизонтали */
     border-radius: 16px;
     background: linear-gradient(180deg, rgba(30,38,58,0.62), rgba(14,18,28,0.62));
     border: 1px solid var(--st-border);
