@@ -1493,32 +1493,38 @@ const STATS_STYLES = `
       grid-template-columns: 1fr;
       grid-template-rows: auto;
     }
-    .st-block-1 { 
-      grid-column: 1; 
+    .st-block-1 {
+      grid-column: 1;
       grid-row: auto;
+      order: 3; /* Прогресс */
     }
-    .st-block-achievements { 
-      grid-column: 1; 
+    .st-block-achievements {
+      grid-column: 1;
       grid-row: auto;
       max-height: none;
+      order: 6; /* Категории */
     }
     .st-block-2 {
       grid-column: 1;
       grid-row: auto;
       display: flex !important; /* ДОБАВЛЕНО: чтобы .modes-grid мог быть grid */
       flex-direction: column !important;
+      order: 4; /* Режимы (2 карточки) */
     }
-    .st-block-3 { 
-      grid-column: 1; 
+    .st-block-3 {
+      grid-column: 1;
       grid-row: auto;
+      order: 7; /* Графики */
     }
-    .st-block-4 { 
-      grid-column: 1; 
+    .st-block-4 {
+      grid-column: 1;
       grid-row: auto;
+      order: 5; /* Сложность + Избранное */
     }
-    .st-block-5 { 
-      grid-column: 1; 
+    .st-block-5 {
+      grid-column: 1;
       grid-row: auto;
+      order: 8; /* Достижения */
     }
     
     /* Mobile: убираем фиксированную высоту */
@@ -1620,9 +1626,6 @@ const STATS_STYLES = `
   
   /* ДОБАВЛЕНО: Карточки одинаковой высоты */
   .st-block-2 .modes-grid .st-mode-card-large {
-    height: 120px !important;
-    min-height: 120px !important;
-    max-height: 120px !important;
     align-items: center !important;
     justify-content: center !important;
   }
@@ -1832,7 +1835,7 @@ export function initStatsPage(appVersion) {
     styleEl.setAttribute('data-stats-style', 'true');
     styleEl.textContent = STATS_STYLES;
     document.head.appendChild(styleEl);
-    
+
     console.log('[STATS INIT] Style element created:', styleEl);
     console.log('[STATS INIT] Style length:', STATS_STYLES.length);
     console.log('[STATS INIT] Contains .st-block-2 .modes-grid:', STATS_STYLES.includes('.st-block-2 .modes-grid'));
@@ -2356,7 +2359,7 @@ function renderStats() {
   console.log('========================================');
   console.log('📱 STATS HEADER DEBUG');
   console.log('========================================');
-  
+
   const topRight = container.querySelector('.st-top-right');
   console.log('\n🔍 st-top-right:', topRight ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (topRight) {
@@ -2371,17 +2374,17 @@ function renderStats() {
     console.log('   justify-content:', topRightStyles.justifyContent);
     console.log('   overflow:', topRightStyles.overflow);
   }
-  
+
   // Проверка кнопок
   const authBtn = container.querySelector('.st-auth-btn');
   const homeBtn = container.querySelector('.st-home-btn');
   const continueBtn = container.querySelector('#st-continue-top-btn');
-  
+
   console.log('\n📦 КНОПКИ:');
   console.log('   .st-auth-btn:', authBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
   console.log('   .st-home-btn:', homeBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
   console.log('   #st-continue-top-btn:', continueBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
-  
+
   if (authBtn) {
     const authStyles = window.getComputedStyle(authBtn);
     console.log('   auth-btn display:', authStyles.display, ', width:', authStyles.width, ', visibility:', authStyles.visibility);
@@ -2394,24 +2397,24 @@ function renderStats() {
     const contStyles = window.getComputedStyle(continueBtn);
     console.log('   continue-btn display:', contStyles.display, ', width:', contStyles.width, ', visibility:', contStyles.visibility);
   }
-  
+
   // Проверка видимости кнопок
   function isElementVisible(el) {
     if (!el) return false;
     const styles = window.getComputedStyle(el);
     const rect = el.getBoundingClientRect();
-    return styles.display !== 'none' && 
-           styles.visibility !== 'hidden' && 
-           styles.opacity !== '0' && 
-           rect.width > 0 && 
-           rect.height > 0;
+    return styles.display !== 'none' &&
+      styles.visibility !== 'hidden' &&
+      styles.opacity !== '0' &&
+      rect.width > 0 &&
+      rect.height > 0;
   }
-  
+
   console.log('\n👁️ ПРОВЕРКА ВИДИМОСТИ:');
   console.log('   auth-btn видима:', isElementVisible(authBtn));
   console.log('   home-btn видима:', isElementVisible(homeBtn));
   console.log('   continue-btn видима:', isElementVisible(continueBtn));
-  
+
   // Проверка z-index и position
   console.log('\n📊 Z-INDEX И POSITION:');
   if (authBtn) {
@@ -2426,7 +2429,7 @@ function renderStats() {
     const trStyles = window.getComputedStyle(topRight);
     console.log('   st-top-right z-index:', trStyles.zIndex, ', position:', trStyles.position);
   }
-  
+
   // Проверка на перекрытие через elementFromPoint
   console.log('\n🎯 ПРОВЕРКА НА ПЕРЕКРЫТИЕ:');
   if (authBtn) {
@@ -2445,7 +2448,7 @@ function renderStats() {
     console.log('   home-btn: элемент в центре кнопки:', topElement ? topElement.className : 'null');
     console.log('   home-btn: совпадает ли с кнопкой:', topElement === homeBtn || (topElement && topElement.closest('.st-home-btn')));
   }
-  
+
   // Проверка .st-top-actions
   const topActions = container.querySelector('.st-top-actions');
   console.log('\n📦 .st-top-actions:', topActions ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
@@ -2454,7 +2457,7 @@ function renderStats() {
     console.log('   display:', actionsStyles.display);
     console.log('   visibility:', actionsStyles.visibility);
   }
-  
+
   console.log('\n========================================');
   // ============================================
   // КОНЕЦ DEBUG шапки
@@ -2466,10 +2469,10 @@ function renderStats() {
   console.log('\n========================================');
   console.log('📦 MODES-GRID DEBUG');
   console.log('========================================');
-  
+
   console.log('\n📏 window.innerWidth:', window.innerWidth);
   console.log('   Media query (max-width: 768px):', window.innerWidth <= 768 ? 'ДА' : 'НЕТ');
-  
+
   // Проверка STATS_STYLES
   console.log('\n📄 ПРОВЕРКА STATS_STYLES:');
   if (typeof STATS_STYLES !== 'undefined') {
@@ -2486,7 +2489,7 @@ function renderStats() {
   } else {
     console.log('   STATS_STYLES НЕ НАЙДЕН!');
   }
-  
+
   // Проверка style элемента
   console.log('\n🔍 ПРОВЕРКА <style> ЭЛЕМЕНТА:');
   const styleEl = document.querySelector('style[data-stats-style]') || document.querySelector('style');
@@ -2504,7 +2507,7 @@ function renderStats() {
   } else {
     console.log('   <style> элемент:', 'НЕ НАЙДЕН!');
   }
-  
+
   // Проверка всех stylesheet
   console.log('\n📜 ПРОВЕРКА ВСЕХ STYLE SHEETS:');
   const allRules = [];
@@ -2528,7 +2531,7 @@ function renderStats() {
   if (allRules.length === 0) {
     console.log('   ❌ Правила для .modes-grid НЕ НАЙДЕНЫ!');
   }
-  
+
   const modesGrid = container.querySelector('.modes-grid');
   console.log('\n🔍 .modes-grid:', modesGrid ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (modesGrid) {
@@ -2540,10 +2543,10 @@ function renderStats() {
     console.log('   height:', mgStyles.height);
     console.log('   background:', mgStyles.background);
     console.log('   inline style:', modesGrid.getAttribute('style'));
-    
+
     // Количество дочерних элементов
     console.log('   children count:', modesGrid.children.length);
-    
+
     // Проверка каждого child
     Array.from(modesGrid.children).forEach((child, i) => {
       const childStyles = window.getComputedStyle(child);
@@ -2552,7 +2555,7 @@ function renderStats() {
       console.log(`      grid-column: ${childStyles.gridColumn}`);
     });
   }
-  
+
   // Проверка .st-block-2
   const block2 = container.querySelector('.st-block-2');
   console.log('\n📦 .st-block-2:', block2 ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
@@ -2561,7 +2564,7 @@ function renderStats() {
     console.log('   display:', b2Styles.display);
     console.log('   width:', b2Styles.width);
   }
-  
+
   console.log('\n========================================');
   // ============================================
   // КОНЕЦ DEBUG modes-grid
