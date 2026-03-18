@@ -2275,7 +2275,7 @@ function renderStats() {
               <span class="stc-block-title" style="font-size:14px!important;justify-content:center!important;text-align:center!important;flex:1;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:8px;">i</button>
             </div>
-            <div class="stc-content" style="display:flex!important;flex-direction:column!important;gap:4px!important;align-items:center!important;text-align:center!important;padding-top:8px!important;"><div class="stc-row stc-forecast-row" style="justify-content:center!important;gap:4px!important;font-size:11px!important;text-align:center!important;"><span class="stc-forecast-text" style="font-size:11px!important;text-align:center!important;">Прогноз: <span class="date" style="font-size:12px!important;font-weight:600!important;">${finishDateStr}</span></span></div></div>
+            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:8px!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding-top:0!important;"><span class="stc-forecast-text" style="font-size:11px!important;text-align:center!important;">Прогноз: <span class="date" style="font-size:12px!important;font-weight:600!important;">${finishDateStr}</span></span></div>
           </div>
         </div>
 
