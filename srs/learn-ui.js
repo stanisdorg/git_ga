@@ -13,6 +13,7 @@ let session = null;
 let currentScheduler = null;
 let timerInterval = null;
 let sessionTimerStart = 0;
+let userScrolled = false; // Флаг ручного скролла прогресс-бара
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -267,6 +268,9 @@ export function initLearnUI() {
                 btn.style.pointerEvents = 'none';
                 console.log('[RATE BUTTON CLICK] pointerEvents: none');
 
+                // Сбрасываем флаг ручного скролла перед ответом
+                userScrolled = false;
+
                 if (session) session.rate(grade);
                 // Сбрасываем фокус с кнопки чтобы не было обводки
                 btn.blur();
@@ -310,17 +314,19 @@ function handleKeydown(e) {
         }
     } else if (session.isFlipped) {
         // Rating keys
-        if (e.key === '1') session.rate(0);
-        if (e.key === '2') session.rate(1);
-        if (e.key === '3') session.rate(2);
-        if (e.key === '4') session.rate(3);
+        if (e.key === '1') { userScrolled = false; session.rate(0); }
+        if (e.key === '2') { userScrolled = false; session.rate(1); }
+        if (e.key === '3') { userScrolled = false; session.rate(2); }
+        if (e.key === '4') { userScrolled = false; session.rate(3); }
     }
 
     // Navigation arrows (Left/Right)
     if (e.key === 'ArrowLeft') {
+        userScrolled = false;
         if (session) session.goTo((session.currentIndex || 0) - 1);
     }
     if (e.key === 'ArrowRight') {
+        userScrolled = false;
         if (session) session.goTo((session.currentIndex || 0) + 1);
     }
 }
@@ -511,6 +517,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
             s.dataset.index = String(i);
             segs.appendChild(s);
         }
+        
         wireSegmentsInteractions(session);
     }
     session.start();
@@ -543,6 +550,12 @@ function renderCardState(state) {
 
     if (!container) return; // Guard against missing container
 
+    console.log('[RENDER CARD STATE] === CALLED ===');
+    console.log('[RENDER CARD STATE] state.results=', state.results, 'length=', state.results.length);
+    console.log('[RENDER CARD STATE] session=', session ? 'exists' : 'null');
+    console.log('[RENDER CARD STATE] session.results=', session ? session.results : 'null');
+    console.log('[RENDER CARD STATE] session.currentIndex=', session ? session.currentIndex : 'null');
+
     const cardEl = container.querySelector('.flashcard');
     const front = container.querySelector('.flashcard-front');
     const back = container.querySelector('.flashcard-back');
@@ -552,7 +565,13 @@ function renderCardState(state) {
     const progressFill = container.querySelector('.learn-progress-fill');
 
     // Update segments
-    updateSegments(state.results, state.total);
+    // Используем session.currentIndex вместо state.currentIndex
+    const currentIndex = session ? (session.currentIndex || 0) : 0;
+    console.log('[SEGMENTS DEBUG] Перед updateSegments: currentIndex=', currentIndex, 'total=', state.total);
+    console.log('[SEGMENTS DEBUG] results=', state.results, 'length=', state.results.length);
+    console.log('[SEGMENTS DEBUG] session.results=', session ? session.results : 'no session', 'session.currentIndex=', session ? session.currentIndex : 'no session');
+    updateSegments(state.results, state.total, currentIndex, true);
+    console.log('[SEGMENTS DEBUG] После updateSegments');
     // Update nav buttons availability
     try {
         const prevBtn = document.getElementById('learn-prev-btn');
@@ -828,36 +847,307 @@ function renderCardState(state) {
     }
 }
 
-function updateSegments(results, total) {
+function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // Build segments once
+    // Всегда показываем 6 сегментов: 3 пройденных + 1 текущий + 2 следующих
+    const visibleCount = 6;
+    let startIdx = currentIndex - 3; // 3 до текущего
+    let endIdx = currentIndex + 2;   // 2 после текущего
+
+    // Если не хватает сегментов после текущего, сдвигаем диапазон вправо
+    if (endIdx >= total) {
+        endIdx = total - 1;
+        startIdx = Math.max(0, endIdx - visibleCount + 1);
+    }
+
+    // Если не хватает сегментов до текущего, сдвигаем диапазон влево
+    if (startIdx < 0) {
+        startIdx = 0;
+        endIdx = Math.min(total - 1, visibleCount - 1);
+    }
+
+    // Создаём все сегменты один раз
     if (segs.childElementCount !== total) {
         segs.innerHTML = '';
         for (let i = 0; i < total; i++) {
             const s = document.createElement('div');
             s.className = 'learn-progress-segment';
+            s.dataset.index = i;
             segs.appendChild(s);
         }
     }
+
+    // Показываем ВСЕ сегменты
+    // Закрашенные сегменты - яркие, непройденные - серые
+    Array.from(segs.children).forEach((el, i) => {
+        // isColored: результат для этого сегмента существует и не null
+        const isColored = results && i < results.length && results[i] !== null && results[i] !== undefined;
+        
+        if (isColored) {
+            // Закрашенный сегмент - полностью видимый
+            el.style.opacity = '1';
+        } else {
+            // Непройденный сегмент - полупрозрачный серый
+            el.style.opacity = '0.5';
+        }
+    });
+
+    // Центрируем текущий сегмент
+    const currentEl = segs.children[currentIndex];
+    console.log('[SEGMENTS] currentEl=', currentEl, 'autoScroll=', autoScroll, 'userScrolled=', userScrolled);
+
+    // Если был ручной скролл и autoScroll не включён принудительно - не скроллим
+    const shouldScroll = autoScroll && !userScrolled;
+
+    if (currentEl && shouldScroll) {
+        // Принудительно показываем текущий сегмент для прокрутки
+        currentEl.style.opacity = '1';
+
+        // Позиционируем так, чтобы текущий был 4-м слева (3-1-2)
+        // Для этого скроллим так, чтобы startIdx был виден слева
+        const segWidth = currentEl.offsetWidth + 2; // width + gap
+        const targetPosition = startIdx * segWidth;
+
+        console.log('[SEGMENTS SCROLL] segWidth=', segWidth, 'startIdx=', startIdx, 'targetPosition=', targetPosition, 'current scrollLeft=', segs.scrollLeft);
+
+        segs.scrollTo({
+            left: Math.max(0, targetPosition),
+            behavior: 'smooth'
+        });
+
+        currentEl.classList.add('current');
+        console.log('[SEGMENTS] Added class current to segment', currentIndex);
+    } else if (currentEl) {
+        // Просто добавляем класс current без скролла
+        currentEl.classList.add('current');
+        console.log('[SEGMENTS] Added class current (no scroll) to segment', currentIndex);
+    }
+
+    // Убираем класс current у остальных
+    Array.from(segs.children).forEach((el, i) => {
+        if (i !== currentIndex) {
+            el.classList.remove('current');
+        }
+    });
+
     // Color segments by results
+    console.log('[SEGMENTS COLOR] === START ===');
+    console.log('[SEGMENTS COLOR] results=', results, 'total=', total, 'currentIndex=', currentIndex);
+    console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
     if (results && results.length) {
-        results.forEach((g, idx) => {
+        // results[i] содержит оценку для карточки с индексом i
+        // null означает, что карточка ещё не пройдена
+        let coloredCount = 0;
+        for (let idx = 0; idx < results.length && idx < total; idx++) {
+            const g = results[idx];
+            if (g === null || g === undefined) {
+                // Карточка ещё не пройдена, пропускаем
+                continue;
+            }
             const el = segs.children[idx];
-            if (!el) return;
+            if (!el) {
+                console.log('[SEGMENTS COLOR] el NOT FOUND for idx=', idx, 'grade=', g);
+                continue;
+            }
+            const oldClass = el.className;
+            const hasCurrent = el.classList.contains('current');
+            console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'oldClass=', oldClass, 'hasCurrent=', hasCurrent);
             el.className = 'learn-progress-segment';
             if (g === 0) el.classList.add('seg-again');
             else if (g === 1) el.classList.add('seg-hard');
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
-        });
+            if (hasCurrent) el.classList.add('current');
+            console.log('[SEGMENTS COLOR] idx=', idx, 'newClass=', el.className);
+            coloredCount++;
+        }
+        console.log('[SEGMENTS COLOR] Colored', coloredCount, 'segments');
+    } else {
+        console.log('[SEGMENTS COLOR] NO RESULTS to color');
     }
+    console.log('[SEGMENTS COLOR] === END ===');
+
+    // Отладка
+    console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
 }
 
 function wireSegmentsInteractions(sess) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
+
+    // Отслеживаем ручной скролл пользователя
+    segs.addEventListener('scroll', () => {
+        console.log('[SEGMENTS] user scrolled');
+        userScrolled = true;
+    }, { passive: true });
+
+    // Прокрутка колесиком
+    segs.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            segs.scrollLeft += e.deltaY;
+        }
+    }, { passive: false });
+
+    // === Инерционная прокрутка для touch устройств ===
+    let isDragging = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let startTime = 0;
+    let lastX = 0;
+    let lastTime = 0;
+    let velocity = 0;
+    let animationFrame = null;
+
+    // Обработка начала касания
+    segs.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        scrollLeft = segs.scrollLeft;
+        startTime = Date.now();
+        lastX = startX;
+        lastTime = startTime;
+        velocity = 0;
+        
+        // Останавливаем предыдущую анимацию
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        }
+    }, { passive: true });
+
+    // Обработка движения пальца
+    segs.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        const currentX = e.touches[0].clientX;
+        const currentTime = Date.now();
+        
+        // Вычисляем смещение
+        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительности
+        segs.scrollLeft = scrollLeft - walk;
+        
+        // Вычисляем скорость для инерции
+        const deltaX = currentX - lastX;
+        const deltaTime = currentTime - lastTime;
+        
+        if (deltaTime > 0) {
+            velocity = deltaX / deltaTime; // пикселей в миллисекунду
+        }
+        
+        lastX = currentX;
+        lastTime = currentTime;
+    }, { passive: true });
+
+    // Обработка окончания касания - запуск инерции
+    segs.addEventListener('touchend', (e) => {
+        isDragging = false;
+        
+        // Если скорость достаточная, запускаем инерционную прокрутку
+        if (Math.abs(velocity) > 0.3) {
+            const inertialScroll = () => {
+                velocity *= 0.92; // Коэффициент затухания (0.92 = плавное замедление)
+                
+                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms ≈ 60fps
+                segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
+                
+                // Продолжаем анимацию, пока скорость значимая
+                if (Math.abs(velocity) > 0.1) {
+                    animationFrame = requestAnimationFrame(inertialScroll);
+                } else {
+                    animationFrame = null;
+                }
+            };
+            
+            animationFrame = requestAnimationFrame(inertialScroll);
+        }
+    }, { passive: true });
+
+    // Обработка отмены касания
+    segs.addEventListener('touchcancel', (e) => {
+        isDragging = false;
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        }
+    }, { passive: true });
+
+    // Drag перетаскивание для мыши
+    let isMouseDragging = false;
+    let mouseStartX = 0;
+    let mouseScrollLeft = 0;
+    let mouseLastX = 0;
+    let mouseLastTime = 0;
+    let mouseVelocity = 0;
+
+    segs.addEventListener('mousedown', (e) => {
+        isMouseDragging = true;
+        mouseStartX = e.pageX - segs.offsetLeft;
+        mouseScrollLeft = segs.scrollLeft;
+        startTime = Date.now();
+        mouseLastX = mouseStartX;
+        mouseLastTime = startTime;
+        mouseVelocity = 0;
+        segs.style.cursor = 'grabbing';
+        
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        }
+    });
+
+    segs.addEventListener('mouseleave', () => {
+        isMouseDragging = false;
+        segs.style.cursor = 'grab';
+    });
+
+    segs.addEventListener('mouseup', () => {
+        isMouseDragging = false;
+        segs.style.cursor = 'grab';
+        
+        // Инерция для мыши тоже
+        if (Math.abs(mouseVelocity) > 0.3) {
+            const inertialScroll = () => {
+                mouseVelocity *= 0.92;
+                
+                const newScrollLeft = segs.scrollLeft - (mouseVelocity * 16);
+                segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
+                
+                if (Math.abs(mouseVelocity) > 0.1) {
+                    animationFrame = requestAnimationFrame(inertialScroll);
+                } else {
+                    animationFrame = null;
+                }
+            };
+            
+            animationFrame = requestAnimationFrame(inertialScroll);
+        }
+    });
+
+    segs.addEventListener('mousemove', (e) => {
+        if (!isMouseDragging) return;
+        e.preventDefault();
+        
+        const currentX = e.pageX - segs.offsetLeft;
+        const currentTime = Date.now();
+        
+        const walk = (currentX - mouseStartX) * 2;
+        segs.scrollLeft = mouseScrollLeft - walk;
+        
+        // Вычисляем скорость
+        const deltaX = currentX - mouseLastX;
+        const deltaTime = currentTime - mouseLastTime;
+        
+        if (deltaTime > 0) {
+            mouseVelocity = deltaX / deltaTime;
+        }
+        
+        mouseLastX = currentX;
+        mouseLastTime = currentTime;
+    });
+
     let touchTimer = null;
     const ensurePreviewEl = () => {
         let el = document.getElementById('learn-seg-preview');
@@ -875,7 +1165,18 @@ function wireSegmentsInteractions(sess) {
             el.style.fontSize = '13px';
             el.style.color = 'var(--color-text, #E6EDF3)';
             el.style.display = 'none';
-            el.style.pointerEvents = 'none';
+            el.style.pointerEvents = 'auto'; /* Разрешаем клики */
+            el.style.cursor = 'pointer';
+            el.onclick = (e) => {
+                e.stopPropagation(); /* Останавливаем всплытие */
+                e.preventDefault();
+                hidePreview();
+            };
+            el.ontouchend = (e) => {
+                e.stopPropagation(); /* Останавливаем всплытие */
+                e.preventDefault();
+                hidePreview();
+            };
             document.body.appendChild(el);
         }
         return el;
@@ -884,10 +1185,11 @@ function wireSegmentsInteractions(sess) {
         const el = ensurePreviewEl();
         const q = sess.queue[index]?.item?.question || '';
         const a = sess.queue[index]?.item?.answer || '';
-        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div>`;
+        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">Нажмите, чтобы закрыть</div>`;
         const r = anchor.getBoundingClientRect();
         const isMobile = window.innerWidth < 768;
         el.style.display = 'block';
+        el.style.pointerEvents = 'auto'; /* Разрешаем клики */
         const pw = el.offsetWidth || 260;
         const ph = el.offsetHeight || 140;
         if (isMobile) {
@@ -921,9 +1223,31 @@ function wireSegmentsInteractions(sess) {
         const i = Number(seg.dataset.index || '0');
         seg.style.cursor = 'pointer';
         seg.addEventListener('click', (e) => {
+            e.stopPropagation(); /* Останавливаем всплытие к карточке */
             e.preventDefault();
+
+            console.log('[SEGMENT CLICK] === CLICK START ===');
+            console.log('[SEGMENT CLICK] Clicked on segment', i);
+            console.log('[SEGMENT CLICK] sess.currentIndex BEFORE goTo=', sess.currentIndex);
+            console.log('[SEGMENT CLICK] sess.results BEFORE goTo=', sess.results);
+
+            // Переходим к карточке
             sess.goTo(i);
             hidePreview();
+
+            console.log('[SEGMENT CLICK] sess.currentIndex AFTER goTo=', sess.currentIndex);
+            console.log('[SEGMENT CLICK] sess.results AFTER goTo=', sess.results);
+
+            // Сбрасываем флаг ручного скролла
+            userScrolled = false;
+
+            // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
+            // sess.results - это уже массив чисел (оценок)
+            console.log('[SEGMENT CLICK] Calling updateSegments with results=', sess.results);
+            updateSegments(sess.results, sess.queue.length, i, true);
+
+            console.log('[SEGMENT CLICK] === CLICK END ===');
+            console.log('[SEGMENT CLICK] Done');
         });
         seg.addEventListener('mouseenter', () => showPreview(i, seg));
         seg.addEventListener('mouseleave', hidePreview);
@@ -933,10 +1257,20 @@ function wireSegmentsInteractions(sess) {
             touchTimer = setTimeout(() => { showPreview(i, target); touchTimer = null; }, 300);
         }, { passive: true });
         seg.addEventListener('touchend', (e) => {
+            e.stopPropagation(); /* Останавливаем всплытие к карточке */
             if (touchTimer) {
                 clearTimeout(touchTimer);
                 touchTimer = null;
+
+                // Сбрасываем флаг ручного скролла
+                userScrolled = false;
+
                 sess.goTo(i);
+
+                // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
+                // sess.results - это уже массив чисел (оценок)
+                console.log('[SEGMENT TOUCHEND] sess.results=', sess.results);
+                updateSegments(sess.results, sess.queue.length, i, true);
             }
         });
     });
@@ -948,8 +1282,8 @@ function showStats(stats, results, total) {
     console.log('[MODAL.TEMPLATE] === CREATING MODAL ===');
 
     // Update segments one last time to show the final card's result
-    if (results && total) {
-        updateSegments(results, total);
+    if (results && total && session) {
+        updateSegments(results, total, session.currentIndex || 0);
     }
 
     if (container) {
@@ -1237,7 +1571,7 @@ function showStats(stats, results, total) {
 
                     setTimeout(() => {
                         console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
-                        // 5. Заполнение нового уровня (1.5s)
+                        // 5. Заполн��ние нов��го уровня (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
                         earnEl.style.left = '0%';
@@ -1491,3 +1825,28 @@ function startBreakCountdown(overlay, seconds) {
         overlay.remove();
     });
 }
+
+// Простая отладка сегментов
+window.debugSegments = () => {
+    const segs = document.getElementById('learn-segments');
+    if (!segs) {
+        console.log('❌ learn-segments не найден');
+        return;
+    }
+    console.log('✅ learn-segments найден');
+    console.log('   Всего сегментов:', segs.children.length);
+    console.log('   Ширина контейнера:', segs.offsetWidth, 'px');
+    console.log('   scrollLeft:', segs.scrollLeft);
+    
+    const visible = Array.from(segs.children).filter(el => el.style.display !== 'none').length;
+    console.log('   Видимые сегменты:', visible);
+    
+    // Показываем индексы видимых
+    const visibleIndices = [];
+    segs.children.forEach((el, i) => {
+        if (el.style.display !== 'none') visibleIndices.push(i);
+    });
+    console.log('   Индексы видимых:', visibleIndices);
+};
+
+console.log('[LEARN-UI] debugSegments loaded. Run window.debugSegments() in console');

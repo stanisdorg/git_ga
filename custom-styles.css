@@ -1059,11 +1059,96 @@ body.learning-mode #bottom-nav {
         width: 100% !important;
         max-width: 100% !important;
         height: 8px !important;
-        display: grid !important;
+        display: flex !important; /* Меняем grid на flex для лучшего контроля */
+        flex-direction: row !important;
+        gap: 2px !important;
+        padding: 0 4px !important;
+        overflow-x: auto !important; /* Вернули скролл для свайпа */
+        scroll-behavior: smooth !important;
+        cursor: grab !important;
+        touch-action: pan-x !important;
+        align-items: center !important;
+        /* Скрываем скроллбар */
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+    .learn-progress-segments::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+    .learn-progress-segments:active {
+        cursor: grabbing !important;
     }
     .learn-progress-segment {
-        height: 100% !important;
-        transition: background-color 0.16s ease;
+        height: 6px !important;
+        width: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        border-radius: 2px !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        background: #3a3a3a !important;
+        flex-shrink: 0 !important; /* Не сжимать */
+        position: relative !important; /* Для псевдоэлементов */
+    }
+    /* Увеличенная область захвата для сегментов */
+    .learn-progress-segment::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -10px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: -10px !important;
+        background: transparent !important;
+        z-index: 1 !important;
+        transition: top 0.2s ease, bottom 0.2s ease !important;
+    }
+    /* Увеличение области захвата при наведении на текущий сегмент */
+    .learn-progress-segment.current:hover::before {
+        top: -11.5px !important;
+        bottom: -11.5px !important;
+    }
+    /* Текущий сегмент (без увеличения) */
+    .learn-progress-segment.current {
+        height: 6px !important; /* Такая же высота */
+        width: 60px !important; /* Оставляем ту же ширину */
+        min-width: 60px !important; /* Фиксируем ширину */
+        max-width: 60px !important; /* Фиксируем ширину */
+        transform: none !important; /* Убираем transform */
+        margin-top: 0 !important; /* Без сдвига */
+        z-index: 10 !important;
+        /* Внутренняя обводка + градиентная заливка */
+        box-shadow: inset 0 0 3px rgba(255,255,255,0.6) !important;
+        background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%) !important;
+        transition: height 0.2s ease !important;
+    }
+    /* Увеличение текущего сегмента при наведении */
+    .learn-progress-segment.current:hover {
+        height: 9px !important; /* В 1.5 раза толще (6px * 1.5 = 9px) */
+        margin-top: -1.5px !important; /* Компенсация для центрирования */
+    }
+    /* Цвета сегментов */
+    .seg-again { background: #f44336 !important; }
+    .seg-hard  { background: #999999 !important; }
+    .seg-good  { background: #4caf50 !important; }
+    .seg-easy  { background: #2196f3 !important; }
+
+    /* Градиент для текущих закрашенных сегментов */
+    .seg-again.current,
+    .seg-hard.current,
+    .seg-good.current,
+    .seg-easy.current {
+        background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%) !important;
+        transition: height 0.2s ease !important;
+    }
+    /* Увеличение закрашенных текущих сегментов при наведении */
+    .seg-again.current:hover,
+    .seg-hard.current:hover,
+    .seg-good.current:hover,
+    .seg-easy.current:hover {
+        height: 9px !important; /* В 1.5 раза толще (6px * 1.5 = 9px) */
+        margin-top: -1.5px !important; /* Компенсация для центрирования */
     }
 
     /* Убираем отступы после прогресс-бара */
@@ -1627,7 +1712,7 @@ body.learning-mode #bottom-nav {
     transition: background-color 160ms ease;
 }
 .seg-again { background: #f44336; }
-.seg-hard  { background: #ff9800; }
+.seg-hard  { background: #999999; }
 .seg-good  { background: #4caf50; }
 .seg-easy  { background: #2196f3; }
 

@@ -60,6 +60,11 @@ export class LearningSession {
     }
 
     goTo(index) {
+        console.log('[SESSION.GO TO] === START ===');
+        console.log('[SESSION.GO TO] index=', index, 'currentIndex=', this.currentIndex);
+        console.log('[SESSION.GO TO] queue.length=', this.queue.length);
+        console.log('[SESSION.GO TO] results BEFORE=', this.results);
+        
         const n = this.queue.length;
         if (n === 0) {
             this.onComplete(this.stats, this.results, this.queue.length);
@@ -67,20 +72,29 @@ export class LearningSession {
         }
         const i = Math.max(0, Math.min(n - 1, Number(index) || 0));
         this.currentIndex = i;
+        console.log('[SESSION.GO TO] currentIndex set to=', this.currentIndex);
+        console.log('[SESSION.GO TO] results AFTER=', this.results);
         this.loadCurrentCard();
+        console.log('[SESSION.GO TO] === END ===');
     }
 
     loadCurrentCard() {
+        console.log('[SESSION.LOAD CARD] === START ===');
+        console.log('[SESSION.LOAD CARD] currentIndex=', this.currentIndex, 'queue.length=', this.queue.length);
+        console.log('[SESSION.LOAD CARD] results=', this.results);
+        
         if (this.currentIndex >= this.queue.length) {
+            console.log('[SESSION.LOAD CARD] COMPLETE! currentIndex >= queue.length');
             this.onComplete(this.stats, this.results, this.queue.length);
             return;
         }
         this.currentCard = this.queue[this.currentIndex];
         this.isFlipped = false;
         this.cardStartTime = Date.now();
-        
+
         const pauseRec = this.checkSmartPause();
-        
+
+        console.log('[SESSION.LOAD CARD] Calling onUpdateUI with results=', this.results);
         this.onUpdateUI({
             card: this.currentCard.item,
             cardProgress: this.currentCard.progress,
@@ -92,6 +106,7 @@ export class LearningSession {
             mode: this.mode,
             timeLeft: this.mode === 'time_attack' ? 5 : null
         });
+        console.log('[SESSION.LOAD CARD] === END ===');
 
         if (this.mode === 'time_attack') {
             this.startModeTimer(5);
@@ -168,8 +183,17 @@ export class LearningSession {
         else if (grade === 2) this.stats.good++;
         else if (grade === 3) this.stats.easy++;
         this.stats.reviewed++;
-        this.results.push(grade);
         
+        // Сохраняем результат с привязкой к индексу карточки в очереди
+        // Если currentIndex >= results.length, расширяем массив
+        while (this.results.length <= this.currentIndex) {
+            this.results.push(null);
+        }
+        this.results[this.currentIndex] = grade;
+        
+        console.log('[SESSION.RATE] grade=', grade, 'currentIndex=', this.currentIndex);
+        console.log('[SESSION.RATE] results AFTER=', this.results, 'length=', this.results.length);
+
         // Track recent performance
         this.recentGrades.push(grade);
         if (this.recentGrades.length > 15) this.recentGrades.shift();
