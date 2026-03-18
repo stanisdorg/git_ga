@@ -2290,19 +2290,19 @@ function renderStats() {
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:8px 10px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.08) 0%,rgba(46,196,182,0.05) 100%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;height:auto!important;" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
-              <span class="st-mode-icon" style="width:28px!important;height:28px!important;margin:0!important;border-radius:50%!important;background:linear-gradient(135deg,rgba(255,159,28,0.3) 0%,rgba(255,107,53,0.3) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
-                <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:10px 12px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.08) 0%,rgba(46,196,182,0.05) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:6px!important;height:auto!important;" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
+              <span class="st-mode-icon" style="width:32px!important;height:32px!important;margin:0!important;border-radius:6px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+                <svg viewBox="0 0 24 24" fill="#000" style="width:18px;height:18px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
               </span>
-              <span class="st-mode-title" style="font-size:12px!important;font-weight:600!important;margin:0!important;text-align:left!important;flex:1!important;">Работа над ошибками</span>
-              <span class="st-mode-desc" style="display:none!important;">Карточки с низкой точностью ответов</span>
+              <span class="st-mode-title" style="font-size:13px!important;font-weight:600!important;margin:0!important;text-align:center!important;display:block!important;">Работа над ошибками</span>
+              <span class="st-mode-desc" style="font-size:10px!important;color:rgba(255,255,255,0.7)!important;margin:0!important;text-align:center!important;display:block!important;line-height:1.3!important;">Карточки с низкой точностью</span>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:8px 10px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.08) 0%,rgba(46,196,182,0.05) 100%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;height:auto!important;" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
-              <span class="st-mode-icon" style="width:28px!important;height:28px!important;margin:0!important;border-radius:50%!important;background:linear-gradient(135deg,rgba(255,159,28,0.3) 0%,rgba(255,107,53,0.3) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
-                <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:10px 12px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.08) 0%,rgba(46,196,182,0.05) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:6px!important;height:auto!important;" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+              <span class="st-mode-icon" style="width:32px!important;height:32px!important;margin:0!important;border-radius:6px!important;background:linear-gradient(135deg,#2EC4B6 0%,#06D6A0 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+                <svg viewBox="0 0 24 24" fill="#000" style="width:18px;height:18px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               </span>
-              <span class="st-mode-title" style="font-size:12px!important;font-weight:600!important;margin:0!important;text-align:left!important;flex:1!important;">Только новые</span>
-              <span class="st-mode-desc" style="display:none!important;">Карточки, которые вы ещё не начинали учить</span>
+              <span class="st-mode-title" style="font-size:13px!important;font-weight:600!important;margin:0!important;text-align:center!important;display:block!important;">Только новые</span>
+              <span class="st-mode-desc" style="font-size:10px!important;color:rgba(255,255,255,0.7)!important;margin:0!important;text-align:center!important;display:block!important;line-height:1.3!important;">Свежий материал</span>
             </div>
           </div>
         </div>
@@ -4604,7 +4604,7 @@ function getXpSeries(mode) {
 }
 
 function getActivitySeries(mode) {
-  // Вспомогательная функция для получения даты по MSK
+  // Вспомогательна�� функция для получения даты по MSK
   const getMSKDate = (date) => {
     try {
       const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
