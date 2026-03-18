@@ -3536,6 +3536,32 @@ window.debugMobileStats = () => {
   console.log('\n========================================');
   console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
   console.log('========================================');
+  
+  // Проверка структуры DOM
+  const statsContainer2 = document.getElementById('stats-container');
+  if (statsContainer2) {
+    console.log('\n🔍 СТРУКТУРА DOM внутри #stats-container:');
+    Array.from(statsContainer2.children).forEach((child, i) => {
+      console.log(`   [${i}] ${child.tagName}.${child.className || ''} id=${child.id || '""'}`);
+      if (child.classList.contains('st-main')) {
+        console.log('       └─ children внутри .st-main:');
+        Array.from(child.children).forEach((c, j) => {
+          console.log(`       [${j}] ${c.tagName}.${c.className || ''} id=${c.id || '""'}`);
+        });
+      }
+    });
+  }
+  
+  // Проверка parent элементов
+  const continueBtn2 = document.getElementById('st-continue-btn');
+  const stBlock12 = document.querySelector('.st-block-1');
+  if (continueBtn2 && stBlock12) {
+    console.log('\n📍 РАСПОЛОЖЕНИЕ ЭЛЕМЕНТОВ:');
+    console.log('   Кнопка parent:', continueBtn2.parentElement.className || continueBtn2.parentElement.tagName);
+    console.log('   Прогресс parent:', stBlock12.parentElement.className || stBlock12.parentElement.tagName);
+    console.log('   Кнопка previousSibling:', continueBtn2.previousSibling?.className || continueBtn2.previousSibling?.tagName || continueBtn2.previousSibling?.textContent?.substring(0, 20));
+    console.log('   Прогресс previousSibling:', stBlock12.previousSibling?.className || stBlock12.previousSibling?.tagName || stBlock12.previousSibling?.textContent?.substring(0, 20));
+  }
 };
 
 // Показать описание достижения (toast)
@@ -4555,7 +4581,7 @@ window.startMode = (modeId) => {
     });
 
     if (candidates.length === 0) {
-      alert('Нет карточек со сложностью ниже 2.2');
+      alert('Нет карточек ��о сложно��тью ниже 2.2');
       return;
     }
     options.mode = 'cram';
