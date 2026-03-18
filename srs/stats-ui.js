@@ -619,6 +619,9 @@ const STATS_STYLES = `
 
 /* Дополнительные отступы для мобильных между конкретными блоками */
 @media (max-width: 768px) {
+  .st-wrapper {
+    gap: 5px !important; /* Уменьшено с 24px до 5px для компактности */
+  }
   .st-cat-progress-wrap {
     margin-bottom: 24px; /* Отступ после блока категорий */
   }
