@@ -3525,32 +3525,81 @@ window.debugMobileStats = () => {
   console.log('========================================');
 };
 
-// Показать описание достижения
+// Показать описание достижения (toast)
 window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   if (!desc) return;
   
-  const overlay = document.createElement('div');
-  overlay.className = 'st-modal-overlay';
-  overlay.innerHTML = `
-    <div class="st-modal" style="max-width:400px;">
-      <div class="st-modal-header">
-        <div class="st-modal-title">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
-        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
-      </div>
-      <div class="st-modal-body" style="padding:20px;">
-        <div style="background:rgba(255,159,28,0.1);border-left:3px solid var(--st-prim);padding:12px;border-radius:8px;">
-          <p style="margin:0 0 12px 0;font-size:14px;color:var(--st-text);">
-            ${desc}
-          </p>
-          <div style="font-size:12px;color:var(--st-text-sec);border-top:1px solid var(--st-border);padding-top:12px;">
-            Прогресс: <strong style="color:#fff;">${progress}</strong>
-          </div>
-        </div>
-        <button onclick="this.closest('.st-modal-overlay').remove()" style="width:100%;margin-top:16px;padding:12px;background:var(--st-prim);color:#000;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Закрыть</button>
-      </div>
-    </div>
+  // Удаляем существующий toast если есть
+  const existing = document.getElementById('ach-toast');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.id = 'ach-toast';
+  toast.style.cssText = `
+    position:fixed;
+    bottom:80px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--st-surf);
+    border:1px solid var(--st-border);
+    border-left:3px solid ${isUnlocked ? 'var(--st-sec)' : 'var(--st-prim)'};
+    border-radius:8px;
+    padding:12px 16px;
+    max-width:280px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);
+    animation:toastFadeIn 0.3s ease;
   `;
-  document.body.appendChild(overlay);
+  toast.innerHTML = `
+    <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
+    <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:6px;">${desc}</div>
+    <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
+  `;
+  
+  // Добавляем стили для анимации
+  if (!document.getElementById('toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'toast-styles';
+    style.textContent = `
+      @keyframes toastFadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes toastFadeOut {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  document.body.appendChild(toast);
+  
+  // Автозакрытие через 4 секунды
+  let closeTimeout = setTimeout(() => closeToast(), 4000);
+  
+  // Закрытие по клику в любом месте
+  const closeToast = () => {
+    if (toast && toast.parentNode) {
+      toast.style.animation = 'toastFadeOut 0.3s ease';
+      setTimeout(() => {
+        if (toast && toast.parentNode) toast.remove();
+      }, 300);
+    }
+    clearTimeout(closeTimeout);
+    document.removeEventListener('click', handleClick);
+    document.removeEventListener('touchstart', handleClick);
+  };
+  
+  const handleClick = (e) => {
+    if (!toast.contains(e.target)) {
+      closeToast();
+    }
+  };
+  
+  // Слушаем клики и тачи
+  document.addEventListener('click', handleClick, { once: true });
+  document.addEventListener('touchstart', handleClick, { once: true });
 };
 
 window.openStatsInfoModal = (event) => {
