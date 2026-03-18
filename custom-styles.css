@@ -1109,45 +1109,49 @@ body.learning-mode #bottom-nav {
         top: -11.5px !important;
         bottom: -11.5px !important;
     }
-    /* Текущий сегмент (без увеличения) */
+    /* Текущий сегмент (серый блок с градиентом) */
     .learn-progress-segment.current {
-        height: 6px !important; /* Такая же высота */
-        width: 60px !important; /* Оставляем ту же ширину */
-        min-width: 60px !important; /* Фиксируем ширину */
-        max-width: 60px !important; /* Фиксируем ширину */
-        transform: none !important; /* Убираем transform */
-        margin-top: 0 !important; /* Без сдвига */
+        height: 6px !important; /* Базовая высота */
+        width: 60px !important;
+        min-width: 60px !important;
+        max-width: 60px !important;
+        transform: none !important;
+        margin-top: 0 !important;
         z-index: 10 !important;
-        /* Внутренняя обводка + градиентная заливка */
+        /* Внутренняя обводка + градиентная заливка для серого блока */
         box-shadow: inset 0 0 3px rgba(255,255,255,0.6) !important;
         background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%) !important;
         transition: height 0.2s ease !important;
     }
-    /* Увеличение текущего сегмента при наведении */
+    /* 1) Увеличение серого блока при наведении в 1.5 раза */
     .learn-progress-segment.current:hover {
-        height: 9px !important; /* В 1.5 раза толще (6px * 1.5 = 9px) */
+        height: 9px !important; /* 6px * 1.5 = 9px */
         margin-top: -1.5px !important; /* Компенсация для центрирования */
     }
+
     /* Цвета сегментов */
     .seg-again { background: #f44336 !important; }
     .seg-hard  { background: #999999 !important; }
     .seg-good  { background: #4caf50 !important; }
     .seg-easy  { background: #2196f3 !important; }
 
-    /* Градиент для текущих закрашенных сегментов */
+    /* 2) Градиент поверх цвета для текущих закрашенных сегментов */
     .seg-again.current,
     .seg-hard.current,
     .seg-good.current,
     .seg-easy.current {
-        background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%) !important;
+        /* Сохраняем цвет + добавляем градиент поверх */
+        box-shadow: inset 0 0 3px rgba(255,255,255,0.6) !important;
+        background-image: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%) !important;
+        background-blend-mode: overlay !important;
         transition: height 0.2s ease !important;
     }
-    /* Увеличение закрашенных текущих сегментов при наведении */
-    .seg-again.current:hover,
-    .seg-hard.current:hover,
-    .seg-good.current:hover,
-    .seg-easy.current:hover {
-        height: 9px !important; /* В 1.5 раза толще (6px * 1.5 = 9px) */
+    /* 2) Увеличение закрашенных текущих сегментов в 1.5 раза (сохраняя цвет) */
+    .seg-again.current,
+    .seg-hard.current,
+    .seg-good.current,
+    .seg-easy.current {
+        height: 9px !important; /* 6px * 1.5 = 9px */
         margin-top: -1.5px !important; /* Компенсация для центрирования */
     }
 
