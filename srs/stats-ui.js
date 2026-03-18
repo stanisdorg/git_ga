@@ -344,7 +344,7 @@ const STATS_STYLES = `
   }
   /* Compact header on mobile */
   .st-top {
-    padding: 12px 0 !important; /* Убраны боковые отступы */
+    padding: 8px 0 !important; /* Уменьшено с 12px до 8px */
   }
   .st-top-right {
     display: flex !important;
@@ -739,10 +739,20 @@ const STATS_STYLES = `
 /* Mobile continue button - full width below header */
 .st-continue-mobile {
   display: none;
-  margin: 0;
-  padding: 14px 20px;
+  margin: 5px 0 !important;
+  padding: 10px 20px !important;
   width: 100%;
   max-width: none;
+}
+
+/* Уменьшаем отступ после кнопки продолжить */
+#st-continue-btn {
+  margin-bottom: 5px !important;
+}
+
+/* Уменьшаем отступ перед блоком прогресса */
+.st-block-1 {
+  margin-top: 0 !important;
 }
 
 /* Progress Cards */
