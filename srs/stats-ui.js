@@ -3578,7 +3578,7 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   // Автозакрытие через 4 секунды
   let closeTimeout = setTimeout(() => closeToast(), 4000);
   
-  // Закрытие по клику в любом месте
+  // Закрытие по клику в любом месте (кроме самого toast)
   const closeToast = () => {
     if (toast && toast.parentNode) {
       toast.style.animation = 'toastFadeOut 0.3s ease';
@@ -3592,14 +3592,18 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   };
   
   const handleClick = (e) => {
-    if (!toast.contains(e.target)) {
-      closeToast();
+    // Не закрываем если клик по toast
+    if (toast.contains(e.target)) {
+      return;
     }
+    closeToast();
   };
   
-  // Слушаем клики и тачи
-  document.addEventListener('click', handleClick, { once: true });
-  document.addEventListener('touchstart', handleClick, { once: true });
+  // Добавляем обработчик с задержкой 100мс чтобы избежать срабатывания от клика по иконке
+  setTimeout(() => {
+    document.addEventListener('click', handleClick);
+    document.addEventListener('touchstart', handleClick);
+  }, 100);
 };
 
 window.openStatsInfoModal = (event) => {
