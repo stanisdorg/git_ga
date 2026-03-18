@@ -4768,3 +4768,4 @@ function getActivitySeries(mode) {
   return res;
 }
 
+
