@@ -3340,13 +3340,24 @@ window.debugMobileStats = () => {
   const continueBtn = document.getElementById('st-continue-btn');
   const stTop = document.querySelector('.st-top');
   const stBlock1 = document.querySelector('.st-block-1');
-  
+  const stMain = document.querySelector('.st-main');
+
   console.log('\n🔍 ОТСТУПЫ МЕЖДУ ЭЛЕМЕНТАМИ:');
   
+  if (stMain) {
+    const mainStyles = window.getComputedStyle(stMain);
+    const mainRect = stMain.getBoundingClientRect();
+    console.log('\n📌 .st-main:');
+    console.log('   display: ' + mainStyles.display);
+    console.log('   flex-direction: ' + mainStyles.flexDirection);
+    console.log('   position: top=' + mainRect.top.toFixed(1));
+  }
+
   if (continueBtn) {
     const btnStyles = window.getComputedStyle(continueBtn);
     const btnRect = continueBtn.getBoundingClientRect();
     console.log('\n📌 #st-continue-btn (кнопка продолжить):');
+    console.log('   order: ' + btnStyles.order);
     console.log('   margin: top=' + btnStyles.marginTop + ', bottom=' + btnStyles.marginBottom);
     console.log('   padding: top=' + btnStyles.paddingTop + ', bottom=' + btnStyles.paddingBottom);
     console.log('   position: top=' + btnRect.top.toFixed(1) + ', height=' + btnRect.height.toFixed(1));
@@ -3354,7 +3365,7 @@ window.debugMobileStats = () => {
   } else {
     console.log('\n❌ #st-continue-btn - НЕ НАЙДЕН (возможно ПК версия)');
   }
-  
+
   if (stTop) {
     const topStyles = window.getComputedStyle(stTop);
     const topRect = stTop.getBoundingClientRect();
@@ -3363,17 +3374,28 @@ window.debugMobileStats = () => {
     console.log('   position: bottom=' + topRect.bottom.toFixed(1));
     console.log('   display: ' + topStyles.display);
   }
-  
+
   if (stBlock1) {
     const block1Styles = window.getComputedStyle(stBlock1);
     const block1Rect = stBlock1.getBoundingClientRect();
     console.log('\n📌 .st-block-1 (прогресс):');
+    console.log('   order: ' + block1Styles.order);
     console.log('   margin: top=' + block1Styles.marginTop + ', bottom=' + block1Styles.marginBottom);
     console.log('   padding: top=' + block1Styles.paddingTop + ', bottom=' + block1Styles.paddingBottom);
-    console.log('   position: top=' + block1Rect.top.toFixed(1));
+    console.log('   position: top=' + block1Rect.top.toFixed(1) + ', height=' + block1Rect.height.toFixed(1));
     console.log('   display: ' + block1Styles.display);
   }
-  
+
+  // Проверка порядка элементов
+  if (continueBtn && stBlock1) {
+    const btnRect = continueBtn.getBoundingClientRect();
+    const block1Rect = stBlock1.getBoundingClientRect();
+    console.log('\n📏 ПРОВЕРКА ПОРЯДКА:');
+    console.log('   Кнопка top: ' + btnRect.top.toFixed(1) + 'px');
+    console.log('   Прогресс top: ' + block1Rect.top.toFixed(1) + 'px');
+    console.log('   Порядок правильный (Прогресс выше): ' + (block1Rect.top < btnRect.top ? '✅ ДА' : '❌ НЕТ'));
+  }
+
   // Расчёт расстояний между элементами
   if (continueBtn && stBlock1) {
     const btnRect = continueBtn.getBoundingClientRect();
@@ -3383,15 +3405,6 @@ window.debugMobileStats = () => {
     console.log('   Кнопка bottom: ' + btnRect.bottom.toFixed(1) + 'px');
     console.log('   Блок 1 top: ' + block1Rect.top.toFixed(1) + 'px');
     console.log('   GAP между кнопкой и прогрессом: ' + gap.toFixed(1) + 'px');
-  }
-  
-  if (stTop && continueBtn) {
-    const topRect = stTop.getBoundingClientRect();
-    const btnRect = continueBtn.getBoundingClientRect();
-    const gap = btnRect.top - topRect.bottom;
-    console.log('   Шапка bottom: ' + topRect.bottom.toFixed(1) + 'px');
-    console.log('   Кнопка top: ' + btnRect.top.toFixed(1) + 'px');
-    console.log('   GAP между шапкой и кнопкой: ' + gap.toFixed(1) + 'px');
   }
 
   const blocks = {
