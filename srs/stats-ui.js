@@ -1751,6 +1751,51 @@ const STATS_STYLES = `
   }
 
   /* ДОБАВЛЕНО: Правило вне media query для принудительного применения */
+  /* Мобильные стили для режимов - Вариант 5 с градиентом */
+  #stats-container .st-block-2 .modes-grid .st-mode-card-large {
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    background: linear-gradient(135deg, rgba(255,159,28,0.08) 0%, rgba(46,196,182,0.05) 100%) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    height: auto !important;
+    transition: all 0.2s !important;
+  }
+  #stats-container .st-block-2 .modes-grid .st-mode-card-large:hover {
+    background: linear-gradient(135deg, rgba(255,159,28,0.12) 0%, rgba(46,196,182,0.08) 100%) !important;
+    border: 1px solid rgba(255,159,28,0.4) !important;
+  }
+  #stats-container .st-block-2 .modes-grid .st-mode-card-large .st-mode-icon {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0 !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, rgba(255,159,28,0.3) 0%, rgba(255,107,53,0.3) 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    filter: none !important;
+  }
+  #stats-container .st-block-2 .modes-grid .st-mode-card-large .st-mode-icon svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  #stats-container .st-block-2 .modes-grid .st-mode-card-large .st-mode-title {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    flex: 1 !important;
+  }
+  #stats-container .st-block-2 .modes-grid .st-mode-card-large .st-mode-desc {
+    display: none !important;
+  }
+  
   .st-block-2 .modes-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
