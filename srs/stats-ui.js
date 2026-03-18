@@ -2190,23 +2190,23 @@ function renderStats() {
       <div class="st-main">
         <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
-          <div class="st-compact-card" role="group" aria-label="Краткая статистика">
-            <div class="stc-header-with-info">
-              <span class="stc-block-title">Прогресс: <span class="index-value stc-red stc-strong">${understandingIndex}%</span></span>
+          <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
+            <div class="stc-header-with-info" style="margin-bottom:0!important;justify-content:center!important;">
+              <span class="stc-block-title" style="font-size:14px!important;justify-content:center!important;text-align:center!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?">i</button>
             </div>
-            <div class="stc-content">
-              <div class="stc-row">
-                <span class="stc-label stc-today">Сегодня:</span>
-                <span class="stc-today-line"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">≈</span> <span class="approx">${planMins} минут</span></span>
+            <div class="stc-content" style="display:flex!important;flex-direction:column!important;gap:6px!important;align-items:center!important;text-align:center!important;">
+              <div class="stc-row" style="justify-content:center!important;flex-wrap:wrap!important;gap:4px!important;text-align:center!important;">
+                <span class="stc-label stc-today" style="font-size:11px!important;font-weight:500!important;">Сегодня:</span>
+                <span class="stc-today-line" style="font-size:12px!important;white-space:normal!important;text-align:center!important;"><span class="stc-value stc-strong" style="font-size:13px!important;">${sessionCount}</span> карточек <span class="muted" style="font-size:11px!important;">≈</span> <span class="approx" style="font-size:11px!important;font-weight:600!important;">${planMins} минут</span></span>
               </div>
-              <div class="stc-row stc-forecast-row">
-                <span class="stc-icon" aria-hidden="true">
+              <div class="stc-row stc-forecast-row" style="justify-content:center!important;gap:4px!important;font-size:10px!important;text-align:center!important;">
+                <span class="stc-icon" aria-hidden="true" style="width:12px!important;height:12px!important;">
                   <svg viewBox="0 0 24 24" fill="none">
                     <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
-                <span class="stc-forecast-text">Прогноз: <span class="date">${finishDateStr}</span></span>
+                <span class="stc-forecast-text" style="font-size:10px!important;text-align:center!important;">Прогноз: <span class="date" style="font-size:11px!important;font-weight:600!important;">${finishDateStr}</span></span>
               </div>
             </div>
           </div>
