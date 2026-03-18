@@ -1418,73 +1418,121 @@ const STATS_STYLES = `
   }
 
   /* Мобильная версия блока прогресса - компактная с центрированием */
-  @media (max-width: 768px) {
-    .st-compact-card {
-      padding: 8px 12px !important;
-      min-height: auto !important;
-      gap: 8px !important;
+  /* Применяется всегда, но переопределяется для десктопа выше */
+  .st-wrapper .st-compact-card {
+    padding: 8px 12px !important;
+    min-height: auto !important;
+    gap: 8px !important;
+  }
+  .st-wrapper .stc-header-with-info {
+    margin-bottom: 0 !important;
+    justify-content: center !important;
+  }
+  .st-wrapper .stc-block-title {
+    font-size: 14px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  .st-wrapper .stc-block-title .index-value {
+    font-size: 16px !important;
+  }
+  .st-wrapper .stc-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .st-wrapper .stc-row {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    text-align: center !important;
+  }
+  .st-wrapper .stc-label.stc-today {
+    font-size: 11px !important;
+    font-weight: 500 !important;
+  }
+  .st-wrapper .stc-today-line {
+    font-size: 12px !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+  .st-wrapper .stc-today-line .stc-value {
+    font-size: 13px !important;
+  }
+  .st-wrapper .stc-today-line .muted {
+    font-size: 11px !important;
+  }
+  .st-wrapper .stc-today-line .approx {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+  }
+  .st-wrapper .stc-forecast-row {
+    justify-content: center !important;
+    gap: 4px !important;
+    font-size: 10px !important;
+    text-align: center !important;
+  }
+  .st-wrapper .stc-forecast-row .stc-icon {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  .st-wrapper .stc-forecast-text {
+    font-size: 10px !important;
+    text-align: center !important;
+  }
+  .st-wrapper .stc-forecast-text .date {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Desktop: переопределяем стили обратно */
+  @media (min-width: 769px) {
+    .st-wrapper .st-compact-card {
+      padding: 10px 20px !important;
+      gap: 12px !important;
     }
-    .stc-header-with-info {
-      margin-bottom: 0 !important;
-      justify-content: center !important;
+    .st-wrapper .stc-header-with-info {
+      margin-bottom: 4px !important;
+      justify-content: space-between !important;
     }
-    .stc-block-title {
-      font-size: 14px !important;
-      justify-content: center !important;
-      text-align: center !important;
+    .st-wrapper .stc-block-title {
+      font-size: 15px !important;
+      justify-content: flex-start !important;
+      text-align: left !important;
     }
-    .stc-block-title .index-value {
-      font-size: 16px !important;
+    .st-wrapper .stc-content {
+      align-items: flex-start !important;
+      text-align: left !important;
     }
-    .stc-content {
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 6px !important;
-      align-items: center !important;
-      text-align: center !important;
+    .st-wrapper .stc-row {
+      justify-content: flex-start !important;
+      text-align: left !important;
     }
-    .stc-row {
-      justify-content: center !important;
-      flex-wrap: wrap !important;
-      gap: 4px !important;
-      text-align: center !important;
-    }
-    .stc-label.stc-today {
-      font-size: 11px !important;
-      font-weight: 500 !important;
-    }
-    .stc-today-line {
-      font-size: 12px !important;
-      white-space: normal !important;
-      text-align: center !important;
-    }
-    .stc-today-line .stc-value {
+    .st-wrapper .stc-label.stc-today {
       font-size: 13px !important;
     }
-    .stc-today-line .muted {
-      font-size: 11px !important;
+    .st-wrapper .stc-today-line {
+      font-size: 14px !important;
+      white-space: nowrap !important;
+      text-align: left !important;
     }
-    .stc-today-line .approx {
-      font-size: 11px !important;
-      font-weight: 600 !important;
+    .st-wrapper .stc-forecast-row {
+      justify-content: flex-start !important;
+      font-size: 13px !important;
+      text-align: left !important;
     }
-    .stc-forecast-row {
-      justify-content: center !important;
-      gap: 4px !important;
-      font-size: 10px !important;
-      text-align: center !important;
+    .st-wrapper .stc-forecast-row .stc-icon {
+      width: 20px !important;
+      height: 20px !important;
     }
-    .stc-forecast-row .stc-icon {
-      width: 12px !important;
-      height: 12px !important;
+    .st-wrapper .stc-forecast-text {
+      font-size: 13px !important;
+      text-align: left !important;
     }
-    .stc-forecast-text {
-      font-size: 10px !important;
-      text-align: center !important;
-    }
-    .stc-forecast-text .date {
-      font-size: 11px !important;
-      font-weight: 600 !important;
+    .st-wrapper .stc-forecast-text .date {
+      font-size: 14px !important;
     }
   }
 
