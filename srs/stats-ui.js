@@ -2263,8 +2263,6 @@ function renderStats() {
       <!-- Отображение имени п��льзователя будет добавлено через JS -->
       <div class="st-username-placeholder" style="display:none"></div>
 
-      <!-- Кнопка прод��лжить на всю ширину -->
-      <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> карточек • ~${planMins} мин</div></div></button>
 
       <div class="st-main">
         <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
