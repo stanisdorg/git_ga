@@ -3545,10 +3545,10 @@ window.debugMobileStats = () => {
   console.log('========================================');
   
   // Переместить кнопку внутрь st-main для работы order
-  const btn = document.getElementById('st-continue-btn');
-  const stMain = document.querySelector('.st-main');
-  if (btn && stMain && !stMain.contains(btn) && window.innerWidth <= 768) {
-    stMain.insertBefore(btn, stMain.firstChild);
+  const btnMove = document.getElementById('st-continue-btn');
+  const stMainMove = document.querySelector('.st-main');
+  if (btnMove && stMainMove && !stMainMove.contains(btnMove) && window.innerWidth <= 768) {
+    stMainMove.insertBefore(btnMove, stMainMove.firstChild);
     console.log('✅ Кнопка перемещена внутрь .st-main');
   }
 };
