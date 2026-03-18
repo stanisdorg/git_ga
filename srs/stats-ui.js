@@ -3293,34 +3293,7 @@ window.openStatsInfoModal = (event) => {
         <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
       </div>
       <div class="st-modal-body" style="padding:20px;">
-        
-        <!-- Этап обучения -->
-        <div style="margin-bottom:24px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">🎯</span>
-            <h3 style="margin:0;font-size:16px;color:#fff;">Этап обучения</h3>
-          </div>
-          <div style="background:rgba(255,159,28,0.1);border-left:3px solid var(--st-prim);padding:12px;border-radius:8px;">
-            <p style="margin:0 0 10px 0;font-size:14px;color:var(--st-text);">
-              Показывает, на какой стадии находится изучение материала:
-            </p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">
-              <div style="background:rgba(229,83,61,0.15);padding:10px;border-radius:6px;">
-                <div style="font-size:12px;color:#ff6b6b;font-weight:700;">🔥 Active Learning</div>
-                <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Более 50% карточек сложные. Фокус на проработке трудных тем.</div>
-              </div>
-              <div style="background:rgba(46,196,182,0.15);padding:10px;border-radius:6px;">
-                <div style="font-size:12px;color:#4ec9b0;font-weight:700;">🌱 Consolidation</div>
-                <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Закрепление материала. Баланс между сложным и лёгким.</div>
-              </div>
-              <div style="background:rgba(76,175,80,0.15);padding:10px;border-radius:6px;">
-                <div style="font-size:12px;color:#81c784;font-weight:700;">💚 Retention</div>
-                <div style="font-size:11px;color:var(--st-text-sec);margin-top:4px;">Более 60% карточек лёгкие. Поддержание знаний в памяти.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
+
         <!-- Прогресс -->
         <div style="margin-bottom:24px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
