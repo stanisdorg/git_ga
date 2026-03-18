@@ -1205,17 +1205,15 @@ const STATS_STYLES = `
   
   .stc-top {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    flex: 1;
-  }
-  
-  .stc-left {
-    display: flex;
     flex-direction: column;
     gap: 12px;
     flex: 1;
+  }
+
+  .stc-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   
   .stc-row {
@@ -1276,15 +1274,7 @@ const STATS_STYLES = `
   .stc-value.index-value {
     font-size: 18px;
   }
-  
-  .stc-right {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-end;
-    text-align: right;
-  }
-  
+
   .stc-today-line {
     white-space: nowrap;
   }
@@ -2086,31 +2076,14 @@ function renderStats() {
         <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика">
             <div class="stc-header-with-info">
-              <span class="stc-block-title"> Прогресс</span>
+              <span class="stc-block-title">Прогресс: <span class="index-value stc-red stc-strong">${understandingIndex}%</span></span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?">i</button>
             </div>
             <div class="stc-top">
               <div class="stc-left">
                 <div class="stc-row">
-                  <span class="stc-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2Z" fill="currentColor" opacity="0.95"/>
-                    </svg>
-                  </span>
-                  <span class="stc-label">Этап:</span>
-                  <span class="stc-value stage-value stc-orange">${learningStage.stage}</span>
-                </div>
-                <div class="stc-row">
-                  <span class="stc-label index-label">Индекс удержания:</span>
-                  <span class="stc-value index-value stc-red stc-strong">${understandingIndex}%</span>
-                </div>
-              </div>
-              <div class="stc-right">
-                <div class="stc-row">
                   <span class="stc-label stc-today">Сегодня:</span>
-                </div>
-                <div class="stc-row">
-                  <span class="stc-today-line"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">≈</span> <span class="approx">${planMins} минут</span></span>
+                  <span class="stc-today-line" style="white-space: nowrap;"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">≈</span> <span class="approx">${planMins} минут</span></span>
                 </div>
               </div>
             </div>
@@ -3115,11 +3088,11 @@ window.openStatsInfoModal = (event) => {
           </div>
         </div>
         
-        <!-- Индекс удержания -->
+        <!-- Прогресс -->
         <div style="margin-bottom:24px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">❤️</span>
-            <h3 style="margin:0;font-size:16px;color:#fff;">Индекс удержания</h3>
+            <span style="font-size:24px;">📊</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">Прогресс</h3>
           </div>
           <div style="background:rgba(229,83,61,0.1);border-left:3px solid #E5533D;padding:12px;border-radius:8px;">
             <p style="margin:0 0 12px 0;font-size:14px;color:var(--st-text);">
@@ -3140,7 +3113,7 @@ window.openStatsInfoModal = (event) => {
               <div>💚<br>5❤️</div>
             </div>
             <p style="margin:10px 0 0 0;font-size:12px;color:var(--st-text-sec);">
-              Каждая карточка имеет от 1 до 5 сердечек. Индекс рассчитывается как средний процент заполненности всех сердечек.
+              Каждая карточка имеет от 1 до 5 сердечек. Прогресс рассчитывается как средний процент заполненности всех сердечек.
             </p>
           </div>
         </div>
