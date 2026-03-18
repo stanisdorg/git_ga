@@ -2500,6 +2500,93 @@ function renderStats() {
   // ============================================
 
   // ============================================
+  // DEBUG: Блок прогресса - стили и размеры
+  // ============================================
+  console.log('\n========================================');
+  console.log('📦 DEBUG: Блок прогресса (.st-compact-card)');
+  console.log('========================================');
+  
+  const compactCard = container.querySelector('.st-compact-card');
+  if (compactCard) {
+    const styles = window.getComputedStyle(compactCard);
+    const rect = compactCard.getBoundingClientRect();
+    
+    console.log('📌 .st-compact-card:');
+    console.log('   padding: top=' + styles.paddingTop + ', right=' + styles.paddingRight + ', bottom=' + styles.paddingBottom + ', left=' + styles.paddingLeft);
+    console.log('   min-height: ' + styles.minHeight);
+    console.log('   height: ' + rect.height.toFixed(1) + 'px');
+    console.log('   display: ' + styles.display);
+    console.log('   flex-direction: ' + styles.flexDirection);
+    console.log('   gap: ' + styles.gap);
+    console.log('   align-items: ' + styles.alignItems);
+    console.log('   justify-content: ' + styles.justifyContent);
+    console.log('   text-align: ' + styles.textAlign);
+  } else {
+    console.log('❌ .st-compact-card - НЕ НАЙДЕН');
+  }
+  
+  // Проверка заголовка
+  const header = container.querySelector('.stc-header-with-info');
+  if (header) {
+    const hStyles = window.getComputedStyle(header);
+    console.log('\n📌 .stc-header-with-info:');
+    console.log('   justify-content: ' + hStyles.justifyContent);
+    console.log('   margin-bottom: ' + hStyles.marginBottom);
+  }
+  
+  // Проверка заголовка текста
+  const title = container.querySelector('.stc-block-title');
+  if (title) {
+    const tStyles = window.getComputedStyle(title);
+    console.log('\n📌 .stc-block-title:');
+    console.log('   justify-content: ' + tStyles.justifyContent);
+    console.log('   text-align: ' + tStyles.textAlign);
+    console.log('   font-size: ' + tStyles.fontSize);
+  }
+  
+  // Проверка контента
+  const content = container.querySelector('.stc-content');
+  if (content) {
+    const cStyles = window.getComputedStyle(content);
+    console.log('\n📌 .stc-content:');
+    console.log('   align-items: ' + cStyles.alignItems);
+    console.log('   text-align: ' + cStyles.textAlign);
+    console.log('   gap: ' + cStyles.gap);
+  }
+  
+  // Проверка строки с прогнозом
+  const forecastRow = container.querySelector('.stc-forecast-row');
+  if (forecastRow) {
+    const fStyles = window.getComputedStyle(forecastRow);
+    const fRect = forecastRow.getBoundingClientRect();
+    console.log('\n📌 .stc-forecast-row:');
+    console.log('   justify-content: ' + fStyles.justifyContent);
+    console.log('   text-align: ' + fStyles.textAlign);
+    console.log('   font-size: ' + fStyles.fontSize);
+    console.log('   height: ' + fRect.height.toFixed(1) + 'px');
+    
+    // Проверка текста прогноза
+    const forecastText = forecastRow.querySelector('.stc-forecast-text');
+    if (forecastText) {
+      const ftStyles = window.getComputedStyle(forecastText);
+      console.log('\n📌 .stc-forecast-text:');
+      console.log('   font-size: ' + ftStyles.fontSize);
+      console.log('   text-align: ' + ftStyles.textAlign);
+      
+      // Проверка даты
+      const dateEl = forecastText.querySelector('.date');
+      if (dateEl) {
+        const dStyles = window.getComputedStyle(dateEl);
+        console.log('\n📌 .date (в прогнозе):');
+        console.log('   font-size: ' + dStyles.fontSize);
+        console.log('   text-align: ' + dStyles.textAlign);
+      }
+    }
+  }
+  
+  console.log('\n========================================');
+
+  // ============================================
   // DEBUG: Порядок блоков в мобильной версии
   // ============================================
   console.log('\n========================================');
