@@ -667,7 +667,7 @@ export function initTabsNavigation(appVersion) {
             window.__lastCandidates = null;
             console.log('[STATS BUTTON] Cleared __lastCandidates');
         }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.56-beta');
+        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.57-beta');
         location.hash = '#/stats';
         initStatsPage(appVersion);
     });
@@ -690,7 +690,7 @@ export function initTabsNavigation(appVersion) {
             // Если stats-container НЕ существует, создаем его
             if (!statsContainerExists) {
                 console.log('[HASH CHANGE] stats-container NOT found - calling initStatsPage()');
-                const { initStatsPage } = await import('../srs/stats-ui.js?v=4.56-beta');
+                const { initStatsPage } = await import('../srs/stats-ui.js?v=4.57-beta');
                 initStatsPage(appVersion);
             } else {
                 console.log('[HASH CHANGE] stats-container already exists');
@@ -1003,7 +1003,7 @@ export function initTabsNavigation(appVersion) {
             window.openLevelInfoModal();
           } else {
             // Иначе загружаем stats-ui
-            import('../srs/stats-ui.js?v=4.56-beta').then(() => {
+            import('../srs/stats-ui.js?v=4.57-beta').then(() => {
               if (window.openLevelInfoModal) {
                 window.openLevelInfoModal();
               } else {
@@ -1302,7 +1302,7 @@ export function initTabsNavigation(appVersion) {
         updateLoginBtnState();
         // Показать/скрыть админ��кие кнопки в зависимости от роли
         try {
-            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может созда��ать пользователей
+            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может созда��ать пользовате��ей
             // editToggleBtn доступен admin и editor
             editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
             // genStatsBtn доступен только admin

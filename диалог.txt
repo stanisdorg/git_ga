@@ -6776,7 +6776,7 @@ export function initLearnUI() {
                     }
                     .nav-arrow-btn {
                         position: absolute;
-                        top: 66%;
+                        top: 96%;
                         transform: translateY(-50%);
                         width: 36px;
                         height: 36px;

@@ -739,7 +739,7 @@ const STATS_STYLES = `
 /* Mobile continue button - full width below header */
 .st-continue-mobile {
   display: none;
-  margin: 16px 0;
+  margin: 0;
   padding: 14px 20px;
   width: 100%;
   max-width: none;
@@ -2128,16 +2128,6 @@ function renderStats() {
           </div>
         </div>
 
-        <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
-        <div class="st-block-achievements">
-          <div class="st-cat-progress-wrap">
-            <div class="st-cat-progress-title"> Категории</div>
-            <div class="st-cat-progress-list" id="st-cat-progress-list">
-              <!-- Заполняется динамически -->
-            </div>
-          </div>
-        </div>
-
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
@@ -2151,28 +2141,6 @@ function renderStats() {
               <span class="st-mode-title">Только новые</span>
               <span class="st-mode-desc">Карточки, которые вы ещё не начинали учить</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Блок 3: График активности (левый нижний, 33%) -->
-        <div class="st-block-3">
-          <div class="activity-card activity">
-            <div class="activity-header">
-              <div class="period-switch">
-                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">Неделя</div>
-                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">Месяц</div>
-                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Год</div>
-              </div>
-              <div class="month-switch"><span id="st-month-label"></span></div>
-            </div>
-            <div class="chart-wrapper">
-              <svg class="chart" id="st-activity-chart"></svg>
-            </div>
-            <button class="st-expand-btn" onclick="window.openChartModal()" title="Развернуть график">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -2200,6 +2168,38 @@ function renderStats() {
                 <div class="st-diff-count">${favCount}</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
+        <div class="st-block-achievements">
+          <div class="st-cat-progress-wrap">
+            <div class="st-cat-progress-title"> Категории</div>
+            <div class="st-cat-progress-list" id="st-cat-progress-list">
+              <!-- Заполняется динамически -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Блок 3: График активности (левый нижний, 33%) -->
+        <div class="st-block-3">
+          <div class="activity-card activity">
+            <div class="activity-header">
+              <div class="period-switch">
+                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">Неделя</div>
+                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">Месяц</div>
+                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Год</div>
+              </div>
+              <div class="month-switch"><span id="st-month-label"></span></div>
+            </div>
+            <div class="chart-wrapper">
+              <svg class="chart" id="st-activity-chart"></svg>
+            </div>
+            <button class="st-expand-btn" onclick="window.openChartModal()" title="Развернуть график">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -2461,6 +2461,63 @@ function renderStats() {
   console.log('\n========================================');
   // ============================================
   // КОНЕЦ DEBUG шапки
+  // ============================================
+
+  // ============================================
+  // DEBUG: Порядок блоков в мобильной версии
+  // ============================================
+  console.log('\n========================================');
+  console.log('📱 MOBILE BLOCKS ORDER DEBUG');
+  console.log('========================================');
+  console.log('window.innerWidth:', window.innerWidth);
+  console.log('Is mobile (≤768px):', window.innerWidth <= 768);
+  
+  const blocks = {
+    '.st-top-right': 'Шапка',
+    '#st-continue-btn': 'Продолжить обучение',
+    '.st-block-1': 'Прогресс',
+    '.st-block-2': 'Режимы (2 карточки)',
+    '.st-block-4': 'Сложность + Избранное',
+    '.st-block-achievements': 'Категории',
+    '.st-block-3': 'Графики',
+    '.st-block-5': 'Достижения'
+  };
+  
+  console.log('\n📊 Порядок блоков (по DOM):');
+  Object.entries(blocks).forEach(([selector, name], index) => {
+    const el = container.querySelector(selector);
+    if (el) {
+      const styles = window.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+      console.log(`   ${index + 1}. ${selector}`);
+      console.log(`      ${name}`);
+      console.log(`      order: ${styles.order}`);
+      console.log(`      display: ${styles.display}`);
+      console.log(`      position: top=${rect.top.toFixed(1)}, height=${rect.height.toFixed(1)}`);
+    } else {
+      console.log(`   ${index + 1}. ${selector} - НЕ НАЙДЕН`);
+    }
+  });
+  
+  // Проверка CSS правил для order
+  console.log('\n📜 CSS Order Rules Check:');
+  const allStyles = Array.from(document.styleSheets);
+  allStyles.forEach((sheet, i) => {
+    try {
+      const rules = Array.from(sheet.cssRules || []);
+      rules.forEach(r => {
+        if (r.selectorText && r.selectorText.includes('.st-block-') && r.style.order) {
+          console.log(`   Sheet ${i}: ${r.selectorText} -> order: ${r.style.order}`);
+        }
+      });
+    } catch(e) {
+      // CORS
+    }
+  });
+  
+  console.log('\n========================================');
+  // ============================================
+  // КОНЕЦ DEBUG порядка блоков
   // ============================================
 
   // ============================================
@@ -2935,10 +2992,10 @@ window.debugMobileStats = () => {
 
   const blocks = {
     '.st-block-1': 'Прогресс',
-    '.st-block-achievements': 'Категории',
     '.st-block-2': 'Режимы',
-    '.st-block-3': 'График',
     '.st-block-4': 'Сложность',
+    '.st-block-achievements': 'Категории',
+    '.st-block-3': 'График',
     '.st-block-5': 'Достижения'
   };
 

@@ -26,12 +26,6 @@ export function initLearnUI() {
     // Check if container already exists (from previous session or reload)
     container = document.getElementById('learn-container');
 
-    console.log('========================================');
-    console.log('🎴 LEARN MODE DEBUG');
-    console.log('========================================');
-    console.log('window.innerWidth:', window.innerWidth);
-    console.log('Is mobile (≤480px):', window.innerWidth <= 480);
-    
     // Create Learn Container if not exists
     if (!container) {
         const appWrapper = document.querySelector('.app-wrapper') || document.body;
@@ -95,7 +89,7 @@ export function initLearnUI() {
                     }
                     .nav-arrow-btn {
                         position: absolute;
-                        top: 66%;
+                        top: 76%;
                         transform: translateY(-50%);
                         width: 36px;
                         height: 36px;
@@ -165,7 +159,6 @@ export function initLearnUI() {
                 <div class="learn-progress">
                     <div class="learn-progress-bar">
                         <div class="learn-progress-segments" id="learn-segments"></div>
-                        <div class="learn-progress-fill"></div>
                     </div>
                     <span id="learn-counter">0/0</span>
                 </div>
@@ -222,7 +215,7 @@ export function initLearnUI() {
         const nextBtn = document.getElementById('learn-next-btn');
         if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (session) session.goTo((session.currentIndex || 0) - 1); });
         if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (session) session.goTo((session.currentIndex || 0) + 1); });
-        
+
         container.querySelector('.flashcard').addEventListener('click', () => {
             if (session && !session.isFlipped) session.flip();
         });
@@ -269,22 +262,22 @@ export function initLearnUI() {
                 console.log('========================================');
                 console.log('[RATE BUTTON CLICK] Клик по кнопке!');
                 console.log('[RATE BUTTON CLICK] Grade:', grade);
-                
+
                 // Временно отключаем pointer-events чтобы снять hover
                 btn.style.pointerEvents = 'none';
                 console.log('[RATE BUTTON CLICK] pointerEvents: none');
-                
+
                 if (session) session.rate(grade);
                 // Сбрасываем фокус с кнопки чтобы не было обводки
                 btn.blur();
                 console.log('[RATE BUTTON CLICK] Focus blurred from button');
-                
+
                 // Возвращаем pointer-events через небольшую задержку
                 setTimeout(() => {
                     btn.style.pointerEvents = '';
                     console.log('[RATE BUTTON CLICK] pointerEvents: restored');
                 }, 300);
-                
+
                 console.log('========================================');
             });
         });
@@ -292,7 +285,7 @@ export function initLearnUI() {
         // Hotkeys
         document.addEventListener('keydown', handleKeydown);
     }
-    
+
     mainContainer = document.querySelector('.container');
 }
 
@@ -307,7 +300,7 @@ export function initLearnUI() {
 function handleKeydown(e) {
     // If no active session, ignore keys
     if (!session) return;
-    
+
     // Check for Space or Enter to flip
     if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter') {
         // Only flip if not already flipped and not typing in an input (though we don't have inputs here)
@@ -325,10 +318,10 @@ function handleKeydown(e) {
 
     // Navigation arrows (Left/Right)
     if (e.key === 'ArrowLeft') {
-         if (session) session.goTo((session.currentIndex || 0) - 1);
+        if (session) session.goTo((session.currentIndex || 0) - 1);
     }
     if (e.key === 'ArrowRight') {
-         if (session) session.goTo((session.currentIndex || 0) + 1);
+        if (session) session.goTo((session.currentIndex || 0) + 1);
     }
 }
 
@@ -341,7 +334,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     console.log('[startLearnSession] candidateQuestions:', candidateQuestions ? candidateQuestions.length : 'null');
     console.log('[startLearnSession] __navigatingToHome:', window.__navigatingToHome);
     console.log('[startLearnSession] Stack trace:', new Error().stack);
-    
+
     // Проверяем, не перешли ли мы на главную во время запуска
     if (window.__navigatingToHome) {
         console.log('[startLearnSession] ABORTED - navigating to home!');
@@ -396,24 +389,43 @@ export function startLearnSession(candidateQuestions, options = {}) {
         }
     }
 
-    // Initialize Session Timer UI
-    let timerEl = document.getElementById('learn-timer');
-    if (!timerEl) {
-        timerEl = document.createElement('div');
-        timerEl.id = 'learn-timer';
-        timerEl.style.marginLeft = 'auto';
-        timerEl.style.marginRight = '16px';
-        timerEl.style.fontSize = '14px';
-        timerEl.style.fontFamily = 'monospace';
-        timerEl.style.color = 'var(--color-text-secondary)';
-        timerEl.style.fontWeight = '600';
-        
-        const btn = document.getElementById('learn-exit-btn');
-        if (btn && btn.parentNode) {
-            btn.parentNode.insertBefore(timerEl, btn);
+    // 🔧 ПЕРЕМЕЩАЕМ ТАЙМЕР И СЧЁТЧИК В .learn-header
+    const timerEl2 = document.getElementById('mode-timer');
+    const counterEl = document.getElementById('learn-counter');
+    const learnHeader2 = document.querySelector('.learn-header');
+    const exitBtn = document.getElementById('learn-exit-btn');
+
+    if (timerEl2 && learnHeader2 && exitBtn) {
+        timerEl2.style.display = 'block !important';
+        timerEl2.style.position = 'static';
+        timerEl2.style.transform = 'none';
+        timerEl2.style.fontSize = '14px';
+        timerEl2.style.fontWeight = '600';
+        timerEl2.style.color = '#ff4d4d';
+        timerEl2.style.textShadow = 'none';
+        timerEl2.style.zIndex = 'auto';
+        timerEl2.style.minWidth = '60px';
+        if (exitBtn.nextSibling) {
+            learnHeader2.insertBefore(timerEl2, exitBtn.nextSibling);
+        } else {
+            learnHeader2.appendChild(timerEl2);
         }
     }
-    
+
+    if (counterEl && learnHeader2) {
+        learnHeader2.appendChild(counterEl);
+    }
+
+    // 🔧 ВЫНОСИМ .learn-progress ИЗ .learn-header - будет отдельным блоком снизу
+    const learnProgressEl = document.querySelector('.learn-progress');
+    if (learnProgressEl && learnHeader2) {
+        learnHeader2.parentNode.insertBefore(learnProgressEl, learnHeader2.nextSibling);
+    }
+
+    // Initialize Session Timer UI
+    // Используем .mode-timer вместо создания отдельного #learn-timer
+    const timerEl = document.querySelector('.mode-timer');
+
     // Start Timer
     if (timerInterval) clearInterval(timerInterval);
     sessionTimerStart = Date.now();
@@ -425,14 +437,14 @@ export function startLearnSession(candidateQuestions, options = {}) {
     if (options.mode === 'cram') {
         const progMap = getProgressMap();
         sessionCards = candidateQuestions.map(q => {
-             const p = progMap[q.question];
-             return {
-                 question: q.question,
-                 answer: q.answer,
-                 item: q,
-                 progress: p || null, // Use existing progress if available
-                 isNew: !p
-             };
+            const p = progMap[q.question];
+            return {
+                question: q.question,
+                answer: q.answer,
+                item: q,
+                progress: p || null, // Use existing progress if available
+                isNew: !p
+            };
         });
         // Shuffle
         sessionCards.sort(() => Math.random() - 0.5);
@@ -442,13 +454,13 @@ export function startLearnSession(candidateQuestions, options = {}) {
         let newCards = dueCards.filter(c => c.isNew);
         sessionCards = [...reviews, ...newCards];
     }
-    
+
     // Safety cap for session length (except cram?)
-    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death') ? 100 : 40; 
+    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death') ? 100 : 40;
     if (sessionCards.length > MAX_SESSION) {
         sessionCards = sessionCards.slice(0, MAX_SESSION);
     }
-    
+
     if (sessionCards.length === 0) {
         if (candidateQuestions && candidateQuestions.length > 0 && options.mode !== 'cram' && options.mode !== 'time_attack' && options.mode !== 'sudden_death') {
             startLearnSession(candidateQuestions, { mode: 'cram' });
@@ -463,18 +475,25 @@ export function startLearnSession(candidateQuestions, options = {}) {
     // Hide sidebar if exists
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) sidebar.style.display = 'none';
-    
+
     container.style.display = 'flex';
     const learnStats = document.getElementById('learn-stats');
     if (learnStats) learnStats.style.display = 'none';
-    
+
     const fcContainer = container.querySelector('.flashcard-container');
     if (fcContainer) fcContainer.style.display = 'flex';
-    
+
     // Reset progress UI for new session
     const segs = document.getElementById('learn-segments');
     const progressFill = container.querySelector('.learn-progress-fill');
-    if (progressFill) { progressFill.style.width = '0%'; progressFill.style.pointerEvents = 'none'; }
+    const progressBar = container.querySelector('.learn-progress-bar');
+    const learnProgress = container.querySelector('.learn-progress');
+    const learnHeader = container.querySelector('.learn-header');
+
+    if (progressFill) {
+        progressFill.style.width = '0%';
+        progressFill.style.pointerEvents = 'none';
+    }
 
     // Start Session
     session = new LearningSession(
@@ -507,7 +526,7 @@ function stopLearnSession() {
     // Restore sidebar
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) sidebar.style.display = '';
-    
+
     // Возвращаем навигацию и убираем класс с body
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
@@ -531,7 +550,7 @@ function renderCardState(state) {
     const aEl = document.getElementById('learn-answer');
     const counter = document.getElementById('learn-counter');
     const progressFill = container.querySelector('.learn-progress-fill');
-    
+
     // Update segments
     updateSegments(state.results, state.total);
     // Update nav buttons availability
@@ -550,11 +569,11 @@ function renderCardState(state) {
             nextBtn.style.opacity = isEnd ? '0.5' : '1';
             nextBtn.style.cursor = isEnd ? 'not-allowed' : 'pointer';
         }
-    } catch {}
+    } catch { }
 
     if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
     if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
-    
+
     // DEBUG: Логируем стили ответа
     console.log('\n📦 FLASHCARD ANSWER DEBUG:');
     console.log('   #learn-answer элемент:', aEl);
@@ -570,7 +589,7 @@ function renderCardState(state) {
         console.log('      padding:', backStyles.padding);
         console.log('      display:', backStyles.display);
     }
-    
+
     // Проверка перекрытия front/back
     console.log('\n🔄 FRONT/BACK OVERLAP CHECK:');
     if (front && back) {
@@ -578,7 +597,7 @@ function renderCardState(state) {
         const backStyles = window.getComputedStyle(back);
         const frontRect = front.getBoundingClientRect();
         const backRect = back.getBoundingClientRect();
-        
+
         console.log('   .flashcard-front:');
         console.log('      display:', frontStyles.display);
         console.log('      position:', frontStyles.position);
@@ -586,7 +605,7 @@ function renderCardState(state) {
         console.log('      transform:', frontStyles.transform);
         console.log('      opacity:', frontStyles.opacity);
         console.log('      rect:', frontRect);
-        
+
         console.log('   .flashcard-back:');
         console.log('      display:', backStyles.display);
         console.log('      position:', backStyles.position);
@@ -594,7 +613,7 @@ function renderCardState(state) {
         console.log('      transform:', backStyles.transform);
         console.log('      opacity:', backStyles.opacity);
         console.log('      rect:', backRect);
-        
+
         console.log('   .flashcard (parent):');
         const cardStyles = window.getComputedStyle(cardEl);
         console.log('      display:', cardStyles.display);
@@ -602,7 +621,7 @@ function renderCardState(state) {
         console.log('      perspective:', cardStyles.perspective);
         console.log('      transform-style:', cardStyles.transformStyle);
     }
-    
+
     // Проверка custom-styles.css
     console.log('\n📜 CUSTOM-styles.css CHECK:');
     const allStyles = Array.from(document.styleSheets);
@@ -619,7 +638,7 @@ function renderCardState(state) {
                     }
                 });
             }
-        } catch(e) {
+        } catch (e) {
             // CORS
         }
     });
@@ -629,7 +648,7 @@ function renderCardState(state) {
     if (backQuestionEl && state.card) {
         backQuestionEl.textContent = state.card.question || '(Пустой вопрос)';
     }
-    
+
     // Update Hearts and Difficulty Label
     const renderHearts = (ef) => {
         try {
@@ -639,7 +658,7 @@ function renderCardState(state) {
             // Range 2: 1.7 - 2.1 (Hard) -> 2 hearts base
             // Range 3: 2.1 - 2.4 (Standard) -> 3 hearts base
             // Range 4: 2.4 - 2.9 (Easy) -> 4-5 hearts
-            
+
             if (ef < 1.7) {
                 // 1.3 to 1.7 -> 1.0 to 2.0
                 heartsCount = 1 + (ef - 1.3) / 0.4;
@@ -653,7 +672,7 @@ function renderCardState(state) {
                 // 2.4 to 2.9 -> 4.0 to 5.0
                 heartsCount = 4 + (ef - 2.4) / 0.5;
             }
-            
+
             // Clamp between 1 and 5
             heartsCount = Math.max(1, Math.min(5, heartsCount));
 
@@ -665,11 +684,11 @@ function renderCardState(state) {
                 } else if (heartsCount > i) {
                     fill = heartsCount - i;
                 }
-                
+
                 // Render heart with gradient if partial, or solid color
                 const stopVal = Math.round(fill * 100);
                 const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
-                
+
                 html += `
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="heart-icon">
                         <defs>
@@ -699,13 +718,13 @@ function renderCardState(state) {
 
         // Determine EF: if no progress or no easeFactor, it's a NEW card (null)
         const ef = progressObj && progressObj.easeFactor !== undefined ? progressObj.easeFactor : null;
-        
+
         if (ef === null) {
             // Render "NEW" state
             container.querySelectorAll('.learn-hearts').forEach(el => {
                 el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span>`;
                 el.title = 'Карточка еще не изучалась';
-                
+
                 // Remove old label if exists
                 const oldLabel = el.nextElementSibling;
                 if (oldLabel && oldLabel.classList.contains('level-label')) oldLabel.remove();
@@ -721,7 +740,7 @@ function renderCardState(state) {
                 'STANDARD': 'Стандарт',
                 'EASY': 'Легкие'
             };
-            
+
             // Recalculate hearts count for title
             let heartsCount = 0;
             if (ef < 1.7) heartsCount = 1 + (ef - 1.3) / 0.4;
@@ -733,10 +752,10 @@ function renderCardState(state) {
             container.querySelectorAll('.learn-hearts').forEach(el => {
                 // Label for the level
                 const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
-                
+
                 el.innerHTML = labelHtml + renderHearts(ef);
                 el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
-                
+
                 // Cleanup old sibling label if it exists (from previous version)
                 const oldLabel = el.nextElementSibling;
                 if (oldLabel && oldLabel.classList.contains('level-label')) {
@@ -753,19 +772,20 @@ function renderCardState(state) {
                 easyBtn.style.opacity = '0.5';
                 easyBtn.style.cursor = 'not-allowed';
                 easyBtn.title = 'Доступно только для карточек уровня "Легкие" с прогрессом > 70%';
-                // Optional: Change text or add lock icon
+                easyBtn.setAttribute('data-locked', 'true');
                 easyBtn.innerHTML = 'Легко 🔒 (4)';
             } else {
                 easyBtn.style.opacity = '1';
                 easyBtn.style.cursor = 'pointer';
                 easyBtn.title = '';
+                easyBtn.removeAttribute('data-locked');
                 easyBtn.innerHTML = 'Легко (4)';
             }
         }
     }
 
     if (counter) counter.textContent = `${state.progress}/${state.total}`;
-    
+
     if (progressFill) {
         progressFill.style.width = `${(state.progress / state.total) * 100}%`;
     }
@@ -926,7 +946,7 @@ function wireSegmentsInteractions(sess) {
 
 function showStats(stats, results, total) {
     console.log('[MODAL.TEMPLATE] === CREATING MODAL ===');
-    
+
     // Update segments one last time to show the final card's result
     if (results && total) {
         updateSegments(results, total);
@@ -981,7 +1001,7 @@ function showStats(stats, results, total) {
         `;
         console.log('[MODAL.TEMPLATE] New template created with .stats-grid and .stat-item');
         container.appendChild(overlay);
-        
+
         // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
             console.log('========================================');
@@ -989,31 +1009,31 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Timestamp:', new Date().toISOString());
             console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
             console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
-            
+
             // ПРИНУДИТЕЛЬНО завершаем сессию обучения
             if (currentScheduler) {
                 currentScheduler = null;
                 console.log('[STATS BUTTON] Cleared currentScheduler');
             }
-            
+
             // ПРИНУДИТЕЛЬНО убираем класс learning-mode
             document.body.classList.remove('learning-mode');
             console.log('[STATS BUTTON] Removed learning-mode');
-            
+
             // ПРИНУДИТЕЛЬНО показываем навигацию
             const bottomNav = document.getElementById('bottom-nav');
             if (bottomNav) {
                 bottomNav.style.display = 'flex';
                 console.log('[STATS BUTTON] Showed bottomNav');
             }
-            
+
             // ПРИНУДИТЕЛЬНО скрываем контейнер обучения
             const learnContainer = document.getElementById('learn-container');
             if (learnContainer) {
                 learnContainer.style.display = 'none';
                 console.log('[STATS BUTTON] Hid learn-container');
             }
-            
+
             // Закрываем модалку
             overlay.remove();
             console.log('[STATS BUTTON] Removed overlay');
@@ -1026,16 +1046,16 @@ function showStats(stats, results, total) {
             // const learnContainer уже объявлена выше, не нужно объявлять снова
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=4.56-beta').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=4.57-beta').then(({ initStatsPage }) => {
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
             });
-            
+
             console.log('[STATS BUTTON] ========== END STATS BUTTON ==========');
             console.log('========================================');
         });
-        
+
         // Кнопка "Продолжить" - следующий круг обучения
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
             console.log('[CONTINUE BTN] Clicked!');
@@ -1073,7 +1093,7 @@ function showStats(stats, results, total) {
     overlay.querySelector('#sum-total').textContent = String(stats.reviewed);
     const accEl = overlay.querySelector('#sum-accuracy');
     accEl.textContent = `${accuracy}%`;
-    accEl.classList.remove('acc-good','acc-mid','acc-bad');
+    accEl.classList.remove('acc-good', 'acc-mid', 'acc-bad');
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
@@ -1083,12 +1103,12 @@ function showStats(stats, results, total) {
         currentScheduler = null;
         console.log('[showStats] Cleared currentScheduler');
     }
-    
+
     // Убираем класс learning-mode
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'flex';
-    
+
     console.log('[showStats] Removed learning-mode, showed bottomNav');
 
     // Motivational Message Logic (Expert Psychology)
@@ -1096,7 +1116,7 @@ function showStats(stats, results, total) {
     if (currentScheduler) {
         const sched = currentScheduler.getScheduleStatus();
         const daysLeft = sched.daysRemaining;
-        
+
         if (accuracy >= 90) {
             motivation = `Потрясающая точность! Вы уверенно идете к цели за ${daysLeft} дн.`;
         } else if (accuracy >= 75) {
@@ -1111,7 +1131,7 @@ function showStats(stats, results, total) {
             motivation += " Финиш уже близко!";
         }
     } else {
-         motivation = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
+        motivation = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
     }
 
     overlay.querySelector('#sum-motivation').textContent = motivation;
@@ -1146,42 +1166,42 @@ function showStats(stats, results, total) {
     dDay[todayKey] = (dDay[todayKey] || 0) + dayBonus;
     localStorage.setItem('dailyDayBonusPoints', JSON.stringify(dDay));
     syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
-    try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
-    
+    try { window.dispatchEvent(new Event('xpUpdated')); } catch { }
+
     console.log('[MODAL.ANIM] === START ANIMATION ===');
     console.log('[MODAL.ANIM] startXP:', session.startXP, 'earned:', earned, 'bonus:', bonus);
-    
+
     // Level info on top
     import('./stats-utils.js?v=3').then(({ getCurrentLevel }) => {
         const lvl = getCurrentLevel();
         console.log('[MODAL.ANIM] Current level:', lvl.level, 'XP:', lvl.xp);
-        
+
         overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
         const earned = session.stats.pointsEarned || 0;
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
         const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
         const bonus = Math.min(100, (st.current || 0) * 5);
-        
+
         console.log('[MODAL.ANIM] startXP:', startXP, 'earned:', earned, 'bonus:', bonus);
 
         // Определяем, было ли повышение уровня
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
-        
+
         console.log('[MODAL.ANIM] startLevel:', startLevel, 'endLevel:', endLevel, 'leveledUp:', leveledUp);
 
         const bar = overlay.querySelector('.level-progress-bar');
         const oldEl = bar.querySelector('.level-progress-fill-old');
         const earnEl = bar.querySelector('.level-progress-fill-earned');
         const bonusEl = bar.querySelector('.level-progress-fill-bonus');
-        
+
         console.log('[MODAL.ANIM] Elements found:', { bar: !!bar, oldEl: !!oldEl, earnEl: !!earnEl, bonusEl: !!bonusEl });
 
         if (leveledUp) {
             console.log('[MODAL.ANIM] === LEVEL UP ANIMATION ===');
-            
+
             // 1. Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
@@ -1191,30 +1211,30 @@ function showStats(stats, results, total) {
             bonusEl.style.width = '0%';
             earnEl.style.left = '100%';
             bonusEl.style.left = '100%';
-            
+
             console.log('[MODAL.ANIM] Step 1: Set to 100% (transition: none)');
-            
+
             // 2. Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
-                
+
                 // 3. Вспышка уровня
                 const levelEl = overlay.querySelector('#sum-level');
                 levelEl.classList.add('flash');
                 levelEl.textContent = `LV:${endLevel}!`;
                 console.log('[MODAL.ANIM] Step 3: Flash level');
-                
+
                 setTimeout(() => {
                     levelEl.classList.remove('flash');
                     levelEl.textContent = `LV:${endLevel} • ${lvl.xp} XP`;
                     console.log('[MODAL.ANIM] Step 4: Remove flash');
-                    
+
                     // 4. Быстрое сжатие (200ms)
                     oldEl.style.transition = 'width 0.2s ease';
                     oldEl.style.width = '0%';
                     console.log('[MODAL.ANIM] Step 5: Shrink old (200ms)');
-                    
+
                     setTimeout(() => {
                         console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
                         // 5. Заполнение нового уровня (1.5s)
@@ -1222,56 +1242,56 @@ function showStats(stats, results, total) {
                         bonusEl.style.transition = 'width 1.5s ease';
                         earnEl.style.left = '0%';
                         bonusEl.style.left = '0%';
-                        
+
                         const totalForLevel = lvl.nextThreshold - lvl.prevThreshold;
                         const earnedInLevel = Math.max(0, lvl.xp - lvl.prevThreshold);
                         const earnedPct = totalForLevel > 0 ? (earnedInLevel / totalForLevel) * 100 : 0;
                         const bonusPct = totalForLevel > 0 ? (bonus / totalForLevel) * 100 : 0;
-                        
+
                         console.log('[MODAL.ANIM] earnedPct:', earnedPct, 'bonusPct:', bonusPct);
-                        
+
                         earnEl.style.width = `${Math.min(100, earnedPct)}%`;
                         bonusEl.style.width = `${Math.min(100, bonusPct)}%`;
                     }, 200);
                 }, 300);
             }, 50);
-            
+
         } else {
             console.log('[MODAL.ANIM] === NORMAL ANIMATION (no level up) ===');
-            
+
             // Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
-            
+
             const prev = lvl.prevThreshold;
             const next = lvl.nextThreshold;
             const pct = (v) => next === Infinity ? 1 : Math.max(0, Math.min(1, (v - prev) / (next - prev)));
             const startPct = pct(startXP);
-            
+
             oldEl.style.width = `${startPct * 100}%`;
             earnEl.style.left = `${startPct * 100}%`;
             earnEl.style.width = '0%';
             bonusEl.style.left = `${startPct * 100}%`;
             bonusEl.style.width = '0%';
-            
+
             console.log('[MODAL.ANIM] Step 1: Set startPct:', startPct * 100);
-            
+
             // Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
-                
+
                 setTimeout(() => {
                     console.log('[MODAL.ANIM] Step 3: Fill earned + bonus (1.5s)');
                     earnEl.style.transition = 'width 1.5s ease';
                     bonusEl.style.transition = 'width 1.5s ease';
-                    
+
                     const earnedPct = Math.max(0, pct(startXP + earned) - startPct) * 100;
                     const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned)) * 100;
-                    
+
                     console.log('[MODAL.ANIM] earnedPct:', earnedPct, 'bonusPct:', bonusPct);
-                    
+
                     earnEl.style.width = `${earnedPct}%`;
                     bonusEl.style.width = `${bonusPct}%`;
                 }, 500);
@@ -1280,11 +1300,11 @@ function showStats(stats, results, total) {
     }).catch((err) => {
         console.error('[MODAL.ANIM] Error:', err);
     });
-    
+
     // Animate overlay and stats
     overlay.classList.add('show');
     console.log('[MODAL.ANIM] Overlay show class added');
-    
+
     // Show all stats immediately (without staggered delay)
     const totalEl = overlay.querySelector('#stat-total');
     const accWrap = overlay.querySelector('#stat-accuracy');
@@ -1292,7 +1312,7 @@ function showStats(stats, results, total) {
     const motEl = overlay.querySelector('#sum-motivation');
     const xpEl = overlay.querySelector('#sum-xp');
     const actions = overlay.querySelector('.summary-actions');
-    
+
     console.log('[MODAL.ANIM] Elements found:', {
         total: !!totalEl,
         accuracy: !!accWrap,
@@ -1303,44 +1323,44 @@ function showStats(stats, results, total) {
     });
 
     // Apply animations simultaneously
-    if (totalEl) { 
-        totalEl.style.display = ''; 
-        totalEl.classList.add('fade-in'); 
+    if (totalEl) {
+        totalEl.style.display = '';
+        totalEl.classList.add('fade-in');
         console.log('[MODAL.ANIM] totalEl fade-in added');
         // Animate numbers counting up
         animateValue(totalEl.querySelector('.stat-value'), 0, parseInt(totalEl.querySelector('.stat-value').textContent) || 0, 1000);
     }
-    if (accWrap) { 
-        accWrap.style.display = ''; 
-        accWrap.classList.add('fade-in'); 
+    if (accWrap) {
+        accWrap.style.display = '';
+        accWrap.classList.add('fade-in');
         console.log('[MODAL.ANIM] accWrap fade-in added');
         // Animate accuracy percentage
         const accValue = accWrap.querySelector('.stat-value');
         const accNum = parseInt(accValue.textContent) || 0;
         animateValue(accValue, 0, accNum, 1000, '%');
     }
-    if (streakWrap) { 
-        streakWrap.style.display = ''; 
-        streakWrap.classList.add('fade-in'); 
+    if (streakWrap) {
+        streakWrap.style.display = '';
+        streakWrap.classList.add('fade-in');
         console.log('[MODAL.ANIM] streakWrap fade-in added');
         // Animate streak number
         animateValue(streakWrap.querySelector('.stat-value'), 0, parseInt(streakWrap.querySelector('.stat-value').textContent) || 0, 1000);
     }
 
     // Fade-in elements (originally hidden by CSS opacity: 0)
-    if (motEl) { 
-        motEl.style.display = ''; 
-        motEl.classList.add('fade-in'); 
+    if (motEl) {
+        motEl.style.display = '';
+        motEl.classList.add('fade-in');
         console.log('[MODAL.ANIM] motEl fade-in added');
     }
-    if (xpEl) { 
-        xpEl.style.display = ''; 
-        xpEl.classList.add('fade-in'); 
+    if (xpEl) {
+        xpEl.style.display = '';
+        xpEl.classList.add('fade-in');
         console.log('[MODAL.ANIM] xpEl fade-in added');
     }
-    if (actions) { 
-        actions.style.display = ''; 
-        actions.classList.add('fade-in'); 
+    if (actions) {
+        actions.style.display = '';
+        actions.classList.add('fade-in');
         console.log('[MODAL.ANIM] actions fade-in added');
     }
 }
@@ -1348,22 +1368,22 @@ function showStats(stats, results, total) {
 // Helper function to animate numbers counting up
 function animateValue(el, start, end, duration, suffix = '') {
     const startTime = performance.now();
-    
+
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // Easing function (easeOutQuart)
         const ease = 1 - Math.pow(1 - progress, 4);
-        
+
         const current = Math.floor(start + (end - start) * ease);
         el.textContent = current + suffix;
-        
+
         if (progress < 1) {
             requestAnimationFrame(update);
         }
     }
-    
+
     requestAnimationFrame(update);
 }
 
@@ -1373,14 +1393,15 @@ function getLevelFromXP(xp) {
 }
 
 function updateTimerDisplay() {
-    const el = document.getElementById('learn-timer');
+    // Обновляем .mode-timer вместо #learn-timer
+    const el = document.querySelector('.mode-timer');
     if (!el) return;
-    
+
     // Show time for current continuous block
     const now = Date.now();
     // If session exists, use session.lastPauseTime to track current block
     const startTime = (session && session.lastPauseTime) ? session.lastPauseTime : sessionTimerStart;
-    
+
     const diff = Math.floor((now - startTime) / 1000);
     const m = Math.floor(diff / 60).toString().padStart(2, '0');
     const s = (diff % 60).toString().padStart(2, '0');
@@ -1389,12 +1410,12 @@ function updateTimerDisplay() {
 
 function showSmartPause(rec) {
     if (document.getElementById('smart-pause-overlay')) return;
-    
+
     const overlay = document.createElement('div');
     overlay.id = 'smart-pause-overlay';
-    overlay.className = 'summary-overlay show'; 
+    overlay.className = 'summary-overlay show';
     overlay.style.zIndex = '10002'; // Above everything
-    
+
     overlay.innerHTML = `
         <div class="summary-box" style="max-width: 400px;">
             <div style="font-size: 48px; margin-bottom: 16px;">☕</div>
@@ -1420,16 +1441,16 @@ function showSmartPause(rec) {
             </div>
         </div>
     `;
-    
+
     container.appendChild(overlay);
-    
+
     // Handlers
     overlay.querySelector('#pause-skip-btn').addEventListener('click', () => {
         if (session) session.resumeFromPause();
         overlay.remove();
         updateTimerDisplay(); // Reset timer visually
     });
-    
+
     overlay.querySelector('#pause-break-btn').addEventListener('click', () => {
         startBreakCountdown(overlay, 5 * 60);
     });
@@ -1448,7 +1469,7 @@ function startBreakCountdown(overlay, seconds) {
         </div>
         <button id="break-skip-btn" class="secondary-btn">Вернуться к обучению</button>
     `;
-    
+
     let left = seconds;
     const timerEl = box.querySelector('#break-timer');
     const interval = setInterval(() => {
@@ -1463,7 +1484,7 @@ function startBreakCountdown(overlay, seconds) {
         const s = (left % 60).toString().padStart(2, '0');
         timerEl.textContent = `${m}:${s}`;
     }, 1000);
-    
+
     box.querySelector('#break-skip-btn').addEventListener('click', () => {
         clearInterval(interval);
         if (session) session.resumeFromPause();
