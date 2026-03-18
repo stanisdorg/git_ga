@@ -1083,8 +1083,42 @@ body.learning-mode #bottom-nav {
     }
     .flashcard-front,
     .flashcard-back {
-        background: #1a1a1a !important; /* Тёмно-серый фон сторон карточки */
+        background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%) !important; /* Градиент от серого к чёрному */
+        border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Полупрозрачный бордер */
+        border-bottom: none !important; /* Убираем бордер снизу */
     }
+    
+    /* Скрываем подсказку о пробеле в мобильной версии */
+    @media (max-width: 768px) {
+        .flashcard-hint {
+            display: none !important;
+        }
+        
+        /* Fade + flip для мобильных — легче для производительности */
+        .flashcard {
+            will-change: transform !important;
+        }
+        .flashcard-front,
+        .flashcard-back {
+            will-change: opacity, transform !important;
+            backface-visibility: hidden !important;
+            -webkit-backface-visibility: hidden !important;
+            transition: opacity 0.3s ease, transform 0.3s ease !important;
+        }
+        /* Скрываем заднюю сторону по умолчанию */
+        .flashcard-back {
+            transform: rotateY(180deg) !important; /* Повёрнута изначально */
+            opacity: 0 !important;
+        }
+        /* При перевороте */
+        .flashcard.flipped .flashcard-front {
+            opacity: 0 !important;
+        }
+        .flashcard.flipped .flashcard-back {
+            opacity: 1 !important;
+        }
+    }
+    
     .favorite-btn.learn-fav-btn {
         top: 6px !important; /* Уменьшаем отступ сверху */
     }
@@ -1094,7 +1128,7 @@ body.learning-mode #bottom-nav {
         background: rgba(0, 0, 0, 0.2) !important; /* Почти прозрачный фон */
         color: rgba(255, 255, 255, 0.3) !important; /* Тусклые стрелки */
         opacity: 0.5 !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important; /* Лёгкая тень */
+        box-shadow: 0 2px 6px rgba(200, 200, 200, 0.6) !important; /* Серая тень (усилена в 2 раза) */
     }
     .nav-arrow-btn:hover {
         background: rgba(0, 0, 0, 0.4) !important;

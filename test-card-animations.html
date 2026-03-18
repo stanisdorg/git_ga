@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест анимаций карточек</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .test-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .test-item {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .test-item h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #4ec9b0;
+        }
+        
+        .card-wrapper {
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-bottom: none;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        /* Вариант 1: Классический flip */
+        .flip .card.flipped {
+            transform: rotateY(180deg);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Вариант 2: Быстрый flip */
+        .flip-fast .card.flipped {
+            transform: rotateY(180deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Вариант 3: Плавный flip с замедлением */
+        .flip-smooth .card.flipped {
+            transform: rotateY(180deg);
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* Вариант 4: Flip + масштаб */
+        .flip-zoom .card.flipped {
+            transform: rotateY(180deg) scale(1.05);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Вариант 5: Flip + подъём */
+        .flip-lift .card.flipped {
+            transform: rotateY(180deg) translateY(-10px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Вариант 6: 3D rotate X */
+        .flip-x .card.flipped {
+            transform: rotateX(180deg);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Вариант 7: Fade + flip */
+        .fade-flip .card {
+            transition: transform 0.5s ease, opacity 0.3s ease;
+        }
+        .fade-flip .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .fade-flip .card-face {
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Вариант 8: Slide + flip */
+        .slide-flip .card {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-flip .card.flipped {
+            transform: rotateY(180deg) translateX(20px);
+        }
+        
+        /* Вариант 9: Elastic flip */
+        .elastic-flip .card.flipped {
+            transform: rotateY(180deg);
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        /* Вариант 10: Double flip */
+        .double-flip .card.flipped {
+            transform: rotateY(360deg);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tap-hint {
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎴 Тест анимаций карточек</h1>
+    <p class="info">Нажми на карточку чтобы перевернуть</p>
+    
+    <div class="test-container">
+        <!-- Вариант 1 -->
+        <div class="test-item">
+            <h3>1. Классический flip (0.6s)</h3>
+            <div class="card-wrapper flip" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Плавный стандартный переворот</p>
+        </div>
+        
+        <!-- Вариант 2 -->
+        <div class="test-item">
+            <h3>2. Быстрый flip (0.3s)</h3>
+            <div class="card-wrapper flip-fast" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Быстрый, отзывчивый</p>
+        </div>
+        
+        <!-- Вариант 3 -->
+        <div class="test-item">
+            <h3>3. Плавный flip (0.8s)</h3>
+            <div class="card-wrapper flip-smooth" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Медленный, кинематографичный</p>
+        </div>
+        
+        <!-- Вариант 4 -->
+        <div class="test-item">
+            <h3>4. Flip + масштаб (bounce)</h3>
+            <div class="card-wrapper flip-zoom" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">С эффектом увеличения</p>
+        </div>
+        
+        <!-- Вариант 5 -->
+        <div class="test-item">
+            <h3>5. Flip + подъём</h3>
+            <div class="card-wrapper flip-lift" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Карточка приподнимается</p>
+        </div>
+        
+        <!-- Вариант 6 -->
+        <div class="test-item">
+            <h3>6. Переворот по X (вверх-вниз)</h3>
+            <div class="card-wrapper flip-x" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Вращение вокруг горизонтальной оси</p>
+        </div>
+        
+        <!-- Вариант 7 -->
+        <div class="test-item">
+            <h3>7. Fade + flip</h3>
+            <div class="card-wrapper fade-flip" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">С растворением</p>
+        </div>
+        
+        <!-- Вариант 8 -->
+        <div class="test-item">
+            <h3>8. Slide + flip</h3>
+            <div class="card-wrapper slide-flip" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Со сдвигом в сторону</p>
+        </div>
+        
+        <!-- Вариант 9 -->
+        <div class="test-item">
+            <h3>9. Elastic flip (пружина)</h3>
+            <div class="card-wrapper elastic-flip" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">С эффектом пружины</p>
+        </div>
+        
+        <!-- Вариант 10 -->
+        <div class="test-item">
+            <h3>10. Double flip (360°)</h3>
+            <div class="card-wrapper double-flip" onclick="this.querySelector('.card').classList.toggle('flipped')">
+                <div class="card">
+                    <div class="card-face card-front">Вопрос</div>
+                    <div class="card-face card-back">Ответ</div>
+                </div>
+            </div>
+            <p class="tap-hint">Полный оборот</p>
+        </div>
+    </div>
+    
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="location.href='/'">← На главную</button>
+        <button class="nav-btn" onclick="location.reload()">↻ Обновить</button>
+    </div>
+    
+    <script>
+        // Добавляем поддержку свайпов для мобильных
+        document.querySelectorAll('.card-wrapper').forEach(wrapper => {
+            let startX = 0;
+            let startY = 0;
+            
+            wrapper.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            });
+            
+            wrapper.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                
+                const diffX = startX - endX;
+                const diffY = startY - endY;
+                
+                // Если свайп вверх или вниз (переворот)
+                if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 50) {
+                    const card = wrapper.querySelector('.card');
+                    card.classList.toggle('flipped');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
