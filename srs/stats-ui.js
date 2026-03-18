@@ -2271,11 +2271,11 @@ function renderStats() {
         <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
-            <div class="stc-header-with-info" style="display:flex!important;margin-bottom:0!important;justify-content:space-between!important;align-items:center!important;">
+            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:12px!important;align-items:center!important;justify-content:space-between!important;">
               <span class="stc-block-title" style="font-size:14px!important;justify-content:center!important;text-align:center!important;flex:1;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:8px;">i</button>
             </div>
-            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:8px!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding-top:0!important;"><span class="stc-forecast-text" style="font-size:11px!important;text-align:center!important;">Прогноз: <span class="date" style="font-size:12px!important;font-weight:600!important;">${finishDateStr}</span></span></div>
+            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:8px!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding-top:0!important;"><span class="stc-forecast-text" style="font-size:11px!important;color:var(--st-text-sec);text-align:center!important;">Прогноз: <span class="date" style="font-size:12px!important;font-weight:600!important;">${finishDateStr}</span></span></div>
           </div>
         </div>
 
