@@ -1420,7 +1420,7 @@ const STATS_STYLES = `
   /* Мобильная версия блока прогресса - компактная с центрированием */
   @media (max-width: 768px) {
     .st-compact-card {
-      padding: 10px 12px !important;
+      padding: 8px 12px !important;
       min-height: auto !important;
       gap: 8px !important;
     }
@@ -1431,6 +1431,7 @@ const STATS_STYLES = `
     .stc-block-title {
       font-size: 14px !important;
       justify-content: center !important;
+      text-align: center !important;
     }
     .stc-block-title .index-value {
       font-size: 16px !important;
@@ -1446,6 +1447,7 @@ const STATS_STYLES = `
       justify-content: center !important;
       flex-wrap: wrap !important;
       gap: 4px !important;
+      text-align: center !important;
     }
     .stc-label.stc-today {
       font-size: 11px !important;
@@ -1454,6 +1456,7 @@ const STATS_STYLES = `
     .stc-today-line {
       font-size: 12px !important;
       white-space: normal !important;
+      text-align: center !important;
     }
     .stc-today-line .stc-value {
       font-size: 13px !important;
@@ -1462,22 +1465,25 @@ const STATS_STYLES = `
       font-size: 11px !important;
     }
     .stc-today-line .approx {
-      font-size: 12px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
     }
     .stc-forecast-row {
       justify-content: center !important;
-      gap: 6px !important;
-      font-size: 11px !important;
+      gap: 4px !important;
+      font-size: 10px !important;
+      text-align: center !important;
     }
     .stc-forecast-row .stc-icon {
-      width: 14px !important;
-      height: 14px !important;
+      width: 12px !important;
+      height: 12px !important;
     }
     .stc-forecast-text {
-      font-size: 11px !important;
+      font-size: 10px !important;
+      text-align: center !important;
     }
     .stc-forecast-text .date {
-      font-size: 12px !important;
+      font-size: 11px !important;
       font-weight: 600 !important;
     }
   }
@@ -1582,8 +1588,9 @@ const STATS_STYLES = `
     .st-compact-card,
     .training-modes-block,
     .st-diff-section {
-      height: auto;
-      min-height: 150px;
+      height: auto !important;
+      min-height: auto !important;
+      padding: 8px 12px !important;
     }
   }
 
