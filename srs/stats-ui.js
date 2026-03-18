@@ -3206,7 +3206,67 @@ window.debugMobileStats = () => {
   console.log('📱 MOBILE LAYOUT DEBUG (width:', window.innerWidth, 'px)');
   console.log('========================================');
 
+  // Проверка кнопки продолжить и отступов
+  const continueBtn = document.getElementById('st-continue-btn');
+  const stTop = document.querySelector('.st-top');
+  const stBlock1 = document.querySelector('.st-block-1');
+  
+  console.log('\n🔍 ОТСТУПЫ МЕЖДУ ЭЛЕМЕНТАМИ:');
+  
+  if (continueBtn) {
+    const btnStyles = window.getComputedStyle(continueBtn);
+    const btnRect = continueBtn.getBoundingClientRect();
+    console.log('\n📌 #st-continue-btn (кнопка продолжить):');
+    console.log('   margin: top=' + btnStyles.marginTop + ', bottom=' + btnStyles.marginBottom);
+    console.log('   padding: top=' + btnStyles.paddingTop + ', bottom=' + btnStyles.paddingBottom);
+    console.log('   position: top=' + btnRect.top.toFixed(1) + ', height=' + btnRect.height.toFixed(1));
+    console.log('   display: ' + btnStyles.display);
+  } else {
+    console.log('\n❌ #st-continue-btn - НЕ НАЙДЕН (возможно ПК версия)');
+  }
+  
+  if (stTop) {
+    const topStyles = window.getComputedStyle(stTop);
+    const topRect = stTop.getBoundingClientRect();
+    console.log('\n📌 .st-top (шапка):');
+    console.log('   padding: top=' + topStyles.paddingTop + ', bottom=' + topStyles.paddingBottom);
+    console.log('   position: bottom=' + topRect.bottom.toFixed(1));
+    console.log('   display: ' + topStyles.display);
+  }
+  
+  if (stBlock1) {
+    const block1Styles = window.getComputedStyle(stBlock1);
+    const block1Rect = stBlock1.getBoundingClientRect();
+    console.log('\n📌 .st-block-1 (прогресс):');
+    console.log('   margin: top=' + block1Styles.marginTop + ', bottom=' + block1Styles.marginBottom);
+    console.log('   padding: top=' + block1Styles.paddingTop + ', bottom=' + block1Styles.paddingBottom);
+    console.log('   position: top=' + block1Rect.top.toFixed(1));
+    console.log('   display: ' + block1Styles.display);
+  }
+  
+  // Расчёт расстояний между элементами
+  if (continueBtn && stBlock1) {
+    const btnRect = continueBtn.getBoundingClientRect();
+    const block1Rect = stBlock1.getBoundingClientRect();
+    const gap = block1Rect.top - btnRect.bottom;
+    console.log('\n📏 РАССТОЯНИЯ:');
+    console.log('   Кнопка bottom: ' + btnRect.bottom.toFixed(1) + 'px');
+    console.log('   Блок 1 top: ' + block1Rect.top.toFixed(1) + 'px');
+    console.log('   GAP между кнопкой и прогрессом: ' + gap.toFixed(1) + 'px');
+  }
+  
+  if (stTop && continueBtn) {
+    const topRect = stTop.getBoundingClientRect();
+    const btnRect = continueBtn.getBoundingClientRect();
+    const gap = btnRect.top - topRect.bottom;
+    console.log('   Шапка bottom: ' + topRect.bottom.toFixed(1) + 'px');
+    console.log('   Кнопка top: ' + btnRect.top.toFixed(1) + 'px');
+    console.log('   GAP между шапкой и кнопкой: ' + gap.toFixed(1) + 'px');
+  }
+
   const blocks = {
+    '.st-top': 'Шапка',
+    '#st-continue-btn': 'Кнопка продолжить',
     '.st-block-1': 'Прогресс',
     '.st-block-2': 'Режимы',
     '.st-block-4': 'Сложность',
@@ -3215,18 +3275,21 @@ window.debugMobileStats = () => {
     '.st-block-5': 'Достижения'
   };
 
-  Object.entries(blocks).forEach(([selector, name]) => {
+  console.log('\n📊 Порядок блоков (по DOM):');
+  Object.entries(blocks).forEach(([selector, name], index) => {
     const el = document.querySelector(selector);
     if (el) {
       const rect = el.getBoundingClientRect();
       const styles = window.getComputedStyle(el);
-      console.log(`\n📦 ${name} (${selector}):`);
-      console.log(`   Position: top=${rect.top.toFixed(1)}, bottom=${rect.bottom.toFixed(1)}, height=${rect.height.toFixed(1)}`);
-      console.log(`   Margin: top=${styles.marginTop}, bottom=${styles.marginBottom}`);
-      console.log(`   Padding: top=${styles.paddingTop}, bottom=${styles.paddingBottom}`);
-      console.log(`   Class list: ${el.className}`);
+      console.log(`   ${index + 1}. ${selector}`);
+      console.log(`      ${name}`);
+      console.log(`      order: ${styles.order}`);
+      console.log(`      display: ${styles.display}`);
+      console.log(`      position: top=${rect.top.toFixed(1)}, height=${rect.height.toFixed(1)}`);
+      console.log(`      margin: top=${styles.marginTop}, bottom=${styles.marginBottom}`);
+      console.log(`      padding: top=${styles.paddingTop}, bottom=${styles.paddingBottom}`);
     } else {
-      console.log(`\n❌ ${name} (${selector}) - NOT FOUND`);
+      console.log(`   ${index + 1}. ${selector} - НЕ НАЙДЕН`);
     }
   });
 
