@@ -3543,6 +3543,14 @@ window.debugMobileStats = () => {
   console.log('\n========================================');
   console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
   console.log('========================================');
+  
+  // Переместить кнопку внутрь st-main для работы order
+  const btn = document.getElementById('st-continue-btn');
+  const stMain = document.querySelector('.st-main');
+  if (btn && stMain && !stMain.contains(btn) && window.innerWidth <= 768) {
+    stMain.insertBefore(btn, stMain.firstChild);
+    console.log('✅ Кнопка перемещена внутрь .st-main');
+  }
 };
 
 // Показать описание достижения (toast)
@@ -4595,7 +4603,7 @@ window.startMode = (modeId) => {
 };
 
 // ============================================
-// АВТОМАТИЧЕСКИЙ ВЫЗОВ DEBUG НА МОБИЛЬНЫХ
+// АВТОМАТИЧ��СКИЙ ВЫЗОВ DEBUG НА МОБИЛЬНЫХ
 // ============================================
 if (window.innerWidth <= 768) {
   setTimeout(() => {
