@@ -749,14 +749,19 @@ const STATS_STYLES = `
   max-width: none;
 }
 
-/* Уменьшаем отступ после кнопки продолжить */
-#st-continue-btn {
-  margin-bottom: 5px !important;
-}
-
-/* Уменьшаем отступ перед блоком прогресса */
-.st-block-1 {
-  margin-top: 0 !important;
+/* Mobile: поменять местами кнопку и блок прогресса */
+@media (max-width: 768px) {
+  .st-main {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .st-block-1 {
+    order: -1 !important; /* Блок прогресса первый */
+  }
+  #st-continue-btn {
+    order: 0 !important; /* Кнопка вторая */
+    margin: 8px 0 !important;
+  }
 }
 
 /* Progress Cards */
@@ -4735,3 +4740,4 @@ function getActivitySeries(mode) {
   }
   return res;
 }
+
