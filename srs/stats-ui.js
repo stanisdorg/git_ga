@@ -1180,18 +1180,18 @@ const STATS_STYLES = `
     background: linear-gradient(135deg, var(--st-surf) 0%, var(--st-surf-h) 100%) !important;
     border: 1px solid var(--st-border);
     border-radius: 16px;
-    padding: 20px;
+    padding: 10px 20px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     box-shadow: none !important;
   }
-  
+
   .stc-header-with-info {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
   
   .stc-block-title {
@@ -1203,13 +1203,6 @@ const STATS_STYLES = `
     gap: 6px;
   }
   
-  .stc-top {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex: 1;
-  }
-
   .stc-content {
     display: flex;
     flex-direction: column;
@@ -1427,15 +1420,20 @@ const STATS_STYLES = `
   /* Мобильная версия блока прогресса - компактная с центрированием */
   @media (max-width: 768px) {
     .st-compact-card {
-      padding: 14px 12px !important;
+      padding: 10px 12px !important;
       min-height: auto !important;
+      gap: 8px !important;
     }
     .stc-header-with-info {
-      margin-bottom: 8px !important;
+      margin-bottom: 0 !important;
+      justify-content: center !important;
     }
     .stc-block-title {
       font-size: 14px !important;
       justify-content: center !important;
+    }
+    .stc-block-title .index-value {
+      font-size: 16px !important;
     }
     .stc-content {
       display: flex !important;
@@ -1450,26 +1448,37 @@ const STATS_STYLES = `
       gap: 4px !important;
     }
     .stc-label.stc-today {
-      font-size: 12px !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
     }
     .stc-today-line {
       font-size: 12px !important;
       white-space: normal !important;
     }
+    .stc-today-line .stc-value {
+      font-size: 13px !important;
+    }
+    .stc-today-line .muted {
+      font-size: 11px !important;
+    }
+    .stc-today-line .approx {
+      font-size: 12px !important;
+    }
     .stc-forecast-row {
       justify-content: center !important;
       gap: 6px !important;
-      font-size: 12px !important;
+      font-size: 11px !important;
     }
     .stc-forecast-row .stc-icon {
-      width: 16px !important;
-      height: 16px !important;
+      width: 14px !important;
+      height: 14px !important;
     }
     .stc-forecast-text {
-      font-size: 12px !important;
+      font-size: 11px !important;
     }
     .stc-forecast-text .date {
-      font-size: 13px !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
     }
   }
 
