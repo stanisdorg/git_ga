@@ -2843,13 +2843,67 @@ function renderStats() {
     console.log('   gap:', mgStyles.gap);
     console.log('   width:', mgStyles.width);
     console.log('   height:', mgStyles.height);
-    console.log('   background:', mgStyles.background);
-    console.log('   inline style:', modesGrid.getAttribute('style'));
+    
+    // Проверка дочерних карточек
+    const cards = modesGrid.querySelectorAll('.st-mode-card, .st-mode-card-large');
+    console.log('\n📌 КАРТОЧКИ (' + cards.length + '):');
+    cards.forEach((card, i) => {
+      const cStyles = window.getComputedStyle(card);
+      const icon = card.querySelector('.st-mode-icon');
+      const title = card.querySelector('.st-mode-title');
+      const desc = card.querySelector('.st-mode-desc');
+      
+      console.log('\n   Карточка ' + (i + 1) + ':');
+      console.log('      display:', cStyles.display);
+      console.log('      padding:', cStyles.padding);
+      console.log('      background:', cStyles.background);
+      console.log('      border:', cStyles.border);
+      console.log('      border-radius:', cStyles.borderRadius);
+      console.log('      height:', cStyles.height);
+      console.log('      flex-direction:', cStyles.flexDirection);
+      console.log('      align-items:', cStyles.alignItems);
+      console.log('      gap:', cStyles.gap);
+      
+      if (icon) {
+        const iStyles = window.getComputedStyle(icon);
+        console.log('      .st-mode-icon:');
+        console.log('         width:', iStyles.width, '| height:', iStyles.height);
+        console.log('         background:', iStyles.background);
+        console.log('         border-radius:', iStyles.borderRadius);
+        console.log('         margin:', iStyles.margin);
+        console.log('         display:', iStyles.display);
+        console.log('         innerHTML:', icon.innerHTML.substring(0, 50) + '...');
+      }
+      
+      if (title) {
+        const tStyles = window.getComputedStyle(title);
+        console.log('      .st-mode-title:');
+        console.log('         font-size:', tStyles.fontSize);
+        console.log('         text-align:', tStyles.textAlign);
+        console.log('         flex:', tStyles.flex);
+        console.log('         text:', title.textContent.substring(0, 30));
+      }
+      
+      if (desc) {
+        const dStyles = window.getComputedStyle(desc);
+        console.log('      .st-mode-desc:');
+        console.log('         display:', dStyles.display);
+        console.log('         font-size:', dStyles.fontSize);
+      }
+    });
+  }
 
-    // Количество дочерних элементов
+  const stBlock2 = container.querySelector('.st-block-2');
+  console.log('\n📌 .st-block-2:', stBlock2 ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+  if (stBlock2) {
+    const b2Styles = window.getComputedStyle(stBlock2);
+    console.log('   display:', b2Styles.display);
+    console.log('   flex-direction:', b2Styles.flexDirection);
+  }
+
+  // Проверка каждого child
+  if (modesGrid) {
     console.log('   children count:', modesGrid.children.length);
-
-    // Проверка каждого child
     Array.from(modesGrid.children).forEach((child, i) => {
       const childStyles = window.getComputedStyle(child);
       console.log(`   child[${i}]:`, child.className);
