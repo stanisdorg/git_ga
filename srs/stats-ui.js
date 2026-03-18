@@ -2201,11 +2201,6 @@ function renderStats() {
                 <span class="stc-today-line" style="font-size:12px!important;white-space:normal!important;text-align:center!important;"><span class="stc-value stc-strong" style="font-size:13px!important;">${sessionCount}</span> карточек <span class="muted" style="font-size:11px!important;">≈</span> <span class="approx" style="font-size:11px!important;font-weight:600!important;">${planMins} минут</span></span>
               </div>
               <div class="stc-row stc-forecast-row" style="justify-content:center!important;gap:4px!important;font-size:10px!important;text-align:center!important;">
-                <span class="stc-icon" aria-hidden="true" style="width:12px!important;height:12px!important;">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </span>
                 <span class="stc-forecast-text" style="font-size:10px!important;text-align:center!important;">Прогноз: <span class="date" style="font-size:11px!important;font-weight:600!important;">${finishDateStr}</span></span>
               </div>
             </div>
