@@ -3480,11 +3480,11 @@ window.debugMobileStats = () => {
 
   // Проверка контейнеров
   const stWrapper = document.querySelector('.st-wrapper');
-  const stMain = document.querySelector('.st-main');
+  const stMain2 = document.querySelector('.st-main');
   const statsContainer = document.getElementById('stats-container');
-  
+
   console.log('\n🔍 КОНТЕЙНЕРЫ:');
-  
+
   if (stWrapper) {
     const wrapperStyles = window.getComputedStyle(stWrapper);
     const wrapperRect = stWrapper.getBoundingClientRect();
@@ -3494,6 +3494,15 @@ window.debugMobileStats = () => {
     console.log('   position: top=' + wrapperRect.top.toFixed(1));
     console.log('   display: ' + wrapperStyles.display);
     console.log('   gap: ' + wrapperStyles.gap);
+  }
+  
+  if (stMain2) {
+    const main2Styles = window.getComputedStyle(stMain2);
+    const main2Rect = stMain2.getBoundingClientRect();
+    console.log('\n📌 .st-main (из КОНТЕЙНЕРЫ):');
+    console.log('   display: ' + main2Styles.display);
+    console.log('   flex-direction: ' + main2Styles.flexDirection);
+    console.log('   position: top=' + main2Rect.top.toFixed(1));
   }
   
   if (stMain) {
@@ -3525,10 +3534,10 @@ window.debugMobileStats = () => {
   }
 
   // Проверка gap в .st-main
-  if (stMain) {
-    const mainStyles = window.getComputedStyle(stMain);
-    console.log(`\n   .st-main gap: ${mainStyles.gap}`);
-    console.log(`   .st-main display: ${mainStyles.display}`);
+  if (stMain2) {
+    const main2Styles = window.getComputedStyle(stMain2);
+    console.log(`\n   .st-main gap: ${main2Styles.gap}`);
+    console.log(`   .st-main display: ${main2Styles.display}`);
   }
 
   console.log('\n========================================');
