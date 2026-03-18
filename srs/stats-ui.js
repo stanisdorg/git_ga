@@ -3543,9 +3543,9 @@ window.debugMobileStats = () => {
   // Переместить кнопку внутрь .st-main после .st-block-1
   const continueBtn3 = document.getElementById('st-continue-btn');
   const stBlock1After = document.querySelector('.st-block-1');
-  const stMain3 = document.querySelector('.st-main');
-  if (continueBtn3 && stBlock1After && stMain3 && !stMain3.contains(continueBtn3)) {
-    stMain3.insertBefore(continueBtn3, stBlock1After.nextSibling);
+  const stMain2 = document.querySelector('.st-main');
+  if (continueBtn3 && stBlock1After && stMain2 && !stMain2.contains(continueBtn3)) {
+    stMain2.insertBefore(continueBtn3, stBlock1After.nextSibling);
     console.log('✅ Кнопка перемещена внутрь .st-main');
   }
 };
