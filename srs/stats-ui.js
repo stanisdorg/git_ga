@@ -3544,12 +3544,15 @@ window.debugMobileStats = () => {
   console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
   console.log('========================================');
   
-  // Переместить кнопку внутрь st-main для работы order
+  // Переместить кнопку ВНУТРЬ st-main и ПЕРЕД st-block-1 для работы order
   const btnMove = document.getElementById('st-continue-btn');
+  const stBlock1 = document.querySelector('.st-block-1');
   const stMainMove = document.querySelector('.st-main');
-  if (btnMove && stMainMove && !stMainMove.contains(btnMove) && window.innerWidth <= 768) {
-    stMainMove.insertBefore(btnMove, stMainMove.firstChild);
-    console.log('✅ Кнопка перемещена внутрь .st-main');
+  if (btnMove && stBlock1 && stMainMove && window.innerWidth <= 768) {
+    if (!stMainMove.contains(btnMove)) {
+      stMainMove.insertBefore(btnMove, stBlock1);
+      console.log('✅ Кнопка перемещена внутрь .st-main ПЕРЕД .st-block-1');
+    }
   }
 };
 
