@@ -1699,32 +1699,54 @@ const STATS_STYLES = `
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
   .st-mode-desc { display: none; }
 
-  /* Mobile: 2 карточки в ряд - ПЕРЕМЕЩЕНО В КОНЕЦ */
+  /* Mobile: компактные карточки режимов - Вариант 5 с градиентом */
   @media (max-width: 768px) {
     .modes-grid {
       display: grid !important;
-      grid-template-columns: repeat(2, 1fr) !important; /* Изменено с 1fr 1fr на repeat(2, 1fr) */
+      grid-template-columns: repeat(2, 1fr) !important;
       gap: 8px !important;
-      height: auto !important; /* Изменено с calc(200px - 2px) */
+      height: auto !important;
     }
     .modes-grid .st-mode-card {
-      padding: 12px 8px !important;
-      width: auto !important;
+      padding: 8px 10px !important;
+      border-radius: 8px !important;
+      border: none !important;
+      background: linear-gradient(135deg, rgba(255,159,28,0.08) 0%, rgba(46,196,182,0.05) 100%) !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      transition: all 0.2s !important;
+    }
+    .modes-grid .st-mode-card:hover {
+      background: linear-gradient(135deg, rgba(255,159,28,0.12) 0%, rgba(46,196,182,0.08) 100%) !important;
+      border: 1px solid rgba(255,159,28,0.4) !important;
     }
     .modes-grid .st-mode-card-large {
-      padding: 12px 8px !important;
+      padding: 8px 10px !important;
+      border-radius: 8px !important;
     }
     .modes-grid .st-mode-card-large .st-mode-icon {
-      font-size: 32px !important;
-      margin-bottom: 8px !important;
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 28px !important;
+      margin: 0 !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, rgba(255,159,28,0.3) 0%, rgba(255,107,53,0.3) 100%) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+      filter: none !important;
     }
     .modes-grid .st-mode-card-large .st-mode-title {
-      font-size: 13px !important;
-      margin-bottom: 4px !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      margin: 0 !important;
+      text-align: left !important;
+      flex: 1 !important;
     }
     .modes-grid .st-mode-card-large .st-mode-desc {
-      font-size: 10px !important;
-      line-height: 1.3 !important;
+      display: none !important;
     }
   }
 
@@ -2224,12 +2246,16 @@ function renderStats() {
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
-              <span class="st-mode-icon">📝</span>
+              <span class="st-mode-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+              </span>
               <span class="st-mode-title">Работа над ошибками</span>
               <span class="st-mode-desc">Карточки с низкой точностью ответов</span>
             </div>
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
-              <span class="st-mode-icon">🌱</span>
+              <span class="st-mode-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              </span>
               <span class="st-mode-title">Только новые</span>
               <span class="st-mode-desc">Карточки, которые вы ещё не начинали учить</span>
             </div>
