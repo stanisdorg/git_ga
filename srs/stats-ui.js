@@ -749,18 +749,11 @@ const STATS_STYLES = `
   max-width: none;
 }
 
-/* Mobile: поменять местами кнопку и блок прогресса */
+/* Mobile: стили для кнопки продолжить */
 @media (max-width: 768px) {
   .st-main {
     display: flex !important;
     flex-direction: column !important;
-  }
-  .st-block-1 {
-    order: -1 !important; /* Блок прогресса первый */
-  }
-  #st-continue-btn {
-    order: 0 !important; /* Кнопка вторая */
-    margin: 8px 0 !important;
   }
 }
 
@@ -3543,17 +3536,6 @@ window.debugMobileStats = () => {
   console.log('\n========================================');
   console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
   console.log('========================================');
-  
-  // Переместить кнопку ВНУТРЬ st-main и ПЕРЕД st-block-1 для работы order
-  const btnMove = document.getElementById('st-continue-btn');
-  const stBlock1Move = document.querySelector('.st-block-1');
-  const stMainMove = document.querySelector('.st-main');
-  if (btnMove && stBlock1Move && stMainMove && window.innerWidth <= 768) {
-    if (!stMainMove.contains(btnMove)) {
-      stMainMove.insertBefore(btnMove, stBlock1Move);
-      console.log('✅ Кнопка перемещена внутрь .st-main ПЕРЕД .st-block-1');
-    }
-  }
 };
 
 // Показать описание достижения (toast)
