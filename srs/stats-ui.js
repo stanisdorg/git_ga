@@ -2271,9 +2271,9 @@ function renderStats() {
         <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
-            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:12px!important;align-items:center!important;justify-content:space-between!important;">
-              <span class="stc-block-title" style="font-size:14px!important;font-weight:600!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
-              <span class="stc-forecast-text" style="font-size:11px!important;color:var(--st-text-sec);">Прогноз: <span class="date" style="font-size:12px!important;font-weight:600!important;">${finishDateStr}</span></span>
+            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:8px!important;align-items:center!important;justify-content:space-between!important;overflow:hidden!important;">
+              <span class="stc-block-title" style="font-size:13px!important;font-weight:600!important;white-space:nowrap!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
+              <span class="stc-forecast-text" style="font-size:10px!important;color:var(--st-text-sec);white-space:nowrap!important;">Прогноз: <span class="date" style="font-size:12px!important;font-weight:600!important;">${finishDateStr}</span></span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;">i</button>
             </div>
           </div>
