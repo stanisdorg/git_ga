@@ -1210,6 +1210,13 @@ const STATS_STYLES = `
     flex: 1;
   }
 
+  .stc-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
   .stc-left {
     display: flex;
     flex-direction: column;
@@ -1288,31 +1295,27 @@ const STATS_STYLES = `
     color: var(--st-sec);
     font-weight: 600;
   }
-  
-  .stc-bottom {
-    border-top: 1px solid var(--st-border);
-    padding-top: 12px;
-  }
-  
-  .stc-forecast {
+
+  .stc-forecast-row {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 13px;
   }
-  
-  .stc-forecast .stc-icon {
+
+  .stc-forecast-row .stc-icon {
     width: 20px;
     height: 20px;
     color: var(--st-sec);
+    flex-shrink: 0;
   }
-  
-  .stc-forecast .key {
+
+  .stc-forecast-text {
     color: var(--st-text-sec);
     font-size: 13px;
   }
-  
-  .stc-forecast .date {
+
+  .stc-forecast-text .date {
     color: var(--st-text);
     font-weight: 600;
     font-size: 14px;
@@ -1419,6 +1422,55 @@ const STATS_STYLES = `
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
+  }
+
+  /* Мобильная версия блока прогресса - компактная с центрированием */
+  @media (max-width: 768px) {
+    .st-compact-card {
+      padding: 14px 12px !important;
+      min-height: auto !important;
+    }
+    .stc-header-with-info {
+      margin-bottom: 8px !important;
+    }
+    .stc-block-title {
+      font-size: 14px !important;
+      justify-content: center !important;
+    }
+    .stc-content {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
+    .stc-row {
+      justify-content: center !important;
+      flex-wrap: wrap !important;
+      gap: 4px !important;
+    }
+    .stc-label.stc-today {
+      font-size: 12px !important;
+    }
+    .stc-today-line {
+      font-size: 12px !important;
+      white-space: normal !important;
+    }
+    .stc-forecast-row {
+      justify-content: center !important;
+      gap: 6px !important;
+      font-size: 12px !important;
+    }
+    .stc-forecast-row .stc-icon {
+      width: 16px !important;
+      height: 16px !important;
+    }
+    .stc-forecast-text {
+      font-size: 12px !important;
+    }
+    .stc-forecast-text .date {
+      font-size: 13px !important;
+    }
   }
 
   /* .modes-grid удалено - теперь только в @media (max-width: 768px) */
@@ -2068,7 +2120,7 @@ function renderStats() {
       <!-- Отображение имени п��льзователя будет добавлено через JS -->
       <div class="st-username-placeholder" style="display:none"></div>
 
-      <!-- Кнопка продолжить на всю ширину -->
+      <!-- Кнопка прод��лжить на всю ширину -->
       <button class="st-cta-btn st-continue-mobile" id="st-continue-btn">Продолжить обучение</button>
 
       <div class="st-main">
@@ -2079,23 +2131,18 @@ function renderStats() {
               <span class="stc-block-title">Прогресс: <span class="index-value stc-red stc-strong">${understandingIndex}%</span></span>
               <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?">i</button>
             </div>
-            <div class="stc-top">
-              <div class="stc-left">
-                <div class="stc-row">
-                  <span class="stc-label stc-today">Сегодня:</span>
-                  <span class="stc-today-line" style="white-space: nowrap;"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">≈</span> <span class="approx">${planMins} минут</span></span>
-                </div>
+            <div class="stc-content">
+              <div class="stc-row">
+                <span class="stc-label stc-today">Сегодня:</span>
+                <span class="stc-today-line"><span class="stc-value stc-strong">${sessionCount}</span> карточек <span class="muted">≈</span> <span class="approx">${planMins} минут</span></span>
               </div>
-            </div>
-            <div class="stc-bottom">
-              <div class="stc-forecast">
+              <div class="stc-row stc-forecast-row">
                 <span class="stc-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none">
                     <path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 4h10M7 10h10M7 14h10M7 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
-                <span class="key">Прогноз:</span>
-                <span class="date">${finishDateStr}</span>
+                <span class="stc-forecast-text">Прогноз: <span class="date">${finishDateStr}</span></span>
               </div>
             </div>
           </div>
