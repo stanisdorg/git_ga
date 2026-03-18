@@ -2577,19 +2577,59 @@ function renderStats() {
   const header = container.querySelector('.stc-header-with-info');
   if (header) {
     const hStyles = window.getComputedStyle(header);
+    const hRect = header.getBoundingClientRect();
     console.log('\n📌 .stc-header-with-info:');
     console.log('   justify-content: ' + hStyles.justifyContent);
     console.log('   margin-bottom: ' + hStyles.marginBottom);
+    console.log('   display: ' + hStyles.display);
+    console.log('   width: ' + hRect.width.toFixed(1) + 'px');
+    console.log('   height: ' + hRect.height.toFixed(1) + 'px');
+    
+    // Проверка дочерних элементов
+    const children = header.children;
+    console.log('   children count: ' + children.length);
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      const cStyles = window.getComputedStyle(child);
+      const cRect = child.getBoundingClientRect();
+      console.log('   child[' + i + ']: ' + child.className);
+      console.log('      justify-content: ' + cStyles.justifyContent);
+      console.log('      text-align: ' + cStyles.textAlign);
+      console.log('      flex: ' + cStyles.flex);
+      console.log('      flex-shrink: ' + cStyles.flexShrink);
+      console.log('      flex-grow: ' + cStyles.flexGrow);
+      console.log('      width: ' + cRect.width.toFixed(1) + 'px');
+      console.log('      left: ' + cRect.left.toFixed(1) + 'px');
+    }
   }
   
   // Проверка заголовка текста
   const title = container.querySelector('.stc-block-title');
   if (title) {
     const tStyles = window.getComputedStyle(title);
+    const tRect = title.getBoundingClientRect();
     console.log('\n📌 .stc-block-title:');
     console.log('   justify-content: ' + tStyles.justifyContent);
     console.log('   text-align: ' + tStyles.textAlign);
     console.log('   font-size: ' + tStyles.fontSize);
+    console.log('   display: ' + tStyles.display);
+    console.log('   flex: ' + tStyles.flex);
+    console.log('   width: ' + tRect.width.toFixed(1) + 'px');
+    console.log('   left: ' + tRect.left.toFixed(1) + 'px');
+    console.log('   innerText: "' + tStyles.innerText + '"');
+  }
+  
+  // Проверка кнопки "i"
+  const infoBtn = container.querySelector('.st-info-btn');
+  if (infoBtn) {
+    const bStyles = window.getComputedStyle(infoBtn);
+    const bRect = infoBtn.getBoundingClientRect();
+    console.log('\n📌 .st-info-btn (кнопка "i"):');
+    console.log('   flex-shrink: ' + bStyles.flexShrink);
+    console.log('   margin-left: ' + bStyles.marginLeft);
+    console.log('   display: ' + bStyles.display);
+    console.log('   width: ' + bRect.width.toFixed(1) + 'px');
+    console.log('   left: ' + bRect.left.toFixed(1) + 'px');
   }
   
   // Проверка контента
