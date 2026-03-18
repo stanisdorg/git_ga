@@ -1135,24 +1135,19 @@ body.learning-mode #bottom-nav {
     .seg-good  { background: #4caf50 !important; }
     .seg-easy  { background: #2196f3 !important; }
 
-    /* 2) Градиент поверх цвета для текущих закрашенных сегментов */
+    /* 2) Закрашенные текущие сегменты - сохраняют цвет + градиент + увеличиваются в 1.5 раза */
     .seg-again.current,
     .seg-hard.current,
     .seg-good.current,
     .seg-easy.current {
-        /* Сохраняем цвет + добавляем градиент поверх */
+        /* Сохраняем свой цвет + добавляем градиент поверх */
         box-shadow: inset 0 0 3px rgba(255,255,255,0.6) !important;
         background-image: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%) !important;
         background-blend-mode: overlay !important;
-        transition: height 0.2s ease !important;
-    }
-    /* 2) Увеличение закрашенных текущих сегментов в 1.5 раза (сохраняя цвет) */
-    .seg-again.current,
-    .seg-hard.current,
-    .seg-good.current,
-    .seg-easy.current {
+        /* Увеличение в 1.5 раза по вертикали */
         height: 9px !important; /* 6px * 1.5 = 9px */
         margin-top: -1.5px !important; /* Компенсация для центрирования */
+        transition: height 0.2s ease !important;
     }
 
     /* Убираем отступы после прогресс-бара */

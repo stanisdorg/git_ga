@@ -936,6 +936,7 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     console.log('[SEGMENTS COLOR] === START ===');
     console.log('[SEGMENTS COLOR] results=', results, 'total=', total, 'currentIndex=', currentIndex);
     console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
+    
     if (results && results.length) {
         // results[i] содержит оценку для карточки с индексом i
         // null означает, что карточка ещё не пройдена
@@ -951,26 +952,43 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
                 console.log('[SEGMENTS COLOR] el NOT FOUND for idx=', idx, 'grade=', g);
                 continue;
             }
-            const oldClass = el.className;
-            const hasCurrent = el.classList.contains('current');
-            console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'oldClass=', oldClass, 'hasCurrent=', hasCurrent);
+            
+            // Проверяем, является ли этот сегмент текущим
+            const isCurrent = (idx === currentIndex);
+            console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'isCurrent=', isCurrent, 'currentIndex=', currentIndex);
+            console.log('[SEGMENTS COLOR] el.className BEFORE=', el.className);
+            
+            // Устанавливаем базовый класс + цвет
             el.className = 'learn-progress-segment';
             if (g === 0) el.classList.add('seg-again');
             else if (g === 1) el.classList.add('seg-hard');
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
-            if (hasCurrent) el.classList.add('current');
-            console.log('[SEGMENTS COLOR] idx=', idx, 'newClass=', el.className);
+            
+            // Добавляем класс current, если это текущий сегмент
+            if (isCurrent) {
+                el.classList.add('current');
+                console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
+            }
+            
+            console.log('[SEGMENTS COLOR] el.className AFTER=', el.className);
+            console.log('[SEGMENTS COLOR] el.classList=', Array.from(el.classList));
             coloredCount++;
         }
-        console.log('[SEGMENTS COLOR] Colored', coloredCount, 'segments');
+        console.log('[SEGMENTS COLOR] Colored', coloredCount, 'segments out of', total);
     } else {
         console.log('[SEGMENTS COLOR] NO RESULTS to color');
     }
     console.log('[SEGMENTS COLOR] === END ===');
 
-    // Отладка
+    // Финальная отладка
     console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
+    
+    // Проверяем все сегменты после покраски
+    console.log('[SEGMENTS FINAL] === ALL SEGMENTS STATE ===');
+    Array.from(segs.children).forEach((el, i) => {
+        console.log('[SEGMENTS FINAL] idx=', i, 'className=', el.className, 'classList=', Array.from(el.classList));
+    });
 }
 
 function wireSegmentsInteractions(sess) {
