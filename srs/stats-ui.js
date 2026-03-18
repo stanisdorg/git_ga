@@ -2290,19 +2290,19 @@ function renderStats() {
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
-              <span class="st-mode-icon">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:8px 10px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.08) 0%,rgba(46,196,182,0.05) 100%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;height:auto!important;" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
+              <span class="st-mode-icon" style="width:28px!important;height:28px!important;margin:0!important;border-radius:50%!important;background:linear-gradient(135deg,rgba(255,159,28,0.3) 0%,rgba(255,107,53,0.3) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
               </span>
-              <span class="st-mode-title">Работа над ошибками</span>
-              <span class="st-mode-desc">Карточки с низкой точностью ответов</span>
+              <span class="st-mode-title" style="font-size:12px!important;font-weight:600!important;margin:0!important;text-align:left!important;flex:1!important;">Работа над ошибками</span>
+              <span class="st-mode-desc" style="display:none!important;">Карточки с низкой точностью ответов</span>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
-              <span class="st-mode-icon">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:8px 10px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.08) 0%,rgba(46,196,182,0.05) 100%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;height:auto!important;" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+              <span class="st-mode-icon" style="width:28px!important;height:28px!important;margin:0!important;border-radius:50%!important;background:linear-gradient(135deg,rgba(255,159,28,0.3) 0%,rgba(255,107,53,0.3) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               </span>
-              <span class="st-mode-title">Только новые</span>
-              <span class="st-mode-desc">Карточки, которые вы ещё не начинали учить</span>
+              <span class="st-mode-title" style="font-size:12px!important;font-weight:600!important;margin:0!important;text-align:left!important;flex:1!important;">Только новые</span>
+              <span class="st-mode-desc" style="display:none!important;">Карточки, которые вы ещё не начинали учить</span>
             </div>
           </div>
         </div>
@@ -3320,7 +3320,7 @@ window.openDiffInfoModal = (event) => {
   window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
   window.simReset = () => { window.simValue = 3.0; updateSim(); };
   function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="' + id + '"><stop offset="' + fillPercent + '%" stop-color="#ff4d4d"/><stop offset="' + fillPercent + '%" stop-color="#444"/></linearGradient></defs><path fill="url(#' + id + ')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
-  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
+  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', '��тандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
   updateSim();
 };
 
