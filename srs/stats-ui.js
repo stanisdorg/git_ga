@@ -739,23 +739,31 @@ const STATS_STYLES = `
 .st-cta-btn:active { transform: scale(0.98); }
 .st-cta-btn:hover { background: #ffa833; }
 
-/* Mobile continue button - full width below header */
-.st-continue-mobile {
-  display: none;
-  margin: 5px 0 !important;
-  padding: 10px 20px !important;
-  width: 100%;
-  max-width: none;
-}
-
-/* Уменьшаем отступ после кнопки продолжить */
-#st-continue-btn {
-  margin-bottom: 5px !important;
-}
-
-/* Уменьшаем отступ перед блоком прогресса */
-.st-block-1 {
-  margin-top: 0 !important;
+/* Mobile continue button - FIXED at bottom */
+@media (max-width: 768px) {
+  .st-continue-mobile {
+    display: block !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 12px 20px !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: var(--st-prim) !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 12px 12px 0 0 !important;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.3) !important;
+    z-index: 1000 !important;
+    cursor: pointer !important;
+  }
+  
+  /* Spacer to prevent content from being hidden behind fixed button */
+  .st-wrapper {
+    padding-bottom: 80px !important;
+  }
 }
 
 /* Progress Cards */
