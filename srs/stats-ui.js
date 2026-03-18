@@ -3335,15 +3335,53 @@ window.debugMobileStats = () => {
   console.log(`   window.innerHeight: ${window.innerHeight}`);
   console.log(`   Пустое пространство внизу: ${(bodyHeight - window.innerHeight).toFixed(1)}px`);
 
-  if (wrapper) {
-    const wrapperStyles = window.getComputedStyle(wrapper);
+  // Проверка контейнеров
+  const stWrapper = document.querySelector('.st-wrapper');
+  const stMain = document.querySelector('.st-main');
+  const statsContainer = document.getElementById('stats-container');
+  
+  console.log('\n🔍 КОНТЕЙНЕРЫ:');
+  
+  if (stWrapper) {
+    const wrapperStyles = window.getComputedStyle(stWrapper);
+    const wrapperRect = stWrapper.getBoundingClientRect();
+    console.log('\n📌 .st-wrapper:');
+    console.log('   margin: top=' + wrapperStyles.marginTop + ', bottom=' + wrapperStyles.marginBottom);
+    console.log('   padding: top=' + wrapperStyles.paddingTop + ', bottom=' + wrapperStyles.paddingBottom);
+    console.log('   position: top=' + wrapperRect.top.toFixed(1));
+    console.log('   display: ' + wrapperStyles.display);
+    console.log('   gap: ' + wrapperStyles.gap);
+  }
+  
+  if (stMain) {
+    const mainStyles = window.getComputedStyle(stMain);
+    const mainRect = stMain.getBoundingClientRect();
+    console.log('\n📌 .st-main:');
+    console.log('   margin: top=' + mainStyles.marginTop + ', bottom=' + mainStyles.marginBottom);
+    console.log('   padding: top=' + mainStyles.paddingTop + ', bottom=' + mainStyles.paddingBottom);
+    console.log('   position: top=' + mainRect.top.toFixed(1));
+    console.log('   display: ' + mainStyles.display);
+    console.log('   gap: ' + mainStyles.gap);
+  }
+  
+  if (statsContainer) {
+    const statsStyles = window.getComputedStyle(statsContainer);
+    const statsRect = statsContainer.getBoundingClientRect();
+    console.log('\n📌 #stats-container:');
+    console.log('   margin: top=' + statsStyles.marginTop + ', bottom=' + statsStyles.marginBottom);
+    console.log('   padding: top=' + statsStyles.paddingTop + ', bottom=' + statsStyles.paddingBottom);
+    console.log('   position: top=' + statsRect.top.toFixed(1));
+    console.log('   display: ' + statsStyles.display);
+  }
+
+  if (stWrapper) {
+    const wrapperStyles = window.getComputedStyle(stWrapper);
     console.log(`\n   .st-wrapper padding-bottom: ${wrapperStyles.paddingBottom}`);
     console.log(`   .st-wrapper margin-bottom: ${wrapperStyles.marginBottom}`);
-    console.log(`   .st-wrapper element:`, wrapper);
+    console.log(`   .st-wrapper element:`, stWrapper);
   }
 
   // Проверка gap в .st-main
-  const stMain = document.querySelector('.st-main');
   if (stMain) {
     const mainStyles = window.getComputedStyle(stMain);
     console.log(`\n   .st-main gap: ${mainStyles.gap}`);
