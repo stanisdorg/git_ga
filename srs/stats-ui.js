@@ -2191,9 +2191,9 @@ function renderStats() {
         <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
           <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
-            <div class="stc-header-with-info" style="margin-bottom:0!important;justify-content:center!important;">
-              <span class="stc-block-title" style="font-size:14px!important;justify-content:center!important;text-align:center!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
-              <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?">i</button>
+            <div class="stc-header-with-info" style="margin-bottom:0!important;justify-content:space-between!important;">
+              <span class="stc-block-title" style="font-size:14px!important;justify-content:center!important;text-align:center!important;flex:1;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:16px!important;">${understandingIndex}%</span></span>
+              <button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:8px;">i</button>
             </div>
             <div class="stc-content" style="display:flex!important;flex-direction:column!important;gap:6px!important;align-items:center!important;text-align:center!important;">
               <div class="stc-row" style="justify-content:center!important;flex-wrap:wrap!important;gap:4px!important;text-align:center!important;">
