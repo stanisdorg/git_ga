@@ -3339,7 +3339,7 @@ export function displayQuestions(questions, title) {
             if (index === 0) console.log('Rendering first item:', item);
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
-            
+
             // DEBUG STYLES - REMOVE LATER
             resultItem.style.display = 'flex';
             resultItem.style.flexDirection = 'column';
@@ -3347,6 +3347,10 @@ export function displayQuestions(questions, title) {
             resultItem.style.backgroundColor = '#242424';
             resultItem.style.border = '1px solid #444';
             resultItem.style.color = '#fff';
+            // FIX WIDTH for mobile
+            resultItem.style.width = '100%';
+            resultItem.style.maxWidth = '100%';
+            resultItem.style.boxSizing = 'border-box';
             // END DEBUG STYLES
 
         if (editMode) {

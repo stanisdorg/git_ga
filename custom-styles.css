@@ -1522,6 +1522,268 @@ body.learning-mode #bottom-nav {
 .level-inline-xp { opacity: 0.8; }
 .level-inline-progress { font-weight: 600; }
 
+/* Сжимаем level-inline-bar на мобильных устройствах */
+@media (max-width: 768px) {
+    .level-inline {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    .level-inline-bar {
+        width: 140px;
+        min-width: 100px;
+    }
+    .level-inline-text {
+        font-size: 8px;
+        line-height: 10px;
+    }
+}
+
+/* Очень маленькие экраны (≤375px) - iPhone SE и подобные */
+@media (max-width: 375px) {
+    .level-inline-bar {
+        width: 100px !important;
+        min-width: 80px !important;
+    }
+    .level-inline-text {
+        font-size: 7px !important;
+        line-height: 9px !important;
+    }
+    .st-compact-card {
+        width: 100% !important;
+        padding: 8px !important;
+    }
+    .stc-block-title {
+        font-size: 11px !important;
+        max-width: 60px !important;
+    }
+    .st-info-btn {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        font-size: 12px !important;
+        line-height: 20px !important;
+        margin-left: 4px !important;
+        flex-shrink: 0 !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+        max-width: 20px !important;
+        max-height: 20px !important;
+    }
+    /* Сжимаем шапку */
+    .st-top-actions {
+        gap: 4px !important;
+    }
+    .st-top-actions button {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    .st-top-metrics {
+        gap: 4px !important;
+    }
+    .st-top-metrics .metric {
+        font-size: 10px !important;
+    }
+    .app-version-display {
+        display: none !important;
+    }
+    #st-continue-top-btn {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        height: 28px !important;
+        margin-left: 4px !important;
+    }
+}
+
+/* Top Actions Bar - равномерные отступы для мобильных */
+@media (max-width: 768px) {
+    .top-actions-bar {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        padding: 4px 8px !important;
+    }
+    .top-actions-bar .nav-icon-btn {
+        padding: 0px 8px !important;
+        min-width: auto !important;
+    }
+    .level-container-right {
+        padding-right: 8px !important;
+        margin-left: 8px !important;
+    }
+    /* Скрываем кнопку "Режим редактирования" на мобильных */
+    .top-actions-bar button[title="Режим редактирования"] {
+        display: none !important;
+    }
+}
+
+/* Очень маленькие экраны (≤375px) - ещё больше сжимаем top-actions-bar */
+@media (max-width: 375px) {
+    /* App wrapper и container - на всю ширину */
+    .app-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    .container {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    .sidebar {
+        display: none !important;
+    }
+    /* Контейнер результатов - на всю ширину */
+    .results-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    #results-list {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        padding: 0 4px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+    .result-item {
+        padding: 8px 10px 12px 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
+    }
+    .result-item * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .question-row {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+        margin-bottom: 4px !important;
+        min-width: 0 !important;
+    }
+    .category-badge, .subcategory-badge {
+        max-width: none !important;
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+    }
+    .question {
+        padding-right: 30px !important;
+        font-size: 14px !important;
+        width: 100% !important;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+    }
+    .answer {
+        font-size: 13px !important;
+        padding-right: 4px !important;
+        width: 100% !important;
+        overflow-wrap: anywhere !important;
+        word-wrap: anywhere !important;
+        hyphens: auto !important;
+    }
+    .hearts-container {
+        right: 32px !important;
+        max-width: none !important;
+    }
+    .fav-btn {
+        right: 6px !important;
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .fav-btn svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    /* Top Actions Bar */
+    .top-actions-bar {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        padding: 4px 4px !important;
+        gap: 2px !important;
+    }
+    .top-actions-bar .nav-icon-btn {
+        padding: 0px 5px !important;
+        min-width: auto !important;
+    }
+    .top-actions-bar .nav-icon-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .username-display {
+        font-size: 11px !important;
+        margin-right: 4px !important;
+        max-width: 80px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+    .level-container-right {
+        margin-left: 4px !important;
+        padding-right: 4px !important;
+    }
+    .level-inline {
+        padding: 2px 4px !important;
+        border-radius: 6px !important;
+    }
+    .level-inline-bar {
+        width: 65px !important;
+        min-width: 50px !important;
+        height: 10px !important;
+    }
+    .level-inline-text {
+        font-size: 5px !important;
+        line-height: 6px !important;
+    }
+    .lv-label {
+        font-size: 9px !important;
+        margin-right: 3px !important;
+    }
+    /* Мобильное имя пользователя - компактнее */
+    .st-mobile-username {
+        top: 8px !important;
+        font-size: 7px !important;
+        left: 200px !important;
+    }
+    /* Блок прогресса - компактный вид */
+    .stc-content {
+        gap: 4px !important;
+        padding-right: 4px !important;
+    }
+    .stc-block-title {
+        font-size: 12px !important;
+        max-width: none !important;
+    }
+    .stc-block-title .index-value {
+        font-size: 14px !important;
+    }
+    .stc-forecast-text {
+        font-size: 9px !important;
+    }
+    .stc-forecast-text .date {
+        font-size: 10px !important;
+    }
+}
+
 /* Mobile Level Bar - скрыт, т.к. в stats-ui.js есть свои стили для мобильной шапки */
 
 .st-compact-card {
@@ -2367,5 +2629,12 @@ body.learning-mode #bottom-nav {
 .results-list.loading {
     opacity: 0.5;
     pointer-events: none;
+}
+
+/* Скрываем мобильное имя пользователя на ПК-версии */
+@media (min-width: 769px) {
+    .st-mobile-username {
+        display: none !important;
+    }
 }
 
