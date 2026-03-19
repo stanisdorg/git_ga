@@ -246,6 +246,21 @@ const STATS_STYLES = `
   flex: 1;
   padding-right: 4px;
   transition: max-height 0.3s ease;
+  position: relative;
+}
+.st-cat-progress-list.collapsed {
+  max-height: 120px; /* Показываем ~1-2 категории */
+  overflow: hidden;
+}
+.st-cat-progress-list.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(22,27,34,0), var(--st-surf));
+  pointer-events: none;
 }
 .st-cat-progress-list::-webkit-scrollbar {
   width: 6px;
@@ -663,11 +678,13 @@ const STATS_STYLES = `
     padding-bottom: 40px !important;
   }
   /* На мобильных список категорий свёрнут по умолчанию */
-  .st-cat-progress-list {
-    display: none !important;
+  .st-cat-progress-list.collapsed {
+    max-height: 120px !important;
+    overflow: hidden !important;
   }
   .st-cat-progress-list.expanded {
-    display: flex !important;
+    max-height: none !important;
+    overflow: auto !important;
   }
   .st-cat-progress-wrap {
     margin-bottom: 24px; /* Отступ после блока категорий */
@@ -2383,7 +2400,7 @@ function renderStats() {
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
             <div class="st-cat-progress-header">
-              <div class="st-cat-progress-title">Категории</div>
+              <div class="st-cat-progress-title">Категории <span id="st-cat-count" style="font-size:12px;color:var(--st-muted);font-weight:400;"></span></div>
               <button class="st-cat-toggle-btn" onclick="window.toggleCategoryList()" title="Свернуть/развернуть">
                 <svg class="st-cat-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -4516,13 +4533,17 @@ window.toggleCategoryList = () => {
   
   if (!list) return;
   
-  // Переключаем видимость
-  if (list.style.display === 'none') {
-    list.style.display = 'flex';
+  const isCollapsed = list.classList.contains('collapsed');
+  
+  // Переключаем состояние
+  if (isCollapsed) {
+    // Разворачиваем
+    list.classList.remove('collapsed');
     list.classList.add('expanded');
     if (icon) icon.classList.remove('collapsed');
   } else {
-    list.style.display = 'none';
+    // Сворачиваем
+    list.classList.add('collapsed');
     list.classList.remove('expanded');
     if (icon) icon.classList.add('collapsed');
   }
@@ -4725,17 +4746,23 @@ function renderCategoryProgress() {
     })
     .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
 
-  // Рендерим
+// Рендерим
   const container = document.getElementById('st-cat-progress-list');
+  const countSpan = document.getElementById('st-cat-count');
   if (!container) return;
+
+  // Показываем счётчик категорий
+  if (countSpan) {
+    countSpan.textContent = `(${categoryProgress.length})`;
+  }
 
   // Определяем начальное состояние
   const isMobile = window.innerWidth <= 768;
   if (isMobile) {
-    container.style.display = 'none'; // По умолчанию свёрнут на мобильных
+    container.classList.add('collapsed'); // Свёрнуто на мобильных
     container.classList.remove('expanded');
   } else {
-    container.style.display = 'flex'; // По умолчанию развёрнут на десктопе
+    container.classList.remove('collapsed'); // Развёрнуто на десктопе
     container.classList.add('expanded');
   }
 
