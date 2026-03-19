@@ -801,10 +801,10 @@ export function initTabsNavigation(appVersion) {
     editToggleBtn.title = 'Режим редактирования';
     editToggleBtn.className = 'nav-icon-btn tab';
     editToggleBtn.style.minWidth = 'auto';
-    editToggleBtn.style.padding = '0 10px';
+    editToggleBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
     editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
     editToggleBtn.style.display = 'none';
-    
+
     // Кнопка администратора для добавления пользователей (появляется после входа админа)
     const adminUsersBtn = document.createElement('button');
     adminUsersBtn.className = 'nav-icon-btn tab';
@@ -812,7 +812,7 @@ export function initTabsNavigation(appVersion) {
     adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
     adminUsersBtn.style.display = 'none';
     adminUsersBtn.style.minWidth = 'auto';
-    adminUsersBtn.style.padding = '0 10px';
+    adminUsersBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
     adminUsersBtn.addEventListener('click', openAdminUsersPanel);
 
     const cloudBtn = document.createElement('button');
@@ -1312,7 +1312,7 @@ export function initTabsNavigation(appVersion) {
             localStorage.removeItem('sessionToken');
             localStorage.removeItem('currentUser');
             localStorage.removeItem('qaSessionUser');
-            // Также очищаем qaUserCards чтобы не было дублей
+            // Также очищаем qaUserCards чтобы не было дубле��
             clearQaUserCards();
             localStorage.removeItem('localDataTimestamp');
             console.log('[Logout] Session cleared. User must login again to access data.');
@@ -2450,7 +2450,7 @@ export function initTabsNavigation(appVersion) {
     function deleteCategoryFlow() {
         const name = prompt('Название категории для удаления:');
         if (!name) return;
-        if (!confirm(`Удалить категорию "${name}" и все её карточки?`)) return;
+        if (!confirm(`Удалить категорию "${name}" и вс�� её карточки?`)) return;
         const placeholders = getCategoryPlaceholders();
         delete placeholders[name];
         setCategoryPlaceholders(placeholders);

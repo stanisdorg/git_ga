@@ -1784,6 +1784,50 @@ body.learning-mode #bottom-nav {
     }
 }
 
+/* iPhone 12 Pro и подобные (390px) - оптимизация шапки */
+@media (min-width: 376px) and (max-width: 420px) {
+    .top-actions-bar {
+        padding: 4px 6px !important;
+        gap: 3px !important;
+        justify-content: flex-start !important;
+    }
+    .top-actions-bar .nav-icon-btn {
+        padding: 0px 6px !important;
+        min-width: auto !important;
+    }
+    .top-actions-bar .nav-icon-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .username-display {
+        font-size: 12px !important;
+        margin-right: 6px !important;
+        max-width: 70px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+    .level-container-right {
+        margin-left: auto !important;
+        padding-right: 0 !important;
+    }
+    .level-inline {
+        padding: 3px 5px !important;
+    }
+    .level-inline-bar {
+        width: 85px !important;
+        min-width: 65px !important;
+    }
+    .level-inline-text {
+        font-size: 6px !important;
+        line-height: 7px !important;
+    }
+    .lv-label {
+        font-size: 10px !important;
+        margin-right: 4px !important;
+    }
+}
+
 /* Mobile Level Bar - скрыт, т.к. в stats-ui.js есть свои стили для мобильной шапки */
 
 .st-compact-card {
