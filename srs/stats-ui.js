@@ -867,6 +867,7 @@ const STATS_STYLES = `
   display: flex;
   flex-direction: column;
   gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
+  position: relative; /* Для абсолютного позиционирования имени пользователя */
 }
 
 /* Дополнительные отступы для мобильных между конкретными блоками */
@@ -1429,7 +1430,7 @@ const STATS_STYLES = `
   }
 
   /* Full Width Rows */
-  .st-top { grid-area: top; height: var(--header-fixed-height); display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: flex-start; padding-top: 0; }
+  .st-top { grid-area: top; height: var(--header-fixed-height); display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: flex-start; padding-top: 0; position:relative; }
   .st-top-left { grid-column: 1 / span 6; display: flex; flex-direction: column; gap: 6px; }
   .st-top-title { display: none; }
   .st-top-sub { display: none; }
@@ -2255,23 +2256,24 @@ export function initStatsPage(appVersion) {
     const learnContainer = document.getElementById('learn-container');
     const sidebar = document.querySelector('.sidebar');
     const topActionsBar = document.querySelector('.top-actions-bar');
-    
-    console.log('[STATS INIT] Hiding other containers...');
+
+    // Отключаем MutationObserver перед скрытием top-actions-bar
+    if (window.__statsTopActionsObserver) {
+        window.__statsTopActionsObserver.disconnect();
+        window.__statsTopActionsObserver = null;
+    }
+
     if (mainContainer) {
         mainContainer.style.display = 'none';
-        console.log('[STATS INIT] Hid main container');
     }
     if (learnContainer) {
         learnContainer.style.display = 'none';
-        console.log('[STATS INIT] Hid learn container');
     }
     if (sidebar) {
         sidebar.style.display = 'none';
-        console.log('[STATS INIT] Hid sidebar');
     }
     if (topActionsBar) {
         topActionsBar.style.display = 'none';
-        console.log('[STATS INIT] Hid top-actions-bar');
     }
     
     // Скелетон уже видим (display:block в HTML), не нужно показывать
@@ -2492,7 +2494,19 @@ function renderStats() {
   } catch { achievements = {}; progress = {}; }
   try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5 = []; rest = []; }
 
-  // Daily Plan
+  // Получаем имя пользователя
+  let username = '';
+  try {
+    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    console.log('[USERNAME] sessionUserRaw:', sessionUserRaw);
+    if (sessionUserRaw) {
+      const u = JSON.parse(sessionUserRaw);
+      console.log('[USERNAME] parsed user:', u);
+      if (u && u.username) username = u.username;
+    }
+  } catch (e) { console.log('[USERNAME] error:', e); }
+  const usernameDisplay = username ? username : '';
+  const usernameStyle = username ? 'position:absolute;top:0;left:210px;font-size:10px;color:var(--st-muted);text-align:center;font-weight:500;margin:0;padding:0 8px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:10;pointer-events:none;' : 'display:none!important;';
   let planMins = 0;
   let sessionCount = 0;
   let todaysSession = [];
@@ -2607,7 +2621,8 @@ function renderStats() {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="st-wrapper">
+    <div class="st-wrapper" style="position:relative;">
+      <div class="st-mobile-username" id="st-mobile-username" style="${usernameStyle}">${usernameDisplay}</div>
       <div class="st-top">
         <div class="st-top-left" style="display:none"></div>
         <div class="st-top-right" style="grid-column:1 / span 12;display:flex;align-items:center;gap:10px;justify-content:flex-start;width:100%">
@@ -2632,7 +2647,6 @@ function renderStats() {
       </div>
 
       <!-- Отображение имени п��льзователя будет добавлено через JS -->
-      <div class="st-username-placeholder" style="display:none"></div>
 
 
       <div class="st-main">
@@ -3477,7 +3491,7 @@ function renderStats() {
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
 
-  // Рендерим прогресс по категориям
+  // Ренде��им прог��есс по категориям
   renderCategoryProgress();
 
   if (chartEl) {
@@ -3500,7 +3514,7 @@ function renderStats() {
         : [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]);
 
     const now = new Date();
-    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', '��ктябрь', 'Но����брь', 'Декабрь'];
     const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
     monthLabel.textContent = mName;
     const cfg = currentXpMode === 'week' ? { bar: 18, gap: 8, count: 14, labelStep: 2 }
@@ -4650,7 +4664,7 @@ window.getXpSeriesForModal = (mode) => {
     return res;
   }
 
-  // Неделя (14 дней) ил�� Меся�� (все дни)
+  // Неделя (14 дней) ил�� Меся��� (все дни)
   const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
   const res = [];
 

@@ -380,31 +380,20 @@ export function initTabsNavigation(appVersion) {
     topActions.style.alignItems = 'center';
     topActions.style.justifyContent = 'flex-start';
     topActions.style.padding = '4px 0';
-    
-    // Добавляем логирование изменений display
-    const originalDisplay = topActions.style.display;
-    console.log('[MOBILE DEBUG] top-actions-bar создан:', topActions);
-    console.log('[MOBILE DEBUG] window.innerWidth:', window.innerWidth);
-    console.log('[MOBILE DEBUG] topActions.style.display после создания:', topActions.style.display);
-    console.log('[MOBILE DEBUG] isStatsPage:', isStatsPage);
-    
+
     // Создаём MutationObserver для отслеживания изменений display
     if (isStatsPage) {
-        const observer = new MutationObserver((mutations) => {
+        window.__statsTopActionsObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                     const currentDisplay = topActions.style.display;
                     if (currentDisplay !== 'none') {
-                        console.warn('[MOBILE DEBUG] ⚠️ top-actions-bar.display изменён с "none" на "', currentDisplay, '"!');
-                        console.warn('[MOBILE DEBUG] Stack:', new Error().stack);
-                        // Возвращаем back to none
                         topActions.style.display = 'none';
                     }
                 }
             });
         });
-        observer.observe(topActions, { attributes: true });
-        console.log('[MOBILE DEBUG] MutationObserver установлен для top-actions-bar');
+        window.__statsTopActionsObserver.observe(topActions, { attributes: true });
     }
     
     // Версия приложения
@@ -712,11 +701,11 @@ export function initTabsNavigation(appVersion) {
     
     // Обработчик изменения hash (для перехода из модалки)
     window.addEventListener('hashchange', async () => {
-        console.log('========================================');
-        console.log('[HASH CHANGE] ========== HASH CHANGE ==========');
-        console.log('[HASH CHANGE] New hash:', location.hash);
-        console.log('[HASH CHANGE] window.__lastCandidates:', window.__lastCandidates);
-        console.log('[HASH CHANGE] Timestamp:', new Date().toISOString());
+        // СНАЧАЛА отключаем MutationObserver!
+        if (window.__statsTopActionsObserver) {
+            window.__statsTopActionsObserver.disconnect();
+            window.__statsTopActionsObserver = null;
+        }
 
         if (location.hash === '#/stats') {
             console.log('[HASH CHANGE] Detected #/stats');
@@ -760,26 +749,29 @@ export function initTabsNavigation(appVersion) {
             console.log('[HASH CHANGE] stats-container element:', statsContainer);
             if (statsContainer) {
                 statsContainer.remove();
-                console.log('[HASH CHANGE] Removed stats container');
             }
-            
-            // Показываем главный контейнер (ПРИНУДИТЕЛЬНО!)
+
+            // Показываем главный контейнер
             const mainContainer = document.querySelector('.container');
-            console.log('[HASH CHANGE] main container element:', mainContainer);
-            console.log('[HASH CHANGE] main container style.display before:', mainContainer ? mainContainer.style.display : 'N/A');
             if (mainContainer) {
-                mainContainer.style.display = 'block';  // ПРИНУДИТЕЛЬНО!
-                console.log('[HASH CHANGE] main container style.display after:', mainContainer.style.display);
-                console.log('[HASH CHANGE] Showed main container');
+                mainContainer.style.display = 'block';
             }
-            
+
+            // Восстанавливаем top-actions-bar
+            const topActionsBar = document.querySelector('.top-actions-bar');
+            if (topActionsBar) {
+                topActionsBar.style.display = 'flex';
+            }
+
+            // Отключаем MutationObserver для top-actions-bar
+            if (window.__statsTopActionsObserver) {
+                window.__statsTopActionsObserver.disconnect();
+                window.__statsTopActionsObserver = null;
+            }
+
             // Обновляем текущий контекст
-            console.log('[HASH CHANGE] Calling refreshCurrentContext()');
             refreshCurrentContext();
-            console.log('[HASH CHANGE] Refreshed current context');
         }
-        console.log('[HASH CHANGE] ========== END HASH CHANGE ==========');
-        console.log('========================================');
     });
 
     // Кнопка профиля / Войти
@@ -1311,7 +1303,7 @@ export function initTabsNavigation(appVersion) {
                     });
                 } catch {}
             } else {
-                // Если бэкапа нет (странно), чистим, чтобы не оставить данные админа
+                // Если бэкапа нет (странно), чистим, чтобы не оставить данные админ��
                 DATA_KEYS.forEach(k => localStorage.removeItem(k));
             }
             localStorage.removeItem('localDataTimestamp');
