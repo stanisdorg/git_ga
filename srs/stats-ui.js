@@ -2469,6 +2469,18 @@ function hideSkeletonLoader() {
     if (skeleton) {
         skeleton.style.display = 'none';
         console.log('[Skeleton] HTML skeleton hidden');
+        console.log('[Skeleton] skeleton display after hide:', skeleton.style.display);
+    }
+    
+    // Проверяем видимость stats-container
+    const statsContainer = document.getElementById('stats-container');
+    console.log('[Skeleton] stats-container exists:', !!statsContainer);
+    if (statsContainer) {
+        console.log('[Skeleton] stats-container display:', statsContainer.style.display);
+        console.log('[Skeleton] stats-container offsetHeight:', statsContainer.offsetHeight);
+        // Принудительно показываем stats-container
+        statsContainer.style.display = 'block';
+        console.log('[Skeleton] stats-container forced to display:block');
     }
     
     // Также удаляем JS skeleton если есть
