@@ -2390,104 +2390,93 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
 
 // SKELETON LOADER FUNCTIONS
 function showSkeletonLoader() {
-  console.log('[Skeleton] showSkeletonLoader called');
-  
-  // Проверяем, есть уже skeleton
-  const existing = document.querySelector('.st-skeleton-overlay');
-  console.log('[Skeleton] Existing skeleton found:', !!existing);
-  if (existing) return;
-
-  const skeleton = document.createElement('div');
-  skeleton.className = 'st-skeleton-overlay';
-  console.log('[Skeleton] Creating skeleton element...');
-  
-  skeleton.innerHTML = `
-    <div class="st-skeleton-wrapper">
-      <!-- Header -->
-      <div class="st-sk-header">
-        <div class="st-sk-block st-sk-header-btn"></div>
-        <div class="st-sk-block st-sk-header-btn"></div>
-        <div class="st-sk-header-metrics">
-          <div class="st-sk-block st-sk-header-metric"></div>
-          <div class="st-sk-block st-sk-header-metric"></div>
-          <div class="st-sk-block st-sk-header-metric"></div>
-        </div>
-        <div class="st-sk-block st-sk-header-progress"></div>
-      </div>
-
-      <!-- Continue Button -->
-      <div class="st-sk-block st-sk-cta"></div>
-
-      <!-- Modes Grid -->
-      <div class="st-sk-modes">
-        <div class="st-sk-block st-sk-mode-card"></div>
-        <div class="st-sk-block st-sk-mode-card"></div>
-      </div>
-
-      <!-- Difficulty Section -->
-      <div class="st-sk-diff">
-        <div class="st-sk-diff-row">
-          <div class="st-sk-block st-sk-diff-item"></div>
-          <div class="st-sk-block st-sk-diff-item"></div>
-          <div class="st-sk-block st-sk-diff-item"></div>
-          <div class="st-sk-block st-sk-diff-item"></div>
-        </div>
-        <div class="st-sk-diff-labels">
-          <div class="st-sk-block st-sk-diff-label"></div>
-          <div class="st-sk-block st-sk-diff-label"></div>
-          <div class="st-sk-block st-sk-diff-label"></div>
-          <div class="st-sk-block st-sk-diff-label"></div>
-        </div>
-        <div class="st-sk-block st-sk-fav"></div>
-      </div>
-
-      <!-- Categories (collapsed ~100px) -->
-      <div class="st-sk-block st-sk-cats">
-        <div class="st-sk-block st-sk-cat-header"></div>
-        <div class="st-sk-cat-item">
-          <div class="st-sk-block st-sk-cat-item-inner"></div>
-          <div class="st-sk-block st-sk-cat-bar"></div>
-        </div>
-        <div class="st-sk-cat-item">
-          <div class="st-sk-block st-sk-cat-item-inner"></div>
-          <div class="st-sk-block st-sk-cat-bar"></div>
-        </div>
-      </div>
-
-      <!-- Activity Chart -->
-      <div class="st-sk-block st-sk-activity"></div>
-
-      <!-- Achievements -->
-      <div class="st-sk-block st-sk-ach"></div>
-    </div>
-  `;
-
-  document.body.appendChild(skeleton);
-  console.log('[Skeleton] Skeleton appended to body');
-  console.log('[Skeleton] Skeleton element:', skeleton);
-  console.log('[Skeleton] Body children count:', document.body.children.length);
-  console.log('[Skeleton] Loader shown successfully');
+    console.log('[Skeleton] showSkeletonLoader called');
+    
+    // Показываем HTML skeleton из index.html
+    const skeleton = document.getElementById('stats-skeleton');
+    if (skeleton) {
+        skeleton.style.display = 'block';
+        console.log('[Skeleton] HTML skeleton shown');
+    } else {
+        console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
+        // Fallback: создаём JS skeleton если HTML не найден
+        const jsSkeleton = document.createElement('div');
+        jsSkeleton.className = 'st-skeleton-overlay';
+        jsSkeleton.innerHTML = `
+            <div class="st-skeleton-wrapper">
+                <div class="st-sk-header">
+                    <div class="st-sk-block st-sk-header-btn"></div>
+                    <div class="st-sk-block st-sk-header-btn"></div>
+                    <div class="st-sk-header-metrics">
+                        <div class="st-sk-block st-sk-header-metric"></div>
+                        <div class="st-sk-block st-sk-header-metric"></div>
+                        <div class="st-sk-block st-sk-header-metric"></div>
+                    </div>
+                    <div class="st-sk-block st-sk-header-progress"></div>
+                </div>
+                <div class="st-sk-block st-sk-cta"></div>
+                <div class="st-sk-modes">
+                    <div class="st-sk-block st-sk-mode-card"></div>
+                    <div class="st-sk-block st-sk-mode-card"></div>
+                </div>
+                <div class="st-sk-diff">
+                    <div class="st-sk-diff-row">
+                        <div class="st-sk-block st-sk-diff-item"></div>
+                        <div class="st-sk-block st-sk-diff-item"></div>
+                        <div class="st-sk-block st-sk-diff-item"></div>
+                        <div class="st-sk-block st-sk-diff-item"></div>
+                    </div>
+                    <div class="st-sk-diff-labels">
+                        <div class="st-sk-block st-sk-diff-label"></div>
+                        <div class="st-sk-block st-sk-diff-label"></div>
+                        <div class="st-sk-block st-sk-diff-label"></div>
+                        <div class="st-sk-block st-sk-diff-label"></div>
+                    </div>
+                    <div class="st-sk-block st-sk-fav"></div>
+                </div>
+                <div class="st-sk-block st-sk-cats">
+                    <div class="st-sk-block st-sk-cat-header"></div>
+                    <div class="st-sk-cat-item">
+                        <div class="st-sk-block st-sk-cat-item-inner"></div>
+                        <div class="st-sk-block st-sk-cat-bar"></div>
+                    </div>
+                    <div class="st-sk-cat-item">
+                        <div class="st-sk-block st-sk-cat-item-inner"></div>
+                        <div class="st-sk-block st-sk-cat-bar"></div>
+                    </div>
+                </div>
+                <div class="st-sk-block st-sk-activity"></div>
+                <div class="st-sk-block st-sk-ach"></div>
+            </div>
+        `;
+        document.body.appendChild(jsSkeleton);
+        console.log('[Skeleton] JS skeleton created and appended');
+    }
 }
 
 function hideSkeletonLoader() {
-  console.log('[Skeleton] hideSkeletonLoader called');
-  const skeleton = document.querySelector('.st-skeleton-overlay');
-  console.log('[Skeleton] Skeleton element found:', !!skeleton);
-  
-  // Также удаляем placeholder если есть
-  const placeholder = document.getElementById('stats-skeleton-placeholder');
-  if (placeholder) {
-    console.log('[Skeleton] Removing placeholder...');
-    placeholder.remove();
-  }
-  
-  if (skeleton) {
-    skeleton.remove();
-    console.log('[Skeleton] Loader removed from DOM');
-    console.log('[Skeleton] Loader hidden');
-  } else {
-    console.warn('[Skeleton] No skeleton found to hide');
-  }
+    console.log('[Skeleton] hideSkeletonLoader called');
+    
+    // Скрываем HTML skeleton
+    const skeleton = document.getElementById('stats-skeleton');
+    if (skeleton) {
+        skeleton.style.display = 'none';
+        console.log('[Skeleton] HTML skeleton hidden');
+    }
+    
+    // Также удаляем JS skeleton если есть
+    const jsSkeleton = document.querySelector('.st-skeleton-overlay');
+    if (jsSkeleton) {
+        jsSkeleton.remove();
+        console.log('[Skeleton] JS skeleton removed');
+    }
+    
+    // Также удаляем placeholder если есть
+    const placeholder = document.getElementById('stats-skeleton-placeholder');
+    if (placeholder) {
+        placeholder.remove();
+        console.log('[Skeleton] Placeholder removed');
+    }
 }
 
 function renderStats() {
