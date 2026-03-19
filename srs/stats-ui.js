@@ -2475,8 +2475,13 @@ function hideSkeletonLoader() {
     const skeleton = document.getElementById('stats-skeleton');
     if (skeleton) {
         skeleton.style.display = 'none';
-        console.log('[Skeleton] HTML skeleton hidden');
-        console.log('[Skeleton] skeleton display after hide:', skeleton.style.display);
+        console.log('[Skeleton] HTML skeleton hidden, display:', skeleton.style.display);
+        
+        // Проверяем что скелетон действительно скрыт через getComputedStyle
+        const computedStyle = window.getComputedStyle(skeleton);
+        console.log('[Skeleton] skeleton computed display:', computedStyle.display);
+    } else {
+        console.log('[Skeleton] No HTML skeleton found');
     }
     
     // Проверяем видимость stats-container
@@ -2503,6 +2508,8 @@ function hideSkeletonLoader() {
         placeholder.remove();
         console.log('[Skeleton] Placeholder removed');
     }
+    
+    console.log('[Skeleton] hideSkeletonLoader completed');
 }
 
 function renderStats() {
