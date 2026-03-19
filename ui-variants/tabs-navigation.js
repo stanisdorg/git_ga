@@ -852,6 +852,21 @@ export function initTabsNavigation(appVersion) {
         topActions.appendChild(adminUsersBtn);
 
         console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
+        
+        // 🔥 ПРИНУДИТЕЛЬНАЯ ПРОВЕРКА видимости кнопки редактирования
+        setTimeout(() => {
+            try {
+                const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
+                if (user && ['admin', 'editor'].includes(user.role)) {
+                    editToggleBtn.style.display = 'inline-block';
+                    console.log('[EDIT BTN] Кнопка редактирования показана для:', user.role);
+                } else {
+                    console.log('[EDIT BTN] Кнопка редактирования скрыта, роль:', user?.role || 'guest');
+                }
+            } catch (e) {
+                console.error('[EDIT BTN] Ошибка проверки роли:', e);
+            }
+        }, 500);
     } else {
         // Desktop: дополнительные кнопки в topActions
         // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
