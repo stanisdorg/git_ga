@@ -203,11 +203,40 @@ const STATS_STYLES = `
   flex-direction: column !important;
   height: 100% !important;
 }
+.st-cat-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
 .st-cat-progress-title {
   font-size: 16px;
   font-weight: 700;
   color: var(--st-text);
-  margin-bottom: 16px;
+}
+.st-cat-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--st-text-sec);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.st-cat-toggle-btn:hover {
+  background: var(--st-surf-h);
+  color: var(--st-prim);
+}
+.st-cat-toggle-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s;
+}
+.st-cat-toggle-icon.collapsed {
+  transform: rotate(-90deg);
 }
 .st-cat-progress-list {
   display: flex;
@@ -216,6 +245,7 @@ const STATS_STYLES = `
   overflow-y: auto;
   flex: 1;
   padding-right: 4px;
+  transition: max-height 0.3s ease;
 }
 .st-cat-progress-list::-webkit-scrollbar {
   width: 6px;
@@ -247,11 +277,6 @@ const STATS_STYLES = `
 }
 .st-cat-progress-item:active {
   transform: translateX(2px) scale(0.98);
-}
-.st-cat-progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 .st-cat-progress-name {
   font-size: 11px;
@@ -636,6 +661,13 @@ const STATS_STYLES = `
   .st-wrapper {
     gap: 5px !important; /* Уменьшено с 24px до 5px для компактности */
     padding-bottom: 40px !important;
+  }
+  /* На мобильных список категорий свёрнут по умолчанию */
+  .st-cat-progress-list {
+    display: none !important;
+  }
+  .st-cat-progress-list.expanded {
+    display: flex !important;
   }
   .st-cat-progress-wrap {
     margin-bottom: 24px; /* Отступ после блока категорий */
@@ -2095,7 +2127,7 @@ export function hideStatsPage() {
 
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
-    sidebar.style.display = ''; // Возвращаем стандартное отображение
+    sidebar.style.display = ''; // Возвращаем стандартное отображе����������ие
     console.log('[hideStatsPage] sidebar display reset');
   }
 
@@ -2350,7 +2382,14 @@ function renderStats() {
         <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
-            <div class="st-cat-progress-title"> Категории</div>
+            <div class="st-cat-progress-header">
+              <div class="st-cat-progress-title">Категории</div>
+              <button class="st-cat-toggle-btn" onclick="window.toggleCategoryList()" title="Свернуть/развернуть">
+                <svg class="st-cat-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
             <div class="st-cat-progress-list" id="st-cat-progress-list">
               <!-- Заполняется динамически -->
             </div>
@@ -3314,7 +3353,7 @@ window.openDiffInfoModal = (event) => {
            </div>
            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
               <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😫</div><div style="font-size:11px;">Снова</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
-              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😐</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
+              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">����</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
               <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😊</div><div style="font-size:11px;">Хорошо</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
               <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">🚀</div><div style="font-size:11px;">Легко</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
            </div>
@@ -4470,6 +4509,25 @@ window.openCategoryModal = (categoryName) => {
   document.addEventListener('keydown', escHandler);
 };
 
+// Сворачивание/разворачивание списка категорий
+window.toggleCategoryList = () => {
+  const list = document.getElementById('st-cat-progress-list');
+  const icon = document.querySelector('.st-cat-toggle-icon');
+  
+  if (!list) return;
+  
+  // Переключаем видимость
+  if (list.style.display === 'none') {
+    list.style.display = 'flex';
+    list.classList.add('expanded');
+    if (icon) icon.classList.remove('collapsed');
+  } else {
+    list.style.display = 'none';
+    list.classList.remove('expanded');
+    if (icon) icon.classList.add('collapsed');
+  }
+};
+
 window.startCategorySession = (categoryName) => {
   document.querySelector('.st-modal-overlay')?.remove();
 
@@ -4520,7 +4578,7 @@ window.startFilteredSession = (index) => {
     return;
   }
 
-  // Очищаем состояние обучения ПЕРЕД запуском нового
+  // Очищаем состояни�� обучения ПЕРЕД запуском нового
   if (window.__lastCandidates) {
     window.__lastCandidates = null;
     console.log('[startFilteredSession] Cleared __lastCandidates');
@@ -4670,6 +4728,16 @@ function renderCategoryProgress() {
   // Рендерим
   const container = document.getElementById('st-cat-progress-list');
   if (!container) return;
+
+  // Определяем начальное состояние
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    container.style.display = 'none'; // По умолчанию свёрнут на мобильных
+    container.classList.remove('expanded');
+  } else {
+    container.style.display = 'flex'; // По умолчанию развёрнут на десктопе
+    container.classList.add('expanded');
+  }
 
   container.innerHTML = categoryProgress.map(cat => `
         <div class="st-cat-progress-item" onclick="window.openCategoryModal('${cat.name.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Нажмите для просмотра карточек">
