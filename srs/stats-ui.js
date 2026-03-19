@@ -2314,12 +2314,15 @@ export function initStatsPage(appVersion) {
 
   console.log('[STATS INIT] Calling renderStats()...');
   renderStats();
+  
+  // Добавляем минимальную задержку перед скрытием скелетона (300ms)
+  console.log('[STATS INIT] Setting minimum skeleton display time (300ms)...');
+  setTimeout(() => {
+    console.log('[STATS INIT] Minimum display time elapsed, hiding skeleton...');
+    hideSkeletonLoader();
+  }, 300);
+  
   console.log('[STATS INIT] ========== END initStatsPage ==========');
-  
-  // Скрываем скелетон-лоадер после завершения рендеринга
-  hideSkeletonLoader();
-  
-  console.log('========================================');
 
   if (!window._statsXpListener) {
     window._statsXpListener = () => {
