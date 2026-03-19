@@ -1394,14 +1394,35 @@ function showStats(stats, results, total) {
             // Потому что если hash уже #/stats, событие hashchange не сработает
             console.log('[STATS BUTTON] Calling initStatsPage() directly...');
 
-            // learn-container уже скрыт выше (строка 915), но на всякий случай проверим
-            // const learnContainer уже объявлена выше, не нужно объявлять снова
+            // Показываем placeholder ДО загрузки модуля
+            console.log('[STATS BUTTON] Creating loading placeholder...');
+            const skeletonPlaceholder = document.createElement('div');
+            skeletonPlaceholder.id = 'stats-skeleton-placeholder';
+            skeletonPlaceholder.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #0E1117;
+                z-index: 1998;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            skeletonPlaceholder.innerHTML = `
+                <div style="color: #8B949E; font-size: 14px;">Загрузка статистики...</div>
+            `;
+            document.body.appendChild(skeletonPlaceholder);
+            console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
             import('./stats-ui.js?v=4.58-beta').then(({ initStatsPage }) => {
+                console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
+                skeletonPlaceholder.remove();
             });
 
             console.log('[STATS BUTTON] ========== END STATS BUTTON ==========');

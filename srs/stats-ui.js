@@ -2244,6 +2244,9 @@ export function initStatsPage(appVersion) {
   console.log('[STATS INIT] Timestamp:', new Date().toISOString());
   console.log('[STATS INIT] appVersion:', appVersion);
   console.log('[STATS INIT] Current location.hash:', location.hash);
+  console.log('[STATS INIT] document.readyState:', document.readyState);
+  console.log('[STATS INIT] document.body exists:', !!document.body);
+  console.log('[STATS INIT] .app-wrapper exists:', !!document.querySelector('.app-wrapper'));
 
   if (appVersion) window.currentAppVersion = appVersion;
 
@@ -2383,12 +2386,17 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
 
 // SKELETON LOADER FUNCTIONS
 function showSkeletonLoader() {
+  console.log('[Skeleton] showSkeletonLoader called');
+  
   // Проверяем, есть уже skeleton
   const existing = document.querySelector('.st-skeleton-overlay');
+  console.log('[Skeleton] Existing skeleton found:', !!existing);
   if (existing) return;
 
   const skeleton = document.createElement('div');
   skeleton.className = 'st-skeleton-overlay';
+  console.log('[Skeleton] Creating skeleton element...');
+  
   skeleton.innerHTML = `
     <div class="st-skeleton-wrapper">
       <!-- Header -->
@@ -2451,14 +2459,30 @@ function showSkeletonLoader() {
   `;
 
   document.body.appendChild(skeleton);
-  console.log('[Skeleton] Loader shown');
+  console.log('[Skeleton] Skeleton appended to body');
+  console.log('[Skeleton] Skeleton element:', skeleton);
+  console.log('[Skeleton] Body children count:', document.body.children.length);
+  console.log('[Skeleton] Loader shown successfully');
 }
 
 function hideSkeletonLoader() {
+  console.log('[Skeleton] hideSkeletonLoader called');
   const skeleton = document.querySelector('.st-skeleton-overlay');
+  console.log('[Skeleton] Skeleton element found:', !!skeleton);
+  
+  // Также удаляем placeholder если есть
+  const placeholder = document.getElementById('stats-skeleton-placeholder');
+  if (placeholder) {
+    console.log('[Skeleton] Removing placeholder...');
+    placeholder.remove();
+  }
+  
   if (skeleton) {
     skeleton.remove();
+    console.log('[Skeleton] Loader removed from DOM');
     console.log('[Skeleton] Loader hidden');
+  } else {
+    console.warn('[Skeleton] No skeleton found to hide');
   }
 }
 
@@ -3517,7 +3541,7 @@ function renderStats() {
       const labelOk = currentXpMode === 'year' ? true : (idx % cfg.labelStep === 0);
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
-      // Минимальная высота для визуального отображения пустых слотов
+      // Ми��имальная высота для визуального отображения пустых слотов
       const cardsH = cardsVal > 0
         ? Math.max(baseBarHeight, Math.min(innerH, (innerH / hcMax) * cardsVal))
         : baseBarHeight;
