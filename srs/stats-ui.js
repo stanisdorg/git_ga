@@ -2250,16 +2250,13 @@ export function initStatsPage(appVersion) {
 
   if (appVersion) window.currentAppVersion = appVersion;
 
-  // Проверяем текущее состояние контейнеров
-  let statsContainerEl = document.getElementById('stats-container');
+  // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД созданием скелетона
   const mainContainer = document.querySelector('.container');
   const learnContainer = document.getElementById('learn-container');
-
-  console.log('[STATS INIT] stats-container exists:', !!statsContainerEl);
-  console.log('[STATS INIT] main container display:', mainContainer ? mainContainer.style.display : 'N/A');
-  console.log('[STATS INIT] learn container display:', learnContainer ? learnContainer.style.display : 'N/A');
-
-  // ПРИНУДИТЕЛЬНО скрываем всё остальное
+  const sidebar = document.querySelector('.sidebar');
+  const topActionsBar = document.querySelector('.top-actions-bar');
+  
+  console.log('[STATS INIT] Hiding other containers BEFORE skeleton...');
   if (mainContainer) {
     mainContainer.style.display = 'none';
     console.log('[STATS INIT] Hid main container');
@@ -2268,13 +2265,17 @@ export function initStatsPage(appVersion) {
     learnContainer.style.display = 'none';
     console.log('[STATS INIT] Hid learn container');
   }
-  const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
     sidebar.style.display = 'none';
     console.log('[STATS INIT] Hid sidebar');
   }
+  if (topActionsBar) {
+    topActionsBar.style.display = 'none';
+    console.log('[STATS INIT] Hid top-actions-bar');
+  }
 
   // Создаём контейнер статистики если не существует
+  let statsContainerEl = document.getElementById('stats-container');
   if (!statsContainerEl) {
     console.log('[STATS INIT] Creating stats-container...');
     statsContainerEl = document.createElement('div');
