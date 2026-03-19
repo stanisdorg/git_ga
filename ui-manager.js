@@ -14,18 +14,28 @@ let uiInitialized = false;
 export function initUI() {
     console.log('initUI called');
     
+    // Скрываем строку поиска СРАЗУ если это страница статистики
+    const isStats = location.hash && location.hash.includes('stats');
+    if (isStats) {
+        console.log('[initUI] Stats page detected, hiding search container immediately...');
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            searchContainer.style.display = 'none';
+            console.log('[initUI] searchContainer hidden');
+        }
+    }
+
     // Защита от повторной инициализации
     if (uiInitialized) {
         console.log('initUI: уже инициализировано, пропускаем');
         return;
     }
     uiInitialized = true;
-    
+
     // Удаляем существующие элементы навигации, если они есть
     removeExistingNavigation();
 
     // Роутинг: хэш-маршрут для статистики (устраняет 404 при обновлении)
-    const isStats = location.hash && location.hash.includes('stats');
 
     // Always initialize main app to ensure Auth and logic availability
     initTabsNavigation(APP_VERSION);
