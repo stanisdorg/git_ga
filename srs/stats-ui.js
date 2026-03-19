@@ -2250,17 +2250,13 @@ export function initStatsPage(appVersion) {
 
     if (appVersion) window.currentAppVersion = appVersion;
     
-    // Показываем скелетон СРАЗУ!
-    console.log('[STATS INIT] Showing skeleton immediately...');
-    showSkeletonLoader();
-
-    // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД созданием скелетона
+    // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД показом скелетона
     const mainContainer = document.querySelector('.container');
     const learnContainer = document.getElementById('learn-container');
     const sidebar = document.querySelector('.sidebar');
     const topActionsBar = document.querySelector('.top-actions-bar');
     
-    console.log('[STATS INIT] Hiding other containers BEFORE skeleton...');
+    console.log('[STATS INIT] Hiding other containers...');
     if (mainContainer) {
         mainContainer.style.display = 'none';
         console.log('[STATS INIT] Hid main container');
@@ -2277,6 +2273,10 @@ export function initStatsPage(appVersion) {
         topActionsBar.style.display = 'none';
         console.log('[STATS INIT] Hid top-actions-bar');
     }
+    
+    // Показываем скелетон СРАЗУ после скрытия контейнеров!
+    console.log('[STATS INIT] Showing skeleton...');
+    showSkeletonLoader();
 
   // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
@@ -2395,6 +2395,13 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
 // SKELETON LOADER FUNCTIONS
 function showSkeletonLoader() {
     console.log('[Skeleton] showSkeletonLoader called');
+    
+    // Проверяем, показан ли уже stats-container
+    const statsContainer = document.getElementById('stats-container');
+    if (statsContainer && statsContainer.offsetHeight > 0) {
+        console.log('[Skeleton] stats-container already visible, skipping skeleton');
+        return;
+    }
     
     // Показываем HTML skeleton из index.html
     const skeleton = document.getElementById('stats-skeleton');
