@@ -826,14 +826,15 @@ export function initTabsNavigation(appVersion) {
 
     // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    console.log('[MOBILE DEBUG] isMobile:', isMobile);
-    
+    const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
+    console.log('[MOBILE DEBUG] isMobile:', isMobile, 'isTablet:', isTablet);
+
     // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
     topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
     topActions.appendChild(statsBtn); /* Статистика - второй */
     topActions.appendChild(learnBtn); /* Обучение - третий */
     topActions.appendChild(levelContainer);
-    
+
     if (isMobile) {
         // Mobile: дополнительные кнопки в topActions
         loginMainBtn.style.position = 'sticky';
@@ -841,10 +842,15 @@ export function initTabsNavigation(appVersion) {
         loginMainBtn.style.zIndex = '10';
         loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
 
-        topActions.appendChild(learnBtn);
-        topActions.appendChild(editToggleBtn);
-        topActions.appendChild(adminUsersBtn);
+        // Версия приложения (компактная)
+        topActions.appendChild(verEl);
         
+        // Кнопка редактирования (для admin и editor)
+        topActions.appendChild(editToggleBtn);
+        
+        // Кнопка добавления пользователя (только admin)
+        topActions.appendChild(adminUsersBtn);
+
         console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
     } else {
         // Desktop: дополнительные кнопки в topActions
