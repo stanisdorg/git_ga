@@ -354,6 +354,11 @@ export function initTabsNavigation(appVersion) {
     if (sidebar && !isStatsPage) sidebar.style.display = '';
 
     const searchContainer = document.querySelector('.search-container');
+    // СКРЫВАЕМ строку поиска для страницы статистики!
+    if (searchContainer) {
+        searchContainer.style.display = isStatsPage ? 'none' : '';
+        console.log('[initTabsNavigation] searchContainer.display:', searchContainer.style.display, 'isStatsPage:', isStatsPage);
+    }
     // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
     const legacyAdminPanel = document.querySelector('.admin-panel');
     if (legacyAdminPanel) legacyAdminPanel.remove();
