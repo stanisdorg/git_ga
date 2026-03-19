@@ -2463,18 +2463,9 @@ function showSkeletonLoader() {
 function hideSkeletonLoader() {
     console.log('[Skeleton] hideSkeletonLoader called');
     
-    // Скрываем HTML skeleton
-    const skeleton = document.getElementById('stats-skeleton');
-    if (skeleton) {
-        skeleton.style.display = 'none';
-        console.log('[Skeleton] HTML skeleton hidden, display:', skeleton.style.display);
-        
-        // Проверяем что скелетон действительно скрыт через getComputedStyle
-        const computedStyle = window.getComputedStyle(skeleton);
-        console.log('[Skeleton] skeleton computed display:', computedStyle.display);
-    } else {
-        console.log('[Skeleton] No HTML skeleton found');
-    }
+    // Скрываем через CSS переменную
+    document.documentElement.style.setProperty('--skeleton-display', 'none');
+    console.log('[Skeleton] Skeleton hidden via CSS variable');
     
     // Проверяем видимость stats-container
     const statsContainer = document.getElementById('stats-container');
@@ -2482,23 +2473,8 @@ function hideSkeletonLoader() {
     if (statsContainer) {
         console.log('[Skeleton] stats-container display:', statsContainer.style.display);
         console.log('[Skeleton] stats-container offsetHeight:', statsContainer.offsetHeight);
-        // Принудительно показываем stats-container
         statsContainer.style.display = 'block';
         console.log('[Skeleton] stats-container forced to display:block');
-    }
-    
-    // Также удаляем JS skeleton если есть
-    const jsSkeleton = document.querySelector('.st-skeleton-overlay');
-    if (jsSkeleton) {
-        jsSkeleton.remove();
-        console.log('[Skeleton] JS skeleton removed');
-    }
-    
-    // Также удаляем placeholder если есть
-    const placeholder = document.getElementById('stats-skeleton-placeholder');
-    if (placeholder) {
-        placeholder.remove();
-        console.log('[Skeleton] Placeholder removed');
     }
     
     console.log('[Skeleton] hideSkeletonLoader completed');
