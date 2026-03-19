@@ -356,8 +356,13 @@ export function initTabsNavigation(appVersion) {
     const searchContainer = document.querySelector('.search-container');
     // СКРЫВАЕМ строку поиска для страницы статистики!
     if (searchContainer) {
-        searchContainer.style.display = isStatsPage ? 'none' : '';
-        console.log('[initTabsNavigation] searchContainer.display:', searchContainer.style.display, 'isStatsPage:', isStatsPage);
+        // Для статистики оставляем display:none, для остальных страниц показываем
+        if (!isStatsPage) {
+            searchContainer.style.display = '';
+            console.log('[initTabsNavigation] searchContainer shown');
+        } else {
+            console.log('[initTabsNavigation] searchContainer kept hidden (stats page)');
+        }
     }
     // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
     const legacyAdminPanel = document.querySelector('.admin-panel');
