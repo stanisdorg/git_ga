@@ -342,6 +342,10 @@ const STATS_STYLES = `
   #st-continue-top-btn {
     display: none !important;
   }
+  /* Скрываем кнопку развёртывания графика на мобильных */
+  .st-expand-btn {
+    display: none !important;
+  }
   /* Compact header on mobile */
   .st-top {
     padding: 8px 0 !important; /* Уменьшено с 12px до 8px */
@@ -351,8 +355,9 @@ const STATS_STYLES = `
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     gap: 6px !important; /* Уменьшено с 8px до 6px */
-    overflow-x: visible !important;
+    overflow-x: auto !important;
     justify-content: flex-start !important;
+    align-items: center !important;
   }
   .st-top-actions {
     flex-shrink: 0 !important;
@@ -388,10 +393,17 @@ const STATS_STYLES = `
     height: 14px !important;
     flex-shrink: 0 !important;
   }
+  /* Скрываем имя пользователя на мобильных */
+  .st-username-display {
+    display: none !important;
+  }
   .st-level-inline {
     display: flex !important;
-    gap: 4px !important;
-    flex-shrink: 0 !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 1 !important; /* Занимает доступное пространство */
+    min-width: 0 !important; /* Позволяет сжиматься */
+    margin-left: 0 !important;
   }
   .level-inline {
     display: flex;
@@ -400,6 +412,8 @@ const STATS_STYLES = `
     padding: 4px 6px; /* Уменьшено с 4px 8px */
     border-radius: 8px;
     transition: all 0.2s ease;
+    flex: 1; /* Занимает всё доступное пространство */
+    min-width: 0; /* Позволяет сжиматься */
   }
   .level-inline:hover {
     background: rgba(255,159,28,0.15);
@@ -409,12 +423,12 @@ const STATS_STYLES = `
   .lv-label {
     font-weight: 700;
     color: var(--st-prim);
-    font-size: 13px;
+    font-size: 9px; /* Уменьшено с 13px в 1.5 раза */
     white-space: nowrap;
   }
   .level-inline-bar {
     position: relative;
-    width: 100px; /* Уменьшено с 140px для мобильных */
+    flex: 1; /* Занимает всё свободное пространство */
     height: 20px;
     background: rgba(0,0,0,0.3);
     border-radius: 10px;
@@ -436,10 +450,10 @@ const STATS_STYLES = `
   .level-inline-text {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    left: 8px; /* Отступ от левого края бара */
+    transform: translateY(-50%);
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 400; /* Уменьшено с 700 в 1.5 раза */
     color: #fff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     white-space: nowrap;
@@ -754,6 +768,9 @@ const STATS_STYLES = `
   .st-main {
     display: flex !important;
     flex-direction: column !important;
+  }
+  .st-continue-mobile {
+    margin-bottom: 8px !important;
   }
 }
 
@@ -4584,7 +4601,7 @@ window.startMode = (modeId) => {
   }
 
   if (candidates.length > 0) {
-    // Очищаем состояние обучения ПЕРЕД запуском нового
+    // Очищаем состояние обучения ПЕРЕД запу��ком нового
     if (window.__lastCandidates) {
       window.__lastCandidates = null;
       console.log('[startMode] Cleared __lastCandidates');
@@ -4598,7 +4615,7 @@ window.startMode = (modeId) => {
 };
 
 // ============================================
-// АВТОМАТИЧ��СКИЙ ВЫЗОВ DEBUG НА МОБИЛЬНЫХ
+// А��ТОМАТИЧ��СКИЙ ВЫЗОВ DEBUG НА МОБИЛЬНЫХ
 // ============================================
 if (window.innerWidth <= 768) {
   setTimeout(() => {
