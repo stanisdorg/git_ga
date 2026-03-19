@@ -2320,12 +2320,12 @@ export function initStatsPage(appVersion) {
   console.log('[STATS INIT] Calling renderStats()...');
   renderStats();
   
-  // Добавляем минимальную задержку перед скрытием скелетона (300ms)
-  console.log('[STATS INIT] Setting minimum skeleton display time (300ms)...');
+  // Добавляем задержку перед скрытием скелетона (1000ms для мобильных)
+  console.log('[STATS INIT] Setting skeleton display time (1000ms)...');
   setTimeout(() => {
-    console.log('[STATS INIT] Minimum display time elapsed, hiding skeleton...');
+    console.log('[STATS INIT] Timeout elapsed, hiding skeleton...');
     hideSkeletonLoader();
-  }, 300);
+  }, 1000);
   
   console.log('[STATS INIT] ========== END initStatsPage ==========');
 
@@ -2396,13 +2396,6 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
 function showSkeletonLoader() {
     console.log('[Skeleton] showSkeletonLoader called');
     
-    // Проверяем, показан ли уже stats-container
-    const statsContainer = document.getElementById('stats-container');
-    if (statsContainer && statsContainer.offsetHeight > 0) {
-        console.log('[Skeleton] stats-container already visible, skipping skeleton');
-        return;
-    }
-    
     // Показываем HTML skeleton из index.html
     const skeleton = document.getElementById('stats-skeleton');
     console.log('[Skeleton] skeleton element:', skeleton);
@@ -2410,7 +2403,6 @@ function showSkeletonLoader() {
         skeleton.style.display = 'block';
         console.log('[Skeleton] HTML skeleton shown, display:', skeleton.style.display);
         console.log('[Skeleton] skeleton zIndex:', skeleton.style.zIndex);
-        console.log('[Skeleton] skeleton offsetTop:', skeleton.offsetTop);
     } else {
         console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
         // Fallback: создаём JS skeleton если HTML не найден
@@ -4681,7 +4673,7 @@ window.getXpSeriesForModal = (mode) => {
     return res;
   }
 
-  // Неделя (14 дней) или Месяц (все дни)
+  // Неделя (14 дней) ил�� Меся�� (все дни)
   const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
   const res = [];
 
