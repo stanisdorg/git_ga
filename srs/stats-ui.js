@@ -49,6 +49,198 @@ let currentXpMode = 'week';
 let isDiffExpanded = false;
 let areCatsExpanded = false;
 
+// SKELETON LOADER STYLES
+const SKELETON_STYLES = `
+.st-skeleton-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--st-bg);
+  z-index: 1999;
+  overflow-y: auto;
+}
+.st-skeleton-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+.st-sk-block {
+  background: linear-gradient(90deg, #2a2a2a 0%, #3a3a3a 50%, #2a2a2a 100%);
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+  opacity: 0.7;
+}
+/* Header skeleton */
+.st-sk-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+}
+.st-sk-header-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.st-sk-header-metrics {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+.st-sk-header-metric {
+  height: 20px;
+  flex: 1;
+  max-width: 60px;
+  border-radius: 4px;
+}
+.st-sk-header-progress {
+  width: 100px;
+  height: 20px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+/* CTA button skeleton */
+.st-sk-cta {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+}
+/* Modes grid skeleton */
+.st-sk-modes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.st-sk-mode-card {
+  height: 72px;
+  border-radius: 8px;
+}
+/* Difficulty section skeleton */
+.st-sk-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.st-sk-diff-row {
+  display: flex;
+  gap: 6px;
+}
+.st-sk-diff-item {
+  flex: 1;
+  height: 36px;
+  border-radius: 8px;
+}
+.st-sk-diff-labels {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.st-sk-diff-label {
+  flex: 1;
+  height: 12px;
+  border-radius: 3px;
+}
+.st-sk-fav {
+  height: 36px;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+/* Categories skeleton */
+.st-sk-cats {
+  height: 120px;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.st-sk-cat-header {
+  height: 20px;
+  width: 40%;
+  border-radius: 4px;
+}
+.st-sk-cat-item {
+  height: 32px;
+  border-radius: 8px;
+}
+.st-sk-cat-item-inner {
+  height: 16px;
+  width: 60%;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.st-sk-cat-bar {
+  height: 4px;
+  width: 100%;
+  border-radius: 2px;
+}
+/* Activity chart skeleton */
+.st-sk-activity {
+  height: 280px;
+  border-radius: 16px;
+  padding: 16px;
+}
+/* Achievements skeleton */
+.st-sk-ach {
+  height: 140px;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .st-skeleton-wrapper {
+    gap: 12px !important;
+    padding: 0 12px 40px;
+  }
+  .st-sk-header {
+    padding: 8px 0;
+  }
+  .st-sk-cta {
+    height: 40px;
+  }
+  .st-sk-mode-card {
+    height: 64px;
+  }
+  .st-sk-diff-item {
+    height: 32px;
+  }
+  .st-sk-cats {
+    height: 100px;
+  }
+}
+
+@media (max-width: 320px) {
+  .st-skeleton-wrapper {
+    padding: 0 8px 40px;
+  }
+  .st-sk-header-btn {
+    width: 28px;
+    height: 28px;
+  }
+  .st-sk-cta {
+    height: 36px;
+  }
+  .st-sk-mode-card {
+    height: 56px;
+  }
+  .st-sk-diff-item {
+    height: 28px;
+  }
+}
+`;
+
 // --- STYLES ---
 const STATS_STYLES = `
 :root {
@@ -2090,17 +2282,20 @@ export function initStatsPage(appVersion) {
 
     const styleEl = document.createElement('style');
     styleEl.setAttribute('data-stats-style', 'true');
-    styleEl.textContent = STATS_STYLES;
+    styleEl.textContent = SKELETON_STYLES + STATS_STYLES;
     document.head.appendChild(styleEl);
 
     console.log('[STATS INIT] Style element created:', styleEl);
-    console.log('[STATS INIT] Style length:', STATS_STYLES.length);
+    console.log('[STATS INIT] Style length:', (SKELETON_STYLES + STATS_STYLES).length);
     console.log('[STATS INIT] Contains .st-block-2 .modes-grid:', STATS_STYLES.includes('.st-block-2 .modes-grid'));
 
     console.log('[STATS INIT] stats-container created');
   } else {
     console.log('[STATS INIT] stats-container already exists');
   }
+
+  // Показываем скелетон-лоадер
+  showSkeletonLoader();
 
   // Показываем статистику
   statsContainerEl.style.display = 'block';
@@ -2117,6 +2312,10 @@ export function initStatsPage(appVersion) {
   console.log('[STATS INIT] Calling renderStats()...');
   renderStats();
   console.log('[STATS INIT] ========== END initStatsPage ==========');
+  
+  // Скрываем скелетон-лоадер после завершения рендеринга
+  hideSkeletonLoader();
+  
   console.log('========================================');
 
   if (!window._statsXpListener) {
@@ -2180,6 +2379,87 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
       </div>
     </div>
   `;
+}
+
+// SKELETON LOADER FUNCTIONS
+function showSkeletonLoader() {
+  // Проверяем, есть уже skeleton
+  const existing = document.querySelector('.st-skeleton-overlay');
+  if (existing) return;
+
+  const skeleton = document.createElement('div');
+  skeleton.className = 'st-skeleton-overlay';
+  skeleton.innerHTML = `
+    <div class="st-skeleton-wrapper">
+      <!-- Header -->
+      <div class="st-sk-header">
+        <div class="st-sk-block st-sk-header-btn"></div>
+        <div class="st-sk-block st-sk-header-btn"></div>
+        <div class="st-sk-header-metrics">
+          <div class="st-sk-block st-sk-header-metric"></div>
+          <div class="st-sk-block st-sk-header-metric"></div>
+          <div class="st-sk-block st-sk-header-metric"></div>
+        </div>
+        <div class="st-sk-block st-sk-header-progress"></div>
+      </div>
+
+      <!-- Continue Button -->
+      <div class="st-sk-block st-sk-cta"></div>
+
+      <!-- Modes Grid -->
+      <div class="st-sk-modes">
+        <div class="st-sk-block st-sk-mode-card"></div>
+        <div class="st-sk-block st-sk-mode-card"></div>
+      </div>
+
+      <!-- Difficulty Section -->
+      <div class="st-sk-diff">
+        <div class="st-sk-diff-row">
+          <div class="st-sk-block st-sk-diff-item"></div>
+          <div class="st-sk-block st-sk-diff-item"></div>
+          <div class="st-sk-block st-sk-diff-item"></div>
+          <div class="st-sk-block st-sk-diff-item"></div>
+        </div>
+        <div class="st-sk-diff-labels">
+          <div class="st-sk-block st-sk-diff-label"></div>
+          <div class="st-sk-block st-sk-diff-label"></div>
+          <div class="st-sk-block st-sk-diff-label"></div>
+          <div class="st-sk-block st-sk-diff-label"></div>
+        </div>
+        <div class="st-sk-block st-sk-fav"></div>
+      </div>
+
+      <!-- Categories (collapsed ~100px) -->
+      <div class="st-sk-block st-sk-cats">
+        <div class="st-sk-block st-sk-cat-header"></div>
+        <div class="st-sk-cat-item">
+          <div class="st-sk-block st-sk-cat-item-inner"></div>
+          <div class="st-sk-block st-sk-cat-bar"></div>
+        </div>
+        <div class="st-sk-cat-item">
+          <div class="st-sk-block st-sk-cat-item-inner"></div>
+          <div class="st-sk-block st-sk-cat-bar"></div>
+        </div>
+      </div>
+
+      <!-- Activity Chart -->
+      <div class="st-sk-block st-sk-activity"></div>
+
+      <!-- Achievements -->
+      <div class="st-sk-block st-sk-ach"></div>
+    </div>
+  `;
+
+  document.body.appendChild(skeleton);
+  console.log('[Skeleton] Loader shown');
+}
+
+function hideSkeletonLoader() {
+  const skeleton = document.querySelector('.st-skeleton-overlay');
+  if (skeleton) {
+    skeleton.remove();
+    console.log('[Skeleton] Loader hidden');
+  }
 }
 
 function renderStats() {
