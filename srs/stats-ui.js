@@ -2239,40 +2239,44 @@ const STATS_STYLES = `
 `;
 
 export function initStatsPage(appVersion) {
-  console.log('========================================');
-  console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
-  console.log('[STATS INIT] Timestamp:', new Date().toISOString());
-  console.log('[STATS INIT] appVersion:', appVersion);
-  console.log('[STATS INIT] Current location.hash:', location.hash);
-  console.log('[STATS INIT] document.readyState:', document.readyState);
-  console.log('[STATS INIT] document.body exists:', !!document.body);
-  console.log('[STATS INIT] .app-wrapper exists:', !!document.querySelector('.app-wrapper'));
+    console.log('========================================');
+    console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
+    console.log('[STATS INIT] Timestamp:', new Date().toISOString());
+    console.log('[STATS INIT] appVersion:', appVersion);
+    console.log('[STATS INIT] Current location.hash:', location.hash);
+    console.log('[STATS INIT] document.readyState:', document.readyState);
+    console.log('[STATS INIT] document.body exists:', !!document.body);
+    console.log('[STATS INIT] .app-wrapper exists:', !!document.querySelector('.app-wrapper'));
 
-  if (appVersion) window.currentAppVersion = appVersion;
+    if (appVersion) window.currentAppVersion = appVersion;
+    
+    // Показываем скелетон СРАЗУ!
+    console.log('[STATS INIT] Showing skeleton immediately...');
+    showSkeletonLoader();
 
-  // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД созданием скелетона
-  const mainContainer = document.querySelector('.container');
-  const learnContainer = document.getElementById('learn-container');
-  const sidebar = document.querySelector('.sidebar');
-  const topActionsBar = document.querySelector('.top-actions-bar');
-  
-  console.log('[STATS INIT] Hiding other containers BEFORE skeleton...');
-  if (mainContainer) {
-    mainContainer.style.display = 'none';
-    console.log('[STATS INIT] Hid main container');
-  }
-  if (learnContainer) {
-    learnContainer.style.display = 'none';
-    console.log('[STATS INIT] Hid learn container');
-  }
-  if (sidebar) {
-    sidebar.style.display = 'none';
-    console.log('[STATS INIT] Hid sidebar');
-  }
-  if (topActionsBar) {
-    topActionsBar.style.display = 'none';
-    console.log('[STATS INIT] Hid top-actions-bar');
-  }
+    // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД созданием скелетона
+    const mainContainer = document.querySelector('.container');
+    const learnContainer = document.getElementById('learn-container');
+    const sidebar = document.querySelector('.sidebar');
+    const topActionsBar = document.querySelector('.top-actions-bar');
+    
+    console.log('[STATS INIT] Hiding other containers BEFORE skeleton...');
+    if (mainContainer) {
+        mainContainer.style.display = 'none';
+        console.log('[STATS INIT] Hid main container');
+    }
+    if (learnContainer) {
+        learnContainer.style.display = 'none';
+        console.log('[STATS INIT] Hid learn container');
+    }
+    if (sidebar) {
+        sidebar.style.display = 'none';
+        console.log('[STATS INIT] Hid sidebar');
+    }
+    if (topActionsBar) {
+        topActionsBar.style.display = 'none';
+        console.log('[STATS INIT] Hid top-actions-bar');
+    }
 
   // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
