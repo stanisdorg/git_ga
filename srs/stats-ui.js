@@ -2398,9 +2398,12 @@ function showSkeletonLoader() {
     
     // Показываем HTML skeleton из index.html
     const skeleton = document.getElementById('stats-skeleton');
+    console.log('[Skeleton] skeleton element:', skeleton);
     if (skeleton) {
         skeleton.style.display = 'block';
-        console.log('[Skeleton] HTML skeleton shown');
+        console.log('[Skeleton] HTML skeleton shown, display:', skeleton.style.display);
+        console.log('[Skeleton] skeleton zIndex:', skeleton.style.zIndex);
+        console.log('[Skeleton] skeleton offsetTop:', skeleton.offsetTop);
     } else {
         console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
         // Fallback: создаём JS skeleton если HTML не найден
@@ -4683,7 +4686,7 @@ window.openDiffModal = (index) => {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   const currentCards = getCurrentCards();
 
-  console.log('[openDiffModal] Избранное:', {
+  console.log('[openDiffModal] ��збранное:', {
     favCount: favorites.size,
     favQuestions: Array.from(favorites),
     totalCards: currentCards.length
