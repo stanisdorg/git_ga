@@ -2274,9 +2274,7 @@ export function initStatsPage(appVersion) {
         console.log('[STATS INIT] Hid top-actions-bar');
     }
     
-    // Показываем скелетон СРАЗУ после скрытия контейнеров!
-    console.log('[STATS INIT] Showing skeleton...');
-    showSkeletonLoader();
+    // Скелетон уже видим (display:block в HTML), не нужно показывать
 
   // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
@@ -2463,9 +2461,12 @@ function showSkeletonLoader() {
 function hideSkeletonLoader() {
     console.log('[Skeleton] hideSkeletonLoader called');
     
-    // Скрываем через CSS переменную
-    document.documentElement.style.setProperty('--skeleton-display', 'none');
-    console.log('[Skeleton] Skeleton hidden via CSS variable');
+    // Скрываем скелетон через display:none
+    const skeleton = document.getElementById('stats-skeleton');
+    if (skeleton) {
+        skeleton.style.display = 'none';
+        console.log('[Skeleton] Skeleton hidden, display:', skeleton.style.display);
+    }
     
     // Проверяем видимость stats-container
     const statsContainer = document.getElementById('stats-container');
