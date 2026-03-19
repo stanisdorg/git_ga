@@ -276,8 +276,8 @@ const STATS_STYLES = `
 .st-cat-progress-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 2px 12px 5px !important;
+  gap: 4px; /* Уменьшено с 6px */
+  padding: 4px 12px !important; /* Уменьшено с 2px 12px 5px */
   background: linear-gradient(135deg, rgba(15,52,96,0.6) 0%, rgba(15,52,96,0.4) 100%);
   border-radius: 8px;
   border: 1px solid rgba(26,58,92,0.5);
@@ -293,20 +293,26 @@ const STATS_STYLES = `
 .st-cat-progress-item:active {
   transform: translateX(2px) scale(0.98);
 }
+.st-cat-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px; /* Уменьшено с 4px */
+}
 .st-cat-progress-name {
   font-size: 11px;
   color: #aaa;
   font-weight: 500;
 }
 .st-cat-progress-value {
-  font-size: 12px;
+  font-size: 11px; /* Уменьшено с 12px */
   color: #fff;
   font-weight: 700;
 }
 .st-cat-progress-track {
-  height: 6px;
+  height: 4px; /* Уменьшено с 6px */
   background: #1a1a2e;
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
 }
 .st-cat-progress-fill {
