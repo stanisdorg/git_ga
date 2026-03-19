@@ -370,10 +370,32 @@ export function initTabsNavigation(appVersion) {
     topActions.style.alignItems = 'center';
     topActions.style.justifyContent = 'flex-start';
     topActions.style.padding = '4px 0';
+    
+    // Добавляем логирование изменений display
+    const originalDisplay = topActions.style.display;
     console.log('[MOBILE DEBUG] top-actions-bar создан:', topActions);
     console.log('[MOBILE DEBUG] window.innerWidth:', window.innerWidth);
     console.log('[MOBILE DEBUG] topActions.style.display после создания:', topActions.style.display);
     console.log('[MOBILE DEBUG] isStatsPage:', isStatsPage);
+    
+    // Создаём MutationObserver для отслеживания изменений display
+    if (isStatsPage) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    const currentDisplay = topActions.style.display;
+                    if (currentDisplay !== 'none') {
+                        console.warn('[MOBILE DEBUG] ⚠️ top-actions-bar.display изменён с "none" на "', currentDisplay, '"!');
+                        console.warn('[MOBILE DEBUG] Stack:', new Error().stack);
+                        // Возвращаем back to none
+                        topActions.style.display = 'none';
+                    }
+                }
+            });
+        });
+        observer.observe(topActions, { attributes: true });
+        console.log('[MOBILE DEBUG] MutationObserver установлен для top-actions-bar');
+    }
     
     // Версия приложения
     const verEl = document.createElement('div');
