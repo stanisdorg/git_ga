@@ -58,7 +58,7 @@ const SKELETON_STYLES = `
   width: 100%;
   height: 100%;
   background: var(--st-bg);
-  z-index: 1999;
+  z-index: 2001; /* Выше чем stats-container (2000) */
   overflow-y: auto;
 }
 .st-skeleton-wrapper {
