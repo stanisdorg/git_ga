@@ -337,16 +337,21 @@ function hideLoading() {
 
 export function initTabsNavigation(appVersion) {
     console.log('Initializing Tabs Navigation...');
-    
+
+    // Проверяем, не открыта ли страница статистики
+    const isStatsPage = location.hash === '#/stats';
+    console.log('[initTabsNavigation] location.hash:', location.hash, 'isStatsPage:', isStatsPage);
+
     // Показываем анимацию загрузки при старте
     showLoading();
 
     try {
         const container = document.querySelector('.container');
     // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
-    if (container) container.style.display = '';
+    // НО НЕ для страницы статистики!
+    if (container && !isStatsPage) container.style.display = '';
     const sidebar = document.querySelector('.sidebar');
-    if (sidebar) sidebar.style.display = '';
+    if (sidebar && !isStatsPage) sidebar.style.display = '';
 
     const searchContainer = document.querySelector('.search-container');
     // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
@@ -360,14 +365,15 @@ export function initTabsNavigation(appVersion) {
     // Контейнер для верхних действий (статистика, админка)
     const topActions = document.createElement('div');
     topActions.className = 'top-actions-bar';
-    topActions.style.display = 'flex';
+    // СКРЫВАЕМ top-actions-bar для страницы статистики!
+    topActions.style.display = isStatsPage ? 'none' : 'flex';
     topActions.style.alignItems = 'center';
     topActions.style.justifyContent = 'flex-start';
     topActions.style.padding = '4px 0';
     console.log('[MOBILE DEBUG] top-actions-bar создан:', topActions);
     console.log('[MOBILE DEBUG] window.innerWidth:', window.innerWidth);
     console.log('[MOBILE DEBUG] topActions.style.display после создания:', topActions.style.display);
-    // keep full-width behavior horizontally
+    console.log('[MOBILE DEBUG] isStatsPage:', isStatsPage);
     
     // Версия приложения
     const verEl = document.createElement('div');
@@ -3057,6 +3063,13 @@ function refreshCurrentContext() {
     console.log('[refreshCurrentContext] Called!');
     console.log('[refreshCurrentContext] currentContextKey:', currentContextKey);
     console.log('[refreshCurrentContext] location.hash:', location.hash);
+    
+    // НЕ показываем вопросы если открыта страница статистики!
+    if (location.hash === '#/stats') {
+        console.log('[refreshCurrentContext] Stats page detected, skipping showAllQuestions()');
+        return;
+    }
+    
     console.log('[refreshCurrentContext] Stack:', new Error().stack);
     console.log('========================================');
     try {
