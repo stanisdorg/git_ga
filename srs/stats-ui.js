@@ -1963,7 +1963,7 @@ const STATS_STYLES = `
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
   .st-mode-desc { display: none; }
 
-  /* Mobile: компактные карточки режимов - Вариант 5 с градиентом */
+  /* Mobile: компактные карточки режимов - вертикальные с жирным заголовком */
   @media (max-width: 768px) {
     .modes-grid {
       display: grid !important;
@@ -1972,12 +1972,14 @@ const STATS_STYLES = `
       height: auto !important;
     }
     .modes-grid .st-mode-card {
-      padding: 8px 10px !important;
+      padding: 12px 8px !important;
       border-radius: 8px !important;
       border: none !important;
       background: linear-gradient(135deg, rgba(255,159,28,0.08) 0%, rgba(46,196,182,0.05) 100%) !important;
       display: flex !important;
+      flex-direction: column !important;
       align-items: center !important;
+      text-align: center !important;
       gap: 8px !important;
       transition: all 0.2s !important;
     }
@@ -1986,15 +1988,15 @@ const STATS_STYLES = `
       border: 1px solid rgba(255,159,28,0.4) !important;
     }
     .modes-grid .st-mode-card-large {
-      padding: 8px 10px !important;
+      padding: 12px 8px !important;
       border-radius: 8px !important;
     }
     .modes-grid .st-mode-card-large .st-mode-icon {
-      width: 28px !important;
-      height: 28px !important;
-      font-size: 28px !important;
+      width: 40px !important;
+      height: 40px !important;
+      font-size: 0 !important;
       margin: 0 !important;
-      border-radius: 50% !important;
+      border-radius: 8px !important;
       background: linear-gradient(135deg, rgba(255,159,28,0.3) 0%, rgba(255,107,53,0.3) 100%) !important;
       display: flex !important;
       align-items: center !important;
@@ -2002,15 +2004,25 @@ const STATS_STYLES = `
       flex-shrink: 0 !important;
       filter: none !important;
     }
+    .modes-grid .st-mode-card-large .st-mode-icon svg {
+      width: 24px !important;
+      height: 24px !important;
+    }
     .modes-grid .st-mode-card-large .st-mode-title {
-      font-size: 12px !important;
-      font-weight: 600 !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
       margin: 0 !important;
-      text-align: left !important;
-      flex: 1 !important;
+      text-align: center !important;
+      display: block !important;
+      color: #fff !important;
     }
     .modes-grid .st-mode-card-large .st-mode-desc {
-      display: none !important;
+      display: block !important;
+      font-size: 9px !important;
+      color: rgba(255,255,255,0.45) !important;
+      margin: 2px 0 0 0 !important;
+      text-align: center !important;
+      line-height: 1.2 !important;
     }
   }
 
@@ -2667,22 +2679,22 @@ function renderStats() {
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:10px 12px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:10px!important;height:auto!important;" title="📝 Работа над ошибками\n\nКарточки с низкой точностью ответов.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
-              <span class="st-mode-icon" style="width:32px!important;height:32px!important;margin:0!important;border-radius:6px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
-                <svg viewBox="0 0 24 24" fill="#000" style="width:18px;height:18px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="📝 Работа над ошибками\n\nНизкая точность.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+                <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
               </span>
-              <div style="display:flex!important;flex-direction:column!important;flex:1!important;min-width:0!important;">
-                <span class="st-mode-title" style="font-size:13px!important;font-weight:600!important;margin:0!important;text-align:left!important;display:block!important;color:#fff!important;">Работа над ошибками</span>
-                <span class="st-mode-desc" style="font-size:10px!important;color:rgba(255,255,255,0.7)!important;margin:2px 0 0 0!important;text-align:left!important;display:block!important;line-height:1.3!important;">Карточки с низкой точностью</span>
+              <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
+                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Работа над ошибками</span>
+                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Низкая точность</span>
               </div>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:10px 12px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:10px!important;height:auto!important;" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
-              <span class="st-mode-icon" style="width:32px!important;height:32px!important;margin:0!important;border-radius:6px!important;background:linear-gradient(135deg,#2EC4B6 0%,#06D6A0 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
-                <svg viewBox="0 0 24 24" fill="#000" style="width:18px;height:18px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#2EC4B6 0%,#06D6A0 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+                <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               </span>
-              <div style="display:flex!important;flex-direction:column!important;flex:1!important;min-width:0!important;">
-                <span class="st-mode-title" style="font-size:13px!important;font-weight:600!important;margin:0!important;text-align:left!important;display:block!important;color:#fff!important;">Только новые</span>
-                <span class="st-mode-desc" style="font-size:10px!important;color:rgba(255,255,255,0.7)!important;margin:2px 0 0 0!important;text-align:left!important;display:block!important;line-height:1.3!important;">Свежий материал</span>
+              <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
+                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Только новые</span>
+                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Свежий материал</span>
               </div>
             </div>
           </div>
