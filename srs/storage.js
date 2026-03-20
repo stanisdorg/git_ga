@@ -113,15 +113,14 @@ export async function loadFromServer(forceReload = false) {
 
         // Check if server data is newer than local last sync
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
-
-        // 🔒 Получаем локальное количество карточек
-        const localCardsCount = JSON.parse(localStorage.getItem('qaUserCards') || '[]').length;
+        const serverTS = data.updatedAt || 0;
 
         // 🔥 ПРИНУДИТЕЛЬНАЯ ПЕРЕЗАПИСЬ при forceReload
         if (forceReload) {
+            // Всегда загружаем с сервера при forceReload
         } else {
-            // Не перезаписываем если локальные данные свежее ИЛИ если локальных карточек больше
-            if ((data.updatedAt && data.updatedAt <= localTS) || (data._cards && data._cards.length <= localCardsCount)) {
+            // Не перезаписываем если локальные данные свежее
+            if (serverTS && serverTS <= localTS) {
                 window.dispatchEvent(new Event('dataLoaded'));
                 return;
             }
