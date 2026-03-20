@@ -363,7 +363,7 @@ let uniqueQaData = [];
 
 // 🔥 Функция для обновления uniqueQaData извне (например, из storage.js)
 // Это нужно для корректной работы на нескольких устройствах
-export function setUniqueQaData(cards) {
+function setUniqueQaData(cards) {
     uniqueQaData = cards;
     console.log('[all-data] setUniqueQaData вызван:', cards.length, 'карточек');
 }
