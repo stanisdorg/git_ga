@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '5.00-fix-logout-progress';
+export const APP_VERSION = '5.01';
 
 let uiInitialized = false;
 
