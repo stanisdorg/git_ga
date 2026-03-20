@@ -755,6 +755,16 @@ const server = http.createServer((req, res) => {
         }
 
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+
+        // 🔍 Читаем существующий файл (если есть)
+        let userData = {};
+        if (fs.existsSync(targetPath)) {
+          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+          logger.info('Существующий файл', { cards: userData._cards?.length || 0 }, 'Save');
+        } else {
+          logger.info('Создаётся новый файл пользователя', null, 'Save');
+        }
+
         console.log('[SERVER] ЗАПИСЬ файла:', {
             operation: 'write',
             filePath: targetPath,
@@ -763,14 +773,6 @@ const server = http.createServer((req, res) => {
             existingCardsCount: userData._cards?.length || 0,
             timestamp: Date.now()
         });
-
-        let userData = {};
-        if (fs.existsSync(targetPath)) {
-          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
-          logger.info('Существующий файл', { cards: userData._cards?.length || 0 }, 'Save');
-        } else {
-          logger.info('Создаётся новый файл пользователя', null, 'Save');
-        }
 
         userData._cards = data;
         if (!userData._meta) userData._meta = {};
