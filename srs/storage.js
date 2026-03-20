@@ -79,6 +79,7 @@ export async function syncWithServer() {
 }
 
 export async function loadFromServer(forceReload = false) {
+    console.log('[loadFromServer] === ЗАГРУЗКА С СЕРВЕРА === forceReload:', forceReload);
     // Only load if we have a logged-in user
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
@@ -86,6 +87,8 @@ export async function loadFromServer(forceReload = false) {
         const u = JSON.parse(sessionUserRaw);
         if (u && u.username) username = u.username;
     } catch {}
+
+    console.log('[loadFromServer] username:', username);
 
     if (!username) {
         // Диспатчим dataLoaded чтобы UI загрузился с global.json
@@ -98,6 +101,8 @@ export async function loadFromServer(forceReload = false) {
 
         const res = await fetch(url);
 
+        console.log('[loadFromServer] Response status:', res?.status);
+
         // Если сервер недоступен (404, 500, network error) - загружаем локальные данные
         if (!res || !res.ok) {
             window.dispatchEvent(new Event('dataLoaded'));
@@ -105,6 +110,13 @@ export async function loadFromServer(forceReload = false) {
         }
 
         const data = await res.json();
+
+        console.log('[loadFromServer] Получены данные:', {
+            hasCards: !!data._cards,
+            cardsCount: data._cards?.length || 0,
+            updatedAt: data.updatedAt,
+            hasProgress: !!data.srsProgress
+        });
 
         if (!data || Object.keys(data).length === 0) {
             window.dispatchEvent(new Event('dataLoaded'));
@@ -114,22 +126,35 @@ export async function loadFromServer(forceReload = false) {
         // Check if server data is newer than local last sync
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
         const serverTS = data.updatedAt || 0;
+        const localCardsCount = JSON.parse(localStorage.getItem('qaUserCards') || '[]').length;
+
+        console.log('[loadFromServer] Сравнение timestamp:', {
+            localTS,
+            serverTS,
+            localCardsCount,
+            serverCardsCount: data._cards?.length || 0,
+            forceReload
+        });
 
         // 🔥 ПРИНУДИТЕЛЬНАЯ ПЕРЕЗАПИСЬ при forceReload
         if (forceReload) {
-            // Всегда загружаем с сервера при forceReload
+            console.log('[loadFromServer] forceReload=true, загружаем с сервера');
         } else {
             // Не перезаписываем если локальные данные свежее
             if (serverTS && serverTS <= localTS) {
+                console.log('[loadFromServer] Локальные данные свежее (serverTS <= localTS), пропускаем загрузку');
                 window.dispatchEvent(new Event('dataLoaded'));
                 return;
             }
         }
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
+        console.log('[loadFromServer] Загружаем данные с сервера в localStorage');
+
         // Restore keys
         if (data._cards) {
             localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
+            console.log('[loadFromServer] Сохранено', data._cards.length, 'карточек в localStorage');
         }
         if (data.srsProgress) localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
         if (data.studyStats) localStorage.setItem('studyStats', JSON.stringify(data.studyStats));
@@ -160,6 +185,8 @@ export async function loadFromServer(forceReload = false) {
                 refreshServerTrash();
             }
         }, 100);
+
+        console.log('[loadFromServer] === ДАННЫЕ УСПЕШНО ЗАГРУЖЕНЫ ===');
     } catch (e) {
         console.error('[loadFromServer] Ошибка загрузки:', e.message);
         // При ошибке используем локальные данные

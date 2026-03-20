@@ -1248,7 +1248,10 @@ export function initTabsNavigation(appVersion) {
 
             // Переключение User -> Guest (Logout)
             if (loggedInUser && !user) {
+                console.log('[LOGOUT] === НАЧАЛО ВЫХОДА ===');
+
                 // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
+                console.log('[LOGOUT] Сохраняем данные на сервер перед выходом...');
                 try {
                     await saveMergedToServer();
                 } catch (e) {
@@ -1267,12 +1270,16 @@ export function initTabsNavigation(appVersion) {
                     'localDataTimestamp', 'qaSessionUser', 'sessionToken', 'currentUser'
                 ];
                 DATA_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
-                
-                // Также очищаем старые ключи без суффиксов
+
+                console.log('[LOGOUT] localStorage очищен, ключи:', DATA_KEYS_TO_CLEAR);
+
+                // Также очищ������ем старые ключи без суффиксов
                 ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
 
                 // ⚠️ ВАЖНО: Удаляем сессию полностью
                 clearQaUserCards();
+
+                console.log('[LOGOUT] === ВЫХОД ЗАВЕРШЕН ===');
             }
 
             loggedInUser = user;
@@ -2498,6 +2505,8 @@ async function saveMergedToServer(skipReload = false) {
         // Отправляем событие начала синхронизации
         window.dispatchEvent(new Event('sync-start'));
 
+        console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ === skipReload:', skipReload);
+
         // 🔍 ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
         const fixEncoding = (text) => {
             if (!text) return text;
@@ -2628,6 +2637,13 @@ async function saveMergedToServer(skipReload = false) {
 
         const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
 
+        console.log('[saveMergedToServer] Отправляем на сервер:', {
+            mergedCount: merged.length,
+            newItemsCount: newItems.length,
+            deletedCount: Object.keys(deletedMap).length,
+            username
+        });
+
         const resp = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2650,6 +2666,8 @@ async function saveMergedToServer(skipReload = false) {
         // Успешное сохранение
         setSaveStatus('success');
 
+        console.log('[saveMergedToServer] Сервер ответил:', { ok, responseJson });
+
         // Отправляем событие успешной синхронизации
         window.dispatchEvent(new Event('sync-success'));
 
@@ -2659,6 +2677,7 @@ async function saveMergedToServer(skipReload = false) {
 
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
+            console.log('[saveMergedToServer] Очищаем qaNewItems:', newItems.length, 'элементов');
             if (Array.isArray(newItems) && newItems.length > 0) {
                 localStorage.setItem('qaNewItems', JSON.stringify([]));
             }
@@ -2673,6 +2692,7 @@ async function saveMergedToServer(skipReload = false) {
         }
 
         // Принудительная перезагрузка данных через 50мс
+        console.log('[saveMergedToServer] Dispatch forceReloadData:', !skipReload);
         setTimeout(() => {
             if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
         }, 50);
@@ -3559,6 +3579,12 @@ export function displayQuestions(questions, title) {
                                 const copyQ = genUniqueQuestion(item.question);
                                 const duplicatedItem = { ...item, question: copyQ };
 
+                                console.log('[DUPLICATE] Создан дубликат:', {
+                                    original: item.question?.substring(0, 50),
+                                    copy: copyQ,
+                                    timestamp: Date.now()
+                                });
+
                                 // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
                                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                                 if (sessionUserRaw) {
@@ -3585,6 +3611,8 @@ export function displayQuestions(questions, title) {
                                     if (!newItems.some(n => n.question === copyQ)) {
                                         newItems.push(duplicatedItem);
                                         localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+
+                                        console.log('[DUPLICATE] Добавлено в qaNewItems, всего:', newItems.length);
                                     }
                                 }
 
@@ -3612,6 +3640,7 @@ export function displayQuestions(questions, title) {
                                         setInlineSaveStatus(rowEl, 'success');
 
                                         // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                        console.log('[DUPLICATE] Вызываем saveMergedToServer(true)');
                                         saveMergedToServer(true).then(saveOk => {
                                             if (!saveOk) {
                                                 setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');

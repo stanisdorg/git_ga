@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "username": "jeff",
+    "role": "user",
+    "createdAt": "2026-03-20T20:41:56.478Z",
+    "lastLoginAt": null,
+    "cardsCount": 316,
+    "lastSavedAt": null
+  },
   "_cards": [
     {
       "category": "DevOps",
@@ -154,7 +162,7 @@
       "category": "DevOps",
       "subcategory": "CI/CD",
       "question": "пример для чего подмена запросов?",
-      "answer": "можно добавить/убрать/заменить заголовки (например, Authorization, Content-Type). например, протестировать, что будет, если токен невалидный.\n    - redis ?"
+      "answer": "можно добавить/убрать/заменить заголовки (например, Authorization, Content-Type). например, протестировать, что будет, если токен невалидный.\n    - redis ????"
     },
     {
       "category": "DevOps",
@@ -1115,14 +1123,14 @@
     {
       "category": "Тестирование",
       "subcategory": "Общее",
-      "question": "Интеграционное?",
+      "question": "Интеграционное???",
       "answer": "Виды интеграционного тестирования:\n\nПоэлементное (Unit Integration) — интеграция по одному компоненту.\n\nПостепенное (Incremental) — компоненты интегрируются постепенно.\n\nBig Bang — все компоненты интегрируются одновременно.",
       "raw_category": "MindMap Node"
     },
     {
       "category": "Тестирование",
       "subcategory": "Общее",
-      "question": "Конфигурационные - разные конфигурации, устройства, браузеры?",
+      "question": "Конфигурационные - разные конфигурации, устройства, браузеры???",
       "answer": "Тестирование совместимости браузеров\n\nТестирование на разных операционных системах\n\nТестирование на мобильных устройствах\n\nТестирование на разных разрешениях экрана:\n\nКонфигурационное тестирование - это, тестирование, к примеру, на только компьютерах с различным набором железа/софта и т.п.\n\nА тестирование совместимости, на различных платформах - компьютеры, ноутбуки, планшеты, смартфоны и т.д.",
       "raw_category": "MindMap Node"
     },
@@ -1185,7 +1193,7 @@
     {
       "category": "Тестирование",
       "subcategory": "Общее",
-      "question": "Совместимость - кроссбраузерное, кроссплатформенное?",
+      "question": "Совместимость - кроссбраузерное, кроссплатформенное???",
       "answer": "Взаимодействие с другими приложениями\n\nКонфигурационное тестирование - это, тестирование, к примеру, на только компьютерах с различным набором железа/софта и т.п.\n\nА тестирование совместимости, на различных платформах - компьютеры, ноутбуки, планшеты, смартфоны и т.д.",
       "raw_category": "MindMap Node"
     },
@@ -1220,14 +1228,14 @@
     {
       "category": "Тестирование",
       "subcategory": "Общее",
-      "question": "Тест-дизайн?",
+      "question": "Тест-дизайн???",
       "answer": "один из этапов тестирования, во время которого проектируются возможные тест-кейсы (случаи).",
       "raw_category": "MindMap Node"
     },
     {
       "category": "Тестирование",
       "subcategory": "Общее",
-      "question": "Тест-план?",
+      "question": "Тест-план???",
       "answer": "документ, в котором указан весь объем работ по тестированию, а также оценки рисков с вариантами их решения.\n\nцели\n\nстратегия\n\nобласть\n\nрасписание и ресурсы\n\nожид. результ. и крит. приемки",
       "raw_category": "MindMap Node"
     },
@@ -1475,7 +1483,7 @@
       "category": "Технические",
       "subcategory": "API и Сети",
       "question": "GET vs POST?",
-      "answer": "GET — получаем информацию от сервера (идемпотентный), не имеет тела (есть query params). POST — метод, отправляющий информацию на сервер, информация в body (неидемпотентный).\n\n--- Дополнительный ответ ---\nget - получаем инфу от ????ерв??ра(идемпот+?), не имеет тела(есть query params)\n    post - метод отправляющий информацию на сервер, информация в body, (не идемпот)"
+      "answer": "GET — получаем информацию от сервера (идемпотентный), не имеет тела (есть query params). POST — метод, отправляющий информацию на сервер, информация в body (неидемпотентный).\n\n--- Дополнительный ответ ---\nget - получаем инфу от сервера(идемпот+?), не имеет тела(есть query params)\n    post - метод отправляющий информацию на сервер, информация в body, (не идемпот)"
     },
     {
       "category": "Технические",
@@ -2033,388 +2041,8 @@
       "answer": "Функциональные — это как работает система. Нефункциональные — это про UI, UX, дизайн, насколько удобно пользователю, например, доступность не менее 99,9% времени в год.\\n\\n--- Дополнительный ответ ---\\nфункц-то как работает система, нефункц-про ui, ux, дизайн, про то насколько удобно пользователю, нефункц- по нагрузке, например: доступность не менее 99,9% времени в год"
     }
   ],
-  "_achievements": {
-    "firstSessionCompleted": true
-  },
-  "_favorites": [
-    "брокеры?",
-    "CI CD?(jeff)",
-    "для чего нам нужны брокеры сообщений, kafka, rabbit?",
-    "Как происходит тестирование локально с помощью Docker?",
-    "4) Прикладной",
-    "kafka отличие партиций от топика"
-  ],
-  "_srsProgress": {
-    "Gitlab Ci/Jenkins": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023630331,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023630331,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "Gitlab Ci/Jenkins"
-    },
-    "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023630606,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023630606,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается"
-    },
-    "что в Elements смотришь обычно?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023630863,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023630863,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "что в Elements смотришь обычно?"
-    },
-    "docker команды?": {
-      "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023631145,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 1,
-      "historyArray": [
-        {
-          "date": 1774023631145,
-          "grade": 3
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "docker команды?"
-    },
-    "2/3ех/многоуровневая": {
-      "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023631549,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 1,
-      "historyArray": [
-        {
-          "date": 1774023631549,
-          "grade": 3
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "2/3ех/многоуровневая"
-    },
-    "Foreign Key": {
-      "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023631736,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 1,
-      "historyArray": [
-        {
-          "date": 1774023631736,
-          "grade": 3
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "Foreign Key"
-    },
-    "charlies proxy": {
-      "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023631919,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 1,
-      "historyArray": [
-        {
-          "date": 1774023631919,
-          "grade": 3
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "charlies proxy"
-    },
-    "403 Forbidden": {
-      "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023632129,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 1,
-      "historyArray": [
-        {
-          "date": 1774023632129,
-          "grade": 3
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "403 Forbidden"
-    },
-    "брокеры?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023633797,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023633797,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "брокеры?"
-    },
-    "CI CD?(jeff)": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023634983,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023634983,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "CI CD?(jeff)"
-    },
-    "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023636524,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023636524,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
-    },
-    "Как происходит тестирование локально с помощью Docker?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023638475,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023638475,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "Как происходит тестирование локально с помощью Docker?"
-    },
-    "4) Прикладной": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774023639724,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774023639724,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 22,
-      "question": "4) Прикладной"
-    },
-    "Как вы работали с Docker и TeamCity?": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774037581629,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774037581629,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 2,
-      "question": "Как вы работали с Docker и TeamCity?"
-    },
-    "502 Bad Gateway": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774037581968,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774037581968,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 2,
-      "question": "502 Bad Gateway"
-    },
-    "Use-cases": {
-      "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774037582251,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774037582251,
-          "grade": 2
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 2,
-      "question": "Use-cases"
-    },
-    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
-      "interval": 1,
-      "easeFactor": 2.05,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774037582475,
-      "nextReviewDate": 1774054800000,
-      "dueDate": "2026-03-21T01:00:00.000Z",
-      "repetitions": 0,
-      "historyArray": [
-        {
-          "date": 1774037582475,
-          "grade": 1
-        }
-      ],
-      "state": "learning",
-      "lastReviewed": "2026-03-20",
-      "lastReviewedTime": 2,
-      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
-    }
-  },
-  "_stats": {
-    "total": 17,
-    "timeSpent": 11639,
-    "points": 105,
-    "correct": 5
-  },
-  "_meta": {
-    "username": "jeff",
-    "role": "user",
-    "createdAt": null,
-    "lastLoginAt": "2026-03-20T20:12:52.805Z",
-    "cardsCount": 316,
-    "lastSavedAt": "2026-03-20T20:12:52.805Z"
-  }
+  "_achievements": {},
+  "_stats": {},
+  "_srsProgress": {},
+  "_favorites": []
 }
