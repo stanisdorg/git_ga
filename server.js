@@ -516,6 +516,11 @@ const server = http.createServer((req, res) => {
         favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
         achievements: Object.keys(userData._achievements || {}).length
       }, 'Load');
+
+      console.log('[SERVER /api/progress] Прочитано из файла:', {
+        cardsCount: userData._cards?.length || 0,
+        filePath: targetPath
+      });
       
       // Проверяем карточки на повреждение
       if (userData._cards && Array.isArray(userData._cards)) {
@@ -544,6 +549,8 @@ const server = http.createServer((req, res) => {
           const debugCardsPath = path.join(__dirname, 'data', 'debug_bad_cards.json');
           fs.writeFileSync(debugCardsPath, JSON.stringify(badCards, null, 2), 'utf-8');
         }
+
+        console.log('[SERVER /api/progress] Найдено повреждённых карточек:', badCards.length);
       }
 
       // Загружаем корзину пользователя
@@ -586,6 +593,12 @@ const server = http.createServer((req, res) => {
         const debugResponsePath = path.join(__dirname, 'data', 'debug_server_response.json');
         fs.writeFileSync(debugResponsePath, jsonResponse, 'utf-8');
       }
+
+      console.log('[SERVER /api/progress] Отправляем клиенту:', {
+        cardsCount: response._cards?.length || 0,
+        favoritesCount: response.qaFavorites?.length || 0,
+        updatedAt: response.updatedAt
+      });
 
       logger.info('=== ОТПРАВКА ДАННЫХ КЛИЕНТУ ===', null, 'Load');
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -683,7 +696,19 @@ const server = http.createServer((req, res) => {
         }
 
         const data = JSON.parse(body);
-        
+
+        console.log('[SERVER /save] Распарсены данные:', {
+            count: Array.isArray(data) ? data.length : 'not array',
+            hasNewItems: Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'))
+        });
+        if (Array.isArray(data)) {
+            const copyItems = data.filter(c => c.question && c.question.includes('копия'));
+            if (copyItems.length > 0) {
+                console.log('[SERVER /save] Найдено дубликатов:', copyItems.length);
+                console.log('[SERVER /save] Первый дубликат:', copyItems[0]);
+            }
+        }
+
         logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array', bodyLength: body.length }, 'Save');
 
         // 🔍 ПРОВЕРКА НА ПОВРЕЖДЕННЫЕ СИМВОЛЫ
@@ -771,12 +796,17 @@ const server = http.createServer((req, res) => {
             hasQuestionInRussian,
             outputLength: jsonString.length
           }, 'Save');
-          
+
           // Сохраняем что именно пойдет в файл
           const debugOutputPath = path.join(__dirname, 'data', 'debug_before_write.json');
           fs.writeFileSync(debugOutputPath, jsonString, 'utf-8');
           logger.error(`Данные перед записью сохранены в ${debugOutputPath}`, null, 'Save');
         }
+
+        console.log('[SERVER /save] Записываем данные:', {
+            cardsCount: userData._cards?.length || 0,
+            filePath: targetPath
+        });
 
         fs.writeFile(targetPath, jsonString, 'utf-8', (err) => {
           if (err) {
@@ -811,7 +841,12 @@ const server = http.createServer((req, res) => {
           } catch (checkErr) {
             logger.error('Ошибка проверки файла', { error: checkErr.message }, 'Save');
           }
-          
+
+          console.log('[SERVER /save] Успешно записано:', {
+              cardsCount: data.length,
+              filePath: targetPath
+          });
+
           logger.info('=== УСПЕШНО СОХРАНЕНО ===', { count: data.length, username }, 'Save');
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true, saved: data.length }));
