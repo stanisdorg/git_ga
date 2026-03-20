@@ -711,6 +711,14 @@ const server = http.createServer((req, res) => {
 
         logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array', bodyLength: body.length }, 'Save');
 
+        // 🔍 ЛОГ: проверяем есть ли дубликаты
+        const hasDuplicates = Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'));
+        console.log('[SERVER /save] Получено данных:', {
+            count: Array.isArray(data) ? data.length : 0,
+            hasDuplicates,
+            timestamp: Date.now()
+        });
+
         // 🔍 ПРОВЕРКА НА ПОВРЕЖДЕННЫЕ СИМВОЛЫ
         const hasFFFD = body.includes('\uFFFD');
         const badRussianPattern = /Д\?{1,5}кументация/.test(body);
