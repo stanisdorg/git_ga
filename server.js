@@ -710,6 +710,7 @@ const server = http.createServer((req, res) => {
           logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ПАРСИНГОМ', null, 'Save');
         }
 
+        console.log('[SERVER /save] Попытка парсинга JSON, длина:', body.length);
         const data = JSON.parse(body);
 
         console.log('[SERVER /save] Распарсены данные:', {
@@ -898,6 +899,12 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {
+        console.error('[SERVER /save] ОШИБКА ПАРСИНГА JSON:', {
+            error: e.message,
+            bodyLength: body.length,
+            bodyPreview: body.substring(0, 500) + '...',
+            timestamp: Date.now()
+        });
         logger.error('Ошибка парсинга JSON', { error: e.message }, 'Save');
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));

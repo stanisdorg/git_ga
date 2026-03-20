@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '4.85-debug-files';
+export const APP_VERSION = '4.86-debug-json-error';
 
 let uiInitialized = false;
 
