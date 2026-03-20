@@ -355,6 +355,18 @@
     width: max-content; /* Only take necessary width */
 }
 
+/* Mobile: уменьшаем размеры табов и отступы */
+@media (max-width: 768px) {
+    .tabs-container {
+        gap: 2px !important;
+    }
+    .tab {
+        padding: 0 6px !important;
+        height: 28px !important;
+        font-size: 12px !important;
+    }
+}
+
 .tab:hover {
     border-color: var(--color-text);
     color: var(--color-text);
@@ -519,6 +531,16 @@
 .search-container {
     padding: 0 20px;
     margin-bottom: 20px;
+}
+
+/* Mobile: уменьшаем padding для search и tabs navigation */
+@media (max-width: 768px) {
+    .tabs-navigation {
+        padding: 0 5px !important;
+    }
+    .search-container {
+        padding: 0 5px !important;
+    }
 }
 
 .input-group {
@@ -1714,7 +1736,7 @@ body.learning-mode #bottom-nav {
         width: 14px !important;
         height: 14px !important;
     }
-    /* Top Actions Bar */
+    /* Top Actions Bar - кнопки должны быть видны */
     .top-actions-bar {
         padding-left: 4px !important;
         padding-right: 4px !important;
@@ -1722,12 +1744,18 @@ body.learning-mode #bottom-nav {
         gap: 2px !important;
     }
     .top-actions-bar .nav-icon-btn {
-        padding: 0px 5px !important;
+        padding: 0px 4px !important;
         min-width: auto !important;
+        display: inline-flex !important;
+    }
+    .top-actions-bar .nav-icon-btn.tab {
+        display: inline-flex !important;
+        height: 32px !important;
     }
     .top-actions-bar .nav-icon-btn svg {
         width: 18px !important;
         height: 18px !important;
+        display: block !important;
     }
     .username-display {
         font-size: 11px !important;
@@ -1740,23 +1768,31 @@ body.learning-mode #bottom-nav {
     .level-container-right {
         margin-left: 4px !important;
         padding-right: 4px !important;
+        gap: 1px !important;
     }
     .level-inline {
         padding: 2px 4px !important;
         border-radius: 6px !important;
+        gap: 1px !important;
     }
     .level-inline-bar {
         width: 65px !important;
         min-width: 50px !important;
         height: 10px !important;
+        display: flex !important;
+        align-items: center !important;
     }
     .level-inline-text {
         font-size: 5px !important;
-        line-height: 6px !important;
+        line-height: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        height: 100% !important;
     }
     .lv-label {
         font-size: 9px !important;
-        margin-right: 3px !important;
+        margin-right: 2px !important;
     }
     /* Мобильное имя пользователя - компактнее */
     .st-mobile-username {
@@ -1786,18 +1822,114 @@ body.learning-mode #bottom-nav {
 
 /* iPhone 12 Pro и подобные (390px) - оптимизация шапки */
 @media (min-width: 376px) and (max-width: 420px) {
+    /* App wrapper и container - на всю ширину */
+    .app-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    .container {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    /* Контейнер результатов - на всю ширину */
+    .results-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    #results-list {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        padding: 0 4px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+    .result-item {
+        padding: 8px 10px 12px 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
+    }
+    .result-item * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .question-row {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+        margin-bottom: 4px !important;
+        min-width: 0 !important;
+    }
+    .category-badge, .subcategory-badge {
+        max-width: none !important;
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+    }
+    .question {
+        padding-right: 30px !important;
+        font-size: 14px !important;
+        width: 100% !important;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+    }
+    .answer {
+        font-size: 13px !important;
+        padding-right: 4px !important;
+        width: 100% !important;
+        overflow-wrap: anywhere !important;
+        word-wrap: anywhere !important;
+        hyphens: auto !important;
+    }
+    .hearts-container {
+        right: 32px !important;
+        max-width: none !important;
+    }
+    .fav-btn {
+        right: 6px !important;
+        width: 22px !important;
+        height: 22px !important;
+    }
+    .fav-btn svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    /* Top Actions Bar - кнопки должны быть видны */
     .top-actions-bar {
         padding: 4px 4px !important;
         gap: 2px !important;
-        justify-content: flex-start !important;
     }
     .top-actions-bar .nav-icon-btn {
         padding: 0px 4px !important;
         min-width: auto !important;
+        display: inline-flex !important;
+    }
+    .top-actions-bar .nav-icon-btn.tab {
+        display: inline-flex !important;
+        height: 32px !important;
     }
     .top-actions-bar .nav-icon-btn svg {
         width: 18px !important;
         height: 18px !important;
+        display: block !important;
     }
     .username-display {
         font-size: 11px !important;
@@ -1810,21 +1942,29 @@ body.learning-mode #bottom-nav {
     .level-container-right {
         margin-left: auto !important;
         padding-right: 0 !important;
+        gap: 2px !important;
     }
     .level-inline {
         padding: 2px 4px !important;
+        gap: 2px !important;
     }
     .level-inline-bar {
         width: 75px !important;
         min-width: 55px !important;
+        display: flex !important;
+        align-items: center !important;
     }
     .level-inline-text {
         font-size: 5px !important;
-        line-height: 6px !important;
+        line-height: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        height: 100% !important;
     }
     .lv-label {
         font-size: 9px !important;
-        margin-right: 3px !important;
+        margin-right: 2px !important;
     }
     .app-version-display {
         font-size: 10px !important;

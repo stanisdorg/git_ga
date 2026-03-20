@@ -848,25 +848,36 @@ export function initTabsNavigation(appVersion) {
         // Кнопка редактирования (для admin и editor)
         topActions.appendChild(editToggleBtn);
         
-        // Кнопка добавления пользователя (только admin)
-        topActions.appendChild(adminUsersBtn);
-
-        console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
-        
-        // 🔥 ПРИНУДИТЕЛЬНАЯ ПРОВЕРКА видимости кнопки редактирования
+        // 🔥 СРАЗУ проверяем видимость кнопки после добавления в DOM
         setTimeout(() => {
             try {
                 const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
+                console.log('[EDIT BTN] user:', user);
+                console.log('[EDIT BTN] editToggleBtn.parentElement:', editToggleBtn.parentElement);
+                
                 if (user && ['admin', 'editor'].includes(user.role)) {
                     editToggleBtn.style.display = 'inline-block';
                     console.log('[EDIT BTN] Кнопка редактирования показана для:', user.role);
+                    
+                    // 🔍 ЛОГИРОВАНИЕ РАЗМЕРОВ
+                    const rect = editToggleBtn.getBoundingClientRect();
+                    const computedStyle = window.getComputedStyle(editToggleBtn);
+                    console.log('[EDIT BTN DEBUG] rect:', rect);
+                    console.log('[EDIT BTN DEBUG] width:', rect.width, 'height:', rect.height);
+                    console.log('[EDIT BTN DEBUG] display:', computedStyle.display);
+                    console.log('[EDIT BTN DEBUG] padding:', computedStyle.padding);
                 } else {
                     console.log('[EDIT BTN] Кнопка редактирования скрыта, роль:', user?.role || 'guest');
                 }
             } catch (e) {
                 console.error('[EDIT BTN] Ошибка проверки роли:', e);
             }
-        }, 500);
+        }, 100);
+        
+        // Кнопка добавления пользователя (только admin)
+        topActions.appendChild(adminUsersBtn);
+
+        console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
     } else {
         // Desktop: дополнительные кнопки в topActions
         // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
@@ -1292,7 +1303,7 @@ export function initTabsNavigation(appVersion) {
             DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
             localStorage.setItem('guest_backup', JSON.stringify(backup));
 
-            // Очищаем данные, чтобы загрузить профиль пользователя начисто
+            // Очищаем д��нные, чтобы загрузить профиль пользователя начисто
             DATA_KEYS.forEach(k => localStorage.removeItem(k));
             localStorage.removeItem('localDataTimestamp');
 
@@ -3630,7 +3641,7 @@ export function displayQuestions(questions, title) {
                                 setInlineSaveStatus(rowEl, 'success');
                                 setSaveStatus('success', 'Карточка перемещена в корзину');
 
-                                // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                // 🔥 Сохраняем на сервер БЕ�� forceReloadData
                                 saveMergedToServer(true).then(saveOk => {
                                     if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
                                 });
