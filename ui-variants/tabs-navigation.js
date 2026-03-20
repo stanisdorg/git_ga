@@ -1269,7 +1269,7 @@ export function initTabsNavigation(appVersion) {
                 });
                 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве������������ перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на серве�������������� перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -3081,8 +3081,14 @@ function renderTrashPanel() {
                     if (resp.ok) {
                         serverTrashSet.delete(q);
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                        const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
-                        const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
+                        
+                        // 🔥 ВАЖНО: Добавляем в qaDeletedItems чтобы карточка не вернулась при сохранении
+                        const delMap = getDeletedItems();
+                        delMap[q] = { deleted_at: new Date().toISOString(), deleted_by: username, permanent: true };
+                        setDeletedItems(delMap);
+                        
+                        const newArr = getNewItems().filter(i => i.question !== q);
+                        setLS('qaNewItems', newArr);
 
                         // 🔒 Обновляем localStorage с корзиной
                         const localTrash = localStorage.getItem('qaUserTrash');
@@ -3094,7 +3100,7 @@ function renderTrashPanel() {
 
                         renderTrashPanel();
                         refreshCurrentContext();
-                        try { await saveMergedToServer(); } catch { }
+                        // 🔥 НЕ вызываем saveMergedToServer() чтобы не вернуть карточку обратно!
                         setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
                         const error = await resp.text();
