@@ -481,6 +481,13 @@ const server = http.createServer((req, res) => {
     }
 
     const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+    console.log('[SERVER] ЧТЕНИЕ файла:', {
+        operation: 'read',
+        filePath: targetPath,
+        username,
+        exists: fs.existsSync(targetPath),
+        timestamp: Date.now()
+    });
 
     if (!fs.existsSync(targetPath)) {
       logger.warn('Файл пользователя не найден', { username }, 'Load');
@@ -491,12 +498,13 @@ const server = http.createServer((req, res) => {
 
     try {
       const rawContent = fs.readFileSync(targetPath, 'utf-8');
-      
+      const fileSize = fs.statSync(targetPath).size;
+
       // 🔍 ПРОВЕРКА ПОСЛЕ ЧТЕНИЯ
       const hasFFFD = rawContent.includes('\uFFFD');
       const hasBadRussian = /Д\?{1,5}кументация/.test(rawContent);
       const hasQuestionInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(rawContent);
-      
+
       if (hasFFFD || hasBadRussian || hasQuestionInRussian) {
         logger.error('❌ ФАЙЛ ПОВРЕЖДЕН ПРИ ЧТЕНИИ!', {
           hasFFFD,
@@ -504,13 +512,20 @@ const server = http.createServer((req, res) => {
           hasQuestionInRussian,
           filePath: targetPath
         }, 'Load');
-        
+
         // Сохраняем для отладки
         const debugReadPath = path.join(__dirname, 'data', 'debug_read_file.json');
         fs.writeFileSync(debugReadPath, rawContent, 'utf-8');
       }
-      
+
       const userData = JSON.parse(rawContent);
+      console.log('[SERVER] Файл прочитан:', {
+          operation: 'read_complete',
+          filePath: targetPath,
+          fileSize,
+          cardsInFile: userData._cards?.length || 0,
+          timestamp: Date.now()
+      });
       logger.info('Прочитано данных', {
         cards: userData._cards?.length || 0,
         favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
@@ -739,6 +754,14 @@ const server = http.createServer((req, res) => {
         }
 
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+        console.log('[SERVER] ЗАПИСЬ файла:', {
+            operation: 'write',
+            filePath: targetPath,
+            username,
+            incomingCardsCount: Array.isArray(data) ? data.length : 0,
+            existingCardsCount: userData._cards?.length || 0,
+            timestamp: Date.now()
+        });
 
         let userData = {};
         if (fs.existsSync(targetPath)) {
@@ -827,10 +850,18 @@ const server = http.createServer((req, res) => {
           // 🔍 ПРОВЕРКА ПОСЛЕ ЗАПИСИ
           try {
             const writtenContent = fs.readFileSync(targetPath, 'utf-8');
+            const writtenData = JSON.parse(writtenContent);
+            console.log('[SERVER] Файл записан:', {
+                operation: 'write_complete',
+                filePath: targetPath,
+                cardsInFile: writtenData._cards?.length || 0,
+                fileSize: writtenContent.length,
+                timestamp: Date.now()
+            });
             const hasFFFDWritten = writtenContent.includes('\uFFFD');
             const hasBadRussianWritten = /Д\?{1,5}кументация/.test(writtenContent);
             const hasQuestionInRussianWritten = /[а-яА-Я]\?[а-яА-Я]/.test(writtenContent);
-            
+
             if (hasFFFDWritten || hasBadRussianWritten || hasQuestionInRussianWritten) {
               logger.error('❌ ПОСЛЕ ЗАПИСИ В ФАЙЛЕ ОБНАРУЖЕНЫ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
                 hasFFFDWritten,
@@ -838,7 +869,7 @@ const server = http.createServer((req, res) => {
                 hasQuestionInRussianWritten,
                 filePath: targetPath
               }, 'Save');
-              
+
               // Сохраняем копию поврежденного файла
               const debugWrittenPath = path.join(__dirname, 'data', 'debug_after_write.json');
               fs.writeFileSync(debugWrittenPath, writtenContent, 'utf-8');
