@@ -1256,17 +1256,27 @@ export function initTabsNavigation(appVersion) {
                 console.log('[LOGOUT] === НАЧАЛО ВЫХОДА ===');
 
                 // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
-                console.log('[LOGOUT] Сохраняем данные на сервер перед выходом...');
-                try {
-                    // 🔍 ЛОГ: проверяем что сохраняем
-                    const currentCards = getQaUserCards();
-                    console.log('[LOGOUT] Текущие данные перед сохранением:', {
-                        cardsCount: currentCards?.length || 0,
-                        hasNewItems: localStorage.getItem('qaNewItems') !== null
-                    });
-                    await saveMergedToServer();
-                } catch (e) {
-                    console.error('[Logout] Failed to save data before logout:', e);
+                // 🔥 ИСПРАВЛЕНИЕ: Не сохраняем если данные уже сохранены (qaNewItems пуст)
+                const newItems = getNewItems();
+                const deletedItems = getDeletedItems();
+                const hasUnsavedChanges = (newItems && newItems.length > 0) || 
+                                          (deletedItems && Object.keys(deletedItems).length > 0);
+                
+                console.log('[LOGOUT] Проверяем есть ли несохранённые данные:', {
+                    hasUnsavedChanges,
+                    newItemsCount: newItems?.length || 0,
+                    deletedCount: Object.keys(deletedItems || {}).length
+                });
+                
+                if (hasUnsavedChanges) {
+                    console.log('[LOGOUT] Сохраняем данные на серве�� перед выходом...');
+                    try {
+                        await saveMergedToServer();
+                    } catch (e) {
+                        console.error('[Logout] Failed to save data before logout:', e);
+                    }
+                } else {
+                    console.log('[LOGOUT] Все данные уже сохранены, пропускаем saveMergedToServer');
                 }
 
                 // ⚠️ ВАЖНО: Полностью очищаем localStorage пользователя
