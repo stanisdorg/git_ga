@@ -1269,7 +1269,7 @@ export function initTabsNavigation(appVersion) {
                 });
                 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве���� перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на серве������ перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -2750,6 +2750,16 @@ async function saveMergedToServer(skipReload = false) {
         // ОБНОВЛЯЕМ qaUserCards в localStorage
         try {
             setQaUserCards(merged);
+            console.log('[saveMergedToServer] setQaUserCards вызван:', {
+                mergedLength: merged.length,
+                savedCards: merged.length
+            });
+            
+            // 🔍 ПРОВЕРЯЕМ что записалось в localStorage
+            const verifyCards = getQaUserCards();
+            console.log('[saveMergedToServer] Проверка localStorage:', {
+                cardsInLocalStorage: verifyCards?.length || 0
+            });
 
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
