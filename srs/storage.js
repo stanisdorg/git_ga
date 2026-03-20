@@ -79,8 +79,6 @@ export async function syncWithServer() {
 }
 
 export async function loadFromServer(forceReload = false) {
-    console.log('[loadFromServer] === ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ===');
-
     // Only load if we have a logged-in user
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
@@ -90,58 +88,40 @@ export async function loadFromServer(forceReload = false) {
     } catch {}
 
     if (!username) {
-        console.log('[loadFromServer] Нет авторизованного пользователя, загрузка не требуется');
         // Диспатчим dataLoaded чтобы UI загрузился с global.json
         window.dispatchEvent(new Event('dataLoaded'));
         return;
     }
 
-    console.log('[loadFromServer] Загрузка для пользователя:', username);
-
     try {
         const url = `/api/progress?username=${encodeURIComponent(username)}`;
-        console.log('[loadFromServer] GET', url);
 
         const res = await fetch(url);
 
         // Если сервер недоступен (404, 500, network error) - загружаем локальные данные
         if (!res || !res.ok) {
-            console.log('[loadFromServer] Сервер недоступен (status:', res?.status, ') - используем локальные данные');
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
 
         const data = await res.json();
-        console.log('[loadFromServer] Получены данные с сервера:', {
-            hasCards: !!data._cards,
-            cardsCount: data._cards?.length || 0,
-            hasProgress: !!data.srsProgress,
-            hasFavorites: !!data.qaFavorites,
-            hasAchievements: !!data.studyAchievements,
-            updatedAt: data.updatedAt ? new Date(data.updatedAt).toISOString() : 'no timestamp'
-        });
 
         if (!data || Object.keys(data).length === 0) {
-            console.log('[loadFromServer] Нет данных от сервера - используем локальные данные');
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
 
         // Check if server data is newer than local last sync
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
-        console.log('[loadFromServer] Сравнение timestamp: локальный=', localTS, 'серверный=', data.updatedAt);
 
         // 🔒 Получаем локальное количество карточек
         const localCardsCount = JSON.parse(localStorage.getItem('qaUserCards') || '[]').length;
-        console.log('[loadFromServer] Сравнение карточек: локальные=', localCardsCount, 'серверные=', data._cards?.length || 0);
 
         // 🔥 ПРИНУДИТЕЛЬНАЯ ПЕРЕЗАПИСЬ при forceReload
         if (forceReload) {
-            console.log('[loadFromServer] Принудительная перезапись данных с сервера...');
         } else {
             // Не перезаписываем если локальные данные свежее ИЛИ если локальных карточек больше
             if ((data.updatedAt && data.updatedAt <= localTS) || (data._cards && data._cards.length <= localCardsCount)) {
-                console.log('[loadFromServer] Локальные данные свежее или больше - не перезаписываем');
                 window.dispatchEvent(new Event('dataLoaded'));
                 return;
             }
@@ -151,7 +131,6 @@ export async function loadFromServer(forceReload = false) {
         // Restore keys
         if (data._cards) {
             localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
-            console.log('[loadFromServer] Сохранено', data._cards.length, 'карточек в localStorage');
         }
         if (data.srsProgress) localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
         if (data.studyStats) localStorage.setItem('studyStats', JSON.stringify(data.studyStats));
@@ -161,17 +140,14 @@ export async function loadFromServer(forceReload = false) {
         if (data.dailyDayBonusPoints) localStorage.setItem('dailyDayBonusPoints', JSON.stringify(data.dailyDayBonusPoints));
         if (data.qaFavorites) {
             localStorage.setItem('qaFavorites', JSON.stringify(data.qaFavorites));
-            console.log('[loadFromServer] Сохранено', data.qaFavorites.length, 'избранных');
         }
         if (data.studyAchievements) localStorage.setItem('studyAchievements', JSON.stringify(data.studyAchievements));
-        
+
         // 🔒 Сохраняем корзину
         if (data.userTrash) {
             localStorage.setItem('qaUserTrash', JSON.stringify(data.userTrash));
-            console.log('[loadFromServer] Сохранено', data.userTrash.length, 'карточек в корзину');
         }
 
-        console.log('[loadFromServer] === ДАННЫЕ УСПЕШНО ЗАГРУЖЕНЫ ===');
         // Dispatch events to update UI
         window.dispatchEvent(new Event('xpUpdated'));
         window.dispatchEvent(new Event('favoritesUpdated'));

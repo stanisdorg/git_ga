@@ -517,7 +517,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
             s.dataset.index = String(i);
             segs.appendChild(s);
         }
-        
+
         wireSegmentsInteractions(session);
     }
     session.start();
@@ -884,7 +884,7 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     Array.from(segs.children).forEach((el, i) => {
         // isColored: результат для этого сегмента существует и не null
         const isColored = results && i < results.length && results[i] !== null && results[i] !== undefined;
-        
+
         if (isColored) {
             // Закрашенный сегмент - полностью видимый
             el.style.opacity = '1';
@@ -936,7 +936,7 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     console.log('[SEGMENTS COLOR] === START ===');
     console.log('[SEGMENTS COLOR] results=', results, 'total=', total, 'currentIndex=', currentIndex);
     console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
-    
+
     if (results && results.length) {
         // results[i] содержит оценку для карточки с индексом i
         // null означает, что карточка ещё не пройдена
@@ -952,25 +952,25 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
                 console.log('[SEGMENTS COLOR] el NOT FOUND for idx=', idx, 'grade=', g);
                 continue;
             }
-            
+
             // Проверяем, является ли этот сегмент текущим
             const isCurrent = (idx === currentIndex);
             console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'isCurrent=', isCurrent, 'currentIndex=', currentIndex);
             console.log('[SEGMENTS COLOR] el.className BEFORE=', el.className);
-            
+
             // Устанавливаем базовый класс + цвет
             el.className = 'learn-progress-segment';
             if (g === 0) el.classList.add('seg-again');
             else if (g === 1) el.classList.add('seg-hard');
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
-            
+
             // Добавляем класс current, если это текущий сегмент
             if (isCurrent) {
                 el.classList.add('current');
                 console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
             }
-            
+
             console.log('[SEGMENTS COLOR] el.className AFTER=', el.className);
             console.log('[SEGMENTS COLOR] el.classList=', Array.from(el.classList));
             coloredCount++;
@@ -983,7 +983,7 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
 
     // Финальная отладка
     console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
-    
+
     // Проверяем все сегменты после покраски
     console.log('[SEGMENTS FINAL] === ALL SEGMENTS STATE ===');
     Array.from(segs.children).forEach((el, i) => {
@@ -1028,7 +1028,7 @@ function wireSegmentsInteractions(sess) {
         lastX = startX;
         lastTime = startTime;
         velocity = 0;
-        
+
         // Останавливаем предыдущую анимацию
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
@@ -1039,22 +1039,22 @@ function wireSegmentsInteractions(sess) {
     // Обработка движения пальца
     segs.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        
+
         const currentX = e.touches[0].clientX;
         const currentTime = Date.now();
-        
+
         // Вычисляем смещение
         const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительности
         segs.scrollLeft = scrollLeft - walk;
-        
+
         // Вычисляем скорость для инерции
         const deltaX = currentX - lastX;
         const deltaTime = currentTime - lastTime;
-        
+
         if (deltaTime > 0) {
             velocity = deltaX / deltaTime; // пикселей в миллисекунду
         }
-        
+
         lastX = currentX;
         lastTime = currentTime;
     }, { passive: true });
@@ -1062,15 +1062,15 @@ function wireSegmentsInteractions(sess) {
     // Обработка окончания касания - запуск инерции
     segs.addEventListener('touchend', (e) => {
         isDragging = false;
-        
+
         // Если скорость достаточная, запускаем инерционную прокрутку
         if (Math.abs(velocity) > 0.3) {
             const inertialScroll = () => {
                 velocity *= 0.92; // Коэффициент затухания (0.92 = плавное замедление)
-                
+
                 const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms ≈ 60fps
                 segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
-                
+
                 // Продолжаем анимацию, пока скорость значимая
                 if (Math.abs(velocity) > 0.1) {
                     animationFrame = requestAnimationFrame(inertialScroll);
@@ -1078,7 +1078,7 @@ function wireSegmentsInteractions(sess) {
                     animationFrame = null;
                 }
             };
-            
+
             animationFrame = requestAnimationFrame(inertialScroll);
         }
     }, { passive: true });
@@ -1109,7 +1109,7 @@ function wireSegmentsInteractions(sess) {
         mouseLastTime = startTime;
         mouseVelocity = 0;
         segs.style.cursor = 'grabbing';
-        
+
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
             animationFrame = null;
@@ -1124,22 +1124,22 @@ function wireSegmentsInteractions(sess) {
     segs.addEventListener('mouseup', () => {
         isMouseDragging = false;
         segs.style.cursor = 'grab';
-        
+
         // Инерция для мыши тоже
         if (Math.abs(mouseVelocity) > 0.3) {
             const inertialScroll = () => {
                 mouseVelocity *= 0.92;
-                
+
                 const newScrollLeft = segs.scrollLeft - (mouseVelocity * 16);
                 segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
-                
+
                 if (Math.abs(mouseVelocity) > 0.1) {
                     animationFrame = requestAnimationFrame(inertialScroll);
                 } else {
                     animationFrame = null;
                 }
             };
-            
+
             animationFrame = requestAnimationFrame(inertialScroll);
         }
     });
@@ -1147,21 +1147,21 @@ function wireSegmentsInteractions(sess) {
     segs.addEventListener('mousemove', (e) => {
         if (!isMouseDragging) return;
         e.preventDefault();
-        
+
         const currentX = e.pageX - segs.offsetLeft;
         const currentTime = Date.now();
-        
+
         const walk = (currentX - mouseStartX) * 2;
         segs.scrollLeft = mouseScrollLeft - walk;
-        
+
         // Вычисляем скорость
         const deltaX = currentX - mouseLastX;
         const deltaTime = currentTime - mouseLastTime;
-        
+
         if (deltaTime > 0) {
             mouseVelocity = deltaX / deltaTime;
         }
-        
+
         mouseLastX = currentX;
         mouseLastTime = currentTime;
     });
@@ -1610,7 +1610,7 @@ function showStats(stats, results, total) {
 
                     setTimeout(() => {
                         console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
-                        // 5. Заполн��ние нов��го уровня (1.5s)
+                        // 5. Заполнение нового уровня (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
                         earnEl.style.left = '0%';
@@ -1876,10 +1876,10 @@ window.debugSegments = () => {
     console.log('   Всего сегментов:', segs.children.length);
     console.log('   Ширина контейнера:', segs.offsetWidth, 'px');
     console.log('   scrollLeft:', segs.scrollLeft);
-    
+
     const visible = Array.from(segs.children).filter(el => el.style.display !== 'none').length;
     console.log('   Видимые сегменты:', visible);
-    
+
     // Показываем индексы видимых
     const visibleIndices = [];
     segs.children.forEach((el, i) => {

@@ -2252,43 +2252,43 @@ const STATS_STYLES = `
 `;
 
 export function initStatsPage(appVersion) {
-    console.log('========================================');
-    console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
-    console.log('[STATS INIT] Timestamp:', new Date().toISOString());
-    console.log('[STATS INIT] appVersion:', appVersion);
-    console.log('[STATS INIT] Current location.hash:', location.hash);
-    console.log('[STATS INIT] document.readyState:', document.readyState);
-    console.log('[STATS INIT] document.body exists:', !!document.body);
-    console.log('[STATS INIT] .app-wrapper exists:', !!document.querySelector('.app-wrapper'));
+  console.log('========================================');
+  console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
+  console.log('[STATS INIT] Timestamp:', new Date().toISOString());
+  console.log('[STATS INIT] appVersion:', appVersion);
+  console.log('[STATS INIT] Current location.hash:', location.hash);
+  console.log('[STATS INIT] document.readyState:', document.readyState);
+  console.log('[STATS INIT] document.body exists:', !!document.body);
+  console.log('[STATS INIT] .app-wrapper exists:', !!document.querySelector('.app-wrapper'));
 
-    if (appVersion) window.currentAppVersion = appVersion;
-    
-    // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД показом скелетона
-    const mainContainer = document.querySelector('.container');
-    const learnContainer = document.getElementById('learn-container');
-    const sidebar = document.querySelector('.sidebar');
-    const topActionsBar = document.querySelector('.top-actions-bar');
+  if (appVersion) window.currentAppVersion = appVersion;
 
-    // Отключаем MutationObserver перед скрытием top-actions-bar
-    if (window.__statsTopActionsObserver) {
-        window.__statsTopActionsObserver.disconnect();
-        window.__statsTopActionsObserver = null;
-    }
+  // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД показом скелетона
+  const mainContainer = document.querySelector('.container');
+  const learnContainer = document.getElementById('learn-container');
+  const sidebar = document.querySelector('.sidebar');
+  const topActionsBar = document.querySelector('.top-actions-bar');
 
-    if (mainContainer) {
-        mainContainer.style.display = 'none';
-    }
-    if (learnContainer) {
-        learnContainer.style.display = 'none';
-    }
-    if (sidebar) {
-        sidebar.style.display = 'none';
-    }
-    if (topActionsBar) {
-        topActionsBar.style.display = 'none';
-    }
-    
-    // Скелетон уже видим (display:block в HTML), не нужно показывать
+  // Отключаем MutationObserver перед скрытием top-actions-bar
+  if (window.__statsTopActionsObserver) {
+    window.__statsTopActionsObserver.disconnect();
+    window.__statsTopActionsObserver = null;
+  }
+
+  if (mainContainer) {
+    mainContainer.style.display = 'none';
+  }
+  if (learnContainer) {
+    learnContainer.style.display = 'none';
+  }
+  if (sidebar) {
+    sidebar.style.display = 'none';
+  }
+  if (topActionsBar) {
+    topActionsBar.style.display = 'none';
+  }
+
+  // Скелетон уже видим (display:block в HTML), не нужно показывать
 
   // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
@@ -2331,14 +2331,14 @@ export function initStatsPage(appVersion) {
 
   console.log('[STATS INIT] Calling renderStats()...');
   renderStats();
-  
+
   // Добавляем задержку перед скрытием скелетона (1000ms для мобильных)
   console.log('[STATS INIT] Setting skeleton display time (1000ms)...');
   setTimeout(() => {
     console.log('[STATS INIT] Timeout elapsed, hiding skeleton...');
     hideSkeletonLoader();
   }, 1000);
-  
+
   console.log('[STATS INIT] ========== END initStatsPage ==========');
 
   if (!window._statsXpListener) {
@@ -2372,7 +2372,7 @@ export function hideStatsPage() {
 
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
-    sidebar.style.display = ''; // Возвращаем стандартное отображе����������ие
+    sidebar.style.display = ''; // Возвращаем стандартное отображение
     console.log('[hideStatsPage] sidebar display reset');
   }
 
@@ -2406,21 +2406,21 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
 
 // SKELETON LOADER FUNCTIONS
 function showSkeletonLoader() {
-    console.log('[Skeleton] showSkeletonLoader called');
-    
-    // Показываем HTML skeleton из index.html
-    const skeleton = document.getElementById('stats-skeleton');
-    console.log('[Skeleton] skeleton element:', skeleton);
-    if (skeleton) {
-        skeleton.style.display = 'block';
-        console.log('[Skeleton] HTML skeleton shown, display:', skeleton.style.display);
-        console.log('[Skeleton] skeleton zIndex:', skeleton.style.zIndex);
-    } else {
-        console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
-        // Fallback: создаём JS skeleton если HTML не найден
-        const jsSkeleton = document.createElement('div');
-        jsSkeleton.className = 'st-skeleton-overlay';
-        jsSkeleton.innerHTML = `
+  console.log('[Skeleton] showSkeletonLoader called');
+
+  // Показываем HTML skeleton из index.html
+  const skeleton = document.getElementById('stats-skeleton');
+  console.log('[Skeleton] skeleton element:', skeleton);
+  if (skeleton) {
+    skeleton.style.display = 'block';
+    console.log('[Skeleton] HTML skeleton shown, display:', skeleton.style.display);
+    console.log('[Skeleton] skeleton zIndex:', skeleton.style.zIndex);
+  } else {
+    console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
+    // Fallback: создаём JS skeleton если HTML не найден
+    const jsSkeleton = document.createElement('div');
+    jsSkeleton.className = 'st-skeleton-overlay';
+    jsSkeleton.innerHTML = `
             <div class="st-skeleton-wrapper">
                 <div class="st-sk-header">
                     <div class="st-sk-block st-sk-header-btn"></div>
@@ -2467,32 +2467,32 @@ function showSkeletonLoader() {
                 <div class="st-sk-block st-sk-ach"></div>
             </div>
         `;
-        document.body.appendChild(jsSkeleton);
-        console.log('[Skeleton] JS skeleton created and appended');
-    }
+    document.body.appendChild(jsSkeleton);
+    console.log('[Skeleton] JS skeleton created and appended');
+  }
 }
 
 function hideSkeletonLoader() {
-    console.log('[Skeleton] hideSkeletonLoader called');
-    
-    // Скрываем скелетон через display:none
-    const skeleton = document.getElementById('stats-skeleton');
-    if (skeleton) {
-        skeleton.style.display = 'none';
-        console.log('[Skeleton] Skeleton hidden, display:', skeleton.style.display);
-    }
-    
-    // Проверяем видимость stats-container
-    const statsContainer = document.getElementById('stats-container');
-    console.log('[Skeleton] stats-container exists:', !!statsContainer);
-    if (statsContainer) {
-        console.log('[Skeleton] stats-container display:', statsContainer.style.display);
-        console.log('[Skeleton] stats-container offsetHeight:', statsContainer.offsetHeight);
-        statsContainer.style.display = 'block';
-        console.log('[Skeleton] stats-container forced to display:block');
-    }
-    
-    console.log('[Skeleton] hideSkeletonLoader completed');
+  console.log('[Skeleton] hideSkeletonLoader called');
+
+  // Скрываем скелетон через display:none
+  const skeleton = document.getElementById('stats-skeleton');
+  if (skeleton) {
+    skeleton.style.display = 'none';
+    console.log('[Skeleton] Skeleton hidden, display:', skeleton.style.display);
+  }
+
+  // Проверяем видимость stats-container
+  const statsContainer = document.getElementById('stats-container');
+  console.log('[Skeleton] stats-container exists:', !!statsContainer);
+  if (statsContainer) {
+    console.log('[Skeleton] stats-container display:', statsContainer.style.display);
+    console.log('[Skeleton] stats-container offsetHeight:', statsContainer.offsetHeight);
+    statsContainer.style.display = 'block';
+    console.log('[Skeleton] stats-container forced to display:block');
+  }
+
+  console.log('[Skeleton] hideSkeletonLoader completed');
 }
 
 function renderStats() {
@@ -2658,7 +2658,7 @@ function renderStats() {
         </div>
       </div>
 
-      <!-- Отображение имени п��льзователя будет добавлено через JS -->
+      <!-- Отображение имени пользователя будет добавлено через JS -->
 
 
       <div class="st-main">
@@ -2688,7 +2688,7 @@ function renderStats() {
                 <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Низкая точность</span>
               </div>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="🌱 Только новые\n\nИзу��ение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
               <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#2EC4B6 0%,#06D6A0 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               </span>
@@ -2920,11 +2920,9 @@ function renderStats() {
   // DEBUG: Логирование шапки статистики
   // ============================================
   console.log('========================================');
-  console.log('📱 STATS HEADER DEBUG');
   console.log('========================================');
 
   const topRight = container.querySelector('.st-top-right');
-  console.log('\n🔍 st-top-right:', topRight ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (topRight) {
     const topRightStyles = window.getComputedStyle(topRight);
     console.log('   display:', topRightStyles.display);
@@ -2943,7 +2941,6 @@ function renderStats() {
   const homeBtn = container.querySelector('.st-home-btn');
   const continueBtn = container.querySelector('#st-continue-top-btn');
 
-  console.log('\n📦 КНОПКИ:');
   console.log('   .st-auth-btn:', authBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
   console.log('   .st-home-btn:', homeBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
   console.log('   #st-continue-top-btn:', continueBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
@@ -2973,13 +2970,11 @@ function renderStats() {
       rect.height > 0;
   }
 
-  console.log('\n👁️ ПРОВЕРКА ВИДИМОСТИ:');
   console.log('   auth-btn видима:', isElementVisible(authBtn));
   console.log('   home-btn видима:', isElementVisible(homeBtn));
   console.log('   continue-btn видима:', isElementVisible(continueBtn));
 
   // Проверка z-index и position
-  console.log('\n📊 Z-INDEX И POSITION:');
   if (authBtn) {
     const authStyles = window.getComputedStyle(authBtn);
     console.log('   auth-btn z-index:', authStyles.zIndex, ', position:', authStyles.position);
@@ -2994,7 +2989,6 @@ function renderStats() {
   }
 
   // Проверка на перекрытие через elementFromPoint
-  console.log('\n🎯 ПРОВЕРКА НА ПЕРЕКРЫТИЕ:');
   if (authBtn) {
     const authRect = authBtn.getBoundingClientRect();
     const centerX = authRect.left + authRect.width / 2;
@@ -3014,7 +3008,6 @@ function renderStats() {
 
   // Проверка .st-top-actions
   const topActions = container.querySelector('.st-top-actions');
-  console.log('\n📦 .st-top-actions:', topActions ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (topActions) {
     const actionsStyles = window.getComputedStyle(topActions);
     console.log('   display:', actionsStyles.display);
@@ -3030,15 +3023,13 @@ function renderStats() {
   // DEBUG: Блок прогресса - стили и размеры
   // ============================================
   console.log('\n========================================');
-  console.log('📦 DEBUG: Блок прогресса (.st-compact-card)');
   console.log('========================================');
-  
+
   const compactCard = container.querySelector('.st-compact-card');
   if (compactCard) {
     const styles = window.getComputedStyle(compactCard);
     const rect = compactCard.getBoundingClientRect();
-    
-    console.log('📌 .st-compact-card:');
+
     console.log('   padding: top=' + styles.paddingTop + ', right=' + styles.paddingRight + ', bottom=' + styles.paddingBottom + ', left=' + styles.paddingLeft);
     console.log('   min-height: ' + styles.minHeight);
     console.log('   height: ' + rect.height.toFixed(1) + 'px');
@@ -3049,21 +3040,19 @@ function renderStats() {
     console.log('   justify-content: ' + styles.justifyContent);
     console.log('   text-align: ' + styles.textAlign);
   } else {
-    console.log('❌ .st-compact-card - НЕ НАЙДЕН');
   }
-  
+
   // Проверка заголовка
   const header = container.querySelector('.stc-header-with-info');
   if (header) {
     const hStyles = window.getComputedStyle(header);
     const hRect = header.getBoundingClientRect();
-    console.log('\n📌 .stc-header-with-info:');
     console.log('   justify-content: ' + hStyles.justifyContent);
     console.log('   margin-bottom: ' + hStyles.marginBottom);
     console.log('   display: ' + hStyles.display);
     console.log('   width: ' + hRect.width.toFixed(1) + 'px');
     console.log('   height: ' + hRect.height.toFixed(1) + 'px');
-    
+
     // Проверка дочерних элементов
     const children = header.children;
     console.log('   children count: ' + children.length);
@@ -3081,13 +3070,12 @@ function renderStats() {
       console.log('      left: ' + cRect.left.toFixed(1) + 'px');
     }
   }
-  
+
   // Проверка заголовка текста
   const title = container.querySelector('.stc-block-title');
   if (title) {
     const tStyles = window.getComputedStyle(title);
     const tRect = title.getBoundingClientRect();
-    console.log('\n📌 .stc-block-title:');
     console.log('   justify-content: ' + tStyles.justifyContent);
     console.log('   text-align: ' + tStyles.textAlign);
     console.log('   font-size: ' + tStyles.fontSize);
@@ -3097,71 +3085,65 @@ function renderStats() {
     console.log('   left: ' + tRect.left.toFixed(1) + 'px');
     console.log('   innerText: "' + tStyles.innerText + '"');
   }
-  
+
   // Проверка кнопки "i"
   const infoBtn = container.querySelector('.st-info-btn');
   if (infoBtn) {
     const bStyles = window.getComputedStyle(infoBtn);
     const bRect = infoBtn.getBoundingClientRect();
-    console.log('\n📌 .st-info-btn (кнопка "i"):');
     console.log('   flex-shrink: ' + bStyles.flexShrink);
     console.log('   margin-left: ' + bStyles.marginLeft);
     console.log('   display: ' + bStyles.display);
     console.log('   width: ' + bRect.width.toFixed(1) + 'px');
     console.log('   left: ' + bRect.left.toFixed(1) + 'px');
   }
-  
+
   // Проверка контента
   const content = container.querySelector('.stc-content');
   if (content) {
     const cStyles = window.getComputedStyle(content);
-    console.log('\n📌 .stc-content:');
     console.log('   align-items: ' + cStyles.alignItems);
     console.log('   text-align: ' + cStyles.textAlign);
     console.log('   gap: ' + cStyles.gap);
   }
-  
+
   // Проверка строки с прогнозом
   const forecastRow = container.querySelector('.stc-forecast-row');
   if (forecastRow) {
     const fStyles = window.getComputedStyle(forecastRow);
     const fRect = forecastRow.getBoundingClientRect();
-    console.log('\n📌 .stc-forecast-row:');
     console.log('   justify-content: ' + fStyles.justifyContent);
     console.log('   text-align: ' + fStyles.textAlign);
     console.log('   font-size: ' + fStyles.fontSize);
     console.log('   height: ' + fRect.height.toFixed(1) + 'px');
-    
+
     // Проверка текста прогноза
     const forecastText = forecastRow.querySelector('.stc-forecast-text');
     if (forecastText) {
       const ftStyles = window.getComputedStyle(forecastText);
-      console.log('\n📌 .stc-forecast-text:');
       console.log('   font-size: ' + ftStyles.fontSize);
       console.log('   text-align: ' + ftStyles.textAlign);
-      
+
       // Проверка даты
       const dateEl = forecastText.querySelector('.date');
       if (dateEl) {
         const dStyles = window.getComputedStyle(dateEl);
-        console.log('\n📌 .date (в прогнозе):');
         console.log('   font-size: ' + dStyles.fontSize);
         console.log('   text-align: ' + dStyles.textAlign);
       }
     }
   }
-  
+
   console.log('\n========================================');
 
   // ============================================
   // DEBUG: Порядок блоков в мобильной версии
   // ============================================
   console.log('\n========================================');
-  console.log('📱 MOBILE BLOCKS ORDER DEBUG');
   console.log('========================================');
   console.log('window.innerWidth:', window.innerWidth);
   console.log('Is mobile (≤768px):', window.innerWidth <= 768);
-  
+
   const blocks = {
     '.st-top-right': 'Шапка',
     '#st-continue-btn': 'Продолжить обучение',
@@ -3172,8 +3154,7 @@ function renderStats() {
     '.st-block-3': 'Графики',
     '.st-block-5': 'Достижения'
   };
-  
-  console.log('\n📊 Порядок блоков (по DOM):');
+
   Object.entries(blocks).forEach(([selector, name], index) => {
     const el = container.querySelector(selector);
     if (el) {
@@ -3188,9 +3169,8 @@ function renderStats() {
       console.log(`   ${index + 1}. ${selector} - НЕ НАЙДЕН`);
     }
   });
-  
+
   // Проверка CSS правил для order
-  console.log('\n📜 CSS Order Rules Check:');
   const allStyles = Array.from(document.styleSheets);
   allStyles.forEach((sheet, i) => {
     try {
@@ -3200,11 +3180,11 @@ function renderStats() {
           console.log(`   Sheet ${i}: ${r.selectorText} -> order: ${r.style.order}`);
         }
       });
-    } catch(e) {
+    } catch (e) {
       // CORS
     }
   });
-  
+
   console.log('\n========================================');
   // ============================================
   // КОНЕЦ DEBUG порядка блоков
@@ -3214,10 +3194,8 @@ function renderStats() {
   // DEBUG: modes-grid (карточки режимов)
   // ============================================
   console.log('\n========================================');
-  console.log('📦 MODES-GRID DEBUG');
   console.log('========================================');
 
-  console.log('\n📏 window.innerWidth:', window.innerWidth);
   console.log('   Media query (max-width: 768px):', window.innerWidth <= 768 ? 'ДА' : 'НЕТ');
 
   // Проверка STATS_STYLES
@@ -3238,7 +3216,6 @@ function renderStats() {
   }
 
   // Проверка style элемента
-  console.log('\n🔍 ПРОВЕРКА <style> ЭЛЕМЕНТА:');
   const styleEl = document.querySelector('style[data-stats-style]') || document.querySelector('style');
   if (styleEl) {
     const styleContent = styleEl.textContent;
@@ -3256,7 +3233,6 @@ function renderStats() {
   }
 
   // Проверка всех stylesheet
-  console.log('\n📜 ПРОВЕРКА ВСЕХ STYLE SHEETS:');
   const allRules = [];
   for (let i = 0; i < document.styleSheets.length; i++) {
     try {
@@ -3264,7 +3240,6 @@ function renderStats() {
       for (let j = 0; j < rules.length; j++) {
         const rule = rules[j];
         if (rule.selectorText && rule.selectorText.includes('.modes-grid')) {
-          console.log(`   ✅ Rule: ${rule.selectorText}`);
           console.log(`      display: ${rule.style.display}`);
           console.log(`      grid-template-columns: ${rule.style.gridTemplateColumns}`);
           console.log(`      background: ${rule.style.background}`);
@@ -3272,15 +3247,12 @@ function renderStats() {
         }
       }
     } catch (e) {
-      console.log(`   ⚠️ StyleSheet ${i}: CORS error`);
     }
   }
   if (allRules.length === 0) {
-    console.log('   ❌ Правила для .modes-grid НЕ НАЙДЕНЫ!');
   }
 
   const modesGrid = container.querySelector('.modes-grid');
-  console.log('\n🔍 .modes-grid:', modesGrid ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (modesGrid) {
     const mgStyles = window.getComputedStyle(modesGrid);
     console.log('   display:', mgStyles.display);
@@ -3288,16 +3260,15 @@ function renderStats() {
     console.log('   gap:', mgStyles.gap);
     console.log('   width:', mgStyles.width);
     console.log('   height:', mgStyles.height);
-    
+
     // Проверка дочерних карточек
     const cards = modesGrid.querySelectorAll('.st-mode-card, .st-mode-card-large');
-    console.log('\n📌 КАРТОЧКИ (' + cards.length + '):');
     cards.forEach((card, i) => {
       const cStyles = window.getComputedStyle(card);
       const icon = card.querySelector('.st-mode-icon');
       const title = card.querySelector('.st-mode-title');
       const desc = card.querySelector('.st-mode-desc');
-      
+
       console.log('\n   Карточка ' + (i + 1) + ':');
       console.log('      display:', cStyles.display);
       console.log('      padding:', cStyles.padding);
@@ -3308,7 +3279,7 @@ function renderStats() {
       console.log('      flex-direction:', cStyles.flexDirection);
       console.log('      align-items:', cStyles.alignItems);
       console.log('      gap:', cStyles.gap);
-      
+
       if (icon) {
         const iStyles = window.getComputedStyle(icon);
         console.log('      .st-mode-icon:');
@@ -3319,7 +3290,7 @@ function renderStats() {
         console.log('         display:', iStyles.display);
         console.log('         innerHTML:', icon.innerHTML.substring(0, 50) + '...');
       }
-      
+
       if (title) {
         const tStyles = window.getComputedStyle(title);
         console.log('      .st-mode-title:');
@@ -3328,7 +3299,7 @@ function renderStats() {
         console.log('         flex:', tStyles.flex);
         console.log('         text:', title.textContent.substring(0, 30));
       }
-      
+
       if (desc) {
         const dStyles = window.getComputedStyle(desc);
         console.log('      .st-mode-desc:');
@@ -3339,7 +3310,6 @@ function renderStats() {
   }
 
   const stBlock2 = container.querySelector('.st-block-2');
-  console.log('\n📌 .st-block-2:', stBlock2 ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (stBlock2) {
     const b2Styles = window.getComputedStyle(stBlock2);
     console.log('   display:', b2Styles.display);
@@ -3359,7 +3329,6 @@ function renderStats() {
 
   // Проверка .st-block-2
   const block2 = container.querySelector('.st-block-2');
-  console.log('\n📦 .st-block-2:', block2 ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
   if (block2) {
     const b2Styles = window.getComputedStyle(block2);
     console.log('   display:', b2Styles.display);
@@ -3503,7 +3472,7 @@ function renderStats() {
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
 
-  // Ренде��им прог��есс по категориям
+  // Рендерим прогресс по категориям
   renderCategoryProgress();
 
   if (chartEl) {
@@ -3526,7 +3495,7 @@ function renderStats() {
         : [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]);
 
     const now = new Date();
-    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', '��ктябрь', 'Но����брь', 'Декабрь'];
+    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
     monthLabel.textContent = mName;
     const cfg = currentXpMode === 'week' ? { bar: 18, gap: 8, count: 14, labelStep: 2 }
@@ -3562,7 +3531,7 @@ function renderStats() {
       const labelOk = currentXpMode === 'year' ? true : (idx % cfg.labelStep === 0);
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
-      // Ми��имальная высота для визуального отображения пустых слотов
+      // Минимальная высота для визуального отображения пустых слотов
       const cardsH = cardsVal > 0
         ? Math.max(baseBarHeight, Math.min(innerH, (innerH / hcMax) * cardsVal))
         : baseBarHeight;
@@ -3629,7 +3598,7 @@ function renderXpChart(data) {
     const xpH = Math.max(xpHRaw, d.xp > 0 ? 2 : 0);
     const heartsH = Math.min(Math.max(heartsHRaw, 0), Math.max(0, 100 - xpHRaw));
     return `
-      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤�� ${(d.hearts || 0)}">
+      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤ ${(d.hearts || 0)}">
          <div class="st-bar-xp" style="height:${xpH}%"></div>
          <div class="st-bar-heart" style="height:${heartsH}%; bottom:${xpHRaw}%"></div>
          <div class="st-xp-label">${d.label}</div>
@@ -3701,7 +3670,7 @@ window.openDiffInfoModal = (event) => {
            </div>
            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
               <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😫</div><div style="font-size:11px;">Снова</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
-              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">����</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
+              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">🤔</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
               <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😊</div><div style="font-size:11px;">Хорошо</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
               <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">🚀</div><div style="font-size:11px;">Легко</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
            </div>
@@ -3720,7 +3689,7 @@ window.openDiffInfoModal = (event) => {
   window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
   window.simReset = () => { window.simValue = 3.0; updateSim(); };
   function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="' + id + '"><stop offset="' + fillPercent + '%" stop-color="#ff4d4d"/><stop offset="' + fillPercent + '%" stop-color="#444"/></linearGradient></defs><path fill="url(#' + id + ')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
-  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', '��тандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
+  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
   updateSim();
 };
 
@@ -3729,237 +3698,15 @@ window.openDiffInfoModal = (event) => {
 // ============================================
 // DEBUG ФУНКЦИЯ ДЛЯ МОБИЛЬНОЙ ВЁРСТКИ
 // ============================================
-window.debugMobileStats = () => {
-  console.log('========================================');
-  console.log('📱 MOBILE LAYOUT DEBUG (width:', window.innerWidth, 'px)');
-  console.log('========================================');
-
-  // Проверка кнопки продолжить и отступов
-  const continueBtn = document.getElementById('st-continue-btn');
-  const stTop = document.querySelector('.st-top');
-  const stBlock1 = document.querySelector('.st-block-1');
-  const stMain = document.querySelector('.st-main');
-
-  console.log('\n🔍 ОТСТУПЫ МЕЖДУ ЭЛЕМЕНТАМИ:');
-  
-  if (stMain) {
-    const mainStyles = window.getComputedStyle(stMain);
-    const mainRect = stMain.getBoundingClientRect();
-    console.log('\n📌 .st-main:');
-    console.log('   display: ' + mainStyles.display);
-    console.log('   flex-direction: ' + mainStyles.flexDirection);
-    console.log('   position: top=' + mainRect.top.toFixed(1));
-  }
-
-  if (continueBtn) {
-    const btnStyles = window.getComputedStyle(continueBtn);
-    const btnRect = continueBtn.getBoundingClientRect();
-    console.log('\n📌 #st-continue-btn (кнопка продолжить):');
-    console.log('   order: ' + btnStyles.order);
-    console.log('   margin: top=' + btnStyles.marginTop + ', bottom=' + btnStyles.marginBottom);
-    console.log('   padding: top=' + btnStyles.paddingTop + ', bottom=' + btnStyles.paddingBottom);
-    console.log('   position: top=' + btnRect.top.toFixed(1) + ', height=' + btnRect.height.toFixed(1));
-    console.log('   display: ' + btnStyles.display);
-  } else {
-    console.log('\n❌ #st-continue-btn - НЕ НАЙДЕН (возможно ПК версия)');
-  }
-
-  if (stTop) {
-    const topStyles = window.getComputedStyle(stTop);
-    const topRect = stTop.getBoundingClientRect();
-    console.log('\n📌 .st-top (шапка):');
-    console.log('   padding: top=' + topStyles.paddingTop + ', bottom=' + topStyles.paddingBottom);
-    console.log('   position: bottom=' + topRect.bottom.toFixed(1));
-    console.log('   display: ' + topStyles.display);
-  }
-
-  if (stBlock1) {
-    const block1Styles = window.getComputedStyle(stBlock1);
-    const block1Rect = stBlock1.getBoundingClientRect();
-    console.log('\n📌 .st-block-1 (прогресс):');
-    console.log('   order: ' + block1Styles.order);
-    console.log('   margin: top=' + block1Styles.marginTop + ', bottom=' + block1Styles.marginBottom);
-    console.log('   padding: top=' + block1Styles.paddingTop + ', bottom=' + block1Styles.paddingBottom);
-    console.log('   position: top=' + block1Rect.top.toFixed(1) + ', height=' + block1Rect.height.toFixed(1));
-    console.log('   display: ' + block1Styles.display);
-  }
-
-  // Проверка порядка элементов
-  if (continueBtn && stBlock1) {
-    const btnRect = continueBtn.getBoundingClientRect();
-    const block1Rect = stBlock1.getBoundingClientRect();
-    console.log('\n📏 ПРОВЕРКА ПОРЯДКА:');
-    console.log('   Кнопка top: ' + btnRect.top.toFixed(1) + 'px');
-    console.log('   Прогресс top: ' + block1Rect.top.toFixed(1) + 'px');
-    console.log('   Порядок правильный (Прогресс выше): ' + (block1Rect.top < btnRect.top ? '✅ ДА' : '❌ НЕТ'));
-  }
-
-  // Расчёт расстояний между элементами
-  if (continueBtn && stBlock1) {
-    const btnRect = continueBtn.getBoundingClientRect();
-    const block1Rect = stBlock1.getBoundingClientRect();
-    const gap = block1Rect.top - btnRect.bottom;
-    console.log('\n📏 РАССТОЯНИЯ:');
-    console.log('   Кнопка bottom: ' + btnRect.bottom.toFixed(1) + 'px');
-    console.log('   Блок 1 top: ' + block1Rect.top.toFixed(1) + 'px');
-    console.log('   GAP между кнопкой и прогрессом: ' + gap.toFixed(1) + 'px');
-  }
-
-  const blocks = {
-    '.st-top': 'Шапка',
-    '#st-continue-btn': 'Кнопка продолжить',
-    '.st-block-1': 'Прогресс',
-    '.st-block-2': 'Режимы',
-    '.st-block-4': 'Сложность',
-    '.st-block-achievements': 'Категории',
-    '.st-block-3': 'График',
-    '.st-block-5': 'Достижения'
-  };
-
-  console.log('\n📊 Порядок блоков (по DOM):');
-  Object.entries(blocks).forEach(([selector, name], index) => {
-    const el = document.querySelector(selector);
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      const styles = window.getComputedStyle(el);
-      console.log(`   ${index + 1}. ${selector}`);
-      console.log(`      ${name}`);
-      console.log(`      order: ${styles.order}`);
-      console.log(`      display: ${styles.display}`);
-      console.log(`      position: top=${rect.top.toFixed(1)}, height=${rect.height.toFixed(1)}`);
-      console.log(`      margin: top=${styles.marginTop}, bottom=${styles.marginBottom}`);
-      console.log(`      padding: top=${styles.paddingTop}, bottom=${styles.paddingBottom}`);
-    } else {
-      console.log(`   ${index + 1}. ${selector} - НЕ НАЙДЕН`);
-    }
-  });
-
-  // Проверка specific элементов с отступами
-  const achSection = document.querySelector('.st-ach-section');
-  const modesSection = document.querySelector('.st-modes-section');
-  const diffSection = document.querySelector('.st-diff-section');
-  const wrapper = document.querySelector('.st-wrapper');
-
-  console.log('\n🔍 ПРОВЕРКА ОТСТУПОВ:');
-
-  if (modesSection) {
-    const modesStyles = window.getComputedStyle(modesSection);
-    console.log(`   .st-modes-section margin-bottom: ${modesStyles.marginBottom}`);
-    console.log(`   .st-modes-section элемент:`, modesSection);
-  } else {
-    console.log(`   ❌ .st-modes-section - НЕ НАЙДЕН`);
-  }
-
-  if (achSection) {
-    const achStyles = window.getComputedStyle(achSection);
-    console.log(`   .st-ach-section margin-bottom: ${achStyles.marginBottom}`);
-    console.log(`   .st-ach-section элемент:`, achSection);
-  } else {
-    console.log(`   ❌ .st-ach-section - НЕ НАЙДЕН`);
-  }
-
-  if (diffSection) {
-    const diffStyles = window.getComputedStyle(diffSection);
-    console.log(`   .st-diff-section margin-top: ${diffStyles.marginTop}`);
-    console.log(`   .st-diff-section элемент:`, diffSection);
-  } else {
-    console.log(`   ❌ .st-diff-section - НЕ НАЙДЕН`);
-  }
-
-  // Проверка пустого пространства внизу
-  const bodyHeight = document.body.scrollHeight;
-  const htmlHeight = document.documentElement.scrollHeight;
-
-  console.log('\n📏 ОБЩАЯ ВЫСОТА:');
-  console.log(`   document.body.scrollHeight: ${bodyHeight}`);
-  console.log(`   document.documentElement.scrollHeight: ${htmlHeight}`);
-  console.log(`   window.innerHeight: ${window.innerHeight}`);
-  console.log(`   Пустое пространство внизу: ${(bodyHeight - window.innerHeight).toFixed(1)}px`);
-
-  // Проверка контейнеров
-  const stWrapper = document.querySelector('.st-wrapper');
-  const stMain2 = document.querySelector('.st-main');
-  const statsContainer = document.getElementById('stats-container');
-
-  console.log('\n🔍 КОНТЕЙНЕРЫ:');
-
-  if (stWrapper) {
-    const wrapperStyles = window.getComputedStyle(stWrapper);
-    const wrapperRect = stWrapper.getBoundingClientRect();
-    console.log('\n📌 .st-wrapper:');
-    console.log('   margin: top=' + wrapperStyles.marginTop + ', bottom=' + wrapperStyles.marginBottom);
-    console.log('   padding: top=' + wrapperStyles.paddingTop + ', bottom=' + wrapperStyles.paddingBottom);
-    console.log('   position: top=' + wrapperRect.top.toFixed(1));
-    console.log('   display: ' + wrapperStyles.display);
-    console.log('   gap: ' + wrapperStyles.gap);
-  }
-  
-  if (stMain2) {
-    const main2Styles = window.getComputedStyle(stMain2);
-    const main2Rect = stMain2.getBoundingClientRect();
-    console.log('\n📌 .st-main (из КОНТЕЙНЕРЫ):');
-    console.log('   display: ' + main2Styles.display);
-    console.log('   flex-direction: ' + main2Styles.flexDirection);
-    console.log('   position: top=' + main2Rect.top.toFixed(1));
-  }
-  
-  if (stMain) {
-    const mainStyles = window.getComputedStyle(stMain);
-    const mainRect = stMain.getBoundingClientRect();
-    console.log('\n📌 .st-main:');
-    console.log('   margin: top=' + mainStyles.marginTop + ', bottom=' + mainStyles.marginBottom);
-    console.log('   padding: top=' + mainStyles.paddingTop + ', bottom=' + mainStyles.paddingBottom);
-    console.log('   position: top=' + mainRect.top.toFixed(1));
-    console.log('   display: ' + mainStyles.display);
-    console.log('   gap: ' + mainStyles.gap);
-  }
-  
-  if (statsContainer) {
-    const statsStyles = window.getComputedStyle(statsContainer);
-    const statsRect = statsContainer.getBoundingClientRect();
-    console.log('\n📌 #stats-container:');
-    console.log('   margin: top=' + statsStyles.marginTop + ', bottom=' + statsStyles.marginBottom);
-    console.log('   padding: top=' + statsStyles.paddingTop + ', bottom=' + statsStyles.paddingBottom);
-    console.log('   position: top=' + statsRect.top.toFixed(1));
-    console.log('   display: ' + statsStyles.display);
-  }
-
-  if (stWrapper) {
-    const wrapperStyles = window.getComputedStyle(stWrapper);
-    console.log(`\n   .st-wrapper padding-bottom: ${wrapperStyles.paddingBottom}`);
-    console.log(`   .st-wrapper margin-bottom: ${wrapperStyles.marginBottom}`);
-    console.log(`   .st-wrapper element:`, stWrapper);
-  }
-
-  // Проверка gap в .st-main
-  if (stMain2) {
-    const main2Styles = window.getComputedStyle(stMain2);
-    console.log(`\n   .st-main gap: ${main2Styles.gap}`);
-    console.log(`   .st-main display: ${main2Styles.display}`);
-  }
-
-  console.log('\n========================================');
-  console.log('📋 Сделайте скриншот этой информации и отправьте разработчику');
-  console.log('========================================');
-
-  // Переместить кнопку внутрь .st-main после .st-block-1
-  const continueBtn3 = document.getElementById('st-continue-btn');
-  const stBlock1After = document.querySelector('.st-block-1');
-  const stMain3 = document.querySelector('.st-main');
-  if (continueBtn3 && stBlock1After && stMain3 && !stMain3.contains(continueBtn3)) {
-    stMain3.insertBefore(continueBtn3, stBlock1After.nextSibling);
-    console.log('✅ Кнопка перемещена внутрь .st-main');
-  }
-};
 
 // Показать описание достижения (toast)
 window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   if (!desc) return;
-  
+
   // Удаляем существующий toast если есть
   const existing = document.getElementById('ach-toast');
   if (existing) existing.remove();
-  
+
   const toast = document.createElement('div');
   toast.id = 'ach-toast';
   toast.style.cssText = `
@@ -3982,7 +3729,7 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:6px;">${desc}</div>
     <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
   `;
-  
+
   // Добавляем стили для анимации
   if (!document.getElementById('toast-styles')) {
     const style = document.createElement('style');
@@ -3999,12 +3746,12 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     `;
     document.head.appendChild(style);
   }
-  
+
   document.body.appendChild(toast);
-  
+
   // Автозакрытие через 4 секунды
   let closeTimeout = setTimeout(() => closeToast(), 4000);
-  
+
   // Закрытие по клику в любом месте (кроме самого toast)
   const closeToast = () => {
     if (toast && toast.parentNode) {
@@ -4017,7 +3764,7 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     document.removeEventListener('click', handleClick);
     document.removeEventListener('touchstart', handleClick);
   };
-  
+
   const handleClick = (e) => {
     // Не закрываем если клик по toast
     if (toast.contains(e.target)) {
@@ -4025,7 +3772,7 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     }
     closeToast();
   };
-  
+
   // Добавляем обработчик с задержкой 100мс чтобы избежать срабатывания от клика по иконке
   setTimeout(() => {
     document.addEventListener('click', handleClick);
@@ -4263,7 +4010,7 @@ window.openLevelInfoModal = () => {
             </div>
           </div>
 
-          <!-- Блок 3: Статист��ка -->
+          <!-- Блок 3: Статистика -->
           <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;">
             <div class="card-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
               <span>📊</span> Статистика
@@ -4272,7 +4019,7 @@ window.openLevelInfoModal = () => {
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
                 <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">📚</div>
                 <div class="stat-value" style="font-size:16px;font-weight:700;">${studiedCount}</div>
-                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Из��чено</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Извчено</div>
               </div>
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
                 <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🎯</div>
@@ -4342,7 +4089,7 @@ function getHeartsForEf(ef) {
   return '❤️❤️❤️❤️❤️';
 }
 
-// Функция для получения количе��тва сердечек по EF (для SVG)
+// Функция для получения количества сердечек по EF (для SVG)
 function getHeartsCountForEf(ef) {
   if (ef === undefined || ef === null) return 0;
   if (ef >= 2.4) return 5;      // EASY
@@ -4676,7 +4423,7 @@ window.getXpSeriesForModal = (mode) => {
     return res;
   }
 
-  // Неделя (14 дней) ил�� Меся��� (все дни)
+  // Неделя (14 дней) или Месяц (все дни)
   const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
   const res = [];
 
@@ -4707,7 +4454,7 @@ window.openDiffModal = (index) => {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   const currentCards = getCurrentCards();
 
-  console.log('[openDiffModal] ��збранное:', {
+  console.log('[openDiffModal] Избранное:', {
     favCount: favorites.size,
     favQuestions: Array.from(favorites),
     totalCards: currentCards.length
@@ -4811,7 +4558,7 @@ window.openCategoryModal = (categoryName) => {
   const maxHearts = total * 5;
   const percentage = maxHearts > 0 ? Math.round((heartsFilled / maxHearts) * 100) : 0;
 
-  console.log('[openCategoryModal] Катег��рия:', categoryName, 'Карточек:', list.length);
+  console.log('[openCategoryModal] Категория:', categoryName, 'Карточек:', list.length);
 
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
@@ -4861,11 +4608,11 @@ window.openCategoryModal = (categoryName) => {
 window.toggleCategoryList = () => {
   const list = document.getElementById('st-cat-progress-list');
   const icon = document.querySelector('.st-cat-toggle-icon');
-  
+
   if (!list) return;
-  
+
   const isCollapsed = list.classList.contains('collapsed');
-  
+
   // Переключаем состояние
   if (isCollapsed) {
     // Разворачиваем
@@ -4930,7 +4677,7 @@ window.startFilteredSession = (index) => {
     return;
   }
 
-  // Очищаем состояни�� обучения ПЕРЕД запуском нового
+  // Очищаем состояние обучения ПЕРЕД запуском нового
   if (window.__lastCandidates) {
     window.__lastCandidates = null;
     console.log('[startFilteredSession] Cleared __lastCandidates');
@@ -4992,7 +4739,7 @@ window.startMode = (modeId) => {
     });
 
     if (candidates.length === 0) {
-      alert('Нет карточек ��о сложно��тью ниже 2.2');
+      alert('Нет карточек со сложностью ниже 2.2');
       return;
     }
     options.mode = 'cram';
@@ -5011,7 +4758,7 @@ window.startMode = (modeId) => {
   }
 
   if (candidates.length > 0) {
-    // Очищаем состояние обучения ПЕРЕД запу��ком нового
+    // Очищаем состояние обучения ПЕРЕД запуском нового
     if (window.__lastCandidates) {
       window.__lastCandidates = null;
       console.log('[startMode] Cleared __lastCandidates');
@@ -5023,18 +4770,6 @@ window.startMode = (modeId) => {
     startLearnSession(candidates, options);
   }
 };
-
-// ============================================
-// А��ТОМАТИЧ��СКИЙ ВЫЗОВ DEBUG НА МОБИЛЬНЫХ
-// ============================================
-if (window.innerWidth <= 768) {
-  setTimeout(() => {
-    console.log('📱 MOBILE STATS LOADED - running debug...');
-    if (window.debugMobileStats) {
-      window.debugMobileStats();
-    }
-  }, 1000);
-}
 
 // ========== Функция для рендеринга прогресса по категориям ==========
 function renderCategoryProgress() {
@@ -5068,7 +4803,7 @@ function renderCategoryProgress() {
     }
   });
 
-  // Рас��читываем проценты и сортируем
+  // Рассчитываем проценты и сортируем
   const categoryProgress = Object.entries(categoryStats)
     .map(([name, stats]) => {
       const maxHearts = stats.total * 5; // Максимум 5 сердечек на карточку
@@ -5077,7 +4812,7 @@ function renderCategoryProgress() {
     })
     .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
 
-// Рендерим
+  // Рендерим
   const container = document.getElementById('st-cat-progress-list');
   const countSpan = document.getElementById('st-cat-count');
   if (!container) return;
@@ -5155,7 +4890,7 @@ function getXpSeries(mode) {
 }
 
 function getActivitySeries(mode) {
-  // Вспомогательна�� функция для получения даты по MSK
+  // Вспомогательная функция для получения даты по MSK
   const getMSKDate = (date) => {
     try {
       const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });

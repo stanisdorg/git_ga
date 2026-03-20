@@ -4,21 +4,21 @@
     "password": "eb653343d706617af1347831b5717c2609ffa4502217ab88a20acf1b9b9dd21c",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-20T01:50:01.125Z"
+    "lastLoginAt": "2026-03-20T19:28:40.125Z"
   },
   {
     "username": "jeff",
     "password": "5f5e0acd67ae0c44f570ebf1e0b0194b3c523d33a970ad200cb7cd73d9601d23",
     "role": "editor",
     "createdAt": "2026-03-10T02:30:00Z",
-    "lastLoginAt": "2026-03-17T13:46:45.150Z"
+    "lastLoginAt": "2026-03-20T19:28:51.090Z"
   },
   {
     "username": "stas",
     "password": "de541379fba8a374e2e24d434f152bd9962a07d8345922e7ae98268dc9d3c2eb",
     "role": "user",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-18T00:09:03.690Z"
+    "lastLoginAt": "2026-03-20T18:43:26.772Z"
   },
   {
     "username": "autotest_user1",

@@ -595,8 +595,6 @@ export function initTabsNavigation(appVersion) {
         learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
         learnBtn.addEventListener('click', async () => {
             try {
-                console.log('[Learn] Button clicked');
-
                 // Fallback: if currentQuestions is empty, try to use all data
                 if ((!currentQuestions || currentQuestions.length === 0) && uniqueQaData && uniqueQaData.length > 0) {
                     console.warn('[Learn] currentQuestions empty, using uniqueQaData fallback');
@@ -626,7 +624,6 @@ export function initTabsNavigation(appVersion) {
                     throw new Error('startLearnSession export is missing');
                 }
 
-                console.log('[Learn] Starting session with', currentQuestions.length, 'questions');
                 startLearnSession(currentQuestions);
             } catch (err) {
                 console.error('[Learn] Error:', err);
@@ -645,7 +642,6 @@ export function initTabsNavigation(appVersion) {
             // Очищаем состояние обучения ПЕРЕД переходом на статистику
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
-                console.log('[STATS BUTTON] Cleared __lastCandidates');
             }
             const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
             location.hash = '#/stats';
@@ -661,45 +657,34 @@ export function initTabsNavigation(appVersion) {
             }
 
             if (location.hash === '#/stats') {
-                console.log('[HASH CHANGE] Detected #/stats');
-
                 // ПРОВЕРЯЕМ: существует ли stats-container
                 const statsContainerExists = document.getElementById('stats-container');
-                console.log('[HASH CHANGE] stats-container exists:', !!statsContainerExists);
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    console.log('[HASH CHANGE] stats-container NOT found - calling initStatsPage()');
                     const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
                     initStatsPage(appVersion);
-                } else {
-                    console.log('[HASH CHANGE] stats-container already exists');
                 }
 
                 // Скрываем главный контейнер и sidebar
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'none';
-                    console.log('[HASH CHANGE] Hid main container');
                 }
                 const sidebar = document.querySelector('.sidebar');
                 if (sidebar) {
                     sidebar.style.display = 'none';
-                    console.log('[HASH CHANGE] Hid sidebar');
                 }
             } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
                 // Переход на главную - закрываем статистику если открыта
-                console.log('[HASH CHANGE] Detected home hash - navigating to home');
 
                 // Очищаем состояние обучения если есть
                 if (window.__lastCandidates) {
                     window.__lastCandidates = null;
-                    console.log('[HASH CHANGE] Cleared __lastCandidates');
                 }
 
                 // Закрываем статистику если открыта
                 const statsContainer = document.getElementById('stats-container');
-                console.log('[HASH CHANGE] stats-container element:', statsContainer);
                 if (statsContainer) {
                     statsContainer.remove();
                 }
@@ -1264,10 +1249,8 @@ export function initTabsNavigation(appVersion) {
             // Переключение User -> Guest (Logout)
             if (loggedInUser && !user) {
                 // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
-                console.log('[Logout] Saving all data to server before logout...');
                 try {
                     await saveMergedToServer();
-                    console.log('[Logout] Data saved successfully');
                 } catch (e) {
                     console.error('[Logout] Failed to save data before logout:', e);
                 }
@@ -1292,10 +1275,9 @@ export function initTabsNavigation(appVersion) {
                 localStorage.removeItem('sessionToken');
                 localStorage.removeItem('currentUser');
                 localStorage.removeItem('qaSessionUser');
-                // Также очищаем qaUserCards чтобы не было дублей
+                // Также очищаем qaUserCards чтобы ��е было дублей
                 clearQaUserCards();
                 localStorage.removeItem('localDataTimestamp');
-                console.log('[Logout] Session cleared. User must login again to access data.');
             }
 
             loggedInUser = user;
@@ -1423,7 +1405,6 @@ export function initTabsNavigation(appVersion) {
                                 }
                             }
                         } catch (e) {
-                            console.log('Local login failed:', e);
                         }
 
                         // Fallback to local users (legacy)
@@ -2083,13 +2064,6 @@ export function initTabsNavigation(appVersion) {
 
                 // Оптимистичное восстановление с сохранением на сервер
                 restoreBtn.addEventListener('click', async () => {
-                    console.log('[restore-click(inner)] Запрошено восстановление', {
-                        question: q,
-                        inUnique: !!uniqueQaData.find(i => i.question === q),
-                        inNewItems: !!getNewItems().find(i => i.question === q),
-                        inServerTrashSet: serverTrashSet.has(q),
-                        wasDeletedLocally: !!getDeletedItems()[q]
-                    });
                     restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
 
                     // Находим карточку в serverTrashItems, чтобы получить её данные
@@ -2111,7 +2085,6 @@ export function initTabsNavigation(appVersion) {
                         if (!newItems.some(n => n.question === q)) {
                             newItems.push(itemData);
                             localStorage.setItem('qaNewItems', JSON.stringify(newItems));
-                            console.log('[restore-click(inner)] Дубликат добавлен в qaNewItems');
                         }
                     }
 
@@ -2124,14 +2097,9 @@ export function initTabsNavigation(appVersion) {
                             // Вставляем на примерную позицию
                             userCards.push(itemData);
                             setQaUserCards(userCards);
-                            console.log('[restore-click(inner)] Карточка возвращена в qaUserCards');
                         }
                     }
 
-                    console.log('[restore-click(inner)] Локальные кеши обновлены', {
-                        serverTrashSetSize: serverTrashSet.size,
-                        delMapSize: Object.keys(getDeletedItems()).length
-                    });
                     renderTrashPanel();
                     // Обновляем без сброса контекста
                     refreshCurrentContext();
@@ -2527,14 +2495,12 @@ let isSyncing = false;
 async function saveMergedToServer(skipReload = false) {
     // Защита от рекурсивных вызовов
     if (isSyncing) {
-        console.log('[saveMergedToServer] Пропуск — уже идёт синхронизация');
         return false;
     }
 
     try {
         isSyncing = true;
         // Отправляем событие начала синхронизации
-        console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ ===');
         window.dispatchEvent(new Event('sync-start'));
 
         // 🔍 ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
@@ -2573,13 +2539,6 @@ async function saveMergedToServer(skipReload = false) {
         const deletedMap = getDeletedItems();
         const merged = [];
         const seen = new Set();
-        console.log('[saveMergedToServer] Параметры', {
-            baseCount: uniqueQaData.length,
-            overridesCount: Object.keys(fixedOverrides || {}).length,
-            newItemsCount: Array.isArray(newItems) ? newItems.length : 0,
-            deletedCount: Object.keys(deletedMap || {}).length,
-            serverTrashCount: serverTrashSet.size
-        });
 
         // Сначала добавляем базовые карточки из global.json
         uniqueQaData.forEach(item => {
@@ -2636,10 +2595,6 @@ async function saveMergedToServer(skipReload = false) {
                                 addedCount++;
                             }
                         });
-                        console.log('[saveMergedToServer] Проверено карточек:', checkedCount, 'Добавлено:', addedCount);
-                        if (addedCount > 0) {
-                            console.log('[saveMergedToServer] Добавлено пользовательских карточек:', addedCount);
-                        }
                     }
                 }
             }
@@ -2647,10 +2602,6 @@ async function saveMergedToServer(skipReload = false) {
             console.warn('[saveMergedToServer] Не удалось добавить дополнительные карточки:', e);
         }
         const lastRestored = typeof window !== 'undefined' ? window.__lastRestoredQuestion : null;
-        console.log('[saveMergedToServer] Сформировано данных', {
-            mergedCount: merged.length,
-            containsLastRestored: lastRestored ? merged.some(i => i.question === lastRestored) : 'n/a',
-        });
 
         // Получаем username для отправки на сервер
         let username = null;
@@ -2659,7 +2610,6 @@ async function saveMergedToServer(skipReload = false) {
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
         } catch { }
-        console.log('[saveMergedToServer] Пользователь:', username || 'guest');
 
         // 🔍 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
         const fixedMerged = merged.map(card => {
@@ -2682,7 +2632,6 @@ async function saveMergedToServer(skipReload = false) {
         });
 
         const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
-        console.log('[saveMergedToServer] POST', url);
 
         const resp = await fetch(url, {
             method: 'POST',
@@ -2697,7 +2646,6 @@ async function saveMergedToServer(skipReload = false) {
         } catch (parseErr) {
             console.warn('[saveMergedToServer] Не удалось распарсить ответ:', parseErr);
         }
-        console.log('[saveMergedToServer] Ответ сервера:', { status: resp.status, ok, responseJson });
 
         if (!ok) {
             console.error('[saveMergedToServer] Сервер вернул ошибку');
@@ -2705,7 +2653,6 @@ async function saveMergedToServer(skipReload = false) {
         }
 
         // Успешное сохранение
-        console.log('[saveMergedToServer] Успешно сохранено', merged.length, 'карточек');
         setSaveStatus('success');
 
         // Отправляем событие успешной синхронизации
@@ -2714,20 +2661,17 @@ async function saveMergedToServer(skipReload = false) {
         // ОБНОВЛЯЕМ qaUserCards в localStorage
         try {
             setQaUserCards(merged);
-            console.log('[saveMergedToServer] qaUserCards обновлён:', merged.length, 'карточек');
 
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
             if (Array.isArray(newItems) && newItems.length > 0) {
                 localStorage.setItem('qaNewItems', JSON.stringify([]));
-                console.log('[saveMergedToServer] qaNewItems очищен:', newItems.length, 'элементов перенесено');
             }
 
             // Очищаем qaDeletedItems после успешной синхронизации
             const deletedItems = getDeletedItems();
             if (Object.keys(deletedItems).length > 0) {
                 localStorage.setItem('qaDeletedItems', JSON.stringify({}));
-                console.log('[saveMergedToServer] qaDeletedItems очищён:', Object.keys(deletedItems).length, 'элементов');
             }
         } catch (e) {
             console.warn('[saveMergedToServer] Не удалось обновить localStorage:', e);
@@ -2735,7 +2679,6 @@ async function saveMergedToServer(skipReload = false) {
 
         // Принудительная перезагрузка данных через 50мс
         setTimeout(() => {
-            console.log('[saveMergedToServer] Dispatch forceReloadData');
             if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
         }, 50);
 
@@ -2802,7 +2745,6 @@ async function restoreFromServerTrash(questions) {
         let jsonResp = null;
         try { jsonResp = await resp.json(); if (typeof jsonResp?.ok === 'boolean') ok = ok && jsonResp.ok; } catch (_) { }
         try { window.__lastRestoredQuestion = Array.isArray(questions) ? questions[0] : null; } catch (_) { }
-        console.log('[restoreFromServerTrash] Результат', { ok, restored_count: jsonResp?.restored_count, questions });
         return ok;
     } catch (e) {
         console.error('Restore operation failed:', e);
@@ -2862,7 +2804,6 @@ async function refreshServerTrash() {
             serverTrashSet = new Set(bin.map(t => t.item?.question).filter(Boolean));
             // 🔒 Сохраняем в localStorage для офлайн-работы
             localStorage.setItem('qaUserTrash', JSON.stringify(serverTrashItems));
-            console.log('[refreshServerTrash] Обновлено с сервера', { size: serverTrashSet.size });
             return;
         }
 
@@ -2872,7 +2813,6 @@ async function refreshServerTrash() {
             const trash = JSON.parse(localTrash);
             serverTrashItems = Array.isArray(trash) ? trash : [];
             serverTrashSet = new Set(serverTrashItems.map(t => t.item?.question).filter(Boolean));
-            console.log('[refreshServerTrash] Загружено из localStorage (фолбэк)', { size: serverTrashSet.size });
         }
     } catch (e) {
         console.error('Failed to refresh server trash:', e);
@@ -2882,7 +2822,6 @@ async function refreshServerTrash() {
             const trash = JSON.parse(localTrash);
             serverTrashItems = Array.isArray(trash) ? trash : [];
             serverTrashSet = new Set(serverTrashItems.map(t => t.item?.question).filter(Boolean));
-            console.log('[refreshServerTrash] Загружено из localStorage (ошибка)', { size: serverTrashSet.size });
         }
     }
 }
@@ -2966,13 +2905,6 @@ function renderTrashPanel() {
 
             // Оптимистичное восстановление + очистка локальной карты удалений
             restoreBtn.addEventListener('click', async () => {
-                console.log('[restore-click] Запрошено восстановление', {
-                    question: q,
-                    inUnique: !!uniqueQaData.find(i => i.question === q),
-                    inNewItems: !!getNewItems().find(i => i.question === q),
-                    inServerTrashSet: serverTrashSet.has(q),
-                    wasDeletedLocally: !!getDeletedItems()[q]
-                });
                 restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
                 // Удаляем из локального кэша корзины сразу
                 serverTrashSet.delete(q);
@@ -2980,10 +2912,6 @@ function renderTrashPanel() {
                 // Если карта локальных удалений помечала эту карточку как удалённую — очистим
                 const delMap = getDeletedItems();
                 if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
-                console.log('[restore-click] Локальные кеши обновлены', {
-                    serverTrashSetSize: serverTrashSet.size,
-                    delMapSize: Object.keys(getDeletedItems()).length
-                });
                 renderTrashPanel();
                 // Обновляем текущий список в зависимости от активного таба
                 // Обновляем без сброса контекста
@@ -3000,9 +2928,6 @@ function renderTrashPanel() {
                     if (!baseHas && !newHas && it) {
                         newItemsArr.push({ ...it });
                         setLS('qaNewItems', newItemsArr);
-                        console.log('[restore-click] Карточка добавлена в qaNewItems для сохранения', { question: q });
-                    } else {
-                        console.log('[restore-click] Карточка уже присутствует в данных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
                     }
                     try { window.__lastRestoredQuestion = q; } catch (_) { }
                     // 🔥 Сохраняем на сервер БЕЗ forceReloadData
@@ -3541,13 +3466,11 @@ export function displayQuestions(questions, title) {
                                 favorites.delete(oldQuestion);
                                 favorites.add(newQuestion);
                                 localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
-                                console.log('[Edit] Обновлено избранное:', { oldQuestion, newQuestion });
 
-                                // Отправляем обновлённое избранное на сервер
+                                // Отправляем обновлённое избранн��е на сервер
                                 import('../srs/storage.js').then(({ syncFavorite }) => {
                                     try {
                                         syncFavorite(newQuestion, true);
-                                        console.log('[Edit] Отправлено на сервер');
                                     } catch (e) { }
                                 }).catch(() => { });
                             }
@@ -3594,7 +3517,7 @@ export function displayQuestions(questions, title) {
                             const act = e.target?.dataset?.act; if (!act) return;
                             e.stopPropagation();
                             if (act === 'delete') {
-                                // Показать индикатор прогресса
+                                // Показа��ь индикатор прогресса
                                 const rowEl = resultItem.querySelector('.question-row');
                                 setInlineSaveStatus(rowEl, 'saving');
 
@@ -3603,7 +3526,7 @@ export function displayQuestions(questions, title) {
                                     if (trashOk) {
                                         // Оптимистично добавляем в локальные кэши корзины
                                         serverTrashSet.add(item.question);
-                                        // Обновляем локальный список корзины, чтобы сразу показать карточку
+                                        // Обновляем локальный список корзи��ы, чтобы сразу показать карточку
                                         try {
                                             serverTrashItems = [
                                                 { item: { ...item } },
@@ -3619,7 +3542,7 @@ export function displayQuestions(questions, title) {
                                         renderTrashPanel();
                                         refreshCurrentContext();
 
-                                        // Пытаемся синхронизировать с серверной корзиной (не блокирует UI)
+                                        // Пытаемся синхронизировать с серверной ��орзиной (не блокирует UI)
                                         try { await refreshServerTrash(); } catch (_) { }
 
                                         setInlineSaveStatus(rowEl, 'success');
@@ -3667,7 +3590,6 @@ export function displayQuestions(questions, title) {
                                     if (!newItems.some(n => n.question === copyQ)) {
                                         newItems.push(duplicatedItem);
                                         localStorage.setItem('qaNewItems', JSON.stringify(newItems));
-                                        console.log('[duplicate] Дубликат добавлен в qaNewItems:', copyQ);
                                     }
                                 }
 

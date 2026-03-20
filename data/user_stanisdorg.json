@@ -1,7 +1,14 @@
 {
-  "_cards": [],
+  "_cards": null,
   "_achievements": {},
   "_favorites": [],
   "_srsProgress": {},
-  "_stats": {}
+  "_stats": {},
+  "_meta": {
+    "username": "stanisdorg",
+    "role": "user",
+    "createdAt": null,
+    "lastLoginAt": null,
+    "cardsCount": 316
+  }
 }
