@@ -1255,29 +1255,24 @@ export function initTabsNavigation(appVersion) {
                     console.error('[Logout] Failed to save data before logout:', e);
                 }
 
-                // Восстанавливаем данные гостя
-                const raw = localStorage.getItem('guest_backup');
-                if (raw) {
-                    try {
-                        const backup = JSON.parse(raw);
-                        DATA_KEYS.forEach(k => {
-                            if (backup[k] !== null) localStorage.setItem(k, backup[k]);
-                            else localStorage.removeItem(k);
-                        });
-                    } catch { }
-                } else {
-                    // Если бэкапа нет (странно), чистим, чтобы не оставить данные админа
-                    DATA_KEYS.forEach(k => localStorage.removeItem(k));
-                }
-                localStorage.removeItem('localDataTimestamp');
+                // ⚠️ ВАЖНО: Полностью очищаем localStorage пользователя
+                // Данные уже сохранены на сервере, при следующем входе загрузим оттуда
+                const DATA_KEYS_TO_CLEAR = [
+                    'qaUserCards_admin', 'qaUserCards_jeff', 'qaUserCards_stas',
+                    'qaFavorites_admin', 'qaFavorites_jeff', 'qaFavorites_stas',
+                    'qaUserTrash_admin', 'qaUserTrash_jeff', 'qaUserTrash_stas',
+                    'qaUserCards_guest', 'qaFavorites_guest', 'qaUserTrash_guest',
+                    'qaAdminOverrides', 'qaNewItems', 'qaDeletedItems',
+                    'qaCategoryPlaceholders', 'qaCategoryOrder', 'qaOrderOverrides',
+                    'localDataTimestamp', 'qaSessionUser', 'sessionToken', 'currentUser'
+                ];
+                DATA_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
+                
+                // Также очищаем старые ключи без суффиксов
+                ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
 
                 // ⚠️ ВАЖНО: Удаляем сессию полностью
-                localStorage.removeItem('sessionToken');
-                localStorage.removeItem('currentUser');
-                localStorage.removeItem('qaSessionUser');
-                // Также очищаем qaUserCards чтобы ��е было дублей
                 clearQaUserCards();
-                localStorage.removeItem('localDataTimestamp');
             }
 
             loggedInUser = user;
