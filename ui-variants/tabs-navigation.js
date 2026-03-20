@@ -85,7 +85,6 @@ function getRuntimeData() {
         const userCards = getQaUserCards();
         if (userCards && Array.isArray(userCards) && userCards.length > 0) {
             baseData = userCards;
-            console.log('[getRuntimeData] Используем qaUserCards:', userCards.length, 'карточек');
         }
     } catch (e) {
         console.warn('[getRuntimeData] Ошибка загрузки userCards:', e);
@@ -169,10 +168,6 @@ function fixEncodingIssues(data) {
     });
 
     if (changed) {
-        const fixedCount = userCards.filter((c, i) =>
-            c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
-        ).length;
-        console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount);
         setQaUserCards(fixedCards);
         // Синхронизируем с сервером
         saveMergedToServer();
@@ -272,12 +267,9 @@ async function fetchWithAuth(url, options = {}) {
 
 // Auto-load user data on page load if user is logged in (qaSessionUser exists)
 async function autoLoadUserData() {
-    console.log('[AutoLoad] === ПРОВЕРКА АВТОЗАГРУЗКИ ===');
-
     // Проверяем, есть ли активная сессия
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) {
-        console.log('[AutoLoad] Нет активной сессии (qaSessionUser пуст)');
         return;
     }
 
@@ -291,17 +283,13 @@ async function autoLoadUserData() {
     }
 
     if (!username) {
-        console.log('[AutoLoad] Нет username в сессии');
         return;
     }
-
-    console.log('[AutoLoad] Найдена активная сессия для:', username);
 
     // Загружаем данные через srs/storage.js
     try {
         const { loadFromServer } = await import('../srs/storage.js?v=2.01');
         await loadFromServer();
-        console.log('[AutoLoad] Автозагрузка завершена');
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
     }
@@ -336,11 +324,8 @@ function hideLoading() {
 // ===========================================================
 
 export function initTabsNavigation(appVersion) {
-    console.log('Initializing Tabs Navigation...');
-
     // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
-    console.log('[initTabsNavigation] location.hash:', location.hash, 'isStatsPage:', isStatsPage);
 
     // Показываем анимацию загрузки при старте
     showLoading();
@@ -359,9 +344,6 @@ export function initTabsNavigation(appVersion) {
             // Для статистики оставляем display:none, для остальных страниц показываем
             if (!isStatsPage) {
                 searchContainer.style.display = '';
-                console.log('[initTabsNavigation] searchContainer shown');
-            } else {
-                console.log('[initTabsNavigation] searchContainer kept hidden (stats page)');
             }
         }
         // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
@@ -413,13 +395,11 @@ export function initTabsNavigation(appVersion) {
         levelContainer.style.alignItems = 'center';
 
         // Показываем все вопросы при инициализации
-        console.log('[initTabsNavigation] Показываем все вопросы при инициализации');
         showAllQuestions();
 
         // Автоматическая загрузка с учётом текущего контекста
         // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
         setTimeout(() => {
-            console.log('[initTabsNavigation] Обновляем контекст через 100мс');
             refreshCurrentContext();
         }, 100);
 
@@ -431,17 +411,6 @@ export function initTabsNavigation(appVersion) {
         // Слушаем dataLoaded от all-data.js для обновления после загрузки данных
         document.addEventListener('dataLoaded', (e) => {
             const data = e.detail?.data;
-            console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
-
-            // Проверяем top-actions-bar после загрузки данных
-            const topBar = document.querySelector('.top-actions-bar');
-            if (topBar) {
-                console.log('[MOBILE DEBUG] После dataLoaded - top-actions-bar:', topBar);
-                console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
-            }
 
             // Скрываем анимацию загрузки
             hideLoading();
@@ -464,22 +433,6 @@ export function initTabsNavigation(appVersion) {
 
         // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
         let categories = buildCategoriesFromData(getRuntimeData());
-
-        // Проверяем top-actions-bar в конце инициализации
-        setTimeout(() => {
-            const topBar = document.querySelector('.top-actions-bar');
-            if (topBar) {
-                console.log('[MOBILE DEBUG] В конце initTabsNavigation - top-actions-bar:', topBar);
-                console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).height:', window.getComputedStyle(topBar).height);
-                console.log('[MOBILE DEBUG] getComputedStyle(topBar).width:', window.getComputedStyle(topBar).width);
-            } else {
-                console.error('[MOBILE DEBUG] top-actions-bar НЕ НАЙДЕН в DOM!');
-            }
-        }, 500);
 
         // Создаем контейнер для табов
         const tabsContainer = document.createElement('div');
@@ -827,7 +780,6 @@ export function initTabsNavigation(appVersion) {
         // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
         const isMobile = window.matchMedia('(max-width: 768px)').matches;
         const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
-        console.log('[MOBILE DEBUG] isMobile:', isMobile, 'isTablet:', isTablet);
 
         // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
         topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
@@ -855,24 +807,19 @@ export function initTabsNavigation(appVersion) {
             setTimeout(() => {
                 try {
                     const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
-                    console.log('[MOBILE ACCESS] user:', user);
 
                     // Кнопка редактирования: admin и editor
                     if (user && ['admin', 'editor'].includes(user.role)) {
                         editToggleBtn.style.setProperty('display', 'inline-block', 'important');
-                        console.log('[MOBILE ACCESS] Edit button shown for:', user.role);
                     } else {
                         editToggleBtn.style.setProperty('display', 'none', 'important');
-                        console.log('[MOBILE ACCESS] Edit button hidden, role:', user?.role || 'guest');
                     }
 
                     // Кнопка добавления пользователя: только admin
                     if (user && user.role === 'admin') {
                         adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
-                        console.log('[MOBILE ACCESS] Add user button shown for admin');
                     } else {
                         adminUsersBtn.style.setProperty('display', 'none', 'important');
-                        console.log('[MOBILE ACCESS] Add user button hidden, role:', user?.role || 'guest');
                     }
                 } catch (e) {
                     console.error('[MOBILE ACCESS] Ошибка проверки прав:', e);
@@ -881,8 +828,6 @@ export function initTabsNavigation(appVersion) {
                     adminUsersBtn.style.setProperty('display', 'none', 'important');
                 }
             }, 50);
-
-            console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
         } else {
             // Desktop: дополнительные кнопки в topActions
             // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
@@ -890,8 +835,6 @@ export function initTabsNavigation(appVersion) {
             topActions.appendChild(editToggleBtn);
             topActions.appendChild(cloudBtn);
             topActions.appendChild(adminUsersBtn);
-
-            console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (desktop mode)');
         }
 
         // Добавляем контейнер табов в навигацию напрямую
@@ -2300,7 +2243,7 @@ export function initTabsNavigation(appVersion) {
                 container.classList.add('edit-mode');
             } else {
                 trashPanel.style.display = 'none';
-                // убрать индикатор корзины из заголовка боковой панели
+                // убрать индикатор корзин���� из заголовка боковой панели
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (existingTrashBtn) existingTrashBtn.remove();
                 container.classList.remove('edit-mode');
@@ -3171,42 +3114,29 @@ function showFavorites() {
 
 // Универсальная перерисовка текущего контекста без сброса на «Все вопросы»
 function refreshCurrentContext() {
-    console.log('========================================');
-    console.log('[refreshCurrentContext] Called!');
-    console.log('[refreshCurrentContext] currentContextKey:', currentContextKey);
-    console.log('[refreshCurrentContext] location.hash:', location.hash);
-
     // НЕ показываем вопросы если открыта страница статистики!
     if (location.hash === '#/stats') {
-        console.log('[refreshCurrentContext] Stats page detected, skipping showAllQuestions()');
         return;
     }
 
-    console.log('[refreshCurrentContext] Stack:', new Error().stack);
-    console.log('========================================');
     try {
         const key = currentContextKey || 'all';
         if (key === 'all') {
-            console.log('[refreshCurrentContext] Calling showAllQuestions()');
             return showAllQuestions();
         }
         if (key === 'favorites') {
-            console.log('[refreshCurrentContext] Calling showFavorites()');
             return showFavorites();
         }
         if (key.startsWith('category:')) {
             const name = key.slice('category:'.length);
-            console.log('[refreshCurrentContext] Calling filterQuestionsByCategory:', name);
             return filterQuestionsByCategory(name);
         }
         if (key.startsWith('subcategory:')) {
             const payload = key.slice('subcategory:'.length);
             const [cat, sub] = payload.split('#');
-            console.log('[refreshCurrentContext] Calling filterQuestionsBySubcategory:', cat, sub);
             return filterQuestionsBySubcategory(cat, sub);
         }
         // fallback
-        console.log('[refreshCurrentContext] Fallback to showAllQuestions()');
         showAllQuestions();
     } catch (e) {
         console.error('[refreshCurrentContext] Error:', e);
@@ -3221,7 +3151,6 @@ export function displayQuestions(questions, title) {
         console.warn('displayQuestions: questions is undefined/null, defaulting to []');
         questions = [];
     }
-    console.log(`displayQuestions: rendering ${questions.length} items. Title: ${title}`);
 
     try {
         const resultsList = document.getElementById('results-list');
@@ -3424,7 +3353,6 @@ export function displayQuestions(questions, title) {
         // Добавляем вопросы
         currentQuestions.forEach((item, index) => {
             try {
-                if (index === 0) console.log('Rendering first item:', item);
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
 
@@ -3603,7 +3531,7 @@ export function displayQuestions(questions, title) {
 
                             const oldQuestion = item.question;
                             const overrides = getOverrides();
-                            // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
+                            // Храним override под ключом исходного вопроса, чтобы лоадер корректн�� применил замену
                             overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
                             setOverrides(overrides);
 
