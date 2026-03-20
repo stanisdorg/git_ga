@@ -526,6 +526,11 @@ const server = http.createServer((req, res) => {
           cardsInFile: userData._cards?.length || 0,
           timestamp: Date.now()
       });
+      console.log('[SERVER /api/progress] ПРОЧТЕНО из файла:', {
+          filePath: targetPath,
+          cardsInFile: userData._cards?.length || 0,
+          fileSize: rawContent.length
+      });
       logger.info('Прочитано данных', {
         cards: userData._cards?.length || 0,
         favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
@@ -883,6 +888,17 @@ const server = http.createServer((req, res) => {
           } catch (checkErr) {
             logger.error('Ошибка проверки файла', { error: checkErr.message }, 'Save');
           }
+
+          // 🔍 ЛОГ: проверяем что записалось
+          setTimeout(() => {
+            const verifyContent = fs.readFileSync(targetPath, 'utf-8');
+            const verifyData = JSON.parse(verifyContent);
+            console.log('[SERVER /save] ПРОВЕРКА записанного файла:', {
+                filePath: targetPath,
+                cardsInFile: verifyData._cards?.length || 0,
+                fileSize: verifyContent.length
+            });
+          }, 100);
 
           console.log('[SERVER /save] Успешно записано:', {
               cardsCount: data.length,

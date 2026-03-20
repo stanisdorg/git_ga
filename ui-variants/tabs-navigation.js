@@ -1269,7 +1269,7 @@ export function initTabsNavigation(appVersion) {
                 });
                 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве�������� перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на серве���������� перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -2763,10 +2763,13 @@ async function saveMergedToServer(skipReload = false) {
             
             // 🔥 ОБНОВЛЯЕМ uniqueQaData в памяти из localStorage
             // Это нужно чтобы следующие дубликаты использовали актуальные данные
+            // Используем setQaUserCards чтобы обновить и localStorage и uniqueQaData
             if (verifyCards && verifyCards.length > 0) {
-                uniqueQaData = verifyCards;
-                console.log('[saveMergedToServer] uniqueQaData обновлён:', {
-                    newLength: uniqueQaData.length
+                // uniqueQaData - это import из all-data.js, его нельзя переназначить
+                // Поэтому обновляем через setQaUserCards который синхронизирует оба источника
+                setQaUserCards(verifyCards);
+                console.log('[saveMergedToServer] uniqueQaData обновлён через setQaUserCards:', {
+                    newLength: verifyCards.length
                 });
             }
 
