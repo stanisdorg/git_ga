@@ -168,6 +168,11 @@ function fixEncodingIssues(data) {
     });
 
     if (changed) {
+        // Подсчитываем сколько карточек было исправлено
+        const fixedCount = userCards.filter((c, i) =>
+            c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
+        ).length;
+        
         setQaUserCards(fixedCards);
         // 🔥 НЕ отправляем на сервер автоматически — исправления сохранятся при следующем явном сохранении
         console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount, '(сохранятся при следующем сохранении)');
