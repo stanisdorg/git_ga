@@ -169,8 +169,8 @@ function fixEncodingIssues(data) {
 
     if (changed) {
         setQaUserCards(fixedCards);
-        // Синхронизируем с сервером
-        saveMergedToServer();
+        // 🔥 НЕ отправляем на сервер автоматически — исправления сохранятся при следующем явном сохранении
+        console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount, '(сохранятся при следующем сохранении)');
     }
 }
 
