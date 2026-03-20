@@ -30,7 +30,7 @@ function getQaUserCardsKey() {
                 return `qaUserCards_${user.username}`;
             }
         }
-    } catch (e) {}
+    } catch (e) { }
     return 'qaUserCards_guest';
 }
 
@@ -137,22 +137,22 @@ function getRuntimeData() {
 function fixEncodingIssues(data) {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) return;
-    
+
     const userCardsRaw = localStorage.getItem('qaUserCards');
     if (!userCardsRaw) return;
-    
+
     let userCards = [];
     try {
         userCards = JSON.parse(userCardsRaw);
     } catch (e) {
         return;
     }
-    
+
     let changed = false;
     const fixedCards = userCards.map(card => {
         const originalCategory = card.category;
         const originalSubcategory = card.subcategory;
-        
+
         // 🔧 Исправляем искажённую кодировку в category
         if (card.category === 'Документация' || card.category === 'Дкументация' || card.category === 'Дкументация') {
             card.category = 'Документация';
@@ -164,10 +164,10 @@ function fixEncodingIssues(data) {
             card.subcategory = 'Типы требований';
             changed = true;
         }
-        
+
         return card;
     });
-    
+
     if (changed) {
         const fixedCount = userCards.filter((c, i) =>
             c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
@@ -218,7 +218,7 @@ function setInlineSaveStatus(rowEl, status, message = '') {
 function genUniqueQuestionGlobal(baseQ) {
     // Очищаем базовый вопрос от суффиксов копий
     const cleanBase = baseQ.replace(/ \(копия( \d+)?\)$/, '');
-    
+
     const exists = (q) => {
         // Проверяем в uniqueQaData
         if (uniqueQaData.some(i => i.question === q)) return true;
@@ -231,10 +231,10 @@ function genUniqueQuestionGlobal(baseQ) {
                 const userCards = JSON.parse(userCardsRaw);
                 if (Array.isArray(userCards) && userCards.some(i => i.question === q)) return true;
             }
-        } catch (e) {}
+        } catch (e) { }
         return false;
     };
-    
+
     // Ищем все существующие копии
     let i = 1;
     let candidate = `${cleanBase} (копия)`;
@@ -251,14 +251,14 @@ function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', ob
 // Global helper function for authenticated fetch requests (NO TOKEN - username/password only)
 async function fetchWithAuth(url, options = {}) {
     const user = loggedInUser;
-    
+
     // Добавляем username в query параметры
     const urlObj = new URL(url, BACKEND_URL);
     if (user && user.username) {
         urlObj.searchParams.set('user', user.username);
     }
     // token removed - using username only for development
-    
+
     const fetchOptions = {
         ...options,
         headers: {
@@ -266,21 +266,21 @@ async function fetchWithAuth(url, options = {}) {
             ...(options.headers || {})
         }
     };
-    
+
     return fetch(urlObj.toString(), fetchOptions);
 }
 
 // Auto-load user data on page load if user is logged in (qaSessionUser exists)
 async function autoLoadUserData() {
     console.log('[AutoLoad] === ПРОВЕРКА АВТОЗАГРУЗКИ ===');
-    
+
     // Проверяем, есть ли активная сессия
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) {
         console.log('[AutoLoad] Нет активной сессии (qaSessionUser пуст)');
         return;
     }
-    
+
     let username = null;
     try {
         const u = JSON.parse(sessionUserRaw);
@@ -347,1080 +347,1080 @@ export function initTabsNavigation(appVersion) {
 
     try {
         const container = document.querySelector('.container');
-    // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
-    // НО НЕ для страницы статистики!
-    if (container && !isStatsPage) container.style.display = '';
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar && !isStatsPage) sidebar.style.display = '';
+        // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
+        // НО НЕ для страницы статистики!
+        if (container && !isStatsPage) container.style.display = '';
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && !isStatsPage) sidebar.style.display = '';
 
-    const searchContainer = document.querySelector('.search-container');
-    // СКРЫВАЕМ строку поиска для страницы статистики!
-    if (searchContainer) {
-        // Для статистики оставляем display:none, для остальных страниц показываем
-        if (!isStatsPage) {
-            searchContainer.style.display = '';
-            console.log('[initTabsNavigation] searchContainer shown');
-        } else {
-            console.log('[initTabsNavigation] searchContainer kept hidden (stats page)');
+        const searchContainer = document.querySelector('.search-container');
+        // СКРЫВАЕМ строку поиска для страницы статистики!
+        if (searchContainer) {
+            // Для статистики оставляем display:none, для остальных страниц показываем
+            if (!isStatsPage) {
+                searchContainer.style.display = '';
+                console.log('[initTabsNavigation] searchContainer shown');
+            } else {
+                console.log('[initTabsNavigation] searchContainer kept hidden (stats page)');
+            }
         }
-    }
-    // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
-    const legacyAdminPanel = document.querySelector('.admin-panel');
-    if (legacyAdminPanel) legacyAdminPanel.remove();
-    
-    // Создаем контейнер для навигации
-    const navigationContainer = document.createElement('div');
-    navigationContainer.className = 'tabs-navigation';
+        // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
+        const legacyAdminPanel = document.querySelector('.admin-panel');
+        if (legacyAdminPanel) legacyAdminPanel.remove();
 
-    // Контейнер для верхних действий (статистика, админка)
-    const topActions = document.createElement('div');
-    topActions.className = 'top-actions-bar';
-    // СКРЫВАЕМ top-actions-bar для страницы статистики!
-    topActions.style.display = isStatsPage ? 'none' : 'flex';
-    topActions.style.alignItems = 'center';
-    topActions.style.justifyContent = 'flex-start';
-    topActions.style.padding = '4px 0';
+        // Создаем контейнер для навигации
+        const navigationContainer = document.createElement('div');
+        navigationContainer.className = 'tabs-navigation';
 
-    // Создаём MutationObserver для отслеживания изменений display
-    if (isStatsPage) {
-        window.__statsTopActionsObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    const currentDisplay = topActions.style.display;
-                    if (currentDisplay !== 'none') {
-                        topActions.style.display = 'none';
+        // Контейнер для верхних действий (статистика, админка)
+        const topActions = document.createElement('div');
+        topActions.className = 'top-actions-bar';
+        // СКРЫВАЕМ top-actions-bar для страницы статистики!
+        topActions.style.display = isStatsPage ? 'none' : 'flex';
+        topActions.style.alignItems = 'center';
+        topActions.style.justifyContent = 'flex-start';
+        topActions.style.padding = '4px 0';
+
+        // Создаём MutationObserver для отслеживания изменений display
+        if (isStatsPage) {
+            window.__statsTopActionsObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const currentDisplay = topActions.style.display;
+                        if (currentDisplay !== 'none') {
+                            topActions.style.display = 'none';
+                        }
                     }
-                }
+                });
             });
-        });
-        window.__statsTopActionsObserver.observe(topActions, { attributes: true });
-    }
-    
-    // Версия приложения
-    const verEl = document.createElement('div');
-    verEl.textContent = `v${appVersion}`;
-    verEl.className = 'app-version-display';
-    verEl.style.fontSize = '11px';
-    verEl.style.color = '#555';
-    verEl.style.fontWeight = 'bold';
-    verEl.style.marginLeft = '10px';
-    
-    // Контейнер для правой части (Уровень + Стрик)
-    const levelContainer = document.createElement('div');
-    levelContainer.className = 'level-container-right';
-    levelContainer.style.marginLeft = 'auto';
-    levelContainer.style.display = 'flex';
-    levelContainer.style.alignItems = 'center';
-
-    // Показываем все вопросы при инициализации
-    console.log('[initTabsNavigation] Показываем все вопросы при инициализации');
-    showAllQuestions();
-
-    // Автоматическая загрузка с учётом текущего контекста
-    // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
-    setTimeout(() => {
-        console.log('[initTabsNavigation] Обновляем контекст через 100мс');
-        refreshCurrentContext();
-    }, 100);
-
-    // Слушаем обновление избранного из облака
-    window.addEventListener('favoritesUpdated', () => {
-        refreshCurrentContext();
-    });
-
-    // Слушаем dataLoaded от all-data.js для обновления после загрузки данных
-    document.addEventListener('dataLoaded', (e) => {
-        const data = e.detail?.data;
-        console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
-        
-        // Проверяем top-actions-bar после загрузки данных
-        const topBar = document.querySelector('.top-actions-bar');
-        if (topBar) {
-            console.log('[MOBILE DEBUG] После dataLoaded - top-actions-bar:', topBar);
-            console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
+            window.__statsTopActionsObserver.observe(topActions, { attributes: true });
         }
 
-        // Скрываем анимацию загрузки
-        hideLoading();
+        // Версия приложения
+        const verEl = document.createElement('div');
+        verEl.textContent = `v${appVersion}`;
+        verEl.className = 'app-version-display';
+        verEl.style.fontSize = '11px';
+        verEl.style.color = '#555';
+        verEl.style.fontWeight = 'bold';
+        verEl.style.marginLeft = '10px';
 
-        if (data && data.length > 0) {
-            // Перестраиваем табы категорий с новыми данными
-            refreshCategoriesTabs();
-            // Обновляем текущий контекст
+        // Контейнер для правой части (Уровень + Стрик)
+        const levelContainer = document.createElement('div');
+        levelContainer.className = 'level-container-right';
+        levelContainer.style.marginLeft = 'auto';
+        levelContainer.style.display = 'flex';
+        levelContainer.style.alignItems = 'center';
+
+        // Показываем все вопросы при инициализации
+        console.log('[initTabsNavigation] Показываем все вопросы при инициализации');
+        showAllQuestions();
+
+        // Автоматическая загрузка с учётом текущего контекста
+        // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
+        setTimeout(() => {
+            console.log('[initTabsNavigation] Обновляем контекст через 100мс');
             refreshCurrentContext();
-        }
-    });
-    
-    // 🔥 ИСПРАВЛЕНИЕ КОДИРОВКИ: После загрузки данных с сервера
-    // Вызываем после loadFromServer, когда данные уже в localStorage
-    window.addEventListener('qaDataLoadedFromServer', () => {
-        fixEncodingIssues();
-        refreshCategoriesTabs();
-        refreshCurrentContext();
-    });
-    
-    // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
-    let categories = buildCategoriesFromData(getRuntimeData());
+        }, 100);
 
-    // Проверяем top-actions-bar в конце инициализации
-    setTimeout(() => {
-        const topBar = document.querySelector('.top-actions-bar');
-        if (topBar) {
-            console.log('[MOBILE DEBUG] В конце initTabsNavigation - top-actions-bar:', topBar);
-            console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).height:', window.getComputedStyle(topBar).height);
-            console.log('[MOBILE DEBUG] getComputedStyle(topBar).width:', window.getComputedStyle(topBar).width);
-        } else {
-            console.error('[MOBILE DEBUG] top-actions-bar НЕ НАЙДЕН в DOM!');
-        }
-    }, 500);
+        // Слушаем обновление избранного из облака
+        window.addEventListener('favoritesUpdated', () => {
+            refreshCurrentContext();
+        });
 
-    // Создаем контейнер для табов
-    const tabsContainer = document.createElement('div');
-    tabsContainer.className = 'tabs-container';
-    
-    // Создаем таб "Все вопросы"
-    const allTab = document.createElement('div');
-    allTab.className = 'tab';
-    allTab.dataset.category = 'all';
-    allTab.textContent = 'Все вопросы';
-    tabsContainer.appendChild(allTab);
-    // Создаем таб "Избранное"
-    const favTab = document.createElement('div');
-    favTab.className = 'tab';
-    favTab.dataset.category = 'favorites';
-    // Иконка избранного: звезда (SVG)
-    favTab.innerHTML = `
+        // Слушаем dataLoaded от all-data.js для обновления после загрузки данных
+        document.addEventListener('dataLoaded', (e) => {
+            const data = e.detail?.data;
+            console.log('[tabs-navigation] dataLoaded от all-data.js, карточ:', data?.length || 0);
+
+            // Проверяем top-actions-bar после загрузки данных
+            const topBar = document.querySelector('.top-actions-bar');
+            if (topBar) {
+                console.log('[MOBILE DEBUG] После dataLoaded - top-actions-bar:', topBar);
+                console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
+            }
+
+            // Скрываем анимацию загрузки
+            hideLoading();
+
+            if (data && data.length > 0) {
+                // Перестраиваем табы категорий с новыми данными
+                refreshCategoriesTabs();
+                // Обновляем текущий контекст
+                refreshCurrentContext();
+            }
+        });
+
+        // 🔥 ИСПРАВЛЕНИЕ КОДИРОВКИ: После загрузки данных с сервера
+        // Вызываем после loadFromServer, когда данные уже в localStorage
+        window.addEventListener('qaDataLoadedFromServer', () => {
+            fixEncodingIssues();
+            refreshCategoriesTabs();
+            refreshCurrentContext();
+        });
+
+        // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
+        let categories = buildCategoriesFromData(getRuntimeData());
+
+        // Проверяем top-actions-bar в конце инициализации
+        setTimeout(() => {
+            const topBar = document.querySelector('.top-actions-bar');
+            if (topBar) {
+                console.log('[MOBILE DEBUG] В конце initTabsNavigation - top-actions-bar:', topBar);
+                console.log('[MOBILE DEBUG] topBar.style.display:', topBar.style.display);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).display:', window.getComputedStyle(topBar).display);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).visibility:', window.getComputedStyle(topBar).visibility);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).opacity:', window.getComputedStyle(topBar).opacity);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).height:', window.getComputedStyle(topBar).height);
+                console.log('[MOBILE DEBUG] getComputedStyle(topBar).width:', window.getComputedStyle(topBar).width);
+            } else {
+                console.error('[MOBILE DEBUG] top-actions-bar НЕ НАЙДЕН в DOM!');
+            }
+        }, 500);
+
+        // Создаем контейнер для табов
+        const tabsContainer = document.createElement('div');
+        tabsContainer.className = 'tabs-container';
+
+        // Создаем таб "Все вопросы"
+        const allTab = document.createElement('div');
+        allTab.className = 'tab';
+        allTab.dataset.category = 'all';
+        allTab.textContent = 'Все вопросы';
+        tabsContainer.appendChild(allTab);
+        // Создаем таб "Избранное"
+        const favTab = document.createElement('div');
+        favTab.className = 'tab';
+        favTab.dataset.category = 'favorites';
+        // Иконка избранного: звезда (SVG)
+        favTab.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align: middle;">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
                 style="fill: #fb923c; stroke: #fb923c; stroke-width: 2px;"
             />
         </svg>
     `;
-    tabsContainer.appendChild(favTab);
-    
-    // Добавляем табы для всех категорий
-    categories.forEach(category => {
-        const tab = document.createElement('div');
-        tab.className = 'tab';
-        tab.dataset.category = category.id;
-        tab.textContent = category.displayName || category.name;
-        tabsContainer.appendChild(tab);
-    });
-    
-    // Создаем контейнер для подкатегорий
-    const subcategoriesContainer = document.createElement('div');
-    subcategoriesContainer.className = 'subcategories-container';
-    subcategoriesContainer.style.display = 'none';
+        tabsContainer.appendChild(favTab);
 
-    // Восстанавливаем подсветку активного таба из текущего контекста
-    try {
-        const key = currentContextKey || 'all';
-        tabsContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        if (key === 'all') {
-            allTab.classList.add('active');
-            subcategoriesContainer.style.display = 'none';
-        } else if (key === 'favorites') {
-            favTab.classList.add('active');
-            subcategoriesContainer.style.display = 'none';
-        } else if (key.startsWith('category:') || key.startsWith('subcategory:')) {
-            const payload = key.startsWith('category:') ? key.slice('category:'.length) : key.slice('subcategory:'.length).split('#')[0];
-            const selectedCategory = categories.find(c => c.name === payload || (c.displayName && c.displayName === payload));
-            if (selectedCategory) {
-                const tabEl = tabsContainer.querySelector(`.tab[data-category="${selectedCategory.id}"]`);
-                if (tabEl) tabEl.classList.add('active');
-                subcategoriesContainer.style.display = 'flex';
-                // Подкатегории будут перестроены при render/refresh; здесь только визуально показываем блок
+        // Добавляем табы для всех категорий
+        categories.forEach(category => {
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.dataset.category = category.id;
+            tab.textContent = category.displayName || category.name;
+            tabsContainer.appendChild(tab);
+        });
+
+        // Создаем контейнер для подкатегорий
+        const subcategoriesContainer = document.createElement('div');
+        subcategoriesContainer.className = 'subcategories-container';
+        subcategoriesContainer.style.display = 'none';
+
+        // Восстанавливаем подсветку активного таба из текущего контекста
+        try {
+            const key = currentContextKey || 'all';
+            tabsContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if (key === 'all') {
+                allTab.classList.add('active');
+                subcategoriesContainer.style.display = 'none';
+            } else if (key === 'favorites') {
+                favTab.classList.add('active');
+                subcategoriesContainer.style.display = 'none';
+            } else if (key.startsWith('category:') || key.startsWith('subcategory:')) {
+                const payload = key.startsWith('category:') ? key.slice('category:'.length) : key.slice('subcategory:'.length).split('#')[0];
+                const selectedCategory = categories.find(c => c.name === payload || (c.displayName && c.displayName === payload));
+                if (selectedCategory) {
+                    const tabEl = tabsContainer.querySelector(`.tab[data-category="${selectedCategory.id}"]`);
+                    if (tabEl) tabEl.classList.add('active');
+                    subcategoriesContainer.style.display = 'flex';
+                    // Подкатегории будут перестроены при render/refresh; здесь только визуально показываем блок
+                } else {
+                    allTab.classList.add('active');
+                    subcategoriesContainer.style.display = 'none';
+                }
             } else {
                 allTab.classList.add('active');
                 subcategoriesContainer.style.display = 'none';
             }
-        } else {
+        } catch (_) {
             allTab.classList.add('active');
             subcategoriesContainer.style.display = 'none';
         }
-    } catch (_) {
-        allTab.classList.add('active');
-        subcategoriesContainer.style.display = 'none';
-    }
-    
-    // Добавляем обработчики клика по табам
-    tabsContainer.addEventListener('click', function(e) {
-        if (e.target.classList.contains('tab')) {
-            // Удаляем класс active у всех табов
-            const tabs = tabsContainer.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Добавляем класс active выбранному табу
-            e.target.classList.add('active');
-            
-            const categoryId = e.target.dataset.category;
-            
-            if (categoryId === 'all') {
-                // Если выбраны все вопросы, скрываем контейнер подкатегорий
-                subcategoriesContainer.style.display = 'none';
-                showAllQuestions();
-            } else if (categoryId === 'favorites') {
-                // Избранное без подкатегорий
-                subcategoriesContainer.style.display = 'none';
-                showFavorites();
-            } else {
-                const selectedCategory = categories.find(cat => cat.id == categoryId);
-                subcategoriesContainer.style.display = 'flex';
-                subcategoriesContainer.innerHTML = '';
-                rebuildSubcategoriesForCategory(selectedCategory.name);
-                filterQuestionsByCategory(selectedCategory.name);
-            }
-        }
-    });
-    
-    // Добавляем обработчики клика по карточкам подкатегорий
-    subcategoriesContainer.addEventListener('click', function(e) {
-        if (e.target.classList.contains('subcategory-card')) {
-            // Удаляем класс active у всех карточек
-            const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
-            cards.forEach(card => card.classList.remove('active'));
-            
-            // Добавляем класс active выбранной карточке
-            e.target.classList.add('active');
-            
-            const subcategoryId = e.target.dataset.subcategory;
-            const categoryId = e.target.dataset.category || tabsContainer.querySelector('.tab.active').dataset.category;
-            
-            if (subcategoryId === 'all') {
-                // Если выбраны все подкатегории, фильтруем только по категории
-                const selectedCategory = categories.find(cat => cat.id == categoryId);
-                filterQuestionsByCategory(selectedCategory.name);
-            } else {
-                // Если выбрана конкретная подкатегория, фильтруем по категории и подкатегории
-                const selectedCategory = categories.find(cat => cat.id == categoryId);
-                const selectedSubcategory = selectedCategory.subcategories.find(
-                    subcat => subcat.id == subcategoryId
-                );
-                
-                filterQuestionsBySubcategory(selectedCategory.name, selectedSubcategory.name);
-            }
-        }
-    });
-    
-    // Интегрируем кнопку фильтров внутрь списка табов как первый элемент (sticky left)
-    const filtersBtn = document.createElement('button');
-    filtersBtn.className = 'tab'; 
-    filtersBtn.title = 'Фильтры';
-    filtersBtn.style.padding = '0 10px';
-    filtersBtn.style.minWidth = 'auto';
-    filtersBtn.style.position = 'sticky';
-    filtersBtn.style.left = '0';
-    filtersBtn.style.zIndex = '10';
-    filtersBtn.style.marginRight = '4px';
-    filtersBtn.style.backgroundColor = 'var(--color-card)'; // Ensure background covers scrolling content
-    filtersBtn.style.border = '1px solid var(--color-border)';
-    filtersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2l-7 7v4l-4 2v-6L3 7z"/></svg>';
-    filtersBtn.addEventListener('click', () => {
-        const sheet = document.getElementById('filters-sheet');
-        if (sheet) {
-            sheet.style.bottom = '0';
-        }
-    });
-    
-    // Вставляем кнопку фильтров перед остальными табами
-    tabsContainer.insertBefore(filtersBtn, tabsContainer.firstChild);
 
-    // Кнопка режима обучения (скрыта на мобильных через CSS .learn-main-btn)
-    const learnBtn = document.createElement('button');
-    learnBtn.title = 'Начать обучение';
-    learnBtn.className = 'nav-icon-btn tab'; 
-    learnBtn.style.padding = '0 10px';
-    learnBtn.style.minWidth = 'auto';
-    learnBtn.style.setProperty('color', '#fb923c', 'important'); // Orange icon (matches Level)
-    learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
-    learnBtn.addEventListener('click', async () => {
-        try {
-            console.log('[Learn] Button clicked');
-            
-            // Fallback: if currentQuestions is empty, try to use all data
-            if ((!currentQuestions || currentQuestions.length === 0) && uniqueQaData && uniqueQaData.length > 0) {
-                 console.warn('[Learn] currentQuestions empty, using uniqueQaData fallback');
-                 currentQuestions = [...uniqueQaData];
-            }
+        // Добавляем обработчики клика по табам
+        tabsContainer.addEventListener('click', function (e) {
+            if (e.target.classList.contains('tab')) {
+                // Удаляем класс active у всех табов
+                const tabs = tabsContainer.querySelectorAll('.tab');
+                tabs.forEach(tab => tab.classList.remove('active'));
 
-            if (!currentQuestions || currentQuestions.length === 0) {
-                console.warn('[Learn] No questions in current context');
-                alert('В текущем списке нет вопросов для изучения. Выберите категорию или "Все вопросы".');
-                return;
-            }
+                // Добавляем класс active выбранному табу
+                e.target.classList.add('active');
 
-            let module;
-            try {
-                module = await import('../srs/learn-ui.js?v=2.13');
-            } catch (e1) {
-                console.warn('[Learn] Import v2.13 failed, trying plain import', e1);
-                try {
-                    module = await import('../srs/learn-ui.js');
-                } catch (e2) {
-                    throw new Error(`Failed to load learn-ui.js: ${e2.message}`);
+                const categoryId = e.target.dataset.category;
+
+                if (categoryId === 'all') {
+                    // Если выбраны все вопросы, скрываем контейнер подкатегорий
+                    subcategoriesContainer.style.display = 'none';
+                    showAllQuestions();
+                } else if (categoryId === 'favorites') {
+                    // Избранное без подкатегорий
+                    subcategoriesContainer.style.display = 'none';
+                    showFavorites();
+                } else {
+                    const selectedCategory = categories.find(cat => cat.id == categoryId);
+                    subcategoriesContainer.style.display = 'flex';
+                    subcategoriesContainer.innerHTML = '';
+                    rebuildSubcategoriesForCategory(selectedCategory.name);
+                    filterQuestionsByCategory(selectedCategory.name);
                 }
             }
+        });
 
-            const { startLearnSession } = module;
-            if (typeof startLearnSession !== 'function') {
-                throw new Error('startLearnSession export is missing');
-            }
-            
-            console.log('[Learn] Starting session with', currentQuestions.length, 'questions');
-            startLearnSession(currentQuestions);
-        } catch (err) {
-            console.error('[Learn] Error:', err);
-            alert('Не удалось запустить режим обучения: ' + err.message);
-        }
-    });
+        // Добавляем обработчики клика по карточкам подкатегорий
+        subcategoriesContainer.addEventListener('click', function (e) {
+            if (e.target.classList.contains('subcategory-card')) {
+                // Удаляем класс active у всех карточек
+                const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
+                cards.forEach(card => card.classList.remove('active'));
 
-    // Кнопка статистики
-    const statsBtn = document.createElement('button');
-    statsBtn.className = 'nav-icon-btn tab';
-    statsBtn.title = 'Статистика';
-    statsBtn.style.minWidth = 'auto';
-    statsBtn.style.padding = '0 10px';
-    statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
-    statsBtn.addEventListener('click', async () => {
-        // Очищаем состояние обучения ПЕРЕД переходом на статистику
-        if (window.__lastCandidates) {
-            window.__lastCandidates = null;
-            console.log('[STATS BUTTON] Cleared __lastCandidates');
-        }
-        const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
-        location.hash = '#/stats';
-        initStatsPage(appVersion);
-    });
-    
-    // Обработчик изменения hash (для перехода из модалки)
-    window.addEventListener('hashchange', async () => {
-        // СНАЧАЛА отключаем MutationObserver!
-        if (window.__statsTopActionsObserver) {
-            window.__statsTopActionsObserver.disconnect();
-            window.__statsTopActionsObserver = null;
-        }
+                // Добавляем класс active выбранной карточке
+                e.target.classList.add('active');
 
-        if (location.hash === '#/stats') {
-            console.log('[HASH CHANGE] Detected #/stats');
-            
-            // ПРОВЕРЯЕМ: существует ли stats-container
-            const statsContainerExists = document.getElementById('stats-container');
-            console.log('[HASH CHANGE] stats-container exists:', !!statsContainerExists);
-            
-            // Если stats-container НЕ существует, создаем его
-            if (!statsContainerExists) {
-                console.log('[HASH CHANGE] stats-container NOT found - calling initStatsPage()');
-                const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
-                initStatsPage(appVersion);
-            } else {
-                console.log('[HASH CHANGE] stats-container already exists');
+                const subcategoryId = e.target.dataset.subcategory;
+                const categoryId = e.target.dataset.category || tabsContainer.querySelector('.tab.active').dataset.category;
+
+                if (subcategoryId === 'all') {
+                    // Если выбраны все подкатегории, фильтруем только по категории
+                    const selectedCategory = categories.find(cat => cat.id == categoryId);
+                    filterQuestionsByCategory(selectedCategory.name);
+                } else {
+                    // Если выбрана конкретная подкатегория, фильтруем по категории и подкатегории
+                    const selectedCategory = categories.find(cat => cat.id == categoryId);
+                    const selectedSubcategory = selectedCategory.subcategories.find(
+                        subcat => subcat.id == subcategoryId
+                    );
+
+                    filterQuestionsBySubcategory(selectedCategory.name, selectedSubcategory.name);
+                }
             }
-            
-            // Скрываем главный контейнер и sidebar
-            const mainContainer = document.querySelector('.container');
-            if (mainContainer) {
-                mainContainer.style.display = 'none';
-                console.log('[HASH CHANGE] Hid main container');
+        });
+
+        // Интегрируем кнопку фильтров внутрь списка табов как первый элемент (sticky left)
+        const filtersBtn = document.createElement('button');
+        filtersBtn.className = 'tab';
+        filtersBtn.title = 'Фильтры';
+        filtersBtn.style.padding = '0 10px';
+        filtersBtn.style.minWidth = 'auto';
+        filtersBtn.style.position = 'sticky';
+        filtersBtn.style.left = '0';
+        filtersBtn.style.zIndex = '10';
+        filtersBtn.style.marginRight = '4px';
+        filtersBtn.style.backgroundColor = 'var(--color-card)'; // Ensure background covers scrolling content
+        filtersBtn.style.border = '1px solid var(--color-border)';
+        filtersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2l-7 7v4l-4 2v-6L3 7z"/></svg>';
+        filtersBtn.addEventListener('click', () => {
+            const sheet = document.getElementById('filters-sheet');
+            if (sheet) {
+                sheet.style.bottom = '0';
             }
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                sidebar.style.display = 'none';
-                console.log('[HASH CHANGE] Hid sidebar');
+        });
+
+        // Вставляем кнопку фильтров перед остальными табами
+        tabsContainer.insertBefore(filtersBtn, tabsContainer.firstChild);
+
+        // Кнопка режима обучения (скрыта на мобильных через CSS .learn-main-btn)
+        const learnBtn = document.createElement('button');
+        learnBtn.title = 'Начать обучение';
+        learnBtn.className = 'nav-icon-btn tab';
+        learnBtn.style.padding = '0 10px';
+        learnBtn.style.minWidth = 'auto';
+        learnBtn.style.setProperty('color', '#fb923c', 'important'); // Orange icon (matches Level)
+        learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
+        learnBtn.addEventListener('click', async () => {
+            try {
+                console.log('[Learn] Button clicked');
+
+                // Fallback: if currentQuestions is empty, try to use all data
+                if ((!currentQuestions || currentQuestions.length === 0) && uniqueQaData && uniqueQaData.length > 0) {
+                    console.warn('[Learn] currentQuestions empty, using uniqueQaData fallback');
+                    currentQuestions = [...uniqueQaData];
+                }
+
+                if (!currentQuestions || currentQuestions.length === 0) {
+                    console.warn('[Learn] No questions in current context');
+                    alert('В текущем списке нет вопросов для изучения. Выберите категорию или "Все вопросы".');
+                    return;
+                }
+
+                let module;
+                try {
+                    module = await import('../srs/learn-ui.js?v=2.13');
+                } catch (e1) {
+                    console.warn('[Learn] Import v2.13 failed, trying plain import', e1);
+                    try {
+                        module = await import('../srs/learn-ui.js');
+                    } catch (e2) {
+                        throw new Error(`Failed to load learn-ui.js: ${e2.message}`);
+                    }
+                }
+
+                const { startLearnSession } = module;
+                if (typeof startLearnSession !== 'function') {
+                    throw new Error('startLearnSession export is missing');
+                }
+
+                console.log('[Learn] Starting session with', currentQuestions.length, 'questions');
+                startLearnSession(currentQuestions);
+            } catch (err) {
+                console.error('[Learn] Error:', err);
+                alert('Не удалось запустить режим обучения: ' + err.message);
             }
-        } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
-            // Переход на главную - закрываем статистику если открыта
-            console.log('[HASH CHANGE] Detected home hash - navigating to home');
-            
-            // Очищаем состояние обучения если есть
+        });
+
+        // Кнопка статистики
+        const statsBtn = document.createElement('button');
+        statsBtn.className = 'nav-icon-btn tab';
+        statsBtn.title = 'Статистика';
+        statsBtn.style.minWidth = 'auto';
+        statsBtn.style.padding = '0 10px';
+        statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
+        statsBtn.addEventListener('click', async () => {
+            // Очищаем состояние обучения ПЕРЕД переходом на статистику
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
-                console.log('[HASH CHANGE] Cleared __lastCandidates');
+                console.log('[STATS BUTTON] Cleared __lastCandidates');
             }
-            
-            // Закрываем статистику если открыта
-            const statsContainer = document.getElementById('stats-container');
-            console.log('[HASH CHANGE] stats-container element:', statsContainer);
-            if (statsContainer) {
-                statsContainer.remove();
-            }
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
+            location.hash = '#/stats';
+            initStatsPage(appVersion);
+        });
 
-            // Показываем главный контейнер
-            const mainContainer = document.querySelector('.container');
-            if (mainContainer) {
-                mainContainer.style.display = 'block';
-            }
-
-            // Восстанавливаем top-actions-bar
-            const topActionsBar = document.querySelector('.top-actions-bar');
-            if (topActionsBar) {
-                topActionsBar.style.display = 'flex';
-            }
-
-            // Отключаем MutationObserver для top-actions-bar
+        // Обработчик изменения hash (для перехода из модалки)
+        window.addEventListener('hashchange', async () => {
+            // СНАЧАЛА отключаем MutationObserver!
             if (window.__statsTopActionsObserver) {
                 window.__statsTopActionsObserver.disconnect();
                 window.__statsTopActionsObserver = null;
             }
 
-            // Обновляем текущий контекст
-            refreshCurrentContext();
-        }
-    });
+            if (location.hash === '#/stats') {
+                console.log('[HASH CHANGE] Detected #/stats');
 
-    // Кнопка профиля / Войти
-    const loginMainBtn = document.createElement('button');
-    loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
-    loginMainBtn.style.minWidth = 'auto';
-    loginMainBtn.style.padding = '0 10px';
-    loginMainBtn.style.backgroundColor = 'var(--color-card)';
-    
-    const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
-    loginMainBtn.innerHTML = userIconSvg;
-    loginMainBtn.title = 'Войти';
-    ensureDefaultUsers();
-    loginMainBtn.addEventListener('click', () => {
-        if (loggedInUser) {
-            const username = loggedInUser.username || 'пользователь';
-            if (confirm(`Выйти из аккаунта ${username}?`)) {
-                setLoggedUser(null);
-                loginMainBtn.title = 'Войти';
-            }
-        } else {
-            openLoginModal();
-        }
-    });
+                // ПРОВЕРЯЕМ: существует ли stats-container
+                const statsContainerExists = document.getElementById('stats-container');
+                console.log('[HASH CHANGE] stats-container exists:', !!statsContainerExists);
 
-    const editToggleBtn = document.createElement('button');
-    editToggleBtn.title = 'Режим редактирования';
-    editToggleBtn.className = 'nav-icon-btn tab';
-    editToggleBtn.style.minWidth = 'auto';
-    editToggleBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
-    editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
-    editToggleBtn.style.display = 'none';
-
-    // Кнопка администратора для добавления пользователей (появляется после входа админа)
-    const adminUsersBtn = document.createElement('button');
-    adminUsersBtn.className = 'nav-icon-btn tab';
-    adminUsersBtn.title = 'Добавить пользователя';
-    adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
-    adminUsersBtn.style.display = 'none';
-    adminUsersBtn.style.minWidth = 'auto';
-    adminUsersBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
-    adminUsersBtn.addEventListener('click', openAdminUsersPanel);
-
-    const cloudBtn = document.createElement('button');
-    cloudBtn.title = 'Облако';
-    cloudBtn.textContent = 'Облако';
-    cloudBtn.className = 'tab';
-    cloudBtn.style.display = 'none';
-    cloudBtn.style.width = 'auto';
-    // Removed manual styles to match app style
-    cloudBtn.addEventListener('click', openCloudOverview);
-
-    // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
-    console.log('[MOBILE DEBUG] isMobile:', isMobile, 'isTablet:', isTablet);
-
-    // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
-    topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
-    topActions.appendChild(statsBtn); /* Статистика - второй */
-    topActions.appendChild(learnBtn); /* Обучение - третий */
-    topActions.appendChild(levelContainer);
-
-    if (isMobile) {
-        // Mobile: дополнительные кнопки в topActions
-        loginMainBtn.style.position = 'sticky';
-        loginMainBtn.style.right = '0';
-        loginMainBtn.style.zIndex = '10';
-        loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
-
-        // Версия приложения (компактная)
-        topActions.appendChild(verEl);
-        
-        // Кнопка редактирования (для admin и editor)
-        topActions.appendChild(editToggleBtn);
-        
-        // Кнопка добавления пользователя (только admin)
-        topActions.appendChild(adminUsersBtn);
-        
-        // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM
-        setTimeout(() => {
-            try {
-                const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
-                console.log('[MOBILE ACCESS] user:', user);
-                
-                // Кнопка редактирования: admin и editor
-                if (user && ['admin', 'editor'].includes(user.role)) {
-                    editToggleBtn.style.setProperty('display', 'inline-block', 'important');
-                    console.log('[MOBILE ACCESS] Edit button shown for:', user.role);
+                // Если stats-container НЕ существует, создаем его
+                if (!statsContainerExists) {
+                    console.log('[HASH CHANGE] stats-container NOT found - calling initStatsPage()');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
+                    initStatsPage(appVersion);
                 } else {
+                    console.log('[HASH CHANGE] stats-container already exists');
+                }
+
+                // Скрываем главный контейнер и sidebar
+                const mainContainer = document.querySelector('.container');
+                if (mainContainer) {
+                    mainContainer.style.display = 'none';
+                    console.log('[HASH CHANGE] Hid main container');
+                }
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    sidebar.style.display = 'none';
+                    console.log('[HASH CHANGE] Hid sidebar');
+                }
+            } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
+                // Переход на главную - закрываем статистику если открыта
+                console.log('[HASH CHANGE] Detected home hash - navigating to home');
+
+                // Очищаем состояние обучения если есть
+                if (window.__lastCandidates) {
+                    window.__lastCandidates = null;
+                    console.log('[HASH CHANGE] Cleared __lastCandidates');
+                }
+
+                // Закрываем статистику если открыта
+                const statsContainer = document.getElementById('stats-container');
+                console.log('[HASH CHANGE] stats-container element:', statsContainer);
+                if (statsContainer) {
+                    statsContainer.remove();
+                }
+
+                // Показываем главный контейнер
+                const mainContainer = document.querySelector('.container');
+                if (mainContainer) {
+                    mainContainer.style.display = 'block';
+                }
+
+                // Восстанавливаем top-actions-bar
+                const topActionsBar = document.querySelector('.top-actions-bar');
+                if (topActionsBar) {
+                    topActionsBar.style.display = 'flex';
+                }
+
+                // Отключаем MutationObserver для top-actions-bar
+                if (window.__statsTopActionsObserver) {
+                    window.__statsTopActionsObserver.disconnect();
+                    window.__statsTopActionsObserver = null;
+                }
+
+                // Обновляем текущий контекст
+                refreshCurrentContext();
+            }
+        });
+
+        // Кнопка профиля / Войти
+        const loginMainBtn = document.createElement('button');
+        loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
+        loginMainBtn.style.minWidth = 'auto';
+        loginMainBtn.style.padding = '0 10px';
+        loginMainBtn.style.backgroundColor = 'var(--color-card)';
+
+        const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+        loginMainBtn.innerHTML = userIconSvg;
+        loginMainBtn.title = 'Войти';
+        ensureDefaultUsers();
+        loginMainBtn.addEventListener('click', () => {
+            if (loggedInUser) {
+                const username = loggedInUser.username || 'пользователь';
+                if (confirm(`Выйти из аккаунта ${username}?`)) {
+                    setLoggedUser(null);
+                    loginMainBtn.title = 'Войти';
+                }
+            } else {
+                openLoginModal();
+            }
+        });
+
+        const editToggleBtn = document.createElement('button');
+        editToggleBtn.title = 'Режим редактирования';
+        editToggleBtn.className = 'nav-icon-btn tab';
+        editToggleBtn.style.minWidth = 'auto';
+        editToggleBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
+        editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
+        editToggleBtn.style.display = 'none';
+
+        // Кнопка администратора для добавления пользователей (появляется после входа админа)
+        const adminUsersBtn = document.createElement('button');
+        adminUsersBtn.className = 'nav-icon-btn tab';
+        adminUsersBtn.title = 'Добавить пользователя';
+        adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+        adminUsersBtn.style.display = 'none';
+        adminUsersBtn.style.minWidth = 'auto';
+        adminUsersBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
+        adminUsersBtn.addEventListener('click', openAdminUsersPanel);
+
+        const cloudBtn = document.createElement('button');
+        cloudBtn.title = 'Облако';
+        cloudBtn.textContent = 'Облако';
+        cloudBtn.className = 'tab';
+        cloudBtn.style.display = 'none';
+        cloudBtn.style.width = 'auto';
+        // Removed manual styles to match app style
+        cloudBtn.addEventListener('click', openCloudOverview);
+
+        // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
+        console.log('[MOBILE DEBUG] isMobile:', isMobile, 'isTablet:', isTablet);
+
+        // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
+        topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
+        topActions.appendChild(statsBtn); /* Статистика - второй */
+        topActions.appendChild(learnBtn); /* Обучение - третий */
+        topActions.appendChild(levelContainer);
+
+        if (isMobile) {
+            // Mobile: дополнительные кнопки в topActions
+            loginMainBtn.style.position = 'sticky';
+            loginMainBtn.style.right = '0';
+            loginMainBtn.style.zIndex = '10';
+            loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
+
+            // Версия приложения (компактная)
+            topActions.appendChild(verEl);
+
+            // Кнопка редактирования (для admin и editor)
+            topActions.appendChild(editToggleBtn);
+
+            // Кнопка добавления пользователя (только admin)
+            topActions.appendChild(adminUsersBtn);
+
+            // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM
+            setTimeout(() => {
+                try {
+                    const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
+                    console.log('[MOBILE ACCESS] user:', user);
+
+                    // Кнопка редактирования: admin и editor
+                    if (user && ['admin', 'editor'].includes(user.role)) {
+                        editToggleBtn.style.setProperty('display', 'inline-block', 'important');
+                        console.log('[MOBILE ACCESS] Edit button shown for:', user.role);
+                    } else {
+                        editToggleBtn.style.setProperty('display', 'none', 'important');
+                        console.log('[MOBILE ACCESS] Edit button hidden, role:', user?.role || 'guest');
+                    }
+
+                    // Кнопка добавления пользователя: только admin
+                    if (user && user.role === 'admin') {
+                        adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
+                        console.log('[MOBILE ACCESS] Add user button shown for admin');
+                    } else {
+                        adminUsersBtn.style.setProperty('display', 'none', 'important');
+                        console.log('[MOBILE ACCESS] Add user button hidden, role:', user?.role || 'guest');
+                    }
+                } catch (e) {
+                    console.error('[MOBILE ACCESS] Ошибка проверки прав:', e);
+                    // По умолчанию скрываем кнопки
                     editToggleBtn.style.setProperty('display', 'none', 'important');
-                    console.log('[MOBILE ACCESS] Edit button hidden, role:', user?.role || 'guest');
-                }
-                
-                // Кнопка добавления пользователя: только admin
-                if (user && user.role === 'admin') {
-                    adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
-                    console.log('[MOBILE ACCESS] Add user button shown for admin');
-                } else {
                     adminUsersBtn.style.setProperty('display', 'none', 'important');
-                    console.log('[MOBILE ACCESS] Add user button hidden, role:', user?.role || 'guest');
                 }
-            } catch (e) {
-                console.error('[MOBILE ACCESS] Ошибка проверки прав:', e);
-                // По умолчанию скрываем кнопки
-                editToggleBtn.style.setProperty('display', 'none', 'important');
-                adminUsersBtn.style.setProperty('display', 'none', 'important');
+            }, 50);
+
+            console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
+        } else {
+            // Desktop: дополнительные кнопки в topActions
+            // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
+            topActions.appendChild(verEl);
+            topActions.appendChild(editToggleBtn);
+            topActions.appendChild(cloudBtn);
+            topActions.appendChild(adminUsersBtn);
+
+            console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (desktop mode)');
+        }
+
+        // Добавляем контейнер табов в навигацию напрямую
+        navigationContainer.appendChild(tabsContainer);
+
+        // Bottom sheet фильтров
+        let activeFilters = { status: null, ef: null };
+        const sheet = document.getElementById('filters-sheet');
+
+        if (sheet) {
+            const overlay = document.getElementById('sheet-overlay');
+
+            // Привязываем обработчики к существующим элементам из index.html
+            const closeBtn = document.getElementById('close-filters');
+            const resetBtn = document.getElementById('reset-filters');
+            const applyBtn = document.getElementById('apply-filters');
+
+            function closeSheet() {
+                sheet.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
             }
-        }, 50);
 
-        console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
-    } else {
-        // Desktop: дополнительные кнопки в topActions
-        // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
-        topActions.appendChild(verEl);
-        topActions.appendChild(editToggleBtn);
-        topActions.appendChild(cloudBtn);
-        topActions.appendChild(adminUsersBtn);
+            function openSheet() {
+                sheet.classList.add('active');
+                if (overlay) overlay.classList.add('active');
+            }
 
-        console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (desktop mode)');
-    }
+            if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+            if (overlay) overlay.addEventListener('click', closeSheet);
 
-    // Добавляем контейнер табов в навигацию напрямую
-    navigationContainer.appendChild(tabsContainer);
-
-    // Bottom sheet фильтров
-    let activeFilters = { status: null, ef: null };
-    const sheet = document.getElementById('filters-sheet');
-    
-    if (sheet) {
-        const overlay = document.getElementById('sheet-overlay');
-        
-        // Привязываем обработчики к существующим элементам из index.html
-        const closeBtn = document.getElementById('close-filters');
-        const resetBtn = document.getElementById('reset-filters');
-        const applyBtn = document.getElementById('apply-filters');
-        
-        function closeSheet() {
-            sheet.classList.remove('active');
-            if (overlay) overlay.classList.remove('active');
-        }
-
-        function openSheet() {
-            sheet.classList.add('active');
-            if (overlay) overlay.classList.add('active');
-        }
-        
-        if (closeBtn) closeBtn.addEventListener('click', closeSheet);
-        if (overlay) overlay.addEventListener('click', closeSheet);
-        
-        if (resetBtn) resetBtn.addEventListener('click', () => { 
-            activeFilters = { status: null, ef: null }; 
-            refreshCurrentContext(); 
-            closeSheet(); 
-            // Сброс визуального состояния чипов
-            sheet.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-        });
-        
-        if (applyBtn) applyBtn.addEventListener('click', () => { 
-            applyFilters(); 
-            closeSheet(); 
-        });
-
-        // Открытие по кнопке фильтров
-        filtersBtn.addEventListener('click', openSheet);
-        
-        // Обработка кликов по чипам
-        sheet.querySelectorAll('.filter-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const filterData = chip.dataset.filter; // "status:new" or "difficulty:easy"
-                if (!filterData) return;
-                
-                const [type, value] = filterData.split(':');
-                
-                // Toggle logic
-                if (type === 'status') {
-                    activeFilters.status = activeFilters.status === value ? null : value;
-                } else if (type === 'difficulty') {
-                    activeFilters.ef = activeFilters.ef === value ? null : value;
-                }
-                
-                // Обновляем визуальное состояние
-                updateChipsVisuals();
+            if (resetBtn) resetBtn.addEventListener('click', () => {
+                activeFilters = { status: null, ef: null };
+                refreshCurrentContext();
+                closeSheet();
+                // Сброс визуального состояния чипов
+                sheet.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
             });
-        });
-        
-        function updateChipsVisuals() {
-            sheet.querySelectorAll('.filter-chip').forEach(c => {
-                const fd = c.dataset.filter;
-                if (!fd) return;
-                const [t, v] = fd.split(':');
-                const isActive = (t === 'status' && activeFilters.status === v) || 
-                                 (t === 'difficulty' && activeFilters.ef === v);
-                
-                if (isActive) c.classList.add('active');
-                else c.classList.remove('active');
+
+            if (applyBtn) applyBtn.addEventListener('click', () => {
+                applyFilters();
+                closeSheet();
             });
+
+            // Открытие по кнопке фильтров
+            filtersBtn.addEventListener('click', openSheet);
+
+            // Обработка кликов по чипам
+            sheet.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const filterData = chip.dataset.filter; // "status:new" or "difficulty:easy"
+                    if (!filterData) return;
+
+                    const [type, value] = filterData.split(':');
+
+                    // Toggle logic
+                    if (type === 'status') {
+                        activeFilters.status = activeFilters.status === value ? null : value;
+                    } else if (type === 'difficulty') {
+                        activeFilters.ef = activeFilters.ef === value ? null : value;
+                    }
+
+                    // Обновляем визуальное состояние
+                    updateChipsVisuals();
+                });
+            });
+
+            function updateChipsVisuals() {
+                sheet.querySelectorAll('.filter-chip').forEach(c => {
+                    const fd = c.dataset.filter;
+                    if (!fd) return;
+                    const [t, v] = fd.split(':');
+                    const isActive = (t === 'status' && activeFilters.status === v) ||
+                        (t === 'difficulty' && activeFilters.ef === v);
+
+                    if (isActive) c.classList.add('active');
+                    else c.classList.remove('active');
+                });
+            }
         }
-    }
 
-    function applyFilters() {
-        const data = getRuntimeData();
-        let progMap = {};
-        try { progMap = getProgressMap(); } catch {}
-        
-        const byStatus = (q) => {
-            const p = progMap[q.question];
-            if (!activeFilters.status) return true;
-            
-            if (activeFilters.status === 'new') return !p || p.easeFactor === undefined;
-            if (activeFilters.status === 'learning') return !!p && (p.easeFactor !== undefined) && p.easeFactor < 2.1;
-            if (activeFilters.status === 'review') return !!p && (p.easeFactor !== undefined) && p.easeFactor >= 2.1;
-            return true;
-        };
-        
-        const byEf = (q) => {
-            const p = progMap[q.question];
-            const ef = (p && p.easeFactor !== undefined) ? p.easeFactor : null;
-            
-            if (!activeFilters.ef) return true;
-            
-            // Mapping difficulty values from chips to EF ranges
-            // easy: >= 2.4
-            // medium: 2.1 - 2.4
-            // hard: < 2.1
-            
-            if (ef === null) return false; // Hard/Medium/Easy imply studied cards
-            
-            if (activeFilters.ef === 'easy') return ef >= 2.4;
-            if (activeFilters.ef === 'medium') return ef >= 1.7 && ef < 2.4;
-            if (activeFilters.ef === 'hard') return ef < 1.7;
-            
-            return true;
-        };
-        
-        const filtered = data.filter(q => byStatus(q) && byEf(q));
-        displayQuestions(filtered, '');
-    }
+        function applyFilters() {
+            const data = getRuntimeData();
+            let progMap = {};
+            try { progMap = getProgressMap(); } catch { }
 
-    // Удалён прежний огонёк до виджета уровня — перенесён ближе к шкале
+            const byStatus = (q) => {
+                const p = progMap[q.question];
+                if (!activeFilters.status) return true;
 
-    // Logic to update icon/tooltip on login change
-    function updateLoginBtnState() {
-        loginMainBtn.title = loggedInUser ? 'Выйти' : 'Войти';
-        const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
-        loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
-        // loginMainBtn.style.color = '#d0d0d0';
-        // try { statsBtn.style.color = '#d0d0d0'; } catch {}
-    }
-    if (!window.qaAuth) window.qaAuth = {};
-    window.qaAuth.getUser = () => loggedInUser;
-    window.qaAuth.openLogin = () => openLoginModal();
-    window.qaAuth.logout = () => setLoggedUser(null);
-    // Плашка уровня и XP
-    import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
-        // Добавляем имя пользователя
-        const usernameSpan = document.createElement('span');
-        usernameSpan.className = 'username-display';
-        usernameSpan.style.marginRight = '8px';
-        usernameSpan.style.fontSize = '13px';
-        usernameSpan.style.color = '#4ec9b0';
-        usernameSpan.style.fontWeight = '600';
-        
-        // Получаем имя из сессии
-        try {
-            const sessionUserRaw = localStorage.getItem('qaSessionUser');
-            if (sessionUserRaw) {
-                const user = JSON.parse(sessionUserRaw);
-                if (user && user.username) {
-                    usernameSpan.textContent = user.username;
+                if (activeFilters.status === 'new') return !p || p.easeFactor === undefined;
+                if (activeFilters.status === 'learning') return !!p && (p.easeFactor !== undefined) && p.easeFactor < 2.1;
+                if (activeFilters.status === 'review') return !!p && (p.easeFactor !== undefined) && p.easeFactor >= 2.1;
+                return true;
+            };
+
+            const byEf = (q) => {
+                const p = progMap[q.question];
+                const ef = (p && p.easeFactor !== undefined) ? p.easeFactor : null;
+
+                if (!activeFilters.ef) return true;
+
+                // Mapping difficulty values from chips to EF ranges
+                // easy: >= 2.4
+                // medium: 2.1 - 2.4
+                // hard: < 2.1
+
+                if (ef === null) return false; // Hard/Medium/Easy imply studied cards
+
+                if (activeFilters.ef === 'easy') return ef >= 2.4;
+                if (activeFilters.ef === 'medium') return ef >= 1.7 && ef < 2.4;
+                if (activeFilters.ef === 'hard') return ef < 1.7;
+
+                return true;
+            };
+
+            const filtered = data.filter(q => byStatus(q) && byEf(q));
+            displayQuestions(filtered, '');
+        }
+
+        // Удалён прежний огонёк до виджета уровня — перенесён ближе к шкале
+
+        // Logic to update icon/tooltip on login change
+        function updateLoginBtnState() {
+            loginMainBtn.title = loggedInUser ? 'Выйти' : 'Войти';
+            const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
+            loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
+            // loginMainBtn.style.color = '#d0d0d0';
+            // try { statsBtn.style.color = '#d0d0d0'; } catch {}
+        }
+        if (!window.qaAuth) window.qaAuth = {};
+        window.qaAuth.getUser = () => loggedInUser;
+        window.qaAuth.openLogin = () => openLoginModal();
+        window.qaAuth.logout = () => setLoggedUser(null);
+        // Плашка уровня и XP
+        import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+            // Добавляем имя пользователя
+            const usernameSpan = document.createElement('span');
+            usernameSpan.className = 'username-display';
+            usernameSpan.style.marginRight = '8px';
+            usernameSpan.style.fontSize = '13px';
+            usernameSpan.style.color = '#4ec9b0';
+            usernameSpan.style.fontWeight = '600';
+
+            // Получаем имя из сессии
+            try {
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                if (sessionUserRaw) {
+                    const user = JSON.parse(sessionUserRaw);
+                    if (user && user.username) {
+                        usernameSpan.textContent = user.username;
+                    } else {
+                        usernameSpan.textContent = 'Гость';
+                        usernameSpan.style.color = '#808080';
+                    }
                 } else {
                     usernameSpan.textContent = 'Гость';
                     usernameSpan.style.color = '#808080';
                 }
-            } else {
+            } catch (e) {
                 usernameSpan.textContent = 'Гость';
                 usernameSpan.style.color = '#808080';
             }
-        } catch (e) {
-            usernameSpan.textContent = 'Гость';
-            usernameSpan.style.color = '#808080';
-        }
-        
-        levelContainer.appendChild(usernameSpan);
 
-        const box = document.createElement('div');
-        box.className = 'level-inline';
-        box.style.cursor = 'pointer';
-        box.style.transition = 'all 0.2s ease';
-        box.style.padding = '4px 8px';
-        box.style.borderRadius = '8px';
-        box.title = 'Уровни и XP';
-        box.onclick = () => {
-          // Сначала пробуем через window (если stats-ui загружен)
-          if (window.openLevelInfoModal) {
-            window.openLevelInfoModal();
-          } else {
-            // Иначе загружаем stats-ui
-            import('../srs/stats-ui.js?v=4.58-beta').then(() => {
-              if (window.openLevelInfoModal) {
-                window.openLevelInfoModal();
-              } else {
-                console.error('openLevelInfoModal not available');
-              }
-            }).catch(err => {
-              console.error('Failed to load stats-ui.js:', err);
-            });
-          }
-        };
-        box.onmouseover = () => {
-          box.style.background = 'rgba(255,159,28,0.15)';
-          box.style.boxShadow = '0 0 12px rgba(255,159,28,0.4)';
-          box.style.transform = 'translateX(2px)';
-          const bar = box.querySelector('.level-inline-bar');
-          if (bar) {
-            bar.style.borderColor = 'var(--st-prim)';
-            bar.style.boxShadow = '0 0 8px rgba(255,159,28,0.3)';
-          }
-        };
-        box.onmouseout = () => {
-          box.style.background = '';
-          box.style.boxShadow = '';
-          box.style.transform = '';
-          const bar = box.querySelector('.level-inline-bar');
-          if (bar) {
-            bar.style.borderColor = '';
-            bar.style.boxShadow = '';
-          }
-        };
-        const data = getCurrentLevel();
-        const label = document.createElement('div');
-        label.className = 'lv-label';
-        label.textContent = `LV:${data.level}`;
-        const bar = document.createElement('div');
-        bar.className = 'level-inline-bar';
-        const fill = document.createElement('div');
-        fill.className = 'level-inline-fill';
-        const pct = Math.round((data.progress || 0) * 100);
-        fill.style.width = `${pct}%`;
-        const txt = document.createElement('div');
-        txt.className = 'level-inline-text';
-        const currentInLevel = Math.max(0, Math.round((data.xp - data.prevThreshold)));
-        const totalForLevel = data.nextThreshold === Infinity ? currentInLevel : Math.round(data.nextThreshold - data.prevThreshold);
-        const xpLeft = document.createElement('span');
-        xpLeft.className = 'level-inline-xp';
-        xpLeft.textContent = `XP:${data.xp}`;
-        const xpRight = document.createElement('span');
-        xpRight.className = 'level-inline-progress';
-        xpRight.textContent = `${currentInLevel}/${totalForLevel}`;
-        txt.appendChild(xpLeft);
-        txt.appendChild(xpRight);
-        bar.appendChild(fill); bar.appendChild(txt);
-        box.appendChild(label); box.appendChild(bar);
-        levelContainer.appendChild(box);
-        // Огонёк стрика рядом со шкалой уровня
-        const streakRaw = localStorage.getItem('studyStreak') || '{}';
-        let streakVal = 0;
-        try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch {}
-        if (streakVal > 0) {
-            const flame = document.createElement('span');
-            flame.textContent = `🔥 ${streakVal}`;
-            flame.className = 'streak-flame';
-            flame.style.fontSize = '12px';
-            flame.style.marginLeft = '4px';
-            levelContainer.appendChild(flame);
-        }
-        function updateLevelInline() {
-            import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
-                const d = getCurrentLevel();
-                const cont = levelContainer.querySelector('.level-inline');
-                if (!cont) return;
-                const lbl = cont.querySelector('.lv-label');
-                const fl = cont.querySelector('.level-inline-fill');
-                const tx = cont.querySelector('.level-inline-text');
-                if (lbl) lbl.textContent = `LV:${d.level}`;
-                const p = Math.round((d.progress || 0) * 100);
-                if (fl) fl.style.width = `${p}%`;
-                const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
-                const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
-                if (tx) tx.textContent = `XP:${d.xp}  ${cur}/${tot}`;
-                
-                // Обновляем имя пользователя
-                const usernameSpan = levelContainer.querySelector('.username-display');
-                if (usernameSpan) {
-                    try {
-                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
-                        if (sessionUserRaw) {
-                            const user = JSON.parse(sessionUserRaw);
-                            if (user && user.username) {
-                                usernameSpan.textContent = user.username;
-                                usernameSpan.style.color = '#4ec9b0';
-                            } else {
-                                usernameSpan.textContent = 'Гость';
-                                usernameSpan.style.color = '#808080';
-                            }
+            levelContainer.appendChild(usernameSpan);
+
+            const box = document.createElement('div');
+            box.className = 'level-inline';
+            box.style.cursor = 'pointer';
+            box.style.transition = 'all 0.2s ease';
+            box.style.padding = '4px 8px';
+            box.style.borderRadius = '8px';
+            box.title = 'Уровни и XP';
+            box.onclick = () => {
+                // Сначала пробуем через window (если stats-ui загружен)
+                if (window.openLevelInfoModal) {
+                    window.openLevelInfoModal();
+                } else {
+                    // Иначе загружаем stats-ui
+                    import('../srs/stats-ui.js?v=4.58-beta').then(() => {
+                        if (window.openLevelInfoModal) {
+                            window.openLevelInfoModal();
+                        } else {
+                            console.error('openLevelInfoModal not available');
                         }
-                    } catch (e) {}
+                    }).catch(err => {
+                        console.error('Failed to load stats-ui.js:', err);
+                    });
                 }
-            }).catch(()=>{});
-        }
-        window.addEventListener('xpUpdated', updateLevelInline);
-        window.addEventListener('statsClosed', updateLevelInline);
-    }).catch(()=>{});
+            };
+            box.onmouseover = () => {
+                box.style.background = 'rgba(255,159,28,0.15)';
+                box.style.boxShadow = '0 0 12px rgba(255,159,28,0.4)';
+                box.style.transform = 'translateX(2px)';
+                const bar = box.querySelector('.level-inline-bar');
+                if (bar) {
+                    bar.style.borderColor = 'var(--st-prim)';
+                    bar.style.boxShadow = '0 0 8px rgba(255,159,28,0.3)';
+                }
+            };
+            box.onmouseout = () => {
+                box.style.background = '';
+                box.style.boxShadow = '';
+                box.style.transform = '';
+                const bar = box.querySelector('.level-inline-bar');
+                if (bar) {
+                    bar.style.borderColor = '';
+                    bar.style.boxShadow = '';
+                }
+            };
+            const data = getCurrentLevel();
+            const label = document.createElement('div');
+            label.className = 'lv-label';
+            label.textContent = `LV:${data.level}`;
+            const bar = document.createElement('div');
+            bar.className = 'level-inline-bar';
+            const fill = document.createElement('div');
+            fill.className = 'level-inline-fill';
+            const pct = Math.round((data.progress || 0) * 100);
+            fill.style.width = `${pct}%`;
+            const txt = document.createElement('div');
+            txt.className = 'level-inline-text';
+            const currentInLevel = Math.max(0, Math.round((data.xp - data.prevThreshold)));
+            const totalForLevel = data.nextThreshold === Infinity ? currentInLevel : Math.round(data.nextThreshold - data.prevThreshold);
+            const xpLeft = document.createElement('span');
+            xpLeft.className = 'level-inline-xp';
+            xpLeft.textContent = `XP:${data.xp}`;
+            const xpRight = document.createElement('span');
+            xpRight.className = 'level-inline-progress';
+            xpRight.textContent = `${currentInLevel}/${totalForLevel}`;
+            txt.appendChild(xpLeft);
+            txt.appendChild(xpRight);
+            bar.appendChild(fill); bar.appendChild(txt);
+            box.appendChild(label); box.appendChild(bar);
+            levelContainer.appendChild(box);
+            // Огонёк стрика рядом со шкалой уровня
+            const streakRaw = localStorage.getItem('studyStreak') || '{}';
+            let streakVal = 0;
+            try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch { }
+            if (streakVal > 0) {
+                const flame = document.createElement('span');
+                flame.textContent = `🔥 ${streakVal}`;
+                flame.className = 'streak-flame';
+                flame.style.fontSize = '12px';
+                flame.style.marginLeft = '4px';
+                levelContainer.appendChild(flame);
+            }
+            function updateLevelInline() {
+                import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+                    const d = getCurrentLevel();
+                    const cont = levelContainer.querySelector('.level-inline');
+                    if (!cont) return;
+                    const lbl = cont.querySelector('.lv-label');
+                    const fl = cont.querySelector('.level-inline-fill');
+                    const tx = cont.querySelector('.level-inline-text');
+                    if (lbl) lbl.textContent = `LV:${d.level}`;
+                    const p = Math.round((d.progress || 0) * 100);
+                    if (fl) fl.style.width = `${p}%`;
+                    const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
+                    const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
+                    if (tx) tx.textContent = `XP:${d.xp}  ${cur}/${tot}`;
 
-    // Инициализация состояния кнопок по сохранённому пользователю
-    try { setLoggedUser(loggedInUser); } catch {}
+                    // Обновляем имя пользователя
+                    const usernameSpan = levelContainer.querySelector('.username-display');
+                    if (usernameSpan) {
+                        try {
+                            const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                            if (sessionUserRaw) {
+                                const user = JSON.parse(sessionUserRaw);
+                                if (user && user.username) {
+                                    usernameSpan.textContent = user.username;
+                                    usernameSpan.style.color = '#4ec9b0';
+                                } else {
+                                    usernameSpan.textContent = 'Гость';
+                                    usernameSpan.style.color = '#808080';
+                                }
+                            }
+                        } catch (e) { }
+                    }
+                }).catch(() => { });
+            }
+            window.addEventListener('xpUpdated', updateLevelInline);
+            window.addEventListener('statsClosed', updateLevelInline);
+        }).catch(() => { });
 
-    // Панель корзины (видна только в режиме редактирования)
-    const trashPanel = document.createElement('div');
-    trashPanel.className = 'trash-panel';
-    trashPanel.style.display = 'none';
-    trashPanel.style.border = '1px solid #444';
-    trashPanel.style.borderRadius = '6px';
-    trashPanel.style.padding = '8px';
-    trashPanel.style.marginBottom = '8px';
-    // Включаем прокрутку независимо от режима
-    trashPanel.style.overflowY = 'auto';
-    // trashPanel.style.maxHeight удален, управляется CSS
-    trashPanel.innerHTML = '<div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
+        // Инициализация состояния кнопок по сохранённому пользователю
+        try { setLoggedUser(loggedInUser); } catch { }
 
-    // Добавляем элементы в контейнер навигации
-    navigationContainer.appendChild(topActions);
-    navigationContainer.appendChild(tabsContainer);
-    navigationContainer.appendChild(subcategoriesContainer);
-    
-    // Вставляем контейнер навигации перед контейнером поиска
-    // Вставляем верхнюю панель и корзину перед навигацией
-    // container.insertBefore(topControls, searchContainer); // Удалено
-    
-    if (container) {
-        if (searchContainer && searchContainer.parentNode === container) {
-            container.insertBefore(navigationContainer, searchContainer);
+        // Панель корзины (видна только в режиме редактирования)
+        const trashPanel = document.createElement('div');
+        trashPanel.className = 'trash-panel';
+        trashPanel.style.display = 'none';
+        trashPanel.style.border = '1px solid #444';
+        trashPanel.style.borderRadius = '6px';
+        trashPanel.style.padding = '8px';
+        trashPanel.style.marginBottom = '8px';
+        // Включаем прокрутку независимо от режима
+        trashPanel.style.overflowY = 'auto';
+        // trashPanel.style.maxHeight удален, управляется CSS
+        trashPanel.innerHTML = '<div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
+
+        // Добавляем элементы в контейнер навигации
+        navigationContainer.appendChild(topActions);
+        navigationContainer.appendChild(tabsContainer);
+        navigationContainer.appendChild(subcategoriesContainer);
+
+        // Вставляем контейнер навигации перед контейнером поиска
+        // Вставляем верхнюю панель и корзину перед навигацией
+        // container.insertBefore(topControls, searchContainer); // Удалено
+
+        if (container) {
+            if (searchContainer && searchContainer.parentNode === container) {
+                container.insertBefore(navigationContainer, searchContainer);
+            } else {
+                console.warn('Search container not found or not in container, appending navigation');
+                container.appendChild(navigationContainer);
+            }
         } else {
-            console.warn('Search container not found or not in container, appending navigation');
-            container.appendChild(navigationContainer);
+            console.error('Main container not found, cannot insert navigation');
         }
-    } else {
-        console.error('Main container not found, cannot insert navigation');
-    }
 
-    // Слушаем dataLoaded для обновления корзины после загрузки данных
-    document.addEventListener('dataLoaded', () => {
-        refreshServerTrash();
-    });
+        // Слушаем dataLoaded для обновления корзины после загрузки данных
+        document.addEventListener('dataLoaded', () => {
+            refreshServerTrash();
+        });
 
-    // Делаем refreshServerTrash глобально доступной
-    window.refreshServerTrash = refreshServerTrash;
+        // Делаем refreshServerTrash глобально доступной
+        window.refreshServerTrash = refreshServerTrash;
 
-    // Привязываем глобальную ссылку на индикатор сохранения
-    // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
+        // Привязываем глобальную ссылку на индикатор сохранения
+        // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
 
-    (async () => {
-        try {
-            const meta = await getServerMetadata();
-            if (Array.isArray(meta.categoryOrder)) setCategoryOrder(meta.categoryOrder);
-            if (meta.subcategoryOrder && typeof meta.subcategoryOrder === 'object') setSubcategoryOrderMap(meta.subcategoryOrder);
-            if (meta.orderOverrides && typeof meta.orderOverrides === 'object') setLS('qaOrderOverrides', meta.orderOverrides);
-            // refreshServerTrash() вызывается ПОСЛЕ загрузки данных с сервера (в loadFromServer)
-            refreshCategoriesTabs();
-        } catch {}
-    })();
+        (async () => {
+            try {
+                const meta = await getServerMetadata();
+                if (Array.isArray(meta.categoryOrder)) setCategoryOrder(meta.categoryOrder);
+                if (meta.subcategoryOrder && typeof meta.subcategoryOrder === 'object') setSubcategoryOrderMap(meta.subcategoryOrder);
+                if (meta.orderOverrides && typeof meta.orderOverrides === 'object') setLS('qaOrderOverrides', meta.orderOverrides);
+                // refreshServerTrash() вызывается ПОСЛЕ загрузки данных с сервера (в loadFromServer)
+                refreshCategoriesTabs();
+            } catch { }
+        })();
 
-    // Применяем сохранённый режим редактирования при инициализации
-    if (editMode) {
-        try {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при старте в режиме редактирования
-            const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
-            const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
-            const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
-            if (!existingTrashBtn && sidebarButtons) {
-                const trashBtn = document.createElement('button');
-                trashBtn.id = 'trash-mode-button';
-                trashBtn.title = 'Корзина';
-                trashBtn.setAttribute('aria-label', 'Корзина');
-                trashBtn.className = 'nav-icon-btn';
-                trashBtn.style.padding = '6px';
-                trashBtn.style.minWidth = 'auto';
-                trashBtn.innerHTML = `
+        // Применяем сохранённый режим редактирования при инициализации
+        if (editMode) {
+            try {
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при старте в режиме редактирования
+                const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
+                const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
+                const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
+                if (!existingTrashBtn && sidebarButtons) {
+                    const trashBtn = document.createElement('button');
+                    trashBtn.id = 'trash-mode-button';
+                    trashBtn.title = 'Корзина';
+                    trashBtn.setAttribute('aria-label', 'Корзина');
+                    trashBtn.className = 'nav-icon-btn';
+                    trashBtn.style.padding = '6px';
+                    trashBtn.style.minWidth = 'auto';
+                    trashBtn.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                         <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" fill="currentColor" />
                         <path d="M6 9h12l-1 10a2 2 0 0 1-2 2H9a 2 2 0 0 1-2-2L6 9z" fill="currentColor" />
                     </svg>`;
-                sidebarButtons.appendChild(trashBtn);
-            }
-            trashPanel.style.display = 'block';
-            if (sidebar && searchHistory) {
-                try { sidebar.insertBefore(trashPanel, searchHistory); } catch {}
-            }
-            container.classList.add('edit-mode');
-            renderTrashPanel();
-            refreshCategoryEditMenus();
-        } catch {}
-    }
-
-    // ===== Локальная авторизация =====
-    function ensureDefaultUsers() {
-        const raw = localStorage.getItem('usersDB') || '[]';
-        let users;
-        try { users = JSON.parse(raw); } catch { users = []; }
-        if (!Array.isArray(users)) users = [];
-        
-        const upsert = (username, password, role) => {
-            const idx = users.findIndex(u => u.username === username);
-            if (idx >= 0) {
-                users[idx].password = password;
-                users[idx].role = role;
-            } else {
-                users.push({ username, password, role });
-            }
-        };
-
-        upsert('admin', 'admin', 'admin');
-        upsert('stas', 'admin', 'user');
-        
-        localStorage.setItem('usersDB', JSON.stringify(users));
-        const currentRaw = localStorage.getItem('qaSessionUser');
-        if (currentRaw) {
-            try { loggedInUser = JSON.parse(currentRaw); } catch {}
-        }
-        updateLoginBtnState();
-    }
-
-    const DATA_KEYS = [
-        'srsProgress', 'studyStats', 'studyStreak', 'dailyPoints', 
-        'dailyBonusPoints', 'dailyDayBonusPoints', 'qaFavorites', 'studyAchievements'
-    ];
-
-    async function setLoggedUser(user, token = null) {
-        // Переключение Guest -> User (Login)
-        if (!loggedInUser && user) {
-            // Бэкап данных гостя
-            const backup = {};
-            DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
-            localStorage.setItem('guest_backup', JSON.stringify(backup));
-
-            // О��ищаем д��нные, чтобы загрузить профиль пользователя начисто
-            DATA_KEYS.forEach(k => localStorage.removeItem(k));
-            localStorage.removeItem('localDataTimestamp');
-
-            // Сохраняем токен если есть
-            if (token) {
-                localStorage.setItem('sessionToken', token);
-            }
-        }
-
-        // Переключение User -> Guest (Logout)
-        if (loggedInUser && !user) {
-            // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
-            console.log('[Logout] Saving all data to server before logout...');
-            try {
-                await saveMergedToServer();
-                console.log('[Logout] Data saved successfully');
-            } catch (e) {
-                console.error('[Logout] Failed to save data before logout:', e);
-            }
-
-            // Восстанавливаем данные гостя
-            const raw = localStorage.getItem('guest_backup');
-            if (raw) {
-                try {
-                    const backup = JSON.parse(raw);
-                    DATA_KEYS.forEach(k => {
-                        if (backup[k] !== null) localStorage.setItem(k, backup[k]);
-                        else localStorage.removeItem(k);
-                    });
-                } catch {}
-            } else {
-                // Если бэкапа нет (странно), чистим, чтобы не оставить данные админ��
-                DATA_KEYS.forEach(k => localStorage.removeItem(k));
-            }
-            localStorage.removeItem('localDataTimestamp');
-
-            // ⚠️ ВАЖНО: Удаляем сессию полностью
-            localStorage.removeItem('sessionToken');
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('qaSessionUser');
-            // Также очищаем qaUserCards чтобы не было дубле��
-            clearQaUserCards();
-            localStorage.removeItem('localDataTimestamp');
-            console.log('[Logout] Session cleared. User must login again to access data.');
-        }
-
-        loggedInUser = user;
-        try {
-            const s = JSON.stringify(user);
-            if (user) { // Only save if user exists
-                localStorage.setItem('qaSessionUser', s);
-                sessionStorage.removeItem('qaSessionUser');
-            } else {
-                localStorage.removeItem('qaSessionUser');
-                sessionStorage.removeItem('qaSessionUser');
-            }
-        } catch {}
-        updateLoginBtnState();
-        // Показать/скрыть админ��кие кнопки в зависимости от роли
-        try {
-            adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может созда��ать пользовате����ей
-            // editToggleBtn доступен admin и editor
-            editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
-            // genStatsBtn доступен только admin
-            genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
-        } catch {}
-        try { migrateDeviceRecordsToUser(); } catch {}
-        if (user) {
-            import('../srs/storage.js').then(mod => {
-                if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
-                    mod.hydrateLocalFromSupabase().then(() => {
-                        const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
-                        // Также обновляем избранное
-                        window.dispatchEvent(new Event('favoritesUpdated'));
-                        // Обновляем UI табов после загрузки данных
-                        window.dispatchEvent(new Event('dataLoaded'));
-                    }).catch(()=>{});
+                    sidebarButtons.appendChild(trashBtn);
                 }
-            }).catch(()=>{});
-        } else {
-             // Если вышли (Guest), тоже обновим UI
-             window.dispatchEvent(new Event('xpUpdated'));
-             window.dispatchEvent(new Event('favoritesUpdated'));
-             // Обновляем имя на "Гость"
-             const usernameSpan = document.querySelector('.username-display');
-             if (usernameSpan) {
-                 usernameSpan.textContent = 'Гость';
-                 usernameSpan.style.color = '#808080';
-             }
+                trashPanel.style.display = 'block';
+                if (sidebar && searchHistory) {
+                    try { sidebar.insertBefore(trashPanel, searchHistory); } catch { }
+                }
+                container.classList.add('edit-mode');
+                renderTrashPanel();
+                refreshCategoryEditMenus();
+            } catch { }
         }
-    }
 
-    // Make setLoggedUser available globally for autoLoadUserData
-    window.setLoggedUser = setLoggedUser;
+        // ===== Локальная авторизация =====
+        function ensureDefaultUsers() {
+            const raw = localStorage.getItem('usersDB') || '[]';
+            let users;
+            try { users = JSON.parse(raw); } catch { users = []; }
+            if (!Array.isArray(users)) users = [];
 
-    // Auto-load user data on page load if credentials are saved
-    // Вызываем с задержкой чтобы все функции были определены
-    setTimeout(() => autoLoadUserData(), 1000);
+            const upsert = (username, password, role) => {
+                const idx = users.findIndex(u => u.username === username);
+                if (idx >= 0) {
+                    users[idx].password = password;
+                    users[idx].role = role;
+                } else {
+                    users.push({ username, password, role });
+                }
+            };
 
-    function openLoginModal() {
-        let ov = document.getElementById('login-overlay');
-        if (!ov) {
-            ov = document.createElement('div');
-            ov.id = 'login-overlay';
-            ov.style.position = 'fixed';
-            ov.style.inset = '0';
-            ov.style.background = 'rgba(0,0,0,0.6)';
-            ov.style.display = 'flex';
-            ov.style.alignItems = 'center';
-            ov.style.justifyContent = 'center';
-            ov.style.zIndex = '5000';
-            ov.innerHTML = `
+            upsert('admin', 'admin', 'admin');
+            upsert('stas', 'admin', 'user');
+
+            localStorage.setItem('usersDB', JSON.stringify(users));
+            const currentRaw = localStorage.getItem('qaSessionUser');
+            if (currentRaw) {
+                try { loggedInUser = JSON.parse(currentRaw); } catch { }
+            }
+            updateLoginBtnState();
+        }
+
+        const DATA_KEYS = [
+            'srsProgress', 'studyStats', 'studyStreak', 'dailyPoints',
+            'dailyBonusPoints', 'dailyDayBonusPoints', 'qaFavorites', 'studyAchievements'
+        ];
+
+        async function setLoggedUser(user, token = null) {
+            // Переключение Guest -> User (Login)
+            if (!loggedInUser && user) {
+                // Бэкап данных гостя
+                const backup = {};
+                DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
+                localStorage.setItem('guest_backup', JSON.stringify(backup));
+
+                // Очищаем данные, чтобы загрузить профиль пользователя начисто
+                DATA_KEYS.forEach(k => localStorage.removeItem(k));
+                localStorage.removeItem('localDataTimestamp');
+
+                // Сохраняем токен если есть
+                if (token) {
+                    localStorage.setItem('sessionToken', token);
+                }
+            }
+
+            // Переключение User -> Guest (Logout)
+            if (loggedInUser && !user) {
+                // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
+                console.log('[Logout] Saving all data to server before logout...');
+                try {
+                    await saveMergedToServer();
+                    console.log('[Logout] Data saved successfully');
+                } catch (e) {
+                    console.error('[Logout] Failed to save data before logout:', e);
+                }
+
+                // Восстанавливаем данные гостя
+                const raw = localStorage.getItem('guest_backup');
+                if (raw) {
+                    try {
+                        const backup = JSON.parse(raw);
+                        DATA_KEYS.forEach(k => {
+                            if (backup[k] !== null) localStorage.setItem(k, backup[k]);
+                            else localStorage.removeItem(k);
+                        });
+                    } catch { }
+                } else {
+                    // Если бэкапа нет (странно), чистим, чтобы не оставить данные админа
+                    DATA_KEYS.forEach(k => localStorage.removeItem(k));
+                }
+                localStorage.removeItem('localDataTimestamp');
+
+                // ⚠️ ВАЖНО: Удаляем сессию полностью
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('qaSessionUser');
+                // Также очищаем qaUserCards чтобы не было дублей
+                clearQaUserCards();
+                localStorage.removeItem('localDataTimestamp');
+                console.log('[Logout] Session cleared. User must login again to access data.');
+            }
+
+            loggedInUser = user;
+            try {
+                const s = JSON.stringify(user);
+                if (user) { // Only save if user exists
+                    localStorage.setItem('qaSessionUser', s);
+                    sessionStorage.removeItem('qaSessionUser');
+                } else {
+                    localStorage.removeItem('qaSessionUser');
+                    sessionStorage.removeItem('qaSessionUser');
+                }
+            } catch { }
+            updateLoginBtnState();
+            // Показать/скрыть админские кнопки в зависимости от роли
+            try {
+                adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может создавать пользователей
+                // editToggleBtn доступен admin и editor
+                editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
+                // genStatsBtn доступен только admin
+                genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+            } catch { }
+            try { migrateDeviceRecordsToUser(); } catch { }
+            if (user) {
+                import('../srs/storage.js').then(mod => {
+                    if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
+                        mod.hydrateLocalFromSupabase().then(() => {
+                            const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
+                            // Также обновляем избранное
+                            window.dispatchEvent(new Event('favoritesUpdated'));
+                            // Обновляем UI табов после загрузки данных
+                            window.dispatchEvent(new Event('dataLoaded'));
+                        }).catch(() => { });
+                    }
+                }).catch(() => { });
+            } else {
+                // Если вышли (Guest), тоже обновим UI
+                window.dispatchEvent(new Event('xpUpdated'));
+                window.dispatchEvent(new Event('favoritesUpdated'));
+                // Обновляем имя на "Гость"
+                const usernameSpan = document.querySelector('.username-display');
+                if (usernameSpan) {
+                    usernameSpan.textContent = 'Гость';
+                    usernameSpan.style.color = '#808080';
+                }
+            }
+        }
+
+        // Make setLoggedUser available globally for autoLoadUserData
+        window.setLoggedUser = setLoggedUser;
+
+        // Auto-load user data on page load if credentials are saved
+        // Вызываем с задержкой чтобы все функции были определены
+        setTimeout(() => autoLoadUserData(), 1000);
+
+        function openLoginModal() {
+            let ov = document.getElementById('login-overlay');
+            if (!ov) {
+                ov = document.createElement('div');
+                ov.id = 'login-overlay';
+                ov.style.position = 'fixed';
+                ov.style.inset = '0';
+                ov.style.background = 'rgba(0,0,0,0.6)';
+                ov.style.display = 'flex';
+                ov.style.alignItems = 'center';
+                ov.style.justifyContent = 'center';
+                ov.style.zIndex = '5000';
+                ov.innerHTML = `
                 <div style="background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
                     <div style="font-weight:600;margin-bottom:10px">Вход</div>
                     <form id="login-form" autocomplete="on" style="display:flex;flex-direction:column;gap:8px">
@@ -1442,91 +1442,91 @@ export function initTabsNavigation(appVersion) {
                     </form>
                 </div>
             `;
-            document.body.appendChild(ov);
-            ov.querySelector('#login-cancel').addEventListener('click', () => ov.remove());
-            ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
-            ov.querySelector('#login-pass-eye').addEventListener('click', () => {
-                const inp = ov.querySelector('#login-password');
-                const isPwd = inp.type === 'password';
-                inp.type = isPwd ? 'text' : 'password';
-            });
-            ov.querySelector('#login-form').addEventListener('submit', async (evt) => {
-                evt.preventDefault();
-                try {
-                    const u = ov.querySelector('#login-username').value.trim();
-                    const p = ov.querySelector('#login-password').value;
-                    const remember = ov.querySelector('#login-remember')?.checked;
-
-                    // Local auth only (локальный сервер)
+                document.body.appendChild(ov);
+                ov.querySelector('#login-cancel').addEventListener('click', () => ov.remove());
+                ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+                ov.querySelector('#login-pass-eye').addEventListener('click', () => {
+                    const inp = ov.querySelector('#login-password');
+                    const isPwd = inp.type === 'password';
+                    inp.type = isPwd ? 'text' : 'password';
+                });
+                ov.querySelector('#login-form').addEventListener('submit', async (evt) => {
+                    evt.preventDefault();
                     try {
-                        // Пробуем войти через локальный API
-                        const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username: u, password: p })
-                        });
+                        const u = ov.querySelector('#login-username').value.trim();
+                        const p = ov.querySelector('#login-password').value;
+                        const remember = ov.querySelector('#login-remember')?.checked;
 
-                        if (loginRes.ok) {
-                            const loginData = await loginRes.json();
-                            if (loginData.ok) {
-                                // Сохраняем username/password ����������������ля последующей загрузки данных
-                                if (remember) {
-                                    localStorage.setItem('qaUsername', u);
-                                    localStorage.setItem('qaPassword', p);
+                        // Local auth only (локальный сервер)
+                        try {
+                            // Пробуем войти через локальный API
+                            const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ username: u, password: p })
+                            });
+
+                            if (loginRes.ok) {
+                                const loginData = await loginRes.json();
+                                if (loginData.ok) {
+                                    // Сохраняем username/password для последующей загрузки данных
+                                    if (remember) {
+                                        localStorage.setItem('qaUsername', u);
+                                        localStorage.setItem('qaPassword', p);
+                                    }
+                                    setLoggedUser({ username: loginData.username, role: loginData.role });
+                                    ov.remove();
+                                    return;
                                 }
-                                setLoggedUser({ username: loginData.username, role: loginData.role });
-                                ov.remove();
-                                return;
                             }
+                        } catch (e) {
+                            console.log('Local login failed:', e);
                         }
-                    } catch (e) {
-                        console.log('Local login failed:', e);
-                    }
 
-                    // Fallback to local users (legacy)
-                    const raw = localStorage.getItem('usersDB') || '[]';
-                    const users = JSON.parse(raw);
-                    const match = users.find(x => x.username === u && x.password === p);
-                    if (match) {
-                        setLoggedUser({ username: match.username, role: match.role });
-                        // Сохраняем credentials д��������я автозагрузки
-                        if (remember) {
-                            localStorage.setItem('qaUsername', u);
-                            localStorage.setItem('qaPassword', p);
+                        // Fallback to local users (legacy)
+                        const raw = localStorage.getItem('usersDB') || '[]';
+                        const users = JSON.parse(raw);
+                        const match = users.find(x => x.username === u && x.password === p);
+                        if (match) {
+                            setLoggedUser({ username: match.username, role: match.role });
+                            // Сохраняем credentials для автозагрузки
+                            if (remember) {
+                                localStorage.setItem('qaUsername', u);
+                                localStorage.setItem('qaPassword', p);
+                            }
+                            ov.remove();
+                        } else {
+                            alert('Неверный логин или пароль');
                         }
-                        ov.remove();
-                    } else {
-                        alert('Неверный логин или пароль');
-                    }
-                } catch {
-                    alert('Ошибка входа');
-                }
-            });
-            // Enter to submit
-            const inputs = ov.querySelectorAll('#login-username, #login-password');
-            inputs.forEach(inp => {
-                inp.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        ov.querySelector('#login-submit').click();
+                    } catch {
+                        alert('Ошибка входа');
                     }
                 });
-            });
+                // Enter to submit
+                const inputs = ov.querySelectorAll('#login-username, #login-password');
+                inputs.forEach(inp => {
+                    inp.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            ov.querySelector('#login-submit').click();
+                        }
+                    });
+                });
+            }
         }
-    }
 
-    function openAdminUsersPanel() {
-        let ov = document.getElementById('admin-users-overlay');
-        if (!ov) {
-            ov = document.createElement('div');
-            ov.id = 'admin-users-overlay';
-            ov.style.position = 'fixed';
-            ov.style.inset = '0';
-            ov.style.background = 'rgba(0,0,0,0.6)';
-            ov.style.display = 'flex';
-            ov.style.alignItems = 'center';
-            ov.style.justifyContent = 'center';
-            ov.style.zIndex = '5000';
-            ov.innerHTML = `
+        function openAdminUsersPanel() {
+            let ov = document.getElementById('admin-users-overlay');
+            if (!ov) {
+                ov = document.createElement('div');
+                ov.id = 'admin-users-overlay';
+                ov.style.position = 'fixed';
+                ov.style.inset = '0';
+                ov.style.background = 'rgba(0,0,0,0.6)';
+                ov.style.display = 'flex';
+                ov.style.alignItems = 'center';
+                ov.style.justifyContent = 'center';
+                ov.style.zIndex = '5000';
+                ov.innerHTML = `
                 <div style="background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
                     <div style="font-weight:600;margin-bottom:10px">Добавить пользователя</div>
                     <div style="display:flex;flex-direction:column;gap:8px">
@@ -1544,53 +1544,53 @@ export function initTabsNavigation(appVersion) {
                     </div>
                 </div>
             `;
-            document.body.appendChild(ov);
-            ov.querySelector('#admin-cancel').addEventListener('click', () => ov.remove());
-            ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
-            ov.querySelector('#admin-add').addEventListener('click', () => {
-                const u = ov.querySelector('#new-username').value.trim();
-                const p = ov.querySelector('#new-password').value;
-                const r = ov.querySelector('#new-role').value;
-                if (!u || !p) { alert('Логин и ��ароль обязательны'); return; }
-                const client = window.__supabaseClient;
-                (async () => {
-                    if (client) {
-                        try {
-                            const { error } = await client.from('users').upsert({ username: u, password: p, role: r }, { onConflict: 'username' });
-                            if (error) throw error;
-                            ov.remove();
-                            alert('Пользователь добавлен');
-                            return;
-                        } catch {}
-                    }
-                    const raw = localStorage.getItem('usersDB') || '[]';
-                    let users = [];
-                    try { users = JSON.parse(raw); } catch {}
-                    if (users.find(x => x.username === u)) { alert('Такой пользователь уже существует'); return; }
-                    users.push({ username: u, password: p, role: r });
-                    localStorage.setItem('usersDB', JSON.stringify(users));
-                    ov.remove();
-                    alert('Пользователь добавлен');
-                })();
-            });
+                document.body.appendChild(ov);
+                ov.querySelector('#admin-cancel').addEventListener('click', () => ov.remove());
+                ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+                ov.querySelector('#admin-add').addEventListener('click', () => {
+                    const u = ov.querySelector('#new-username').value.trim();
+                    const p = ov.querySelector('#new-password').value;
+                    const r = ov.querySelector('#new-role').value;
+                    if (!u || !p) { alert('Логин и пароль обязательны'); return; }
+                    const client = window.__supabaseClient;
+                    (async () => {
+                        if (client) {
+                            try {
+                                const { error } = await client.from('users').upsert({ username: u, password: p, role: r }, { onConflict: 'username' });
+                                if (error) throw error;
+                                ov.remove();
+                                alert('Пользователь добавлен');
+                                return;
+                            } catch { }
+                        }
+                        const raw = localStorage.getItem('usersDB') || '[]';
+                        let users = [];
+                        try { users = JSON.parse(raw); } catch { }
+                        if (users.find(x => x.username === u)) { alert('Такой пользователь уже существует'); return; }
+                        users.push({ username: u, password: p, role: r });
+                        localStorage.setItem('usersDB', JSON.stringify(users));
+                        ov.remove();
+                        alert('Пользователь добавлен');
+                    })();
+                });
+            }
         }
-    }
 
-    function openCloudOverview() {
-        const client = window.__supabaseClient;
-        if (!client) { alert('Supabase недоступен'); return; }
-        let ov = document.getElementById('cloud-overview-overlay');
-        if (!ov) {
-            ov = document.createElement('div');
-            ov.id = 'cloud-overview-overlay';
-            ov.style.position = 'fixed';
-            ov.style.inset = '0';
-            ov.style.background = 'rgba(0,0,0,0.6)';
-            ov.style.display = 'flex';
-            ov.style.alignItems = 'center';
-            ov.style.justifyContent = 'center';
-            ov.style.zIndex = '5000';
-            ov.innerHTML = `
+        function openCloudOverview() {
+            const client = window.__supabaseClient;
+            if (!client) { alert('Supabase недоступен'); return; }
+            let ov = document.getElementById('cloud-overview-overlay');
+            if (!ov) {
+                ov = document.createElement('div');
+                ov.id = 'cloud-overview-overlay';
+                ov.style.position = 'fixed';
+                ov.style.inset = '0';
+                ov.style.background = 'rgba(0,0,0,0.6)';
+                ov.style.display = 'flex';
+                ov.style.alignItems = 'center';
+                ov.style.justifyContent = 'center';
+                ov.style.zIndex = '5000';
+                ov.innerHTML = `
                 <div style="background:#1f1f1f;color:#fff;padding:16px 20px;border-radius:10px;width:560px;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
                         <div style="font-weight:600">Supabase данные</div>
@@ -1608,925 +1608,925 @@ export function initTabsNavigation(appVersion) {
                     </div>
                 </div>
             `;
-            document.body.appendChild(ov);
-            ov.querySelector('#cloud-close').addEventListener('click', () => ov.remove());
-            ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
-        }
-        const usersEl = ov.querySelector('#cloud-users');
-        const statsEl = ov.querySelector('#cloud-stats');
-        usersEl.textContent = 'Загрузка...';
-        statsEl.textContent = 'Загрузка...';
-        client.from('users').select('*').then(({ data, error }) => {
-            if (error) { usersEl.textContent = 'Ошибка'; return; }
-            usersEl.innerHTML = (data || []).map(u => `<div>${u.username} • роль: ${u.role || 'user'}</div>`).join('') || '<div>Пусто</div>';
-        }).catch(() => { usersEl.textContent = 'Ошибка'; });
-        const loadStats = () => {
-            client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
-                if (error) { statsEl.textContent = 'Ошибка'; return; }
-                const list = data || [];
-                const hasDevices = list.some(s => String(s.user_id || '').startsWith('device_'));
-                const btn = document.createElement('button');
-                btn.textContent = 'Привязать device_* к текущему пользователю';
-                btn.style.cssText = 'margin-bottom:8px;padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px';
-                statsEl.innerHTML = '';
-                if (hasDevices) {
-                    statsEl.appendChild(btn);
-                    btn.addEventListener('click', async () => {
-                        btn.disabled = true;
-                        btn.textContent = 'Миграция...';
-                        let result = null;
-                        try { result = await migrateDeviceRecordsToUser(); } catch {}
-                        btn.disabled = false;
-                        const d = (result && typeof result.daily === 'number') ? result.daily : 0;
-                        const c = (result && typeof result.cards === 'number') ? result.cards : 0;
-                        window.__cloudLastMigration = { daily: d, cards: c, at: Date.now() };
-                        btn.textContent = `Готово: достижения ${d}, карточки ${c}`;
-                        setTimeout(() => { btn.textContent = 'Привязать device_* к текущему пользователю'; }, 1800);
-                        loadStats();
-                    });
-                }
-                if (window.__cloudLastMigration && typeof window.__cloudLastMigration.daily === 'number') {
-                    const info = document.createElement('div');
-                    info.style.cssText = 'margin:6px 0;padding:6px 10px;border:1px solid #444;background:#222;color:#ddd;border-radius:6px';
-                    info.textContent = `Последняя миграция: достижения ${window.__cloudLastMigration.daily}, карточки ${window.__cloudLastMigration.cards}`;
-                    statsEl.appendChild(info);
-                    // очистить через короткое время, чтобы не мешало
-                    setTimeout(() => { try { delete window.__cloudLastMigration; } catch {} }, 2500);
-                }
-                const rows = list.map(s => `<div>${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div>`).join('');
-                statsEl.innerHTML += rows || '<div>Пусто</div>';
-            }).catch(() => { statsEl.textContent = 'Ошибка'; });
-        };
-        loadStats();
-    }
-
-    async function migrateDeviceRecordsToUser() {
-        try {
-            const client = window.__supabaseClient;
-            if (!client) return { daily: 0, cards: 0 };
-            if (!loggedInUser) { return { daily: 0, cards: 0 }; }
-            const targetId = loggedInUser.id || loggedInUser.email || loggedInUser.username;
-            if (!targetId) return { daily: 0, cards: 0 };
-            const { data: ds } = await client.from('daily_stats').select('user_id,date,xp,bonus,day_bonus,streak').like('user_id', 'device_%');
-            let dailyMigrated = 0;
-            for (const row of ds || []) {
-                try {
-                    const { error } = await client.from('daily_stats').upsert({
-                        user_id: targetId,
-                        date: row.date,
-                        xp: row.xp,
-                        bonus: row.bonus,
-                        day_bonus: row.day_bonus,
-                        streak: row.streak
-                    }, { onConflict: 'user_id,date' });
-                    if (!error) dailyMigrated++;
-                } catch {}
-                try { await client.from('daily_stats').delete().eq('user_id', row.user_id).eq('date', row.date); } catch {}
+                document.body.appendChild(ov);
+                ov.querySelector('#cloud-close').addEventListener('click', () => ov.remove());
+                ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
             }
-            const { data: cp } = await client.from('card_progress').select('user_id,question,due_date,interval,repetitions,ease_factor,last_reviewed,last_reviewed_time').like('user_id', 'device_%');
-            let cardsMigrated = 0;
-            for (const row of cp || []) {
-                try {
-                    const { error } = await client.from('card_progress').upsert({
-                        user_id: targetId,
-                        question: row.question,
-                        due_date: row.due_date,
-                        interval: row.interval,
-                        repetitions: row.repetitions,
-                        ease_factor: row.ease_factor,
-                        last_reviewed: row.last_reviewed,
-                        last_reviewed_time: row.last_reviewed_time
-                    }, { onConflict: 'user_id,question' });
-                    if (!error) cardsMigrated++;
-                } catch {}
-                try { await client.from('card_progress').delete().eq('user_id', row.user_id).eq('question', row.question); } catch {}
-            }
-            return { daily: dailyMigrated, cards: cardsMigrated };
-        } catch {}
-        return { daily: 0, cards: 0 };
-    }
-    // Функции меню категорий в режиме редактирования
-    function refreshCategoryEditMenus() {
-        const tabs = tabsContainer.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            const cId = tab.dataset.category;
-            if (cId === 'all' || cId === 'favorites') return;
-            const prevBtn = tab.querySelector('.cat-menu-btn');
-            if (prevBtn) prevBtn.remove();
-            if (!editMode) return;
-            const btn = document.createElement('button');
-            btn.className = 'cat-menu-btn';
-            btn.title = 'Меню категории';
-            btn.textContent = '⋮';
-            // Стили перенесены в CSS
-            tab.appendChild(btn);
-            btn.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                openCategoryMenu(tab, cId);
-            });
-        });
-    }
-
-    // Перерисовка табов категорий
-    function refreshCategoriesTabs(oldName = null, newName = null) {
-        // 🔥 Обновляем categories из актуальных данных
-        categories = buildCategoriesFromData(getRuntimeData());
-        
-        const active = tabsContainer.querySelector('.tab.active');
-        const activeId = active?.dataset?.category || 'all';
-        tabsContainer.innerHTML = '';
-        const allTab = document.createElement('div');
-        allTab.className = 'tab';
-        allTab.dataset.category = 'all';
-        allTab.textContent = 'Все вопросы';
-        tabsContainer.appendChild(allTab);
-        const favTab = document.createElement('div');
-        favTab.className = 'tab';
-        favTab.dataset.category = 'favorites';
-        favTab.textContent = '★';
-        tabsContainer.appendChild(favTab);
-        const cats = buildCategoriesFromData(getRuntimeData());
-        // Применяем сохранённый порядок категорий, если он есть
-        try {
-            const order = getCategoryOrder();
-            if (order && order.length) {
-                const idx = new Map(order.map((name, i) => [name, i]));
-                cats.sort((a, b) => (idx.get(a.name) ?? 1e9) - (idx.get(b.name) ?? 1e9));
-            }
-        } catch {}
-        cats.forEach(category => {
-            const tab = document.createElement('div');
-            tab.className = 'tab';
-            tab.dataset.category = category.id;
-            tab.textContent = category.displayName || category.name;
-            tabsContainer.appendChild(tab);
-        });
-        // Восстанавливаем активный таб, если возможно
-        const toActivate = tabsContainer.querySelector(`.tab[data-category="${activeId}"]`) || allTab;
-        toActivate.classList.add('active');
-        // Обновляем меню редактирования
-        refreshCategoryEditMenus();
-        // Включаем перетаскивание категорий в режиме редактирования
-        if (editMode) {
-            const catsNow = Array.from(tabsContainer.querySelectorAll('.tab'))
-                .filter(el => el.dataset.category !== 'all' && el.dataset.category !== 'favorites');
-            const nameById = new Map();
-            buildCategoriesFromData(getRuntimeData()).forEach(c => nameById.set(String(c.id), c.name));
-            const currentOrder = catsNow.map(el => nameById.get(String(el.dataset.category))).filter(Boolean);
-            catsNow.forEach((el) => {
-                el.setAttribute('draggable', 'true');
-                el.addEventListener('dragstart', (ev) => {
-                    ev.dataTransfer.setData('text/plain', el.dataset.category);
-                });
-                el.addEventListener('dragover', (ev) => { ev.preventDefault(); });
-                el.addEventListener('drop', (ev) => {
-                    ev.preventDefault();
-                    const fromCatId = ev.dataTransfer.getData('text/plain');
-                    const toCatId = el.dataset.category;
-                    if (!fromCatId || !toCatId || fromCatId === toCatId) return;
-                    const fromName = nameById.get(String(fromCatId));
-                    const toName = nameById.get(String(toCatId));
-                    if (!fromName || !toName) return;
-                    const names = [...currentOrder];
-                    const fromIdx = names.indexOf(fromName);
-                    const toIdx = names.indexOf(toName);
-                    if (fromIdx < 0 || toIdx < 0) return;
-                    const [moved] = names.splice(fromIdx, 1);
-                    names.splice(toIdx, 0, moved);
-                    setCategoryOrder(names);
-                    (async () => {
-                        setSaveStatus('saving', 'Сохранение порядка категорий...');
-                        const meta = await getServerMetadata();
-                        meta.categoryOrder = names;
-                        const ok = await updateServerMetadata(meta);
-                        setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок сохранён' : 'Ошибка сохранения');
-                        refreshCategoriesTabs();
-                    })();
-                });
-            });
-        }
-    }
-
-    function openCategoryMenu(tabEl, categoryId) {
-        const categoriesList = buildCategoriesFromData(getRuntimeData());
-        const catObj = categoriesList.find(c => String(c.id) === String(categoryId));
-        if (!catObj) return;
-        document.querySelectorAll('.popup-menu').forEach(m => m.remove());
-        const menu = document.createElement('div');
-        menu.className = 'popup-menu';
-        menu.style.position = 'fixed';
-        menu.style.background = '#222';
-        menu.style.color = '#ddd';
-        menu.style.border = '1px solid #444';
-        menu.style.borderRadius = '6px';
-        menu.style.padding = '6px';
-        menu.style.zIndex = '1000';
-        menu.innerHTML = `
-            <button data-act="rename">Переименовать</button>
-            <button data-act="duplicate">Дублировать</button>
-            <button data-act="delete">Удалить</button>
-        `;
-        document.body.appendChild(menu);
-        const rect = tabEl.getBoundingClientRect();
-        menu.style.left = `${rect.right + 6}px`;
-        menu.style.top = `${rect.top}px`;
-        const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
-        document.addEventListener('click', onDocClick);
-        menu.addEventListener('click', async (e) => {
-            const act = e.target?.dataset?.act;
-            if (!act) return;
-            e.stopPropagation();
-            if (act === 'rename') {
-                const newName = prompt('Новое название категории:', catObj.name);
-                if (newName && newName !== catObj.name) {
-                    const ov = getOverrides();
-                    uniqueQaData.forEach(it => { if (it.category === catObj.name) { ov[it.question] = { ...ov[it.question], category: newName }; } });
-                    setLS('qaAdminOverrides', ov);
-                    // Автосохранение
-                    saveMergedToServer();
-                    // Перерисовываем табы, чтобы сразу увидеть новое имя
-                    refreshCategoriesTabs(catObj.name, newName);
-                    setSaveStatus('success', 'Категория переименована');
-                }
-            } else if (act === 'duplicate') {
-                const dupName = prompt('Название копии категории:', `${catObj.name} (копия)`);
-                if (!dupName) return;
-                const placeholders = getCategoryPlaceholders();
-                if (!placeholders[dupName]) placeholders[dupName] = { _cid: Date.now(), sub: [] };
-                const newItemsArr = getNewItems();
-                getRuntimeData().filter(it => it.category === catObj.name).forEach(it => {
-                    const newQuestion = genUniqueQuestionGlobal(it.question);
-                    newItemsArr.push({ ...it, category: dupName, question: newQuestion });
-                });
-                setLS('qaNewItems', newItemsArr);
-                setCategoryPlaceholders(placeholders);
-                saveMergedToServer();
-                // Перерисовываем табы, чтобы сразу появилась новая категория
-                refreshCategoriesTabs();
-                setSaveStatus('success', 'Категория дублирована');
-            } else if (act === 'delete') {
-                if (!confirm('Удалить категорию в корзину?')) return;
-                const trashCats = getLS('qaTrashCategories', '{}');
-                trashCats[catObj.name] = true;
-                setLS('qaTrashCategories', trashCats);
-                const delMap = getDeletedItems();
-                const itemsToTrash = getRuntimeData().filter(it => it.category === catObj.name);
-                itemsToTrash.forEach(it => { delMap[it.question] = true; });
-                setDeletedItems(delMap);
-                try {
-                    const ok = await moveToServerTrash(itemsToTrash);
-                    if (ok) {
-                        itemsToTrash.forEach(it => serverTrashSet.add(it.question));
-                        await refreshServerTrash();
+            const usersEl = ov.querySelector('#cloud-users');
+            const statsEl = ov.querySelector('#cloud-stats');
+            usersEl.textContent = 'Загрузка...';
+            statsEl.textContent = 'Загрузка...';
+            client.from('users').select('*').then(({ data, error }) => {
+                if (error) { usersEl.textContent = 'Ошибка'; return; }
+                usersEl.innerHTML = (data || []).map(u => `<div>${u.username} • роль: ${u.role || 'user'}</div>`).join('') || '<div>Пусто</div>';
+            }).catch(() => { usersEl.textContent = 'Ошибка'; });
+            const loadStats = () => {
+                client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
+                    if (error) { statsEl.textContent = 'Ошибка'; return; }
+                    const list = data || [];
+                    const hasDevices = list.some(s => String(s.user_id || '').startsWith('device_'));
+                    const btn = document.createElement('button');
+                    btn.textContent = 'Привязать device_* к текущему пользователю';
+                    btn.style.cssText = 'margin-bottom:8px;padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px';
+                    statsEl.innerHTML = '';
+                    if (hasDevices) {
+                        statsEl.appendChild(btn);
+                        btn.addEventListener('click', async () => {
+                            btn.disabled = true;
+                            btn.textContent = 'Миграция...';
+                            let result = null;
+                            try { result = await migrateDeviceRecordsToUser(); } catch { }
+                            btn.disabled = false;
+                            const d = (result && typeof result.daily === 'number') ? result.daily : 0;
+                            const c = (result && typeof result.cards === 'number') ? result.cards : 0;
+                            window.__cloudLastMigration = { daily: d, cards: c, at: Date.now() };
+                            btn.textContent = `Готово: достижения ${d}, карточки ${c}`;
+                            setTimeout(() => { btn.textContent = 'Привязать device_* к текущему пользователю'; }, 1800);
+                            loadStats();
+                        });
                     }
-                } catch {}
-                renderTrashPanel();
-                saveMergedToServer();
-                refreshCategoriesTabs();
-                setSaveStatus('success', 'Категория удалена в корзину');
-            }
-            menu.remove();
-        });
-    }
+                    if (window.__cloudLastMigration && typeof window.__cloudLastMigration.daily === 'number') {
+                        const info = document.createElement('div');
+                        info.style.cssText = 'margin:6px 0;padding:6px 10px;border:1px solid #444;background:#222;color:#ddd;border-radius:6px';
+                        info.textContent = `Последняя миграция: достижения ${window.__cloudLastMigration.daily}, карточки ${window.__cloudLastMigration.cards}`;
+                        statsEl.appendChild(info);
+                        // очистить через короткое время, чтобы не мешало
+                        setTimeout(() => { try { delete window.__cloudLastMigration; } catch { } }, 2500);
+                    }
+                    const rows = list.map(s => `<div>${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div>`).join('');
+                    statsEl.innerHTML += rows || '<div>Пусто</div>';
+                }).catch(() => { statsEl.textContent = 'Ошибка'; });
+            };
+            loadStats();
+        }
 
-    // Меню подкатегорий в режиме редактирования
-    function refreshSubcategoryEditMenus(categoryName) {
-        const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
-        cards.forEach(card => {
-            const subId = card.dataset.subcategory;
-            if (subId === 'all') return;
-            const prevBtn = card.querySelector('.subcat-menu-btn');
-            if (prevBtn) prevBtn.remove();
-            if (!editMode) return;
-            const btn = document.createElement('button');
-            btn.className = 'subcat-menu-btn';
-            btn.title = 'Меню подкатегории';
-            btn.textContent = '⋮';
-            btn.style.marginLeft = '8px';
-            // Тёмно-серый стиль
-            btn.style.background = '#444';
-            btn.style.color = '#eee';
-            btn.style.border = '1px solid #333';
-            btn.style.borderRadius = '4px';
-            btn.style.padding = '2px 6px';
-            btn.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                const originalName = card.dataset.subcatOriginalName || card.textContent;
-                openSubcategoryMenu(card, categoryName, originalName);
+        async function migrateDeviceRecordsToUser() {
+            try {
+                const client = window.__supabaseClient;
+                if (!client) return { daily: 0, cards: 0 };
+                if (!loggedInUser) { return { daily: 0, cards: 0 }; }
+                const targetId = loggedInUser.id || loggedInUser.email || loggedInUser.username;
+                if (!targetId) return { daily: 0, cards: 0 };
+                const { data: ds } = await client.from('daily_stats').select('user_id,date,xp,bonus,day_bonus,streak').like('user_id', 'device_%');
+                let dailyMigrated = 0;
+                for (const row of ds || []) {
+                    try {
+                        const { error } = await client.from('daily_stats').upsert({
+                            user_id: targetId,
+                            date: row.date,
+                            xp: row.xp,
+                            bonus: row.bonus,
+                            day_bonus: row.day_bonus,
+                            streak: row.streak
+                        }, { onConflict: 'user_id,date' });
+                        if (!error) dailyMigrated++;
+                    } catch { }
+                    try { await client.from('daily_stats').delete().eq('user_id', row.user_id).eq('date', row.date); } catch { }
+                }
+                const { data: cp } = await client.from('card_progress').select('user_id,question,due_date,interval,repetitions,ease_factor,last_reviewed,last_reviewed_time').like('user_id', 'device_%');
+                let cardsMigrated = 0;
+                for (const row of cp || []) {
+                    try {
+                        const { error } = await client.from('card_progress').upsert({
+                            user_id: targetId,
+                            question: row.question,
+                            due_date: row.due_date,
+                            interval: row.interval,
+                            repetitions: row.repetitions,
+                            ease_factor: row.ease_factor,
+                            last_reviewed: row.last_reviewed,
+                            last_reviewed_time: row.last_reviewed_time
+                        }, { onConflict: 'user_id,question' });
+                        if (!error) cardsMigrated++;
+                    } catch { }
+                    try { await client.from('card_progress').delete().eq('user_id', row.user_id).eq('question', row.question); } catch { }
+                }
+                return { daily: dailyMigrated, cards: cardsMigrated };
+            } catch { }
+            return { daily: 0, cards: 0 };
+        }
+        // Функции меню категорий в режиме редактирования
+        function refreshCategoryEditMenus() {
+            const tabs = tabsContainer.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                const cId = tab.dataset.category;
+                if (cId === 'all' || cId === 'favorites') return;
+                const prevBtn = tab.querySelector('.cat-menu-btn');
+                if (prevBtn) prevBtn.remove();
+                if (!editMode) return;
+                const btn = document.createElement('button');
+                btn.className = 'cat-menu-btn';
+                btn.title = 'Меню категории';
+                btn.textContent = '⋮';
+                // Стили перенесены в CSS
+                tab.appendChild(btn);
+                btn.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    openCategoryMenu(tab, cId);
+                });
             });
-            card.appendChild(btn);
-        });
-    }
+        }
 
-    function openSubcategoryMenu(cardEl, categoryName, subcatName) {
-        document.querySelectorAll('.popup-menu').forEach(m => m.remove());
-        const menu = document.createElement('div');
-        menu.className = 'popup-menu';
-        menu.style.position = 'fixed';
-        menu.style.background = '#222';
-        menu.style.color = '#ddd';
-        menu.style.border = '1px solid #444';
-        menu.style.borderRadius = '6px';
-        menu.style.padding = '6px';
-        menu.style.zIndex = '1000';
-        menu.innerHTML = `
+        // Перерисовка табов категорий
+        function refreshCategoriesTabs(oldName = null, newName = null) {
+            // 🔥 Обновляем categories из актуальных данных
+            categories = buildCategoriesFromData(getRuntimeData());
+
+            const active = tabsContainer.querySelector('.tab.active');
+            const activeId = active?.dataset?.category || 'all';
+            tabsContainer.innerHTML = '';
+            const allTab = document.createElement('div');
+            allTab.className = 'tab';
+            allTab.dataset.category = 'all';
+            allTab.textContent = 'Все вопросы';
+            tabsContainer.appendChild(allTab);
+            const favTab = document.createElement('div');
+            favTab.className = 'tab';
+            favTab.dataset.category = 'favorites';
+            favTab.textContent = '★';
+            tabsContainer.appendChild(favTab);
+            const cats = buildCategoriesFromData(getRuntimeData());
+            // Применяем сохранённый порядок категорий, если он есть
+            try {
+                const order = getCategoryOrder();
+                if (order && order.length) {
+                    const idx = new Map(order.map((name, i) => [name, i]));
+                    cats.sort((a, b) => (idx.get(a.name) ?? 1e9) - (idx.get(b.name) ?? 1e9));
+                }
+            } catch { }
+            cats.forEach(category => {
+                const tab = document.createElement('div');
+                tab.className = 'tab';
+                tab.dataset.category = category.id;
+                tab.textContent = category.displayName || category.name;
+                tabsContainer.appendChild(tab);
+            });
+            // Восстанавливаем активный таб, если возможно
+            const toActivate = tabsContainer.querySelector(`.tab[data-category="${activeId}"]`) || allTab;
+            toActivate.classList.add('active');
+            // Обновляем меню редактирования
+            refreshCategoryEditMenus();
+            // Включаем перетаскивание категорий в режиме редактирования
+            if (editMode) {
+                const catsNow = Array.from(tabsContainer.querySelectorAll('.tab'))
+                    .filter(el => el.dataset.category !== 'all' && el.dataset.category !== 'favorites');
+                const nameById = new Map();
+                buildCategoriesFromData(getRuntimeData()).forEach(c => nameById.set(String(c.id), c.name));
+                const currentOrder = catsNow.map(el => nameById.get(String(el.dataset.category))).filter(Boolean);
+                catsNow.forEach((el) => {
+                    el.setAttribute('draggable', 'true');
+                    el.addEventListener('dragstart', (ev) => {
+                        ev.dataTransfer.setData('text/plain', el.dataset.category);
+                    });
+                    el.addEventListener('dragover', (ev) => { ev.preventDefault(); });
+                    el.addEventListener('drop', (ev) => {
+                        ev.preventDefault();
+                        const fromCatId = ev.dataTransfer.getData('text/plain');
+                        const toCatId = el.dataset.category;
+                        if (!fromCatId || !toCatId || fromCatId === toCatId) return;
+                        const fromName = nameById.get(String(fromCatId));
+                        const toName = nameById.get(String(toCatId));
+                        if (!fromName || !toName) return;
+                        const names = [...currentOrder];
+                        const fromIdx = names.indexOf(fromName);
+                        const toIdx = names.indexOf(toName);
+                        if (fromIdx < 0 || toIdx < 0) return;
+                        const [moved] = names.splice(fromIdx, 1);
+                        names.splice(toIdx, 0, moved);
+                        setCategoryOrder(names);
+                        (async () => {
+                            setSaveStatus('saving', 'Сохранение порядка категорий...');
+                            const meta = await getServerMetadata();
+                            meta.categoryOrder = names;
+                            const ok = await updateServerMetadata(meta);
+                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок сохранён' : 'Ошибка сохранения');
+                            refreshCategoriesTabs();
+                        })();
+                    });
+                });
+            }
+        }
+
+        function openCategoryMenu(tabEl, categoryId) {
+            const categoriesList = buildCategoriesFromData(getRuntimeData());
+            const catObj = categoriesList.find(c => String(c.id) === String(categoryId));
+            if (!catObj) return;
+            document.querySelectorAll('.popup-menu').forEach(m => m.remove());
+            const menu = document.createElement('div');
+            menu.className = 'popup-menu';
+            menu.style.position = 'fixed';
+            menu.style.background = '#222';
+            menu.style.color = '#ddd';
+            menu.style.border = '1px solid #444';
+            menu.style.borderRadius = '6px';
+            menu.style.padding = '6px';
+            menu.style.zIndex = '1000';
+            menu.innerHTML = `
             <button data-act="rename">Переименовать</button>
             <button data-act="duplicate">Дублировать</button>
             <button data-act="delete">Удалить</button>
         `;
-        document.body.appendChild(menu);
-        const rect = cardEl.getBoundingClientRect();
-        menu.style.left = `${rect.right + 6}px`;
-        menu.style.top = `${rect.top}px`;
-        const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
-        document.addEventListener('click', onDocClick);
-        menu.addEventListener('click', async (e) => {
-            const act = e.target?.dataset?.act; if (!act) return;
-            e.stopPropagation();
-            if (act === 'rename') {
-                const newName = prompt('Новое название подкатегории:', subcatName);
-                if (newName && newName !== subcatName) {
+            document.body.appendChild(menu);
+            const rect = tabEl.getBoundingClientRect();
+            menu.style.left = `${rect.right + 6}px`;
+            menu.style.top = `${rect.top}px`;
+            const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
+            document.addEventListener('click', onDocClick);
+            menu.addEventListener('click', async (e) => {
+                const act = e.target?.dataset?.act;
+                if (!act) return;
+                e.stopPropagation();
+                if (act === 'rename') {
+                    const newName = prompt('Новое название категории:', catObj.name);
+                    if (newName && newName !== catObj.name) {
+                        const ov = getOverrides();
+                        uniqueQaData.forEach(it => { if (it.category === catObj.name) { ov[it.question] = { ...ov[it.question], category: newName }; } });
+                        setLS('qaAdminOverrides', ov);
+                        // Автосохранение
+                        saveMergedToServer();
+                        // Перерисовываем табы, чтобы сразу увидеть новое имя
+                        refreshCategoriesTabs(catObj.name, newName);
+                        setSaveStatus('success', 'Категория переименована');
+                    }
+                } else if (act === 'duplicate') {
+                    const dupName = prompt('Название копии категории:', `${catObj.name} (копия)`);
+                    if (!dupName) return;
+                    const placeholders = getCategoryPlaceholders();
+                    if (!placeholders[dupName]) placeholders[dupName] = { _cid: Date.now(), sub: [] };
+                    const newItemsArr = getNewItems();
+                    getRuntimeData().filter(it => it.category === catObj.name).forEach(it => {
+                        const newQuestion = genUniqueQuestionGlobal(it.question);
+                        newItemsArr.push({ ...it, category: dupName, question: newQuestion });
+                    });
+                    setLS('qaNewItems', newItemsArr);
+                    setCategoryPlaceholders(placeholders);
+                    saveMergedToServer();
+                    // Перерисовываем табы, чтобы сразу появилась новая категория
+                    refreshCategoriesTabs();
+                    setSaveStatus('success', 'Категория дублирована');
+                } else if (act === 'delete') {
+                    if (!confirm('Удалить категорию в корзину?')) return;
+                    const trashCats = getLS('qaTrashCategories', '{}');
+                    trashCats[catObj.name] = true;
+                    setLS('qaTrashCategories', trashCats);
+                    const delMap = getDeletedItems();
+                    const itemsToTrash = getRuntimeData().filter(it => it.category === catObj.name);
+                    itemsToTrash.forEach(it => { delMap[it.question] = true; });
+                    setDeletedItems(delMap);
+                    try {
+                        const ok = await moveToServerTrash(itemsToTrash);
+                        if (ok) {
+                            itemsToTrash.forEach(it => serverTrashSet.add(it.question));
+                            await refreshServerTrash();
+                        }
+                    } catch { }
+                    renderTrashPanel();
+                    saveMergedToServer();
+                    refreshCategoriesTabs();
+                    setSaveStatus('success', 'Категория удалена в корзину');
+                }
+                menu.remove();
+            });
+        }
+
+        // Меню подкатегорий в режиме редактирования
+        function refreshSubcategoryEditMenus(categoryName) {
+            const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
+            cards.forEach(card => {
+                const subId = card.dataset.subcategory;
+                if (subId === 'all') return;
+                const prevBtn = card.querySelector('.subcat-menu-btn');
+                if (prevBtn) prevBtn.remove();
+                if (!editMode) return;
+                const btn = document.createElement('button');
+                btn.className = 'subcat-menu-btn';
+                btn.title = 'Меню подкатегории';
+                btn.textContent = '⋮';
+                btn.style.marginLeft = '8px';
+                // Тёмно-серый стиль
+                btn.style.background = '#444';
+                btn.style.color = '#eee';
+                btn.style.border = '1px solid #333';
+                btn.style.borderRadius = '4px';
+                btn.style.padding = '2px 6px';
+                btn.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    const originalName = card.dataset.subcatOriginalName || card.textContent;
+                    openSubcategoryMenu(card, categoryName, originalName);
+                });
+                card.appendChild(btn);
+            });
+        }
+
+        function openSubcategoryMenu(cardEl, categoryName, subcatName) {
+            document.querySelectorAll('.popup-menu').forEach(m => m.remove());
+            const menu = document.createElement('div');
+            menu.className = 'popup-menu';
+            menu.style.position = 'fixed';
+            menu.style.background = '#222';
+            menu.style.color = '#ddd';
+            menu.style.border = '1px solid #444';
+            menu.style.borderRadius = '6px';
+            menu.style.padding = '6px';
+            menu.style.zIndex = '1000';
+            menu.innerHTML = `
+            <button data-act="rename">Переименовать</button>
+            <button data-act="duplicate">Дублировать</button>
+            <button data-act="delete">Удалить</button>
+        `;
+            document.body.appendChild(menu);
+            const rect = cardEl.getBoundingClientRect();
+            menu.style.left = `${rect.right + 6}px`;
+            menu.style.top = `${rect.top}px`;
+            const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
+            document.addEventListener('click', onDocClick);
+            menu.addEventListener('click', async (e) => {
+                const act = e.target?.dataset?.act; if (!act) return;
+                e.stopPropagation();
+                if (act === 'rename') {
+                    const newName = prompt('Новое название подкатегории:', subcatName);
+                    if (newName && newName !== subcatName) {
+                        const scPlaceholders = getSubcategoryPlaceholders();
+                        if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
+                        scPlaceholders[categoryName][subcatName] = { displayName: newName };
+                        setSubcategoryPlaceholders(scPlaceholders);
+                        // Обновляем все карточки этой подкатегории через overrides
+                        const ov = getOverrides();
+                        getRuntimeData().forEach(it => {
+                            if (it.category === categoryName && it.subcategory === subcatName) {
+                                ov[it.question] = { ...ov[it.question], subcategory: newName };
+                            }
+                        });
+                        setLS('qaAdminOverrides', ov);
+                        rebuildSubcategoriesForCategory(categoryName);
+                        saveMergedToServer();
+                        setSaveStatus('success', 'Подкатегория переименована');
+                    }
+                } else if (act === 'duplicate') {
+                    const dupName = prompt('Название копии подкатегории:', `${subcatName} (копия)`);
+                    if (!dupName) return;
+                    const newItemsArr = getNewItems();
+                    getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName)
+                        .forEach(it => {
+                            const newQuestion = genUniqueQuestionGlobal(it.question);
+                            newItemsArr.push({ ...it, subcategory: dupName, question: newQuestion });
+                        });
+                    setLS('qaNewItems', newItemsArr);
+                    // Добавляем плейсхолдер отображения
                     const scPlaceholders = getSubcategoryPlaceholders();
                     if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
-                    scPlaceholders[categoryName][subcatName] = { displayName: newName };
+                    scPlaceholders[categoryName][dupName] = { displayName: dupName };
                     setSubcategoryPlaceholders(scPlaceholders);
-                    // Обновляем все карточки этой подкатегории через overrides
-                    const ov = getOverrides();
-                    getRuntimeData().forEach(it => {
-                        if (it.category === categoryName && it.subcategory === subcatName) {
-                            ov[it.question] = { ...ov[it.question], subcategory: newName };
-                        }
-                    });
-                    setLS('qaAdminOverrides', ov);
-                    rebuildSubcategoriesForCategory(categoryName);
-                    saveMergedToServer();
-                    setSaveStatus('success', 'Подкатегория переименована');
-                }
-            } else if (act === 'duplicate') {
-                const dupName = prompt('Название копии подкатегории:', `${subcatName} (копия)`);
-                if (!dupName) return;
-                const newItemsArr = getNewItems();
-                getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName)
-                    .forEach(it => {
-                        const newQuestion = genUniqueQuestionGlobal(it.question);
-                        newItemsArr.push({ ...it, subcategory: dupName, question: newQuestion });
-                    });
-                setLS('qaNewItems', newItemsArr);
-                // Добавляем плейсхолдер отображения
-                const scPlaceholders = getSubcategoryPlaceholders();
-                if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
-                scPlaceholders[categoryName][dupName] = { displayName: dupName };
-                setSubcategoryPlaceholders(scPlaceholders);
-                
-                // Force full refresh to ensure data visibility
-                refreshCategoriesTabs();
-                rebuildSubcategoriesForCategory(categoryName);
-                
-                saveMergedToServer();
-                setSaveStatus('success', 'Подкатегория дублирована');
-            } else if (act === 'delete') {
-                if (!confirm('Удалить подкатегорию в корзину?')) { menu.remove(); return; }
-                const delMap = getDeletedItems();
-                const itemsToTrash = getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName);
-                itemsToTrash.forEach(it => { delMap[it.question] = true; });
-                setDeletedItems(delMap);
-                try {
-                    const ok = await moveToServerTrash(itemsToTrash);
-                    if (ok) {
-                        itemsToTrash.forEach(it => serverTrashSet.add(it.question));
-                        await refreshServerTrash();
-                    }
-                } catch {}
-                renderTrashPanel();
-                saveMergedToServer();
-                rebuildSubcategoriesForCategory(categoryName);
-                setSaveStatus('success', 'Подкатегория удалена в корзину');
-            }
-            menu.remove();
-        });
-    }
 
-    // Перестроить список подкатегорий для выбранной категории
-    function rebuildSubcategoriesForCategory(categoryName) {
-        const allCats = buildCategoriesFromData(getRuntimeData());
-        const catObj = allCats.find(c => c.name === categoryName);
-        if (!catObj) return;
-        subcategoriesContainer.style.display = 'flex';
-        subcategoriesContainer.innerHTML = '';
-        const allCard = document.createElement('div');
-        allCard.className = 'subcategory-card active';
-        allCard.dataset.subcategory = 'all';
-        allCard.textContent = 'Все подкатегории';
-        subcategoriesContainer.appendChild(allCard);
-        const scPlaceholders = getSubcategoryPlaceholders();
-        try {
-            const scOrder = getSubcategoryOrderFor(categoryName);
-            if (scOrder && scOrder.length) {
-                const idx = new Map(scOrder.map((name, i) => [name, i]));
-                catObj.subcategories.sort((a, b) => (idx.get(a.name) ?? 1e9) - (idx.get(b.name) ?? 1e9));
-            }
-        } catch {}
-        catObj.subcategories.forEach(subcategory => {
-            const card = document.createElement('div');
-            card.className = 'subcategory-card';
-            card.dataset.subcategory = subcategory.id;
-            const activeTab = tabsContainer.querySelector('.tab.active');
-            card.dataset.category = activeTab?.dataset?.category || '';
-            const displayName = (scPlaceholders[categoryName] && scPlaceholders[categoryName][subcategory.name] && scPlaceholders[categoryName][subcategory.name].displayName) || subcategory.name;
-            card.dataset.subcatOriginalName = subcategory.name;
-            card.textContent = displayName;
-            subcategoriesContainer.appendChild(card);
-        });
-        refreshSubcategoryEditMenus(categoryName);
-        if (editMode) {
-            const cards = Array.from(subcategoriesContainer.querySelectorAll('.subcategory-card')).filter(c => c.dataset.subcategory !== 'all');
-            const currentOrder = cards.map(c => c.dataset.subcatOriginalName);
-            cards.forEach(el => {
-                el.setAttribute('draggable', 'true');
-                el.addEventListener('dragstart', (ev) => {
-                    ev.dataTransfer.setData('text/plain', el.dataset.subcatOriginalName);
-                });
-                el.addEventListener('dragover', (ev) => { ev.preventDefault(); });
-                el.addEventListener('drop', (ev) => {
-                    ev.preventDefault();
-                    const fromName = ev.dataTransfer.getData('text/plain');
-                    const toName = el.dataset.subcatOriginalName;
-                    if (!fromName || !toName || fromName === toName) return;
-                    const names = [...currentOrder];
-                    const fromIdx = names.indexOf(fromName);
-                    const toIdx = names.indexOf(toName);
-                    if (fromIdx < 0 || toIdx < 0) return;
-                    const [moved] = names.splice(fromIdx, 1);
-                    names.splice(toIdx, 0, moved);
-                    setSubcategoryOrderFor(categoryName, names);
-                    (async () => {
-                        setSaveStatus('saving', 'Сохранение порядка подкатегорий...');
-                        const meta = await getServerMetadata();
-                        meta.subcategoryOrder = meta.subcategoryOrder || {};
-                        meta.subcategoryOrder[categoryName] = names;
-                        const ok = await updateServerMetadata(meta);
-                        setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок сохранён' : 'Ошибка сохранения');
-                        rebuildSubcategoriesForCategory(categoryName);
-                    })();
-                });
+                    // Force full refresh to ensure data visibility
+                    refreshCategoriesTabs();
+                    rebuildSubcategoriesForCategory(categoryName);
+
+                    saveMergedToServer();
+                    setSaveStatus('success', 'Подкатегория дублирована');
+                } else if (act === 'delete') {
+                    if (!confirm('Удалить подкатегорию в корзину?')) { menu.remove(); return; }
+                    const delMap = getDeletedItems();
+                    const itemsToTrash = getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName);
+                    itemsToTrash.forEach(it => { delMap[it.question] = true; });
+                    setDeletedItems(delMap);
+                    try {
+                        const ok = await moveToServerTrash(itemsToTrash);
+                        if (ok) {
+                            itemsToTrash.forEach(it => serverTrashSet.add(it.question));
+                            await refreshServerTrash();
+                        }
+                    } catch { }
+                    renderTrashPanel();
+                    saveMergedToServer();
+                    rebuildSubcategoriesForCategory(categoryName);
+                    setSaveStatus('success', 'Подкатегория удалена в корзину');
+                }
+                menu.remove();
             });
         }
-    }
 
-    function renderTrashPanel() {
-        if (!editMode) return;
-        const catDiv = trashPanel.querySelector('#trash-categories');
-        const cardDiv = trashPanel.querySelector('#trash-cards');
-        catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
-        // Список удалённых вопросов + сортировка по оригинальному порядку ("Все вопросы")
-        const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
-        const baseOrder = getOrderForContext('all') || getRuntimeData().map(i => i.question);
-        const idxMap = new Map(baseOrder.map((q, i) => [q, i]));
-        const sortedTrash = [...serverTrashItems].sort((a, b) =>
-            (idxMap.get(a.item?.question) ?? 1e9) - (idxMap.get(b.item?.question) ?? 1e9)
-        );
-        // Header + grid container
-        cardDiv.innerHTML = '';
-        const header = document.createElement('div');
-        header.innerHTML = '<strong>Карточки:</strong>' + (deletedCards.length ? '' : ' <span>Пусто</span>');
-        cardDiv.appendChild(header);
-        const grid = document.createElement('div');
-        grid.className = 'trash-cards-grid';
-        cardDiv.appendChild(grid);
-
-        sortedTrash.forEach(entry => {
-            const q = entry.item?.question;
-            const it = entry.item || uniqueQaData.find(i => i.question === q) || getNewItems().find(i => i.question === q);
-            const mini = document.createElement('div');
-            mini.className = 'result-item trash-mini';
-
-            // Верхняя зона: теги (категория, подкатегория)
-            const meta = document.createElement('div');
-            meta.className = 'trash-meta';
-            meta.style.display = 'flex';
-            meta.style.flexWrap = 'wrap';
-            meta.style.gap = '6px';
-            const catBadge = document.createElement('span'); catBadge.className = 'category-badge'; catBadge.textContent = (it && it.category) ? it.category : '';
-            const subBadge = document.createElement('span'); subBadge.className = 'subcategory-badge'; subBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
-            meta.appendChild(catBadge); meta.appendChild(subBadge);
-
-            // Вопрос
-            const qText = document.createElement('div');
-            qText.className = 'question';
-            qText.textContent = it?.question || q;
-            qText.style.marginTop = '6px';
-
-            // Ответ
-            const aEl = document.createElement('div');
-            aEl.className = 'answer';
-            aEl.textContent = it?.answer || '';
-            aEl.style.marginTop = '6px';
-
-            // Действия (восстановить / удалить навсегда) внизу
-            const actions = document.createElement('div');
-            actions.className = 'trash-actions';
-            actions.style.display = 'flex';
-            actions.style.gap = '8px';
-            actions.style.marginTop = '8px';
-            const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Восстановить';
-            const purgeBtn = document.createElement('button'); purgeBtn.className = 'purge-btn'; purgeBtn.textContent = 'Удалить навсегда';
-            actions.appendChild(restoreBtn);
-            actions.appendChild(purgeBtn);
-
-            mini.appendChild(meta);
-            mini.appendChild(qText);
-            mini.appendChild(aEl);
-            mini.appendChild(actions);
-
-            // Оптимистичное восстановление с сохранением на сервер
-            restoreBtn.addEventListener('click', async () => {
-                console.log('[restore-click(inner)] Запрошено восстановление', {
-                    question: q,
-                    inUnique: !!uniqueQaData.find(i => i.question === q),
-                    inNewItems: !!getNewItems().find(i => i.question === q),
-                    inServerTrashSet: serverTrashSet.has(q),
-                    wasDeletedLocally: !!getDeletedItems()[q]
-                });
-                restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
-                
-                // Находим карточку в serverTrashItems, чтобы получить её данные
-                const trashItem = serverTrashItems.find(t => t.item?.question === q);
-                const itemData = trashItem?.item;
-                
-                // Удаляем из локального кэша корзины сразу
-                serverTrashSet.delete(q);
-                serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                // Очищаем локальную карту удалений для этой карточки, если была помечена
-                const delMap = getDeletedItems();
-                if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
-                
-                // 🔥 ВАЖНО: Если карточки нет в uniqueQaData (дубликат), добавляем её в qaNewItems
-                const isInUnique = !!uniqueQaData.find(i => i.question === q);
-                if (!isInUnique && itemData) {
-                    const newItems = getNewItems();
-                    // Проверяем, нет ли уже такой карточки в newItems
-                    if (!newItems.some(n => n.question === q)) {
-                        newItems.push(itemData);
-                        localStorage.setItem('qaNewItems', JSON.stringify(newItems));
-                        console.log('[restore-click(inner)] Дубликат добавлен в qaNewItems');
-                    }
+        // Перестроить список подкатегорий для выбранной категории
+        function rebuildSubcategoriesForCategory(categoryName) {
+            const allCats = buildCategoriesFromData(getRuntimeData());
+            const catObj = allCats.find(c => c.name === categoryName);
+            if (!catObj) return;
+            subcategoriesContainer.style.display = 'flex';
+            subcategoriesContainer.innerHTML = '';
+            const allCard = document.createElement('div');
+            allCard.className = 'subcategory-card active';
+            allCard.dataset.subcategory = 'all';
+            allCard.textContent = 'Все подкатегории';
+            subcategoriesContainer.appendChild(allCard);
+            const scPlaceholders = getSubcategoryPlaceholders();
+            try {
+                const scOrder = getSubcategoryOrderFor(categoryName);
+                if (scOrder && scOrder.length) {
+                    const idx = new Map(scOrder.map((name, i) => [name, i]));
+                    catObj.subcategories.sort((a, b) => (idx.get(a.name) ?? 1e9) - (idx.get(b.name) ?? 1e9));
                 }
-                
-                // 🔥 ВОЗВРАЩАЕМ карточку в qaUserCards если она была удалена
-                const userCards = getQaUserCards();
-                if (userCards && !userCards.some(c => c.question === q) && itemData) {
-                    // Ищем позицию где была карточка (по индексу в serverTrashItems)
-                    const trashIndex = serverTrashItems.findIndex(t => t.item?.question === q);
-                    if (trashIndex >= 0) {
-                        // Вставляем на примерную позицию
-                        userCards.push(itemData);
-                        setQaUserCards(userCards);
-                        console.log('[restore-click(inner)] Карточка возвращена в qaUserCards');
-                    }
-                }
-
-                console.log('[restore-click(inner)] Локальные кеши обновлены', {
-                    serverTrashSetSize: serverTrashSet.size,
-                    delMapSize: Object.keys(getDeletedItems()).length
-                });
-                renderTrashPanel();
-                // Обновляем без сброса контекста
-                refreshCurrentContext();
-                // Пытаемся восстановить на сервере
-                let restoreOk = false;
-                try { restoreOk = await restoreFromServerTrash([q]); } catch (_) { restoreOk = false; }
-                if (!restoreOk) {
-                    // Обновляем корзину с сервера на случай рассинхронизации
-                    try { await refreshServerTrash(); } catch (_) {}
-                    setSaveStatus('error', 'Сервер восстановления недоступен');
-                    restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
-                } else {
-                    // Карточка уже восстановлена
-                    setSaveStatus('success', 'Карточка восстановлена');
-                    restoreBtn.textContent = 'Готово'; setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
-                }
+            } catch { }
+            catObj.subcategories.forEach(subcategory => {
+                const card = document.createElement('div');
+                card.className = 'subcategory-card';
+                card.dataset.subcategory = subcategory.id;
+                const activeTab = tabsContainer.querySelector('.tab.active');
+                card.dataset.category = activeTab?.dataset?.category || '';
+                const displayName = (scPlaceholders[categoryName] && scPlaceholders[categoryName][subcategory.name] && scPlaceholders[categoryName][subcategory.name].displayName) || subcategory.name;
+                card.dataset.subcatOriginalName = subcategory.name;
+                card.textContent = displayName;
+                subcategoriesContainer.appendChild(card);
             });
-
-            // Окончательное удаление
-            purgeBtn.addEventListener('click', async () => {
-                purgeBtn.textContent = 'Удаление...'; purgeBtn.disabled = true;
-                
-                // 🔒 Получаем username
-                const sessionUserRaw = localStorage.getItem('qaSessionUser');
-                let username = 'guest';
-                try {
-                    const u = JSON.parse(sessionUserRaw);
-                    if (u && u.username) username = u.username;
-                } catch {}
-                
-                try {
-                    const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ questions: [q] })
+            refreshSubcategoryEditMenus(categoryName);
+            if (editMode) {
+                const cards = Array.from(subcategoriesContainer.querySelectorAll('.subcategory-card')).filter(c => c.dataset.subcategory !== 'all');
+                const currentOrder = cards.map(c => c.dataset.subcatOriginalName);
+                cards.forEach(el => {
+                    el.setAttribute('draggable', 'true');
+                    el.addEventListener('dragstart', (ev) => {
+                        ev.dataTransfer.setData('text/plain', el.dataset.subcatOriginalName);
                     });
-                    if (resp.ok) {
-                        // Удаляем из серверной корзины и локальных кэшей
-                        serverTrashSet.delete(q);
-                        serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                        // Помечаем как удалённый локально
-                        const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
-                        // Если карточка была среди новых, удалим её
-                        const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
-                        
-                        // 🔒 Обновляем localStorage с корзиной
-                        const localTrash = localStorage.getItem('qaUserTrash');
-                        if (localTrash) {
-                            const trash = JSON.parse(localTrash);
-                            const newTrash = trash.filter(t => t.item?.question !== q);
-                            localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
+                    el.addEventListener('dragover', (ev) => { ev.preventDefault(); });
+                    el.addEventListener('drop', (ev) => {
+                        ev.preventDefault();
+                        const fromName = ev.dataTransfer.getData('text/plain');
+                        const toName = el.dataset.subcatOriginalName;
+                        if (!fromName || !toName || fromName === toName) return;
+                        const names = [...currentOrder];
+                        const fromIdx = names.indexOf(fromName);
+                        const toIdx = names.indexOf(toName);
+                        if (fromIdx < 0 || toIdx < 0) return;
+                        const [moved] = names.splice(fromIdx, 1);
+                        names.splice(toIdx, 0, moved);
+                        setSubcategoryOrderFor(categoryName, names);
+                        (async () => {
+                            setSaveStatus('saving', 'Сохранение порядка подкатегорий...');
+                            const meta = await getServerMetadata();
+                            meta.subcategoryOrder = meta.subcategoryOrder || {};
+                            meta.subcategoryOrder[categoryName] = names;
+                            const ok = await updateServerMetadata(meta);
+                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок сохранён' : 'Ошибка сохранения');
+                            rebuildSubcategoriesForCategory(categoryName);
+                        })();
+                    });
+                });
+            }
+        }
+
+        function renderTrashPanel() {
+            if (!editMode) return;
+            const catDiv = trashPanel.querySelector('#trash-categories');
+            const cardDiv = trashPanel.querySelector('#trash-cards');
+            catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
+            // Список удалённых вопросов + сортировка по оригинальному порядку ("Все вопросы")
+            const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
+            const baseOrder = getOrderForContext('all') || getRuntimeData().map(i => i.question);
+            const idxMap = new Map(baseOrder.map((q, i) => [q, i]));
+            const sortedTrash = [...serverTrashItems].sort((a, b) =>
+                (idxMap.get(a.item?.question) ?? 1e9) - (idxMap.get(b.item?.question) ?? 1e9)
+            );
+            // Header + grid container
+            cardDiv.innerHTML = '';
+            const header = document.createElement('div');
+            header.innerHTML = '<strong>Карточки:</strong>' + (deletedCards.length ? '' : ' <span>Пусто</span>');
+            cardDiv.appendChild(header);
+            const grid = document.createElement('div');
+            grid.className = 'trash-cards-grid';
+            cardDiv.appendChild(grid);
+
+            sortedTrash.forEach(entry => {
+                const q = entry.item?.question;
+                const it = entry.item || uniqueQaData.find(i => i.question === q) || getNewItems().find(i => i.question === q);
+                const mini = document.createElement('div');
+                mini.className = 'result-item trash-mini';
+
+                // Верхняя зона: теги (категория, подкатегория)
+                const meta = document.createElement('div');
+                meta.className = 'trash-meta';
+                meta.style.display = 'flex';
+                meta.style.flexWrap = 'wrap';
+                meta.style.gap = '6px';
+                const catBadge = document.createElement('span'); catBadge.className = 'category-badge'; catBadge.textContent = (it && it.category) ? it.category : '';
+                const subBadge = document.createElement('span'); subBadge.className = 'subcategory-badge'; subBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
+                meta.appendChild(catBadge); meta.appendChild(subBadge);
+
+                // Вопрос
+                const qText = document.createElement('div');
+                qText.className = 'question';
+                qText.textContent = it?.question || q;
+                qText.style.marginTop = '6px';
+
+                // Ответ
+                const aEl = document.createElement('div');
+                aEl.className = 'answer';
+                aEl.textContent = it?.answer || '';
+                aEl.style.marginTop = '6px';
+
+                // Действия (восстановить / удалить навсегда) внизу
+                const actions = document.createElement('div');
+                actions.className = 'trash-actions';
+                actions.style.display = 'flex';
+                actions.style.gap = '8px';
+                actions.style.marginTop = '8px';
+                const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Восстановить';
+                const purgeBtn = document.createElement('button'); purgeBtn.className = 'purge-btn'; purgeBtn.textContent = 'Удалить навсегда';
+                actions.appendChild(restoreBtn);
+                actions.appendChild(purgeBtn);
+
+                mini.appendChild(meta);
+                mini.appendChild(qText);
+                mini.appendChild(aEl);
+                mini.appendChild(actions);
+
+                // Оптимистичное восстановление с сохранением на сервер
+                restoreBtn.addEventListener('click', async () => {
+                    console.log('[restore-click(inner)] Запрошено восстановление', {
+                        question: q,
+                        inUnique: !!uniqueQaData.find(i => i.question === q),
+                        inNewItems: !!getNewItems().find(i => i.question === q),
+                        inServerTrashSet: serverTrashSet.has(q),
+                        wasDeletedLocally: !!getDeletedItems()[q]
+                    });
+                    restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
+
+                    // Находим карточку в serverTrashItems, чтобы получить её данные
+                    const trashItem = serverTrashItems.find(t => t.item?.question === q);
+                    const itemData = trashItem?.item;
+
+                    // Удаляем из локального кэша корзины сразу
+                    serverTrashSet.delete(q);
+                    serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
+                    // Очищаем локальную карту удалений для этой карточки, если была помечена
+                    const delMap = getDeletedItems();
+                    if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
+
+                    // 🔥 ВАЖНО: Если карточки нет в uniqueQaData (дубликат), добавляем её в qaNewItems
+                    const isInUnique = !!uniqueQaData.find(i => i.question === q);
+                    if (!isInUnique && itemData) {
+                        const newItems = getNewItems();
+                        // Проверяем, нет ли уже такой карточки в newItems
+                        if (!newItems.some(n => n.question === q)) {
+                            newItems.push(itemData);
+                            localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+                            console.log('[restore-click(inner)] Дубликат добавлен в qaNewItems');
                         }
-                        
-                        // Обновляем UI
-                        renderTrashPanel();
-                        refreshCurrentContext();
-                        try { await saveMergedToServer(); } catch {}
-                        setSaveStatus('success', 'Карточка удалена навсегда');
-                    } else {
-                        const error = await resp.text();
-                        console.error('[delete-permanent] Ошибка:', resp.status, error);
-                        setSaveStatus('error', 'Ошибка: ' + error);
                     }
-                } catch (e) {
-                    console.error('[delete-permanent] Ошибка:', e);
-                    setSaveStatus('error', 'Сервер удаления недоступен');
-                }
-                purgeBtn.textContent = 'Удалить навсегда'; purgeBtn.disabled = false;
+
+                    // 🔥 ВОЗВРАЩАЕМ карточку в qaUserCards если она была удалена
+                    const userCards = getQaUserCards();
+                    if (userCards && !userCards.some(c => c.question === q) && itemData) {
+                        // Ищем позицию где была карточка (по индексу в serverTrashItems)
+                        const trashIndex = serverTrashItems.findIndex(t => t.item?.question === q);
+                        if (trashIndex >= 0) {
+                            // Вставляем на примерную позицию
+                            userCards.push(itemData);
+                            setQaUserCards(userCards);
+                            console.log('[restore-click(inner)] Карточка возвращена в qaUserCards');
+                        }
+                    }
+
+                    console.log('[restore-click(inner)] Локальные кеши обновлены', {
+                        serverTrashSetSize: serverTrashSet.size,
+                        delMapSize: Object.keys(getDeletedItems()).length
+                    });
+                    renderTrashPanel();
+                    // Обновляем без сброса контекста
+                    refreshCurrentContext();
+                    // Пытаемся восстановить на сервере
+                    let restoreOk = false;
+                    try { restoreOk = await restoreFromServerTrash([q]); } catch (_) { restoreOk = false; }
+                    if (!restoreOk) {
+                        // Обновляем корзину с сервера на случай рассинхронизации
+                        try { await refreshServerTrash(); } catch (_) { }
+                        setSaveStatus('error', 'Сервер восстановления недоступен');
+                        restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
+                    } else {
+                        // Карточка уже восстановлена
+                        setSaveStatus('success', 'Карточка восстановлена');
+                        restoreBtn.textContent = 'Готово'; setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
+                    }
+                });
+
+                // Окончательное удаление
+                purgeBtn.addEventListener('click', async () => {
+                    purgeBtn.textContent = 'Удаление...'; purgeBtn.disabled = true;
+
+                    // 🔒 Получаем username
+                    const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                    let username = 'guest';
+                    try {
+                        const u = JSON.parse(sessionUserRaw);
+                        if (u && u.username) username = u.username;
+                    } catch { }
+
+                    try {
+                        const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ questions: [q] })
+                        });
+                        if (resp.ok) {
+                            // Удаляем из серверной корзины и локальных кэшей
+                            serverTrashSet.delete(q);
+                            serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
+                            // Помечаем как удалённый локально
+                            const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
+                            // Если карточка была среди новых, удалим её
+                            const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
+
+                            // 🔒 Обновляем localStorage с корзиной
+                            const localTrash = localStorage.getItem('qaUserTrash');
+                            if (localTrash) {
+                                const trash = JSON.parse(localTrash);
+                                const newTrash = trash.filter(t => t.item?.question !== q);
+                                localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
+                            }
+
+                            // Обновляем UI
+                            renderTrashPanel();
+                            refreshCurrentContext();
+                            try { await saveMergedToServer(); } catch { }
+                            setSaveStatus('success', 'Карточка удалена навсегда');
+                        } else {
+                            const error = await resp.text();
+                            console.error('[delete-permanent] Ошибка:', resp.status, error);
+                            setSaveStatus('error', 'Ошибка: ' + error);
+                        }
+                    } catch (e) {
+                        console.error('[delete-permanent] Ошибка:', e);
+                        setSaveStatus('error', 'Сервер удаления недоступен');
+                    }
+                    purgeBtn.textContent = 'Удалить навсегда'; purgeBtn.disabled = false;
+                });
+
+                grid.appendChild(mini);
             });
+        }
 
-            grid.appendChild(mini);
-        });
-    }
+        // Удалена старая логика второго модального окна входа
 
-    // Удалена старая логика второго модального окна входа
-
-    editToggleBtn.addEventListener('click', () => {
-        editMode = !editMode;
-        // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
-        try { setNormalizationDisabled(editMode); } catch {}
-        // Позиция кнопок ✎ и Вход НЕ меняется — остаются над категориями
-        // Показать/скрыть панель корзины и перенести её в левую боковую панель
-        const sidebar = document.querySelector('.sidebar');
-        const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
-        const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
-        if (editMode) {
-            if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при включении режима
-            trashPanel.style.display = 'block';
-            // добавить квадрат с иконкой мусорного ведра в заголовок боковой панели
-            if (sidebarButtons && !sidebarButtons.querySelector('#trash-mode-button')) {
-                const trashBtn = document.createElement('button');
-                trashBtn.id = 'trash-mode-button';
-                trashBtn.title = 'Корзина';
-                trashBtn.setAttribute('aria-label', 'Корзина');
-                trashBtn.className = 'nav-icon-btn';
-                trashBtn.style.padding = '6px';
-                trashBtn.style.minWidth = 'auto';
-                trashBtn.innerHTML = `
+        editToggleBtn.addEventListener('click', () => {
+            editMode = !editMode;
+            // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
+            try { setNormalizationDisabled(editMode); } catch { }
+            // Позиция кнопок ✎ и Вход НЕ меняется — остаются над категориями
+            // Показать/скрыть панель корзины и перенести её в левую боковую панель
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
+            const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
+            if (editMode) {
+                if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при включении режима
+                trashPanel.style.display = 'block';
+                // добавить квадрат с иконкой мусорного ведра в заголовок боковой панели
+                if (sidebarButtons && !sidebarButtons.querySelector('#trash-mode-button')) {
+                    const trashBtn = document.createElement('button');
+                    trashBtn.id = 'trash-mode-button';
+                    trashBtn.title = 'Корзина';
+                    trashBtn.setAttribute('aria-label', 'Корзина');
+                    trashBtn.className = 'nav-icon-btn';
+                    trashBtn.style.padding = '6px';
+                    trashBtn.style.minWidth = 'auto';
+                    trashBtn.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                         <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" fill="currentColor" />
                         <path d="M6 9h12l-1 10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9z" fill="currentColor" />
                     </svg>`;
-                sidebarButtons.appendChild(trashBtn);
-            }
-            // перенести саму панель корзины в левую панель, сразу под заголовком
-            if (sidebar && searchHistory) {
-                try { sidebar.insertBefore(trashPanel, searchHistory); } catch {}
-            }
-            container.classList.add('edit-mode');
-        } else {
-            trashPanel.style.display = 'none';
-            // убрать индикатор корзины из заголовка боковой панели
-            const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
-            if (existingTrashBtn) existingTrashBtn.remove();
-            container.classList.remove('edit-mode');
-        }
-        try { localStorage.setItem('qaEditMode', editMode ? 'true' : 'false'); } catch {}
-        refreshCategoryEditMenus();
-        // Обновляем вкладки категорий, чтобы включить/отключить перетаскивание
-        refreshCategoriesTabs();
-        renderTrashPanel();
-        refreshCurrentContext();
-    });
-
-    // Обработчики панели управления - удалены (legacy)
-
-
-    function setSaveStatus(state, msg) {
-        const statusEl = document.getElementById('global-toast-notification') || (() => {
-            const el = document.createElement('div');
-            el.id = 'global-toast-notification';
-            el.style.position = 'fixed';
-            el.style.top = '20px';
-            el.style.left = '50%';
-            el.style.transform = 'translateX(-50%)';
-            el.style.zIndex = '9999';
-            el.style.padding = '8px 16px';
-            el.style.borderRadius = '6px';
-            el.style.fontSize = '14px';
-            el.style.fontWeight = '500';
-            el.style.display = 'none';
-            el.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
-            document.body.appendChild(el);
-            return el;
-        })();
-
-        if (state === 'saving') {
-            statusEl.style.display = 'block';
-            statusEl.style.background = '#333';
-            statusEl.style.color = '#eee';
-            statusEl.style.border = '1px solid #444';
-            statusEl.textContent = msg || 'Сохранение...';
-        } else if (state === 'success') {
-            statusEl.style.display = 'block';
-            statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Зеленый фон
-            statusEl.style.color = '#ffffff';
-            statusEl.style.border = '1px solid #2a6b2a';
-            statusEl.textContent = msg || 'Сохранено';
-            setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
-        } else if (state === 'error') {
-            statusEl.style.display = 'block';
-            statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // Красный фон
-            statusEl.style.color = '#ffffff';
-            statusEl.style.border = '1px solid #8b2a2a';
-            statusEl.textContent = msg || 'Ошибка сохранения';
-            setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
-        }
-    }
-
-    async function saveMergedToServer() {
-        try {
-            setSaveStatus('saving');
-            const overrides = getOverrides();
-            const newItems = getNewItems();
-            const deletedMap = getDeletedItems();
-            const merged = [];
-            const seen = new Set();
-            // Базовые элементы + overrides
-            uniqueQaData.forEach(item => {
-                if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
-                const ov = overrides[item.question];
-                const mergedItem = ov ? { ...item, ...ov } : item;
-                merged.push(mergedItem);
-                seen.add(item.question);
-            });
-            // Новые элементы + их возможные overrides
-            newItems.forEach(n => {
-                if (!seen.has(n.question) && !deletedMap[n.question] && !serverTrashSet.has(n.question)) {
-                    const ov = overrides[n.question];
-                    merged.push(ov ? { ...n, ...ov } : n);
-                    seen.add(n.question);
+                    sidebarButtons.appendChild(trashBtn);
                 }
-            });
-            // Отправка на сервер
-            const resp = await fetchWithAuth('/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(merged)
-            });
-            let ok = resp.ok;
-            let responseJson = null;
+                // перенести саму панель корзины в левую панель, сразу под заголовком
+                if (sidebar && searchHistory) {
+                    try { sidebar.insertBefore(trashPanel, searchHistory); } catch { }
+                }
+                container.classList.add('edit-mode');
+            } else {
+                trashPanel.style.display = 'none';
+                // убрать индикатор корзины из заголовка боковой панели
+                const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
+                if (existingTrashBtn) existingTrashBtn.remove();
+                container.classList.remove('edit-mode');
+            }
+            try { localStorage.setItem('qaEditMode', editMode ? 'true' : 'false'); } catch { }
+            refreshCategoryEditMenus();
+            // Обновляем вкладки категорий, чтобы включить/отключить перетаскивание
+            refreshCategoriesTabs();
+            renderTrashPanel();
+            refreshCurrentContext();
+        });
+
+        // Обработчики панели управления - удалены (legacy)
+
+
+        function setSaveStatus(state, msg) {
+            const statusEl = document.getElementById('global-toast-notification') || (() => {
+                const el = document.createElement('div');
+                el.id = 'global-toast-notification';
+                el.style.position = 'fixed';
+                el.style.top = '20px';
+                el.style.left = '50%';
+                el.style.transform = 'translateX(-50%)';
+                el.style.zIndex = '9999';
+                el.style.padding = '8px 16px';
+                el.style.borderRadius = '6px';
+                el.style.fontSize = '14px';
+                el.style.fontWeight = '500';
+                el.style.display = 'none';
+                el.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+                document.body.appendChild(el);
+                return el;
+            })();
+
+            if (state === 'saving') {
+                statusEl.style.display = 'block';
+                statusEl.style.background = '#333';
+                statusEl.style.color = '#eee';
+                statusEl.style.border = '1px solid #444';
+                statusEl.textContent = msg || 'Сохранение...';
+            } else if (state === 'success') {
+                statusEl.style.display = 'block';
+                statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Зеленый фон
+                statusEl.style.color = '#ffffff';
+                statusEl.style.border = '1px solid #2a6b2a';
+                statusEl.textContent = msg || 'Сохранено';
+                setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
+            } else if (state === 'error') {
+                statusEl.style.display = 'block';
+                statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // Красный фон
+                statusEl.style.color = '#ffffff';
+                statusEl.style.border = '1px solid #8b2a2a';
+                statusEl.textContent = msg || 'Ошибка сохранения';
+                setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+            }
+        }
+
+        async function saveMergedToServer() {
             try {
-                responseJson = await resp.json();
-                if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
-            } catch (_) {
-                // Сервер мог вернуть пустой ответ — ориентируемся только на статус
-            }
-            if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
-
-            // Успешно сохранили — уведомляем и принудительно перезагружаем данные из JSON
-            setSaveStatus('success');
-            // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
-            setTimeout(() => {
-                window.dispatchEvent(new Event('forceReloadData'));
-            }, 50);
-            return true;
-        } catch (e) {
-            console.error('Save failed:', e);
-            setSaveStatus('error', 'Ошибка: ' + e.message);
-            return false;
-        }
-    }
-
-    // New server-side helper functions
-    async function moveToServerTrash(items) {
-        try {
-            const resp = await fetchWithAuth('/trash', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    items: items,
-                    deleted_by: loggedInUser?.email || 'anonymous'
-                })
-            });
-            return resp.ok;
-        } catch (e) {
-            console.error('Trash operation failed:', e);
-            return false;
-        }
-    }
-
-    async function restoreFromServerTrash(questions) {
-        try {
-            const resp = await fetchWithAuth('/restore', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ questions: questions })
-            });
-            return resp.ok;
-        } catch (e) {
-            console.error('Restore operation failed:', e);
-            return false;
-        }
-    }
-
-    async function trackServerDuplication(originalQuestion, newQuestion) {
-        try {
-            // Получаем username из сессии
-            const sessionUserRaw = localStorage.getItem('qaSessionUser');
-            let username = 'anonymous';
-            if (sessionUserRaw) {
+                setSaveStatus('saving');
+                const overrides = getOverrides();
+                const newItems = getNewItems();
+                const deletedMap = getDeletedItems();
+                const merged = [];
+                const seen = new Set();
+                // Базовые элементы + overrides
+                uniqueQaData.forEach(item => {
+                    if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
+                    const ov = overrides[item.question];
+                    const mergedItem = ov ? { ...item, ...ov } : item;
+                    merged.push(mergedItem);
+                    seen.add(item.question);
+                });
+                // Новые элементы + их возможные overrides
+                newItems.forEach(n => {
+                    if (!seen.has(n.question) && !deletedMap[n.question] && !serverTrashSet.has(n.question)) {
+                        const ov = overrides[n.question];
+                        merged.push(ov ? { ...n, ...ov } : n);
+                        seen.add(n.question);
+                    }
+                });
+                // Отправка на сервер
+                const resp = await fetchWithAuth('/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(merged)
+                });
+                let ok = resp.ok;
+                let responseJson = null;
                 try {
-                    const user = JSON.parse(sessionUserRaw);
-                    if (user && user.username) username = user.username;
-                } catch {}
+                    responseJson = await resp.json();
+                    if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
+                } catch (_) {
+                    // Сервер мог вернуть пустой ответ — ориентируемся только на статус
+                }
+                if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
+
+                // Успешно сохранили — уведомляем и принудительно перезагружаем данные из JSON
+                setSaveStatus('success');
+                // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('forceReloadData'));
+                }, 50);
+                return true;
+            } catch (e) {
+                console.error('Save failed:', e);
+                setSaveStatus('error', 'Ошибка: ' + e.message);
+                return false;
             }
-            
-            const resp = await fetch(`/duplicate?user=${encodeURIComponent(username)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    items: [{
-                        original_question: originalQuestion,
-                        new_question: newQuestion
-                    }],
-                    duplicated_by: username
-                })
-            });
-            return resp.ok;
-        } catch (e) {
-            console.error('Duplicate tracking failed:', e);
-            return false;
         }
-    }
+
+        // New server-side helper functions
+        async function moveToServerTrash(items) {
+            try {
+                const resp = await fetchWithAuth('/trash', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: items,
+                        deleted_by: loggedInUser?.email || 'anonymous'
+                    })
+                });
+                return resp.ok;
+            } catch (e) {
+                console.error('Trash operation failed:', e);
+                return false;
+            }
+        }
+
+        async function restoreFromServerTrash(questions) {
+            try {
+                const resp = await fetchWithAuth('/restore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ questions: questions })
+                });
+                return resp.ok;
+            } catch (e) {
+                console.error('Restore operation failed:', e);
+                return false;
+            }
+        }
+
+        async function trackServerDuplication(originalQuestion, newQuestion) {
+            try {
+                // Получаем username из сессии
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                let username = 'anonymous';
+                if (sessionUserRaw) {
+                    try {
+                        const user = JSON.parse(sessionUserRaw);
+                        if (user && user.username) username = user.username;
+                    } catch { }
+                }
+
+                const resp = await fetch(`/duplicate?user=${encodeURIComponent(username)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: [{
+                            original_question: originalQuestion,
+                            new_question: newQuestion
+                        }],
+                        duplicated_by: username
+                    })
+                });
+                return resp.ok;
+            } catch (e) {
+                console.error('Duplicate tracking failed:', e);
+                return false;
+            }
+        }
 
 
-    function addCategoryPlaceholderFlow() {
-        const name = prompt('Название новой категории:');
-        if (!name) return;
-        const placeholders = getCategoryPlaceholders();
-        const id = Math.max(0, ...Object.values(placeholders).map(v => v._cid || 0)) + 1;
-        if (!placeholders[name]) placeholders[name] = { _cid: id, sub: [] };
-        setCategoryPlaceholders(placeholders);
-        alert('Категория добавлена. Появится в меню.');
-    }
-    function deleteCategoryFlow() {
-        const name = prompt('Название категории для удаления:');
-        if (!name) return;
-        if (!confirm(`Удалить категорию "${name}" и вс�� её карточки?`)) return;
-        const placeholders = getCategoryPlaceholders();
-        delete placeholders[name];
-        setCategoryPlaceholders(placeholders);
-        const del = getDeletedItems();
-        uniqueQaData.forEach(item => {
-            if (item.category === name) del[item.question] = true;
-        });
-        setDeletedItems(del);
-        alert('Категория отмечена как удалённая. Сохраните, чтобы применить.');
-    }
-    function addSubcategoryFlow() {
-        const cat = prompt('Категория:');
-        if (!cat) return;
-        const sub = prompt('Название новой подкатегории:');
-        if (!sub) return;
-        const placeholders = getCategoryPlaceholders();
-        if (!placeholders[cat]) placeholders[cat] = { _cid: Date.now(), sub: [] };
-        const id = Math.max(0, ...placeholders[cat].sub.map(s => s._sid || 0)) + 1;
-        placeholders[cat].sub.push({ name: sub, _sid: id });
-        setCategoryPlaceholders(placeholders);
-        alert('Подкатегория добавл��на. Появится в меню.');
-    }
-    function deleteSubcategoryFlow() {
-        const cat = prompt('Категория:');
-        if (!cat) return;
-        const sub = prompt('Подкатегория для удаления:');
-        if (!sub) return;
-        const placeholders = getCategoryPlaceholders();
-        if (placeholders[cat]) {
-            placeholders[cat].sub = placeholders[cat].sub.filter(s => s.name !== sub);
+        function addCategoryPlaceholderFlow() {
+            const name = prompt('Название новой категории:');
+            if (!name) return;
+            const placeholders = getCategoryPlaceholders();
+            const id = Math.max(0, ...Object.values(placeholders).map(v => v._cid || 0)) + 1;
+            if (!placeholders[name]) placeholders[name] = { _cid: id, sub: [] };
             setCategoryPlaceholders(placeholders);
+            alert('Категория добавлена. Появится в меню.');
         }
-        const del = getDeletedItems();
-        uniqueQaData.forEach(item => {
-            if (item.category === cat && item.subcategory === sub) del[item.question] = true;
-        });
-        setDeletedItems(del);
-        alert('Подкатегория отмечена как удалённая. Сохраните, чтобы применить.');
-    }
+        function deleteCategoryFlow() {
+            const name = prompt('Название категории для удаления:');
+            if (!name) return;
+            if (!confirm(`Удалить категорию "${name}" и все её карточки?`)) return;
+            const placeholders = getCategoryPlaceholders();
+            delete placeholders[name];
+            setCategoryPlaceholders(placeholders);
+            const del = getDeletedItems();
+            uniqueQaData.forEach(item => {
+                if (item.category === name) del[item.question] = true;
+            });
+            setDeletedItems(del);
+            alert('Категория отмечена как удалённая. Сохраните, чтобы применить.');
+        }
+        function addSubcategoryFlow() {
+            const cat = prompt('Категория:');
+            if (!cat) return;
+            const sub = prompt('Название новой подкатегории:');
+            if (!sub) return;
+            const placeholders = getCategoryPlaceholders();
+            if (!placeholders[cat]) placeholders[cat] = { _cid: Date.now(), sub: [] };
+            const id = Math.max(0, ...placeholders[cat].sub.map(s => s._sid || 0)) + 1;
+            placeholders[cat].sub.push({ name: sub, _sid: id });
+            setCategoryPlaceholders(placeholders);
+            alert('Подкатегория добавлена. Появится в меню.');
+        }
+        function deleteSubcategoryFlow() {
+            const cat = prompt('Категория:');
+            if (!cat) return;
+            const sub = prompt('Подкатегория для удаления:');
+            if (!sub) return;
+            const placeholders = getCategoryPlaceholders();
+            if (placeholders[cat]) {
+                placeholders[cat].sub = placeholders[cat].sub.filter(s => s.name !== sub);
+                setCategoryPlaceholders(placeholders);
+            }
+            const del = getDeletedItems();
+            uniqueQaData.forEach(item => {
+                if (item.category === cat && item.subcategory === sub) del[item.question] = true;
+            });
+            setDeletedItems(del);
+            alert('Подкатегория отмечена как удалённая. Сохраните, чтобы применить.');
+        }
 
     } catch (e) {
         console.error('CRITICAL ERROR in initTabsNavigation:', e);
@@ -2594,14 +2594,45 @@ async function saveMergedToServer(skipReload = false) {
         console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ ===');
         window.dispatchEvent(new Event('sync-start'));
 
+        // 🔍 ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
+        const fixEncoding = (text) => {
+            if (!text) return text;
+            return text
+                .replace(/\uFFFD/g, '?')  // U+FFFD → ?
+                .replace(/Д\?{1,10}кументация/g, 'Документация')
+                .replace(/инфу о\? сервера/g, 'инфу от сервера')
+                .replace(/получа\?м/g, 'получаем')
+                .replace(/се\?{1,5}висы/g, 'сервисы');
+        };
+        
+        // Исправляем overrides перед отправкой
         const overrides = getOverrides();
+        const fixedOverrides = {};
+        let hasFixes = false;
+        for (const key in overrides) {
+            const ov = overrides[key];
+            const fixedOv = {};
+            for (const field in ov) {
+                const original = ov[field];
+                const fixed = fixEncoding(original);
+                fixedOv[field] = fixed;
+                if (original !== fixed) hasFixes = true;
+            }
+            fixedOverrides[key] = fixedOv;
+        }
+        
+        if (hasFixes) {
+            console.warn('[saveMergedToServer] ⚠️ Данные были исправлены перед отправкой (поврежденная кодировка)');
+            setOverrides(fixedOverrides);
+        }
+        
         const newItems = getNewItems();
         const deletedMap = getDeletedItems();
         const merged = [];
         const seen = new Set();
         console.log('[saveMergedToServer] Параметры', {
             baseCount: uniqueQaData.length,
-            overridesCount: Object.keys(overrides || {}).length,
+            overridesCount: Object.keys(fixedOverrides || {}).length,
             newItemsCount: Array.isArray(newItems) ? newItems.length : 0,
             deletedCount: Object.keys(deletedMap || {}).length,
             serverTrashCount: serverTrashSet.size
@@ -2621,16 +2652,16 @@ async function saveMergedToServer(skipReload = false) {
         newItems.forEach(n => {
             const isDeleted = deletedMap[n.question] || serverTrashSet.has(n.question);
             const isAlreadyAdded = seen.has(n.question);
-            
-            // Пропускаем ������далённые и уже добавленные
+
+            // Пропускаем удалённые и уже добавленные
             if (isDeleted || isAlreadyAdded) return;
-            
+
             // Добавляем новый элемент с применёнными overrides
             const ov = overrides[n.question];
             merged.push(ov ? { ...n, ...ov } : n);
             seen.add(n.question);
         });
-        
+
         // Также проверяем qaUserCards на наличие элементов, которых нет ни в base, ни в newItems
         // Это нужно для случаев, когда дубликаты уже сохранены в localStorage
         try {
@@ -2649,12 +2680,12 @@ async function saveMergedToServer(skipReload = false) {
                             const isInServerTrash = serverTrashSet.has(uc.question);
                             const isInLocalDeleted = deletedMap[uc.question];
                             const isDeleted = isInLocalDeleted || (isInServerTrash && !uc.question.includes('копия'));
-                            
+
                             const isAlreadyAdded = seen.has(uc.question);
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
 
-                            // До��ав��яе�� только е��ли эт�� пользовательская карточка, которой нет в базе и новых элементах
+                            // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
                                 const ov = overrides[uc.question];
                                 merged.push(ov ? { ...uc, ...ov } : uc);
@@ -2664,7 +2695,7 @@ async function saveMergedToServer(skipReload = false) {
                         });
                         console.log('[saveMergedToServer] Проверено карточек:', checkedCount, 'Добавлено:', addedCount);
                         if (addedCount > 0) {
-                            console.log('[saveMergedToServer] Добавлено пользовательских карточ��к:', addedCount);
+                            console.log('[saveMergedToServer] Добавлено пользовательских карточек:', addedCount);
                         }
                     }
                 }
@@ -2684,8 +2715,28 @@ async function saveMergedToServer(skipReload = false) {
             const sessionUserRaw = localStorage.getItem('qaSessionUser');
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
-        } catch {}
+        } catch { }
         console.log('[saveMergedToServer] Пользователь:', username || 'guest');
+
+        // 🔍 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
+        const fixedMerged = merged.map(card => {
+            const fixedCard = {};
+            let hasFixes = false;
+            for (const key in card) {
+                const original = card[key];
+                if (typeof original === 'string') {
+                    const fixed = fixEncoding(original);
+                    fixedCard[key] = fixed;
+                    if (original !== fixed) hasFixes = true;
+                } else {
+                    fixedCard[key] = original;
+                }
+            }
+            if (hasFixes) {
+                console.warn(`[saveMergedToServer] Исправлена карточка: ${card.question?.substring(0, 30)}...`);
+            }
+            return fixedCard;
+        });
 
         const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
         console.log('[saveMergedToServer] POST', url);
@@ -2693,7 +2744,7 @@ async function saveMergedToServer(skipReload = false) {
         const resp = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(merged)
+            body: JSON.stringify(fixedMerged)
         });
         let ok = resp.ok;
         let responseJson = null;
@@ -2721,14 +2772,14 @@ async function saveMergedToServer(skipReload = false) {
         try {
             setQaUserCards(merged);
             console.log('[saveMergedToServer] qaUserCards обновлён:', merged.length, 'карточек');
-            
+
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
             if (Array.isArray(newItems) && newItems.length > 0) {
                 localStorage.setItem('qaNewItems', JSON.stringify([]));
                 console.log('[saveMergedToServer] qaNewItems очищен:', newItems.length, 'элементов перенесено');
             }
-            
+
             // Очищаем qaDeletedItems после успешной синхронизации
             const deletedItems = getDeletedItems();
             if (Object.keys(deletedItems).length > 0) {
@@ -2739,7 +2790,7 @@ async function saveMergedToServer(skipReload = false) {
             console.warn('[saveMergedToServer] Не удалось обновить localStorage:', e);
         }
 
-        // Принудительна�� перезагрузка данных через 50мс
+        // Принудительная перезагрузка данных через 50мс
         setTimeout(() => {
             console.log('[saveMergedToServer] Dispatch forceReloadData');
             if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
@@ -2766,7 +2817,7 @@ async function moveToServerTrash(items) {
         try {
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
-        } catch {}
+        } catch { }
 
         const resp = await fetch(`${BACKEND_URL}/trash?user=${encodeURIComponent(username)}`, {
             method: 'POST',
@@ -2776,12 +2827,12 @@ async function moveToServerTrash(items) {
                 deleted_by: username
             })
         });
-        
+
         if (!resp.ok) {
             const error = await resp.text();
             console.error('[moveToServerTrash] Ошибка сервера:', resp.status, error);
         }
-        
+
         return resp.ok;
     } catch (e) {
         console.error('[moveToServerTrash] Ошибка:', e);
@@ -2797,7 +2848,7 @@ async function restoreFromServerTrash(questions) {
         try {
             const u = JSON.parse(sessionUserRaw);
             if (u && u.username) username = u.username;
-        } catch {}
+        } catch { }
 
         const resp = await fetch(`${BACKEND_URL}/restore?user=${encodeURIComponent(username || 'guest')}`, {
             method: 'POST',
@@ -2806,8 +2857,8 @@ async function restoreFromServerTrash(questions) {
         });
         let ok = resp.ok;
         let jsonResp = null;
-        try { jsonResp = await resp.json(); if (typeof jsonResp?.ok === 'boolean') ok = ok && jsonResp.ok; } catch (_) {}
-        try { window.__lastRestoredQuestion = Array.isArray(questions) ? questions[0] : null; } catch (_) {}
+        try { jsonResp = await resp.json(); if (typeof jsonResp?.ok === 'boolean') ok = ok && jsonResp.ok; } catch (_) { }
+        try { window.__lastRestoredQuestion = Array.isArray(questions) ? questions[0] : null; } catch (_) { }
         console.log('[restoreFromServerTrash] Результат', { ok, restored_count: jsonResp?.restored_count, questions });
         return ok;
     } catch (e) {
@@ -2997,7 +3048,7 @@ function renderTrashPanel() {
                 // Пытаемся восстановить на сервере
                 let ok = false; try { ok = await restoreFromServerTrash([q]); } catch (e) { console.error('[restore-click] Ошибка запроса к серверу /restore', e); ok = false; }
                 if (ok) {
-                    try { await refreshServerTrash(); } catch (_) {}
+                    try { await refreshServerTrash(); } catch (_) { }
                     // Если восстановленной карточки нет в текущем базовом наборе (uniqueQaData)
                     // и она не числится среди новых элементов — добавим её в новые для последующего сохранения.
                     const baseHas = !!uniqueQaData.find(i => i.question === q);
@@ -3006,11 +3057,11 @@ function renderTrashPanel() {
                     if (!baseHas && !newHas && it) {
                         newItemsArr.push({ ...it });
                         setLS('qaNewItems', newItemsArr);
-                        console.log('[restore-click] Карточка до������влена в qaNewItems для сохранения', { question: q });
+                        console.log('[restore-click] Карточка добавлена в qaNewItems для сохранения', { question: q });
                     } else {
-                        console.log('[restore-click] Карточка уже присутствует в ����анных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
+                        console.log('[restore-click] Карточка уже присутствует в данных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
                     }
-                    try { window.__lastRestoredQuestion = q; } catch (_) {}
+                    try { window.__lastRestoredQuestion = q; } catch (_) { }
                     // 🔥 Сохраняем на сервер БЕЗ forceReloadData
                     saveMergedToServer(true).then(saveOk => {
                         if (saveOk) {
@@ -3023,7 +3074,7 @@ function renderTrashPanel() {
                         }
                     });
                 } else {
-                    try { await refreshServerTrash(); } catch (_) {}
+                    try { await refreshServerTrash(); } catch (_) { }
                     setSaveStatus('error', 'Ошибка восстановления на сервере');
                     restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                 }
@@ -3032,15 +3083,15 @@ function renderTrashPanel() {
             // Окончательное удаление (вторая ветка)
             purgeBtn2.addEventListener('click', async () => {
                 purgeBtn2.textContent = 'Удаление...'; purgeBtn2.disabled = true;
-                
+
                 // 🔒 Получаем username
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 let username = 'guest';
                 try {
                     const u = JSON.parse(sessionUserRaw);
                     if (u && u.username) username = u.username;
-                } catch {}
-                
+                } catch { }
+
                 try {
                     const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
                         method: 'POST',
@@ -3052,7 +3103,7 @@ function renderTrashPanel() {
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
                         const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
                         const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
-                        
+
                         // 🔒 Обновляем localStorage с корзиной
                         const localTrash = localStorage.getItem('qaUserTrash');
                         if (localTrash) {
@@ -3060,10 +3111,10 @@ function renderTrashPanel() {
                             const newTrash = trash.filter(t => t.item?.question !== q);
                             localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
                         }
-                        
+
                         renderTrashPanel();
                         refreshCurrentContext();
-                        try { await saveMergedToServer(); } catch {}
+                        try { await saveMergedToServer(); } catch { }
                         setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
                         const error = await resp.text();
@@ -3080,7 +3131,7 @@ function renderTrashPanel() {
     }
 }
 
-// Фун��ция для фильтрации вопросов по категории
+// Функция для фильтрации вопросов по категории
 function filterQuestionsByCategory(categoryName) {
     currentContextKey = `category:${categoryName}`;
     const data = getRuntimeData();
@@ -3101,7 +3152,7 @@ function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     const scMap = scPlaceholders[canonicalCategory] || scPlaceholders[categoryName] || {};
     const canonicalSub = Object.entries(scMap).find(([, v]) => v?.displayName === subcategoryName)?.[0] || subcategoryName;
     const filteredData = data.filter(item => (item.category === canonicalCategory || item.category === categoryName) && (item.subcategory === canonicalSub || item.subcategory === subcategoryName));
-    displayQuestions(filteredData, `Подкатегор����: ${subcategoryName}`);
+    displayQuestions(filteredData, `Подкатегория: ${subcategoryName}`);
 }
 
 // Функция для отображения всех вопросов
@@ -3124,13 +3175,13 @@ function refreshCurrentContext() {
     console.log('[refreshCurrentContext] Called!');
     console.log('[refreshCurrentContext] currentContextKey:', currentContextKey);
     console.log('[refreshCurrentContext] location.hash:', location.hash);
-    
+
     // НЕ показываем вопросы если открыта страница статистики!
     if (location.hash === '#/stats') {
         console.log('[refreshCurrentContext] Stats page detected, skipping showAllQuestions()');
         return;
     }
-    
+
     console.log('[refreshCurrentContext] Stack:', new Error().stack);
     console.log('========================================');
     try {
@@ -3182,175 +3233,175 @@ export function displayQuestions(questions, title) {
         resultsListRef = resultsList;
 
         if (questions.length === 0) {
-             // DEBUG INFO
-             const totalData = uniqueQaData ? uniqueQaData.length : 'N/A';
-             resultsList.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-style: italic;">
+            // DEBUG INFO
+            const totalData = uniqueQaData ? uniqueQaData.length : 'N/A';
+            resultsList.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-style: italic;">
                 Список вопросов пуст
              </div>`;
         } else {
-             // Force display grid
-             resultsList.style.display = 'grid';
-             resultsList.style.visibility = 'visible';
-             resultsList.style.opacity = '1';
-             // Ensure container is visible too
-             const container = resultsList.closest('.results-container');
-             if (container) {
-                 container.style.display = 'block';
-                 container.style.visibility = 'visible';
-                 container.style.opacity = '1';
-             }
+            // Force display grid
+            resultsList.style.display = 'grid';
+            resultsList.style.visibility = 'visible';
+            resultsList.style.opacity = '1';
+            // Ensure container is visible too
+            const container = resultsList.closest('.results-container');
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            }
         }
 
         currentQuestions = [...questions];
 
         // Применяем порядок, если задан
-    const order = getOrderForContext(currentContextKey);
-    if (order && sortMode === 'default') {
-        const idx = new Map(order.map((q, i) => [q, i]));
-        currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
-    }
-    
-    // Получаем прогресс для всех карточек для сортировки и отображения
-    let progressMap = {};
-    try {
-        progressMap = getProgressMap();
-    } catch (e) {
-        console.warn('getProgressMap failed:', e);
-    }
+        const order = getOrderForContext(currentContextKey);
+        if (order && sortMode === 'default') {
+            const idx = new Map(order.map((q, i) => [q, i]));
+            currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
+        }
 
-    // Применяем сортировку по EF (сердечкам), если включена
-    if (sortMode !== 'default') {
-        currentQuestions.sort((a, b) => {
-            const efA = progressMap[a.question]?.easeFactor ?? 2.3;
-            const efB = progressMap[b.question]?.easeFactor ?? 2.3;
-            
-            // 1. Первичная сортировка по EF
-            if (Math.abs(efA - efB) >= 0.001) {
-                 // asc: от меньшего к большему (1.3 -> 2.9) - Самые сложные сначала
-                 return sortMode === 'asc' ? efA - efB : efB - efA;
-            }
+        // Получаем прогресс для всех карточек для сортировки и отображения
+        let progressMap = {};
+        try {
+            progressMap = getProgressMap();
+        } catch (e) {
+            console.warn('getProgressMap failed:', e);
+        }
 
-            // 2. Вторичная сортировка по ID (всегда ASC для стабильности)
-            const idA = parseInt(a.id, 10) || 0;
-            const idB = parseInt(b.id, 10) || 0;
-            if (idA !== idB) {
-                return idA - idB;
-            }
+        // Применяем сортировку по EF (сердечкам), если включена
+        if (sortMode !== 'default') {
+            currentQuestions.sort((a, b) => {
+                const efA = progressMap[a.question]?.easeFactor ?? 2.3;
+                const efB = progressMap[b.question]?.easeFactor ?? 2.3;
 
-            // 3. Третичная сортировка по алфавиту (всегда ASC для стабильности)
-            return a.question.localeCompare(b.question, undefined, { numeric: true, sensitivity: 'base' });
-        });
-    }
-    
-    // Обновляем счетчик результатов (вынесен из grid)
-    let countContainer = document.getElementById('results-count-container');
-    if (!countContainer) {
-        countContainer = document.createElement('div');
-        countContainer.id = 'results-count-container';
-        countContainer.className = 'results-header'; // Use existing class for style
-        countContainer.style.padding = '0 20px 10px 20px';
-        countContainer.style.marginBottom = '0';
-        countContainer.style.display = 'flex';
-        countContainer.style.alignItems = 'center';
-        countContainer.style.gap = '10px';
-        resultsList.parentNode.insertBefore(countContainer, resultsList);
-    }
-    
-    // Иконки сортировки
-    const sortIcons = {
-        default: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5"/></svg>',
-        asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // Стрелка вниз (возрастание)
-        desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // Стрелка вверх (убывание)
-    };
-    const sortTitle = {
-        default: 'Сортировка: По умолчанию',
-        asc: 'Сортировка: От сложных к легким (EF ↑)',
-        desc: 'Сортировка: От легких к сложным (EF ↓)'
-    };
+                // 1. Первичная сортировка по EF
+                if (Math.abs(efA - efB) >= 0.001) {
+                    // asc: от меньшего к большему (1.3 -> 2.9) - Самые сложные сначала
+                    return sortMode === 'asc' ? efA - efB : efB - efA;
+                }
 
-    // Формируем текст счетчика
-    // 🔒 Используем getRuntimeData() для консистентности
-    const runtimeData = getRuntimeData();
-    const totalCount = runtimeData.length;
-    const isFiltered = questions.length !== totalCount;
-    const countText = isFiltered
-        ? `Найдено: ${questions.length} из ${totalCount}`
-        : `Всего карточек: ${questions.length}`;
+                // 2. Вторичная сортировка по ID (всегда ASC для стабильности)
+                const idA = parseInt(a.id, 10) || 0;
+                const idB = parseInt(b.id, 10) || 0;
+                if (idA !== idB) {
+                    return idA - idB;
+                }
 
-    countContainer.innerHTML = `
+                // 3. Третичная сортировка по алфавиту (всегда ASC для стабильности)
+                return a.question.localeCompare(b.question, undefined, { numeric: true, sensitivity: 'base' });
+            });
+        }
+
+        // Обновляем счетчик результатов (вынесен из grid)
+        let countContainer = document.getElementById('results-count-container');
+        if (!countContainer) {
+            countContainer = document.createElement('div');
+            countContainer.id = 'results-count-container';
+            countContainer.className = 'results-header'; // Use existing class for style
+            countContainer.style.padding = '0 20px 10px 20px';
+            countContainer.style.marginBottom = '0';
+            countContainer.style.display = 'flex';
+            countContainer.style.alignItems = 'center';
+            countContainer.style.gap = '10px';
+            resultsList.parentNode.insertBefore(countContainer, resultsList);
+        }
+
+        // Иконки сортировки
+        const sortIcons = {
+            default: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5"/></svg>',
+            asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // Стрелка вниз (возрастание)
+            desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // Стрелка вверх (убывание)
+        };
+        const sortTitle = {
+            default: 'Сортировка: По умолчанию',
+            asc: 'Сортировка: От сложных к легким (EF ↑)',
+            desc: 'Сортировка: От легких к сложным (EF ↓)'
+        };
+
+        // Формируем текст счетчика
+        // 🔒 Используем getRuntimeData() для консистентности
+        const runtimeData = getRuntimeData();
+        const totalCount = runtimeData.length;
+        const isFiltered = questions.length !== totalCount;
+        const countText = isFiltered
+            ? `Найдено: ${questions.length} из ${totalCount}`
+            : `Всего карточек: ${questions.length}`;
+
+        countContainer.innerHTML = `
         <p class="results-count" style="margin:0">${countText}</p>
         <button id="sort-toggle-btn" class="nav-icon-btn" title="${sortTitle[sortMode]}" style="padding:4px 8px; border-radius:4px; border:1px solid #444; background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             ${sortIcons[sortMode]}
         </button>
     `;
 
-    // Обработчик кнопки сортировки
-    const sortBtn = countContainer.querySelector('#sort-toggle-btn');
-    if (sortBtn) {
-        sortBtn.addEventListener('click', () => {
-            if (sortMode === 'default') sortMode = 'asc';
-            else if (sortMode === 'asc') sortMode = 'desc';
-            else sortMode = 'default';
-            displayQuestions(currentQuestions, title);
-        });
-    }
+        // Обработчик кнопки сортировки
+        const sortBtn = countContainer.querySelector('#sort-toggle-btn');
+        if (sortBtn) {
+            sortBtn.addEventListener('click', () => {
+                if (sortMode === 'default') sortMode = 'asc';
+                else if (sortMode === 'asc') sortMode = 'desc';
+                else sortMode = 'default';
+                displayQuestions(currentQuestions, title);
+            });
+        }
 
-    // Хелпер для отрисовки сердечек (новая логика с дробными)
-    const renderHearts = (ef) => {
-        try {
-            if (typeof getDifficultyLevel !== 'function' || typeof getLevelProgress !== 'function') {
-                console.warn('SRS functions not available');
-                return '';
-            }
-
-            // Check for NEW card (ef is null or undefined)
-            if (ef === null || ef === undefined) {
-                 return '<div class="hearts-container" title="Карточка еще не изучалась" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span></div>';
-            }
-
-            // Расчет количества сердечек (1.0 - 5.0)
-            let heartsCount = 0;
-            if (ef < 1.7) {
-                // 1.3 -> 1.0, 1.7 -> 2.0
-                heartsCount = 1 + (ef - 1.3) / 0.4;
-            } else if (ef < 2.1) {
-                // 1.7 -> 2.0, 2.1 -> 3.0
-                heartsCount = 2 + (ef - 1.7) / 0.4;
-            } else if (ef < 2.4) {
-                // 2.1 -> 3.0, 2.4 -> 4.0
-                heartsCount = 3 + (ef - 2.1) / 0.3;
-            } else {
-                // 2.4 -> 4.0, 2.9 -> 5.0
-                heartsCount = 4 + (ef - 2.4) / 0.5;
-            }
-            
-            // Clamp to 1-5 range just in case
-            heartsCount = Math.max(1, Math.min(5, heartsCount));
-
-            const level = getDifficultyLevel(ef);
-            const levelNames = {
-                'VERY_HARD': 'Очень трудные',
-                'HARD': 'Трудные',
-                'STANDARD': 'Стандарт',
-                'EASY': 'Легкие'
-            };
-            const levelName = levelNames[level] || level;
-            
-            let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
-            
-            // Рисуем 5 сердечек
-            for (let i = 0; i < 5; i++) {
-                let fill = 0;
-                if (heartsCount >= i + 1) {
-                    fill = 1;
-                } else if (heartsCount > i) {
-                    fill = heartsCount - i;
+        // Хелпер для отрисовки сердечек (новая логика с дробными)
+        const renderHearts = (ef) => {
+            try {
+                if (typeof getDifficultyLevel !== 'function' || typeof getLevelProgress !== 'function') {
+                    console.warn('SRS functions not available');
+                    return '';
                 }
-                
-                const stopVal = Math.round(fill * 100);
-                const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
-                
-                html += `
+
+                // Check for NEW card (ef is null or undefined)
+                if (ef === null || ef === undefined) {
+                    return '<div class="hearts-container" title="Карточка еще не изучалась" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span></div>';
+                }
+
+                // Расчет количества сердечек (1.0 - 5.0)
+                let heartsCount = 0;
+                if (ef < 1.7) {
+                    // 1.3 -> 1.0, 1.7 -> 2.0
+                    heartsCount = 1 + (ef - 1.3) / 0.4;
+                } else if (ef < 2.1) {
+                    // 1.7 -> 2.0, 2.1 -> 3.0
+                    heartsCount = 2 + (ef - 1.7) / 0.4;
+                } else if (ef < 2.4) {
+                    // 2.1 -> 3.0, 2.4 -> 4.0
+                    heartsCount = 3 + (ef - 2.1) / 0.3;
+                } else {
+                    // 2.4 -> 4.0, 2.9 -> 5.0
+                    heartsCount = 4 + (ef - 2.4) / 0.5;
+                }
+
+                // Clamp to 1-5 range just in case
+                heartsCount = Math.max(1, Math.min(5, heartsCount));
+
+                const level = getDifficultyLevel(ef);
+                const levelNames = {
+                    'VERY_HARD': 'Очень трудные',
+                    'HARD': 'Трудные',
+                    'STANDARD': 'Стандарт',
+                    'EASY': 'Легкие'
+                };
+                const levelName = levelNames[level] || level;
+
+                let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
+
+                // Рисуем 5 сердечек
+                for (let i = 0; i < 5; i++) {
+                    let fill = 0;
+                    if (heartsCount >= i + 1) {
+                        fill = 1;
+                    } else if (heartsCount > i) {
+                        fill = heartsCount - i;
+                    }
+
+                    const stopVal = Math.round(fill * 100);
+                    const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+
+                    html += `
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="${id}">
@@ -3361,90 +3412,90 @@ export function displayQuestions(questions, title) {
                         <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                 `;
-            }
-            html += '</div>';
-            return html;
-        } catch (e) {
-            console.error('Error in renderHearts:', e);
-            return '';
-        }
-    };
-
-    // Добавляем вопросы
-    currentQuestions.forEach((item, index) => {
-        try {
-            if (index === 0) console.log('Rendering first item:', item);
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-
-            // DEBUG STYLES - REMOVE LATER
-            resultItem.style.display = 'flex';
-            resultItem.style.flexDirection = 'column';
-            resultItem.style.minHeight = '100px';
-            resultItem.style.backgroundColor = '#242424';
-            resultItem.style.border = '1px solid #444';
-            resultItem.style.color = '#fff';
-            // FIX WIDTH for mobile
-            resultItem.style.width = '100%';
-            resultItem.style.maxWidth = '100%';
-            resultItem.style.boxSizing = 'border-box';
-            // END DEBUG STYLES
-
-        if (editMode) {
-            resultItem.setAttribute('draggable', 'true');
-            resultItem.dataset.index = String(index);
-            resultItem.addEventListener('dragstart', (ev) => {
-                ev.dataTransfer.setData('text/plain', resultItem.dataset.index);
-            });
-            resultItem.addEventListener('dragover', (ev) => {
-                ev.preventDefault();
-            });
-            resultItem.addEventListener('drop', (ev) => {
-                ev.preventDefault();
-                const fromIdx = parseInt(ev.dataTransfer.getData('text/plain'), 10);
-                const toIdx = parseInt(resultItem.dataset.index, 10);
-                if (Number.isInteger(fromIdx) && Number.isInteger(toIdx) && fromIdx !== toIdx) {
-                    const moved = currentQuestions.splice(fromIdx, 1)[0];
-                    currentQuestions.splice(toIdx, 0, moved);
-                    setOrderForContext(currentContextKey, currentQuestions.map(q => q.question));
-                    (async () => {
-                        setSaveStatus('saving', 'Сохранение порядка карточек...');
-                        const meta = await getServerMetadata();
-                        meta.orderOverrides = meta.orderOverrides || {};
-                        meta.orderOverrides[currentContextKey] = currentQuestions.map(q => q.question);
-                        const ok = await updateServerMetadata(meta);
-                        setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок изменен' : 'Ошибка сохранения');
-                    })();
-                    // Перерисовать текущий список
-                    displayQuestions(currentQuestions, title);
                 }
-            });
-        }
-        
-        // Избранное
-        let isFav = false;
-        let favClass = '';
-        try {
-            const favorites = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
-            isFav = favorites.includes(item.question);
-            favClass = isFav ? 'fav-active' : '';
-        } catch (e) {
-            console.warn('Favorites error:', e);
-        }
+                html += '</div>';
+                return html;
+            } catch (e) {
+                console.error('Error in renderHearts:', e);
+                return '';
+            }
+        };
 
-        // Отображаем бейджи с учётом плейсхолдеров
-        let dispCat = item.category || '';
-        let dispSub = item.subcategory || '';
-        try {
-            const catPlaceholders = getCategoryPlaceholders();
-            const scPlaceholders = getSubcategoryPlaceholders();
-            dispCat = (catPlaceholders[item.category] && catPlaceholders[item.category].displayName) || item.category || '';
-            dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
-        } catch (e) {
-            console.warn('Placeholders error:', e);
-        }
+        // Добавляем вопросы
+        currentQuestions.forEach((item, index) => {
+            try {
+                if (index === 0) console.log('Rendering first item:', item);
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
 
-        const starSvg = (filled) => `
+                // DEBUG STYLES - REMOVE LATER
+                resultItem.style.display = 'flex';
+                resultItem.style.flexDirection = 'column';
+                resultItem.style.minHeight = '100px';
+                resultItem.style.backgroundColor = '#242424';
+                resultItem.style.border = '1px solid #444';
+                resultItem.style.color = '#fff';
+                // FIX WIDTH for mobile
+                resultItem.style.width = '100%';
+                resultItem.style.maxWidth = '100%';
+                resultItem.style.boxSizing = 'border-box';
+                // END DEBUG STYLES
+
+                if (editMode) {
+                    resultItem.setAttribute('draggable', 'true');
+                    resultItem.dataset.index = String(index);
+                    resultItem.addEventListener('dragstart', (ev) => {
+                        ev.dataTransfer.setData('text/plain', resultItem.dataset.index);
+                    });
+                    resultItem.addEventListener('dragover', (ev) => {
+                        ev.preventDefault();
+                    });
+                    resultItem.addEventListener('drop', (ev) => {
+                        ev.preventDefault();
+                        const fromIdx = parseInt(ev.dataTransfer.getData('text/plain'), 10);
+                        const toIdx = parseInt(resultItem.dataset.index, 10);
+                        if (Number.isInteger(fromIdx) && Number.isInteger(toIdx) && fromIdx !== toIdx) {
+                            const moved = currentQuestions.splice(fromIdx, 1)[0];
+                            currentQuestions.splice(toIdx, 0, moved);
+                            setOrderForContext(currentContextKey, currentQuestions.map(q => q.question));
+                            (async () => {
+                                setSaveStatus('saving', 'Сохранение порядка карточек...');
+                                const meta = await getServerMetadata();
+                                meta.orderOverrides = meta.orderOverrides || {};
+                                meta.orderOverrides[currentContextKey] = currentQuestions.map(q => q.question);
+                                const ok = await updateServerMetadata(meta);
+                                setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок изменен' : 'Ошибка сохранения');
+                            })();
+                            // Перерисовать текущий список
+                            displayQuestions(currentQuestions, title);
+                        }
+                    });
+                }
+
+                // Избранное
+                let isFav = false;
+                let favClass = '';
+                try {
+                    const favorites = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+                    isFav = favorites.includes(item.question);
+                    favClass = isFav ? 'fav-active' : '';
+                } catch (e) {
+                    console.warn('Favorites error:', e);
+                }
+
+                // Отображаем бейджи с учётом плейсхолдеров
+                let dispCat = item.category || '';
+                let dispSub = item.subcategory || '';
+                try {
+                    const catPlaceholders = getCategoryPlaceholders();
+                    const scPlaceholders = getSubcategoryPlaceholders();
+                    dispCat = (catPlaceholders[item.category] && catPlaceholders[item.category].displayName) || item.category || '';
+                    dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
+                } catch (e) {
+                    console.warn('Placeholders error:', e);
+                }
+
+                const starSvg = (filled) => `
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
                     style="fill: ${filled ? '#fb923c' : 'none'}; stroke: ${filled ? '#fb923c' : 'currentColor'}; stroke-width: 2px;"
@@ -3452,12 +3503,12 @@ export function displayQuestions(questions, title) {
             </svg>
         `;
 
-        // Расчет сердечек
-        const cardProgress = progressMap[item.question];
-        // If no progress or no easeFactor, treat as NEW (pass null)
-        const ef = (cardProgress && cardProgress.easeFactor !== undefined) ? cardProgress.easeFactor : null;
-        
-        resultItem.innerHTML = `
+                // Расчет сердечек
+                const cardProgress = progressMap[item.question];
+                // If no progress or no easeFactor, treat as NEW (pass null)
+                const ef = (cardProgress && cardProgress.easeFactor !== undefined) ? cardProgress.easeFactor : null;
+
+                resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
                 <span class="subcategory-badge">${dispSub}</span>
@@ -3468,45 +3519,45 @@ export function displayQuestions(questions, title) {
             <div class="answer">${item.answer}</div>
         `;
 
-        // Обработчик избранного
-        const favBtn = resultItem.querySelector('.fav-btn');
-        favBtn.addEventListener('click', () => {
-            const current = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-            if (current.has(item.question)) {
-                current.delete(item.question);
-                favBtn.classList.remove('fav-active');
-                favBtn.innerHTML = starSvg(false);
-                import('../srs/storage.js').then(({ syncFavorite }) => { try { syncFavorite(item.question, false); } catch {} }).catch(()=>{});
-            } else {
-                current.add(item.question);
-                favBtn.classList.add('fav-active');
-                favBtn.innerHTML = starSvg(true);
-                import('../srs/storage.js').then(({ syncFavorite }) => { try { syncFavorite(item.question, true); } catch {} }).catch(()=>{});
-            }
-            localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
-        });
+                // Обработчик избранного
+                const favBtn = resultItem.querySelector('.fav-btn');
+                favBtn.addEventListener('click', () => {
+                    const current = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+                    if (current.has(item.question)) {
+                        current.delete(item.question);
+                        favBtn.classList.remove('fav-active');
+                        favBtn.innerHTML = starSvg(false);
+                        import('../srs/storage.js').then(({ syncFavorite }) => { try { syncFavorite(item.question, false); } catch { } }).catch(() => { });
+                    } else {
+                        current.add(item.question);
+                        favBtn.classList.add('fav-active');
+                        favBtn.innerHTML = starSvg(true);
+                        import('../srs/storage.js').then(({ syncFavorite }) => { try { syncFavorite(item.question, true); } catch { } }).catch(() => { });
+                    }
+                    localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
+                });
 
-        // Меню карточки (⋮) в режиме редактирования
-        if (editMode) {
-            const qRow = resultItem.querySelector('.question-row');
-            const kebabBtn = document.createElement('button');
-            kebabBtn.className = 'kebab-btn';
-            kebabBtn.title = 'Меню карточки';
-            kebabBtn.textContent = '⋮';
-            // Тёмно-серый стиль кнопки ⋮ на карточке
-            kebabBtn.style.background = '#444';
-            kebabBtn.style.color = '#eee';
-            kebabBtn.style.border = '1px solid #333';
-            kebabBtn.style.borderRadius = '4px';
-            kebabBtn.style.padding = '2px 6px';
-            qRow.appendChild(kebabBtn);
+                // Меню карточки (⋮) в режиме редактирования
+                if (editMode) {
+                    const qRow = resultItem.querySelector('.question-row');
+                    const kebabBtn = document.createElement('button');
+                    kebabBtn.className = 'kebab-btn';
+                    kebabBtn.title = 'Меню карточки';
+                    kebabBtn.textContent = '⋮';
+                    // Тёмно-серый стиль кнопки ⋮ на карточке
+                    kebabBtn.style.background = '#444';
+                    kebabBtn.style.color = '#eee';
+                    kebabBtn.style.border = '1px solid #333';
+                    kebabBtn.style.borderRadius = '4px';
+                    kebabBtn.style.padding = '2px 6px';
+                    qRow.appendChild(kebabBtn);
 
-            const launchEditor = () => {
-                const categoriesData = buildCategoriesFromData(getRuntimeData());
-                const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}" ${item.category === cat.name ? 'selected' : ''}>${cat.name}</option>`).join('');
-                const selectedCategory = categoriesData.find(cat => cat.name === item.category);
-                const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
-                resultItem.innerHTML = `
+                    const launchEditor = () => {
+                        const categoriesData = buildCategoriesFromData(getRuntimeData());
+                        const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}" ${item.category === cat.name ? 'selected' : ''}>${cat.name}</option>`).join('');
+                        const selectedCategory = categoriesData.find(cat => cat.name === item.category);
+                        const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
+                        resultItem.innerHTML = `
                     <div class="editor-row">
                         <div class="editor-field-group">
                             <label class="edit-mode-label">Категория</label>
@@ -3529,224 +3580,224 @@ export function displayQuestions(questions, title) {
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                     </button>
                 `;
-                const editCategory = resultItem.querySelector('.edit-category');
-                const editSubcategory = resultItem.querySelector('.edit-subcategory');
-                const editQuestion = resultItem.querySelector('.edit-question');
-                const editAnswer = resultItem.querySelector('.edit-answer');
-                setTimeout(() => {
-                    editQuestion.focus();
-                    const qLen = editQuestion.value.length;
-                    editQuestion.setSelectionRange(qLen, qLen);
-                }, 0);
-                editCategory.addEventListener('change', () => {
-                    const newCategory = editCategory.value;
-                    const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
-                    editSubcategory.innerHTML = newSubs;
-                });
-                resultItem.querySelector('.save-inline').addEventListener('click', async () => {
-                    const newCategory = editCategory.value;
-                    const newSubcategory = editSubcategory.value;
-                    const newQuestion = editQuestion.value.trim();
-                    const newAnswer = editAnswer.value.trim();
-                    if (!newQuestion || !newAnswer) { alert('Вопрос и ответ не могут быть пустыми'); return; }
-                    
-                    const oldQuestion = item.question;
-                    const overrides = getOverrides();
-                    // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
-                    overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
-                    setOverrides(overrides);
+                        const editCategory = resultItem.querySelector('.edit-category');
+                        const editSubcategory = resultItem.querySelector('.edit-subcategory');
+                        const editQuestion = resultItem.querySelector('.edit-question');
+                        const editAnswer = resultItem.querySelector('.edit-answer');
+                        setTimeout(() => {
+                            editQuestion.focus();
+                            const qLen = editQuestion.value.length;
+                            editQuestion.setSelectionRange(qLen, qLen);
+                        }, 0);
+                        editCategory.addEventListener('change', () => {
+                            const newCategory = editCategory.value;
+                            const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
+                            editSubcategory.innerHTML = newSubs;
+                        });
+                        resultItem.querySelector('.save-inline').addEventListener('click', async () => {
+                            const newCategory = editCategory.value;
+                            const newSubcategory = editSubcategory.value;
+                            const newQuestion = editQuestion.value.trim();
+                            const newAnswer = editAnswer.value.trim();
+                            if (!newQuestion || !newAnswer) { alert('Вопрос и ответ не могут быть пустыми'); return; }
 
-                    // Если карточка была в избранном — обновляем ключ в избранном
-                    const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-                    if (favorites.has(oldQuestion)) {
-                        favorites.delete(oldQuestion);
-                        favorites.add(newQuestion);
-                        localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
-                        console.log('[Edit] Обновлено избранное:', { oldQuestion, newQuestion });
-                        
-                        // Отправляем обновлённое избранное на сервер
-                        import('../srs/storage.js').then(({ syncFavorite }) => {
-                            try {
-                                syncFavorite(newQuestion, true);
-                                console.log('[Edit] Отправлено на сервер');
-                            } catch (e) {}
-                        }).catch(()=>{});
-                    }
+                            const oldQuestion = item.question;
+                            const overrides = getOverrides();
+                            // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
+                            overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
+                            setOverrides(overrides);
 
-                    // После сохранения — перерисовка с карандашом и меню
-                    displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
-                    const rowEl = resultItem.querySelector('.question-row');
-                    setInlineSaveStatus(rowEl, 'saving');
-                    const ok = await saveMergedToServer();
-                    setInlineSaveStatus(rowEl, ok ? 'success' : 'error');
-                });
-            };
+                            // Если карточка была в избранном — обновляем ключ в избранном
+                            const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+                            if (favorites.has(oldQuestion)) {
+                                favorites.delete(oldQuestion);
+                                favorites.add(newQuestion);
+                                localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
+                                console.log('[Edit] Обновлено избранное:', { oldQuestion, newQuestion });
 
-            // Кнопка карандаша удалена: редактирование доступно через меню ⋮
+                                // Отправляем обновлённое избранное на сервер
+                                import('../srs/storage.js').then(({ syncFavorite }) => {
+                                    try {
+                                        syncFavorite(newQuestion, true);
+                                        console.log('[Edit] Отправлено на сервер');
+                                    } catch (e) { }
+                                }).catch(() => { });
+                            }
 
-            // 🔥 Используем глобальную функцию с проверкой qaUserCards
-            const genUniqueQuestion = (baseQ) => genUniqueQuestionGlobal(baseQ);
+                            // После сохранения — перерисовка с карандашом и меню
+                            displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
+                            const rowEl = resultItem.querySelector('.question-row');
+                            setInlineSaveStatus(rowEl, 'saving');
+                            const ok = await saveMergedToServer();
+                            setInlineSaveStatus(rowEl, ok ? 'success' : 'error');
+                        });
+                    };
 
-            kebabBtn.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                document.querySelectorAll('.popup-menu').forEach(m => m.remove());
-                const menu = document.createElement('div');
-                menu.className = 'popup-menu';
-                menu.style.position = 'fixed';
-                menu.style.background = '#222';
-                menu.style.color = '#ddd';
-                menu.style.border = '1px solid #444';
-                menu.style.borderRadius = '6px';
-                menu.style.padding = '6px';
-                menu.style.zIndex = '1000';
-                menu.innerHTML = `
+                    // Кнопка карандаша удалена: редактирование доступно через меню ⋮
+
+                    // 🔥 Используем глобальную функцию с проверкой qaUserCards
+                    const genUniqueQuestion = (baseQ) => genUniqueQuestionGlobal(baseQ);
+
+                    kebabBtn.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        document.querySelectorAll('.popup-menu').forEach(m => m.remove());
+                        const menu = document.createElement('div');
+                        menu.className = 'popup-menu';
+                        menu.style.position = 'fixed';
+                        menu.style.background = '#222';
+                        menu.style.color = '#ddd';
+                        menu.style.border = '1px solid #444';
+                        menu.style.borderRadius = '6px';
+                        menu.style.padding = '6px';
+                        menu.style.zIndex = '1000';
+                        menu.innerHTML = `
                     <button data-act="edit">Изменить</button>
                     <button data-act="duplicate">Дублировать</button>
                     <button data-act="delete">Удалить</button>
                 `;
-                document.body.appendChild(menu);
-                const rect = kebabBtn.getBoundingClientRect();
-                menu.style.left = `${rect.right + 6}px`;
-                menu.style.top = `${rect.top}px`;
-                const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
-                document.addEventListener('click', onDocClick);
+                        document.body.appendChild(menu);
+                        const rect = kebabBtn.getBoundingClientRect();
+                        menu.style.left = `${rect.right + 6}px`;
+                        menu.style.top = `${rect.top}px`;
+                        const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
+                        document.addEventListener('click', onDocClick);
 
-        menu.addEventListener('click', async (e) => {
-            const act = e.target?.dataset?.act; if (!act) return;
-            e.stopPropagation();
-                    if (act === 'delete') {
-                        // Показать индикатор прогресса
-                        const rowEl = resultItem.querySelector('.question-row');
-                        setInlineSaveStatus(rowEl, 'saving');
+                        menu.addEventListener('click', async (e) => {
+                            const act = e.target?.dataset?.act; if (!act) return;
+                            e.stopPropagation();
+                            if (act === 'delete') {
+                                // Показать индикатор прогресса
+                                const rowEl = resultItem.querySelector('.question-row');
+                                setInlineSaveStatus(rowEl, 'saving');
 
-                        // Перемещаем на сервер в корзину
-                        moveToServerTrash([item]).then(async (trashOk) => {
-                            if (trashOk) {
-                                // Оптимистично добавляем в локальные кэши корзины
-                                serverTrashSet.add(item.question);
-                                // Обновляем локальный список корзины, чтобы сразу показать карточку
-                                try {
-                                    serverTrashItems = [
-                                        { item: { ...item } },
-                                        ...serverTrashItems.filter(t => t.item?.question !== item.question)
-                                    ];
-                                } catch (_) {}
+                                // Перемещаем на сервер в корзину
+                                moveToServerTrash([item]).then(async (trashOk) => {
+                                    if (trashOk) {
+                                        // Оптимистично добавляем в локальные кэши корзины
+                                        serverTrashSet.add(item.question);
+                                        // Обновляем локальный список корзины, чтобы сразу показать карточку
+                                        try {
+                                            serverTrashItems = [
+                                                { item: { ...item } },
+                                                ...serverTrashItems.filter(t => t.item?.question !== item.question)
+                                            ];
+                                        } catch (_) { }
 
-                                // Убедимся, что панель корзины видна в режиме редактирования
-                                const tp = document.querySelector('.trash-panel');
-                                if (tp && editMode) { tp.style.display = 'block'; }
+                                        // Убедимся, что панель корзины видна в режиме редактирования
+                                        const tp = document.querySelector('.trash-panel');
+                                        if (tp && editMode) { tp.style.display = 'block'; }
 
-                                // Перерисовываем панель корзины и текущий контекст
-                                renderTrashPanel();
-                                refreshCurrentContext();
+                                        // Перерисовываем панель корзины и текущий контекст
+                                        renderTrashPanel();
+                                        refreshCurrentContext();
 
-                                // Пытаемся синхронизировать с серверной корзиной (не блокирует UI)
-                                try { await refreshServerTrash(); } catch (_) {}
+                                        // Пытаемся синхронизировать с серверной корзиной (не блокирует UI)
+                                        try { await refreshServerTrash(); } catch (_) { }
 
-                                setInlineSaveStatus(rowEl, 'success');
-                                setSaveStatus('success', 'Карточка переме��ена в корзину');
+                                        setInlineSaveStatus(rowEl, 'success');
+                                        setSaveStatus('success', 'Карточка перемещена в корзину');
 
-                                // 🔥 Сохраняем на сервер БЕ�� forceReloadData
-                                saveMergedToServer(true).then(saveOk => {
-                                    if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
-                                });
-                            } else {
-                                setInlineSaveStatus(rowEl, 'error', 'Ошибка удаления');
-                            }
-                        });
-                    } else if (act === 'duplicate') {
-                        // Show visual indicator
-                        const rowEl = resultItem.querySelector('.question-row');
-                        setInlineSaveStatus(rowEl, 'saving');
-
-                        const copyQ = genUniqueQuestion(item.question);
-                        const duplicatedItem = { ...item, question: copyQ };
-
-                        // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
-                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
-                        if (sessionUserRaw) {
-                            const userCards = getQaUserCards();
-                            if (userCards) {
-                                // Ищем оригинал по вопросу (может отличаться от item.question если были изменения)
-                                const originalIndex = userCards.findIndex(c =>
-                                    c.question === item.question ||
-                                    (c.category === item.category && c.subcategory === item.subcategory && c.answer === item.answer)
-                                );
-                                if (originalIndex >= 0) {
-                                    // Вставляем дубликат после оригинала
-                                    userCards.splice(originalIndex + 1, 0, duplicatedItem);
-                                    setQaUserCards(userCards);
-                                } else {
-                                    // Если не нашли, добавляем в конец
-                                    userCards.push(duplicatedItem);
-                                    setQaUserCards(userCards);
-                                }
-                            }
-                            
-                            // 🔥 ДОБАВЛЯЕМ в qaNewItems чтобы синхронизация видела новую карточку
-                            const newItems = getNewItems();
-                            if (!newItems.some(n => n.question === copyQ)) {
-                                newItems.push(duplicatedItem);
-                                localStorage.setItem('qaNewItems', JSON.stringify(newItems));
-                                console.log('[duplicate] Дубликат добавлен в qaNewItems:', copyQ);
-                            }
-                        }
-
-                        // Track duplication on server
-                        trackServerDuplication(item.question, copyQ).then(trackOk => {
-                            if (trackOk) {
-                                // 🔥 Обновляем UI сразу, без forceReloadData, чтобы сохранить порядок карточек
-                                const activeTab = document.querySelector('.tabs-container .tab.active');
-                                if (activeTab) {
-                                    if (activeTab.dataset.category === 'all') {
-                                        showAllQuestions();
-                                    } else if (activeTab.dataset.category === 'favorites') {
-                                        showFavorites();
+                                        // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                        saveMergedToServer(true).then(saveOk => {
+                                            if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
+                                        });
                                     } else {
-                                        const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
-                                        if (selectedCategory) {
-                                            filterQuestionsByCategory(selectedCategory.name);
+                                        setInlineSaveStatus(rowEl, 'error', 'Ошибка удаления');
+                                    }
+                                });
+                            } else if (act === 'duplicate') {
+                                // Show visual indicator
+                                const rowEl = resultItem.querySelector('.question-row');
+                                setInlineSaveStatus(rowEl, 'saving');
+
+                                const copyQ = genUniqueQuestion(item.question);
+                                const duplicatedItem = { ...item, question: copyQ };
+
+                                // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
+                                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                                if (sessionUserRaw) {
+                                    const userCards = getQaUserCards();
+                                    if (userCards) {
+                                        // Ищем оригинал по вопросу (может отличаться от item.question если были изменения)
+                                        const originalIndex = userCards.findIndex(c =>
+                                            c.question === item.question ||
+                                            (c.category === item.category && c.subcategory === item.subcategory && c.answer === item.answer)
+                                        );
+                                        if (originalIndex >= 0) {
+                                            // Вставляем дубликат после оригинала
+                                            userCards.splice(originalIndex + 1, 0, duplicatedItem);
+                                            setQaUserCards(userCards);
+                                        } else {
+                                            // Если не нашли, добавляем в конец
+                                            userCards.push(duplicatedItem);
+                                            setQaUserCards(userCards);
+                                        }
+                                    }
+
+                                    // 🔥 ДОБАВЛЯЕМ в qaNewItems чтобы синхронизация видела новую карточку
+                                    const newItems = getNewItems();
+                                    if (!newItems.some(n => n.question === copyQ)) {
+                                        newItems.push(duplicatedItem);
+                                        localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+                                        console.log('[duplicate] Дубликат добавлен в qaNewItems:', copyQ);
+                                    }
+                                }
+
+                                // Track duplication on server
+                                trackServerDuplication(item.question, copyQ).then(trackOk => {
+                                    if (trackOk) {
+                                        // 🔥 Обновляем UI сразу, без forceReloadData, чтобы сохранить порядок карточек
+                                        const activeTab = document.querySelector('.tabs-container .tab.active');
+                                        if (activeTab) {
+                                            if (activeTab.dataset.category === 'all') {
+                                                showAllQuestions();
+                                            } else if (activeTab.dataset.category === 'favorites') {
+                                                showFavorites();
+                                            } else {
+                                                const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
+                                                if (selectedCategory) {
+                                                    filterQuestionsByCategory(selectedCategory.name);
+                                                } else {
+                                                    showAllQuestions();
+                                                }
+                                            }
                                         } else {
                                             showAllQuestions();
                                         }
-                                    }
-                                } else {
-                                    showAllQuestions();
-                                }
-                                setInlineSaveStatus(rowEl, 'success');
-                                
-                                // 🔥 Сохраняем на сервер БЕЗ forceReloadData
-                                saveMergedToServer(true).then(saveOk => {
-                                    if (!saveOk) {
-                                        setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
+                                        setInlineSaveStatus(rowEl, 'success');
+
+                                        // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                        saveMergedToServer(true).then(saveOk => {
+                                            if (!saveOk) {
+                                                setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
+                                            }
+                                        });
+                                    } else {
+                                        setInlineSaveStatus(rowEl, 'error', 'Ошибка дублирования');
                                     }
                                 });
-                            } else {
-                                setInlineSaveStatus(rowEl, 'error', 'Ошибка дублирования');
+                            } else if (act === 'edit') {
+                                launchEditor();
                             }
+                            menu.remove();
                         });
-                    } else if (act === 'edit') {
-                        launchEditor();
-                    }
-                    menu.remove();
-                });
-            });
-        }
+                    });
+                }
 
-        resultsList.appendChild(resultItem);
-        } catch (err) {
-            console.error('Error rendering item:', item, err);
-            // Визуально показываем, что элемент сломался (для отладки)
-            try {
-                const errDiv = document.createElement('div');
-                errDiv.style.border = '1px solid red';
-                errDiv.style.color = 'red';
-                errDiv.style.padding = '10px';
-                errDiv.textContent = `Ошибка отображения вопроса: ${err.message}`;
-                resultsList.appendChild(errDiv);
-            } catch (_) {}
-        }
-    });
+                resultsList.appendChild(resultItem);
+            } catch (err) {
+                console.error('Error rendering item:', item, err);
+                // Визуально показываем, что элемент сломался (для отладки)
+                try {
+                    const errDiv = document.createElement('div');
+                    errDiv.style.border = '1px solid red';
+                    errDiv.style.color = 'red';
+                    errDiv.style.padding = '10px';
+                    errDiv.textContent = `Ошибка отображения вопроса: ${err.message}`;
+                    resultsList.appendChild(errDiv);
+                } catch (_) { }
+            }
+        });
     } catch (e) {
         console.error('Critical error in displayQuestions:', e);
     }

@@ -309,7 +309,7 @@ const server = http.createServer((req, res) => {
         const userIndex = users.findIndex(u => u.username === username);
         if (userIndex !== -1) {
           users[userIndex].lastLoginAt = new Date().toISOString();
-          fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+          fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
         }
 
         console.log(`[Login] User ${username} logged in successfully`);
@@ -386,7 +386,7 @@ const server = http.createServer((req, res) => {
           createdAt: new Date().toISOString()
         };
         users.push(newUser);
-        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
 
         // Clone global.json to user file
         const globalPath = path.join(__dirname, 'data', 'global.json');
@@ -408,15 +408,15 @@ const server = http.createServer((req, res) => {
         };
         
         const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
-        fs.writeFileSync(userFilePath, JSON.stringify(userFile, null, 2));
+        fs.writeFileSync(userFilePath, JSON.stringify(userFile, null, 2), 'utf-8');
 
         // Create user metadata file
         const metadataFilePath = path.join(__dirname, 'data', `user_${username}_metadata.json`);
-        fs.writeFileSync(metadataFilePath, JSON.stringify({}, null, 2));
+        fs.writeFileSync(metadataFilePath, JSON.stringify({}, null, 2), 'utf-8');
 
         // Create user trash file
         const trashFilePath = path.join(__dirname, 'data', `user_${username}_trash.json`);
-        fs.writeFileSync(trashFilePath, JSON.stringify([], null, 2));
+        fs.writeFileSync(trashFilePath, JSON.stringify([], null, 2), 'utf-8');
 
         console.log(`[Register] New user ${username} registered by admin ${adminInfo.username}`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -490,12 +490,61 @@ const server = http.createServer((req, res) => {
     }
 
     try {
-      const userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+      const rawContent = fs.readFileSync(targetPath, 'utf-8');
+      
+      // 🔍 ПРОВЕРКА ПОСЛЕ ЧТЕНИЯ
+      const hasFFFD = rawContent.includes('\uFFFD');
+      const hasBadRussian = /Д\?{1,5}кументация/.test(rawContent);
+      const hasQuestionInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(rawContent);
+      
+      if (hasFFFD || hasBadRussian || hasQuestionInRussian) {
+        logger.error('❌ ФАЙЛ ПОВРЕЖДЕН ПРИ ЧТЕНИИ!', {
+          hasFFFD,
+          hasBadRussian,
+          hasQuestionInRussian,
+          filePath: targetPath
+        }, 'Load');
+        
+        // Сохраняем для отладки
+        const debugReadPath = path.join(__dirname, 'data', 'debug_read_file.json');
+        fs.writeFileSync(debugReadPath, rawContent, 'utf-8');
+      }
+      
+      const userData = JSON.parse(rawContent);
       logger.info('Прочитано данных', {
         cards: userData._cards?.length || 0,
         favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
         achievements: Object.keys(userData._achievements || {}).length
       }, 'Load');
+      
+      // Проверяем карточки на повреждение
+      if (userData._cards && Array.isArray(userData._cards)) {
+        const badCards = userData._cards.filter(card => {
+          const cat = card.category || '';
+          const subcat = card.subcategory || '';
+          const q = card.question || '';
+          const a = card.answer || '';
+          const all = cat + subcat + q + a;
+          return /\uFFFD/.test(all) || /Д\?{1,5}кументация/.test(all) || /[а-яА-Я]\?[а-яА-Я]/.test(all);
+        });
+        
+        if (badCards.length > 0) {
+          logger.error(`❌ НАЙДЕНО ${badCards.length} карточек с поврежденными символами!`, null, 'Load');
+          
+          // Показываем первые 3
+          badCards.slice(0, 3).forEach((card, idx) => {
+            logger.error(`Карточка ${idx + 1}: ${JSON.stringify({
+              category: card.category,
+              subcategory: card.subcategory,
+              question: card.question?.substring(0, 50)
+            })}`, null, 'Load');
+          });
+          
+          // Сохраняем список поврежденных карточек
+          const debugCardsPath = path.join(__dirname, 'data', 'debug_bad_cards.json');
+          fs.writeFileSync(debugCardsPath, JSON.stringify(badCards, null, 2), 'utf-8');
+        }
+      }
 
       // Загружаем корзину пользователя
       const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
@@ -519,9 +568,28 @@ const server = http.createServer((req, res) => {
         updatedAt: Date.now()
       };
 
+      // 🔍 ПРОВЕРКА ПЕРЕД ОТПРАВКОЙ КЛИЕНТУ
+      const jsonResponse = JSON.stringify(response);
+      const hasFFFDInResponse = jsonResponse.includes('\uFFFD');
+      const hasBadRussianInResponse = /Д\?{1,5}кументация/.test(jsonResponse);
+      const hasQuestionInRussianResponse = /[а-яА-Я]\?[а-яА-Я]/.test(jsonResponse);
+      
+      if (hasFFFDInResponse || hasBadRussianInResponse || hasQuestionInRussianResponse) {
+        logger.error('❌ ОТВЕТ КЛИЕНТУ СОДЕРЖИТ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
+          hasFFFDInResponse,
+          hasBadRussianInResponse,
+          hasQuestionInRussianResponse,
+          responseLength: jsonResponse.length
+        }, 'Load');
+        
+        // Сохраняем для отладки
+        const debugResponsePath = path.join(__dirname, 'data', 'debug_server_response.json');
+        fs.writeFileSync(debugResponsePath, jsonResponse, 'utf-8');
+      }
+
       logger.info('=== ОТПРАВКА ДАННЫХ КЛИЕНТУ ===', null, 'Load');
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(response));
+      res.end(jsonResponse);
     } catch (e) {
       logger.error('Ошибка чтения', { error: e.message }, 'Load');
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -602,8 +670,40 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
+        // 🔍 АВТОМАТИЧЕСКОЕ ИСПРАВЛЕНИЕ ПОВРЕЖДЕННЫХ СИМВОЛОВ
+        let originalBody = body;
+        body = body.replace(/\uFFFD/g, '?'); // Заменяем U+FFFD
+        body = body.replace(/Д\?{1,10}кументация/g, 'Документация');
+        body = body.replace(/инфу о\? сервера/g, 'инфу от сервера');
+        body = body.replace(/получа\?м/g, 'получаем');
+        body = body.replace(/се\?{1,5}висы/g, 'сервисы');
+
+        if (body !== originalBody) {
+          logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ПАРСИНГОМ', null, 'Save');
+        }
+
         const data = JSON.parse(body);
-        logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array' }, 'Save');
+        
+        logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array', bodyLength: body.length }, 'Save');
+
+        // 🔍 ПРОВЕРКА НА ПОВРЕЖДЕННЫЕ СИМВОЛЫ
+        const hasFFFD = body.includes('\uFFFD');
+        const badRussianPattern = /Д\?{1,5}кументация/.test(body);
+        const questionMarksInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(body);
+
+        if (hasFFFD || badRussianPattern || questionMarksInRussian) {
+          logger.error('⚠️ ВХОДЯЩИЕ ДАННЫЕ СОДЕРЖАТ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
+            hasFFFD,
+            badRussianPattern,
+            questionMarksInRussian,
+            bodyLength: body.length
+          }, 'Save');
+
+          // Сохраняем сырое тело для отладки
+          const debugPath = path.join(__dirname, 'data', 'debug_bad_request.json');
+          fs.writeFileSync(debugPath, body, 'utf-8');
+          logger.error(`Сырое тело сохранено в ${debugPath}`, null, 'Save');
+        }
 
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
@@ -621,13 +721,97 @@ const server = http.createServer((req, res) => {
         userData._meta.lastLoginAt = new Date().toISOString();
         userData._meta.lastSavedAt = new Date().toISOString();
 
-        fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
+        // 🔍 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ КАЖДОЙ КАРТОЧКИ ПЕРЕД ЗАПИСЬЮ
+        const fixCard = (card) => {
+            if (!card) return card;
+            const fixed = {};
+            for (const key in card) {
+                if (typeof card[key] === 'string') {
+                    fixed[key] = card[key]
+                        .replace(/\uFFFD/g, '?')
+                        .replace(/Д\?{1,10}кументация/g, 'Документация')
+                        .replace(/инфу о\? сервера/g, 'инфу от сервера')
+                        .replace(/получа\?м/g, 'получаем')
+                        .replace(/се\?{1,5}висы/g, 'сервисы');
+                } else {
+                    fixed[key] = card[key];
+                }
+            }
+            return fixed;
+        };
+        
+        if (Array.isArray(userData._cards)) {
+            userData._cards = userData._cards.map(fixCard);
+            logger.info(`Исправлено ${userData._cards.length} карточек перед записью`, null, 'Save');
+        }
+
+        // 🔍 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ПЕРЕД ЗАПИСЬЮ
+        let jsonString = JSON.stringify(userData, null, 2);
+        const originalJson = jsonString;
+        
+        jsonString = jsonString.replace(/\uFFFD/g, '?');
+        jsonString = jsonString.replace(/Д\?{1,10}кументация/g, 'Документация');
+        jsonString = jsonString.replace(/инфу о\? сервера/g, 'инфу от сервера');
+        jsonString = jsonString.replace(/получа\?м/g, 'получаем');
+        jsonString = jsonString.replace(/се\?{1,5}висы/g, 'сервисы');
+        
+        if (jsonString !== originalJson) {
+          logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ЗАПИСЬЮ', null, 'Save');
+        }
+
+        // 🔍 ПРОВЕРКА ПЕРЕД ЗАПИСЬЮ
+        const hasFFFDInOutput = jsonString.includes('\uFFFD');
+        const hasBadRussianInOutput = /Д\?{1,5}кументация/.test(jsonString);
+        const hasQuestionInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(jsonString);
+        
+        if (hasFFFDInOutput || hasBadRussianInOutput || hasQuestionInRussian) {
+          logger.error('⚠️ ПОСЛЕ СБОРКИ ДАННЫХ ОБНАРУЖЕНЫ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
+            hasFFFDInOutput,
+            hasBadRussianInOutput,
+            hasQuestionInRussian,
+            outputLength: jsonString.length
+          }, 'Save');
+          
+          // Сохраняем что именно пойдет в файл
+          const debugOutputPath = path.join(__dirname, 'data', 'debug_before_write.json');
+          fs.writeFileSync(debugOutputPath, jsonString, 'utf-8');
+          logger.error(`Данные перед записью сохранены в ${debugOutputPath}`, null, 'Save');
+        }
+
+        fs.writeFile(targetPath, jsonString, 'utf-8', (err) => {
           if (err) {
             logger.error('Ошибка записи', { error: err.message }, 'Save');
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
+          
+          // 🔍 ПРОВЕРКА ПОСЛЕ ЗАПИСИ
+          try {
+            const writtenContent = fs.readFileSync(targetPath, 'utf-8');
+            const hasFFFDWritten = writtenContent.includes('\uFFFD');
+            const hasBadRussianWritten = /Д\?{1,5}кументация/.test(writtenContent);
+            const hasQuestionInRussianWritten = /[а-яА-Я]\?[а-яА-Я]/.test(writtenContent);
+            
+            if (hasFFFDWritten || hasBadRussianWritten || hasQuestionInRussianWritten) {
+              logger.error('❌ ПОСЛЕ ЗАПИСИ В ФАЙЛЕ ОБНАРУЖЕНЫ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
+                hasFFFDWritten,
+                hasBadRussianWritten,
+                hasQuestionInRussianWritten,
+                filePath: targetPath
+              }, 'Save');
+              
+              // Сохраняем копию поврежденного файла
+              const debugWrittenPath = path.join(__dirname, 'data', 'debug_after_write.json');
+              fs.writeFileSync(debugWrittenPath, writtenContent, 'utf-8');
+              logger.error(`Поврежденный файл сохранен в ${debugWrittenPath}`, null, 'Save');
+            } else {
+              logger.info('✅ Файл записан без повреждений', { filePath: targetPath }, 'Save');
+            }
+          } catch (checkErr) {
+            logger.error('Ошибка проверки файла', { error: checkErr.message }, 'Save');
+          }
+          
           logger.info('=== УСПЕШНО СОХРАНЕНО ===', { count: data.length, username }, 'Save');
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true, saved: data.length }));

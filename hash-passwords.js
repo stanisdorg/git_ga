@@ -34,7 +34,7 @@ users.forEach(user => {
   }
 });
 
-fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
 
 console.log('\nГотово!');
 console.log('Обновлено паролей:', updated);
