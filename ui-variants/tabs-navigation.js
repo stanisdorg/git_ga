@@ -1269,7 +1269,7 @@ export function initTabsNavigation(appVersion) {
                 });
                 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве�������������� перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на серве���������������� перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -1282,13 +1282,20 @@ export function initTabsNavigation(appVersion) {
                 // ⚠️ ВАЖНО: Полностью очищаем localStorage пользователя
                 // Данные уже сохранены на сервере, при следующем входе загрузим оттуда
                 const DATA_KEYS_TO_CLEAR = [
+                    // Карточки, избранное, корзина
                     'qaUserCards_admin', 'qaUserCards_jeff', 'qaUserCards_stas',
                     'qaFavorites_admin', 'qaFavorites_jeff', 'qaFavorites_stas',
                     'qaUserTrash_admin', 'qaUserTrash_jeff', 'qaUserTrash_stas',
                     'qaUserCards_guest', 'qaFavorites_guest', 'qaUserTrash_guest',
+                    // Админка и overrides
                     'qaAdminOverrides', 'qaNewItems', 'qaDeletedItems',
                     'qaCategoryPlaceholders', 'qaCategoryOrder', 'qaOrderOverrides',
-                    'localDataTimestamp', 'qaSessionUser', 'sessionToken', 'currentUser'
+                    // Сессия
+                    'localDataTimestamp', 'qaSessionUser', 'sessionToken', 'currentUser',
+                    // 🔥 ПРОГРЕСС И ДОСТИЖЕНИЯ (чтобы гость не видел данные админа)
+                    'srsProgress', 'studyAchievements', 'studyStreak',
+                    'dailyPoints', 'dailyBonusPoints', 'dailyDayBonusPoints',
+                    'studyStats'
                 ];
                 DATA_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
 
@@ -1296,6 +1303,10 @@ export function initTabsNavigation(appVersion) {
 
                 // Также очищ������ем старые ключи без суффиксов
                 ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
+
+                // 🔥 Дополнительно очищаем прогресс без суффиксов
+                ['srsProgress', 'studyAchievements', 'studyStreak', 'dailyPoints', 'dailyBonusPoints', 'dailyDayBonusPoints', 'studyStats']
+                    .forEach(key => localStorage.removeItem(key));
 
                 // ⚠️ ВАЖНО: Удаляем сессию полностью
                 clearQaUserCards();
