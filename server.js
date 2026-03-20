@@ -849,6 +849,13 @@ const server = http.createServer((req, res) => {
 
           logger.info('=== УСПЕШНО СОХРАНЕНО ===', { count: data.length, username }, 'Save');
           res.writeHead(200, { 'Content-Type': 'application/json' });
+          // 🔍 ДОБАВЛЯЕМ ЛОГИ В ОТВЕТ КЛИЕНТУ
+          const logResponse = {
+              ok: true,
+              serverCardsCount: data.length,
+              timestamp: Date.now()
+          };
+          console.log('[SERVER /save] Отправляем ответ клиенту:', logResponse);
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {

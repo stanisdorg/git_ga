@@ -2658,6 +2658,7 @@ async function saveMergedToServer(skipReload = false) {
         let responseJson = null;
         try {
             responseJson = await resp.json();
+            console.log('[saveMergedToServer] ПОЛУЧЕНО ОТ СЕРВЕРА:', responseJson);
             if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
         } catch (parseErr) {
             console.warn('[saveMergedToServer] Не удалось распарсить ответ:', parseErr);
