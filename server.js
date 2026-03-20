@@ -899,15 +899,23 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {
+        const errorResponse = {
+            ok: false,
+            error: e.message,
+            debug: {
+                bodyLength: body.length,
+                bodyPreview: body.substring(0, 1000),
+                timestamp: Date.now()
+            }
+        };
         console.error('[SERVER /save] ОШИБКА ПАРСИНГА JSON:', {
             error: e.message,
             bodyLength: body.length,
-            bodyPreview: body.substring(0, 500) + '...',
-            timestamp: Date.now()
+            first500: body.substring(0, 500)
         });
         logger.error('Ошибка парсинга JSON', { error: e.message }, 'Save');
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+        res.end(JSON.stringify(errorResponse));
       }
     });
     return;
