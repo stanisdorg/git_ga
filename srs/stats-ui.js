@@ -1228,8 +1228,8 @@ const STATS_STYLES = `
 @media (max-width: 768px) {
   .st-ach-scroll-wrap {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 карточки в ряду */
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряду */
+    gap: 8px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding: 8px;
