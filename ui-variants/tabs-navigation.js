@@ -1258,6 +1258,12 @@ export function initTabsNavigation(appVersion) {
                 // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
                 console.log('[LOGOUT] Сохраняем данные на сервер перед выходом...');
                 try {
+                    // 🔍 ЛОГ: проверяем что сохраняем
+                    const currentCards = getQaUserCards();
+                    console.log('[LOGOUT] Текущие данные перед сохранением:', {
+                        cardsCount: currentCards?.length || 0,
+                        hasNewItems: localStorage.getItem('qaNewItems') !== null
+                    });
                     await saveMergedToServer();
                 } catch (e) {
                     console.error('[Logout] Failed to save data before logout:', e);
@@ -2316,7 +2322,7 @@ export function initTabsNavigation(appVersion) {
                 }
                 if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
 
-                // Успешно сохранили — уведомляем и принудительно перезагружаем данные из JSON
+                // Успеш��о сохранили — уведомляем и принудительно перезагружаем данные из JSON
                 setSaveStatus('success');
                 // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
                 setTimeout(() => {
