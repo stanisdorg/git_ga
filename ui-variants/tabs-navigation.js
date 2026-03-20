@@ -848,34 +848,39 @@ export function initTabsNavigation(appVersion) {
         // Кнопка редактирования (для admin и editor)
         topActions.appendChild(editToggleBtn);
         
-        // 🔥 СРАЗУ проверяем видимость кнопки после добавления в DOM
+        // Кнопка добавления пользователя (только admin)
+        topActions.appendChild(adminUsersBtn);
+        
+        // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM
         setTimeout(() => {
             try {
                 const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
-                console.log('[EDIT BTN] user:', user);
-                console.log('[EDIT BTN] editToggleBtn.parentElement:', editToggleBtn.parentElement);
+                console.log('[MOBILE ACCESS] user:', user);
                 
+                // Кнопка редактирования: admin и editor
                 if (user && ['admin', 'editor'].includes(user.role)) {
-                    editToggleBtn.style.display = 'inline-block';
-                    console.log('[EDIT BTN] Кнопка редактирования показана для:', user.role);
-                    
-                    // 🔍 ЛОГИРОВАНИЕ РАЗМЕРОВ
-                    const rect = editToggleBtn.getBoundingClientRect();
-                    const computedStyle = window.getComputedStyle(editToggleBtn);
-                    console.log('[EDIT BTN DEBUG] rect:', rect);
-                    console.log('[EDIT BTN DEBUG] width:', rect.width, 'height:', rect.height);
-                    console.log('[EDIT BTN DEBUG] display:', computedStyle.display);
-                    console.log('[EDIT BTN DEBUG] padding:', computedStyle.padding);
+                    editToggleBtn.style.setProperty('display', 'inline-block', 'important');
+                    console.log('[MOBILE ACCESS] Edit button shown for:', user.role);
                 } else {
-                    console.log('[EDIT BTN] Кнопка редактирования скрыта, роль:', user?.role || 'guest');
+                    editToggleBtn.style.setProperty('display', 'none', 'important');
+                    console.log('[MOBILE ACCESS] Edit button hidden, role:', user?.role || 'guest');
+                }
+                
+                // Кнопка добавления пользователя: только admin
+                if (user && user.role === 'admin') {
+                    adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
+                    console.log('[MOBILE ACCESS] Add user button shown for admin');
+                } else {
+                    adminUsersBtn.style.setProperty('display', 'none', 'important');
+                    console.log('[MOBILE ACCESS] Add user button hidden, role:', user?.role || 'guest');
                 }
             } catch (e) {
-                console.error('[EDIT BTN] Ошибка проверки роли:', e);
+                console.error('[MOBILE ACCESS] Ошибка проверки прав:', e);
+                // По умолчанию скрываем кнопки
+                editToggleBtn.style.setProperty('display', 'none', 'important');
+                adminUsersBtn.style.setProperty('display', 'none', 'important');
             }
-        }, 100);
-        
-        // Кнопка добавления пользователя (только admin)
-        topActions.appendChild(adminUsersBtn);
+        }, 50);
 
         console.log('[MOBILE DEBUG] Кнопки добавлены в topActions (mobile mode)');
     } else {
@@ -1303,7 +1308,7 @@ export function initTabsNavigation(appVersion) {
             DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
             localStorage.setItem('guest_backup', JSON.stringify(backup));
 
-            // Очищаем д��нные, чтобы загрузить профиль пользователя начисто
+            // О��ищаем д��нные, чтобы загрузить профиль пользователя начисто
             DATA_KEYS.forEach(k => localStorage.removeItem(k));
             localStorage.removeItem('localDataTimestamp');
 
@@ -3639,7 +3644,7 @@ export function displayQuestions(questions, title) {
                                 try { await refreshServerTrash(); } catch (_) {}
 
                                 setInlineSaveStatus(rowEl, 'success');
-                                setSaveStatus('success', 'Карточка перемещена в корзину');
+                                setSaveStatus('success', 'Карточка переме��ена в корзину');
 
                                 // 🔥 Сохраняем на сервер БЕ�� forceReloadData
                                 saveMergedToServer(true).then(saveOk => {
