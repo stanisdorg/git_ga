@@ -2322,7 +2322,7 @@ export function initTabsNavigation(appVersion) {
                 }
                 if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
 
-                // Успеш����о сохранили — уведомляем и принудительно перезагружаем данные из JSON
+                // Успеш������о сохранили — уведомляем и принудительно перезагружаем данные из JSON
                 setSaveStatus('success');
                 // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
                 setTimeout(() => {
@@ -2657,10 +2657,24 @@ async function saveMergedToServer(skipReload = false) {
         });
         
         // 🔍 ЛОГ: первые 3 карточки для проверки
-        console.log('[saveMergedToServer] Первые 3 карточки:', merged.slice(0, 3).map(c => ({
+        const first3 = merged.slice(0, 3).map(c => ({
             question: c.question?.substring(0, 50),
-            hasCopy: c.question?.includes('копия')
-        })));
+            hasCopy: c.question?.includes('копия'),
+            category: c.category,
+            subcategory: c.subcategory
+        }));
+        console.log('[saveMergedToServer] Первые 3 карточки:', first3);
+        
+        // 🔍 ЛОГ: поиск дубликата во всём массиве
+        const dupIndex = merged.findIndex(c => c.question?.includes('копия'));
+        console.log('[saveMergedToServer] Дубликат найден на индексе:', dupIndex);
+        if (dupIndex >= 0) {
+            console.log('[saveMergedToServer] Дубликат:', {
+                question: merged[dupIndex].question,
+                category: merged[dupIndex].category,
+                subcategory: merged[dupIndex].subcategory
+            });
+        }
 
         const resp = await fetch(url, {
             method: 'POST',
