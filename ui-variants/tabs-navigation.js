@@ -2322,7 +2322,7 @@ export function initTabsNavigation(appVersion) {
                 }
                 if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
 
-                // Успеш��о сохранили — уведомляем и принудительно перезагружаем данные из JSON
+                // Успеш����о сохранили — уведомляем и принудительно перезагружаем данные из JSON
                 setSaveStatus('success');
                 // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
                 setTimeout(() => {
@@ -2652,13 +2652,26 @@ async function saveMergedToServer(skipReload = false) {
             mergedCount: merged.length,
             newItemsCount: newItems.length,
             deletedCount: Object.keys(deletedMap).length,
-            username
+            username,
+            bodyLength: JSON.stringify(fixedMerged).length
         });
+        
+        // 🔍 ЛОГ: первые 3 карточки для проверки
+        console.log('[saveMergedToServer] Первые 3 карточки:', merged.slice(0, 3).map(c => ({
+            question: c.question?.substring(0, 50),
+            hasCopy: c.question?.includes('копия')
+        })));
 
         const resp = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(fixedMerged)
+        });
+        
+        console.log('[saveMergedToServer] Ответ сервера:', {
+            status: resp.status,
+            ok: resp.ok,
+            statusText: resp.statusText
         });
         let ok = resp.ok;
         let responseJson = null;
