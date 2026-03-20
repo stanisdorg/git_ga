@@ -1269,7 +1269,7 @@ export function initTabsNavigation(appVersion) {
                 });
                 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве������ перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на серве�������� перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -2760,6 +2760,15 @@ async function saveMergedToServer(skipReload = false) {
             console.log('[saveMergedToServer] Проверка localStorage:', {
                 cardsInLocalStorage: verifyCards?.length || 0
             });
+            
+            // 🔥 ОБНОВЛЯЕМ uniqueQaData в памяти из localStorage
+            // Это нужно чтобы следующие дубликаты использовали актуальные данные
+            if (verifyCards && verifyCards.length > 0) {
+                uniqueQaData = verifyCards;
+                console.log('[saveMergedToServer] uniqueQaData обновлён:', {
+                    newLength: uniqueQaData.length
+                });
+            }
 
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
