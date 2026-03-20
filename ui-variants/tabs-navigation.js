@@ -1269,7 +1269,7 @@ export function initTabsNavigation(appVersion) {
                 });
                 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве�� перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на серве���� перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -2598,8 +2598,16 @@ async function saveMergedToServer(skipReload = false) {
                 if (userCardsRaw) {
                     const userCards = JSON.parse(userCardsRaw);
                     if (Array.isArray(userCards)) {
+                        console.log('[saveMergedToServer] qaUserCards:', {
+                            totalCards: userCards.length,
+                            uniqueQaDataCount: uniqueQaData.length,
+                            newItemsCount: newItems.length
+                        });
+                        
                         let addedCount = 0;
                         let checkedCount = 0;
+                        let duplicatesFound = 0;
+                        
                         userCards.forEach(uc => {
                             checkedCount++;
                             // 🔥 ИСПРАВЛЕНИЕ: Дубликаты (с "копия" в названии) не должны считаться удалёнными
@@ -2611,6 +2619,18 @@ async function saveMergedToServer(skipReload = false) {
                             const isAlreadyAdded = seen.has(uc.question);
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
+                            
+                            // Считаем дубликаты
+                            if (uc.question.includes('копия')) {
+                                duplicatesFound++;
+                                console.log('[saveMergedToServer] Найден дубликат в qaUserCards:', {
+                                    question: uc.question.substring(0, 50),
+                                    isAlreadyAdded,
+                                    isInBase,
+                                    isNewItem,
+                                    isDeleted
+                                });
+                            }
 
                             // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
@@ -2619,6 +2639,13 @@ async function saveMergedToServer(skipReload = false) {
                                 seen.add(uc.question);
                                 addedCount++;
                             }
+                        });
+                        
+                        console.log('[saveMergedToServer] Обработано qaUserCards:', {
+                            checkedCount,
+                            duplicatesFound,
+                            addedCount,
+                            mergedCount: merged.length
                         });
                     }
                 }
