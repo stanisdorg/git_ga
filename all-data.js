@@ -361,6 +361,13 @@ function removeDuplicates(data) {
 // Изначально инициализируем пустым массивом, чтобы не показывать старые данные до загрузки JSON
 let uniqueQaData = [];
 
+// 🔥 Функция для обновления uniqueQaData извне (например, из storage.js)
+// Это нужно для корректной работы на нескольких устройствах
+export function setUniqueQaData(cards) {
+    uniqueQaData = cards;
+    console.log('[all-data] setUniqueQaData вызван:', cards.length, 'карточек');
+}
+
 // Применение локальных админ-правок (overrides) и новых карточек к данным
 function applyAdminOverridesAndNewItems() {
     try {
@@ -492,4 +499,4 @@ window.addEventListener('adminOverridesChanged', () => {
 });
 
 // Экспортируем данные для использования в других файлах
-export { uniqueQaData };
+export { uniqueQaData, setUniqueQaData };

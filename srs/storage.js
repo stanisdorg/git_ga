@@ -155,6 +155,18 @@ export async function loadFromServer(forceReload = false) {
         if (data._cards) {
             localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
             console.log('[loadFromServer] Сохранено', data._cards.length, 'карточек в localStorage');
+            
+            // 🔥 ВАЖНО: Обновляем uniqueQaData в all-data.js
+            // Это нужно для корректной работы на нескольких устройствах
+            try {
+                const { setUniqueQaData } = await import('../all-data.js');
+                if (typeof setUniqueQaData === 'function') {
+                    setUniqueQaData(data._cards);
+                    console.log('[loadFromServer] uniqueQaData обновлён:', data._cards.length);
+                }
+            } catch (e) {
+                console.warn('[loadFromServer] Не удалось обновить uniqueQaData:', e.message);
+            }
         }
         if (data.srsProgress) localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
         if (data.studyStats) localStorage.setItem('studyStats', JSON.stringify(data.studyStats));
