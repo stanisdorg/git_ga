@@ -34,65 +34,49 @@ export function createFormatToolbar(field) {
     toolbar.className = 'format-toolbar';
     toolbar.dataset.field = field || 'both';
 
+    // Структура: 2 ряда
+    // Ряд 1: B I U C | 7 цветов текста
+    // Ряд 2: 7 цветов фона | ✕
     toolbar.innerHTML = `
-        <div class="format-toolbar-section">
-            <button class="format-btn" data-action="bold" title="Жирный (Ctrl+B)">
-                <strong>B</strong>
-            </button>
-            <button class="format-btn" data-action="italic" title="Курсив (Ctrl+I)">
-                <em>I</em>
-            </button>
-            <button class="format-btn" data-action="underline" title="Подчёркивание (Ctrl+U)">
-                <u>U</u>
-            </button>
-            <button class="format-btn" data-action="code" title="Код (Ctrl+E)">
-                &lt;/&gt;
-            </button>
-        </div>
-        
-        <div class="format-toolbar-divider"></div>
-        
-        <div class="format-toolbar-section">
-            <span class="format-toolbar-label">Текст:</span>
-            <div class="format-colors-row">
-                ${COLORS.map(color => `
-                    <button class="format-color-btn format-text-color-btn" 
-                            data-color="${color}" 
-                            style="background-color: ${color}"
-                            title="Цвет текста ${color}">
-                    </button>
-                `).join('')}
-                <button class="format-color-btn format-text-color-btn format-color-clear" 
-                        data-color=""
-                        title="Сбросить цвет текста">
-                    ✕
+        <div class="format-toolbar-row">
+            <div class="format-toolbar-format">
+                <button class="format-btn" data-action="bold" title="Жирный (Ctrl+B)">
+                    <strong>B</strong>
+                </button>
+                <button class="format-btn" data-action="italic" title="Курсив (Ctrl+I)">
+                    <em>I</em>
+                </button>
+                <button class="format-btn" data-action="underline" title="Подчёркивание (Ctrl+U)">
+                    <u>U</u>
+                </button>
+                <button class="format-btn" data-action="code" title="Код (Ctrl+E)">
+                    &lt;/&gt;
                 </button>
             </div>
-        </div>
-        
-        <div class="format-toolbar-section">
-            <span class="format-toolbar-label">Фон:</span>
-            <div class="format-colors-row">
-                ${BACKGROUND_COLORS.map(color => `
-                    <button class="format-color-btn format-bg-color-btn" 
-                            data-color="${color}" 
-                            style="background-color: ${color}"
-                            title="Цвет фона ${color}">
-                    </button>
-                `).join('')}
-                <button class="format-color-btn format-bg-color-btn format-color-clear" 
-                        data-color=""
-                        title="Сбросить цвет фона">
-                    ✕
-                </button>
+            <div class="format-toolbar-divider"></div>
+            <div class="format-toolbar-colors">
+                <button class="format-color-btn format-text-color-btn" data-color="#F5B042" style="background-color: #F5B042" title="Цвет текста #F5B042"></button>
+                <button class="format-color-btn format-text-color-btn" data-color="#FF8C42" style="background-color: #FF8C42" title="Цвет текста #FF8C42"></button>
+                <button class="format-color-btn format-text-color-btn" data-color="#4ECDC4" style="background-color: #4ECDC4" title="Цвет текста #4ECDC4"></button>
+                <button class="format-color-btn format-text-color-btn" data-color="#B794F4" style="background-color: #B794F4" title="Цвет текста #B794F4"></button>
+                <button class="format-color-btn format-text-color-btn" data-color="#FF9F7C" style="background-color: #FF9F7C" title="Цвет текста #FF9F7C"></button>
+                <button class="format-color-btn format-text-color-btn" data-color="#7FCDCD" style="background-color: #7FCDCD" title="Цвет текста #7FCDCD"></button>
+                <button class="format-color-btn format-text-color-btn" data-color="#FF6B6B" style="background-color: #FF6B6B" title="Цвет текста #FF6B6B"></button>
             </div>
         </div>
-        
-        <div class="format-toolbar-divider"></div>
-        
-        <div class="format-toolbar-section">
+        <div class="format-toolbar-row">
+            <div class="format-toolbar-colors">
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(245, 176, 66, 0.2)" style="background-color: rgba(245, 176, 66, 0.2)" title="Цвет фона"></button>
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 140, 66, 0.2)" style="background-color: rgba(255, 140, 66, 0.2)" title="Цвет фона"></button>
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(78, 205, 196, 0.2)" style="background-color: rgba(78, 205, 196, 0.2)" title="Цвет фона"></button>
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(183, 148, 244, 0.2)" style="background-color: rgba(183, 148, 244, 0.2)" title="Цвет фона"></button>
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 159, 124, 0.2)" style="background-color: rgba(255, 159, 124, 0.2)" title="Цвет фона"></button>
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(127, 205, 205, 0.2)" style="background-color: rgba(127, 205, 205, 0.2)" title="Цвет фона"></button>
+                <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 107, 107, 0.2)" style="background-color: rgba(255, 107, 107, 0.2)" title="Цвет фона"></button>
+            </div>
+            <div class="format-toolbar-divider"></div>
             <button class="format-btn format-clear-btn" data-action="clear" title="Очистить всё форматирование">
-                🗑 Очистить
+                ✕
             </button>
         </div>
     `;

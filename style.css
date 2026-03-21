@@ -74,60 +74,58 @@ body {
 
 .format-toolbar {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    padding: 8px 10px;
-    background: var(--color-bg-tertiary, #2a2a2a);
-    border-radius: 6px;
-    border: 1px solid var(--color-border, #3a3a3a);
-    align-items: center;
-    overflow-x: auto;
-    max-width: 100%;
-    margin-bottom: 12px;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px;
+    background: var(--color-bg-tertiary, #333333);
+    border-radius: 4px;
+    max-width: 280px;
+    margin: 0 auto;
 }
 
-.format-toolbar-section {
+.format-toolbar-row {
     display: flex;
-    gap: 4px;
     align-items: center;
-    flex-shrink: 0;
+    justify-content: center;
+    gap: 2px;
+    flex-wrap: wrap;
+}
+
+.format-toolbar-format {
+    display: flex;
+    gap: 1px;
+}
+
+.format-toolbar-colors {
+    display: flex;
+    gap: 2px;
+    align-items: center;
 }
 
 .format-toolbar-divider {
     width: 1px;
-    height: 28px;
+    height: 16px;
     background: var(--color-border, #3a3a3a);
-    margin: 0 6px;
-    flex-shrink: 0;
-}
-
-.format-toolbar-label {
-    font-size: 11px;
-    color: var(--color-text-secondary, #888);
-    white-space: nowrap;
-    margin-right: 4px;
-    flex-shrink: 0;
+    margin: 0 3px;
 }
 
 /* Кнопки форматирования (B, I, U, Code) */
 .format-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    border: 1px solid var(--color-border, #3a3a3a);
+    background: var(--color-bg, #1e1e1e);
+    color: var(--color-text, #fff);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    background: var(--color-bg, #1e1e1e);
-    border: 1px solid var(--color-border, #3a3a3a);
-    border-radius: 4px;
-    color: var(--color-text, #fff);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
+    font-size: 9px;
+    font-weight: bold;
     transition: all 0.15s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    flex-shrink: 0;
 }
 
 .format-btn:hover {
@@ -154,13 +152,13 @@ body {
 
 .format-btn[data-action="code"] {
     font-family: monospace;
-    font-size: 11px;
+    font-size: 8px;
 }
 
 .format-clear-btn {
-    width: auto;
-    padding: 0 10px;
-    font-size: 12px;
+    width: auto !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
     background: rgba(255, 107, 107, 0.15);
     border-color: rgba(255, 107, 107, 0.3);
     color: #FF6B6B;
@@ -170,33 +168,19 @@ body {
     background: rgba(255, 107, 107, 0.25);
 }
 
-/* Ряды кнопок цветов */
-.format-colors-row {
-    display: flex;
-    gap: 4px;
-    flex-wrap: nowrap;
-}
-
 /* Кнопки цветов */
 .format-color-btn {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    border: 2px solid var(--color-border, #3a3a3a);
     cursor: pointer;
     transition: all 0.15s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.6);
-    -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
 }
 
 .format-color-btn:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
     border-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -204,91 +188,26 @@ body {
     transform: scale(0.95);
 }
 
-.format-color-clear {
-    background: var(--color-bg, #1e1e1e) !important;
-    border: 2px solid var(--color-border, #3a3a3a);
-    color: var(--color-text-secondary, #888);
-    font-size: 14px;
-}
-
-.format-color-clear:hover {
-    border-color: #FF6B6B;
-    color: #FF6B6B;
-}
-
-/* Редактор */
-.edit-field-editor {
-    background: var(--color-bg-tertiary, #2a2a2a);
-    border: 2px solid transparent;
-    border-radius: 6px;
-    padding: 12px;
-    min-height: 80px;
-    max-height: 250px;
-    overflow-y: auto;
-    color: var(--color-text-primary, #fff);
-    font-size: 15px;
-    line-height: 1.5;
-    outline: none;
-    transition: border-color 0.2s;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-.edit-field-editor:focus {
-    border-color: #4a9eff;
-    background: var(--color-bg, #1e1e1e);
-}
-
 /* Мобильная адаптация */
-@media (max-width: 768px) {
+@media (max-width: 320px) {
     .format-toolbar {
-        gap: 6px;
-        padding: 6px 8px;
-    }
-
-    .format-toolbar-section {
-        gap: 3px;
+        gap: 2px;
+        padding: 4px;
     }
 
     .format-btn {
-        width: 36px;
-        height: 36px;
+        width: 22px;
+        height: 22px;
+        font-size: 8px;
     }
 
     .format-color-btn {
-        width: 28px;
-        height: 28px;
+        width: 14px;
+        height: 14px;
     }
 
     .format-toolbar-divider {
-        height: 24px;
-    }
-
-    /* Скрываем label на мобильных */
-    .format-toolbar-label {
-        display: none;
-    }
-
-    /* Скролл для цветов */
-    .format-colors-row {
-        overflow-x: auto;
-        padding-bottom: 2px;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .format-colors-row::-webkit-scrollbar {
-        height: 3px;
-    }
-
-    .format-colors-row::-webkit-scrollbar-thumb {
-        background: var(--color-border, #3a3a3a);
-        border-radius: 2px;
-    }
-    
-    .edit-field-editor {
-        min-height: 70px;
-        max-height: 200px;
-        font-size: 14px;
+        height: 14px;
     }
 }
 
