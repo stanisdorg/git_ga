@@ -331,6 +331,7 @@ function hideLoading() {
 export function initTabsNavigation(appVersion) {
     // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
+    console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
 
     // Показываем анимацию загрузки при старте
     showLoading();
@@ -339,9 +340,15 @@ export function initTabsNavigation(appVersion) {
         const container = document.querySelector('.container');
         // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
         // НО НЕ для страницы статистики!
-        if (container && !isStatsPage) container.style.display = '';
+        if (container && !isStatsPage) {
+            container.style.display = '';
+            console.log('[initTabsNavigation] container display reset');
+        }
         const sidebar = document.querySelector('.sidebar');
-        if (sidebar && !isStatsPage) sidebar.style.display = '';
+        if (sidebar && !isStatsPage) {
+            sidebar.style.display = '';
+            console.log('[initTabsNavigation] sidebar display reset');
+        }
 
         const searchContainer = document.querySelector('.search-container');
         // СКРЫВАЕМ строку поиска для страницы статистики!
@@ -349,6 +356,10 @@ export function initTabsNavigation(appVersion) {
             // Для статистики оставляем display:none, для остальных страниц показываем
             if (!isStatsPage) {
                 searchContainer.style.display = '';
+                console.log('[initTabsNavigation] search-container display reset');
+            } else {
+                searchContainer.style.display = 'none';
+                console.log('[initTabsNavigation] search-container hidden (stats page)');
             }
         }
         // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
@@ -648,7 +659,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.02');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -667,7 +678,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=4.58-beta');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.02');
                     initStatsPage(appVersion);
                 }
 
@@ -682,38 +693,56 @@ export function initTabsNavigation(appVersion) {
                 }
             } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
                 // Переход на главную - закрываем статистику если открыта
+                console.log('[HASHCHANGE #/] Navigating to home page...');
 
                 // Очищаем состояние обучения если есть
                 if (window.__lastCandidates) {
                     window.__lastCandidates = null;
+                    console.log('[HASHCHANGE #/] Cleared __lastCandidates');
                 }
 
                 // Закрываем статистику если открыта
                 const statsContainer = document.getElementById('stats-container');
                 if (statsContainer) {
                     statsContainer.remove();
+                    console.log('[HASHCHANGE #/] Removed stats-container');
                 }
 
                 // Показываем главный контейнер
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'block';
+                    console.log('[HASHCHANGE #/] mainContainer display set to block');
                 }
 
                 // Восстанавливаем top-actions-bar
                 const topActionsBar = document.querySelector('.top-actions-bar');
                 if (topActionsBar) {
                     topActionsBar.style.display = 'flex';
+                    console.log('[HASHCHANGE #/] top-actions-bar display set to flex');
+                } else {
+                    console.warn('[HASHCHANGE #/] top-actions-bar NOT FOUND!');
+                }
+
+                // Восстанавливаем search-container
+                const searchContainer = document.querySelector('.search-container');
+                if (searchContainer) {
+                    searchContainer.style.display = '';
+                    console.log('[HASHCHANGE #/] search-container display reset');
+                } else {
+                    console.warn('[HASHCHANGE #/] search-container NOT FOUND!');
                 }
 
                 // Отключаем MutationObserver для top-actions-bar
                 if (window.__statsTopActionsObserver) {
                     window.__statsTopActionsObserver.disconnect();
                     window.__statsTopActionsObserver = null;
+                    console.log('[HASHCHANGE #/] Disconnected __statsTopActionsObserver');
                 }
 
                 // Обновляем текущий контекст
                 refreshCurrentContext();
+                console.log('[HASHCHANGE #] Home page setup complete');
             }
         });
 
@@ -1003,7 +1032,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=4.58-beta').then(() => {
+                    import('../srs/stats-ui.js?v=5.02').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {

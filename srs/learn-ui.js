@@ -524,23 +524,59 @@ export function startLearnSession(candidateQuestions, options = {}) {
 }
 
 function stopLearnSession() {
+    console.log('[stopLearnSession] Called!');
+    console.log('[stopLearnSession] location.hash:', location.hash);
+    
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
     }
-    if (container) container.style.display = 'none';
-    if (mainContainer) mainContainer.style.display = 'block'; // Or whatever flex/grid it was
+    if (container) {
+        container.style.display = 'none';
+        console.log('[stopLearnSession] learn-container hidden');
+    }
+    if (mainContainer) {
+        mainContainer.style.display = 'block';
+        console.log('[stopLearnSession] mainContainer display set to block');
+    }
     // Restore sidebar
     const sidebar = document.querySelector('.sidebar');
-    if (sidebar) sidebar.style.display = '';
+    if (sidebar) {
+        sidebar.style.display = '';
+        console.log('[stopLearnSession] sidebar display reset');
+    }
 
     // Возвращаем навигацию и убираем класс с body
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) bottomNav.style.display = 'flex';
+    if (bottomNav) {
+        bottomNav.style.display = 'flex';
+        console.log('[stopLearnSession] bottom-nav display set to flex');
+    }
+
+    // Восстанавливаем search-container и top-actions-bar
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer) {
+        searchContainer.style.display = '';
+        console.log('[stopLearnSession] search-container display reset');
+    } else {
+        console.warn('[stopLearnSession] search-container NOT FOUND!');
+    }
+
+    const topActionsBar = document.querySelector('.top-actions-bar');
+    if (topActionsBar) {
+        topActionsBar.style.display = 'flex';
+        console.log('[stopLearnSession] top-actions-bar display reset');
+    } else {
+        console.warn('[stopLearnSession] top-actions-bar NOT FOUND!');
+    }
 
     window.dispatchEvent(new Event('favoritesUpdated'));
     session = null;
+    
+    console.log('[stopLearnSession] Done! Checking elements visibility:');
+    console.log('  - search-container:', document.querySelector('.search-container')?.style.display);
+    console.log('  - top-actions-bar:', document.querySelector('.top-actions-bar')?.style.display);
 }
 
 function renderCardState(state) {
@@ -1417,7 +1453,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=4.58-beta').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=5.02').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {

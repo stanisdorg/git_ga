@@ -2376,6 +2376,23 @@ export function hideStatsPage() {
     console.log('[hideStatsPage] sidebar display reset');
   }
 
+  // Восстанавливаем search-container и top-actions-bar
+  const searchContainer = document.querySelector('.search-container');
+  if (searchContainer) {
+    searchContainer.style.display = '';
+    console.log('[hideStatsPage] search-container display reset');
+  } else {
+    console.warn('[hideStatsPage] search-container NOT FOUND!');
+  }
+
+  const topActionsBar = document.querySelector('.top-actions-bar');
+  if (topActionsBar) {
+    topActionsBar.style.display = 'flex';
+    console.log('[hideStatsPage] top-actions-bar display reset');
+  } else {
+    console.warn('[hideStatsPage] top-actions-bar NOT FOUND!');
+  }
+
   // НЕ меняем hash здесь! Это вызывается из startFilteredSession
   // if (location.hash && location.hash.includes('stats')) {
   //     location.hash = '';
