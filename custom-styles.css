@@ -2577,14 +2577,21 @@ body.learning-mode #bottom-nav {
     flex: none !important;
 }
 
-/* УСИЛЕННЫЕ ПРАВИЛА: применяем ко ВСЕМ элементам внутри flashcard-content */
+/* УСИЛЕННЫЕ ПРАВИЛА: применяем ко ВСЕМ элементам внутри flashcard-content И flashcard-back-question */
 .flashcard-content span,
 .flashcard-content code,
 .flashcard-content strong,
 .flashcard-content em,
 .flashcard-content u,
 .flashcard-content b,
-.flashcard-content i {
+.flashcard-content i,
+.flashcard-back-question span,
+.flashcard-back-question code,
+.flashcard-back-question strong,
+.flashcard-back-question em,
+.flashcard-back-question u,
+.flashcard-back-question b,
+.flashcard-back-question i {
     display: inline !important;
     white-space: pre-wrap !important;
 }
