@@ -2577,10 +2577,16 @@ body.learning-mode #bottom-nav {
     flex: none !important;
 }
 
-/* Принудительно делаем span и code inline внутри flashcard-content */
-.flashcard-front .flashcard-content > *,
-.flashcard-back .flashcard-content > * {
+/* УСИЛЕННЫЕ ПРАВИЛА: применяем ко ВСЕМ элементам внутри flashcard-content */
+.flashcard-content span,
+.flashcard-content code,
+.flashcard-content strong,
+.flashcard-content em,
+.flashcard-content u,
+.flashcard-content b,
+.flashcard-content i {
     display: inline !important;
+    white-space: pre-wrap !important;
 }
 
 /* Sync Indicator Widget */

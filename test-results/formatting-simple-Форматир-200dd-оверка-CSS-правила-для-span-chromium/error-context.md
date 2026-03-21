@@ -1,0 +1,232 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "Выйти (undefined)" [ref=e8] [cursor=pointer]:
+          - img [ref=e9]
+        - button "Домой" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+      - generic [ref=e16]: v5.05
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: 🔥
+          - text: "0"
+        - generic [ref=e20]:
+          - generic [ref=e21]: ⚡
+          - text: "0"
+        - generic [ref=e22]:
+          - generic [ref=e23]: ❤️
+          - text: "1"
+      - button "▶ Обучение" [ref=e24] [cursor=pointer]
+      - generic [ref=e25]: admin
+      - generic "Уровни и XP" [ref=e27] [cursor=pointer]:
+        - generic [ref=e28]: LV:2
+        - generic [ref=e29]:
+          - generic: XP:730 105/1875
+    - generic [ref=e31]:
+      - group "Краткая статистика" [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - text: "Прогресс:"
+            - generic [ref=e36]: 49%
+          - generic [ref=e37]: "Прогноз: 9 апр. 2026 г."
+          - button "i" [ref=e38] [cursor=pointer]
+      - generic [ref=e40]:
+        - generic "📝 Работа над ошибками Низкая точность. Сфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности." [ref=e41] [cursor=pointer]:
+          - img [ref=e43]
+          - generic [ref=e45]:
+            - generic [ref=e46]: Работа над ошибками
+            - generic [ref=e47]: Низкая точность
+        - generic "🌱 Только новые Изучение свежего материала. Показываются только карточки, которые вы ещё не начинали учить." [ref=e48] [cursor=pointer]:
+          - img [ref=e50]
+          - generic [ref=e52]:
+            - generic [ref=e53]: Только новые
+            - generic [ref=e54]: Свежий материал
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - text: Сложность
+          - button "i" [ref=e58] [cursor=pointer]
+        - generic [ref=e59]:
+          - generic "0.0%" [ref=e60] [cursor=pointer]:
+            - generic [ref=e63]:
+              - text: Легкие
+              - img [ref=e64]
+              - img [ref=e66]
+              - img [ref=e68]
+              - img [ref=e70]
+              - img [ref=e72]
+            - generic [ref=e74]: "0"
+          - generic "36.2%" [ref=e76] [cursor=pointer]:
+            - generic [ref=e79]:
+              - text: Стандарт
+              - img [ref=e80]
+              - img [ref=e82]
+              - img [ref=e84]
+              - img [ref=e86]
+              - img [ref=e88]
+            - generic [ref=e90]: "38"
+          - generic "62.9%" [ref=e92] [cursor=pointer]:
+            - generic [ref=e95]:
+              - text: Трудные
+              - img [ref=e96]
+              - img [ref=e98]
+              - img [ref=e100]
+              - img [ref=e102]
+              - img [ref=e104]
+            - generic [ref=e106]: "66"
+          - generic "1.0%" [ref=e108] [cursor=pointer]:
+            - generic [ref=e111]:
+              - text: Очень трудные
+              - img [ref=e112]
+              - img [ref=e114]
+              - img [ref=e116]
+              - img [ref=e118]
+              - img [ref=e120]
+            - generic [ref=e122]: "1"
+          - generic "Избранное" [ref=e124] [cursor=pointer]:
+            - generic [ref=e127]: Избранное
+            - generic [ref=e128]: "8"
+      - generic [ref=e130]:
+        - generic [ref=e131]:
+          - generic [ref=e132]: Категории (13)
+          - button "Свернуть/развернуть" [ref=e133] [cursor=pointer]:
+            - img [ref=e134]
+        - generic [ref=e136]:
+          - generic "Нажмите для просмотра карточек" [ref=e137] [cursor=pointer]:
+            - generic [ref=e138]:
+              - generic [ref=e139]: Graphql, grpc
+              - generic [ref=e140]: 80% (2)
+          - generic "Нажмите для просмотра карточек" [ref=e143] [cursor=pointer]:
+            - generic [ref=e144]:
+              - generic [ref=e145]: MindMap
+              - generic [ref=e146]: 59% (54)
+          - generic "Нажмите для просмотра карточек" [ref=e149] [cursor=pointer]:
+            - generic [ref=e150]:
+              - generic [ref=e151]: DevOps
+              - generic [ref=e152]: 52% (29)
+          - generic "Нажмите для просмотра карточек" [ref=e155] [cursor=pointer]:
+            - generic [ref=e156]:
+              - generic [ref=e157]: Архитектура
+              - generic [ref=e158]: 48% (10)
+          - generic "Нажмите для просмотра карточек" [ref=e161] [cursor=pointer]:
+            - generic [ref=e162]:
+              - generic [ref=e163]: Взаимодействие
+              - generic [ref=e164]: 39% (30)
+          - generic "Нажмите для просмотра карточек" [ref=e167] [cursor=pointer]:
+            - generic [ref=e168]:
+              - generic [ref=e169]: Техники тест дизайна
+              - generic [ref=e170]: 10% (6)
+          - generic "Нажмите для просмотра карточек" [ref=e173] [cursor=pointer]:
+            - generic [ref=e174]:
+              - generic [ref=e175]: Документация
+              - generic [ref=e176]: 9% (19)
+          - generic "Нажмите для просмотра карточек" [ref=e179] [cursor=pointer]:
+            - generic [ref=e180]:
+              - generic [ref=e181]: Технические
+              - generic [ref=e182]: 2% (82)
+          - generic "Нажмите для просмотра карточек" [ref=e185] [cursor=pointer]:
+            - generic [ref=e186]:
+              - generic [ref=e187]: Тестирование
+              - generic [ref=e188]: 1% (58)
+          - generic "Нажмите для просмотра карточек" [ref=e191] [cursor=pointer]:
+            - generic [ref=e192]:
+              - generic [ref=e193]: Безопасность
+              - generic [ref=e194]: 0% (1)
+          - generic "Нажмите для просмотра карточек" [ref=e196] [cursor=pointer]:
+            - generic [ref=e197]:
+              - generic [ref=e198]: Опыт
+              - generic [ref=e199]: 0% (6)
+          - generic "Нажмите для просмотра карточек" [ref=e201] [cursor=pointer]:
+            - generic [ref=e202]:
+              - generic [ref=e203]: Процессы
+              - generic [ref=e204]: 0% (5)
+          - generic "Нажмите для просмотра карточек" [ref=e206] [cursor=pointer]:
+            - generic [ref=e207]:
+              - generic [ref=e208]: Типы, виды тестирования
+              - generic [ref=e209]: 0% (14)
+      - generic [ref=e212]:
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - generic [ref=e215]: Неделя
+            - generic [ref=e216]: Месяц
+            - generic [ref=e217]: Год
+          - generic [ref=e218]: Март 2026
+        - img [ref=e220]:
+          - generic [ref=e221]: "0"
+          - generic [ref=e222]: "35"
+          - generic [ref=e223]: "69"
+          - generic [ref=e224]: "104"
+          - generic [ref=e225]: "138"
+          - generic [ref=e228]: "9"
+          - generic [ref=e233]: "11"
+          - generic [ref=e238]: "13"
+          - generic [ref=e243]: "15"
+          - generic [ref=e248]: "17"
+          - generic [ref=e253]: "19"
+          - generic [ref=e258]: "21"
+        - button "Развернуть график" [ref=e261] [cursor=pointer]:
+          - img [ref=e262]
+      - generic [ref=e266]:
+        - 'generic "Первый шаг: 1/1 — Пройдите хотя бы один урок" [ref=e267] [cursor=pointer]':
+          - generic [ref=e268]: 🏁
+          - generic [ref=e269]: Первый шаг
+        - 'generic "Неделя в огне: 0/7 — 7 дней подряд заходите в приложение и учитесь" [ref=e272] [cursor=pointer]':
+          - generic [ref=e273]: 🔥
+          - generic [ref=e274]: Неделя в огне
+        - 'generic "Стабильность: 0/14 — 14 дней подряд без пропусков" [ref=e276] [cursor=pointer]':
+          - generic [ref=e277]: 🧘
+          - generic [ref=e278]: Стабильность
+        - 'generic "Марафонец: 0/30 — 30 дней подряд — целый месяц без пропусков!" [ref=e280] [cursor=pointer]':
+          - generic [ref=e281]: 🏃
+          - generic [ref=e282]: Марафонец
+        - 'generic "Прогресс: 0/10 — 10 карточек, которые были сложными, стали лёгкими (5 сердечек)" [ref=e284] [cursor=pointer]':
+          - generic [ref=e285]: 📈
+          - generic [ref=e286]: Прогресс
+        - 'generic "Набрал темп: 41/50 — 50 карточек изучено (пройдено хотя бы один раз)" [ref=e288] [cursor=pointer]':
+          - generic [ref=e289]: 📚
+          - generic [ref=e290]: Набрал темп
+        - 'generic "Центурион: 41/100 — 100 карточек изучено — вы знаете больше половины базы!" [ref=e293] [cursor=pointer]':
+          - generic [ref=e294]: 💯
+          - generic [ref=e295]: Центурион
+        - 'generic "Снайпер: 33/90 — 90%+ правильных ответов за всё время — почти без ошибок!" [ref=e298] [cursor=pointer]':
+          - generic [ref=e299]: 🎯
+          - generic [ref=e300]: Снайпер
+        - 'generic "Мастер: 2/10 — Уровень 10 — накопите 56250 XP" [ref=e303] [cursor=pointer]':
+          - generic [ref=e304]: 👑
+          - generic [ref=e305]: Мастер
+        - 'generic "Ранняя пташка: 1/25 — 25 карточек, пройденных до 9:00 утра" [ref=e308] [cursor=pointer]':
+          - generic [ref=e309]: 🌅
+          - generic [ref=e310]: Ранняя пташка
+        - 'generic "Ночной рейдер: 50/50 — 50 карточек, пройденных после 23:00 (ночью)" [ref=e313] [cursor=pointer]':
+          - generic [ref=e314]: 🌙
+          - generic [ref=e315]: Ночной рейдер
+        - 'generic "Возвращение: 1/10 — Сделайте перерыв 7+ дней, затем вернитесь и пройдите 10 карточек" [ref=e318] [cursor=pointer]':
+          - generic [ref=e319]: 🔄
+          - generic [ref=e320]: Возвращение
+  - generic [ref=e323]:
+    - generic [ref=e324]:
+      - heading "Фильтры" [level=3] [ref=e325]
+      - button [ref=e326] [cursor=pointer]:
+        - img [ref=e327]
+    - generic [ref=e330]:
+      - generic [ref=e331]:
+        - generic [ref=e332]: Статус
+        - generic [ref=e333]:
+          - button "Новые" [ref=e334] [cursor=pointer]
+          - button "Изучаются" [ref=e335] [cursor=pointer]
+          - button "Повторение" [ref=e336] [cursor=pointer]
+      - generic [ref=e337]:
+        - generic [ref=e338]: Сложность
+        - generic [ref=e339]:
+          - button "Легко" [ref=e340] [cursor=pointer]
+          - button "Средне" [ref=e341] [cursor=pointer]
+          - button "Сложно" [ref=e342] [cursor=pointer]
+    - generic [ref=e343]:
+      - button "Сбросить" [ref=e344] [cursor=pointer]
+      - button "Применить" [ref=e345] [cursor=pointer]
+  - generic "Готов к синхронизации" [ref=e346]:
+    - img [ref=e347]
+```
