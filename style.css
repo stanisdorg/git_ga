@@ -75,11 +75,12 @@ body {
 .format-toolbar {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     padding: 6px;
     background: var(--color-bg-tertiary, #333333);
     border-radius: 4px;
-    max-width: 280px;
+    width: 100%;
+    max-width: 320px;
     margin: 0 auto;
 }
 
@@ -87,32 +88,35 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    flex-wrap: wrap;
+    gap: 3px;
+    flex-wrap: nowrap;
 }
 
 .format-toolbar-format {
     display: flex;
-    gap: 1px;
+    gap: 2px;
+    flex-shrink: 0;
 }
 
 .format-toolbar-colors {
     display: flex;
-    gap: 2px;
+    gap: 3px;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .format-toolbar-divider {
     width: 1px;
-    height: 16px;
+    height: 20px;
     background: var(--color-border, #3a3a3a);
-    margin: 0 3px;
+    margin: 0 4px;
+    flex-shrink: 0;
 }
 
 /* Кнопки форматирования (B, I, U, Code) */
 .format-btn {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 3px;
     border: 1px solid var(--color-border, #3a3a3a);
     background: var(--color-bg, #1e1e1e);
@@ -121,11 +125,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: bold;
     transition: all 0.15s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
 }
 
 .format-btn:hover {
@@ -152,13 +157,13 @@ body {
 
 .format-btn[data-action="code"] {
     font-family: monospace;
-    font-size: 8px;
+    font-size: 9px;
 }
 
 .format-clear-btn {
     width: auto !important;
-    padding: 0 6px !important;
-    font-size: 9px !important;
+    padding: 0 8px !important;
+    font-size: 10px !important;
     background: rgba(255, 107, 107, 0.15);
     border-color: rgba(255, 107, 107, 0.3);
     color: #FF6B6B;
@@ -170,8 +175,8 @@ body {
 
 /* Кнопки цветов */
 .format-color-btn {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     border: 2px solid var(--color-border, #3a3a3a);
     cursor: pointer;
@@ -188,68 +193,65 @@ body {
     transform: scale(0.95);
 }
 
-/* Мобильная адаптация */
-@media (max-width: 320px) {
+/* Адаптация под разные размеры экрана */
+@media (max-width: 340px) {
     .format-toolbar {
-        gap: 2px;
-        padding: 4px;
+        max-width: 100%;
     }
-
+    
     .format-btn {
-        width: 22px;
-        height: 22px;
-        font-size: 8px;
+        width: 24px;
+        height: 24px;
+        font-size: 9px;
     }
-
+    
     .format-color-btn {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
     }
-
+    
     .format-toolbar-divider {
-        height: 14px;
+        height: 16px;
     }
 }
 
-@media (min-width: 321px) and (max-width: 375px) {
+@media (min-width: 341px) and (max-width: 400px) {
     .format-toolbar {
-        gap: 2px;
-        padding: 5px;
+        max-width: 300px;
     }
-
+    
     .format-btn {
         width: 26px;
         height: 26px;
-        font-size: 9px;
+        font-size: 10px;
     }
-
+    
     .format-color-btn {
         width: 18px;
         height: 18px;
     }
-
+    
     .format-toolbar-divider {
         height: 18px;
     }
 }
 
-@media (min-width: 376px) {
+@media (min-width: 401px) {
     .format-toolbar {
-        gap: 2px;
-        padding: 6px;
+        max-width: 320px;
     }
-
+    
     .format-btn {
         width: 28px;
         height: 28px;
-        font-size: 10px;
+        font-size: 11px;
     }
-
+    
     .format-color-btn {
         width: 20px;
         height: 20px;
     }
-
+    
     .format-toolbar-divider {
         height: 20px;
     }
