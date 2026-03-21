@@ -1308,10 +1308,37 @@ function renderCardState(state) {
         }
     });
 
-    // Обновляем вопрос на back-стороне
+    // Обновляем вопрос на back-стороне С ФОРМАТИРОВАНИЕМ
     const backQuestionEl = document.getElementById('learn-back-question');
     if (backQuestionEl && state.card) {
-        backQuestionEl.textContent = state.card.question || '(Пустой вопрос)';
+        const sessionCard = session?.currentCard;
+        const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
+        const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
+        const questionHTML = applyFormatting(questionText, questionFormatting);
+        backQuestionEl.innerHTML = questionHTML;
+        
+        console.log('[RENDER CARD] Back question rendered:', {
+            text: questionText,
+            formatting: questionFormatting,
+            html: questionHTML,
+            innerHTML: backQuestionEl.innerHTML
+        });
+        
+        // DEBUG: Проверяем стили первого span
+        setTimeout(() => {
+            const firstSpan = backQuestionEl.querySelector('span');
+            if (firstSpan) {
+                const styles = window.getComputedStyle(firstSpan);
+                console.log('[RENDER CARD] ❗ First BACK QUESTION span STYLES:', {
+                    display: styles.display,
+                    color: styles.color,
+                    textDecoration: styles.textDecoration,
+                    fontFamily: styles.fontFamily,
+                    fontWeight: styles.fontWeight,
+                    fontStyle: styles.fontStyle
+                });
+            }
+        }, 100);
     }
 
     // Update Hearts and Difficulty Label
@@ -2063,7 +2090,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=5.05').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=5.08').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {
