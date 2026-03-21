@@ -659,7 +659,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.10');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.11');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -678,7 +678,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.10');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.11');
                     initStatsPage(appVersion);
                 }
 
