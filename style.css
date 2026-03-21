@@ -211,6 +211,50 @@ body {
     }
 }
 
+@media (min-width: 321px) and (max-width: 375px) {
+    .format-toolbar {
+        gap: 2px;
+        padding: 5px;
+    }
+
+    .format-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 9px;
+    }
+
+    .format-color-btn {
+        width: 18px;
+        height: 18px;
+    }
+
+    .format-toolbar-divider {
+        height: 18px;
+    }
+}
+
+@media (min-width: 376px) {
+    .format-toolbar {
+        gap: 2px;
+        padding: 6px;
+    }
+
+    .format-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .format-color-btn {
+        width: 20px;
+        height: 20px;
+    }
+
+    .format-toolbar-divider {
+        height: 20px;
+    }
+}
+
 /* Подсветка синтаксиса кода */
 .edit-field-editor code {
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
