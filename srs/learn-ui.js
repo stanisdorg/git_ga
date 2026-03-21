@@ -1453,7 +1453,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=5.02').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=5.03').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {

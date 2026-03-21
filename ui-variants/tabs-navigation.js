@@ -659,7 +659,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.02');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.03');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -678,7 +678,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.02');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.03');
                     initStatsPage(appVersion);
                 }
 
@@ -713,6 +713,15 @@ export function initTabsNavigation(appVersion) {
                 if (mainContainer) {
                     mainContainer.style.display = 'block';
                     console.log('[HASHCHANGE #/] mainContainer display set to block');
+                }
+
+                // Восстанавливаем sidebar
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    sidebar.style.display = '';
+                    console.log('[HASHCHANGE #/] sidebar display reset');
+                } else {
+                    console.warn('[HASHCHANGE #/] sidebar NOT FOUND!');
                 }
 
                 // Восстанавливаем top-actions-bar
@@ -1032,7 +1041,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=5.02').then(() => {
+                    import('../srs/stats-ui.js?v=5.03').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {
