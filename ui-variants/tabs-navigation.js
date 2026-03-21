@@ -659,7 +659,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.04');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.05');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -678,7 +678,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.04');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.05');
                     initStatsPage(appVersion);
                 }
 
@@ -1041,7 +1041,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=5.04').then(() => {
+                    import('../srs/stats-ui.js?v=5.05').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {

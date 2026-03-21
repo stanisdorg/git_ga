@@ -54,6 +54,11 @@ const server = http.createServer((req, res) => {
   }, 'HTTP');
   
   console.log(`${ts} - ${req.method} ${req.url}`);
+  
+  // Логирование всех POST запросов для отладки
+  if (req.method === 'POST') {
+    console.log('[SERVER DEBUG] POST запрос:', req.url);
+  }
 
   // CORS и preflight
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -678,6 +683,180 @@ const server = http.createServer((req, res) => {
         });
       } catch (e) {
         console.error('Invalid JSON body:', e);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+      }
+    });
+    return;
+  }
+
+  // POST /api/card/update - Обновление одной карточки (вопрос/ответ)
+  if (req.method === 'POST' && req.url.startsWith('/api/card/update')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const username = urlObj.searchParams.get('username');
+
+    console.log('========================================');
+    console.log('[SERVER /api/card/update] === ЗАПРОС НА ОБНОВЛЕНИЕ КАРТОЧКИ ===');
+    console.log('[SERVER /api/card/update] username:', username);
+    console.log('[SERVER /api/card/update] URL:', req.url);
+    console.log('========================================');
+
+    logger.info('=== ЗАПРОС НА ОБНОВЛЕНИЕ КАРТОЧКИ ===', { username }, 'CardUpdate');
+
+    if (!username) {
+      logger.error('Ошибка: username не указан', null, 'CardUpdate');
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, error: 'username required' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        // 🔍 АВТОМАТИЧЕСКОЕ ИСПРАВЛЕНИЕ ПОВРЕЖДЕННЫХ СИМВОЛОВ
+        let originalBody = body;
+        body = body.replace(/\uFFFD/g, '?');
+        body = body.replace(/Д\?{1,10}кументация/g, 'Документация');
+        body = body.replace(/инфу о\? сервера/g, 'инфу от сервера');
+        body = body.replace(/получа\?м/g, 'получаем');
+        body = body.replace(/се\?{1,5}висы/g, 'сервисы');
+
+        if (body !== originalBody) {
+          logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ПАРСИНГОМ', null, 'CardUpdate');
+        }
+
+        const data = JSON.parse(body);
+        const { oldQuestion, newQuestion, newAnswer, formatting } = data;
+
+        logger.info('Получены данные для обновления', {
+          oldQuestionLength: oldQuestion?.length,
+          newQuestionLength: newQuestion?.length,
+          hasNewAnswer: !!newAnswer,
+          hasFormatting: !!formatting
+        }, 'CardUpdate');
+
+        if (!oldQuestion || !newQuestion) {
+          logger.error('Ошибка: oldQuestion и newQuestion обязательны', null, 'CardUpdate');
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'oldQuestion and newQuestion required' }));
+          return;
+        }
+
+        const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+        let userData = {};
+
+        if (fs.existsSync(targetPath)) {
+          userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+          console.log('[SERVER /api/card/update] Файл прочитан, количество карточек:', userData._cards?.length || 0);
+          console.log('[SERVER /api/card/update] Время чтения файла:', new Date().toISOString());
+        } else {
+          console.log('[SERVER /api/card/update] Файл не существует:', targetPath);
+        }
+        
+        // Логирование для отладки
+        console.log('========================================');
+        console.log('[SERVER /api/card/update] === ЧТЕНИЕ ПЕРЕД ЗАПИСЬЮ ===');
+        console.log('[SERVER /api/card/update] Чтение файла:', targetPath);
+        console.log('[SERVER /api/card/update] oldQuestion для поиска:', oldQuestion);
+        console.log('[SERVER /api/card/update] Вопросы в файле (первые 5):', userData._cards?.slice(0, 5).map(c => c.question.substring(0, 30)) || []);
+        console.log('========================================');
+
+        // Ищем карточку по старому вопросу и обновляем
+        let updated = false;
+        let foundIndex = -1;
+        if (userData._cards && Array.isArray(userData._cards)) {
+          foundIndex = userData._cards.findIndex(c => c.question === oldQuestion);
+          console.log('[SERVER /api/card/update] cardIndex:', foundIndex);
+          if (foundIndex !== -1) {
+            userData._cards[foundIndex].question = newQuestion;
+            if (newAnswer !== undefined) {
+              userData._cards[foundIndex].answer = newAnswer;
+            }
+            // Сохраняем formatting если есть
+            if (formatting !== undefined) {
+              userData._cards[foundIndex].formatting = formatting;
+            }
+            updated = true;
+            logger.info('Карточка обновлена', {
+              oldQuestion: oldQuestion.substring(0, 50) + '...',
+              newQuestion: newQuestion.substring(0, 50) + '...',
+              hasFormatting: !!formatting
+            }, 'CardUpdate');
+          } else {
+            // Логируем все вопросы для отладки
+            console.log('[SERVER /api/card/update] Карточка не найдена! Вопросы в файле (первые 10):');
+            userData._cards.slice(0, 10).forEach((c, i) => {
+              console.log(`  [${i}] ${c.question.substring(0, 50)}...`);
+            });
+          }
+        }
+
+        if (!updated) {
+          logger.warn('Карточка не найдена для обновления', { oldQuestion: oldQuestion.substring(0, 50) }, 'CardUpdate');
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ 
+            ok: false, 
+            error: 'card_not_found',
+            debug: {
+              oldQuestion: oldQuestion,
+              questionsInFile: userData._cards?.slice(0, 10).map(c => c.question) || [],
+              foundIndex: foundIndex,
+              fileReadTime: new Date().toISOString()
+            }
+          }));
+          return;
+        }
+
+        // Синхронная запись для гарантии обновления до ответа
+        try {
+          const jsonString = JSON.stringify(userData, null, 2);
+          
+          // Используем флаг 'w' для явной перезаписи файла
+          fs.writeFileSync(targetPath, jsonString, { encoding: 'utf8', flag: 'w' });
+          console.log('[SERVER /api/card/update] Файл записан, время:', new Date().toISOString());
+          
+          // Явно закрываем файловый дескриптор для сброса кэша
+          const fd = fs.openSync(targetPath, 'r');
+          fs.closeSync(fd);
+          
+          // Небольшая задержка перед проверкой
+          const startWait = Date.now();
+          while (Date.now() - startWait < 50) { /* ждём 50ms */ }
+          
+          // Читаем файл после записи для проверки
+          const verifyData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+          const foundNewCard = verifyData._cards?.some(c => c.question === newQuestion);
+          
+          console.log('========================================');
+          console.log('[SERVER /api/card/update] === ПРОВЕРКА ПОСЛЕ ЗАПИСИ ===');
+          console.log('[SERVER /api/card/update] Файл записан:', targetPath);
+          console.log('[SERVER /api/card/update] newQuestion:', newQuestion);
+          console.log('[SERVER /api/card/update] Найдена ли новая карточка:', foundNewCard);
+          console.log('[SERVER /api/card/update] Время проверки:', new Date().toISOString());
+          console.log('[SERVER /api/card/update] Время между записью и проверкой:', Date.now() - startWait, 'ms');
+          console.log('========================================');
+          
+          logger.info(`Карточка пользователя ${username} обновлена`, null, 'CardUpdate');
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ 
+            ok: true, 
+            message: 'card_updated',
+            debug: {
+              fileWritten: targetPath,
+              newQuestion: newQuestion,
+              cardFoundInFile: foundNewCard,
+              writeTime: new Date().toISOString()
+            }
+          }));
+        } catch (err) {
+          console.error('[SERVER /api/card/update] Ошибка записи:', err);
+          logger.error('Ошибка записи файла', { error: err.message }, 'CardUpdate');
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
+        }
+      } catch (e) {
+        logger.error('Ошибка парсинга JSON', { error: e.message }, 'CardUpdate');
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
       }
@@ -1394,7 +1573,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Нормализуем URL
+  // ��ормализуем URL
   // 🔒 СНАЧАЛА ПРОВЕРЯЕМ НА PATH TRAVERSAL (до декодирования!)
   if (req.url.includes('..') || req.url.includes('\\') || req.url.includes('%2e%2e') || req.url.includes('%252e')) {
     logger.warn('Попытка Path Traversal', { url: req.url }, 'Security');

@@ -1,0 +1,12 @@
+{
+  "_cards": [
+    {
+      "category": "DevOps",
+      "subcategory": "CI/CD",
+      "question": "Медленный деплой",
+      "answer": "пересборка всего приложения при любом изменении"
+    }
+  ],
+  "_srsProgress": {},
+  "_stats": {}
+}

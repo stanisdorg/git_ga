@@ -1187,6 +1187,22 @@ function renderCardState(state) {
             childrenCount: qEl.children.length,
             spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
+        
+        // DEBUG: Проверяем стили первого span
+        setTimeout(() => {
+            const firstSpan = qEl.querySelector('span');
+            if (firstSpan) {
+                const styles = window.getComputedStyle(firstSpan);
+                console.log('[RENDER CARD] ❗ First QUESTION span STYLES:', {
+                    display: styles.display,
+                    color: styles.color,
+                    textDecoration: styles.textDecoration,
+                    fontFamily: styles.fontFamily,
+                    fontWeight: styles.fontWeight,
+                    fontStyle: styles.fontStyle
+                });
+            }
+        }, 100);
     }
     if (aEl && state.card) {
         // Применяем форматирование к ответу
@@ -1205,6 +1221,22 @@ function renderCardState(state) {
             childrenCount: aEl.children.length,
             spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
+        
+        // DEBUG: Проверяем стили первого span
+        setTimeout(() => {
+            const firstSpan = aEl.querySelector('span');
+            if (firstSpan) {
+                const styles = window.getComputedStyle(firstSpan);
+                console.log('[RENDER CARD] ❗ First ANSWER span STYLES:', {
+                    display: styles.display,
+                    color: styles.color,
+                    textDecoration: styles.textDecoration,
+                    fontFamily: styles.fontFamily,
+                    fontWeight: styles.fontWeight,
+                    fontStyle: styles.fontStyle
+                });
+            }
+        }, 100);
     }
 
     // DEBUG: Логируем стили ответа
@@ -2031,7 +2063,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=5.04').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=5.05').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {

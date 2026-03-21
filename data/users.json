@@ -4,7 +4,7 @@
     "password": "eb653343d706617af1347831b5717c2609ffa4502217ab88a20acf1b9b9dd21c",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-20T23:26:21.626Z"
+    "lastLoginAt": "2026-03-21T20:52:21.051Z"
   },
   {
     "username": "jeff",
@@ -31,5 +31,12 @@
     "password": "11adf58fe971f56751ea7c5d9e28b12f599efde2bdb067f2fb1dd8ef6dc1e13b",
     "role": "user",
     "createdAt": "2026-03-12T09:09:39.149Z"
+  },
+  {
+    "username": "autotest_user",
+    "password": "68e760633bef1c68df5d4458ce34776a49a87683756fd3f6ec632247686b8cdd",
+    "role": "admin",
+    "createdAt": "2026-03-21T15:49:32.354Z",
+    "lastLoginAt": "2026-03-21T15:49:41.008Z"
   }
 ]

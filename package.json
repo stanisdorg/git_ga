@@ -6,15 +6,30 @@
   "type": "module",
   "scripts": {
     "start": "electron .",
-    "test": "playwright test",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:setup": "node tests/setup-tests.js",
+    "test:api": "npm run test:setup && node --experimental-vm-modules node_modules/jest/bin/jest.js tests/api",
     "electron:dev": "electron .",
     "release": "node scripts/auto_release.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
-    "electron": "^30.0.0"
+    "electron": "^30.0.0",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   },
   "dependencies": {
     "playwright": "^1.58.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stanisdorg/git_ga.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stanisdorg/git_ga/issues"
+  },
+  "homepage": "https://github.com/stanisdorg/git_ga#readme"
 }
