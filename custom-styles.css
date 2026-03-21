@@ -2263,6 +2263,257 @@ body.learning-mode #bottom-nav {
     display: block;
 }
 
+/* Кнопка редактирования на карточке обучения */
+.learn-edit-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 20; /* Выше всех элементов */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #888;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.learn-edit-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    color: #fff;
+}
+.learn-edit-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* Модальное окно редактирования */
+.edit-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000; /* Выше чем #learn-container (2000) */
+    animation: fadeIn 0.2s ease-out;
+}
+
+.edit-modal {
+    background: var(--color-bg-secondary, #1e1e1e);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: slideIn 0.3s ease-out;
+    z-index: 10001; /* Выше чем overlay */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.edit-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.edit-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--color-text-primary, #fff);
+}
+
+.edit-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Toolbar в модальном окне */
+.edit-modal-content .format-toolbar {
+    margin-bottom: 0;
+    order: -1;  /* Toolbar всегда первый */
+}
+
+.edit-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.edit-field-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary, #aaa);
+}
+
+.edit-field-editor {
+    background: var(--color-bg-tertiary, #2a2a2a);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 100px;
+    color: var(--color-text-primary, #fff);
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.edit-field-editor:focus {
+    border-color: #4a9eff;
+}
+
+.edit-field-editor.editing {
+    border-color: #4a9eff;
+    background: var(--color-bg-primary, #1a1a1a);
+}
+
+.edit-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border, #333);
+}
+
+.edit-modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.edit-modal-btn.cancel {
+    background: transparent;
+    color: var(--color-text-secondary, #aaa);
+    border: 1px solid var(--color-border, #444);
+}
+
+.edit-modal-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary, #fff);
+}
+
+.edit-modal-btn.save {
+    background: #4a9eff;
+    color: #fff;
+}
+
+.edit-modal-btn.save:hover {
+    background: #3a8eef;
+}
+
+.edit-modal-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Уведомления */
+.edit-notification {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--color-bg-secondary, #1e1e1e);
+    border-radius: 8px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+
+.edit-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.edit-notification.success {
+    border-left: 4px solid #4caf50;
+}
+
+.edit-notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.edit-notification-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.edit-notification-icon.success {
+    color: #4caf50;
+}
+
+.edit-notification-icon.error {
+    color: #f44336;
+}
+
+.edit-notification-message {
+    color: var(--color-text-primary, #fff);
+    font-size: 14px;
+}
+
+/* Mobile Layout */
+@media (max-width: 768px) {
+    .learn-edit-btn {
+        top: 8px;
+        left: 8px;
+    }
+    .learn-edit-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    .edit-modal {
+        width: 95%;
+        padding: 16px;
+    }
+    .edit-field-editor {
+        min-height: 80px;
+        font-size: 14px;
+    }
+    .edit-notification {
+        bottom: 70px;
+        padding: 10px 16px;
+    }
+}
+
 /* Сердечки на карточке обучения */
 .learn-hearts {
     position: absolute;
@@ -2279,6 +2530,7 @@ body.learning-mode #bottom-nav {
     overflow-y: auto;
     max-height: 100%;
     white-space: pre-wrap;
+    display: block;  /* Изменено с flex на block для корректного отображения форматирования */
 }
 
 .flashcard-front .flashcard-content {
@@ -2288,6 +2540,47 @@ body.learning-mode #bottom-nav {
 .flashcard-back .flashcard-content {
     margin-top: 0 !important;
     padding-top: 120px !important; /* Увеличено с 20px до 120px */
+}
+
+/* Форматированный текст в карточках */
+.flashcard-content span[style*="color"],
+.flashcard-content span[style*="background"] {
+    display: inline;
+    padding: 0 2px;
+}
+
+.flashcard-content code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+}
+
+/* Принудительные стили для форматированного текста на ОБЕИХ сторонах карточки */
+.flashcard-front .flashcard-content span[style],
+.flashcard-back .flashcard-content span[style] {
+    display: inline !important;
+    white-space: pre-wrap !important;
+}
+
+.flashcard-front .flashcard-content code,
+.flashcard-back .flashcard-content code {
+    display: inline !important;
+    white-space: pre-wrap !important;
+}
+
+/* КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: .flashcard-content на лицевой стороне не должен быть flex item */
+.flashcard-front .flashcard-content {
+    display: block !important;
+    flex: none !important;
+}
+
+/* Принудительно делаем span и code inline внутри flashcard-content */
+.flashcard-front .flashcard-content > *,
+.flashcard-back .flashcard-content > * {
+    display: inline !important;
 }
 
 /* Sync Indicator Widget */
@@ -2365,7 +2658,7 @@ body.learning-mode #bottom-nav {
     font-size: 18px;
     color: var(--color-text-secondary);
     flex: 1;
-    display: flex;
+    display: block !important;  /* Изменено с flex на block для корректного отображения форматирования */
     align-items: flex-start;
     justify-content: flex-start;
     padding-top: 120px !important; /* Увеличено с 20px до 120px */

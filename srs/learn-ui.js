@@ -1,10 +1,12 @@
 ﻿import { LearningSession } from './session.js?v=2.01';
-import { getDueCards, syncFavorite, syncDailyStats } from './storage.js?v=2.01';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=2.01';
 import { getProgressMap } from './stats-utils.js?v=2.00';
 import { checkAchievements } from './stats-utils.js?v=2.00';
 import { Scheduler } from './scheduler.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
 import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=2.00';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=1.00';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=1.00';
 
 // DOM Elements
 let container = null;
@@ -172,12 +174,24 @@ export function initLearnUI() {
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
                     <div class="flashcard-front">
+                        <button class="edit-btn learn-edit-btn" title="Редактировать" style="top:10px;left:10px;z-index:10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-content" id="learn-question"></div>
                         <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
                     </div>
                     <div class="flashcard-back">
+                        <button class="edit-btn learn-edit-btn" title="Редактировать" style="top:10px;left:10px;z-index:10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-back-question" id="learn-back-question"></div>
@@ -286,11 +300,540 @@ export function initLearnUI() {
             });
         });
 
+        // Edit buttons - открытие модального окна редактирования
+        container.querySelectorAll('.learn-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!session || !session.currentCard) {
+                    console.log('[EDIT] Нет активной карточки для редактирования');
+                    return;
+                }
+                console.log('[EDIT] Открытие редактора для карточки:', session.currentCard.question?.substring(0, 50));
+                openEditModal(session.currentCard);
+            });
+        });
+
         // Hotkeys
         document.addEventListener('keydown', handleKeydown);
     }
 
     mainContainer = document.querySelector('.container');
+}
+
+// ==========================================
+// РЕДАКТИРОВАНИЕ КАРТОЧЕК
+// ==========================================
+
+let editModalState = {
+    isOpen: false,
+    originalCard: null,
+    editedQuestion: '',
+    editedAnswer: '',
+    formatting: null  // formatting объект { question: [], answer: [] }
+};
+
+// Открытие модального окна редактирования
+function openEditModal(card) {
+    console.log('[EDIT MODAL] Открытие модального окна');
+
+    // Получаем актуальные данные из session.currentCard (не из card!)
+    const currentCard = session?.currentCard;
+    const question = currentCard?.question || card.question || '';
+    const answer = currentCard?.answer || currentCard?.item?.answer || card.answer || card.item?.answer || '';
+
+    console.log('[EDIT MODAL] card.question:', question);
+    console.log('[EDIT MODAL] answer:', answer?.substring(0, 50));
+
+    // Получаем formatting из карточки или создаём пустой
+    const formatting = card.formatting || createEmptyFormatting();
+
+    // Сохраняем исходные данные - всегда берем из session.currentCard
+    editModalState = {
+        isOpen: true,
+        originalCard: {
+            question: question,
+            answer: answer,
+            item: currentCard?.item || card.item,
+            formatting: formatting
+        },
+        editedQuestion: question,
+        editedAnswer: answer,
+        formatting: { ...formatting },  // Копируем formatting
+        // Сохраняем oldQuestion для использования при сохранении
+        oldQuestion: question
+    };
+
+    console.log('[EDIT MODAL] editModalState.originalCard.question:', editModalState.originalCard.question);
+    console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion);
+
+    // Блокируем навигацию и переворот карточки
+    if (session) {
+        session.pauseNavigation = true;
+        session.blockFlip = true;
+    }
+
+    // Блокируем клики по карточке
+    const flashcard = container?.querySelector('.flashcard');
+    if (flashcard) {
+        flashcard.style.pointerEvents = 'none';
+        console.log('[EDIT MODAL] Card clicks blocked');
+    }
+
+    // Создаем модальное окно с ОДНОЙ панелью форматирования
+    const modalHTML = `
+        <div class="edit-modal-overlay" id="edit-modal-overlay">
+            <div class="edit-modal">
+                <div class="edit-modal-header">
+                    <h3 class="edit-modal-title">Редактирование карточки</h3>
+                </div>
+                <div class="edit-modal-content">
+                    <!-- ОДНА ОБЩАЯ ПАНЕЛЬ ФОРМАТИРОВАНИЯ -->
+                    <div class="format-toolbar" id="main-format-toolbar"></div>
+                    
+                    <div class="edit-field-group">
+                        <label class="edit-field-label">Вопрос</label>
+                        <div
+                            class="edit-field-editor"
+                            id="edit-question-editor"
+                            contenteditable="true"
+                            spellcheck="true"
+                        ></div>
+                    </div>
+                    <div class="edit-field-group">
+                        <label class="edit-field-label">Ответ</label>
+                        <div
+                            class="edit-field-editor"
+                            id="edit-answer-editor"
+                            contenteditable="true"
+                            spellcheck="true"
+                        ></div>
+                    </div>
+                </div>
+                <div class="edit-modal-footer">
+                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">Отмена</button>
+                    <button class="edit-modal-btn save" id="edit-save-btn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    console.log('[EDIT MODAL] Modal HTML inserted, checking element:', document.getElementById('edit-modal-overlay'));
+
+    // Создаём toolbar
+    const toolbarContainer = document.getElementById('main-format-toolbar');
+    const questionEditor = document.getElementById('edit-question-editor');
+    const answerEditor = document.getElementById('edit-answer-editor');
+
+    if (toolbarContainer) {
+        const mainToolbar = createFormatToolbar('both');  // 'both' означает общий для всех
+        toolbarContainer.appendChild(mainToolbar);
+        
+        console.log('[EDIT MODAL] Toolbar created:', mainToolbar);
+    }
+
+    console.log('[EDIT MODAL] Editors found:', { questionEditor, answerEditor });
+
+    if (questionEditor) {
+        // Применяем форматирование к вопросу
+        renderFormattingInEditor(questionEditor, question, formatting.question || []);
+        console.log('[EDIT MODAL] Question set:', question?.substring(0, 50));
+    }
+    if (answerEditor) {
+        // Применяем форматирование к ответу
+        renderFormattingInEditor(answerEditor, answer, formatting.answer || []);
+        console.log('[EDIT MODAL] Answer set:', answer?.substring(0, 50));
+    }
+
+    // Инициализируем toolbar с ОБОИМИ редакторами
+    const mainToolbar = toolbarContainer?.querySelector('.format-toolbar');
+    if (mainToolbar && questionEditor && answerEditor) {
+        initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
+            editModalState.formatting = newFormatting;
+        });
+    }
+
+    // Обработчики кнопок
+    const cancelBtn = document.getElementById('edit-cancel-btn');
+    const saveBtn = document.getElementById('edit-save-btn');
+    const overlay = document.getElementById('edit-modal-overlay');
+
+    console.log('[EDIT MODAL] Buttons found:', { cancelBtn, saveBtn, overlay });
+
+    // Добавляем отладочные логи для кнопок
+    cancelBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('[EDIT MODAL] Cancel button clicked');
+        closeEditModal(true);
+    });
+    
+    saveBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('[EDIT MODAL] Save button clicked');
+        saveEditChanges();
+    });
+    
+    overlay?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            e.stopPropagation();
+            console.log('[EDIT MODAL] Overlay clicked');
+            closeEditModal(true);
+        }
+    });
+
+    // Обработчик Enter (Ctrl+Enter для сохранения)
+    const handleKeyDown = (e) => {
+        // Блокируем все события клавиатуры от передачи на карточку
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (e.key === 'Enter' && e.ctrlKey) {
+            saveEditChanges();
+        } else if (e.key === 'Escape') {
+            closeEditModal(true);
+        }
+        // Остальные клавиши работают для редактирования текста
+    };
+
+    // Блокируем стандартные события клавиатуры для редакторов
+    questionEditor?.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        // Разрешаем только редактирование
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            saveEditChanges();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeEditModal(true);
+        }
+    });
+    answerEditor?.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            saveEditChanges();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeEditModal(true);
+        }
+    });
+
+    // Фокус на первый редактор
+    setTimeout(() => {
+        const overlay = document.getElementById('edit-modal-overlay');
+        const modal = document.querySelector('.edit-modal');
+        console.log('[EDIT MODAL] Final check:', {
+            overlayExists: !!overlay,
+            modalExists: !!modal,
+            overlayDisplay: overlay?.style?.display,
+            overlayZIndex: overlay?.style?.zIndex,
+            computedZIndex: overlay ? getComputedStyle(overlay).zIndex : 'N/A',
+            computedDisplay: overlay ? getComputedStyle(overlay).display : 'N/A'
+        });
+        questionEditor?.focus();
+    }, 100);
+
+    console.log('[EDIT MODAL] Модальное окно открыто');
+}
+
+// Закрытие модального окна
+function closeEditModal(discardChanges = true) {
+    console.log('[EDIT MODAL] Закрытие модального окна, discardChanges:', discardChanges);
+    
+    const modal = document.getElementById('edit-modal-overlay');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.remove();
+        }, 200);
+    }
+
+    editModalState.isOpen = false;
+    
+    // Разблокируем навигацию и карточку
+    if (session) {
+        session.pauseNavigation = false;
+        session.blockFlip = false;
+    }
+    
+    // Восстанавливаем клики по карточке
+    const flashcard = container?.querySelector('.flashcard');
+    if (flashcard) {
+        flashcard.style.pointerEvents = '';
+        console.log('[EDIT MODAL] Card clicks restored');
+    }
+
+    console.log('[EDIT MODAL] Модальное окно закрыто');
+}
+
+// Сохранение изменений
+async function saveEditChanges() {
+    console.log('[EDIT MODAL] Сохранение изменений');
+
+    const questionEditor = document.getElementById('edit-question-editor');
+    const answerEditor = document.getElementById('edit-answer-editor');
+
+    if (!questionEditor || !answerEditor) {
+        console.error('[EDIT MODAL] Редакторы не найдены');
+        return;
+    }
+
+    // Получаем HTML из редакторов
+    const questionHTML = questionEditor.innerHTML.trim();
+    const answerHTML = answerEditor.innerHTML.trim();
+
+    // Конвертируем HTML в чистый текст + formatting
+    const questionData = convertHtmlToTextAndFormatting(questionHTML);
+    const answerData = convertHtmlToTextAndFormatting(answerHTML);
+
+    const newQuestion = questionData.text.trim();
+    const newAnswer = answerData.text.trim();
+
+    // Получаем formatting из editModalState и обновляем его с новыми данными
+    const currentFormatting = editModalState.formatting || createEmptyFormatting();
+
+    console.log('[EDIT MODAL] Новые данные:', {
+        newQuestion: newQuestion.substring(0, 50),
+        newAnswer: newAnswer.substring(0, 50),
+        hasFormatting: !!(currentFormatting.question?.length || currentFormatting.answer?.length)
+    });
+    console.log('[EDIT MODAL] currentFormatting:', currentFormatting);
+    console.log('[EDIT MODAL] editModalState.formatting:', editModalState.formatting);
+    console.log('[EDIT MODAL] New question length:', newQuestion.length);
+    console.log('[EDIT MODAL] New answer length:', newAnswer.length);
+
+    // Валидация
+    if (!newQuestion) {
+        showEditNotification('Вопрос не может быть пустым', 'error');
+        questionEditor.focus();
+        return;
+    }
+
+    if (!newAnswer) {
+        showEditNotification('Ответ не может быть пустым', 'error');
+        answerEditor.focus();
+        return;
+    }
+
+    // Блокируем кнопку сохранения
+    const saveBtn = document.getElementById('edit-save-btn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Сохранение...';
+    }
+
+    try {
+        // Получаем текущего пользователя (проверяем оба ключа)
+        let username = null;
+
+        // Пробуем получить из UserSystem (currentUser)
+        const currentUser = window.UserSystem?.getCurrentUser?.();
+        if (currentUser?.username) {
+            username = currentUser.username;
+            console.log('[EDIT MODAL] Пользователь из UserSystem:', username);
+        }
+
+        // Если не нашли, пробуем qaSessionUser
+        if (!username) {
+            try {
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                if (sessionUserRaw) {
+                    const sessionUser = JSON.parse(sessionUserRaw);
+                    if (sessionUser?.username) {
+                        username = sessionUser.username;
+                        console.log('[EDIT MODAL] Пользователь из qaSessionUser:', username);
+                    }
+                }
+            } catch (e) {
+                console.warn('[EDIT MODAL] Не удалось получить пользователя из qaSessionUser:', e);
+            }
+        }
+
+        if (!username) {
+            throw new Error('Пользователь не авторизован');
+        }
+        
+        // БЕРЕМ oldQuestion ИЗ SESSION.CURRENTCARD ПЕРЕД ОТПРАВКОЙ
+        // Это гарантирует, что мы используем актуальные данные карточки
+        const currentCard = session?.currentCard;
+        const oldQuestion = currentCard?.question;
+        const oldAnswer = currentCard?.answer || currentCard?.item?.answer;
+        
+        console.log('[EDIT MODAL] Отправка данных на сервер', {
+            username,
+            oldQuestion: oldQuestion?.substring(0, 50),
+            newQuestion: newQuestion.substring(0, 50),
+            hasNewAnswer: newAnswer !== oldAnswer
+        });
+
+        console.log('[EDIT MODAL] session.currentCard.question:', currentCard?.question?.substring(0, 50));
+        console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion?.substring(0, 50));
+        console.log('[EDIT MODAL] editor text:', newQuestion.substring(0, 50));
+        
+        const requestUrl = `/api/card/update?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
+        console.log('[EDIT MODAL] Request URL:', requestUrl);
+
+        // Отправляем на сервер
+        const response = await fetch(requestUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            body: JSON.stringify({
+                oldQuestion: oldQuestion,
+                newQuestion: newQuestion,
+                newAnswer: newAnswer,
+                formatting: currentFormatting
+            })
+        });
+        
+        console.log('[EDIT MODAL] Status:', response.status);
+
+        const result = await response.json();
+        
+        console.log('[EDIT MODAL] Ответ сервера:', result);
+        
+        // Выводим debug информацию от сервера
+        if (result.debug) {
+            console.log('[EDIT MODAL] SERVER DEBUG:', result.debug);
+            if (result.debug.questionsInFile) {
+                console.log('[EDIT MODAL] Questions in file:', result.debug.questionsInFile);
+            }
+        }
+
+        if (response.ok && result.ok) {
+            // Успех
+            console.log('[EDIT MODAL] Карточка успешно обновлена');
+
+            const currentIndex = session.currentIndex || 0;
+
+            // 1. Обновляем session.queue
+            if (session.queue && session.queue[currentIndex]) {
+                session.queue[currentIndex].question = newQuestion;
+                session.queue[currentIndex].answer = newAnswer;
+                session.queue[currentIndex].formatting = currentFormatting;
+                if (session.queue[currentIndex].item) {
+                    session.queue[currentIndex].item.question = newQuestion;
+                    session.queue[currentIndex].item.answer = newAnswer;
+                    session.queue[currentIndex].item.formatting = currentFormatting;
+                }
+            }
+
+            // 2. Обновляем session.currentCard ПОСЛЕ goTo()
+            session.goTo(currentIndex);
+
+            if (session && session.currentCard) {
+                session.currentCard.question = newQuestion;
+                session.currentCard.answer = newAnswer;
+                session.currentCard.formatting = currentFormatting;
+                session.currentCard.item.question = newQuestion;
+                session.currentCard.item.answer = newAnswer;
+                session.currentCard.item.formatting = currentFormatting;
+
+                console.log('[EDIT MODAL] Updated session.currentCard:', session.currentCard.question?.substring(0, 50));
+            }
+
+            // 3. Обновляем localStorage (ВАЖНО для сохранения после перезагрузки!)
+            try {
+                const allCardsRaw = localStorage.getItem('qaUserCards');
+                if (allCardsRaw) {
+                    const allCards = JSON.parse(allCardsRaw);
+                    const cardIndex = allCards.findIndex(c => c.question === editModalState.originalCard.question);
+                    if (cardIndex !== -1) {
+                        allCards[cardIndex].question = newQuestion;
+                        allCards[cardIndex].answer = newAnswer;
+                        allCards[cardIndex].formatting = currentFormatting;
+                        localStorage.setItem('qaUserCards', JSON.stringify(allCards));
+                        console.log('[EDIT MODAL] localStorage обновлён');
+                    } else {
+                        console.warn('[EDIT MODAL] Карточка не найдена в localStorage для обновления');
+                    }
+                }
+            } catch (e) {
+                console.error('[EDIT MODAL] Ошибка обновления localStorage:', e);
+            }
+
+            // 4. Обновляем originalCard в state
+            editModalState.originalCard.question = newQuestion;
+            editModalState.originalCard.answer = newAnswer;
+            editModalState.originalCard.formatting = currentFormatting;
+
+            console.log('[EDIT MODAL] editModalState.originalCard обновлён:', {
+                question: editModalState.originalCard.question?.substring(0, 50)
+            });
+
+            // Закрываем модальное окно
+            closeEditModal(false);
+
+            // Показываем уведомление
+            showEditNotification('Изменения сохранены', 'success');
+
+            // Синхронизируем с сервером
+            syncWithServer();
+        } else {
+            // Ошибка сервера
+            console.error('[EDIT MODAL] Ошибка сервера:', result);
+            throw new Error(result.error || 'Ошибка сервера');
+        }
+    } catch (error) {
+        console.error('[EDIT MODAL] Ошибка сохранения:', error);
+        showEditNotification(`Ошибка сохранения: ${error.message}`, 'error');
+    } finally {
+        // Разблокируем кнопку
+        const saveBtn = document.getElementById('edit-save-btn');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Сохранить';
+        }
+    }
+}
+
+// Показ уведомления
+function showEditNotification(message, type = 'success') {
+    console.log('[EDIT NOTIFICATION] Показ уведомления:', message, type);
+
+    // Удаляем предыдущее уведомление если есть
+    const existingNotification = document.querySelector('.edit-notification');
+    if (existingNotification) {
+        console.log('[EDIT NOTIFICATION] Удаляем старое уведомление');
+        existingNotification.remove();
+    }
+
+    const iconSVG = type === 'success'
+        ? '<svg class="edit-notification-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
+        : '<svg class="edit-notification-icon error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+    const notificationHTML = `
+        <div class="edit-notification ${type}" id="edit-notification" style="position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e1e1e; border-radius: 8px; padding: 12px 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 10001; display: flex; align-items: center; gap: 12px; opacity: 0; transition: all 0.3s ease-out;">
+            ${iconSVG}
+            <span class="edit-notification-message" style="color: #fff; font-size: 14px;">${message}</span>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', notificationHTML);
+
+    // Показываем уведомление
+    const notification = document.getElementById('edit-notification');
+    console.log('[EDIT NOTIFICATION] Notification element:', notification);
+    console.log('[EDIT NOTIFICATION] Computed styles:', notification ? getComputedStyle(notification) : 'N/A');
+    
+    setTimeout(() => {
+        if (notification) {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(-50%) translateY(0)';
+            console.log('[EDIT NOTIFICATION] Notification shown');
+        }
+    }, 10);
+
+    // Скрываем через 3 секунды
+    setTimeout(() => {
+        notification?.classList.remove('show');
+        setTimeout(() => {
+            notification?.remove();
+        }, 300);
+    }, 3000);
 }
 
 // Stub for Smart Pause feature to prevent errors
@@ -626,8 +1169,43 @@ function renderCardState(state) {
         }
     } catch { }
 
-    if (qEl && state.card) qEl.textContent = state.card.question || '(Пустой вопрос)';
-    if (aEl && state.card) aEl.textContent = state.card.answer || '(Пустой ответ)';
+    if (qEl && state.card) {
+        // Применяем форматирование к вопросу
+        // Берём formatting из session.currentCard (там актуальные данные)
+        const sessionCard = session?.currentCard;
+        const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
+        const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
+        const questionHTML = applyFormatting(questionText, questionFormatting);
+        qEl.innerHTML = questionHTML;
+        
+        // DEBUG: Проверяем, что вставилось
+        console.log('[RENDER CARD] Question rendered:', {
+            text: questionText,
+            formatting: questionFormatting,
+            html: questionHTML,
+            innerHTML: qEl.innerHTML,
+            childrenCount: qEl.children.length,
+            spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
+        });
+    }
+    if (aEl && state.card) {
+        // Применяем форматирование к ответу
+        const sessionCard = session?.currentCard;
+        const answerFormatting = sessionCard?.formatting?.answer || state.card.formatting?.answer || [];
+        const answerText = sessionCard?.answer || state.card.answer || '(Пустой ответ)';
+        const answerHTML = applyFormatting(answerText, answerFormatting);
+        aEl.innerHTML = answerHTML;
+        
+        // DEBUG: Проверяем, что вставилось
+        console.log('[RENDER CARD] Answer rendered:', {
+            text: answerText,
+            formatting: answerFormatting,
+            html: answerHTML,
+            innerHTML: aEl.innerHTML,
+            childrenCount: aEl.children.length,
+            spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
+        });
+    }
 
     // DEBUG: Логируем стили ответа
     console.log('\n📦 FLASHCARD ANSWER DEBUG:');
@@ -1001,7 +1579,7 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
 
-            // Добавляем класс current, если это текущий сегмент
+            // Добавляем ��ласс current, если это текущий сегмент
             if (isCurrent) {
                 el.classList.add('current');
                 console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
@@ -1080,7 +1658,7 @@ function wireSegmentsInteractions(sess) {
         const currentTime = Date.now();
 
         // Вычисляем смещение
-        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительности
+        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительн��сти
         segs.scrollLeft = scrollLeft - walk;
 
         // Вычисляем скорость для инерции
@@ -1453,7 +2031,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=5.03').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=5.04').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '4.50-beta');
             }).catch(err => {

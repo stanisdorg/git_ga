@@ -625,9 +625,9 @@ export function initTabsNavigation(appVersion) {
 
                 let module;
                 try {
-                    module = await import('../srs/learn-ui.js?v=2.13');
+                    module = await import('../srs/learn-ui.js?v=2.42');
                 } catch (e1) {
-                    console.warn('[Learn] Import v2.13 failed, trying plain import', e1);
+                    console.warn('[Learn] Import v2.42 failed, trying plain import', e1);
                     try {
                         module = await import('../srs/learn-ui.js');
                     } catch (e2) {
@@ -659,7 +659,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.03');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.04');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -678,7 +678,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.03');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.04');
                     initStatsPage(appVersion);
                 }
 
@@ -1041,7 +1041,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=5.03').then(() => {
+                    import('../srs/stats-ui.js?v=5.04').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {
