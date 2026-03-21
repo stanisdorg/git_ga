@@ -2548,7 +2548,8 @@ body.learning-mode #bottom-nav {
 .flashcard-content span[style*="color"],
 .flashcard-content span[style*="background"] {
     display: inline;
-    padding: 0 2px;
+    padding: 0;  /* Убраны отступы чтобы не было разрывов внутри слов */
+    margin: 0;   /* На всякий случай убираем margin */
 }
 
 .flashcard-content code {
