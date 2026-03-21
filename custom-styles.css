@@ -2527,9 +2527,11 @@ body.learning-mode #bottom-nav {
 .flashcard-content {
     font-size: 24px;
     color: var(--color-text);
-    overflow-y: auto;
+    overflow-y: visible;  /* Изменено с auto на visible чтобы убрать стрелки прокрутки */
     max-height: 100%;
     white-space: pre-wrap;
+    overflow-wrap: break-word;  /* Перенос длинных строк кода */
+    word-wrap: break-word;
     display: block;  /* Изменено с flex на block для корректного отображения форматирования */
 }
 
