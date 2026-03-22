@@ -5,13 +5,16 @@
 
 body {
     margin: 0;
-    padding: 0;
+    padding: 50px 0 0 0; /* Отступ для фиксированной шапки */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--color-bg);
     color: var(--color-text);
     /* Разрешаем скролл, но блокируем зум */
     touch-action: pan-x pan-y;
     overscroll-behavior: none;
+    /* Скролл всего body для главной страницы */
+    overflow-y: auto;
+    height: 100vh;
 }
 
 .container {
@@ -29,19 +32,21 @@ body {
 
 /* Фиксируем шапку на главной странице */
 .top-actions-bar {
-    position: sticky !important;
+    position: fixed !important;
     top: 0 !important;
-    z-index: 100 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
     background: var(--color-bg) !important;
 }
 
-/* Контейнер должен скроллиться весь вместе с поиском и категориями */
+/* Контейнер скроллится весь вместе с поиском и категориями */
 .container {
     max-width: none;
     margin: 0;
-    padding: 50px 0 0 0; /* Отступ для фиксированной шапки сверху */
-    overflow-y: auto; /* Скролл всего контейнера */
-    max-height: 100vh; /* На всю высоту экрана */
+    padding: 0 0 80px 0; /* Отступ для навигации снизу */
+    overflow-y: visible; /* Скролл на body */
+    max-height: none; /* Убираем ограничение */
 }
 
 /* Сообщение об отсутствии результатов */
@@ -54,8 +59,11 @@ body {
 
 /* Адаптивная верстка */
 @media (max-width: 768px) {
+    body {
+        padding-bottom: 56px; /* Для bottom-nav */
+    }
     .container {
-        padding: 50px 0 0 0 !important; /* Отступ для фиксированной шапки */
+        padding: 0 0 80px 0 !important; /* Отступ для навигации снизу */
     }
 }
 
