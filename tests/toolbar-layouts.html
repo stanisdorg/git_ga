@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест вариантов toolbar</title>
+    <style>
+        :root {
+            --color-bg: #1e1e1e;
+            --color-bg-secondary: #2a2a2a;
+            --color-bg-tertiary: #333333;
+            --color-border: #3a3a3a;
+            --color-text: #ffffff;
+            --color-text-secondary: #888888;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: var(--color-text);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .test-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .test-card {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .test-card h3 {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .test-card .preview {
+            min-height: 80px;
+            background: var(--color-bg-secondary);
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        /* Цвета */
+        .colors {
+            #F5B042, #FF8C42, #4ECDC4, #B794F4, #FF9F7C, #7FCDCD, #FF6B6B
+        }
+
+        /* ========== ВАРИАНТ 1: Две строки (Desktop) ========== */
+        .v1-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v1-section {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .v1-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--color-border);
+            margin: 0 4px;
+        }
+
+        .v1-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .v1-color-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .v1-label {
+            font-size: 10px;
+            color: var(--color-text-secondary);
+            margin-right: 4px;
+        }
+
+        /* ========== ВАРИАНТ 2: Компактные иконки ========== */
+        .v2-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v2-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .v2-color-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        /* ========== ВАРИАНТ 3: Выпадающие меню ========== */
+        .v3-toolbar {
+            display: flex;
+            gap: 4px;
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+            flex-wrap: wrap;
+        }
+
+        .v3-btn {
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 11px;
+            position: relative;
+        }
+
+        .v3-colors {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            padding: 4px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            z-index: 100;
+        }
+
+        .v3-btn:hover .v3-colors {
+            display: grid;
+        }
+
+        /* ========== ВАРИАНТ 4: Горизонтальный скролл ========== */
+        .v4-toolbar {
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: thin;
+            scrollbar-color: var(--color-border) var(--color-bg-secondary);
+        }
+
+        .v4-toolbar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .v4-toolbar::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 2px;
+        }
+
+        .v4-section {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* ========== ВАРИАНТ 5: Две панели ========== */
+        .v5-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v5-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ========== ВАРИАНТ 6: Круглые кнопки ========== */
+        .v6-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v6-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .v6-color-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        /* ========== ВАРИАНТ 7: Минимализм ========== */
+        .v7-toolbar {
+            display: flex;
+            gap: 2px;
+            padding: 4px;
+            background: var(--color-bg-secondary);
+            border-radius: 4px;
+            flex-wrap: wrap;
+        }
+
+        .v7-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .v7-btn:hover {
+            background: var(--color-border);
+            border-radius: 2px;
+        }
+
+        .v7-color-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        /* ========== ВАРИАНТ 8: Аккордеон ========== */
+        .v8-toolbar {
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v8-header {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .v8-btn {
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .v8-content {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        /* ========== ВАРИАНТ 9: Сетка ========== */
+        .v9-toolbar {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v9-btn {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .v9-color-btn {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        /* ========== ВАРИАНТ 10: Вкладки ========== */
+        .v10-toolbar {
+            padding: 6px;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+        }
+
+        .v10-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 4px;
+        }
+
+        .v10-tab {
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .v10-tab.active {
+            background: var(--color-bg);
+            border-color: var(--color-border);
+            color: var(--color-text);
+        }
+
+        .v10-content {
+            display: none;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .v10-content.active {
+            display: flex;
+        }
+
+        .v10-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .v10-color-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        /* Мобильная версия */
+        @media (max-width: 400px) {
+            .test-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Тест вариантов toolbar (10 вариантов)</h1>
+    
+    <div class="test-container">
+        <!-- Вариант 1 -->
+        <div class="test-card">
+            <h3>1. Две строки (Flex-wrap)</h3>
+            <div class="preview">
+                <div class="v1-toolbar">
+                    <div class="v1-section">
+                        <button class="v1-btn"><strong>B</strong></button>
+                        <button class="v1-btn"><em>I</em></button>
+                        <button class="v1-btn"><u>U</u></button>
+                        <button class="v1-btn">&lt;/&gt;</button>
+                    </div>
+                    <div class="v1-divider"></div>
+                    <div class="v1-section">
+                        <span class="v1-label">Текст:</span>
+                        <button class="v1-color-btn" style="background: #F5B042"></button>
+                        <button class="v1-color-btn" style="background: #FF8C42"></button>
+                        <button class="v1-color-btn" style="background: #4ECDC4"></button>
+                        <button class="v1-color-btn" style="background: #B794F4"></button>
+                        <button class="v1-color-btn" style="background: #FF9F7C"></button>
+                        <button class="v1-color-btn" style="background: #7FCDCD"></button>
+                        <button class="v1-color-btn" style="background: #FF6B6B"></button>
+                    </div>
+                    <div class="v1-divider"></div>
+                    <div class="v1-section">
+                        <span class="v1-label">Фон:</span>
+                        <button class="v1-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 2 -->
+        <div class="test-card">
+            <h3>2. Компактные иконки</h3>
+            <div class="preview">
+                <div class="v2-toolbar">
+                    <button class="v2-btn"><strong>B</strong></button>
+                    <button class="v2-btn"><em>I</em></button>
+                    <button class="v2-btn"><u>U</u></button>
+                    <button class="v2-btn">&lt;/&gt;</button>
+                    <button class="v2-color-btn" style="background: #F5B042"></button>
+                    <button class="v2-color-btn" style="background: #FF8C42"></button>
+                    <button class="v2-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v2-color-btn" style="background: #B794F4"></button>
+                    <button class="v2-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v2-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v2-color-btn" style="background: #FF6B6B"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 3 -->
+        <div class="test-card">
+            <h3>3. Выпадающие меню (Hover)</h3>
+            <div class="preview">
+                <div class="v3-toolbar">
+                    <button class="v3-btn">
+                        B I U
+                        <div class="v3-colors">
+                            <button class="v2-color-btn" style="background: #F5B042"></button>
+                            <button class="v2-color-btn" style="background: #FF8C42"></button>
+                            <button class="v2-color-btn" style="background: #4ECDC4"></button>
+                            <button class="v2-color-btn" style="background: #B794F4"></button>
+                        </div>
+                    </button>
+                    <button class="v3-btn">
+                        🎨 Цвет
+                        <div class="v3-colors">
+                            <button class="v2-color-btn" style="background: #FF9F7C"></button>
+                            <button class="v2-color-btn" style="background: #7FCDCD"></button>
+                            <button class="v2-color-btn" style="background: #FF6B6B"></button>
+                            <button class="v2-color-btn" style="background: transparent; color: #fff;">✕</button>
+                        </div>
+                    </button>
+                    <button class="v3-btn">
+                        🖌 Фон
+                        <div class="v3-colors">
+                            <button class="v2-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                            <button class="v2-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                            <button class="v2-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                            <button class="v2-color-btn" style="background: transparent; color: #fff;">✕</button>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 4 -->
+        <div class="test-card">
+            <h3>4. Горизонтальный скролл</h3>
+            <div class="preview">
+                <div class="v4-toolbar">
+                    <div class="v4-section">
+                        <button class="v1-btn"><strong>B</strong></button>
+                        <button class="v1-btn"><em>I</em></button>
+                        <button class="v1-btn"><u>U</u></button>
+                        <button class="v1-btn">&lt;/&gt;</button>
+                    </div>
+                    <div class="v1-divider"></div>
+                    <div class="v4-section">
+                        <button class="v1-color-btn" style="background: #F5B042"></button>
+                        <button class="v1-color-btn" style="background: #FF8C42"></button>
+                        <button class="v1-color-btn" style="background: #4ECDC4"></button>
+                        <button class="v1-color-btn" style="background: #B794F4"></button>
+                        <button class="v1-color-btn" style="background: #FF9F7C"></button>
+                        <button class="v1-color-btn" style="background: #7FCDCD"></button>
+                        <button class="v1-color-btn" style="background: #FF6B6B"></button>
+                    </div>
+                    <div class="v1-divider"></div>
+                    <div class="v4-section">
+                        <button class="v1-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(255, 159, 124, 0.2)"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 5 -->
+        <div class="test-card">
+            <h3>5. Две панели (Вертикально)</h3>
+            <div class="preview">
+                <div class="v5-toolbar">
+                    <div class="v5-row">
+                        <button class="v1-btn"><strong>B</strong></button>
+                        <button class="v1-btn"><em>I</em></button>
+                        <button class="v1-btn"><u>U</u></button>
+                        <button class="v1-btn">&lt;/&gt;</button>
+                        <button class="v1-color-btn" style="background: #F5B042"></button>
+                        <button class="v1-color-btn" style="background: #FF8C42"></button>
+                        <button class="v1-color-btn" style="background: #4ECDC4"></button>
+                    </div>
+                    <div class="v5-row">
+                        <button class="v1-color-btn" style="background: #B794F4"></button>
+                        <button class="v1-color-btn" style="background: #FF9F7C"></button>
+                        <button class="v1-color-btn" style="background: #7FCDCD"></button>
+                        <button class="v1-color-btn" style="background: #FF6B6B"></button>
+                        <button class="v1-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                        <button class="v1-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 6 -->
+        <div class="test-card">
+            <h3>6. Круглые кнопки</h3>
+            <div class="preview">
+                <div class="v6-toolbar">
+                    <button class="v6-btn"><strong>B</strong></button>
+                    <button class="v6-btn"><em>I</em></button>
+                    <button class="v6-btn"><u>U</u></button>
+                    <button class="v6-btn">C</button>
+                    <button class="v6-color-btn" style="background: #F5B042"></button>
+                    <button class="v6-color-btn" style="background: #FF8C42"></button>
+                    <button class="v6-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v6-color-btn" style="background: #B794F4"></button>
+                    <button class="v6-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v6-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v6-color-btn" style="background: #FF6B6B"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 7 -->
+        <div class="test-card">
+            <h3>7. Минимализм</h3>
+            <div class="preview">
+                <div class="v7-toolbar">
+                    <button class="v7-btn"><strong>B</strong></button>
+                    <button class="v7-btn"><em>I</em></button>
+                    <button class="v7-btn"><u>U</u></button>
+                    <button class="v7-btn">C</button>
+                    <button class="v7-color-btn" style="background: #F5B042"></button>
+                    <button class="v7-color-btn" style="background: #FF8C42"></button>
+                    <button class="v7-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v7-color-btn" style="background: #B794F4"></button>
+                    <button class="v7-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v7-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v7-color-btn" style="background: #FF6B6B"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 8 -->
+        <div class="test-card">
+            <h3>8. Аккордеон</h3>
+            <div class="preview">
+                <div class="v8-toolbar">
+                    <div class="v8-header">
+                        <button class="v8-btn">B I U</button>
+                        <button class="v8-btn">🎨 Цвета</button>
+                    </div>
+                    <div class="v8-content">
+                        <button class="v1-color-btn" style="background: #F5B042"></button>
+                        <button class="v1-color-btn" style="background: #FF8C42"></button>
+                        <button class="v1-color-btn" style="background: #4ECDC4"></button>
+                        <button class="v1-color-btn" style="background: #B794F4"></button>
+                        <button class="v1-color-btn" style="background: #FF9F7C"></button>
+                        <button class="v1-color-btn" style="background: #7FCDCD"></button>
+                        <button class="v1-color-btn" style="background: #FF6B6B"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 9 -->
+        <div class="test-card">
+            <h3>9. Сетка (Grid)</h3>
+            <div class="preview">
+                <div class="v9-toolbar">
+                    <button class="v9-btn"><strong>B</strong></button>
+                    <button class="v9-btn"><em>I</em></button>
+                    <button class="v9-btn"><u>U</u></button>
+                    <button class="v9-btn">C</button>
+                    <button class="v9-color-btn" style="background: #F5B042"></button>
+                    <button class="v9-color-btn" style="background: #FF8C42"></button>
+                    <button class="v9-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v9-color-btn" style="background: #B794F4"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вариант 10 -->
+        <div class="test-card">
+            <h3>10. Вкладки (Tabs)</h3>
+            <div class="preview">
+                <div class="v10-toolbar">
+                    <div class="v10-tabs">
+                        <button class="v10-tab active" onclick="switchTab(1)">Формат</button>
+                        <button class="v10-tab" onclick="switchTab(2)">Цвет</button>
+                        <button class="v10-tab" onclick="switchTab(3)">Фон</button>
+                    </div>
+                    <div class="v10-content active" id="v10-content-1">
+                        <button class="v10-btn"><strong>B</strong></button>
+                        <button class="v10-btn"><em>I</em></button>
+                        <button class="v10-btn"><u>U</u></button>
+                        <button class="v10-btn">&lt;/&gt;</button>
+                    </div>
+                    <div class="v10-content" id="v10-content-2">
+                        <button class="v10-color-btn" style="background: #F5B042"></button>
+                        <button class="v10-color-btn" style="background: #FF8C42"></button>
+                        <button class="v10-color-btn" style="background: #4ECDC4"></button>
+                        <button class="v10-color-btn" style="background: #B794F4"></button>
+                        <button class="v10-color-btn" style="background: #FF9F7C"></button>
+                        <button class="v10-color-btn" style="background: #7FCDCD"></button>
+                        <button class="v10-color-btn" style="background: #FF6B6B"></button>
+                    </div>
+                    <div class="v10-content" id="v10-content-3">
+                        <button class="v10-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                        <button class="v10-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                        <button class="v10-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                        <button class="v10-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabNum) {
+            // Убираем active у всех tabs
+            document.querySelectorAll('.v10-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Добавляем active выбранному tab
+            event.target.classList.add('active');
+            
+            // Скрываем все content
+            document.querySelectorAll('.v10-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Показываем выбранный content
+            document.getElementById('v10-content-' + tabNum).classList.add('active');
+        }
+    </script>
+</body>
+</html>

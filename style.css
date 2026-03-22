@@ -96,7 +96,7 @@ body:has(#stats-container) {
 /* Контейнер скроллится весь вместе с поиском и категориями */
 .container {
     max-width: none;
-    margin: 0 20px 0 0; /* Отступ 20px справа */
+    margin: 0 12px 0 12px; /* Симметричные отступы 12px слева и справа */
     padding: 0 0 80px 0; /* Отступ для навигации снизу */
     overflow-y: visible; /* Скролл на body */
     max-height: none; /* Убираем ограничение */
@@ -105,9 +105,9 @@ body:has(#stats-container) {
 /* Шапка той же ширины что и контейнер */
 @media (min-width: 769px) {
     .top-actions-bar {
-        left: calc(var(--sidebar-width, 300px)) !important;
-        right: 20px !important;
-        width: calc(100% - var(--sidebar-width, 300px) - 20px) !important;
+        left: calc(var(--sidebar-width, 300px) + 12px) !important; /* Отступ от сайдбара 12px */
+        right: 12px !important; /* Симметричный отступ справа */
+        width: calc(100% - var(--sidebar-width, 300px) - 24px) !important; /* 12px слева + 12px справа */
     }
 }
 
@@ -131,8 +131,14 @@ body:has(#stats-container) {
         padding-bottom: 56px; /* Для bottom-nav */
     }
     .container {
-        margin: 0 !important; /* На мобильном без отступов */
+        margin: 0 12px !important; /* Симметричные отступы на мобильном */
         padding: 0 0 80px 0 !important; /* Отступ для навигации снизу */
+    }
+    /* На мобильном шапка на всю ширину с отступами */
+    .top-actions-bar {
+        left: 12px !important;
+        right: 12px !important;
+        width: calc(100% - 24px) !important;
     }
 }
 

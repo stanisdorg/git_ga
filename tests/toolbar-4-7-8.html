@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbar - 2 ряда (4+7+8)</title>
+    <style>
+        :root {
+            --color-bg: #1e1e1e;
+            --color-bg-secondary: #2a2a2a;
+            --color-bg-tertiary: #333333;
+            --color-border: #3a3a3a;
+            --color-text: #ffffff;
+            --color-text-secondary: #888888;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d0d;
+            color: var(--color-text);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .info {
+            text-align: center;
+            color: var(--color-text-secondary);
+            font-size: 12px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: var(--color-bg-secondary);
+            border-radius: 4px;
+        }
+
+        .test-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .test-card {
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .test-card h3 {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .test-card .preview {
+            background: var(--color-bg-secondary);
+            border-radius: 4px;
+            padding: 8px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .dimensions {
+            text-align: center;
+            font-size: 10px;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ========== ВАРИАНТ 1: 4+7+8 (2 ряда) ========== */
+        .v1-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            padding: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            justify-content: center;
+        }
+
+        .v1-format {
+            display: flex;
+            gap: 1px;
+        }
+
+        .v1-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .v1-color-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        .v1-divider {
+            width: 1px;
+            height: 18px;
+            background: var(--color-border);
+            margin: 0 3px;
+        }
+
+        .v1-clear {
+            width: auto !important;
+            padding: 0 6px !important;
+            font-size: 9px !important;
+            margin-left: 3px !important;
+        }
+
+        /* ========== ВАРИАНТ 2: 4+7+8 с уменьшенными кнопками ========== */
+        .v2-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            padding: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            justify-content: center;
+        }
+
+        .v2-format {
+            display: flex;
+            gap: 1px;
+        }
+
+        .v2-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .v2-color-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        .v2-divider {
+            width: 1px;
+            height: 16px;
+            background: var(--color-border);
+            margin: 0 3px;
+        }
+
+        .v2-clear {
+            width: auto !important;
+            padding: 0 5px !important;
+            font-size: 8px !important;
+            margin-left: 3px !important;
+        }
+
+        /* ========== ВАРИАНТ 3: 4+7+8 с большими кнопками ========== */
+        .v3-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            padding: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            justify-content: center;
+        }
+
+        .v3-format {
+            display: flex;
+            gap: 2px;
+        }
+
+        .v3-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .v3-color-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        .v3-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+            margin: 0 4px;
+        }
+
+        .v3-clear {
+            width: auto !important;
+            padding: 0 8px !important;
+            font-size: 10px !important;
+            margin-left: 4px !important;
+        }
+
+        /* ========== ВАРИАНТ 4: 4+7+8 с минимальными отступами ========== */
+        .v4-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1px;
+            padding: 4px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            justify-content: center;
+        }
+
+        .v4-format {
+            display: flex;
+            gap: 1px;
+        }
+
+        .v4-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 2px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .v4-color-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        .v4-divider {
+            width: 1px;
+            height: 16px;
+            background: var(--color-border);
+            margin: 0 2px;
+        }
+
+        .v4-clear {
+            width: auto !important;
+            padding: 0 4px !important;
+            font-size: 8px !important;
+            margin-left: 2px !important;
+        }
+
+        /* ========== ВАРИАНТ 5: 4+7+8 с разделителями ========== */
+        .v5-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            padding: 6px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            justify-content: center;
+        }
+
+        .v5-format {
+            display: flex;
+            gap: 1px;
+            background: rgba(0,0,0,0.2);
+            padding: 2px;
+            border-radius: 3px;
+        }
+
+        .v5-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 3px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .v5-color-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        .v5-divider {
+            width: 1px;
+            height: 18px;
+            background: var(--color-border);
+            margin: 0 3px;
+        }
+
+        .v5-clear {
+            width: auto !important;
+            padding: 0 6px !important;
+            font-size: 9px !important;
+            margin-left: 3px !important;
+        }
+
+        @media (max-width: 320px) {
+            .test-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Toolbar - 2 ряда (4+7+8)</h1>
+    
+    <div class="info">
+        📐 Ряд 1: 4 форматирования + 7 цветов текста = 11 элементов<br>
+        📐 Ряд 2: 7 цветов фона + сброс = 8 элементов<br>
+        📱 Максимальная ширина: 280px (320px - 40px отступы)
+    </div>
+    
+    <div class="test-container">
+        <!-- Вариант 1 -->
+        <div class="test-card">
+            <h3>1. 4+7+8 (gap: 2px, 26px)</h3>
+            <div class="preview">
+                <div class="v1-toolbar">
+                    <div class="v1-format">
+                        <button class="v1-btn"><strong>B</strong></button>
+                        <button class="v1-btn"><em>I</em></button>
+                        <button class="v1-btn"><u>U</u></button>
+                        <button class="v1-btn">C</button>
+                    </div>
+                    <div class="v1-divider"></div>
+                    <button class="v1-color-btn" style="background: #F5B042"></button>
+                    <button class="v1-color-btn" style="background: #FF8C42"></button>
+                    <button class="v1-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v1-color-btn" style="background: #B794F4"></button>
+                    <button class="v1-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v1-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v1-color-btn" style="background: #FF6B6B"></button>
+                    <div class="v1-divider"></div>
+                    <button class="v1-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                    <button class="v1-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                    <button class="v1-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                    <button class="v1-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    <button class="v1-color-btn" style="background: rgba(255, 159, 124, 0.2)"></button>
+                    <button class="v1-color-btn" style="background: rgba(127, 205, 205, 0.2)"></button>
+                    <button class="v1-color-btn" style="background: rgba(255, 107, 107, 0.2)"></button>
+                    <button class="v1-btn v1-clear">✕</button>
+                </div>
+            </div>
+            <div class="dimensions">280px × ~72px ⭐ РЕКОМЕНДУЕМЫЙ</div>
+        </div>
+
+        <!-- Вариант 2 -->
+        <div class="test-card">
+            <h3>2. 4+7+8 (gap: 2px, 24px)</h3>
+            <div class="preview">
+                <div class="v2-toolbar">
+                    <div class="v2-format">
+                        <button class="v2-btn"><strong>B</strong></button>
+                        <button class="v2-btn"><em>I</em></button>
+                        <button class="v2-btn"><u>U</u></button>
+                        <button class="v2-btn">C</button>
+                    </div>
+                    <div class="v2-divider"></div>
+                    <button class="v2-color-btn" style="background: #F5B042"></button>
+                    <button class="v2-color-btn" style="background: #FF8C42"></button>
+                    <button class="v2-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v2-color-btn" style="background: #B794F4"></button>
+                    <button class="v2-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v2-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v2-color-btn" style="background: #FF6B6B"></button>
+                    <div class="v2-divider"></div>
+                    <button class="v2-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                    <button class="v2-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                    <button class="v2-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                    <button class="v2-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    <button class="v2-color-btn" style="background: rgba(255, 159, 124, 0.2)"></button>
+                    <button class="v2-color-btn" style="background: rgba(127, 205, 205, 0.2)"></button>
+                    <button class="v2-color-btn" style="background: rgba(255, 107, 107, 0.2)"></button>
+                    <button class="v2-btn v2-clear">✕</button>
+                </div>
+            </div>
+            <div class="dimensions">280px × ~68px (самый компактный)</div>
+        </div>
+
+        <!-- Вариант 3 -->
+        <div class="test-card">
+            <h3>3. 4+7+8 (gap: 3px, 28px)</h3>
+            <div class="preview">
+                <div class="v3-toolbar">
+                    <div class="v3-format">
+                        <button class="v3-btn"><strong>B</strong></button>
+                        <button class="v3-btn"><em>I</em></button>
+                        <button class="v3-btn"><u>U</u></button>
+                        <button class="v3-btn">C</button>
+                    </div>
+                    <div class="v3-divider"></div>
+                    <button class="v3-color-btn" style="background: #F5B042"></button>
+                    <button class="v3-color-btn" style="background: #FF8C42"></button>
+                    <button class="v3-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v3-color-btn" style="background: #B794F4"></button>
+                    <button class="v3-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v3-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v3-color-btn" style="background: #FF6B6B"></button>
+                    <div class="v3-divider"></div>
+                    <button class="v3-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                    <button class="v3-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                    <button class="v3-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                    <button class="v3-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    <button class="v3-color-btn" style="background: rgba(255, 159, 124, 0.2)"></button>
+                    <button class="v3-color-btn" style="background: rgba(127, 205, 205, 0.2)"></button>
+                    <button class="v3-color-btn" style="background: rgba(255, 107, 107, 0.2)"></button>
+                    <button class="v3-btn v3-clear">✕</button>
+                </div>
+            </div>
+            <div class="dimensions">280px × ~76px (крупные кнопки)</div>
+        </div>
+
+        <!-- Вариант 4 -->
+        <div class="test-card">
+            <h3>4. 4+7+8 (gap: 1px, 24px)</h3>
+            <div class="preview">
+                <div class="v4-toolbar">
+                    <div class="v4-format">
+                        <button class="v4-btn"><strong>B</strong></button>
+                        <button class="v4-btn"><em>I</em></button>
+                        <button class="v4-btn"><u>U</u></button>
+                        <button class="v4-btn">C</button>
+                    </div>
+                    <div class="v4-divider"></div>
+                    <button class="v4-color-btn" style="background: #F5B042"></button>
+                    <button class="v4-color-btn" style="background: #FF8C42"></button>
+                    <button class="v4-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v4-color-btn" style="background: #B794F4"></button>
+                    <button class="v4-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v4-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v4-color-btn" style="background: #FF6B6B"></button>
+                    <div class="v4-divider"></div>
+                    <button class="v4-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                    <button class="v4-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                    <button class="v4-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                    <button class="v4-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    <button class="v4-color-btn" style="background: rgba(255, 159, 124, 0.2)"></button>
+                    <button class="v4-color-btn" style="background: rgba(127, 205, 205, 0.2)"></button>
+                    <button class="v4-color-btn" style="background: rgba(255, 107, 107, 0.2)"></button>
+                    <button class="v4-btn v4-clear">✕</button>
+                </div>
+            </div>
+            <div class="dimensions">280px × ~66px (минимальные отступы)</div>
+        </div>
+
+        <!-- Вариант 5 -->
+        <div class="test-card">
+            <h3>5. 4+7+8 с группировкой</h3>
+            <div class="preview">
+                <div class="v5-toolbar">
+                    <div class="v5-format">
+                        <button class="v5-btn"><strong>B</strong></button>
+                        <button class="v5-btn"><em>I</em></button>
+                        <button class="v5-btn"><u>U</u></button>
+                        <button class="v5-btn">C</button>
+                    </div>
+                    <div class="v5-divider"></div>
+                    <button class="v5-color-btn" style="background: #F5B042"></button>
+                    <button class="v5-color-btn" style="background: #FF8C42"></button>
+                    <button class="v5-color-btn" style="background: #4ECDC4"></button>
+                    <button class="v5-color-btn" style="background: #B794F4"></button>
+                    <button class="v5-color-btn" style="background: #FF9F7C"></button>
+                    <button class="v5-color-btn" style="background: #7FCDCD"></button>
+                    <button class="v5-color-btn" style="background: #FF6B6B"></button>
+                    <div class="v5-divider"></div>
+                    <button class="v5-color-btn" style="background: rgba(245, 176, 66, 0.2)"></button>
+                    <button class="v5-color-btn" style="background: rgba(255, 140, 66, 0.2)"></button>
+                    <button class="v5-color-btn" style="background: rgba(78, 205, 196, 0.2)"></button>
+                    <button class="v5-color-btn" style="background: rgba(183, 148, 244, 0.2)"></button>
+                    <button class="v5-color-btn" style="background: rgba(255, 159, 124, 0.2)"></button>
+                    <button class="v5-color-btn" style="background: rgba(127, 205, 205, 0.2)"></button>
+                    <button class="v5-color-btn" style="background: rgba(255, 107, 107, 0.2)"></button>
+                    <button class="v5-btn v5-clear">✕</button>
+                </div>
+            </div>
+            <div class="dimensions">280px × ~72px (с фоном группы)</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('[class*="color-btn"], [class*="btn"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
