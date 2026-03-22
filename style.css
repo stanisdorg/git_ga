@@ -39,10 +39,51 @@ body:has(#stats-container) {
 .top-actions-bar {
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
     z-index: 1000 !important;
     background: var(--color-bg) !important;
+}
+
+/* ПК версия - отступ для сайдбара слева и отступ справа */
+@media (min-width: 769px) {
+    .top-actions-bar {
+        left: var(--sidebar-width, 300px) !important;
+        right: 80px !important;
+        width: calc(100% - var(--sidebar-width, 300px) - 80px) !important;
+    }
+}
+
+/* Мобильная версия - на всю ширину */
+@media (max-width: 768px) {
+    .top-actions-bar {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        justify-content: space-between !important;
+        padding: 4px 12px !important;
+    }
+    /* Распределяем контент шапки на мобильном */
+    .top-actions-bar .st-top-actions {
+        display: flex !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    .top-actions-bar .app-version-display {
+        display: none !important; /* Скрываем версию на мобильном */
+    }
+    .top-actions-bar .st-top-metrics {
+        display: flex !important;
+        gap: 12px !important;
+        flex-shrink: 0 !important;
+    }
+    .top-actions-bar .st-top-metrics .metric {
+        font-size: 11px !important;
+    }
+    .top-actions-bar #st-continue-top-btn {
+        margin-left: auto !important;
+    }
+    .top-actions-bar .st-level-inline {
+        margin-left: 8px !important;
+    }
 }
 
 /* Фиксируем шапку на странице статистики */
@@ -55,7 +96,7 @@ body:has(#stats-container) {
 /* Контейнер скроллится весь вместе с поиском и категориями */
 .container {
     max-width: none;
-    margin: 0;
+    margin: 0 80px 0 0; /* Отступ 80px справа */
     padding: 0 0 80px 0; /* Отступ для навигации снизу */
     overflow-y: visible; /* Скролл на body */
     max-height: none; /* Убираем ограничение */
@@ -81,6 +122,7 @@ body:has(#stats-container) {
         padding-bottom: 56px; /* Для bottom-nav */
     }
     .container {
+        margin: 0 !important; /* На мобильном без отступов */
         padding: 0 0 80px 0 !important; /* Отступ для навигации снизу */
     }
 }
