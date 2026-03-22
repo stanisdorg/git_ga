@@ -45,11 +45,17 @@
     height: 80px;
     margin-bottom: 24px;
     animation: splash-pulse 2s ease-in-out infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+.splash-logo img,
 .splash-logo svg {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 @keyframes splash-pulse {
