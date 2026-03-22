@@ -426,7 +426,7 @@ function openEditModal(card) {
     if (toolbarContainer) {
         const mainToolbar = createFormatToolbar('both');  // 'both' означает общий для всех
         toolbarContainer.appendChild(mainToolbar);
-        
+
         console.log('[EDIT MODAL] Toolbar created:', mainToolbar);
     }
 
@@ -464,13 +464,13 @@ function openEditModal(card) {
         console.log('[EDIT MODAL] Cancel button clicked');
         closeEditModal(true);
     });
-    
+
     saveBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         console.log('[EDIT MODAL] Save button clicked');
         saveEditChanges();
     });
-    
+
     overlay?.addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
             e.stopPropagation();
@@ -537,7 +537,7 @@ function openEditModal(card) {
 // Закрытие модального окна
 function closeEditModal(discardChanges = true) {
     console.log('[EDIT MODAL] Закрытие модального окна, discardChanges:', discardChanges);
-    
+
     const modal = document.getElementById('edit-modal-overlay');
     if (modal) {
         modal.style.opacity = '0';
@@ -547,13 +547,13 @@ function closeEditModal(discardChanges = true) {
     }
 
     editModalState.isOpen = false;
-    
+
     // Разблокируем навигацию и карточку
     if (session) {
         session.pauseNavigation = false;
         session.blockFlip = false;
     }
-    
+
     // Восстанавливаем клики по карточке
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
@@ -650,13 +650,13 @@ async function saveEditChanges() {
         if (!username) {
             throw new Error('Пользователь не авторизован');
         }
-        
+
         // БЕРЕМ oldQuestion ИЗ SESSION.CURRENTCARD ПЕРЕД ОТПРАВКОЙ
         // Это гарантирует, что мы используем актуальные данные карточки
         const currentCard = session?.currentCard;
         const oldQuestion = currentCard?.question;
         const oldAnswer = currentCard?.answer || currentCard?.item?.answer;
-        
+
         console.log('[EDIT MODAL] Отправка данных на сервер', {
             username,
             oldQuestion: oldQuestion?.substring(0, 50),
@@ -667,7 +667,7 @@ async function saveEditChanges() {
         console.log('[EDIT MODAL] session.currentCard.question:', currentCard?.question?.substring(0, 50));
         console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion?.substring(0, 50));
         console.log('[EDIT MODAL] editor text:', newQuestion.substring(0, 50));
-        
+
         const requestUrl = `/api/card/update?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
         console.log('[EDIT MODAL] Request URL:', requestUrl);
 
@@ -685,13 +685,13 @@ async function saveEditChanges() {
                 formatting: currentFormatting
             })
         });
-        
+
         console.log('[EDIT MODAL] Status:', response.status);
 
         const result = await response.json();
-        
+
         console.log('[EDIT MODAL] Ответ сервера:', result);
-        
+
         // Выводим debug информацию от сервера
         if (result.debug) {
             console.log('[EDIT MODAL] SERVER DEBUG:', result.debug);
@@ -815,7 +815,7 @@ function showEditNotification(message, type = 'success') {
     const notification = document.getElementById('edit-notification');
     console.log('[EDIT NOTIFICATION] Notification element:', notification);
     console.log('[EDIT NOTIFICATION] Computed styles:', notification ? getComputedStyle(notification) : 'N/A');
-    
+
     setTimeout(() => {
         if (notification) {
             notification.style.opacity = '1';
@@ -1066,7 +1066,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
 function stopLearnSession() {
     console.log('[stopLearnSession] Called!');
     console.log('[stopLearnSession] location.hash:', location.hash);
-    
+
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -1113,7 +1113,7 @@ function stopLearnSession() {
 
     window.dispatchEvent(new Event('favoritesUpdated'));
     session = null;
-    
+
     console.log('[stopLearnSession] Done! Checking elements visibility:');
     console.log('  - search-container:', document.querySelector('.search-container')?.style.display);
     console.log('  - top-actions-bar:', document.querySelector('.top-actions-bar')?.style.display);
@@ -1174,7 +1174,7 @@ function renderCardState(state) {
         const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         qEl.innerHTML = questionHTML;
-        
+
         // DEBUG: Проверяем, что вставилось
         console.log('[RENDER CARD] Question rendered:', {
             text: questionText,
@@ -1184,7 +1184,7 @@ function renderCardState(state) {
             childrenCount: qEl.children.length,
             spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
-        
+
         // DEBUG: Проверяем стили первого span
         setTimeout(() => {
             const firstSpan = qEl.querySelector('span');
@@ -1208,7 +1208,7 @@ function renderCardState(state) {
         const answerText = sessionCard?.answer || state.card.answer || '(Пустой ответ)';
         const answerHTML = applyFormatting(answerText, answerFormatting);
         aEl.innerHTML = answerHTML;
-        
+
         // DEBUG: Проверяем, что вставилось
         console.log('[RENDER CARD] Answer rendered:', {
             text: answerText,
@@ -1218,7 +1218,7 @@ function renderCardState(state) {
             childrenCount: aEl.children.length,
             spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
-        
+
         // DEBUG: Проверяем стили первого span
         setTimeout(() => {
             const firstSpan = aEl.querySelector('span');
@@ -1313,14 +1313,14 @@ function renderCardState(state) {
         const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         backQuestionEl.innerHTML = questionHTML;
-        
+
         console.log('[RENDER CARD] Back question rendered:', {
             text: questionText,
             formatting: questionFormatting,
             html: questionHTML,
             innerHTML: backQuestionEl.innerHTML
         });
-        
+
         // DEBUG: Проверяем стили первого span
         setTimeout(() => {
             const firstSpan = backQuestionEl.querySelector('span');
@@ -1635,7 +1635,7 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
 
-            // Добавляем ��ласс current, если это текущий сегмент
+            // Добавляем класс current, если это текущий сегмент
             if (isCurrent) {
                 el.classList.add('current');
                 console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
@@ -1714,7 +1714,7 @@ function wireSegmentsInteractions(sess) {
         const currentTime = Date.now();
 
         // Вычисляем смещение
-        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительн��сти
+        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительности
         segs.scrollLeft = scrollLeft - walk;
 
         // Вычисляем скорость для инерции

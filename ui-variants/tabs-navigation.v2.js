@@ -4,6 +4,7 @@
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
+import { applyFormatting } from '../srs/text-formatter.js';
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = false;
@@ -775,16 +776,18 @@ export function initTabsNavigation() {
             const subBadge = document.createElement('span'); subBadge.className = 'subcategory-badge'; subBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
             meta.appendChild(catBadge); meta.appendChild(subBadge);
 
-            // Вопрос
+            // Вопрос - применяем форматирование
             const qText = document.createElement('div');
             qText.className = 'question';
-            qText.textContent = it?.question || q;
+            const questionFormatting = it?.formatting?.question || [];
+            qText.innerHTML = applyFormatting(it?.question || q, questionFormatting);
             qText.style.marginTop = '6px';
 
-            // Ответ
+            // Ответ - применяем форматирование
             const aEl = document.createElement('div');
             aEl.className = 'answer';
-            aEl.textContent = it?.answer || '';
+            const answerFormatting = it?.formatting?.answer || [];
+            aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
             aEl.style.marginTop = '6px';
 
             // Действия (восстановить / удалить навсегда) внизу
@@ -1484,12 +1487,16 @@ function renderTrashPanel() {
             const scBadge = document.createElement('span'); scBadge.className = 'subcategory-badge'; scBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
             meta.appendChild(catBadge); meta.appendChild(scBadge);
 
-            // Вопрос
-            const qEl = document.createElement('div'); qEl.className = 'question'; qEl.textContent = it?.question || q || '';
+            // Вопрос - применяем форматирование
+            const qEl = document.createElement('div'); qEl.className = 'question';
+            const questionFormatting = it?.formatting?.question || [];
+            qEl.innerHTML = applyFormatting(it?.question || q || '', questionFormatting);
             qEl.style.marginTop = '6px';
 
-            // Ответ
-            const aEl = document.createElement('div'); aEl.className = 'answer'; aEl.textContent = it?.answer || '';
+            // Ответ - применяем форматирование
+            const aEl = document.createElement('div'); aEl.className = 'answer';
+            const answerFormatting = it?.formatting?.answer || [];
+            aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
             aEl.style.marginTop = '6px';
 
             // Действия
@@ -1723,14 +1730,20 @@ function displayQuestions(questions, title) {
         const dispCat = (catPlaceholders[item.category] && catPlaceholders[item.category].displayName) || item.category || '';
         const dispSub = (scPlaceholders[item.category] && scPlaceholders[item.category][item.subcategory] && scPlaceholders[item.category][item.subcategory].displayName) || item.subcategory || '';
 
+        // Применяем форматирование к вопросу и ответу
+        const questionFormatting = item.formatting?.question || [];
+        const answerFormatting = item.formatting?.answer || [];
+        const questionHTML = applyFormatting(item.question, questionFormatting);
+        const answerHTML = applyFormatting(item.answer, answerFormatting);
+
         resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
                 <span class="subcategory-badge">${dispSub}</span>
                 <button class="fav-btn ${favClass}" title="В избранное">★</button>
             </div>
-            <div class="question">${item.question}</div>
-            <div class="answer">${item.answer}</div>
+            <div class="question">${questionHTML}</div>
+            <div class="answer">${answerHTML}</div>
         `;
 
         // Обработчик избранного

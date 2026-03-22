@@ -3,6 +3,7 @@ import { syncFavorite } from './storage.js?v=2.01';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=2.00';
 import { getTodaysSession } from './category-scheduler.js?v=2.00';
 import { startLearnSession } from './learn-ui.js?v=2.42';
+import { applyFormatting } from './text-formatter.js';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
@@ -4517,17 +4518,24 @@ window.openDiffModal = (index) => {
     const heartFills = getHeartFillPercentages(ef);
     const heartsSvg = renderHeartsSvg(heartFills, 'modal-' + idx);
     const isFav = favorites.has(q.question);
+    
+    // Применяем форматирование к вопросу и ответу
+    const questionFormatting = q.formatting?.question || [];
+    const answerFormatting = q.formatting?.answer || [];
+    const questionHTML = applyFormatting(q.question, questionFormatting);
+    const answerPreview = q.answer.substring(0, 80) + (q.answer.length > 80 ? '...' : '');
+    const answerHTML = applyFormatting(answerPreview, answerFormatting);
 
     return `
                 <li class="st-modal-item">
                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
-                       <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
+                       <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${questionHTML}</span>
                        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
                           <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
                           ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
                        </div>
                    </div>
-                   <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${q.answer.substring(0, 80)}${q.answer.length > 80 ? '...' : ''}</div>
+                   <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${answerHTML}</div>
                 </li>
                 `;
   }).join('')}
@@ -4593,17 +4601,24 @@ window.openCategoryModal = (categoryName) => {
     const heartFills = getHeartFillPercentages(ef);
     const heartsSvg = renderHeartsSvg(heartFills, 'cat-' + idx);
     const isFav = favorites.has(q.question);
+    
+    // Применяем форматирование к вопросу и ответу
+    const questionFormatting = q.formatting?.question || [];
+    const answerFormatting = q.formatting?.answer || [];
+    const questionHTML = applyFormatting(q.question, questionFormatting);
+    const answerPreview = q.answer.substring(0, 80) + (q.answer.length > 80 ? '...' : '');
+    const answerHTML = applyFormatting(answerPreview, answerFormatting);
 
     return `
                 <li class="st-modal-item">
                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px">
-                       <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${q.question}</span>
+                       <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${questionHTML}</span>
                        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
                           <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
                           ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
                        </div>
                    </div>
-                   <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${q.answer.substring(0, 80)}${q.answer.length > 80 ? '...' : ''}</div>
+                   <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${answerHTML}</div>
                 </li>
                 `;
   }).join('')}

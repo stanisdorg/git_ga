@@ -1,4 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="64" ry="64" fill="#333333"/>
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="280" fill="#ffffff">QA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="rocketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Основной фон (круг) -->
+  <circle cx="96" cy="96" r="88" fill="#1a1a1a"/>
+  
+  <!-- Ракета -->
+  <g fill="url(#rocketGradient)">
+    <!-- Основной корпус -->
+    <path d="M96 35 C82 35 70 52 70 78 L70 125 L58 138 L58 155 L82 148 L96 165 L110 148 L134 155 L134 138 L122 125 L122 78 C122 52 110 35 96 35Z"/>
+    <!-- Оконце -->
+    <circle cx="96" cy="75" r="14" fill="#1a1a1a"/>
+    <!-- Огонь -->
+    <path d="M85 155 L96 178 L107 155" fill="url(#rocketGradient)"/>
+  </g>
+  
+  <!-- Блик на ракете -->
+  <ellipse cx="88" cy="95" rx="6" ry="12" fill="rgba(255,255,255,0.1)"/>
 </svg>

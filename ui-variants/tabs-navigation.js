@@ -6,6 +6,7 @@ import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
 import { getProgressMap } from '../srs/stats-utils.js';
 import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
+import { applyFormatting } from '../srs/text-formatter.js';
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
@@ -172,7 +173,7 @@ function fixEncodingIssues(data) {
         const fixedCount = userCards.filter((c, i) =>
             c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
         ).length;
-        
+
         setQaUserCards(fixedCards);
         // 🔥 НЕ отправляем на сервер автоматически — исправления сохранятся при следующем явном сохранении
         console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount, '(сохранятся при следующем сохранении)');
@@ -417,7 +418,7 @@ export function initTabsNavigation(appVersion) {
         // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
         setTimeout(() => {
             refreshCurrentContext();
-            
+
             // Логирование размеров для отладки
             const topBar = document.querySelector('.top-actions-bar');
             const container = document.querySelector('.container');
@@ -1322,17 +1323,17 @@ export function initTabsNavigation(appVersion) {
                 // 🔥 ИСПРАВЛЕНИЕ: Не сохраняем если данные уже сохранены (qaNewItems пуст)
                 const newItems = getNewItems();
                 const deletedItems = getDeletedItems();
-                const hasUnsavedChanges = (newItems && newItems.length > 0) || 
-                                          (deletedItems && Object.keys(deletedItems).length > 0);
-                
+                const hasUnsavedChanges = (newItems && newItems.length > 0) ||
+                    (deletedItems && Object.keys(deletedItems).length > 0);
+
                 console.log('[LOGOUT] Проверяем есть ли несохранённые данные:', {
                     hasUnsavedChanges,
                     newItemsCount: newItems?.length || 0,
                     deletedCount: Object.keys(deletedItems || {}).length
                 });
-                
+
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на серве���������������� перед выходом...');
+                    console.log('[LOGOUT] Сохраняем данные на сервере перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
@@ -1364,7 +1365,7 @@ export function initTabsNavigation(appVersion) {
 
                 console.log('[LOGOUT] localStorage очищен, ключи:', DATA_KEYS_TO_CLEAR);
 
-                // Также очищ������ем старые ключи без суффиксов
+                // Также очищаем старые ключи без суффиксов
                 ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
 
                 // 🔥 Дополнительно очищаем прогресс без суффиксов
@@ -2131,16 +2132,18 @@ export function initTabsNavigation(appVersion) {
                 const subBadge = document.createElement('span'); subBadge.className = 'subcategory-badge'; subBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
                 meta.appendChild(catBadge); meta.appendChild(subBadge);
 
-                // Вопрос
+                // Вопрос - применяем форматирование
                 const qText = document.createElement('div');
                 qText.className = 'question';
-                qText.textContent = it?.question || q;
+                const questionFormatting = it?.formatting?.question || [];
+                qText.innerHTML = applyFormatting(it?.question || q, questionFormatting);
                 qText.style.marginTop = '6px';
 
-                // Ответ
+                // Ответ - применяем форматирование
                 const aEl = document.createElement('div');
                 aEl.className = 'answer';
-                aEl.textContent = it?.answer || '';
+                const answerFormatting = it?.formatting?.answer || [];
+                aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
                 aEl.style.marginTop = '6px';
 
                 // Действия (восстановить / удалить навсегда) внизу
@@ -2308,7 +2311,7 @@ export function initTabsNavigation(appVersion) {
                 container.classList.add('edit-mode');
             } else {
                 trashPanel.style.display = 'none';
-                // убрать индикатор корзин���� из заголовка боковой панели
+                // убрать индикатор корзины из заголовка боковой панели
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (existingTrashBtn) existingTrashBtn.remove();
                 container.classList.remove('edit-mode');
@@ -2406,7 +2409,7 @@ export function initTabsNavigation(appVersion) {
                 }
                 if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
 
-                // Успеш������о сохранили — уведомляем и принудительно перезагружаем данные из JSON
+                // Успешно сохранили — уведомляем и принудительно перезагружаем данные из JSON
                 setSaveStatus('success');
                 // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
                 setTimeout(() => {
@@ -2612,7 +2615,7 @@ async function saveMergedToServer(skipReload = false) {
                 .replace(/получа\?м/g, 'получаем')
                 .replace(/се\?{1,5}висы/g, 'сервисы');
         };
-        
+
         // Исправляем overrides перед отправкой
         const overrides = getOverrides();
         const fixedOverrides = {};
@@ -2628,12 +2631,12 @@ async function saveMergedToServer(skipReload = false) {
             }
             fixedOverrides[key] = fixedOv;
         }
-        
+
         if (hasFixes) {
             console.warn('[saveMergedToServer] ⚠️ Данные были исправлены перед отправкой (поврежденная кодировка)');
             setOverrides(fixedOverrides);
         }
-        
+
         const newItems = getNewItems();
         const deletedMap = getDeletedItems();
         const merged = [];
@@ -2677,11 +2680,11 @@ async function saveMergedToServer(skipReload = false) {
                             uniqueQaDataCount: uniqueQaData.length,
                             newItemsCount: newItems.length
                         });
-                        
+
                         let addedCount = 0;
                         let checkedCount = 0;
                         let duplicatesFound = 0;
-                        
+
                         userCards.forEach(uc => {
                             checkedCount++;
                             // 🔥 ИСПРАВЛЕНИЕ: Дубликаты (с "копия" в названии) не должны считаться удалёнными
@@ -2693,7 +2696,7 @@ async function saveMergedToServer(skipReload = false) {
                             const isAlreadyAdded = seen.has(uc.question);
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
-                            
+
                             // Считаем дубликаты
                             if (uc.question.includes('копия')) {
                                 duplicatesFound++;
@@ -2714,7 +2717,7 @@ async function saveMergedToServer(skipReload = false) {
                                 addedCount++;
                             }
                         });
-                        
+
                         console.log('[saveMergedToServer] Обработано qaUserCards:', {
                             checkedCount,
                             duplicatesFound,
@@ -2766,7 +2769,7 @@ async function saveMergedToServer(skipReload = false) {
             username,
             bodyLength: JSON.stringify(fixedMerged).length
         });
-        
+
         // 🔍 ЛОГ: первые 3 карточки для проверки
         const first3 = merged.slice(0, 3).map(c => ({
             question: c.question?.substring(0, 50),
@@ -2775,7 +2778,7 @@ async function saveMergedToServer(skipReload = false) {
             subcategory: c.subcategory
         }));
         console.log('[saveMergedToServer] Первые 3 карточки:', first3);
-        
+
         // 🔍 ЛОГ: поиск дубликата во всём массиве
         const dupIndex = merged.findIndex(c => c.question?.includes('копия'));
         console.log('[saveMergedToServer] Дубликат найден на индексе:', dupIndex);
@@ -2792,7 +2795,7 @@ async function saveMergedToServer(skipReload = false) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(fixedMerged)
         });
-        
+
         console.log('[saveMergedToServer] Ответ сервера:', {
             status: resp.status,
             ok: resp.ok,
@@ -2828,13 +2831,13 @@ async function saveMergedToServer(skipReload = false) {
                 mergedLength: merged.length,
                 savedCards: merged.length
             });
-            
+
             // 🔍 ПРОВЕРЯЕМ что записалось в localStorage
             const verifyCards = getQaUserCards();
             console.log('[saveMergedToServer] Проверка localStorage:', {
                 cardsInLocalStorage: verifyCards?.length || 0
             });
-            
+
             // 🔥 ОБНОВЛЯЕМ uniqueQaData в памяти из localStorage
             // Это нужно чтобы следующие дубликаты использовали актуальные данные
             // Импортируем setUniqueQaData из all-data.js
@@ -3064,12 +3067,16 @@ function renderTrashPanel() {
             const scBadge = document.createElement('span'); scBadge.className = 'subcategory-badge'; scBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
             meta.appendChild(catBadge); meta.appendChild(scBadge);
 
-            // Вопрос
-            const qEl = document.createElement('div'); qEl.className = 'question'; qEl.textContent = it?.question || q || '';
+            // Вопрос - применяем форматирование
+            const qEl = document.createElement('div'); qEl.className = 'question';
+            const questionFormatting = it?.formatting?.question || [];
+            qEl.innerHTML = applyFormatting(it?.question || q || '', questionFormatting);
             qEl.style.marginTop = '6px';
 
-            // Ответ
-            const aEl = document.createElement('div'); aEl.className = 'answer'; aEl.textContent = it?.answer || '';
+            // Ответ - применяем форматирование
+            const aEl = document.createElement('div'); aEl.className = 'answer';
+            const answerFormatting = it?.formatting?.answer || [];
+            aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
             aEl.style.marginTop = '6px';
 
             // Действия
@@ -3155,12 +3162,12 @@ function renderTrashPanel() {
                     if (resp.ok) {
                         serverTrashSet.delete(q);
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                        
+
                         // 🔥 ВАЖНО: Добавляем в qaDeletedItems чтобы карточка не вернулась при сохранении
                         const delMap = getDeletedItems();
                         delMap[q] = { deleted_at: new Date().toISOString(), deleted_by: username, permanent: true };
                         setDeletedItems(delMap);
-                        
+
                         const newArr = getNewItems().filter(i => i.question !== q);
                         setLS('qaNewItems', newArr);
 
@@ -3553,6 +3560,12 @@ export function displayQuestions(questions, title) {
                 // If no progress or no easeFactor, treat as NEW (pass null)
                 const ef = (cardProgress && cardProgress.easeFactor !== undefined) ? cardProgress.easeFactor : null;
 
+                // Применяем форматирование к вопросу и ответу
+                const questionFormatting = item.formatting?.question || [];
+                const answerFormatting = item.formatting?.answer || [];
+                const questionHTML = applyFormatting(item.question, questionFormatting);
+                const answerHTML = applyFormatting(item.answer, answerFormatting);
+
                 resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${dispCat}</span>
@@ -3560,8 +3573,8 @@ export function displayQuestions(questions, title) {
             </div>
             ${renderHearts(ef)}
             <button class="fav-btn ${favClass}" title="В избранное" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
-            <div class="question">${item.question}</div>
-            <div class="answer">${item.answer}</div>
+            <div class="question">${questionHTML}</div>
+            <div class="answer">${answerHTML}</div>
         `;
 
                 // Обработчик избранного
@@ -3648,7 +3661,7 @@ export function displayQuestions(questions, title) {
 
                             const oldQuestion = item.question;
                             const overrides = getOverrides();
-                            // Храним override под ключом исходного вопроса, чтобы лоадер корректн�� применил замену
+                            // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
                             overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
                             setOverrides(overrides);
 
@@ -3659,7 +3672,7 @@ export function displayQuestions(questions, title) {
                                 favorites.add(newQuestion);
                                 localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
 
-                                // Отправляем обновлённое избранн��е на сервер
+                                // Отправляем обновлённое избранное на сервер
                                 import('../srs/storage.js').then(({ syncFavorite }) => {
                                     try {
                                         syncFavorite(newQuestion, true);
@@ -3709,7 +3722,7 @@ export function displayQuestions(questions, title) {
                             const act = e.target?.dataset?.act; if (!act) return;
                             e.stopPropagation();
                             if (act === 'delete') {
-                                // Показа��ь индикатор прогресса
+                                // Показать индикатор прогресса
                                 const rowEl = resultItem.querySelector('.question-row');
                                 setInlineSaveStatus(rowEl, 'saving');
 
@@ -3718,7 +3731,7 @@ export function displayQuestions(questions, title) {
                                     if (trashOk) {
                                         // Оптимистично добавляем в локальные кэши корзины
                                         serverTrashSet.add(item.question);
-                                        // Обновляем локальный список корзи��ы, чтобы сразу показать карточку
+                                        // Обновляем локальный список корзины, чтобы сразу показать карточку
                                         try {
                                             serverTrashItems = [
                                                 { item: { ...item } },
@@ -3734,7 +3747,7 @@ export function displayQuestions(questions, title) {
                                         renderTrashPanel();
                                         refreshCurrentContext();
 
-                                        // Пытаемся синхронизировать с серверной ��орзиной (не блокирует UI)
+                                        // Пытаемся синхронизировать с серверной корзиной (не блокирует UI)
                                         try { await refreshServerTrash(); } catch (_) { }
 
                                         setInlineSaveStatus(rowEl, 'success');

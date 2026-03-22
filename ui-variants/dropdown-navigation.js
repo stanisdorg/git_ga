@@ -3,6 +3,7 @@
 // Импортируем данные и генератор категорий
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
+import { applyFormatting } from '../srs/text-formatter.js';
 
 // Функция для инициализации навигации с выпадающими списками
 export function initDropdownNavigation() {
@@ -149,6 +150,12 @@ function displayQuestions(questions, title) {
             </svg>
         `;
 
+        // Применяем форматирование к вопросу и ответу
+        const questionFormatting = item.formatting?.question || [];
+        const answerFormatting = item.formatting?.answer || [];
+        const questionHTML = applyFormatting(item.question, questionFormatting);
+        const answerHTML = applyFormatting(item.answer, answerFormatting);
+
         resultItem.innerHTML = `
             <div class="question-row">
                 <span class="category-badge">${item.category || ''}</span>
@@ -156,8 +163,8 @@ function displayQuestions(questions, title) {
                 <button class="fav-btn ${favClass}" title="В избранное" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center">${starSvg(isFav)}</button>
                 ${location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? '<button class="edit-btn" title="Редактировать">✎</button>' : ''}
             </div>
-            <div class="question">${item.question}</div>
-            <div class="answer">${item.answer}</div>
+            <div class="question">${questionHTML}</div>
+            <div class="answer">${answerHTML}</div>
         `;
 
         const favBtn = resultItem.querySelector('.fav-btn');

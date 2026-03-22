@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Голосовой помощник QA</title>
+    <title>BrainCommit — Твой путь в IT</title>
     <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
-    <link rel="stylesheet" href="style.css?v=2.00">
-    <link rel="stylesheet" href="custom-styles.css?v=84.0">
+    <link rel="stylesheet" href="style.css?v=6.01">
+    <link rel="stylesheet" href="custom-styles.css?v=6.1">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e1e1e">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,6 +37,45 @@
     </style>
 </head>
 <body>
+    <!-- SPLASH SCREEN - Экран загрузки приложения -->
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="80" height="80">
+                <defs>
+                    <linearGradient id="splashRocketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="96" cy="96" r="88" fill="#1a1a1a"/>
+                <g fill="url(#splashRocketGradient)">
+                    <path d="M96 35 C82 35 70 52 70 78 L70 125 L58 138 L58 155 L82 148 L96 165 L110 148 L134 155 L134 138 L122 125 L122 78 C122 52 110 35 96 35Z"/>
+                    <circle cx="96" cy="75" r="14" fill="#1a1a1a"/>
+                    <path d="M85 155 L96 178 L107 155" fill="url(#splashRocketGradient)"/>
+                </g>
+            </svg>
+        </div>
+        <h1 class="splash-title">BrainCommit</h1>
+        <p class="splash-subtitle">Твой репозиторий знаний...</p>
+        
+        <!-- Прогресс бар -->
+        <div class="splash-progress-container">
+            <div class="splash-progress-bar" id="splash-progress"></div>
+        </div>
+        <p class="splash-status" id="splash-status">Инициализация...</p>
+        
+        <!-- Индикатор сети -->
+        <div class="splash-network-indicator online" id="splash-network">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3c4.97-4.97 13.03-4.97 18 0l2-2C24.93 13.93 15.08 13.93 9 17zm-8-8l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z"/>
+            </svg>
+            <span id="splash-network-text">Онлайн</span>
+        </div>
+        
+        <!-- Советы (меняются при каждой загрузке) -->
+        <p class="splash-tip" id="splash-tip">Совет: Используйте голосовой ввод для быстрого поиска вопросов</p>
+    </div>
+
     <!-- Скрываем скелетон для НЕ статистики страниц и для ПК версий -->
     <script>
         const isStats = location.hash && location.hash.includes('stats');
@@ -214,18 +253,138 @@
         </div>
     </div>
 
+    <!-- Скрипт управления Splash Screen -->
+    <script>
+        // Splash Screen - управление загрузкой приложения
+        (function() {
+            const splashScreen = document.getElementById('splash-screen');
+            const progressBar = document.getElementById('splash-progress');
+            const statusText = document.getElementById('splash-status');
+            const networkIndicator = document.getElementById('splash-network');
+            const networkText = document.getElementById('splash-network-text');
+            const tipElement = document.getElementById('splash-tip');
+
+            // Советы для показа при загрузке
+            const tips = [
+                'BrainCommit — Твой репозиторий знаний',
+                'Совет: Регулярное повторение улучшает запоминание',
+                'Знаете ли вы? Интервальные повторения увеличивают эффективность обучения',
+                'Совет: Отмечай сложные вопросы как избранные',
+                'Знаете ли вы? Можно искать вопросы по тексту',
+                'Совет: Используй режим обучения для закрепления знаний',
+                'BrainCommit — Система интервального обучения для IT'
+            ];
+
+            // Случайный совет при каждой загрузке
+            function setRandomTip() {
+                const randomIndex = Math.floor(Math.random() * tips.length);
+                tipElement.textContent = tips[randomIndex];
+            }
+
+            // Обновление индикатора сети
+            function updateNetworkStatus() {
+                if (navigator.onLine) {
+                    networkIndicator.classList.remove('offline');
+                    networkIndicator.classList.add('online');
+                    networkText.textContent = 'Онлайн';
+                } else {
+                    networkIndicator.classList.remove('online');
+                    networkIndicator.classList.add('offline');
+                    networkText.textContent = 'Офлайн';
+                }
+            }
+
+            // Прогресс бар с анимацией
+            let progress = 0;
+            const stages = [
+                { percent: 10, text: 'Загрузка ресурсов...' },
+                { percent: 25, text: 'Инициализация интерфейса...' },
+                { percent: 40, text: 'Загрузка данных...' },
+                { percent: 60, text: 'Подготовка к работе...' },
+                { percent: 80, text: 'Почти готово...' },
+                { percent: 100, text: 'Готово!' }
+            ];
+
+            let currentStage = 0;
+
+            function updateProgress(stageIndex) {
+                if (stageIndex >= stages.length) return;
+                
+                const stage = stages[stageIndex];
+                progressBar.style.width = stage.percent + '%';
+                statusText.textContent = stage.text;
+            }
+
+            // Запуск прогресс бара
+            function startProgress() {
+                setRandomTip();
+                updateNetworkStatus();
+                
+                // Слушатели изменения статуса сети
+                window.addEventListener('online', updateNetworkStatus);
+                window.addEventListener('offline', updateNetworkStatus);
+
+                // Имитация прогресса загрузки
+                const progressInterval = setInterval(() => {
+                    if (currentStage < stages.length) {
+                        updateProgress(currentStage);
+                        currentStage++;
+                    } else {
+                        clearInterval(progressInterval);
+                    }
+                }, 300); // Каждые 300мс новый этап
+            }
+
+            // Скрытие splash screen
+            window.hideSplashScreen = function() {
+                if (splashScreen) {
+                    splashScreen.classList.add('hidden');
+                    // Удаляем из DOM через 500мс (после завершения анимации)
+                    setTimeout(() => {
+                        splashScreen.style.display = 'none';
+                    }, 500);
+                }
+            };
+
+            // Автоматическое скрытие через 15 секунд (если приложение не загрузилось)
+            setTimeout(() => {
+                if (splashScreen && !splashScreen.classList.contains('hidden')) {
+                    console.warn('[Splash Screen] Timeout 15s, forcing hide');
+                    hideSplashScreen();
+                }
+            }, 15000);
+
+            // Запуск при загрузке
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', startProgress);
+            } else {
+                startProgress();
+            }
+        })();
+    </script>
+
     <script type="module">
         import { initUI } from './ui-manager.js?v=4.55-beta';
         window.initUI = initUI;
-        
-        // Unregister Service Workers to fix cache issues
+
+        // Регистрируем Service Worker для кэширования статики
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                    console.log('Service Worker unregistered');
-                }
-            });
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('[SW] Registered:', registration.scope);
+                    
+                    // Слушаем сообщения от Service Worker
+                    navigator.serviceWorker.addEventListener('message', event => {
+                        if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                            console.log('[SW] Update available, reloading...');
+                            // Перезагружаем страницу для применения обновлений
+                            window.location.reload();
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.error('[SW] Registration failed:', err);
+                });
         }
 
         // Auto-init if DOM is ready

@@ -1,33 +1,116 @@
-const CACHE_NAME = 'trae-app-v1';
-const urlsToCache = []; // Отключаем кэширование
+const CACHE_NAME = 'braincommit-v1';  // Увеличиваем версию при изменениях статики
 
-// Установка Service Worker БЕЗ кэширования
+// Ресурсы для кэширования (статика)
+const STATIC_ASSETS = [
+    '/',
+    '/index.html',
+    '/style.css',
+    '/custom-styles.css',
+    '/manifest.json',
+    '/icons/icon-192x192.svg',
+    '/icons/icon-512x512.svg',
+    '/icons/favicon.svg'
+];
+
+// Установка Service Worker - кэшируем статику
 self.addEventListener('install', event => {
-    // Пропускаем кэширование
+    console.log('[SW] Install');
+    // Пропускаем ожидание и сразу активируем для быстрых обновлений
     self.skipWaiting();
 });
 
-// Активация Service Worker
+// Активация Service Worker - удаляем старые кэши и обновляем статику
 self.addEventListener('activate', event => {
-    // Удаляем все кэши
+    console.log('[SW] Activate');
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    return caches.delete(cacheName);
-                })
-            );
-        })
+        caches.keys()
+            .then(cacheNames => {
+                return Promise.all(
+                    cacheNames
+                        .filter(name => name !== CACHE_NAME)
+                        .map(name => {
+                            console.log('[SW] Deleting old cache:', name);
+                            return caches.delete(name);
+                        })
+                );
+            })
+            .then(() => {
+                console.log('[SW] Claiming clients');
+                // Сообщаем всем клиентам что нужно перезагрузиться
+                return self.clients.matchAll().then(clients => {
+                    clients.forEach(client => {
+                        client.postMessage({ type: 'UPDATE_AVAILABLE' });
+                    });
+                    return self.clients.claim();
+                });
+            })
     );
-    self.clients.claim();
 });
 
-// Перехват запросов - всегда сеть, без кэша
+// Перехват запросов - стратегия: Cache First, затем Network
 self.addEventListener('fetch', event => {
+    const { request } = event;
+    const url = new URL(request.url);
+
+    // Не кэшируем POST запросы и запросы к API
+    if (request.method !== 'GET') {
+        return;
+    }
+
+    // Не кэшируем данные пользователя (JSON файлы в data/)
+    if (url.pathname.includes('/data/')) {
+        event.respondWith(
+            fetch(request).catch(() => {
+                console.log('[SW] Offline, data request failed:', url.pathname);
+                return new Response(JSON.stringify({ error: 'offline' }), {
+                    status: 503,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            })
+        );
+        return;
+    }
+
+    // Стратегия Cache First для статики
     event.respondWith(
-        fetch(new Request(event.request, { 
-            cache: 'no-store',
-            mode: 'cors'
-        }))
+        caches.match(request)
+            .then(cachedResponse => {
+                if (cachedResponse) {
+                    // Возвращаем из кэша + обновляем кэш в фоне
+                    event.waitUntil(
+                        fetch(request)
+                            .then(networkResponse => {
+                                if (networkResponse && networkResponse.status === 200) {
+                                    return caches.open(CACHE_NAME)
+                                        .then(cache => cache.put(request, networkResponse));
+                                }
+                            })
+                            .catch(() => {
+                                // Network failed, but we have cache - that's fine
+                            })
+                    );
+                    return cachedResponse;
+                }
+
+                // Нет в кэше - загружаем из сети
+                return fetch(request)
+                    .then(networkResponse => {
+                        // Кэшируем успешные ответы
+                        if (networkResponse && networkResponse.status === 200) {
+                            const responseClone = networkResponse.clone();
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.put(request, responseClone));
+                        }
+                        return networkResponse;
+                    })
+                    .catch(err => {
+                        console.log('[SW] Fetch failed, no cache:', request.url);
+                        // Для навигации возвращаем index.html из кэша
+                        if (request.mode === 'navigate') {
+                            return caches.match('/index.html');
+                        }
+                        throw err;
+                    });
+            })
     );
 });

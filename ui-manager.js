@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '5.28';
+export const APP_VERSION = '6.00';
 
 let uiInitialized = false;
 
@@ -48,6 +48,15 @@ export function initUI() {
     addStyles();
     // createBottomNav(); // Убрали нижнюю навигацию
     initSyncIndicator();
+
+    // Скрываем splash screen после загрузки приложения
+    if (typeof window.hideSplashScreen === 'function') {
+        // Небольшая задержка для плавного перехода
+        setTimeout(() => {
+            window.hideSplashScreen();
+            console.log('[Splash Screen] Hidden after UI init');
+        }, 500);
+    }
 
     // Загружаем прогресс с локального сервера ПОСЛЕ инициализации табов
     // dataLoaded не диспатчим здесь — loadFromServer сам диспатчит

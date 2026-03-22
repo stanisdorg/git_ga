@@ -1,6 +1,7 @@
 // Импортируем данные из отдельного файла
 import { uniqueQaData } from './all-data.js';
 import { displayQuestions } from './ui-variants/tabs-navigation.js';
+import { applyFormatting } from './srs/text-formatter.js';
 let transcriptionMode = false; // глобальное состояние режима транскрипции
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -564,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filteredData.forEach(item => {
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
-            
+
             // Формируем бейджи категорий
             const badges = [];
             if (item.category) {
@@ -574,15 +575,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 badges.push(`<span class="subcategory-badge">${item.subcategory}</span>`);
             }
             const metaHtml = badges.length ? `<div class="result-meta" style="margin-bottom:4px">${badges.join('')}</div>` : '';
-            
+
+            // Применяем форматирование к вопросу и ответу
+            const questionFormatting = item.formatting?.question || [];
+            const answerFormatting = item.formatting?.answer || [];
+            const questionHTML = applyFormatting(item.question, questionFormatting);
+            const answerHTML = applyFormatting(item.answer, answerFormatting);
+
             resultItem.innerHTML = `
                 ${metaHtml}
-                <div class="question">${item.question}</div>
-                <div class="answer">${item.answer}</div>
+                <div class="question">${questionHTML}</div>
+                <div class="answer">${answerHTML}</div>
             `;
-            
+
             // Hover effects are now handled by CSS
-            
+
             resultsList.appendChild(resultItem);
         });
     }

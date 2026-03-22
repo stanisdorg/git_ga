@@ -1,4 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="64" ry="64" fill="#333333"/>
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="280" fill="#ffffff">QA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="rocketGradientFavicon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Ракета -->
+  <g fill="url(#rocketGradientFavicon)">
+    <path d="M16 4 C13 4 11 8 11 13 L11 22 L9 24 L9 27 L13 26 L16 29 L19 26 L23 27 L23 24 L21 22 L21 13 C21 8 19 4 16 4Z"/>
+    <circle cx="16" cy="14" r="3" fill="#1a1a1a"/>
+    <path d="M14 27 L16 31 L18 27" fill="url(#rocketGradientFavicon)"/>
+  </g>
 </svg>

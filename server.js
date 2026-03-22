@@ -39,7 +39,7 @@ function verifyPassword(password, hash) {
 const server = http.createServer((req, res) => {
   const ts = new Date().toISOString();
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
-  
+
   // Детальное логирование всех запросов
   logger.info('HTTP запрос', {
     method: req.method,
@@ -52,9 +52,9 @@ const server = http.createServer((req, res) => {
       'content-length': req.headers['content-length']
     }
   }, 'HTTP');
-  
+
   console.log(`${ts} - ${req.method} ${req.url}`);
-  
+
   // Логирование всех POST запросов для отладки
   if (req.method === 'POST') {
     console.log('[SERVER DEBUG] POST запрос:', req.url);
@@ -64,14 +64,14 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   // No-cache headers для ВСЕХ запросов
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   res.setHeader('Surrogate-Control', 'no-store');
   res.setHeader('Connection', 'close');
-  
+
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
@@ -83,41 +83,41 @@ const server = http.createServer((req, res) => {
   function checkUserPermissions(req, res, requireAdmin = false) {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username') || urlObj.searchParams.get('user');
-    
+
     // 🔒 ВАЛИДАЦИЯ username (только буквы, цифры, _)
     if (username && !/^[a-zA-Z0-9_]{1,50}$/.test(username)) {
       return { authorized: false, reason: 'invalid username format' };
     }
-    
+
     if (!username) {
       return { authorized: false, reason: 'username required' };
     }
-    
+
     try {
       const usersPath = path.join(__dirname, 'data', 'users.json');
       const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
       const user = users.find(u => u.username === username);
-      
+
       if (!user) {
         return { authorized: false, reason: 'user not found' };
       }
-      
+
       // Если требуется admin, проверяем только admin
       if (requireAdmin && user.role !== 'admin') {
         return { authorized: false, reason: 'admin access required' };
       }
-      
+
       // Для editor: разрешаем admin и editor
       if (!requireAdmin && !['admin', 'editor'].includes(user.role)) {
         return { authorized: false, reason: 'editor or admin access required' };
       }
-      
+
       return { authorized: true, user, role: user.role };
     } catch (e) {
       return { authorized: false, reason: 'error checking permissions' };
     }
   }
-  
+
   // Для обратной совместимости
   function checkAdmin(req, res) {
     return checkUserPermissions(req, res, true); // requireAdmin = true
@@ -127,15 +127,15 @@ const server = http.createServer((req, res) => {
   if (req.method === 'GET' && req.url.startsWith('/api/logs')) {
     const adminCheck = checkAdmin(req, res); // requireAdmin = true
     if (!adminCheck.authorized) {
-      logger.warn('Доступ к логам без авторизации', { 
+      logger.warn('Доступ к логам без авторизации', {
         username: new URL(req.url, `http://${req.headers.host}`).searchParams.get('username'),
-        reason: adminCheck.reason 
+        reason: adminCheck.reason
       }, 'Security');
       res.writeHead(403, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: adminCheck.reason }));
       return;
     }
-    
+
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const limit = parseInt(urlObj.searchParams.get('limit') || '100');
     const level = urlObj.searchParams.get('level') || 'DEBUG';
@@ -183,7 +183,7 @@ const server = http.createServer((req, res) => {
   //   return activeTokens.get(token) || null;
   // };
   const activeTokens = new Map(); // Keep for future use
-  
+
   // 🔒 RATE LIMITING ДЛЯ LOGIN (защита от brute-force)
   const loginAttempts = new Map(); // IP → { count, lastAttempt }
   const MAX_ATTEMPTS = 5;
@@ -192,27 +192,27 @@ const server = http.createServer((req, res) => {
   function checkRateLimit(ip) {
     const now = Date.now();
     const attempt = loginAttempts.get(ip);
-    
+
     if (attempt) {
       // Если прошло больше BLOCK_TIME_MS, сбрасываем счётчик
       if (now - attempt.lastAttempt > BLOCK_TIME_MS) {
         loginAttempts.delete(ip);
         return { allowed: true };
       }
-      
+
       // Если превышен лимит попыток
       if (attempt.count >= MAX_ATTEMPTS) {
         const remainingTime = Math.ceil((BLOCK_TIME_MS - (now - attempt.lastAttempt)) / 60000);
         return { allowed: false, remainingMinutes: remainingTime };
       }
-      
+
       // Увеличиваем счётчик
       attempt.count++;
       attempt.lastAttempt = now;
       loginAttempts.set(ip, attempt);
       return { allowed: true };
     }
-    
+
     // Первая попытка
     loginAttempts.set(ip, { count: 1, lastAttempt: now });
     return { allowed: true };
@@ -225,26 +225,26 @@ const server = http.createServer((req, res) => {
   // POST /api/login - Login and get username (token disabled)
   if (req.method === 'POST' && req.url === '/api/login') {
     // Получаем IP клиента для rate limiting
-    const clientIP = req.headers['x-forwarded-for']?.split(',')[0] || 
-                     req.headers['x-real-ip'] || 
-                     req.socket.remoteAddress || 
-                     'unknown';
-    
+    const clientIP = req.headers['x-forwarded-for']?.split(',')[0] ||
+      req.headers['x-real-ip'] ||
+      req.socket.remoteAddress ||
+      'unknown';
+
     // 🔒 ПРОВЕРКА RATE LIMIT
     const rateLimit = checkRateLimit(clientIP);
     if (!rateLimit.allowed) {
-      logger.warn('Brute-force атака (превышен лимит)', { 
-        ip: clientIP, 
-        remainingMinutes: rateLimit.remainingMinutes 
+      logger.warn('Brute-force атака (превышен лимит)', {
+        ip: clientIP,
+        remainingMinutes: rateLimit.remainingMinutes
       }, 'Security');
       res.writeHead(429, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ 
-        ok: false, 
-        error: `Too many login attempts. Try again in ${rateLimit.remainingMinutes} minutes.` 
+      res.end(JSON.stringify({
+        ok: false,
+        error: `Too many login attempts. Try again in ${rateLimit.remainingMinutes} minutes.`
       }));
       return;
     }
-    
+
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
@@ -266,14 +266,14 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ ok: false, error: 'invalid input type' }));
           return;
         }
-        
+
         // Проверяем длину (защита от переполнения)
         if (username.length > 50 || password.length > 100) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: false, error: 'input too long' }));
           return;
         }
-        
+
         // Проверяем формат username (только буквы, цифры, _)
         if (!/^[a-zA-Z0-9_]{1,50}$/.test(username)) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -306,7 +306,7 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ ok: false, error: 'Invalid credentials' }));
           return;
         }
-        
+
         // Успешный вход — сбрасываем счётчик попыток
         resetRateLimit(clientIP);
 
@@ -341,7 +341,7 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        const {token} = JSON.parse(body);
+        const { token } = JSON.parse(body);
         if (token && activeTokens.has(token)) {
           const userInfo = activeTokens.get(token);
           console.log(`[Logout] User ${userInfo.username} logged out`);
@@ -363,8 +363,8 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
-        const {username, password, role, adminToken} = JSON.parse(body);
-        
+        const { username, password, role, adminToken } = JSON.parse(body);
+
         // Verify admin token (only admin can create new users)
         const adminInfo = verifyToken(adminToken);
         if (!adminInfo || adminInfo.role !== 'admin') {
@@ -396,7 +396,7 @@ const server = http.createServer((req, res) => {
         // Clone global.json to user file
         const globalPath = path.join(__dirname, 'data', 'global.json');
         const globalCards = JSON.parse(fs.readFileSync(globalPath, 'utf-8'));
-        
+
         const userFile = {
           _meta: {
             username,
@@ -411,7 +411,7 @@ const server = http.createServer((req, res) => {
           _srsProgress: {},
           _favorites: []
         };
-        
+
         const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
         fs.writeFileSync(userFilePath, JSON.stringify(userFile, null, 2), 'utf-8');
 
@@ -443,7 +443,7 @@ const server = http.createServer((req, res) => {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
     // token parameter removed - using username only for development
-    
+
     // Проверка что username существует
     if (!username) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -452,7 +452,7 @@ const server = http.createServer((req, res) => {
     }
 
     const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
-    
+
     if (!fs.existsSync(userFilePath)) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: false, error: 'User data not found' }));
@@ -487,11 +487,11 @@ const server = http.createServer((req, res) => {
 
     const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
     console.log('[SERVER] ЧТЕНИЕ файла:', {
-        operation: 'read',
-        filePath: targetPath,
-        username,
-        exists: fs.existsSync(targetPath),
-        timestamp: Date.now()
+      operation: 'read',
+      filePath: targetPath,
+      username,
+      exists: fs.existsSync(targetPath),
+      timestamp: Date.now()
     });
 
     if (!fs.existsSync(targetPath)) {
@@ -525,16 +525,16 @@ const server = http.createServer((req, res) => {
 
       const userData = JSON.parse(rawContent);
       console.log('[SERVER] Файл прочитан:', {
-          operation: 'read_complete',
-          filePath: targetPath,
-          fileSize,
-          cardsInFile: userData._cards?.length || 0,
-          timestamp: Date.now()
+        operation: 'read_complete',
+        filePath: targetPath,
+        fileSize,
+        cardsInFile: userData._cards?.length || 0,
+        timestamp: Date.now()
       });
       console.log('[SERVER /api/progress] ПРОЧТЕНО из файла:', {
-          filePath: targetPath,
-          cardsInFile: userData._cards?.length || 0,
-          fileSize: rawContent.length
+        filePath: targetPath,
+        cardsInFile: userData._cards?.length || 0,
+        fileSize: rawContent.length
       });
       logger.info('Прочитано данных', {
         cards: userData._cards?.length || 0,
@@ -546,7 +546,7 @@ const server = http.createServer((req, res) => {
         cardsCount: userData._cards?.length || 0,
         filePath: targetPath
       });
-      
+
       // Проверяем карточки на повреждение
       if (userData._cards && Array.isArray(userData._cards)) {
         const badCards = userData._cards.filter(card => {
@@ -557,10 +557,10 @@ const server = http.createServer((req, res) => {
           const all = cat + subcat + q + a;
           return /\uFFFD/.test(all) || /Д\?{1,5}кументация/.test(all) || /[а-яА-Я]\?[а-яА-Я]/.test(all);
         });
-        
+
         if (badCards.length > 0) {
           logger.error(`❌ НАЙДЕНО ${badCards.length} карточек с поврежденными символами!`, null, 'Load');
-          
+
           // Показываем первые 3
           badCards.slice(0, 3).forEach((card, idx) => {
             logger.error(`Карточка ${idx + 1}: ${JSON.stringify({
@@ -569,7 +569,7 @@ const server = http.createServer((req, res) => {
               question: card.question?.substring(0, 50)
             })}`, null, 'Load');
           });
-          
+
           // Сохраняем список поврежденных карточек
           const debugCardsPath = path.join(__dirname, 'data', 'debug_bad_cards.json');
           fs.writeFileSync(debugCardsPath, JSON.stringify(badCards, null, 2), 'utf-8');
@@ -605,7 +605,7 @@ const server = http.createServer((req, res) => {
       const hasFFFDInResponse = jsonResponse.includes('\uFFFD');
       const hasBadRussianInResponse = /Д\?{1,5}кументация/.test(jsonResponse);
       const hasQuestionInRussianResponse = /[а-яА-Я]\?[а-яА-Я]/.test(jsonResponse);
-      
+
       if (hasFFFDInResponse || hasBadRussianInResponse || hasQuestionInRussianResponse) {
         logger.error('❌ ОТВЕТ КЛИЕНТУ СОДЕРЖИТ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
           hasFFFDInResponse,
@@ -613,7 +613,7 @@ const server = http.createServer((req, res) => {
           hasQuestionInRussianResponse,
           responseLength: jsonResponse.length
         }, 'Load');
-        
+
         // Сохраняем для отладки
         const debugResponsePath = path.join(__dirname, 'data', 'debug_server_response.json');
         fs.writeFileSync(debugResponsePath, jsonResponse, 'utf-8');
@@ -753,7 +753,7 @@ const server = http.createServer((req, res) => {
         } else {
           console.log('[SERVER /api/card/update] Файл не существует:', targetPath);
         }
-        
+
         // Логирование для отладки
         console.log('========================================');
         console.log('[SERVER /api/card/update] === ЧТЕНИЕ ПЕРЕД ЗАПИСЬЮ ===');
@@ -795,8 +795,8 @@ const server = http.createServer((req, res) => {
         if (!updated) {
           logger.warn('Карточка не найдена для обновления', { oldQuestion: oldQuestion.substring(0, 50) }, 'CardUpdate');
           res.writeHead(404, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ 
-            ok: false, 
+          res.end(JSON.stringify({
+            ok: false,
             error: 'card_not_found',
             debug: {
               oldQuestion: oldQuestion,
@@ -811,23 +811,23 @@ const server = http.createServer((req, res) => {
         // Синхронная запись для гарантии обновления до ответа
         try {
           const jsonString = JSON.stringify(userData, null, 2);
-          
+
           // Используем флаг 'w' для явной перезаписи файла
           fs.writeFileSync(targetPath, jsonString, { encoding: 'utf8', flag: 'w' });
           console.log('[SERVER /api/card/update] Файл записан, время:', new Date().toISOString());
-          
+
           // Явно закрываем файловый дескриптор для сброса кэша
           const fd = fs.openSync(targetPath, 'r');
           fs.closeSync(fd);
-          
+
           // Небольшая задержка перед проверкой
           const startWait = Date.now();
           while (Date.now() - startWait < 50) { /* ждём 50ms */ }
-          
+
           // Читаем файл после записи для проверки
           const verifyData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
           const foundNewCard = verifyData._cards?.some(c => c.question === newQuestion);
-          
+
           console.log('========================================');
           console.log('[SERVER /api/card/update] === ПРОВЕРКА ПОСЛЕ ЗАПИСИ ===');
           console.log('[SERVER /api/card/update] Файл записан:', targetPath);
@@ -836,11 +836,11 @@ const server = http.createServer((req, res) => {
           console.log('[SERVER /api/card/update] Время проверки:', new Date().toISOString());
           console.log('[SERVER /api/card/update] Время между записью и проверкой:', Date.now() - startWait, 'ms');
           console.log('========================================');
-          
+
           logger.info(`Карточка пользователя ${username} обновлена`, null, 'CardUpdate');
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ 
-            ok: true, 
+          res.end(JSON.stringify({
+            ok: true,
             message: 'card_updated',
             debug: {
               fileWritten: targetPath,
@@ -898,15 +898,15 @@ const server = http.createServer((req, res) => {
         const data = JSON.parse(body);
 
         console.log('[SERVER /save] Распарсены данные:', {
-            count: Array.isArray(data) ? data.length : 'not array',
-            hasNewItems: Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'))
+          count: Array.isArray(data) ? data.length : 'not array',
+          hasNewItems: Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'))
         });
         if (Array.isArray(data)) {
-            const copyItems = data.filter(c => c.question && c.question.includes('копия'));
-            if (copyItems.length > 0) {
-                console.log('[SERVER /save] Найдено дубликатов:', copyItems.length);
-                console.log('[SERVER /save] Первый дубликат:', copyItems[0]);
-            }
+          const copyItems = data.filter(c => c.question && c.question.includes('копия'));
+          if (copyItems.length > 0) {
+            console.log('[SERVER /save] Найдено дубликатов:', copyItems.length);
+            console.log('[SERVER /save] Первый дубликат:', copyItems[0]);
+          }
         }
 
         logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array', bodyLength: body.length }, 'Save');
@@ -914,9 +914,9 @@ const server = http.createServer((req, res) => {
         // 🔍 ЛОГ: проверяем есть ли дубликаты
         const hasDuplicates = Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'));
         console.log('[SERVER /save] Получено данных:', {
-            count: Array.isArray(data) ? data.length : 0,
-            hasDuplicates,
-            timestamp: Date.now()
+          count: Array.isArray(data) ? data.length : 0,
+          hasDuplicates,
+          timestamp: Date.now()
         });
 
         // 🔍 ПРОВЕРКА НА ПОВРЕЖДЕННЫЕ СИМВОЛЫ
@@ -950,12 +950,12 @@ const server = http.createServer((req, res) => {
         }
 
         console.log('[SERVER] ЗАПИСЬ файла:', {
-            operation: 'write',
-            filePath: targetPath,
-            username,
-            incomingCardsCount: Array.isArray(data) ? data.length : 0,
-            existingCardsCount: userData._cards?.length || 0,
-            timestamp: Date.now()
+          operation: 'write',
+          filePath: targetPath,
+          username,
+          incomingCardsCount: Array.isArray(data) ? data.length : 0,
+          existingCardsCount: userData._cards?.length || 0,
+          timestamp: Date.now()
         });
 
         userData._cards = data;
@@ -966,38 +966,38 @@ const server = http.createServer((req, res) => {
 
         // 🔍 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ КАЖДОЙ КАРТОЧКИ ПЕРЕД ЗАПИСЬЮ
         const fixCard = (card) => {
-            if (!card) return card;
-            const fixed = {};
-            for (const key in card) {
-                if (typeof card[key] === 'string') {
-                    fixed[key] = card[key]
-                        .replace(/\uFFFD/g, '?')
-                        .replace(/Д\?{1,10}кументация/g, 'Документация')
-                        .replace(/инфу о\? сервера/g, 'инфу от сервера')
-                        .replace(/получа\?м/g, 'получаем')
-                        .replace(/се\?{1,5}висы/g, 'сервисы');
-                } else {
-                    fixed[key] = card[key];
-                }
+          if (!card) return card;
+          const fixed = {};
+          for (const key in card) {
+            if (typeof card[key] === 'string') {
+              fixed[key] = card[key]
+                .replace(/\uFFFD/g, '?')
+                .replace(/Д\?{1,10}кументация/g, 'Документация')
+                .replace(/инфу о\? сервера/g, 'инфу от сервера')
+                .replace(/получа\?м/g, 'получаем')
+                .replace(/се\?{1,5}висы/g, 'сервисы');
+            } else {
+              fixed[key] = card[key];
             }
-            return fixed;
+          }
+          return fixed;
         };
-        
+
         if (Array.isArray(userData._cards)) {
-            userData._cards = userData._cards.map(fixCard);
-            logger.info(`Исправлено ${userData._cards.length} карточек перед записью`, null, 'Save');
+          userData._cards = userData._cards.map(fixCard);
+          logger.info(`Исправлено ${userData._cards.length} карточек перед записью`, null, 'Save');
         }
 
         // 🔍 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ПЕРЕД ЗАПИСЬЮ
         let jsonString = JSON.stringify(userData, null, 2);
         const originalJson = jsonString;
-        
+
         jsonString = jsonString.replace(/\uFFFD/g, '?');
         jsonString = jsonString.replace(/Д\?{1,10}кументация/g, 'Документация');
         jsonString = jsonString.replace(/инфу о\? сервера/g, 'инфу от сервера');
         jsonString = jsonString.replace(/получа\?м/g, 'получаем');
         jsonString = jsonString.replace(/се\?{1,5}висы/g, 'сервисы');
-        
+
         if (jsonString !== originalJson) {
           logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ЗАПИСЬЮ', null, 'Save');
         }
@@ -1006,7 +1006,7 @@ const server = http.createServer((req, res) => {
         const hasFFFDInOutput = jsonString.includes('\uFFFD');
         const hasBadRussianInOutput = /Д\?{1,5}кументация/.test(jsonString);
         const hasQuestionInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(jsonString);
-        
+
         if (hasFFFDInOutput || hasBadRussianInOutput || hasQuestionInRussian) {
           logger.error('⚠️ ПОСЛЕ СБОРКИ ДАННЫХ ОБНАРУЖЕНЫ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
             hasFFFDInOutput,
@@ -1022,8 +1022,8 @@ const server = http.createServer((req, res) => {
         }
 
         console.log('[SERVER /save] Записываем данные:', {
-            cardsCount: userData._cards?.length || 0,
-            filePath: targetPath
+          cardsCount: userData._cards?.length || 0,
+          filePath: targetPath
         });
 
         fs.writeFile(targetPath, jsonString, 'utf-8', (err) => {
@@ -1033,17 +1033,17 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
             return;
           }
-          
+
           // 🔍 ПРОВЕРКА ПОСЛЕ ЗАПИСИ
           try {
             const writtenContent = fs.readFileSync(targetPath, 'utf-8');
             const writtenData = JSON.parse(writtenContent);
             console.log('[SERVER] Файл записан:', {
-                operation: 'write_complete',
-                filePath: targetPath,
-                cardsInFile: writtenData._cards?.length || 0,
-                fileSize: writtenContent.length,
-                timestamp: Date.now()
+              operation: 'write_complete',
+              filePath: targetPath,
+              cardsInFile: writtenData._cards?.length || 0,
+              fileSize: writtenContent.length,
+              timestamp: Date.now()
             });
             const hasFFFDWritten = writtenContent.includes('\uFFFD');
             const hasBadRussianWritten = /Д\?{1,5}кументация/.test(writtenContent);
@@ -1073,42 +1073,42 @@ const server = http.createServer((req, res) => {
             const verifyContent = fs.readFileSync(targetPath, 'utf-8');
             const verifyData = JSON.parse(verifyContent);
             console.log('[SERVER /save] ПРОВЕРКА записанного файла:', {
-                filePath: targetPath,
-                cardsInFile: verifyData._cards?.length || 0,
-                fileSize: verifyContent.length
+              filePath: targetPath,
+              cardsInFile: verifyData._cards?.length || 0,
+              fileSize: verifyContent.length
             });
           }, 100);
 
           console.log('[SERVER /save] Успешно записано:', {
-              cardsCount: data.length,
-              filePath: targetPath
+            cardsCount: data.length,
+            filePath: targetPath
           });
 
           logger.info('=== УСПЕШНО СОХРАНЕНО ===', { count: data.length, username }, 'Save');
           res.writeHead(200, { 'Content-Type': 'application/json' });
           // 🔍 ДОБАВЛЯЕМ ЛОГИ В ОТВЕТ КЛИЕНТУ
           const logResponse = {
-              ok: true,
-              serverCardsCount: data.length,
-              timestamp: Date.now()
+            ok: true,
+            serverCardsCount: data.length,
+            timestamp: Date.now()
           };
           console.log('[SERVER /save] Отправляем ответ клиенту:', logResponse);
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {
         const errorResponse = {
-            ok: false,
-            error: e.message,
-            debug: {
-                bodyLength: body.length,
-                bodyPreview: body.substring(0, 1000),
-                timestamp: Date.now()
-            }
+          ok: false,
+          error: e.message,
+          debug: {
+            bodyLength: body.length,
+            bodyPreview: body.substring(0, 1000),
+            timestamp: Date.now()
+          }
         };
         console.error('[SERVER /save] ОШИБКА ПАРСИНГА JSON:', {
-            error: e.message,
-            bodyLength: body.length,
-            first500: body.substring(0, 500)
+          error: e.message,
+          bodyLength: body.length,
+          first500: body.substring(0, 500)
         });
         logger.error('Ошибка парсинга JSON', { error: e.message }, 'Save');
         res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -1289,8 +1289,8 @@ const server = http.createServer((req, res) => {
         // Читаем текущие метаданные
         let currentMeta = {};
         try {
-           if (fs.existsSync(metaPath)) currentMeta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
-        } catch (_) {}
+          if (fs.existsSync(metaPath)) currentMeta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+        } catch (_) { }
 
         // Обновляем поля
         const newMeta = { ...currentMeta, ...payload };
@@ -1393,7 +1393,7 @@ const server = http.createServer((req, res) => {
     // }
 
     const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
-    
+
     if (fs.existsSync(userFilePath)) {
       fs.readFile(userFilePath, 'utf-8', (err, content) => {
         if (err) {
@@ -1425,7 +1425,7 @@ const server = http.createServer((req, res) => {
     if (!fs.existsSync(p)) return [];
     try { return JSON.parse(fs.readFileSync(p, 'utf-8')) || []; } catch { return []; }
   };
-  
+
   const saveUserTrash = (username, items) => {
     const p = path.join(__dirname, 'data', `user_${username}_trash.json`);
     const dir = path.dirname(p);
@@ -1457,18 +1457,18 @@ const server = http.createServer((req, res) => {
         const data = JSON.parse(body);
         const items = data.items || [];
         logger.info('Получено элементов', { count: items.length }, 'Trash');
-        
+
         const trash = getUserTrash(username);
         logger.info('Текущая корзина', { count: trash.length }, 'Trash');
-        
+
         items.forEach(item => {
-            trash.push({
-                item,
-                deleted_at: new Date().toISOString(),
-                deleted_by: username
-            });
+          trash.push({
+            item,
+            deleted_at: new Date().toISOString(),
+            deleted_by: username
+          });
         });
-        
+
         saveUserTrash(username, trash);
         logger.info('Сохранено в корзину', { username, count: trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1573,7 +1573,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ��ормализуем URL
+  // Формализуем URL
   // 🔒 СНАЧАЛА ПРОВЕРЯЕМ НА PATH TRAVERSAL (до декодирования!)
   if (req.url.includes('..') || req.url.includes('\\') || req.url.includes('%2e%2e') || req.url.includes('%252e')) {
     logger.warn('Попытка Path Traversal', { url: req.url }, 'Security');
@@ -1581,7 +1581,7 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({ ok: false, error: 'Forbidden: Invalid path' }));
     return;
   }
-  
+
   // Декодируем URL для поддержки кириллических имен файлов
   let requestUrl;
   try {
@@ -1611,12 +1611,12 @@ const server = http.createServer((req, res) => {
 
   // Разрешаем только безопасные пути
   const allowedPaths = ['/', '/index.html', '/logs.html', '/style.css', '/custom-styles.css', '/manifest.json'];
-  const isStaticFile = allowedPaths.some(p => requestUrl === p) || 
-                       requestUrl.startsWith('/icons/') ||
-                       requestUrl.startsWith('/data/') ||
-                       requestUrl.startsWith('/srs/') ||
-                       requestUrl.startsWith('/ui-variants/');
-  
+  const isStaticFile = allowedPaths.some(p => requestUrl === p) ||
+    requestUrl.startsWith('/icons/') ||
+    requestUrl.startsWith('/data/') ||
+    requestUrl.startsWith('/srs/') ||
+    requestUrl.startsWith('/ui-variants/');
+
   if (!isStaticFile && !requestUrl.startsWith('/api/') && !requestUrl.startsWith('/save') && !requestUrl.startsWith('/load') && !requestUrl.startsWith('/metadata') && !requestUrl.startsWith('/trash') && !requestUrl.startsWith('/restore') && !requestUrl.startsWith('/duplicate')) {
     logger.warn('Доступ к неизвестному пути', { url: req.url }, 'Security');
   }
