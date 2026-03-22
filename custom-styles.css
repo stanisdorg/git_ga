@@ -2299,25 +2299,23 @@ body.learning-mode #bottom-nav {
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
-    align-items: flex-start; /* Прижато к верху */
+    align-items: center;
     justify-content: center;
     z-index: 10000;
     animation: fadeIn 0.2s ease-out;
-    padding-top: 10px; /* Небольшой отступ сверху */
 }
 
 .edit-modal {
     background: var(--color-bg-secondary, #1e1e1e);
     border-radius: 12px;
-    padding: 16px;
+    padding: 24px;
     width: 90%;
-    max-width: 360px;
+    max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     animation: slideIn 0.3s ease-out;
     z-index: 10001;
-    margin-bottom: 10vh; /* Место для клавиатуры снизу */
 }
 
 @keyframes fadeIn {
@@ -2339,7 +2337,13 @@ body.learning-mode #bottom-nav {
 .edit-modal-content {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+}
+
+/* Toolbar в модальном окне */
+.edit-modal-content .format-toolbar {
+    margin-bottom: 0;
+    order: -1;  /* Toolbar всегда первый */
 }
 
 .edit-field-group {
@@ -2483,15 +2487,16 @@ body.learning-mode #bottom-nav {
         width: 18px;
         height: 18px;
     }
+    /* Модальное окно на мобильном - прижато к верху с местом для клавиатуры */
     .edit-modal-overlay {
-        padding-top: 5px;
         align-items: flex-start;
+        padding-top: 5px;
     }
     .edit-modal {
         width: 95%;
         max-width: 100%;
         padding: 12px;
-        margin-bottom: 5vh;
+        margin-bottom: 5vh; /* Место для клавиатуры */
     }
     .edit-field-editor {
         min-height: 80px;
