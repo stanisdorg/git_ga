@@ -242,6 +242,9 @@
 
     <!-- Скрипт управления Splash Screen -->
     <script>
+        // Устанавливаем версию приложения глобально
+        window.currentAppVersion = '6.04';
+        
         // Splash Screen - управление загрузкой приложения
         (function() {
             const splashScreen = document.getElementById('splash-screen');
@@ -381,9 +384,6 @@
             // DOM готов, вызываем initUI
             initUI();
         }
-        
-        // Set app version globally
-        window.currentAppVersion = '6.04';
     </script>
 </body>
 </html>
