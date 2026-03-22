@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>ByteCards — Интервальное повторение</title>
     <link rel="icon" type="image/png" href="icons/favicon.png">
-    <link rel="stylesheet" href="style.css?v=6.04">
-    <link rel="stylesheet" href="custom-styles.css?v=6.04">
+    <link rel="stylesheet" href="style.css?v=5.11">
+    <link rel="stylesheet" href="custom-styles.css?v=5.11">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e1e1e">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -243,7 +243,7 @@
     <!-- Скрипт управления Splash Screen -->
     <script>
         // Устанавливаем версию приложения глобально
-        window.currentAppVersion = '6.04';
+        window.currentAppVersion = '5.11';
         
         // Splash Screen - управление загрузкой приложения
         (function() {
@@ -352,6 +352,9 @@
             }
         })();
     </script>
+
+    <!-- Debug: логирование стилей кнопок -->
+    <script src="debug-buttons.js"></script>
 
     <script type="module">
         import { initUI } from './ui-manager.js?v=4.55-beta';

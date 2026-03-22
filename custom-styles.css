@@ -1809,10 +1809,19 @@ body.learning-mode #bottom-nav {
         padding-left: 8px !important;
         padding-right: 8px !important;
         padding: 4px 8px !important;
+        gap: 4px !important;
+        justify-content: flex-start !important; /* Фикс: убираем space-between */
+        display: flex !important;
+        flex-wrap: nowrap !important; /* Запрещаем перенос */
     }
     .top-actions-bar .nav-icon-btn {
         padding: 0px 8px !important;
         min-width: auto !important;
+        flex-shrink: 0 !important; /* Не сжимать кнопки */
+    }
+    .top-actions-bar .level-container-right {
+        margin-left: auto !important; /* Прижимаем вправо */
+        flex-shrink: 0 !important; /* Не сжимать */
     }
     .level-container-right {
         padding-right: 8px !important;
@@ -1983,23 +1992,56 @@ body.learning-mode #bottom-nav {
         font-size: 7px !important;
         left: 200px !important;
     }
-    /* Блок прогресса - компактный вид */
+    /* Блок прогресса - компактный вид - АГРЕССИВНОЕ ПЕРЕОПРЕДЕЛЕНИЕ */
     .stc-content {
         gap: 4px !important;
         padding-right: 4px !important;
+        justify-content: flex-start !important;
+        flex-wrap: nowrap !important;
+    }
+    .stc-content > * {
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
     }
     .stc-block-title {
-        font-size: 12px !important;
-        max-width: none !important;
+        font-size: 10px !important; /* Уменьшил с 11px */
+        white-space: normal !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
+        max-width: 55% !important;
+        line-height: 1 !important; /* Выравнивание */
     }
     .stc-block-title .index-value {
-        font-size: 14px !important;
+        font-size: 11px !important; /* Уменьшил с 12px */
+        line-height: 1 !important;
     }
     .stc-forecast-text {
-        font-size: 9px !important;
+        font-size: 8px !important; /* Уменьшил с 9px - самый мелкий шрифт */
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important; /* Центрирование по вертикали */
+        gap: 2px !important;
+        line-height: 1 !important; /* Выравнивание */
     }
     .stc-forecast-text .date {
-        font-size: 10px !important;
+        font-size: 9px !important; /* Уменьшил с 10px */
+        font-weight: 600 !important;
+        line-height: 1 !important;
+    }
+    .stc-forecast-text .st-info-btn {
+        flex-shrink: 0 !important;
+        min-width: 18px !important; /* Уменьшил с 20px */
+        min-height: 18px !important;
+        max-width: 18px !important;
+        max-height: 18px !important;
+        font-size: 11px !important; /* Уменьшил с 12px */
+        margin-left: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
     }
 }
 
@@ -2098,7 +2140,7 @@ body.learning-mode #bottom-nav {
     /* Top Actions Bar - кнопки должны быть видны */
     .top-actions-bar {
         padding: 4px 4px !important;
-        gap: 2px !important;
+        gap: 4px !important;
     }
     .top-actions-bar .nav-icon-btn {
         padding: 0px 4px !important;
