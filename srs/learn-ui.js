@@ -383,13 +383,10 @@ function openEditModal(card) {
     const modalHTML = `
         <div class="edit-modal-overlay" id="edit-modal-overlay">
             <div class="edit-modal">
-                <div class="edit-modal-header">
-                    <h3 class="edit-modal-title">Редактирование карточки</h3>
-                </div>
                 <div class="edit-modal-content">
                     <!-- ОДНА ОБЩАЯ ПАНЕЛЬ ФОРМАТИРОВАНИЯ -->
                     <div class="format-toolbar" id="main-format-toolbar"></div>
-                    
+
                     <div class="edit-field-group">
                         <label class="edit-field-label">Вопрос</label>
                         <div

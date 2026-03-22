@@ -2299,23 +2299,25 @@ body.learning-mode #bottom-nav {
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Прижато к верху */
     justify-content: center;
-    z-index: 10000; /* Выше чем #learn-container (2000) */
+    z-index: 10000;
     animation: fadeIn 0.2s ease-out;
+    padding-top: 10px; /* Небольшой отступ сверху */
 }
 
 .edit-modal {
     background: var(--color-bg-secondary, #1e1e1e);
     border-radius: 12px;
-    padding: 24px;
+    padding: 16px;
     width: 90%;
-    max-width: 600px;
+    max-width: 360px;
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     animation: slideIn 0.3s ease-out;
-    z-index: 10001; /* Выше чем overlay */
+    z-index: 10001;
+    margin-bottom: 10vh; /* Место для клавиатуры снизу */
 }
 
 @keyframes fadeIn {
@@ -2334,29 +2336,10 @@ body.learning-mode #bottom-nav {
     }
 }
 
-.edit-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.edit-modal-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--color-text-primary, #fff);
-}
-
 .edit-modal-content {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-}
-
-/* Toolbar в модальном окне */
-.edit-modal-content .format-toolbar {
-    margin-bottom: 0;
-    order: -1;  /* Toolbar всегда первый */
+    gap: 12px;
 }
 
 .edit-field-group {
@@ -2500,9 +2483,15 @@ body.learning-mode #bottom-nav {
         width: 18px;
         height: 18px;
     }
+    .edit-modal-overlay {
+        padding-top: 5px;
+        align-items: flex-start;
+    }
     .edit-modal {
         width: 95%;
-        padding: 16px;
+        max-width: 100%;
+        padding: 12px;
+        margin-bottom: 5vh;
     }
     .edit-field-editor {
         min-height: 80px;
