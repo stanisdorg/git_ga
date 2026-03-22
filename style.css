@@ -19,7 +19,7 @@ body {
 
 /* Для страницы статистики тоже добавляем отступ */
 body:has(#stats-container) {
-    padding-top: 60px !important;
+    padding-top: 50px !important;
 }
 
 .container {
@@ -50,7 +50,6 @@ body:has(#stats-container) {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
-    background: var(--color-bg) !important;
 }
 
 /* Контейнер скроллится весь вместе с поиском и категориями */
