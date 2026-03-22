@@ -17,6 +17,11 @@ body {
     height: 100vh;
 }
 
+/* Для страницы статистики тоже добавляем отступ */
+body:has(#stats-container) {
+    padding-top: 60px !important;
+}
+
 .container {
     max-width: none;
     margin: 0;
@@ -40,6 +45,14 @@ body {
     background: var(--color-bg) !important;
 }
 
+/* Фиксируем шапку на странице статистики */
+.st-top-right {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    background: var(--color-bg) !important;
+}
+
 /* Контейнер скроллится весь вместе с поиском и категориями */
 .container {
     max-width: none;
@@ -47,6 +60,12 @@ body {
     padding: 0 0 80px 0; /* Отступ для навигации снизу */
     overflow-y: visible; /* Скролл на body */
     max-height: none; /* Убираем ограничение */
+}
+
+/* Для страницы статистики - скролл внутри st-main */
+.st-main {
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
 }
 
 /* Сообщение об отсутствии результатов */
