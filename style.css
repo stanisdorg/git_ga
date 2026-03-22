@@ -27,15 +27,21 @@ body {
     position: relative;
 }
 
-/* Контейнер результатов */
-.results-container {
-    width: 100%;
+/* Фиксируем шапку на главной странице */
+.top-actions-bar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: var(--color-bg) !important;
+}
+
+/* Контейнер должен скроллиться весь вместе с поиском и категориями */
+.container {
+    max-width: none;
     margin: 0;
-    padding-bottom: 80px !important; /* Место для навигации */
-    margin-bottom: 0 !important;
-    max-height: calc(100vh - 150px); /* Чтобы скроллилось */
-    overflow-y: auto; /* Скролл одним пальцем */
-    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+    padding: 50px 0 0 0; /* Отступ для фиксированной шапки сверху */
+    overflow-y: auto; /* Скролл всего контейнера */
+    max-height: 100vh; /* На всю высоту экрана */
 }
 
 /* Сообщение об отсутствии результатов */
@@ -49,7 +55,7 @@ body {
 /* Адаптивная верстка */
 @media (max-width: 768px) {
     .container {
-        padding: 0 !important;
+        padding: 50px 0 0 0 !important; /* Отступ для фиксированной шапки */
     }
 }
 
