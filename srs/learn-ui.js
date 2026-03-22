@@ -2089,7 +2089,7 @@ function showStats(stats, results, total) {
             // Импортируем и вызываем initStatsPage
             import('./stats-ui.js?v=5.28').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
-                initStatsPage(window.currentAppVersion || '5.11');
+                initStatsPage(window.currentAppVersion || '6.05');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
                 skeletonPlaceholder.remove();
