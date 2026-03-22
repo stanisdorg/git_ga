@@ -417,6 +417,31 @@ export function initTabsNavigation(appVersion) {
         // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
         setTimeout(() => {
             refreshCurrentContext();
+            
+            // Логирование размеров для отладки
+            const topBar = document.querySelector('.top-actions-bar');
+            const container = document.querySelector('.container');
+            const sidebar = document.querySelector('.sidebar');
+            if (topBar && container && sidebar) {
+                const topRect = topBar.getBoundingClientRect();
+                const contRect = container.getBoundingClientRect();
+                const sideRect = sidebar.getBoundingClientRect();
+                console.log('[LAYOUT DEBUG]:', {
+                    'Sidebar collapsed': sidebar.classList.contains('collapsed'),
+                    'Sidebar width': sideRect.width,
+                    'Sidebar right': sideRect.right,
+                    'Sidebar left': sideRect.left,
+                    'Top bar left': topRect.left,
+                    'Top bar right': topRect.right,
+                    'Top bar width': topRect.width,
+                    'Container left': contRect.left,
+                    'Container right': contRect.right,
+                    'Container width': contRect.width,
+                    'Container margin-left': getComputedStyle(container).marginLeft,
+                    'Container margin-right': getComputedStyle(container).marginRight,
+                    'Match (top vs container)': topRect.width === contRect.width
+                });
+            }
         }, 100);
 
         // Слушаем обновление избранного из облака
@@ -659,7 +684,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.26');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.28');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -678,7 +703,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.26');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.28');
                     initStatsPage(appVersion);
                 }
 
