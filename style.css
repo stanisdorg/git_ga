@@ -31,8 +31,11 @@ body {
 .results-container {
     width: 100%;
     margin: 0;
-    padding-bottom: 0 !important;
+    padding-bottom: 80px !important; /* Место для навигации */
     margin-bottom: 0 !important;
+    max-height: calc(100vh - 150px); /* Чтобы скроллилось */
+    overflow-y: auto; /* Скролл одним пальцем */
+    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
 }
 
 /* Сообщение об отсутствии результатов */
