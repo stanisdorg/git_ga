@@ -294,7 +294,7 @@ async function autoLoadUserData() {
 
     // Загружаем данные через srs/storage.js
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=2.01');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.08');
         await loadFromServer();
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
@@ -653,7 +653,7 @@ export function initTabsNavigation(appVersion) {
 
                 let module;
                 try {
-                    module = await import('../srs/learn-ui.js?v=2.42');
+                    module = await import('../srs/learn-ui.js?v=6.08');
                 } catch (e1) {
                     console.warn('[Learn] Import v2.42 failed, trying plain import', e1);
                     try {
@@ -687,7 +687,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=5.28');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.08');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -706,7 +706,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=5.28');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.08');
                     initStatsPage(appVersion);
                 }
 
@@ -1069,7 +1069,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=5.05').then(() => {
+                    import('../srs/stats-ui.js?v=6.08').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {

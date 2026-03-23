@@ -1,0 +1,29 @@
+[33mcommit eeb87fe356a35da8d8aec0b009132fdf8851738b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: stanisdorg <stasdoroganov@gmail.com>
+Date:   Mon Mar 23 23:01:20 2026 +0300
+
+    елиз v6.08: бновление версии на главной и странице статистики
+
+[33mcommit 08336b46171a863b4e443cea223195dad1c9f6f5[m
+Author: stanisdorg <stasdoroganov@gmail.com>
+Date:   Mon Mar 23 22:22:18 2026 +0300
+
+    Fix statistics layout: increase bottom padding and enable scroll. Update version to 6.07
+
+[33mcommit 9ab3d4c57e81f73ff3d2eebb348b53d9c7795151[m
+Author: stanisdorg <stasdoroganov@gmail.com>
+Date:   Mon Mar 23 21:52:09 2026 +0300
+
+    v6.06: Убран текст 'XP:N' из блоков уровня, прижат прогресс влево + отключены DEBUG-логи
+
+[33mcommit 2483be3f903e622e4808e23323d48cc38bc23902[m
+Author: stanisdorg <stasdoroganov@gmail.com>
+Date:   Sun Mar 22 23:59:02 2026 +0300
+
+    v6.05: Исправление версии (была ошибочно установлена 5.11)
+
+[33mcommit 63f555a31c3ca1402b45da0027992077aaf11ceb[m
+Author: stanisdorg <stasdoroganov@gmail.com>
+Date:   Sun Mar 22 23:57:18 2026 +0300
+
+    v5.11: Обновление версии + фикс отображения блока прогресса на мобильных

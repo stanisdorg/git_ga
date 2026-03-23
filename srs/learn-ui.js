@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=2.01';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=2.01';
-import { getProgressMap } from './stats-utils.js?v=2.00';
-import { checkAchievements } from './stats-utils.js?v=2.00';
-import { Scheduler } from './scheduler.js?v=2.00';
-import { getTodaysSession } from './category-scheduler.js?v=2.00';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=2.00';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=1.00';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=1.00';
+import { LearningSession } from './session.js?v=6.08';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.08';
+import { getProgressMap } from './stats-utils.js?v=6.08';
+import { checkAchievements } from './stats-utils.js?v=6.08';
+import { Scheduler } from './scheduler.js?v=6.08';
+import { getTodaysSession } from './category-scheduler.js?v=6.08';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.08';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.08';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.08';
 
 // DOM Elements
 let container = null;
