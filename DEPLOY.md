@@ -4,7 +4,7 @@
 
 1. **Node.js** (версия 18+)
 2. **Cloudflare Tunnel** (cloudflared.exe)
-3. **Домен** на Cloudflare (crispcode.ru)
+3. **Домен** на Cloudflare (bytecards.ru)
 4. **Сервер** на Reg.ru (Windows/Linux)
 
 ---
@@ -26,7 +26,7 @@
 После запуска через DUAL-TUNNEL сервис будет доступен по трем адресам:
 1. **Локально**: http://localhost:8085
 2. **ngrok**: https://reportorial-thermotactic-natalya.ngrok-free.dev (для текущих пользователей)
-3. **Cloudflare**: https://crispcode.ru (основной домен)
+3. **Cloudflare**: https://bytecards.ru (основной домен)
 
 ### 3. Проверка работы
 
@@ -74,7 +74,7 @@ tunnel: e315380c-7f82-49b0-bb14-4ee1f53a16a2
 credentials-file: C:\\Users\\web\\.cloudflared\\e315380c-7f82-49b0-bb14-4ee1f53a16a2.json
 
 ingress:
-  - hostname: crispcode.ru
+  - hostname: bytecards.ru
     service: http://localhost:8085
   - service: http_status:404
 ```

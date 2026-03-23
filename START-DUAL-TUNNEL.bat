@@ -30,13 +30,14 @@ echo ngrok started (URL: https://reportorial-thermotactic-natalya.ngrok-free.dev
 
 echo.
 echo [4/4] Starting Cloudflare tunnel...
-set CLOUDFLARED_PATH=%~dp0cloudflared.exe
+cd /d "%~dp0"
+set CLOUDFLARED_PATH=cloudflared.exe
 if exist "%CLOUDFLARED_PATH%" (
     start "Cloudflare Tunnel" "%CLOUDFLARED_PATH%" tunnel --config cloudflared-config.yml run crispcode-qa
-    echo Cloudflare started (URL: https://crispcode.ru)
+    echo Cloudflare started (URL: https://bytecards.ru)
 ) else (
-    echo [ERROR] cloudflared.exe not found in current directory!
-    echo Please make sure cloudflared.exe is placed in %~dp0
+    echo [ERROR] cloudflared.exe not found in %cd%
+    echo Please make sure cloudflared.exe is placed in this directory.
 )
 
 echo.
@@ -45,7 +46,7 @@ echo  EVERYTHING STARTED!
 echo ========================================
 echo.
 echo ngrok: https://reportorial-thermotactic-natalya.ngrok-free.dev
-echo Cloudflare: https://crispcode.ru
+echo Cloudflare: https://bytecards.ru
 echo.
 echo Check the separate windows for status!
 echo.

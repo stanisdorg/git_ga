@@ -28,7 +28,7 @@ echo ========================================
 echo.
 echo Local URL: http://localhost:8085
 echo ngrok URL: https://reportorial-thermotactic-natalya.ngrok-free.dev
-echo Cloudflare URL: https://crispcode.ru
+echo Cloudflare URL: https://bytecards.ru
 echo.
 echo This window will close in 5 seconds...
 timeout /t 5 /nobreak >nul
