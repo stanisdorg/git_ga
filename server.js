@@ -100,6 +100,11 @@ const server = http.createServer((req, res) => {
   const ts = new Date().toISOString();
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
 
+  // ВАЖНО: Всегда устанавливаем UTF-8 для JSON ответов
+  if (req.url.startsWith('/api/') || req.url.startsWith('/load') || req.url.startsWith('/save')) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  }
+
   // Детальное логирование всех запросов
   logger.info('HTTP запрос', {
     method: req.method,
@@ -138,6 +143,16 @@ const server = http.createServer((req, res) => {
     res.end();
     return;
   }
+
+  // 🛡️ ЗАЩИТА ОТ ПЕРЕХВАТА API СТАТИКОЙ
+  // Если запрос начинается с /api/, /load, /save и т.д., мы НЕ должны отдавать index.html
+  const isApiRequest = req.url.startsWith('/api/') || 
+                       req.url.startsWith('/load') || 
+                       req.url.startsWith('/save') || 
+                       req.url.startsWith('/metadata') || 
+                       req.url.startsWith('/trash') || 
+                       req.url.startsWith('/restore') || 
+                       req.url.startsWith('/duplicate');
 
   // 🔒 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ ПРАВ
   // isEditor: true для проверки прав editor/admin, false для проверки только admin
@@ -1543,7 +1558,15 @@ const server = http.createServer((req, res) => {
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        // Файл не найден
+        // 🛡️ Если это API запрос, который не был обработан выше, НЕ отдаем index.html
+        if (isApiRequest) {
+          logger.error('API эндпоинт не найден', { url: req.url }, 'HTTP');
+          res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: false, error: 'API endpoint not found' }));
+          return;
+        }
+
+        // Файл не найден, отдаем index.html для поддержки SPA роутинга
         fs.readFile('./index.html', (err, content) => {
           if (err) {
             res.writeHead(500);
