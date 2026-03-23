@@ -129,8 +129,8 @@
             style.setProperty('line-height', '1', 'important');
             console.log('[FIX] stc-forecast-text исправлен');
         }
-        
-        const stcBlockTitle = document.querySelector('.stc-block-title');
+
+        // Обновляем stc-block-title (второе исправление)
         if (stcBlockTitle) {
             const style = stcBlockTitle.style;
             style.setProperty('font-size', '10px', 'important');
@@ -138,7 +138,7 @@
             style.setProperty('flex-shrink', '1', 'important');
             style.setProperty('min-width', '0', 'important');
             style.setProperty('line-height', '1', 'important');
-            console.log('[FIX] stc-block-title исправлен');
+            console.log('[FIX] stc-block-title исправлен (обновление)');
         }
         
         const stcInfoBtn = document.querySelector('.stc-forecast-text .st-info-btn');

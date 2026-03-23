@@ -420,6 +420,7 @@ export function initTabsNavigation(appVersion) {
             refreshCurrentContext();
 
             // Логирование размеров для отладки
+            /* DEBUG
             const topBar = document.querySelector('.top-actions-bar');
             const container = document.querySelector('.container');
             const sidebar = document.querySelector('.sidebar');
@@ -443,6 +444,7 @@ export function initTabsNavigation(appVersion) {
                     'Match (top vs container)': topRect.width === contRect.width
                 });
             }
+            */
         }, 100);
 
         // Слушаем обновление избранного из облака
@@ -1112,14 +1114,7 @@ export function initTabsNavigation(appVersion) {
             txt.className = 'level-inline-text';
             const currentInLevel = Math.max(0, Math.round((data.xp - data.prevThreshold)));
             const totalForLevel = data.nextThreshold === Infinity ? currentInLevel : Math.round(data.nextThreshold - data.prevThreshold);
-            const xpLeft = document.createElement('span');
-            xpLeft.className = 'level-inline-xp';
-            xpLeft.textContent = `XP:${data.xp}`;
-            const xpRight = document.createElement('span');
-            xpRight.className = 'level-inline-progress';
-            xpRight.textContent = `${currentInLevel}/${totalForLevel}`;
-            txt.appendChild(xpLeft);
-            txt.appendChild(xpRight);
+            txt.textContent = `${currentInLevel}/${totalForLevel}`;
             bar.appendChild(fill); bar.appendChild(txt);
             box.appendChild(label); box.appendChild(bar);
             levelContainer.appendChild(box);
@@ -1148,7 +1143,7 @@ export function initTabsNavigation(appVersion) {
                     if (fl) fl.style.width = `${p}%`;
                     const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
                     const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
-                    if (tx) tx.textContent = `XP:${d.xp}  ${cur}/${tot}`;
+                    if (tx) tx.textContent = `${cur}/${tot}`;
 
                     // Обновляем имя пользователя
                     const usernameSpan = levelContainer.querySelector('.username-display');

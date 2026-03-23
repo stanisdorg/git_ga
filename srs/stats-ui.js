@@ -14,7 +14,9 @@ function getCurrentCards() {
       if (userCardsRaw) {
         const userCards = JSON.parse(userCardsRaw);
         if (Array.isArray(userCards) && userCards.length > 0) {
+          /* DEBUG
           console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
+          */
 
           // 🔧 Исправляем кодировку на лету
           userCards.forEach(card => {
@@ -36,11 +38,15 @@ function getCurrentCards() {
 
   // Fallback: читаем из all-data.js через window
   if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
+    /* DEBUG
     console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
+    */
     return window.uniqueQaData;
   }
 
+  /* DEBUG
   console.log('[getCurrentCards] Нет данных');
+  */
   return [];
 }
 
@@ -2253,6 +2259,7 @@ const STATS_STYLES = `
 `;
 
 export function initStatsPage(appVersion) {
+  /* DEBUG
   console.log('========================================');
   console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
   console.log('[STATS INIT] Timestamp:', new Date().toISOString());
@@ -2261,6 +2268,7 @@ export function initStatsPage(appVersion) {
   console.log('[STATS INIT] document.readyState:', document.readyState);
   console.log('[STATS INIT] document.body exists:', !!document.body);
   console.log('[STATS INIT] .app-wrapper exists:', !!document.querySelector('.app-wrapper'));
+  */
 
   if (appVersion) window.currentAppVersion = appVersion;
 
@@ -2294,7 +2302,9 @@ export function initStatsPage(appVersion) {
   // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
   if (!statsContainerEl) {
+    /* DEBUG
     console.log('[STATS INIT] Creating stats-container...');
+    */
     statsContainerEl = document.createElement('div');
     statsContainerEl.id = 'stats-container';
 
@@ -2306,13 +2316,17 @@ export function initStatsPage(appVersion) {
     styleEl.textContent = SKELETON_STYLES + STATS_STYLES;
     document.head.appendChild(styleEl);
 
+    /* DEBUG
     console.log('[STATS INIT] Style element created:', styleEl);
     console.log('[STATS INIT] Style length:', (SKELETON_STYLES + STATS_STYLES).length);
     console.log('[STATS INIT] Contains .st-block-2 .modes-grid:', STATS_STYLES.includes('.st-block-2 .modes-grid'));
 
     console.log('[STATS INIT] stats-container created');
+    */
   } else {
+    /* DEBUG
     console.log('[STATS INIT] stats-container already exists');
+    */
   }
 
   // Показываем скелетон-лоадер
@@ -2320,27 +2334,37 @@ export function initStatsPage(appVersion) {
 
   // Показываем статистику
   statsContainerEl.style.display = 'block';
+  /* DEBUG
   console.log('[STATS INIT] stats-container display set to block');
+  */
 
   // Инициализируем глобальную переменную
   statsContainer = statsContainerEl;
 
   // Проверяем что контейнер действительно виден
   const computedStyle = window.getComputedStyle(statsContainerEl);
+  /* DEBUG
   console.log('[STATS INIT] stats-container computed display:', computedStyle.display);
   console.log('[STATS INIT] stats-container computed zIndex:', computedStyle.zIndex);
 
   console.log('[STATS INIT] Calling renderStats()...');
+  */
   renderStats();
 
   // Добавляем задержку перед скрытием скелетона (1000ms для мобильных)
+  /* DEBUG
   console.log('[STATS INIT] Setting skeleton display time (1000ms)...');
+  */
   setTimeout(() => {
+    /* DEBUG
     console.log('[STATS INIT] Timeout elapsed, hiding skeleton...');
+    */
     hideSkeletonLoader();
   }, 1000);
 
+  /* DEBUG
   console.log('[STATS INIT] ========== END initStatsPage ==========');
+  */
 
   if (!window._statsXpListener) {
     window._statsXpListener = () => {
@@ -2356,32 +2380,42 @@ export function initStatsPage(appVersion) {
 }
 
 export function hideStatsPage() {
+  /* DEBUG
   console.log('[hideStatsPage] Called!');
   console.log('[hideStatsPage] __navigatingToHome:', window.__navigatingToHome);
+  */
 
   if (statsContainer) {
     statsContainer.remove();
     statsContainer = null; // Очищаем ссылку на удаленный элемент
+    /* DEBUG
     console.log('[hideStatsPage] stats-container removed and reference cleared');
+    */
   }
 
   if (!mainContainer) mainContainer = document.querySelector('.container');
   if (mainContainer) {
     mainContainer.style.display = 'block'; // Явно показываем главный контейнер
+    /* DEBUG
     console.log('[hideStatsPage] mainContainer display set to block');
+    */
   }
 
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
     sidebar.style.display = ''; // Возвращаем стандартное отображение
+    /* DEBUG
     console.log('[hideStatsPage] sidebar display reset');
+    */
   }
 
   // Восстанавливаем search-container и top-actions-bar
   const searchContainer = document.querySelector('.search-container');
   if (searchContainer) {
     searchContainer.style.display = '';
+    /* DEBUG
     console.log('[hideStatsPage] search-container display reset');
+    */
   } else {
     console.warn('[hideStatsPage] search-container NOT FOUND!');
   }
@@ -2389,7 +2423,9 @@ export function hideStatsPage() {
   const topActionsBar = document.querySelector('.top-actions-bar');
   if (topActionsBar) {
     topActionsBar.style.display = 'flex';
+    /* DEBUG
     console.log('[hideStatsPage] top-actions-bar display reset');
+    */
   } else {
     console.warn('[hideStatsPage] top-actions-bar NOT FOUND!');
   }
@@ -2400,7 +2436,9 @@ export function hideStatsPage() {
   // }
   const evt = new Event('statsClosed'); window.dispatchEvent(evt);
 
+  /* DEBUG
   console.log('[hideStatsPage] Done!');
+  */
 }
 
 // Helper function to render achievement card
@@ -2424,15 +2462,21 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
 
 // SKELETON LOADER FUNCTIONS
 function showSkeletonLoader() {
+  /* DEBUG
   console.log('[Skeleton] showSkeletonLoader called');
+  */
 
   // Показываем HTML skeleton из index.html
   const skeleton = document.getElementById('stats-skeleton');
+  /* DEBUG
   console.log('[Skeleton] skeleton element:', skeleton);
+  */
   if (skeleton) {
     skeleton.style.display = 'block';
+    /* DEBUG
     console.log('[Skeleton] HTML skeleton shown, display:', skeleton.style.display);
     console.log('[Skeleton] skeleton zIndex:', skeleton.style.zIndex);
+    */
   } else {
     console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
     // Fallback: создаём JS skeleton если HTML не найден
@@ -2486,31 +2530,45 @@ function showSkeletonLoader() {
             </div>
         `;
     document.body.appendChild(jsSkeleton);
+    /* DEBUG
     console.log('[Skeleton] JS skeleton created and appended');
+    */
   }
 }
 
 function hideSkeletonLoader() {
+  /* DEBUG
   console.log('[Skeleton] hideSkeletonLoader called');
+  */
 
   // Скрываем скелетон через display:none
   const skeleton = document.getElementById('stats-skeleton');
   if (skeleton) {
     skeleton.style.display = 'none';
+    /* DEBUG
     console.log('[Skeleton] Skeleton hidden, display:', skeleton.style.display);
+    */
   }
 
   // Проверяем видимость stats-container
   const statsContainer = document.getElementById('stats-container');
+  /* DEBUG
   console.log('[Skeleton] stats-container exists:', !!statsContainer);
+  */
   if (statsContainer) {
+    /* DEBUG
     console.log('[Skeleton] stats-container display:', statsContainer.style.display);
     console.log('[Skeleton] stats-container offsetHeight:', statsContainer.offsetHeight);
+    */
     statsContainer.style.display = 'block';
+    /* DEBUG
     console.log('[Skeleton] stats-container forced to display:block');
+    */
   }
 
+  /* DEBUG
   console.log('[Skeleton] hideSkeletonLoader completed');
+  */
 }
 
 function renderStats() {
@@ -2528,13 +2586,17 @@ function renderStats() {
   let username = '';
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
+    /* DEBUG
     console.log('[USERNAME] sessionUserRaw:', sessionUserRaw);
+    */
     if (sessionUserRaw) {
       const u = JSON.parse(sessionUserRaw);
+      /* DEBUG
       console.log('[USERNAME] parsed user:', u);
+      */
       if (u && u.username) username = u.username;
     }
-  } catch (e) { console.log('[USERNAME] error:', e); }
+  } catch (e) { /* DEBUG */ console.log('[USERNAME] error:', e); /* */ }
   const usernameDisplay = username ? username : '';
   const usernameStyle = username ? 'position:absolute;top:0;left:210px;font-size:10px;color:var(--st-muted);text-align:center;font-weight:500;margin:0;padding:0 8px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:10;pointer-events:none;' : 'display:none!important;';
   let planMins = 0;
@@ -2574,7 +2636,9 @@ function renderStats() {
   // MSK timezone fix (UTC+3)
   const mskOffset = 3 * 60 * 60 * 1000;
   const todayStr = new Date(Date.now() + mskOffset).toISOString().split('T')[0];
+  /* DEBUG
   console.log('[STATS.UI] todayStr (MSK):', todayStr, 'UTC:', new Date().toISOString());
+  */
   let cardsDoneToday = 0;
 
   // Forecast calculations
@@ -2586,7 +2650,9 @@ function renderStats() {
   const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7); weekEnd.setHours(23, 59, 59, 999);
 
   const currentCards = getCurrentCards();
+  /* DEBUG
   console.log('[STATS.UI] Текущих карточек:', currentCards.length);
+  */
 
   currentCards.forEach(q => {
     const p = progressMap[q.question] || progressMap[q.question.trim()];
@@ -2847,18 +2913,24 @@ function renderStats() {
       box.style.borderRadius = '8px';
       box.title = 'Уровни и XP';
       box.onclick = () => {
+        /* DEBUG
         console.log('========================================');
         console.log('[LEVEL BOX CLICK] Клик по блоку уровня!');
         console.log('[LEVEL BOX CLICK] Timestamp:', new Date().toISOString());
         console.log('[LEVEL BOX CLICK] window.openLevelInfoModal:', typeof window.openLevelInfoModal);
         console.log('[LEVEL BOX CLICK] Вызываем openLevelInfoModal()...');
+        */
         if (window.openLevelInfoModal) {
           window.openLevelInfoModal();
+          /* DEBUG
           console.log('[LEVEL BOX CLICK] Модальное окно открыто!');
+          */
         } else {
           console.error('[LEVEL BOX CLICK] ❌ window.openLevelInfoModal НЕ НАЙДЕН!');
         }
+        /* DEBUG
         console.log('========================================');
+        */
       };
       box.onmouseover = () => {
         box.style.background = 'rgba(255,159,28,0.15)';
@@ -2893,7 +2965,7 @@ function renderStats() {
       txt.className = 'level-inline-text';
       const cur = Math.max(0, Math.round((d.xp - d.prevThreshold)));
       const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
-      txt.textContent = `XP:${d.xp}  ${cur}/${tot}`;
+      txt.textContent = `${cur}/${tot}`;
       bar.appendChild(fill); bar.appendChild(txt);
       box.appendChild(lbl); box.appendChild(bar);
       levelCont.appendChild(box);
@@ -2909,7 +2981,7 @@ function renderStats() {
           if (f) f.style.width = `${pp}%`;
           const cc = Math.max(0, Math.round((dd.xp - dd.prevThreshold)));
           const tt = dd.nextThreshold === Infinity ? cc : Math.round(dd.nextThreshold - dd.prevThreshold);
-          if (t) t.textContent = `XP:${dd.xp}  ${cc}/${tt}`;
+          if (t) t.textContent = `${cc}/${tt}`;
         } catch { }
       };
       window.addEventListener('xpUpdated', upd);
@@ -2936,9 +3008,17 @@ function renderStats() {
   // ============================================
   // DEBUG: Логирование шапки статистики
   // ============================================
+  /* DEBUG
   console.log('========================================');
   console.log('========================================');
+  */
 
+  // Объявление кнопок (вне DEBUG-блока)
+  const authBtn = container.querySelector('.st-auth-btn');
+  const homeBtn = container.querySelector('.st-home-btn');
+  const continueBtn = container.querySelector('#st-continue-top-btn');
+
+  /* DEBUG
   const topRight = container.querySelector('.st-top-right');
   if (topRight) {
     const topRightStyles = window.getComputedStyle(topRight);
@@ -2953,11 +3033,13 @@ function renderStats() {
     console.log('   overflow:', topRightStyles.overflow);
   }
 
-  // Проверка кнопок
+  /* DEBUG
+  // Проверка кнопок (дублирующее объявление - закомментировано)
   const authBtn = container.querySelector('.st-auth-btn');
   const homeBtn = container.querySelector('.st-home-btn');
   const continueBtn = container.querySelector('#st-continue-top-btn');
 
+  /* DEBUG
   console.log('   .st-auth-btn:', authBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
   console.log('   .st-home-btn:', homeBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
   console.log('   #st-continue-top-btn:', continueBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
@@ -2974,7 +3056,9 @@ function renderStats() {
     const contStyles = window.getComputedStyle(continueBtn);
     console.log('   continue-btn display:', contStyles.display, ', width:', contStyles.width, ', visibility:', contStyles.visibility);
   }
+  */
 
+  /* DEBUG
   // Проверка видимости кнопок
   function isElementVisible(el) {
     if (!el) return false;
@@ -3035,10 +3119,12 @@ function renderStats() {
   // ============================================
   // КОНЕЦ DEBUG шапки
   // ============================================
+  */
 
   // ============================================
   // DEBUG: Блок прогресса - стили и размеры
   // ============================================
+  /* DEBUG
   console.log('\n========================================');
   console.log('========================================');
 
@@ -3152,10 +3238,12 @@ function renderStats() {
   }
 
   console.log('\n========================================');
+  */
 
   // ============================================
   // DEBUG: Порядок блоков в мобильной версии
   // ============================================
+  /* DEBUG
   console.log('\n========================================');
   console.log('========================================');
   console.log('window.innerWidth:', window.innerWidth);
@@ -3206,10 +3294,12 @@ function renderStats() {
   // ============================================
   // КОНЕЦ DEBUG порядка блоков
   // ============================================
+  */
 
   // ============================================
   // DEBUG: modes-grid (карточки режимов)
   // ============================================
+  /* DEBUG
   console.log('\n========================================');
   console.log('========================================');
 
@@ -3356,29 +3446,38 @@ function renderStats() {
   // ============================================
   // КОНЕЦ DEBUG modes-grid
   // ============================================
+  */
 
   // homeBtn уже объявлен выше в debug-секции
+  /* DEBUG
   console.log('========================================');
   console.log('[HOME BTN SETUP] homeBtn found:', !!homeBtn);
   console.log('[HOME BTN SETUP] location.hash:', location.hash);
   console.log('========================================');
+  */
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
+      /* DEBUG
       console.log('========================================');
       console.log('[HOME BTN CLICK] Clicked!');
       console.log('[HOME BTN CLICK] Current location.hash:', location.hash);
       console.log('[HOME BTN CLICK] window.__lastCandidates:', window.__lastCandidates);
+      */
 
       // Очищаем состояние обучения
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
+        /* DEBUG
         console.log('[HOME BTN CLICK] Cleared __lastCandidates');
+        */
       }
 
       // Просто меняем hash на главную
       location.hash = '#/';
+      /* DEBUG
       console.log('[HOME BTN CLICK] Hash changed to:', location.hash);
       console.log('========================================');
+      */
     });
   }
 
@@ -4704,7 +4803,7 @@ window.startFilteredSession = (index) => {
   console.log('[startFilteredSession] Карточек:', cards.length);
 
   if (cards.length === 0) {
-    alert('Нет карт в этой категории');
+    alert('Нет карт в ��той категории');
     return;
   }
 
@@ -4714,7 +4813,7 @@ window.startFilteredSession = (index) => {
     console.log('[startFilteredSession] Cleared __lastCandidates');
   }
 
-  // Сбрасываем флаг навигации
+  // Сбрасываем флаг навигац��и
   window.__navigatingToHome = false;
   console.log('[startFilteredSession] Set __navigatingToHome = false');
 
@@ -4884,7 +4983,9 @@ function getXpSeries(mode) {
     return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
   };
 
+  /* DEBUG
   console.log('[CHART.XP] Starting getXpSeries, mode:', mode);
+  */
   const data = getDailyPointsAll(); // {date, xp, bonus, dayBonus}
   const prog = getProgressMap();
   const revCounts = new Map();
@@ -4897,7 +4998,9 @@ function getXpSeries(mode) {
   } catch { }
   const today = new Date();
   const todayStr = getMSKDate(today);
+  /* DEBUG
   console.log('[CHART.XP] todayStr (MSK):', todayStr);
+  */
   const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : (mode === 'year' ? 365 : 365));
   const res = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -4905,9 +5008,11 @@ function getXpSeries(mode) {
     d.setDate(today.getDate() - i);
     const s = getMSKDate(d);
     const entry = data.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
+    /* DEBUG
     if (i <= 2 || i >= days - 2) {
       console.log(`[CHART.XP] Day ${i}:`, { date: s, xp: entry.xp, isToday: s === todayStr });
     }
+    */
     res.push({
       date: s,
       label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
