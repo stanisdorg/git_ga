@@ -39,7 +39,8 @@ function verifyPassword(password, hash) {
 // Telegram Auth (v6.09)
 // ============================================
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8636706073:AAFKjiCtuU0zlhYCJI-glCc_Bc_xKpWqTcI';
-const TELEGRAM_CHANNEL_ID = '@brotherhood_qa'; // Можно также использовать ID типа -100...
+const TELEGRAM_CHANNEL_ID = '@brotherhood_qa';
+const TELEGRAM_ADMIN_ID = 721236696; // 🛡️ Ваш ID (Станислав) для гарантированного входа
 
 /**
  * Проверка подписи Telegram (защита от подделки)
@@ -71,6 +72,12 @@ function verifyTelegramAuth(data) {
  * Проверка подписки на канал через Telegram Bot API
  */
 async function checkTelegramSubscription(userId) {
+  // 🛡️ БАЙПАС ДЛЯ АДМИНИСТРАТОРА (ВАС)
+  if (Number(userId) === TELEGRAM_ADMIN_ID) {
+    console.log('[TG API] Вход разрешен по ADMIN_ID (Станислав)');
+    return true;
+  }
+
   try {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getChatMember?chat_id=${TELEGRAM_CHANNEL_ID}&user_id=${userId}`;
     const response = await new Promise((resolve, reject) => {
@@ -82,11 +89,14 @@ async function checkTelegramSubscription(userId) {
     });
 
     if (!response.ok) {
-      console.error('[TG API] Error:', response.description);
+      console.error('[TG API] Ошибка запроса:', response.description);
+      console.error('[TG API] Полный ответ:', JSON.stringify(response, null, 2));
       return false;
     }
 
     const status = response.result.status;
+    console.log(`[TG API] Статус пользователя ${userId} в канале ${TELEGRAM_CHANNEL_ID}: ${status}`);
+    
     // Статусы 'member', 'administrator', 'creator' означают, что пользователь подписан
     return ['member', 'administrator', 'creator'].includes(status);
   } catch (error) {
@@ -346,13 +356,13 @@ const server = http.createServer((req, res) => {
         let user = users.find(u => u.telegramId === authData.id || u.username === authData.username);
 
         if (!user) {
-          // 🆕 РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ (Editor по умолчанию)
+          // 🆕 РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
           user = {
             username: authData.username || `user_${authData.id}`,
             telegramId: authData.id,
             firstName: authData.first_name,
             lastName: authData.last_name,
-            role: 'editor', // Как просил пользователь
+            role: (authData.id === TELEGRAM_ADMIN_ID) ? 'admin' : 'editor', // Админ для вас, редактор для остальных
             createdAt: new Date().toISOString(),
             lastLoginAt: new Date().toISOString()
           };
