@@ -58,6 +58,7 @@ const server = http.createServer((req, res) => {
   // Логирование всех POST запросов для отладки
   if (req.method === 'POST') {
     console.log('[SERVER DEBUG] POST запрос:', req.url);
+    req.setEncoding('utf-8'); // 🔧 Глобально устанавливаем кодировку для всех POST запросов, чтобы избежать разрыва UTF-8 символов
   }
 
   // CORS и preflight
@@ -503,80 +504,13 @@ const server = http.createServer((req, res) => {
 
     try {
       const rawContent = fs.readFileSync(targetPath, 'utf-8');
-      const fileSize = fs.statSync(targetPath).size;
-
-      // 🔍 ПРОВЕРКА ПОСЛЕ ЧТЕНИЯ
-      const hasFFFD = rawContent.includes('\uFFFD');
-      const hasBadRussian = /Д\?{1,5}кументация/.test(rawContent);
-      const hasQuestionInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(rawContent);
-
-      if (hasFFFD || hasBadRussian || hasQuestionInRussian) {
-        logger.error('❌ ФАЙЛ ПОВРЕЖДЕН ПРИ ЧТЕНИИ!', {
-          hasFFFD,
-          hasBadRussian,
-          hasQuestionInRussian,
-          filePath: targetPath
-        }, 'Load');
-
-        // Сохраняем для отладки
-        const debugReadPath = path.join(__dirname, 'data', 'debug_read_file.json');
-        fs.writeFileSync(debugReadPath, rawContent, 'utf-8');
-      }
-
       const userData = JSON.parse(rawContent);
-      console.log('[SERVER] Файл прочитан:', {
-        operation: 'read_complete',
-        filePath: targetPath,
-        fileSize,
-        cardsInFile: userData._cards?.length || 0,
-        timestamp: Date.now()
-      });
-      console.log('[SERVER /api/progress] ПРОЧТЕНО из файла:', {
-        filePath: targetPath,
-        cardsInFile: userData._cards?.length || 0,
-        fileSize: rawContent.length
-      });
+
       logger.info('Прочитано данных', {
         cards: userData._cards?.length || 0,
         favorites: Array.isArray(userData._favorites) ? userData._favorites.length : 0,
         achievements: Object.keys(userData._achievements || {}).length
       }, 'Load');
-
-      console.log('[SERVER /api/progress] Прочитано из файла:', {
-        cardsCount: userData._cards?.length || 0,
-        filePath: targetPath
-      });
-
-      // Проверяем карточки на повреждение
-      if (userData._cards && Array.isArray(userData._cards)) {
-        const badCards = userData._cards.filter(card => {
-          const cat = card.category || '';
-          const subcat = card.subcategory || '';
-          const q = card.question || '';
-          const a = card.answer || '';
-          const all = cat + subcat + q + a;
-          return /\uFFFD/.test(all) || /Д\?{1,5}кументация/.test(all) || /[а-яА-Я]\?[а-яА-Я]/.test(all);
-        });
-
-        if (badCards.length > 0) {
-          logger.error(`❌ НАЙДЕНО ${badCards.length} карточек с поврежденными символами!`, null, 'Load');
-
-          // Показываем первые 3
-          badCards.slice(0, 3).forEach((card, idx) => {
-            logger.error(`Карточка ${idx + 1}: ${JSON.stringify({
-              category: card.category,
-              subcategory: card.subcategory,
-              question: card.question?.substring(0, 50)
-            })}`, null, 'Load');
-          });
-
-          // Сохраняем список поврежденных карточек
-          const debugCardsPath = path.join(__dirname, 'data', 'debug_bad_cards.json');
-          fs.writeFileSync(debugCardsPath, JSON.stringify(badCards, null, 2), 'utf-8');
-        }
-
-        console.log('[SERVER /api/progress] Найдено повреждённых карточек:', badCards.length);
-      }
 
       // Загружаем корзину пользователя
       const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
@@ -714,18 +648,6 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        // 🔍 АВТОМАТИЧЕСКОЕ ИСПРАВЛЕНИЕ ПОВРЕЖДЕННЫХ СИМВОЛОВ
-        let originalBody = body;
-        body = body.replace(/\uFFFD/g, '?');
-        body = body.replace(/Д\?{1,10}кументация/g, 'Документация');
-        body = body.replace(/инфу о\? сервера/g, 'инфу от сервера');
-        body = body.replace(/получа\?м/g, 'получаем');
-        body = body.replace(/се\?{1,5}висы/g, 'сервисы');
-
-        if (body !== originalBody) {
-          logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ПАРСИНГОМ', null, 'CardUpdate');
-        }
-
         const data = JSON.parse(body);
         const { oldQuestion, newQuestion, newAnswer, formatting } = data;
 
@@ -882,18 +804,6 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        // 🔍 АВТОМАТИЧЕСКОЕ ИСПРАВЛЕНИЕ ПОВРЕЖДЕННЫХ СИМВОЛОВ
-        let originalBody = body;
-        body = body.replace(/\uFFFD/g, '?'); // Заменяем U+FFFD
-        body = body.replace(/Д\?{1,10}кументация/g, 'Документация');
-        body = body.replace(/инфу о\? сервера/g, 'инфу от сервера');
-        body = body.replace(/получа\?м/g, 'получаем');
-        body = body.replace(/се\?{1,5}висы/g, 'сервисы');
-
-        if (body !== originalBody) {
-          logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ПАРСИНГОМ', null, 'Save');
-        }
-
         console.log('[SERVER /save] Попытка парсинга JSON, длина:', body.length);
         const data = JSON.parse(body);
 
@@ -901,42 +811,8 @@ const server = http.createServer((req, res) => {
           count: Array.isArray(data) ? data.length : 'not array',
           hasNewItems: Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'))
         });
-        if (Array.isArray(data)) {
-          const copyItems = data.filter(c => c.question && c.question.includes('копия'));
-          if (copyItems.length > 0) {
-            console.log('[SERVER /save] Найдено дубликатов:', copyItems.length);
-            console.log('[SERVER /save] Первый дубликат:', copyItems[0]);
-          }
-        }
-
+        
         logger.info('Получено данных', { count: Array.isArray(data) ? data.length : 'not array', bodyLength: body.length }, 'Save');
-
-        // 🔍 ЛОГ: проверяем есть ли дубликаты
-        const hasDuplicates = Array.isArray(data) && data.some(c => c.question && c.question.includes('копия'));
-        console.log('[SERVER /save] Получено данных:', {
-          count: Array.isArray(data) ? data.length : 0,
-          hasDuplicates,
-          timestamp: Date.now()
-        });
-
-        // 🔍 ПРОВЕРКА НА ПОВРЕЖДЕННЫЕ СИМВОЛЫ
-        const hasFFFD = body.includes('\uFFFD');
-        const badRussianPattern = /Д\?{1,5}кументация/.test(body);
-        const questionMarksInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(body);
-
-        if (hasFFFD || badRussianPattern || questionMarksInRussian) {
-          logger.error('⚠️ ВХОДЯЩИЕ ДАННЫЕ СОДЕРЖАТ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
-            hasFFFD,
-            badRussianPattern,
-            questionMarksInRussian,
-            bodyLength: body.length
-          }, 'Save');
-
-          // Сохраняем сырое тело для отладки
-          const debugPath = path.join(__dirname, 'data', 'debug_bad_request.json');
-          fs.writeFileSync(debugPath, body, 'utf-8');
-          logger.error(`Сырое тело сохранено в ${debugPath}`, null, 'Save');
-        }
 
         const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
@@ -949,77 +825,13 @@ const server = http.createServer((req, res) => {
           logger.info('Создаётся новый файл пользователя', null, 'Save');
         }
 
-        console.log('[SERVER] ЗАПИСЬ файла:', {
-          operation: 'write',
-          filePath: targetPath,
-          username,
-          incomingCardsCount: Array.isArray(data) ? data.length : 0,
-          existingCardsCount: userData._cards?.length || 0,
-          timestamp: Date.now()
-        });
-
         userData._cards = data;
         if (!userData._meta) userData._meta = {};
         userData._meta.cardsCount = data.length;
         userData._meta.lastLoginAt = new Date().toISOString();
         userData._meta.lastSavedAt = new Date().toISOString();
 
-        // 🔍 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ КАЖДОЙ КАРТОЧКИ ПЕРЕД ЗАПИСЬЮ
-        const fixCard = (card) => {
-          if (!card) return card;
-          const fixed = {};
-          for (const key in card) {
-            if (typeof card[key] === 'string') {
-              fixed[key] = card[key]
-                .replace(/\uFFFD/g, '?')
-                .replace(/Д\?{1,10}кументация/g, 'Документация')
-                .replace(/инфу о\? сервера/g, 'инфу от сервера')
-                .replace(/получа\?м/g, 'получаем')
-                .replace(/се\?{1,5}висы/g, 'сервисы');
-            } else {
-              fixed[key] = card[key];
-            }
-          }
-          return fixed;
-        };
-
-        if (Array.isArray(userData._cards)) {
-          userData._cards = userData._cards.map(fixCard);
-          logger.info(`Исправлено ${userData._cards.length} карточек перед записью`, null, 'Save');
-        }
-
-        // 🔍 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ПЕРЕД ЗАПИСЬЮ
         let jsonString = JSON.stringify(userData, null, 2);
-        const originalJson = jsonString;
-
-        jsonString = jsonString.replace(/\uFFFD/g, '?');
-        jsonString = jsonString.replace(/Д\?{1,10}кументация/g, 'Документация');
-        jsonString = jsonString.replace(/инфу о\? сервера/g, 'инфу от сервера');
-        jsonString = jsonString.replace(/получа\?м/g, 'получаем');
-        jsonString = jsonString.replace(/се\?{1,5}висы/g, 'сервисы');
-
-        if (jsonString !== originalJson) {
-          logger.warn('⚠️ ДАННЫЕ БЫЛИ АВТОМАТИЧЕСКИ ИСПРАВЛЕНЫ ПЕРЕД ЗАПИСЬЮ', null, 'Save');
-        }
-
-        // 🔍 ПРОВЕРКА ПЕРЕД ЗАПИСЬЮ
-        const hasFFFDInOutput = jsonString.includes('\uFFFD');
-        const hasBadRussianInOutput = /Д\?{1,5}кументация/.test(jsonString);
-        const hasQuestionInRussian = /[а-яА-Я]\?[а-яА-Я]/.test(jsonString);
-
-        if (hasFFFDInOutput || hasBadRussianInOutput || hasQuestionInRussian) {
-          logger.error('⚠️ ПОСЛЕ СБОРКИ ДАННЫХ ОБНАРУЖЕНЫ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
-            hasFFFDInOutput,
-            hasBadRussianInOutput,
-            hasQuestionInRussian,
-            outputLength: jsonString.length
-          }, 'Save');
-
-          // Сохраняем что именно пойдет в файл
-          const debugOutputPath = path.join(__dirname, 'data', 'debug_before_write.json');
-          fs.writeFileSync(debugOutputPath, jsonString, 'utf-8');
-          logger.error(`Данные перед записью сохранены в ${debugOutputPath}`, null, 'Save');
-        }
 
         console.log('[SERVER /save] Записываем данные:', {
           cardsCount: userData._cards?.length || 0,
@@ -1034,85 +846,14 @@ const server = http.createServer((req, res) => {
             return;
           }
 
-          // 🔍 ПРОВЕРКА ПОСЛЕ ЗАПИСИ
-          try {
-            const writtenContent = fs.readFileSync(targetPath, 'utf-8');
-            const writtenData = JSON.parse(writtenContent);
-            console.log('[SERVER] Файл записан:', {
-              operation: 'write_complete',
-              filePath: targetPath,
-              cardsInFile: writtenData._cards?.length || 0,
-              fileSize: writtenContent.length,
-              timestamp: Date.now()
-            });
-            const hasFFFDWritten = writtenContent.includes('\uFFFD');
-            const hasBadRussianWritten = /Д\?{1,5}кументация/.test(writtenContent);
-            const hasQuestionInRussianWritten = /[а-яА-Я]\?[а-яА-Я]/.test(writtenContent);
-
-            if (hasFFFDWritten || hasBadRussianWritten || hasQuestionInRussianWritten) {
-              logger.error('❌ ПОСЛЕ ЗАПИСИ В ФАЙЛЕ ОБНАРУЖЕНЫ ПОВРЕЖДЕННЫЕ СИМВОЛЫ!', {
-                hasFFFDWritten,
-                hasBadRussianWritten,
-                hasQuestionInRussianWritten,
-                filePath: targetPath
-              }, 'Save');
-
-              // Сохраняем копию поврежденного файла
-              const debugWrittenPath = path.join(__dirname, 'data', 'debug_after_write.json');
-              fs.writeFileSync(debugWrittenPath, writtenContent, 'utf-8');
-              logger.error(`Поврежденный файл сохранен в ${debugWrittenPath}`, null, 'Save');
-            } else {
-              logger.info('✅ Файл записан без повреждений', { filePath: targetPath }, 'Save');
-            }
-          } catch (checkErr) {
-            logger.error('Ошибка проверки файла', { error: checkErr.message }, 'Save');
-          }
-
-          // 🔍 ЛОГ: проверяем что записалось
-          setTimeout(() => {
-            const verifyContent = fs.readFileSync(targetPath, 'utf-8');
-            const verifyData = JSON.parse(verifyContent);
-            console.log('[SERVER /save] ПРОВЕРКА записанного файла:', {
-              filePath: targetPath,
-              cardsInFile: verifyData._cards?.length || 0,
-              fileSize: verifyContent.length
-            });
-          }, 100);
-
-          console.log('[SERVER /save] Успешно записано:', {
-            cardsCount: data.length,
-            filePath: targetPath
-          });
-
           logger.info('=== УСПЕШНО СОХРАНЕНО ===', { count: data.length, username }, 'Save');
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          // 🔍 ДОБАВЛЯЕМ ЛОГИ В ОТВЕТ КЛИЕНТУ
-          const logResponse = {
-            ok: true,
-            serverCardsCount: data.length,
-            timestamp: Date.now()
-          };
-          console.log('[SERVER /save] Отправляем ответ клиенту:', logResponse);
           res.end(JSON.stringify({ ok: true, saved: data.length }));
         });
       } catch (e) {
-        const errorResponse = {
-          ok: false,
-          error: e.message,
-          debug: {
-            bodyLength: body.length,
-            bodyPreview: body.substring(0, 1000),
-            timestamp: Date.now()
-          }
-        };
-        console.error('[SERVER /save] ОШИБКА ПАРСИНГА JSON:', {
-          error: e.message,
-          bodyLength: body.length,
-          first500: body.substring(0, 500)
-        });
         logger.error('Ошибка парсинга JSON', { error: e.message }, 'Save');
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(errorResponse));
+        res.end(JSON.stringify({ ok: false, error: e.message }));
       }
     });
     return;

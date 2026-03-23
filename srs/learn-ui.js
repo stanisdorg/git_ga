@@ -1,4 +1,4 @@
-﻿import { LearningSession } from './session.js?v=2.01';
+import { LearningSession } from './session.js?v=2.01';
 import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=2.01';
 import { getProgressMap } from './stats-utils.js?v=2.00';
 import { checkAchievements } from './stats-utils.js?v=2.00';
@@ -2087,9 +2087,9 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=5.28').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=6.08').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
-                initStatsPage(window.currentAppVersion || '6.05');
+                initStatsPage(window.currentAppVersion || '6.08');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
                 skeletonPlaceholder.remove();
