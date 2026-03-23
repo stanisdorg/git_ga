@@ -38,5 +38,14 @@
     "role": "admin",
     "createdAt": "2026-03-21T15:49:32.354Z",
     "lastLoginAt": "2026-03-21T15:49:41.008Z"
+  },
+  {
+    "username": "doroganov_stanislav",
+    "telegramId": 721236696,
+    "firstName": "Станислав",
+    "lastName": "Дороганов",
+    "role": "admin",
+    "createdAt": "2026-03-23T23:47:57.109Z",
+    "lastLoginAt": "2026-03-23T23:50:37.511Z"
   }
 ]

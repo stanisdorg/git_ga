@@ -1314,6 +1314,10 @@ export function initTabsNavigation(appVersion) {
             if (loggedInUser && !user) {
                 console.log('[LOGOUT] === НАЧАЛО ВЫХОДА ===');
 
+                // Очищаем ключи Telegram авторизации
+                localStorage.removeItem('qaUsername');
+                localStorage.removeItem('qaAuthType');
+
                 // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
                 // 🔥 ИСПРАВЛЕНИЕ: Не сохраняем если данные уже сохранены (qaNewItems пуст)
                 const newItems = getNewItems();
@@ -1496,13 +1500,15 @@ export function initTabsNavigation(appVersion) {
                         const data = await res.json();
                         console.log('[TG Auth] Response data:', data);
                         if (res.ok && data.ok) {
-                            // Сохраняем данные для автозагрузки (как и в обычном логине)
-                            // Но вместо пароля используем метку TG
+                            // Сохраняем данные для автозагрузки
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'telegram');
                             
                             setLoggedUser({ username: data.username, role: data.role });
                             ov.remove();
+                            
+                            // 🔄 Перезагружаем страницу для чистого входа
+                            window.location.reload();
                         } else {
                             if (data.error === 'not_subscribed') {
                                 alert(data.message || 'Чтобы войти, подпишитесь на наш канал!');

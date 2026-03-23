@@ -45,7 +45,7 @@ function verifyPassword(password, hash) {
 // ============================================
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8636706073:AAFKjiCtuU0zlhYCJI-glCc_Bc_xKpWqTcI';
 const TELEGRAM_CHANNEL_ID = '@brotherhood_qa';
-const TELEGRAM_ADMIN_ID = 721236696; // 🛡️ Ваш ID (Станислав) для гарантированного входа
+const TELEGRAM_ADMIN_IDS = [721236696, 8333264308]; // 🛡️ Ваши ID для гарантированного входа
 
 /**
  * Проверка подписи Telegram (защита от подделки)
@@ -77,12 +77,12 @@ function verifyTelegramAuth(data) {
  * Проверка подписки на канал через Telegram Bot API
  */
 async function checkTelegramSubscription(userId) {
-  console.log(`[TG API] Проверка подписки для ID: ${userId} (тип: ${typeof userId})`);
-  console.log(`[TG API] Сравнение с ADMIN_ID: ${TELEGRAM_ADMIN_ID} (тип: ${typeof TELEGRAM_ADMIN_ID})`);
+  const numId = Number(userId);
+  console.log(`[TG API] Проверка подписки для ID: ${numId} (тип: ${typeof numId})`);
   
-  // 🛡️ БАЙПАС ДЛЯ АДМИНИСТРАТОРА (ВАС)
-  if (Number(userId) === TELEGRAM_ADMIN_ID) {
-    console.log('[TG API] !!! БАЙПАС СРАБОТАЛ !!! Вход разрешен (Станислав)');
+  // 🛡️ БАЙПАС ДЛЯ ВАШИХ АККАУНТОВ
+  if (TELEGRAM_ADMIN_IDS.includes(numId)) {
+    console.log(`[TG API] !!! БАЙПАС СРАБОТАЛ !!! Вход разрешен для ID ${numId}`);
     return true;
   }
 
@@ -370,7 +370,7 @@ const server = http.createServer((req, res) => {
             telegramId: authData.id,
             firstName: authData.first_name,
             lastName: authData.last_name,
-            role: (authData.id === TELEGRAM_ADMIN_ID) ? 'admin' : 'editor', // Админ для вас, редактор для остальных
+            role: (TELEGRAM_ADMIN_IDS.includes(authData.id)) ? 'admin' : 'editor', // Админ для вас, редактор для остальных
             createdAt: new Date().toISOString(),
             lastLoginAt: new Date().toISOString()
           };
