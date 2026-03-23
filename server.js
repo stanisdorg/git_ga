@@ -285,11 +285,19 @@ const server = http.createServer((req, res) => {
 
   // POST /api/auth/telegram - Вход через Telegram (v6.09)
   if (req.method === 'POST' && req.url === '/api/auth/telegram') {
+    console.log('[TG Auth] Входящий запрос на авторизацию');
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
       try {
+        if (!body) {
+          console.error('[TG Auth] Пустое тело запроса');
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Empty body' }));
+          return;
+        }
         const authData = JSON.parse(body);
+        console.log('[TG Auth] Данные получены для ID:', authData.id);
         
         // 1. Проверка подписи Telegram
         if (!verifyTelegramAuth(authData)) {

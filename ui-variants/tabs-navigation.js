@@ -1482,15 +1482,19 @@ export function initTabsNavigation(appVersion) {
 
                 // Глобальный коллбэк для виджета
                 window.onTelegramAuth = async function(user) {
-                    console.log('[TG Auth] Data received:', user);
+                    console.log('[TG Auth] Data received from widget:', user);
+                    const authUrl = `${BACKEND_URL}/api/auth/telegram`;
+                    console.log('[TG Auth] Sending request to:', authUrl);
                     try {
-                        const res = await fetch(`${BACKEND_URL}/api/auth/telegram`, {
+                        const res = await fetch(authUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(user)
                         });
 
+                        console.log('[TG Auth] Response status:', res.status);
                         const data = await res.json();
+                        console.log('[TG Auth] Response data:', data);
                         if (res.ok && data.ok) {
                             // Сохраняем данные для автозагрузки (как и в обычном логине)
                             // Но вместо пароля используем метку TG
