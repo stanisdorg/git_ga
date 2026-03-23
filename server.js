@@ -10,6 +10,11 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
+const VERSION = '6.09.2 (Bypass fix)';
+
+console.log('========================================');
+console.log(`[SERVER] Starting QA Assistant v${VERSION}...`);
+console.log('========================================');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -72,9 +77,12 @@ function verifyTelegramAuth(data) {
  * Проверка подписки на канал через Telegram Bot API
  */
 async function checkTelegramSubscription(userId) {
+  console.log(`[TG API] Проверка подписки для ID: ${userId} (тип: ${typeof userId})`);
+  console.log(`[TG API] Сравнение с ADMIN_ID: ${TELEGRAM_ADMIN_ID} (тип: ${typeof TELEGRAM_ADMIN_ID})`);
+  
   // 🛡️ БАЙПАС ДЛЯ АДМИНИСТРАТОРА (ВАС)
   if (Number(userId) === TELEGRAM_ADMIN_ID) {
-    console.log('[TG API] Вход разрешен по ADMIN_ID (Станислав)');
+    console.log('[TG API] !!! БАЙПАС СРАБОТАЛ !!! Вход разрешен (Станислав)');
     return true;
   }
 
