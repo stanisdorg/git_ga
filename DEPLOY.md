@@ -4,28 +4,35 @@
 
 1. **Node.js** (версия 18+)
 2. **Cloudflare Tunnel** (cloudflared.exe)
-3. **Домен** на Cloudflare (qa.crispcode.ru)
+3. **Домен** на Cloudflare (crispcode.ru)
 4. **Сервер** на Reg.ru (Windows/Linux)
 
 ---
 
 ## 🔧 Локальная разработка (Windows)
 
-### 1. Запуск сервера
+### 1. Запуск сервера и туннелей
 
-```bash
-# Вариант 1: Использовать bat-файл
-start-server.bat
+Для локальной разработки или тестирования используйте один из bat-файлов:
 
-# Вариант 2: Вручную
-node server.js
-```
+- **START-DUAL-TUNNEL.bat**: (Рекомендуется) Запускает Node.js сервер, ngrok и Cloudflare Tunnel одновременно.
+- **START-ALL.bat**: Аналог DUAL-TUNNEL, запускает все три компонента.
+- **START-LOCAL.bat**: Запускает только Node.js сервер локально на порту 8085.
+- **START-NGROK.bat**: Запускает только туннель ngrok (требуется работающий сервер).
+- **START-CLOUDFLARE.bat**: Запускает только туннель Cloudflare (требуется работающий сервер).
 
-### 2. Проверка работы
+### 2. Доступные URL
 
-- Откройте http://localhost:8085
+После запуска через DUAL-TUNNEL сервис будет доступен по трем адресам:
+1. **Локально**: http://localhost:8085
+2. **ngrok**: https://reportorial-thermotactic-natalya.ngrok-free.dev (для текущих пользователей)
+3. **Cloudflare**: https://crispcode.ru (основной домен)
+
+### 3. Проверка работы
+
+- Откройте один из указанных выше URL.
 - Войдите как `admin/admin`
-- Проверьте консоль браузера (F12) на ошибки
+- Проверьте консоль браузера (F12) на ошибки.
 
 ### 3. Остановка сервера
 
@@ -67,7 +74,7 @@ tunnel: e315380c-7f82-49b0-bb14-4ee1f53a16a2
 credentials-file: C:\\Users\\web\\.cloudflared\\e315380c-7f82-49b0-bb14-4ee1f53a16a2.json
 
 ingress:
-  - hostname: qa.crispcode.ru
+  - hostname: crispcode.ru
     service: http://localhost:8085
   - service: http_status:404
 ```

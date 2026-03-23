@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title QA Server - START ALL
+title QA Server - DUAL TUNNEL (ngrok + Cloudflare)
 
 echo ========================================
-echo  QA Server - START ALL
-echo  (Server + ngrok + Cloudflare)
+echo  QA Server - DUAL TUNNEL
+echo  (ngrok + Cloudflare)
 echo ========================================
 echo.
 
@@ -35,7 +35,8 @@ if exist "%CLOUDFLARED_PATH%" (
     start "Cloudflare Tunnel" "%CLOUDFLARED_PATH%" tunnel --config cloudflared-config.yml run crispcode-qa
     echo Cloudflare started (URL: https://crispcode.ru)
 ) else (
-    echo [ERROR] cloudflared.exe not found!
+    echo [ERROR] cloudflared.exe not found in current directory!
+    echo Please make sure cloudflared.exe is placed in %~dp0
 )
 
 echo.
@@ -50,5 +51,5 @@ echo Check the separate windows for status!
 echo.
 echo ========================================
 echo.
-echo This window will close in 10 seconds...
-timeout /t 10 /nobreak >nul
+echo This window will close in 15 seconds...
+timeout /t 15 /nobreak >nul
