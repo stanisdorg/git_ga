@@ -1457,10 +1457,61 @@ export function initTabsNavigation(appVersion) {
                             <button id="login-cancel" type="button" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Отмена</button>
                             <button id="login-submit" type="submit" style="padding:8px 12px;border-radius:6px;border:1px solid #e0b000;background:#ffd54f;color:#111;font-weight:700">Войти</button>
                         </div>
+                        <div style="margin-top:12px;border-top:1px solid #444;padding-top:12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+                            <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px">Или войти через</div>
+                            <div id="telegram-login-container"></div>
+                        </div>
                     </form>
                 </div>
             `;
                 document.body.appendChild(ov);
+
+                // Рендерим виджет Telegram динамически
+                const tgContainer = ov.querySelector('#telegram-login-container');
+                if (tgContainer) {
+                    const script = document.createElement('script');
+                    script.async = true;
+                    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+                    script.setAttribute('data-telegram-login', 'ByteCards_bot');
+                    script.setAttribute('data-size', 'medium');
+                    script.setAttribute('data-radius', '8');
+                    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+                    script.setAttribute('data-request-access', 'write');
+                    tgContainer.appendChild(script);
+                }
+
+                // Глобальный коллбэк для виджета
+                window.onTelegramAuth = async function(user) {
+                    console.log('[TG Auth] Data received:', user);
+                    try {
+                        const res = await fetch(`${BACKEND_URL}/api/auth/telegram`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(user)
+                        });
+
+                        const data = await res.json();
+                        if (res.ok && data.ok) {
+                            // Сохраняем данные для автозагрузки (как и в обычном логине)
+                            // Но вместо пароля используем метку TG
+                            localStorage.setItem('qaUsername', data.username);
+                            localStorage.setItem('qaAuthType', 'telegram');
+                            
+                            setLoggedUser({ username: data.username, role: data.role });
+                            ov.remove();
+                        } else {
+                            if (data.error === 'not_subscribed') {
+                                alert(data.message || 'Чтобы войти, подпишитесь на наш канал!');
+                                window.open('https://t.me/brotherhood_qa', '_blank');
+                            } else {
+                                alert('Ошибка авторизации через Telegram: ' + (data.error || 'Неизвестная ошибка'));
+                            }
+                        }
+                    } catch (err) {
+                        console.error('[TG Auth] Fetch error:', err);
+                        alert('Ошибка связи с сервером');
+                    }
+                };
                 ov.querySelector('#login-cancel').addEventListener('click', () => ov.remove());
                 ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
                 ov.querySelector('#login-pass-eye').addEventListener('click', () => {

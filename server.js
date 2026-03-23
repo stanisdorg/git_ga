@@ -36,6 +36,66 @@ function verifyPassword(password, hash) {
 }
 
 // ============================================
+// Telegram Auth (v6.09)
+// ============================================
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8636706073:AAFKjiCtuU0zlhYCJI-glCc_Bc_xKpWqTcI';
+const TELEGRAM_CHANNEL_ID = '@brotherhood_qa'; // Можно также использовать ID типа -100...
+
+/**
+ * Проверка подписи Telegram (защита от подделки)
+ */
+function verifyTelegramAuth(data) {
+  const { hash, ...authData } = data;
+  
+  // 1. Создаем строку из всех полей (кроме hash), отсортированных по алфавиту
+  const checkString = Object.keys(authData)
+    .sort()
+    .map(key => `${key}=${authData[key]}`)
+    .join('\n');
+
+  // 2. Вычисляем секретный ключ (SHA256 от токена бота)
+  const secretKey = crypto.createHash('sha256')
+    .update(TELEGRAM_BOT_TOKEN)
+    .digest();
+
+  // 3. Вычисляем HMAC-SHA256 от строки с данными
+  const hmac = crypto.createHmac('sha256', secretKey)
+    .update(checkString)
+    .digest('hex');
+
+  // 4. Сравниваем с присланным хешем
+  return hmac === hash;
+}
+
+/**
+ * Проверка подписки на канал через Telegram Bot API
+ */
+async function checkTelegramSubscription(userId) {
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getChatMember?chat_id=${TELEGRAM_CHANNEL_ID}&user_id=${userId}`;
+    const response = await new Promise((resolve, reject) => {
+      http.get(url, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve(JSON.parse(data)));
+      }).on('error', reject);
+    });
+
+    if (!response.ok) {
+      console.error('[TG API] Error:', response.description);
+      return false;
+    }
+
+    const status = response.result.status;
+    // Статусы 'member', 'administrator', 'creator' означают, что пользователь подписан
+    return ['member', 'administrator', 'creator'].includes(status);
+  } catch (error) {
+    console.error('[TG API] Exception:', error);
+    return false;
+  }
+}
+
+// ============================================
 const server = http.createServer((req, res) => {
   const ts = new Date().toISOString();
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
@@ -221,6 +281,106 @@ const server = http.createServer((req, res) => {
 
   function resetRateLimit(ip) {
     loginAttempts.delete(ip);
+  }
+
+  // POST /api/auth/telegram - Вход через Telegram (v6.09)
+  if (req.method === 'POST' && req.url === '/api/auth/telegram') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const authData = JSON.parse(body);
+        
+        // 1. Проверка подписи Telegram
+        if (!verifyTelegramAuth(authData)) {
+          logger.warn('Попытка входа с неверным хешем Telegram', { id: authData.id }, 'Auth');
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'Invalid Telegram hash' }));
+          return;
+        }
+
+        // 2. Проверка подписки на канал
+        const isSubscribed = await checkTelegramSubscription(authData.id);
+        if (!isSubscribed) {
+          logger.info('Отказано во входе: пользователь не подписан на канал', { id: authData.id }, 'Auth');
+          res.writeHead(403, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ 
+            ok: false, 
+            error: 'not_subscribed', 
+            message: 'Чтобы войти, подпишитесь на наш канал: ' + TELEGRAM_CHANNEL_ID 
+          }));
+          return;
+        }
+
+        // 3. Работа с базой пользователей
+        const usersPath = path.join(__dirname, 'data', 'users.json');
+        let users = [];
+        if (fs.existsSync(usersPath)) {
+          users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+        }
+
+        // Ищем по telegramId или по username (если совпадает)
+        let user = users.find(u => u.telegramId === authData.id || u.username === authData.username);
+
+        if (!user) {
+          // 🆕 РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ (Editor по умолчанию)
+          user = {
+            username: authData.username || `user_${authData.id}`,
+            telegramId: authData.id,
+            firstName: authData.first_name,
+            lastName: authData.last_name,
+            role: 'editor', // Как просил пользователь
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString()
+          };
+          users.push(user);
+          logger.info('Новый пользователь зарегистрирован через Telegram', { username: user.username }, 'Auth');
+
+          // 📄 СОЗДАЕМ ФАЙЛ ДАННЫХ ДЛЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
+          const newUserPath = path.join(__dirname, 'data', `user_${user.username}.json`);
+          const globalPath = path.join(__dirname, 'data', 'global.json');
+          let initialCards = [];
+          if (fs.existsSync(globalPath)) {
+            initialCards = JSON.parse(fs.readFileSync(globalPath, 'utf-8'));
+          }
+          const initialData = {
+            _cards: initialCards,
+            _achievements: {},
+            _favorites: [],
+            _srsProgress: {},
+            _stats: {},
+            _meta: {
+              username: user.username,
+              role: user.role,
+              createdAt: user.createdAt,
+              lastLoginAt: user.lastLoginAt,
+              cardsCount: initialCards.length
+            }
+          };
+          fs.writeFileSync(newUserPath, JSON.stringify(initialData, null, 2), 'utf-8');
+        } else {
+          // Обновляем данные существующего
+          user.telegramId = authData.id;
+          user.lastLoginAt = new Date().toISOString();
+          if (authData.username) user.username = authData.username;
+        }
+
+        // Сохраняем изменения
+        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          ok: true,
+          username: user.username,
+          role: user.role
+        }));
+      } catch (e) {
+        console.error('[TG Auth] Error:', e);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'Internal server error' }));
+      }
+    });
+    return;
   }
 
   // POST /api/login - Login and get username (token disabled)
