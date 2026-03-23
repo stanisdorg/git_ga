@@ -396,11 +396,9 @@ const STATS_STYLES = `
   border: 1px solid var(--st-border);
   border-radius: 16px;
   padding: 20px;
-  max-height: 600px !important;
   overflow: hidden;
   display: flex !important;
   flex-direction: column !important;
-  height: 100% !important;
 }
 .st-cat-progress-header {
   display: flex;
@@ -870,7 +868,7 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 0 16px 40px; /* Нижний отступ для достижений (уменьшено с 120px до 40px) */
+  padding: 0 16px 120px; /* Нижний отступ для достижений (возвращено к 120px для предотвращения обрезки контента) */
   display: flex;
   flex-direction: column;
   gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
@@ -881,7 +879,7 @@ const STATS_STYLES = `
 @media (max-width: 768px) {
   .st-wrapper {
     gap: 5px !important; /* Уменьшено с 24px до 5px для компактности */
-    padding-bottom: 40px !important;
+    padding-bottom: 120px !important;
   }
   /* На мобильных список категорий свёрнут по умолчанию */
   .st-cat-progress-list.collapsed {
@@ -1420,11 +1418,11 @@ const STATS_STYLES = `
 
 /* Desktop Adaptation */
 @media (min-width: 1024px) {
-  #stats-container { overflow: hidden; }
+  #stats-container { overflow-y: auto; }
   .st-wrapper {
     max-width: 1400px;
-    height: 100vh;
-    padding: 24px;
+    min-height: 100vh;
+    padding: 24px 24px 80px; /* Дополнительный отступ снизу */
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: 24px;
@@ -1839,7 +1837,6 @@ const STATS_STYLES = `
   /* Центральный блок — КРИТИЧНО! */
   .st-block-achievements,
   .st-cat-progress-wrap {
-    max-height: 600px !important;
     overflow-y: auto !important;
   }
 
@@ -1856,7 +1853,6 @@ const STATS_STYLES = `
     .st-block-achievements { 
       grid-column: 1 / span 2; 
       grid-row: 2;
-      max-height: 600px;
     }
     .st-block-2 { 
       grid-column: 2; 
@@ -2569,6 +2565,14 @@ function hideSkeletonLoader() {
   /* DEBUG
   console.log('[Skeleton] hideSkeletonLoader completed');
   */
+}
+
+function showStats() {
+  const statsContainer = document.getElementById('stats-container');
+  if (statsContainer) {
+    statsContainer.style.display = 'block';
+  }
+  renderStats();
 }
 
 function renderStats() {
