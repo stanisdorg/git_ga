@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.08';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.08';
-import { getProgressMap } from './stats-utils.js?v=6.08';
-import { checkAchievements } from './stats-utils.js?v=6.08';
-import { Scheduler } from './scheduler.js?v=6.08';
-import { getTodaysSession } from './category-scheduler.js?v=6.08';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.08';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.08';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.08';
+import { LearningSession } from './session.js?v=6.09';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.09';
+import { getProgressMap } from './stats-utils.js?v=6.09';
+import { checkAchievements } from './stats-utils.js?v=6.09';
+import { Scheduler } from './scheduler.js?v=6.09';
+import { getTodaysSession } from './category-scheduler.js?v=6.09';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.09';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.09';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.09';
 
 // DOM Elements
 let container = null;
@@ -2087,9 +2087,9 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=6.08').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=6.09').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
-                initStatsPage(window.currentAppVersion || '6.08');
+                initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
                 skeletonPlaceholder.remove();
