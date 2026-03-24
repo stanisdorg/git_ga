@@ -41,6 +41,18 @@ body:has(#stats-container) {
     top: 0 !important;
     z-index: 1000 !important;
     background: var(--color-bg) !important;
+    overflow: visible !important;
+}
+
+/* DEBUG: логирование для .top-actions-bar */
+.top-actions-bar {
+    animation: debug-top-actions-bar 0s infinite;
+}
+
+@keyframes debug-top-actions-bar {
+    0% {
+        /* Пустой keyframe для триггера лога */
+    }
 }
 
 /* ПК версия - отступ для сайдбара слева и отступ справа */

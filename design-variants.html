@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Редизайн: Категории и Подкатегории</title>
+   <style>
+      * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+      }
+
+      body {
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+         min-height: 100vh;
+         padding: 40px 20px;
+         color: #fff;
+      }
+
+      .container {
+         max-width: 1400px;
+         margin: 0 auto;
+      }
+
+      h1 {
+         text-align: center;
+         margin-bottom: 40px;
+         font-size: 2rem;
+         background: linear-gradient(90deg, #00d9ff, #00ff88);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+      }
+
+      .variant-section {
+         background: rgba(255, 255, 255, 0.05);
+         border-radius: 20px;
+         padding: 30px;
+         margin-bottom: 40px;
+         backdrop-filter: blur(10px);
+         border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .variant-title {
+         font-size: 1.5rem;
+         margin-bottom: 20px;
+         color: #00d9ff;
+         display: flex;
+         align-items: center;
+         gap: 10px;
+      }
+
+      .variant-title::before {
+         content: '';
+         width: 4px;
+         height: 24px;
+         background: linear-gradient(180deg, #00d9ff, #00ff88);
+         border-radius: 2px;
+      }
+
+      /* ВАРИАНТ 1: Минимализм */
+      .variant-1 .tabs-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 8px;
+         margin-bottom: 20px;
+      }
+
+      .variant-1 .tab {
+         padding: 10px 18px;
+         background: rgba(255, 255, 255, 0.08);
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         border-radius: 10px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.9rem;
+         color: #ccc;
+      }
+
+      .variant-1 .tab:hover {
+         background: rgba(255, 255, 255, 0.15);
+         transform: translateY(-2px);
+      }
+
+      .variant-1 .tab.active {
+         background: linear-gradient(135deg, #00d9ff, #0099ff);
+         border-color: transparent;
+         color: #fff;
+         box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+      }
+
+      .variant-1 .subcategories-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+      }
+
+      .variant-1 .subcategory-card {
+         padding: 12px 20px;
+         background: rgba(255, 255, 255, 0.05);
+         border: 1px solid rgba(255, 255, 255, 0.08);
+         border-radius: 8px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.85rem;
+         color: #aaa;
+      }
+
+      .variant-1 .subcategory-card:hover {
+         background: rgba(255, 255, 255, 0.1);
+         border-color: rgba(0, 217, 255, 0.5);
+      }
+
+      .variant-1 .subcategory-card.active {
+         background: rgba(0, 217, 255, 0.2);
+         border-color: #00d9ff;
+         color: #00d9ff;
+      }
+
+      /* ВАРИАНТ 2: Pill Tabs */
+      .variant-2 .tabs-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 6px;
+         margin-bottom: 20px;
+         background: rgba(0, 0, 0, 0.2);
+         padding: 6px;
+         border-radius: 16px;
+      }
+
+      .variant-2 .tab {
+         padding: 10px 20px;
+         background: transparent;
+         border: none;
+         border-radius: 12px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.9rem;
+         color: #888;
+      }
+
+      .variant-2 .tab:hover {
+         color: #fff;
+         background: rgba(255, 255, 255, 0.05);
+      }
+
+      .variant-2 .tab.active {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         color: #fff;
+         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .variant-2 .subcategories-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 8px;
+      }
+
+      .variant-2 .subcategory-card {
+         padding: 10px 18px;
+         background: rgba(255, 255, 255, 0.05);
+         border: none;
+         border-radius: 20px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.85rem;
+         color: #aaa;
+      }
+
+      .variant-2 .subcategory-card:hover {
+         background: rgba(255, 255, 255, 0.1);
+         transform: scale(1.05);
+      }
+
+      .variant-2 .subcategory-card.active {
+         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+         color: #fff;
+         box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+      }
+
+      /* ВАРИАНТ 3: Подчёркивание */
+      .variant-3 .tabs-container {
+         display: flex;
+         gap: 0;
+         margin-bottom: 20px;
+         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+         overflow-x: auto;
+         padding-bottom: 2px;
+      }
+
+      .variant-3 .tab {
+         padding: 15px 25px;
+         background: transparent;
+         border: none;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.95rem;
+         color: #888;
+         position: relative;
+         white-space: nowrap;
+      }
+
+      .variant-3 .tab::after {
+         content: '';
+         position: absolute;
+         bottom: -2px;
+         left: 0;
+         width: 0;
+         height: 3px;
+         background: linear-gradient(90deg, #11998e, #38ef7d);
+         transition: width 0.3s ease;
+         border-radius: 2px 2px 0 0;
+      }
+
+      .variant-3 .tab:hover {
+         color: #fff;
+      }
+
+      .variant-3 .tab.active {
+         color: #38ef7d;
+      }
+
+      .variant-3 .tab.active::after {
+         width: 100%;
+      }
+
+      .variant-3 .subcategories-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 12px;
+      }
+
+      .variant-3 .subcategory-card {
+         padding: 10px 16px;
+         background: transparent;
+         border: 2px solid rgba(255, 255, 255, 0.1);
+         border-radius: 12px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.85rem;
+         color: #aaa;
+      }
+
+      .variant-3 .subcategory-card:hover {
+         border-color: #38ef7d;
+         background: rgba(56, 239, 125, 0.1);
+      }
+
+      .variant-3 .subcategory-card.active {
+         background: linear-gradient(135deg, #11998e, #38ef7d);
+         border-color: transparent;
+         color: #fff;
+         box-shadow: 0 4px 20px rgba(56, 239, 125, 0.3);
+      }
+
+      /* ВАРИАНТ 4: Карточки с номерами */
+      .variant-4 .tabs-container {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+         gap: 12px;
+         margin-bottom: 30px;
+      }
+
+      .variant-4 .tab {
+         padding: 20px 15px;
+         background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+         border: 1px solid rgba(255, 255, 255, 0.1);
+         border-radius: 16px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.85rem;
+         color: #ccc;
+         text-align: center;
+      }
+
+      .variant-4 .tab::before {
+         content: attr(data-category);
+         display: block;
+         font-size: 1.5rem;
+         font-weight: bold;
+         margin-bottom: 8px;
+         opacity: 0.5;
+      }
+
+      .variant-4 .tab:hover {
+         transform: translateY(-5px);
+         border-color: rgba(255, 183, 77, 0.5);
+         box-shadow: 0 10px 30px rgba(255, 183, 77, 0.2);
+      }
+
+      .variant-4 .tab.active {
+         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+         border-color: transparent;
+         color: #fff;
+         box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+      }
+
+      .variant-4 .tab.active::before {
+         opacity: 1;
+      }
+
+      .variant-4 .subcategories-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+      }
+
+      .variant-4 .subcategory-card {
+         padding: 12px 20px;
+         background: rgba(255, 255, 255, 0.05);
+         border: 1px solid rgba(255, 255, 255, 0.08);
+         border-radius: 10px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.85rem;
+         color: #aaa;
+         position: relative;
+         overflow: hidden;
+      }
+
+      .variant-4 .subcategory-card::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 4px;
+         height: 100%;
+         background: linear-gradient(180deg, #667eea, #764ba2);
+         opacity: 0;
+         transition: opacity 0.3s ease;
+      }
+
+      .variant-4 .subcategory-card:hover {
+         background: rgba(255, 255, 255, 0.1);
+      }
+
+      .variant-4 .subcategory-card:hover::before {
+         opacity: 1;
+      }
+
+      .variant-4 .subcategory-card.active {
+         background: rgba(102, 126, 234, 0.2);
+         border-color: #667eea;
+         color: #667eea;
+      }
+
+      .variant-4 .subcategory-card.active::before {
+         opacity: 1;
+      }
+
+      /* ВАРИАНТ 5: Горизонтальный скролл */
+      .variant-5 .tabs-wrapper {
+         position: relative;
+         margin-bottom: 20px;
+      }
+
+      .variant-5 .tabs-container {
+         display: flex;
+         gap: 0;
+         overflow-x: auto;
+         scrollbar-width: none;
+         -ms-overflow-style: none;
+      }
+
+      .variant-5 .tabs-container::-webkit-scrollbar {
+         display: none;
+      }
+
+      .variant-5 .tab {
+         padding: 12px 24px;
+         background: transparent;
+         border: none;
+         border-bottom: 3px solid transparent;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.9rem;
+         color: #666;
+         white-space: nowrap;
+      }
+
+      .variant-5 .tab:hover {
+         color: #fff;
+         background: rgba(255, 255, 255, 0.03);
+      }
+
+      .variant-5 .tab.active {
+         color: #fff;
+         background: rgba(0, 217, 255, 0.1);
+         border-bottom-color: #00d9ff;
+      }
+
+      .variant-5 .subcategories-container {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+         gap: 12px;
+      }
+
+      .variant-5 .subcategory-card {
+         padding: 16px 20px;
+         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+         border: 1px solid rgba(255, 255, 255, 0.05);
+         border-radius: 14px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+         font-size: 0.9rem;
+         color: #ccc;
+      }
+
+      .variant-5 .subcategory-card:hover {
+         background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+         transform: translateY(-3px);
+         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      }
+
+      .variant-5 .subcategory-card.active {
+         background: linear-gradient(135deg, #00d9ff, #0099ff);
+         border-color: transparent;
+         color: #fff;
+         box-shadow: 0 8px 25px rgba(0, 217, 255, 0.3);
+      }
+
+      .nav-buttons {
+         position: fixed;
+         bottom: 20px;
+         right: 20px;
+         display: flex;
+         gap: 10px;
+         z-index: 1000;
+      }
+
+      .nav-btn {
+         padding: 12px 20px;
+         background: linear-gradient(135deg, #667eea, #764ba2);
+         border: none;
+         border-radius: 10px;
+         color: #fff;
+         cursor: pointer;
+         font-size: 0.9rem;
+         transition: all 0.3s ease;
+         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .nav-btn:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .scroll-top {
+         display: inline-block;
+         margin-top: 20px;
+         padding: 10px 20px;
+         background: rgba(255, 255, 255, 0.1);
+         border-radius: 8px;
+         color: #00d9ff;
+         text-decoration: none;
+         transition: all 0.3s ease;
+      }
+
+      .scroll-top:hover {
+         background: rgba(255, 255, 255, 0.2);
+      }
+   </style>
+</head>
+
+<body>
+   <div class="container">
+      <h1>Варианты редизайна: Категории и Подкатегории</h1>
+
+      <!-- ВАРИАНТ 1 -->
+      <div class="variant-section variant-1">
+         <h2 class="variant-title">Вариант 1: Минимализм с неоновыми акцентами</h2>
+         <div class="tabs-container">
+            <div class="tab" data-category="all">Все вопросы</div>
+            <div class="tab" data-category="favorites">★</div>
+            <div class="tab" data-category="1">Архитектура</div>
+            <div class="tab" data-category="2">Безопасность</div>
+            <div class="tab active" data-category="3">Взаимодействие</div>
+            <div class="tab" data-category="4">Документация</div>
+            <div class="tab" data-category="5">Опыт</div>
+            <div class="tab" data-category="6">Процессы</div>
+            <div class="tab" data-category="7">Тестирование</div>
+            <div class="tab" data-category="8">Техники тест дизайна</div>
+            <div class="tab" data-category="9">Технические</div>
+            <div class="tab" data-category="10">Типы, виды тестирования</div>
+            <div class="tab" data-category="11">DevOps</div>
+            <div class="tab" data-category="12">Graphql, grpc</div>
+            <div class="tab" data-category="13">MindMap</div>
+         </div>
+         <div class="subcategories-container">
+            <div class="subcategory-card active" data-subcategory="all">Все подкатегории</div>
+            <div class="subcategory-card" data-subcategory="1">Адаптация нового сотрудника</div>
+            <div class="subcategory-card" data-subcategory="2">Баги и Отчеты</div>
+            <div class="subcategory-card" data-subcategory="3">Взаимодействие</div>
+            <div class="subcategory-card" data-subcategory="4">Взаимодействие с другими командами</div>
+            <div class="subcategory-card" data-subcategory="5">Взаимодействие с командой</div>
+            <div class="subcategory-card" data-subcategory="6">Документация от аналитиков</div>
+            <div class="subcategory-card" data-subcategory="7">Жизненный цикл</div>
+            <div class="subcategory-card" data-subcategory="8">Инициирование проблемы</div>
+            <div class="subcategory-card" data-subcategory="9">Интересные задачи</div>
+            <div class="subcategory-card" data-subcategory="10">Клиент-Сервер</div>
+            <div class="subcategory-card" data-subcategory="11">Коммуникация с командой</div>
+            <div class="subcategory-card" data-subcategory="12">Конфликтные ситуации</div>
+         </div>
+      </div>
+
+      <!-- ВАРИАНТ 2 -->
+      <div class="variant-section variant-2">
+         <h2 class="variant-title">Вариант 2: Pill Tabs с градиентами</h2>
+         <div class="tabs-container">
+            <div class="tab active" data-category="all">Все вопросы</div>
+            <div class="tab" data-category="favorites">★</div>
+            <div class="tab" data-category="1">Архитектура</div>
+            <div class="tab" data-category="2">Безопасность</div>
+            <div class="tab" data-category="3">Взаимодействие</div>
+            <div class="tab" data-category="4">Документация</div>
+            <div class="tab" data-category="5">Опыт</div>
+            <div class="tab" data-category="6">Процессы</div>
+            <div class="tab" data-category="7">Тестирование</div>
+            <div class="tab" data-category="8">Техники тест дизайна</div>
+            <div class="tab" data-category="9">Технические</div>
+            <div class="tab" data-category="10">Типы, виды тестирования</div>
+            <div class="tab" data-category="11">DevOps</div>
+            <div class="tab" data-category="12">Graphql, grpc</div>
+            <div class="tab" data-category="13">MindMap</div>
+         </div>
+         <div class="subcategories-container">
+            <div class="subcategory-card" data-subcategory="all">Все подкатегории</div>
+            <div class="subcategory-card active" data-subcategory="1">Адаптация нового сотрудника</div>
+            <div class="subcategory-card" data-subcategory="2">Баги и Отчеты</div>
+            <div class="subcategory-card" data-subcategory="3">Взаимодействие</div>
+            <div class="subcategory-card" data-subcategory="4">Взаимодействие с другими командами</div>
+            <div class="subcategory-card" data-subcategory="5">Взаимодействие с командой</div>
+            <div class="subcategory-card" data-subcategory="6">Документация от аналитиков</div>
+            <div class="subcategory-card" data-subcategory="7">Жизненный цикл</div>
+            <div class="subcategory-card" data-subcategory="8">Инициирование проблемы</div>
+            <div class="subcategory-card" data-subcategory="9">Интересные задачи</div>
+            <div class="subcategory-card" data-subcategory="10">Клиент-Сервер</div>
+            <div class="subcategory-card" data-subcategory="11">Коммуникация с командой</div>
+            <div class="subcategory-card" data-subcategory="12">Конфликтные ситуации</div>
+         </div>
+      </div>
+
+      <!-- ВАРИАНТ 3 -->
+      <div class="variant-section variant-3">
+         <h2 class="variant-title">Вариант 3: Подчёркивание с анимацией</h2>
+         <div class="tabs-container">
+            <div class="tab" data-category="all">Все вопросы</div>
+            <div class="tab" data-category="favorites">★</div>
+            <div class="tab" data-category="1">Архитектура</div>
+            <div class="tab" data-category="2">Безопасность</div>
+            <div class="tab active" data-category="3">Взаимодействие</div>
+            <div class="tab" data-category="4">Документация</div>
+            <div class="tab" data-category="5">Опыт</div>
+            <div class="tab" data-category="6">Процессы</div>
+            <div class="tab" data-category="7">Тестирование</div>
+            <div class="tab" data-category="8">Техники тест дизайна</div>
+            <div class="tab" data-category="9">Технические</div>
+            <div class="tab" data-category="10">Типы, виды тестирования</div>
+            <div class="tab" data-category="11">DevOps</div>
+            <div class="tab" data-category="12">Graphql, grpc</div>
+            <div class="tab" data-category="13">MindMap</div>
+         </div>
+         <div class="subcategories-container">
+            <div class="subcategory-card active" data-subcategory="all">Все подкатегории</div>
+            <div class="subcategory-card" data-subcategory="1">Адаптация нового сотрудника</div>
+            <div class="subcategory-card" data-subcategory="2">Баги и Отчеты</div>
+            <div class="subcategory-card" data-subcategory="3">Взаимодействие</div>
+            <div class="subcategory-card" data-subcategory="4">Взаимодействие с другими командами</div>
+            <div class="subcategory-card" data-subcategory="5">Взаимодействие с командой</div>
+            <div class="subcategory-card" data-subcategory="6">Документация от аналитиков</div>
+            <div class="subcategory-card" data-subcategory="7">Жизненный цикл</div>
+            <div class="subcategory-card" data-subcategory="8">Инициирование проблемы</div>
+            <div class="subcategory-card" data-subcategory="9">Интересные задачи</div>
+            <div class="subcategory-card" data-subcategory="10">Клиент-Сервер</div>
+            <div class="subcategory-card" data-subcategory="11">Коммуникация с командой</div>
+            <div class="subcategory-card" data-subcategory="12">Конфликтные ситуации</div>
+         </div>
+      </div>
+
+      <!-- ВАРИАНТ 4 -->
+      <div class="variant-section variant-4">
+         <h2 class="variant-title">Вариант 4: Карточки с номерами</h2>
+         <div class="tabs-container">
+            <div class="tab" data-category="all">Все вопросы</div>
+            <div class="tab" data-category="favorites">★</div>
+            <div class="tab" data-category="1">Архитектура</div>
+            <div class="tab" data-category="2">Безопасность</div>
+            <div class="tab active" data-category="3">Взаимодействие</div>
+            <div class="tab" data-category="4">Документация</div>
+            <div class="tab" data-category="5">Опыт</div>
+            <div class="tab" data-category="6">Процессы</div>
+            <div class="tab" data-category="7">Тестирование</div>
+            <div class="tab" data-category="8">Техники тест дизайна</div>
+            <div class="tab" data-category="9">Технические</div>
+            <div class="tab" data-category="10">Типы, виды тестирования</div>
+            <div class="tab" data-category="11">DevOps</div>
+            <div class="tab" data-category="12">Graphql, grpc</div>
+            <div class="tab" data-category="13">MindMap</div>
+         </div>
+         <div class="subcategories-container">
+            <div class="subcategory-card active" data-subcategory="all">Все подкатегории</div>
+            <div class="subcategory-card" data-subcategory="1">Адаптация нового сотрудника</div>
+            <div class="subcategory-card" data-subcategory="2">Баги и Отчеты</div>
+            <div class="subcategory-card" data-subcategory="3">Взаимодействие</div>
+            <div class="subcategory-card" data-subcategory="4">Взаимодействие с другими командами</div>
+            <div class="subcategory-card" data-subcategory="5">Взаимодействие с командой</div>
+            <div class="subcategory-card" data-subcategory="6">Документация от аналитиков</div>
+            <div class="subcategory-card" data-subcategory="7">Жизненный цикл</div>
+            <div class="subcategory-card" data-subcategory="8">Инициирование проблемы</div>
+            <div class="subcategory-card" data-subcategory="9">Интересные задачи</div>
+            <div class="subcategory-card" data-subcategory="10">Клиент-Сервер</div>
+            <div class="subcategory-card" data-subcategory="11">Коммуникация с командой</div>
+            <div class="subcategory-card" data-subcategory="12">Конфликтные ситуации</div>
+         </div>
+      </div>
+
+      <!-- ВАРИАНТ 5 -->
+      <div class="variant-section variant-5">
+         <h2 class="variant-title">Вариант 5: Горизонтальный скролл + Grid</h2>
+         <div class="tabs-wrapper">
+            <div class="tabs-container">
+               <div class="tab active" data-category="all">Все вопросы</div>
+               <div class="tab" data-category="favorites">★</div>
+               <div class="tab" data-category="1">Архитектура</div>
+               <div class="tab" data-category="2">Безопасность</div>
+               <div class="tab" data-category="3">Взаимодействие</div>
+               <div class="tab" data-category="4">Документация</div>
+               <div class="tab" data-category="5">Опыт</div>
+               <div class="tab" data-category="6">Процессы</div>
+               <div class="tab" data-category="7">Тестирование</div>
+               <div class="tab" data-category="8">Техники тест дизайна</div>
+               <div class="tab" data-category="9">Технические</div>
+               <div class="tab" data-category="10">Типы, виды тестирования</div>
+               <div class="tab" data-category="11">DevOps</div>
+               <div class="tab" data-category="12">Graphql, grpc</div>
+               <div class="tab" data-category="13">MindMap</div>
+            </div>
+         </div>
+         <div class="subcategories-container">
+            <div class="subcategory-card" data-subcategory="all">Все подкатегории</div>
+            <div class="subcategory-card active" data-subcategory="1">Адаптация нового сотрудника</div>
+            <div class="subcategory-card" data-subcategory="2">Баги и Отчеты</div>
+            <div class="subcategory-card" data-subcategory="3">Взаимодействие</div>
+            <div class="subcategory-card" data-subcategory="4">Взаимодействие с другими командами</div>
+            <div class="subcategory-card" data-subcategory="5">Взаимодействие с командой</div>
+            <div class="subcategory-card" data-subcategory="6">Документация от аналитиков</div>
+            <div class="subcategory-card" data-subcategory="7">Жизненный цикл</div>
+            <div class="subcategory-card" data-subcategory="8">Инициирование проблемы</div>
+            <div class="subcategory-card" data-subcategory="9">Интересные задачи</div>
+            <div class="subcategory-card" data-subcategory="10">Клиент-Сервер</div>
+            <div class="subcategory-card" data-subcategory="11">Коммуникация с командой</div>
+            <div class="subcategory-card" data-subcategory="12">Конфликтные ситуации</div>
+         </div>
+      </div>
+
+      <a href="#" class="scroll-top">Вернуться наверх</a>
+   </div>
+
+   <div class="nav-buttons">
+      <button class="nav-btn"
+         onclick="document.querySelector('.variant-1').scrollIntoView({behavior: 'smooth'})">1</button>
+      <button class="nav-btn"
+         onclick="document.querySelector('.variant-2').scrollIntoView({behavior: 'smooth'})">2</button>
+      <button class="nav-btn"
+         onclick="document.querySelector('.variant-3').scrollIntoView({behavior: 'smooth'})">3</button>
+      <button class="nav-btn"
+         onclick="document.querySelector('.variant-4').scrollIntoView({behavior: 'smooth'})">4</button>
+      <button class="nav-btn"
+         onclick="document.querySelector('.variant-5').scrollIntoView({behavior: 'smooth'})">5</button>
+   </div>
+
+   <script>
+      document.querySelectorAll('.tab').forEach(tab => {
+         tab.addEventListener('click', function () {
+            this.closest('.tabs-container').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+         });
+      });
+
+      document.querySelectorAll('.subcategory-card').forEach(card => {
+         card.addEventListener('click', function () {
+            this.closest('.subcategories-container').querySelectorAll('.subcategory-card').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+         });
+      });
+   </script>
+</body>
+
+</html>

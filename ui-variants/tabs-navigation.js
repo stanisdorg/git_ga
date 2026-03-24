@@ -1,4 +1,5 @@
 // Вариант 3: Табы для категорий и карточки для подкатегорий
+console.log('[TABS-NAVIGATION] Module loaded');
 
 // Импортируем данные и генератор категорий
 import { uniqueQaData } from '../all-data.js';
@@ -7,6 +8,8 @@ import { setNormalizationDisabled } from '../load-json-data.js';
 import { getProgressMap } from '../srs/stats-utils.js';
 import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
 import { applyFormatting } from '../srs/text-formatter.js';
+
+console.log('[TABS-NAVIGATION] Imports completed');
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
@@ -481,6 +484,8 @@ export function initTabsNavigation(appVersion) {
         // Создаем контейнер для табов
         const tabsContainer = document.createElement('div');
         tabsContainer.className = 'tabs-container';
+        console.log('[TABS-NAVIGATION] tabsContainer created:', tabsContainer);
+        console.log('[TABS-NAVIGATION] tabs-container parent will be:', document.querySelector('.tabs-header'));
 
         // Создаем таб "Все вопросы"
         const allTab = document.createElement('div');
@@ -503,13 +508,18 @@ export function initTabsNavigation(appVersion) {
         tabsContainer.appendChild(favTab);
 
         // Добавляем табы для всех категорий
-        categories.forEach(category => {
+        categories.forEach((category, index) => {
             const tab = document.createElement('div');
             tab.className = 'tab';
             tab.dataset.category = category.id;
             tab.textContent = category.displayName || category.name;
             tabsContainer.appendChild(tab);
+            if (index < 3) {
+                console.log('[TABS-NAVIGATION] Tab', index, 'created:', tab);
+            }
         });
+
+        console.log('[TABS-NAVIGATION] All tabs created, total:', tabsContainer.querySelectorAll('.tab').length);
 
         // Создаем контейнер для подкатегорий
         const subcategoriesContainer = document.createElement('div');
@@ -549,13 +559,27 @@ export function initTabsNavigation(appVersion) {
 
         // Добавляем обработчики клика по табам
         tabsContainer.addEventListener('click', function (e) {
+            console.log('[TABS-NAVIGATION] Click on tabsContainer, target:', e.target);
             if (e.target.classList.contains('tab')) {
+                console.log('[TABS-NAVIGATION] Tab clicked:', e.target);
+                console.log('[TABS-NAVIGATION] Tab computed styles before active:', {
+                    transform: window.getComputedStyle(e.target).transform,
+                    zIndex: window.getComputedStyle(e.target).zIndex,
+                    position: window.getComputedStyle(e.target).position
+                });
+
                 // Удаляем класс active у всех табов
                 const tabs = tabsContainer.querySelectorAll('.tab');
                 tabs.forEach(tab => tab.classList.remove('active'));
 
                 // Добавляем класс active выбранному табу
                 e.target.classList.add('active');
+
+                console.log('[TABS-NAVIGATION] Tab after active:', {
+                    transform: window.getComputedStyle(e.target).transform,
+                    zIndex: window.getComputedStyle(e.target).zIndex,
+                    position: window.getComputedStyle(e.target).position
+                });
 
                 const categoryId = e.target.dataset.category;
 

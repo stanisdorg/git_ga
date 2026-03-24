@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Варианты карточек - Glass с границей</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 15px;
+            margin-top: 40px;
+        }
+
+        .variant-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .variant-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        /* ==================== ВАРИАНТ 5A: Тонкая градиентная граница ==================== */
+        .card-v5a {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-v5a::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5a:hover {
+            background: rgba(42, 42, 50, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        /* ==================== ВАРИАНТ 5B: Угловая подсветка ==================== */
+        .card-v5b {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .card-v5b::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.6));
+            transition: all 0.3s ease;
+        }
+
+        .card-v5b:hover {
+            background: rgba(42, 42, 50, 0.6);
+            border-color: rgba(0, 217, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.12);
+        }
+
+        .card-v5b:hover::after {
+            width: 100%;
+        }
+
+        /* ==================== ВАРИАНТ 5C: Двойная граница ==================== */
+        .card-v5c {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-v5c::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(0, 217, 255, 0.2));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5c::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 10px;
+            padding: 1px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5c:hover {
+            background: rgba(42, 42, 50, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        /* ==================== ВАРИАНТ 5D: Боковая граница ==================== */
+        .card-v5d {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 3px solid rgba(0, 217, 255, 0.4);
+        }
+
+        .card-v5d::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0, 217, 255, 0.15));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5d:hover {
+            background: rgba(42, 42, 50, 0.6);
+            border-left-color: rgba(0, 217, 255, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        /* ==================== ВАРИАНТ 5E: Скруглённая граница ==================== */
+        .card-v5e {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-v5e::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 1.5px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.3), rgba(100, 150, 200, 0.15), rgba(0, 217, 255, 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5e:hover {
+            background: rgba(42, 42, 50, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.18);
+        }
+
+        /* ==================== ВАРИАНТ 5F: Неоновая граница ==================== */
+        .card-v5f {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-v5f::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(180deg, rgba(0, 217, 255, 0.4), rgba(0, 153, 255, 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.5));
+        }
+
+        .card-v5f:hover {
+            background: rgba(42, 42, 50, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.25);
+        }
+
+        /* ==================== ВАРИАНТ 5G: Частичная граница ==================== */
+        .card-v5g {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-v5g::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.5), transparent);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .card-v5g::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 0 0 2px 2px;
+        }
+
+        .card-v5g:hover {
+            background: rgba(42, 42, 50, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.12);
+        }
+
+        /* ==================== ВАРИАНТ 5H: Градиент по углам ==================== */
+        .card-v5h {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-v5h::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(0, 217, 255, 0.4) 0%, 
+                    transparent 25%, 
+                    transparent 75%, 
+                    rgba(0, 217, 255, 0.4) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5h:hover {
+            background: rgba(42, 42, 50, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        /* ==================== ВАРИАНТ 5I: Мягкая граница ==================== */
+        .card-v5i {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(0, 217, 255, 0.15);
+        }
+
+        .card-v5i:hover {
+            background: rgba(42, 42, 50, 0.6);
+            border-color: rgba(0, 217, 255, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        /* ==================== ВАРИАНТ 5J: Верхняя граница ==================== */
+        .card-v5j {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            border-top: 2px solid rgba(0, 217, 255, 0.4);
+        }
+
+        .card-v5j::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card-v5j:hover {
+            background: rgba(42, 42, 50, 0.6);
+            border-top-color: rgba(0, 217, 255, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Варианты Glass с акцентной границей</h1>
+
+        <!-- ВАРИАНТ 5A -->
+        <div class="variant-section">
+            <h2>Вариант 5A: Тонкая градиентная граница</h2>
+            <p class="variant-label">Классическая градиентная граница от белого к голубому</p>
+            <div class="cards-grid">
+                <div class="card-v5a">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5a">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5a">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5B -->
+        <div class="variant-section">
+            <h2>Вариант 5B: Угловая подсветка</h2>
+            <p class="variant-label">Линия сверху, расширяющаяся при hover</p>
+            <div class="cards-grid">
+                <div class="card-v5b">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5b">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5b">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5C -->
+        <div class="variant-section">
+            <h2>Вариант 5C: Двойная граница</h2>
+            <p class="variant-label">Внешняя яркая + внутренняя тонкая</p>
+            <div class="cards-grid">
+                <div class="card-v5c">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5c">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5c">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5D -->
+        <div class="variant-section">
+            <h2>Вариант 5D: Боковая граница</h2>
+            <p class="variant-label">Акцент слева + тонкая граница</p>
+            <div class="cards-grid">
+                <div class="card-v5d">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5d">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5d">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5E -->
+        <div class="variant-section">
+            <h2>Вариант 5E: Скруглённая граница</h2>
+            <p class="variant-label">Более скруглённые углы + диагональный градиент</p>
+            <div class="cards-grid">
+                <div class="card-v5e">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5e">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5e">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5F -->
+        <div class="variant-section">
+            <h2>Вариант 5F: Неоновая граница</h2>
+            <p class="variant-label">Яркая граница с glow-эффектом</p>
+            <div class="cards-grid">
+                <div class="card-v5f">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5f">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5f">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5G -->
+        <div class="variant-section">
+            <h2>Вариант 5G: Частичная граница</h2>
+            <p class="variant-label">Только сверху и снизу, не по всему периметру</p>
+            <div class="cards-grid">
+                <div class="card-v5g">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5g">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5g">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5H -->
+        <div class="variant-section">
+            <h2>Вариант 5H: Градиент по углам</h2>
+            <p class="variant-label">Акцент на углах, прозрачные стороны</p>
+            <div class="cards-grid">
+                <div class="card-v5h">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5h">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5h">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5I -->
+        <div class="variant-section">
+            <h2>Вариант 5I: Мягкая граница</h2>
+            <p class="variant-label">Простая полупрозрачная граница без градиентов</p>
+            <div class="cards-grid">
+                <div class="card-v5i">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5i">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5i">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5J -->
+        <div class="variant-section">
+            <h2>Вариант 5J: Верхняя граница</h2>
+            <p class="variant-label">Только верхняя граница выделена</p>
+            <div class="cards-grid">
+                <div class="card-v5j">
+                    <div class="card-title">Архитектура</div>
+                    <div class="card-desc">Вопросы по архитектуре программного обеспечения</div>
+                </div>
+                <div class="card-v5j">
+                    <div class="card-title">Безопасность</div>
+                    <div class="card-desc">Тестирование безопасности приложений</div>
+                </div>
+                <div class="card-v5j">
+                    <div class="card-title">Взаимодействие</div>
+                    <div class="card-desc">Коммуникация в команде и с клиентами</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

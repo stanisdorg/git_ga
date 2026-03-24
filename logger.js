@@ -8,7 +8,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const LOGS_DIR = path.join(__dirname, '..', 'logs');
+const LOGS_DIR = path.join(__dirname, 'logs');
+console.log(`[Logger] Logs directory: ${LOGS_DIR}`);
 const MAX_LOG_FILES = 10;
 const MAX_LOG_AGE_HOURS = 24;
 

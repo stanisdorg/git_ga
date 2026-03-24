@@ -6,7 +6,7 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '6.10.0';
+export const APP_VERSION = '6.11.0';
 
 let uiInitialized = false;
 
@@ -186,10 +186,11 @@ function addStyles() {
         .tabs-container {
             display: flex;
             flex-wrap: wrap;
-            overflow-x: hidden;
-            background-color: #252525;
-            border-radius: 5px;
-            border: 1px solid #444;
+            overflow-x: visible !important;
+            overflow-y: visible !important;
+            background: transparent;
+            border-radius: 12px;
+            border: none !important;
         }
         
         .tab {
@@ -230,26 +231,34 @@ function addStyles() {
         .subcategories-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px; /* компактнее */
+            gap: 6px;
             padding: 6px;
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            margin-bottom: 4px; /* ближе к полю */
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 4px;
         }
         
         .subcategory-card {
-            padding: 6px 8px;
-            background-color: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
+            color: #aaa;
+            transition: all 0.3s ease;
             white-space: nowrap;
+        }
+
+        .subcategory-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 217, 255, 0.5);
         }
         
         .subcategory-card.active {
-            background-color: #a0a0a0;
-            color: white;
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            color: #00d9ff;
         }
 
         /* Кнопки избранного и редактирования */

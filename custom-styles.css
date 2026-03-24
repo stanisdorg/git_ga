@@ -1,18 +1,18 @@
 /* Основные CSS переменные */
 :root {
-    --color-bg: #1a1a1a;
-    --color-card: #242424;
-    --color-border: #333333;
+    --color-bg: #1e1e24;
+    --color-card: #25252b;
+    --color-border: #2d2d35;
     --color-text: #ffffff;
     --color-text-secondary: rgba(255, 255, 255, 0.7);
     --color-badge-bg: rgba(255, 255, 255, 0.1);
     --color-badge-text: rgba(255, 255, 255, 0.7);
-    --color-button-active: rgba(255, 255, 255, 0.1);
+    --color-button-active: rgba(0, 217, 255, 0.1);
     --grid-gap: 10px;
     --sidebar-width: 300px;
-  --sidebar-collapsed-width: 48px;
-  --header-fixed-height: 35px;
-  --header-fixed-width: 920px;
+    --sidebar-collapsed-width: 48px;
+    --header-fixed-height: 35px;
+    --header-fixed-width: 920px;
 }
 
 /* =================================================================== */
@@ -24,7 +24,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%);
+    background: linear-gradient(135deg, #1e1e24 0%, #25252b 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -200,6 +200,7 @@
 .app-wrapper {
     display: flex;
     min-height: 100vh;
+    overflow: visible !important;
 }
 
 /* Боковая панель */
@@ -381,18 +382,38 @@
 }
 
 .result-item {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 8px 16px 16px 16px; /* Reduced top padding */
-    margin-bottom: 0; /* Grid handles gap */
-    position: relative; /* For absolute positioning of star */
+    background: rgba(37, 37, 43, 0.5) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px 16px 16px 16px;
+    margin-bottom: 0;
+    position: relative;
     display: flex;
     flex-direction: column;
+    transition: all 0.3s ease;
+    border: none !important;
+    outline: none !important;
+}
+
+.result-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 1px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .result-item:hover {
-    border-color: var(--color-text-secondary);
+    background: rgba(42, 42, 50, 0.6) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
 }
 
 .question {
@@ -432,9 +453,13 @@
 /* Tabs Navigation Styling */
 .tabs-header {
     display: flex;
-    align-items: stretch; /* Stretch items to same height */
-    margin: 0 0 10px 0 !important; /* Same margins as cards */
+    align-items: stretch;
+    margin: 0 0 10px 0 !important;
     gap: 10px;
+    background: rgba(30, 35, 45, 0.4);
+    border-radius: 12px;
+    padding: 16px 10px 10px 10px;
+    overflow: visible !important;
 }
 
 .tabs-container {
@@ -443,14 +468,16 @@
     flex-direction: row;
     flex-wrap: nowrap;
     align-content: flex-start;
-    align-items: center;
-    overflow-y: visible;
+    align-items: flex-start;
+    overflow-y: visible !important;
     overflow-x: auto;
     gap: 4px;
     height: auto;
     padding: 0;
     scrollbar-width: thin;
     scrollbar-color: var(--color-border) transparent;
+    background: transparent;
+    border: none !important;
 }
 
 .tabs-actions {
@@ -510,21 +537,20 @@
 
 .tab {
     padding: 0 12px;
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
+    background: rgba(30, 35, 45, 0.7);
+    border: 1px solid rgba(100, 150, 200, 0.15);
+    border-radius: 10px;
     cursor: pointer;
     white-space: nowrap;
-    color: var(--color-text-secondary);
-    transition: all 0.2s;
-    position: relative; /* For menu button */
-    padding-right: 12px; /* Default padding */
+    color: #aaa;
+    transition: all 0.3s ease;
+    padding-right: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 36px; /* Fixed height */
+    height: 36px;
     box-sizing: border-box;
-    width: max-content; /* Only take necessary width */
+    width: max-content;
 }
 
 /* Mobile: уменьшаем размеры табов и отступы */
@@ -540,14 +566,21 @@
 }
 
 .tab:hover {
-    border-color: var(--color-text);
-    color: var(--color-text);
+    background: rgba(40, 50, 65, 0.8);
+    border-color: rgba(100, 150, 200, 0.3);
+    color: #fff;
+    transform: translateY(-3px);
+    z-index: 100;
+    position: relative;
 }
 
 .tab.active {
-    background: var(--color-button-active);
-    border-color: var(--color-text);
-    color: var(--color-text);
+    background: linear-gradient(135deg, #00d9ff, #0099ff);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+    z-index: 50;
+    position: relative;
 }
 
 /* Menu buttons for categories/subcategories (Three dots) */
@@ -596,25 +629,25 @@
 
 .subcategory-card {
     padding: 6px 12px;
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
-    color: var(--color-text-secondary);
-    transition: all 0.2s;
+    color: #aaa;
+    transition: all 0.3s ease;
     position: relative;
 }
 
 .subcategory-card:hover {
-    border-color: var(--color-text);
-    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 217, 255, 0.5);
 }
 
 .subcategory-card.active {
-    background: var(--color-button-active);
-    border-color: var(--color-text);
-    color: var(--color-text);
+    background: rgba(0, 217, 255, 0.2);
+    border-color: #00d9ff;
+    color: #00d9ff;
 }
 
 /* Favorite Star on Card */
@@ -1151,20 +1184,27 @@ body.learning-mode #bottom-nav {
         overflow-x: hidden !important;
     }
     .app-wrapper {
-        overflow-x: hidden !important;
+        overflow-x: visible !important;
+        overflow-y: visible !important;
     }
     .tabs-header {
         margin: 0 10px 8px 10px;
         gap: 8px;
+        background: rgba(30, 35, 45, 0.4);
+        border-radius: 12px;
+        padding: 14px 8px 6px 8px;
+        overflow: visible !important;
     }
     /* TODO: debug mobile header visibility */
     .tabs-container {
         flex-wrap: nowrap;
         overflow-x: auto;
-        overflow-y: hidden;
+        overflow-y: visible !important;
         gap: 8px;
         padding-bottom: 2px;
         -webkit-overflow-scrolling: touch;
+        background: transparent;
+        border: none !important;
     }
     .tab {
         height: 32px;
@@ -1463,7 +1503,7 @@ body.learning-mode #bottom-nav {
     }
     .result-item {
         padding: 10px 10px 14px 10px !important;
-        border-radius: 10px;
+        border-radius: 10px !important;
         max-width: 100% !important;
         width: 100% !important;
         box-sizing: border-box;
@@ -1471,6 +1511,29 @@ body.learning-mode #bottom-nav {
         word-wrap: break-word;
         hyphens: auto;
         position: relative;
+        background: rgba(37, 37, 43, 0.5) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: none !important;
+        outline: none !important;
+    }
+    .result-item::before {
+        content: '' !important;
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        padding: 1px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25)) !important;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .result-item:hover {
+        background: rgba(42, 42, 50, 0.6) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
     }
     .question {
         font-size: 16px;
@@ -1879,6 +1942,26 @@ body.learning-mode #bottom-nav {
         margin-right: 0 !important;
         min-width: 0 !important;
         overflow-x: hidden !important;
+        background: rgba(37, 37, 43, 0.5) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 10px !important;
+        position: relative;
+        border: none !important;
+        outline: none !important;
+    }
+    .result-item::before {
+        content: '' !important;
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        padding: 1px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25)) !important;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 1;
     }
     .result-item * {
         max-width: 100% !important;
@@ -2051,7 +2134,8 @@ body.learning-mode #bottom-nav {
     .app-wrapper {
         width: 100% !important;
         max-width: 100% !important;
-        overflow-x: hidden !important;
+        overflow-x: visible !important;
+        overflow-y: visible !important;
     }
     .container {
         margin-left: 0 !important;
@@ -2088,6 +2172,26 @@ body.learning-mode #bottom-nav {
         margin-right: 0 !important;
         min-width: 0 !important;
         overflow-x: hidden !important;
+        background: rgba(37, 37, 43, 0.5) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 10px !important;
+        position: relative;
+        border: none !important;
+        outline: none !important;
+    }
+    .result-item::before {
+        content: '' !important;
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        padding: 1px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25)) !important;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 1;
     }
     .result-item * {
         max-width: 100% !important;
@@ -3432,14 +3536,16 @@ body.learning-mode #bottom-nav {
         width: 100% !important;
         box-sizing: border-box !important;
     }
-    
+
     /* Контейнер табов: без отступов */
     .tabs-container {
         padding-left: 0 !important;
         padding-right: 0 !important;
         box-sizing: border-box !important;
+        background: transparent !important;
+        border: none !important;
     }
-    
+
     /* Список результатов: отступы внутри контейнера */
     #results-list {
         padding: 0 var(--content-padding-x) 20px var(--content-padding-x) !important;
@@ -3489,8 +3595,10 @@ body.learning-mode #bottom-nav {
         padding-left: 0 !important;
         padding-right: 0 !important;
         box-sizing: border-box !important;
+        background: transparent !important;
+        border: none !important;
     }
-    
+
     /* Список результатов: минимальные одинаковые отступы */
     #results-list {
         padding: 0 8px 20px 8px !important;
@@ -3507,6 +3615,23 @@ body.learning-mode #bottom-nav {
         padding-right: 10px !important;
         width: 100% !important;
         box-sizing: border-box !important;
+        background: rgba(37, 37, 43, 0.5) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 10px !important;
+        position: relative;
+    }
+    .result-item::before {
+        content: '' !important;
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        padding: 1px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25)) !important;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
     }
 }
 
@@ -3531,6 +3656,8 @@ body.learning-mode #bottom-nav {
     .tabs-container {
         padding-left: 0 !important;
         padding-right: 0 !important;
+        background: transparent !important;
+        border: none !important;
     }
 
     #results-list {
@@ -3540,6 +3667,23 @@ body.learning-mode #bottom-nav {
     .result-item {
         padding-left: 8px !important;
         padding-right: 8px !important;
+        background: rgba(37, 37, 43, 0.5) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 10px !important;
+        position: relative;
+    }
+    .result-item::before {
+        content: '' !important;
+        position: absolute;
+        inset: 0;
+        border-radius: 10px;
+        padding: 1px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(0, 217, 255, 0.25)) !important;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
     }
 }
 

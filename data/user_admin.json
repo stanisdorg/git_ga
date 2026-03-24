@@ -5,7 +5,7 @@
     "createdAt": "2026-03-22T07:07:25.543Z",
     "lastLoginAt": null,
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-23T19:48:15.874Z"
+    "lastSavedAt": "2026-03-24T14:32:00.454Z"
   },
   "_cards": [
     {
@@ -208,7 +208,17 @@
       "subcategory": "General",
       "question": "2/3ех/многоуровневая",
       "answer": "2ух и 3ех уровневые серверные архитектуры сейчас не применяются, это только теория",
-      "raw_category": "MindMap Node"
+      "raw_category": "MindMap Node",
+      "formatting": {
+        "question": [
+          {
+            "start": 0,
+            "end": 20,
+            "color": "#B794F4"
+          }
+        ],
+        "answer": []
+      }
     },
     {
       "category": "MindMap",
@@ -2048,10 +2058,10 @@
   "_rewards": {},
   "_streaks": {},
   "_stats": {
-    "total": 8,
-    "timeSpent": 20356,
-    "points": 20,
-    "correct": 0
+    "total": 9,
+    "timeSpent": 24783,
+    "points": 30,
+    "correct": 1
   },
   "_srsProgress": {
     "как отправлял сообщения в кафке ручками?": {
@@ -2221,9 +2231,33 @@
       "lastReviewed": "2026-03-23",
       "lastReviewedTime": 1,
       "question": "брокеры?"
+    },
+    "2/3ех/многоуровневая": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774358320860,
+      "nextReviewDate": 1774400400000,
+      "dueDate": "2026-03-25T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774358320860,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-24",
+      "lastReviewedTime": 19,
+      "question": "2/3ех/многоуровневая"
     }
   },
   "_favorites": [
-    "как отправлял сообщения в кафке ручками?"
+    "как отправлял сообщения в кафке ручками?",
+    "2/3ех/многоуровневая",
+    "брокеры, кафка, как взаимодействовали сервисы?",
+    "Из чего состоит Kafka и как работает?"
   ]
 }

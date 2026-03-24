@@ -4,7 +4,11 @@ import { displayQuestions } from './ui-variants/tabs-navigation.js';
 import { applyFormatting } from './srs/text-formatter.js';
 let transcriptionMode = false; // глобальное состояние режима транскрипции
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('[SCRIPT.JS] DOMContentLoaded fired');
+    console.log('[SCRIPT.JS] Body styles:', window.getComputedStyle(document.body));
+    console.log('[SCRIPT.JS] Body overflow:', window.getComputedStyle(document.body).overflow);
+
     const searchInput = document.getElementById('search-input');
     const micButton = document.getElementById('mic-button');
     const statusIndicator = document.getElementById('status-indicator');
@@ -17,7 +21,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const historyButton = document.getElementById('history-button');
     const transcriptionButton = document.getElementById('transcription-button');
     const transcriptionHistory = document.getElementById('transcription-history');
-    
+
+    console.log('[SCRIPT.JS] Main elements found:', {
+        searchInput: !!searchInput,
+        micButton: !!micButton,
+        resultsList: !!resultsList,
+        sidebar: !!sidebar
+    });
+
     // По умолчанию открываем вкладку транскрипции
     if (searchHistory && transcriptionHistory && transcriptionButton) {
         searchHistory.style.display = 'none';
@@ -35,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebarToggle.setAttribute('aria-label', 'Развернуть историю');
         }
     }
-    
+
     // Автоматическая загрузка всех карточек - ОТКЛЮЧЕНО (конфликт с ui-manager.js)
     /*
     setTimeout(() => {
@@ -44,20 +55,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 300);
     */
-    
+
     // Массив для хранения истории поиска
     let searchHistoryArray = [];
     // Единый текст транскрипции вместо разбивки на блоки
     let transcriptionText = '';
     let pressHoldActive = false;
     const selectedKeywordsById = new Map();
-    
+
     // Тоггл боковой панели (сворачивание истории поиска)
     if (sidebarToggle && sidebar && searchHistory) {
         sidebarToggle.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
             const isCollapsed = sidebar.classList.contains('collapsed');
-            
+
             if (isCollapsed) {
                 sidebarToggle.setAttribute('aria-expanded', 'false');
                 sidebarToggle.setAttribute('aria-label', 'Развернуть историю');
@@ -88,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
             transcriptionButton.classList.toggle('active', true);
         });
     }
-    
+
     // Проверка поддержки Web Speech API
     const preferElectronSTT = typeof window.sttBridge !== 'undefined';
     const isSpeechSupported = !preferElectronSTT && (('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window));
@@ -98,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
         micButton.removeAttribute('disabled');
         micButton.setAttribute('aria-disabled', 'true');
         micButton.setAttribute('aria-pressed', 'false');
-        micButton.addEventListener('click', function() {
+        micButton.addEventListener('click', function () {
             micButton.classList.toggle('active');
             const pressed = micButton.classList.contains('active');
             micButton.setAttribute('aria-pressed', pressed ? 'true' : 'false');
@@ -137,8 +148,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function stopMicVisualizer() {
-            try { if (micVizRAF) cancelAnimationFrame(micVizRAF); } catch(_){}
-            try { if (micAudioContext) micAudioContext.close(); } catch(_){}
+            try { if (micVizRAF) cancelAnimationFrame(micVizRAF); } catch (_) { }
+            try { if (micAudioContext) micAudioContext.close(); } catch (_) { }
             if (micVizStream) {
                 micVizStream.getTracks().forEach(t => t.stop());
             }
@@ -148,15 +159,15 @@ document.addEventListener('DOMContentLoaded', function() {
             micDataArray = null;
             clearCanvas(micVisualizer);
         }
-        
+
         // Живое обновление транскрипции: финальный и промежуточный хвост
         let transcriptionFinalText = '';
         let transcriptionInterim = '';
         // Обработка результатов распознавания
-        recognition.onresult = function(event) {
+        recognition.onresult = function (event) {
             let finalTranscript = '';
             let interimTranscript = '';
-            
+
             // Обработка промежуточных и финальных результатов
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 if (event.results[i].isFinal) {
@@ -165,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     interimTranscript += event.results[i][0].transcript;
                 }
             }
-            
+
             // Финальный текст накапливаем, промежуточный показываем без задержек
             if (finalTranscript !== '') {
                 transcriptionFinalText = (transcriptionFinalText ? (transcriptionFinalText + ' ') : '') + finalTranscript.trim();
@@ -178,15 +189,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (statusIndicator) statusIndicator.textContent = 'Слушаю: ' + interimTranscript;
             }
         };
-        
-        recognition.onstart = function() {
+
+        recognition.onstart = function () {
             if (statusIndicator) statusIndicator.textContent = 'Слушаю...';
             micButton.classList.add('listening');
             document.body.classList.add('listening');
             startMicVisualizer();
         };
-        
-        recognition.onend = function() {
+
+        recognition.onend = function () {
             // Если кнопка всё ещё в режиме прослушивания, перезапускаем распознавание
             if (micButton.classList.contains('listening')) {
                 recognition.start();
@@ -195,8 +206,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             stopMicVisualizer();
         };
-        
-        recognition.onerror = function(event) {
+
+        recognition.onerror = function (event) {
             if (statusIndicator) statusIndicator.textContent = 'Ошибка распознавания: ' + event.error;
             if (event.error !== 'no-speech') {
                 micButton.classList.remove('listening');
@@ -206,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => recognition.start(), 500);
             }
         };
-        
+
         // Логика короткого клика (переключение) vs долгого удержания (на время удержания)
         let holdTimer = null;
         let holdStartTime = 0;
@@ -251,15 +262,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 micButton.setAttribute('aria-pressed', 'false');
             }
         });
-        
+
         // Обработчик горячих клавиш
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             if (event.altKey && event.key === 'm') {
                 event.preventDefault();
                 toggleSpeechRecognition();
             }
         });
-        
+
         // Функция для переключения состояния распознавания речи
         function toggleSpeechRecognition() {
             if (micButton.classList.contains('listening')) {
@@ -363,9 +374,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = canvasEl.getContext('2d');
         ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
     }
-    
+
     // Обработчик ввода текста в поле поиска
-    searchInput.addEventListener('input', function() {
+    searchInput.addEventListener('input', function () {
         performSearch(this.value);
     });
 
@@ -397,9 +408,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     */
-    
+
     // Обработчик нажатия Enter в поле поиска — всегда выполняет поиск и пишет в историю
-    searchInput.addEventListener('keydown', function(event) {
+    searchInput.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             const query = this.value.trim();
             if (query) {
@@ -408,31 +419,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Функция добавления запроса в историю поиска
     function addToSearchHistory(query) {
         // Проверяем, что запрос не пустой
         if (!query.trim()) return;
-        
+
         // Создаем объект с запросом и временем
         const historyItem = {
             query: query,
             timestamp: new Date().toLocaleTimeString(),
             id: Date.now() // уникальный идентификатор для элемента истории
         };
-        
+
         // Добавляем в начало массива истории
         searchHistoryArray.unshift(historyItem);
-        
+
         // Обновляем отображение истории
         renderSearchHistory();
     }
-    
+
     // Функция отображения истории поиска
     function renderSearchHistory() {
         // Очищаем текущую историю
         searchHistory.innerHTML = '';
-        
+
         // Добавляем элементы истории
         searchHistoryArray.forEach(item => {
             const historyElement = document.createElement('div');
@@ -442,20 +453,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="history-item-query">${item.query}</div>
                 <div class="history-item-time">${item.timestamp}</div>
             `;
-            
+
             // Добавляем обработчик клика по элементу истории
-            historyElement.addEventListener('click', function() {
+            historyElement.addEventListener('click', function () {
                 searchInput.value = item.query;
                 performSearch(item.query);
             });
-            
+
             searchHistory.appendChild(historyElement);
         });
     }
 
     // ------------------------
 
-    
+
     // Функции для транскрипции: единое поле без разбиения на блоки
     function appendToTranscription(text) {
         if (!text.trim()) return;
@@ -498,9 +509,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Автопрокрутка вниз при добавлении нового текста
         transcriptionHistory.scrollTop = transcriptionHistory.scrollHeight;
     }
-    
+
     // Поиск выполняется через поле ввода, здесь дополнительная функция не требуется
-    
+
     function escapeHtml(str) {
         return str
             .replace(/&/g, '&amp;')
@@ -509,38 +520,48 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     }
-    
+
     // Функция выполнения поиска
     function performSearch(query) {
         if (!query) {
-             displaySearchResults(uniqueQaData, '');
-             return;
+            displaySearchResults(uniqueQaData, '');
+            return;
         }
-        
+
         const lowerQuery = query.toLowerCase();
         const filteredData = uniqueQaData.filter(item => {
             const inQuestion = item.question && item.question.toLowerCase().includes(lowerQuery);
             const inAnswer = item.answer && item.answer.toLowerCase().includes(lowerQuery);
             const inCategory = item.category && item.category.toLowerCase().includes(lowerQuery);
             const inSubcategory = item.subcategory && item.subcategory.toLowerCase().includes(lowerQuery);
-            
+
             return inQuestion || inAnswer || inCategory || inSubcategory;
         });
-        
+
         displaySearchResults(filteredData, query);
     }
-    
+
     // Функция отображения результатов поиска
     function displaySearchResults(filteredData, query) {
+        console.log('[SCRIPT.JS] displaySearchResults called, count:', filteredData.length);
+
         // Use the advanced display logic from tabs-navigation if available
         if (typeof displayQuestions === 'function') {
-             displayQuestions(filteredData, query ? `Результаты поиска: ${query}` : 'Результаты поиска');
-             return;
+            console.log('[SCRIPT.JS] Using displayQuestions from tabs-navigation');
+            displayQuestions(filteredData, query ? `Результаты поиска: ${query}` : 'Результаты поиска');
+            return;
         }
 
         const resultsList = document.getElementById('results-list');
+        console.log('[SCRIPT.JS] resultsList element:', resultsList);
+        console.log('[SCRIPT.JS] resultsList parent:', resultsList?.parentElement);
+        console.log('[SCRIPT.JS] resultsList parent computed styles:', {
+            overflow: resultsList?.parentElement ? window.getComputedStyle(resultsList.parentElement).overflow : 'N/A',
+            overflowY: resultsList?.parentElement ? window.getComputedStyle(resultsList.parentElement).overflowY : 'N/A'
+        });
+
         resultsList.innerHTML = '';
-        
+
         // Обновляем счетчик результатов (вынесен из grid)
         let countContainer = document.getElementById('results-count-container');
         if (!countContainer) {
@@ -560,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsList.appendChild(noResults);
             return;
         }
-        
+
         // Добавляем результаты
         filteredData.forEach(item => {
             const resultItem = document.createElement('div');
