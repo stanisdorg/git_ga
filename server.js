@@ -113,6 +113,107 @@ async function checkTelegramSubscription(userId) {
   }
 }
 
+/**
+ * Отправка сообщения в Telegram через Bot API
+ */
+async function sendTelegramMessage(chatId, text) {
+  try {
+    const data = JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' });
+    const options = {
+      hostname: 'api.telegram.org',
+      path: `/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      const req = http.request(options, (res) => {
+        let responseBody = '';
+        res.on('data', chunk => responseBody += chunk);
+        res.on('end', () => resolve(JSON.parse(responseBody)));
+      });
+      req.on('error', reject);
+      req.write(data);
+      req.end();
+    });
+  } catch (error) {
+    console.error('[TG Bot] Ошибка отправки сообщения:', error);
+  }
+}
+
+/**
+ * Обработка входящих команд бота
+ */
+async function handleBotCommand(message) {
+  const chatId = message.chat.id;
+  const userId = message.from.id;
+  const text = message.text || '';
+
+  // 🛡️ Проверка прав администратора (только Станислав)
+  if (!TELEGRAM_ADMIN_IDS.includes(userId)) {
+    await sendTelegramMessage(chatId, '❌ У вас нет прав для управления пользователями.');
+    return;
+  }
+
+  // Команда /start
+  if (text.startsWith('/start')) {
+    await sendTelegramMessage(chatId, 
+      '👋 <b>Добро пожаловать в админ-панель ByteCards!</b>\n\n' +
+      'Доступные команды:\n' +
+      '/users — Список всех пользователей\n' +
+      '/setrole username role — Изменить роль (admin/editor/guest)'
+    );
+    return;
+  }
+
+  // Команда /users
+  if (text === '/users') {
+    const usersPath = path.join(__dirname, 'data', 'users.json');
+    if (!fs.existsSync(usersPath)) {
+      await sendTelegramMessage(chatId, '📭 База пользователей пуста.');
+      return;
+    }
+    const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+    let response = '👥 <b>Список пользователей:</b>\n\n';
+    users.forEach((u, i) => {
+      response += `${i + 1}. <code>${u.username}</code> [${u.role}]\n`;
+      if (u.firstName) response += `   👤 ${u.firstName} ${u.lastName || ''}\n`;
+      if (u.telegramId) response += `   🆔 <code>${u.telegramId}</code>\n`;
+      response += '\n';
+    });
+    await sendTelegramMessage(chatId, response);
+    return;
+  }
+
+  // Команда /setrole
+  if (text.startsWith('/setrole')) {
+    const parts = text.split(' ');
+    if (parts.length < 3) {
+      await sendTelegramMessage(chatId, '⚠️ Формат: <code>/setrole username role</code>\nПример: <code>/setrole stas admin</code>');
+      return;
+    }
+    const targetUser = parts[1];
+    const newRole = parts[2];
+
+    const usersPath = path.join(__dirname, 'data', 'users.json');
+    let users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+    const userIndex = users.findIndex(u => u.username === targetUser);
+
+    if (userIndex === -1) {
+      await sendTelegramMessage(chatId, `❌ Пользователь <code>${targetUser}</code> не найден.`);
+      return;
+    }
+
+    users[userIndex].role = newRole;
+    fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
+    await sendTelegramMessage(chatId, `✅ Роль пользователя <code>${targetUser}</code> изменена на <b>${newRole}</b>.`);
+    return;
+  }
+}
+
 // ============================================
 const server = http.createServer((req, res) => {
   const ts = new Date().toISOString();
@@ -314,6 +415,27 @@ const server = http.createServer((req, res) => {
 
   function resetRateLimit(ip) {
     loginAttempts.delete(ip);
+  }
+
+  // 🤖 Telegram Bot Webhook (v6.09.4)
+  if (req.method === 'POST' && req.url === `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`) {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const update = JSON.parse(body);
+        if (update.message) {
+          await handleBotCommand(update.message);
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        console.error('[TG Bot Webhook] Error:', e);
+        res.writeHead(200); // Telegram требует 200 чтобы не слать повторно
+        res.end();
+      }
+    });
+    return;
   }
 
   // POST /api/auth/telegram - Вход через Telegram (v6.09)
