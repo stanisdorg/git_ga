@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плавная обводка - Варианты</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .variant-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .variant-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #00d9ff;
+        }
+
+        .variant-desc {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(30, 35, 45, 0.4);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .subcategories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Общие стили для неактивных табов */
+        .tab {
+            padding: 10px 18px;
+            background: rgba(30, 35, 45, 0.7);
+            border: 1px solid rgba(100, 150, 200, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .tab:hover {
+            background: rgba(40, 50, 65, 0.8);
+            border-color: rgba(100, 150, 200, 0.3);
+            color: #fff;
+        }
+
+        /* Общие стили для подкатегорий */
+        .subcategory-card {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .subcategory-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .subcategory-card.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        /* ==================== ВАРИАНТ 1: Тонкая обводка + свечение ==================== */
+        .variant-1 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 2: Обводка + внешнее свечение ==================== */
+        .variant-2 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        /* ==================== ВАРИАНТ 3: Двойное свечение ==================== */
+        .variant-3 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3), 0 0 25px rgba(0, 217, 255, 0.2);
+        }
+
+        /* ==================== ВАРИАНТ 4: Мягкое свечение ==================== */
+        .variant-4 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 5: Интенсивное свечение ==================== */
+        .variant-5 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.6);
+        }
+
+        /* ==================== ВАРИАНТ 6: Без обводки, только свечение ==================== */
+        .variant-6 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: none;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        /* ==================== ВАРИАНТ 7: Тонкая обводка + рассеянное свечение ==================== */
+        .variant-7 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 35px rgba(0, 217, 255, 0.25);
+        }
+
+        /* ==================== ВАРИАНТ 8: Обводка + свечение снизу ==================== */
+        .variant-8 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 9: Обводка + свечение со всех сторон ==================== */
+        .variant-9 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.4), 0 0 20px rgba(0, 217, 255, 0.2), 0 0 30px rgba(0, 217, 255, 0.1);
+        }
+
+        /* ==================== ВАРИАНТ 10: Градиентная обводка ==================== */
+        .variant-10 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 11: Внутреннее свечение ==================== */
+        .variant-11 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: inset 0 0 10px rgba(0, 217, 255, 0.1), 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 12: Минималистичное ==================== */
+        .variant-12 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: none;
+        }
+
+        .tech-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Плавная обводка активной категории</h1>
+
+        <!-- ВАРИАНТ 1 -->
+        <div class="variant-section variant-1">
+            <h2 class="variant-title">Вариант 1: Тонкая обводка + мягкое свечение</h2>
+            <p class="variant-desc">1px обводка + небольшое свечение (15px)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 2 -->
+        <div class="variant-section variant-2">
+            <h2 class="variant-title">Вариант 2: Обводка + внешнее свечение</h2>
+            <p class="variant-desc">1px обводка + более яркое свечение (20px)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 3 -->
+        <div class="variant-section variant-3">
+            <h2 class="variant-title">Вариант 3: Двойное свечение</h2>
+            <p class="variant-desc">1px обводка + два слоя свечения</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 10px rgba(0, 217, 255, 0.3), 0 0 25px rgba(0, 217, 255, 0.2);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 4 -->
+        <div class="variant-section variant-4">
+            <h2 class="variant-title">Вариант 4: Мягкое рассеянное свечение</h2>
+            <p class="variant-desc">1px обводка + большое мягкое свечение (30px)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5 -->
+        <div class="variant-section variant-5">
+            <h2 class="variant-title">Вариант 5: Интенсивное свечение</h2>
+            <p class="variant-desc">1px обводка + яркое интенсивное свечение</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 25px rgba(0, 217, 255, 0.6);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 6 -->
+        <div class="variant-section variant-6">
+            <h2 class="variant-title">Вариант 6: Без обводки, только свечение</h2>
+            <p class="variant-desc">Нет границы, только свечение вокруг кнопки</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: none; box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 7 -->
+        <div class="variant-section variant-7">
+            <h2 class="variant-title">Вариант 7: Тонкая обводка + рассеянное свечение</h2>
+            <p class="variant-desc">1px обводка + очень мягкое большое свечение (35px)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 35px rgba(0, 217, 255, 0.25);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 8 -->
+        <div class="variant-section variant-8">
+            <h2 class="variant-title">Вариант 8: Обводка + свечение снизу</h2>
+            <p class="variant-desc">1px обводка + тень только снизу (как подъём)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 9 -->
+        <div class="variant-section variant-9">
+            <h2 class="variant-title">Вариант 9: Многослойное свечение</h2>
+            <p class="variant-desc">1px обводка + три слоя свечения для плавности</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: 0 0 10px rgba(0, 217, 255, 0.4), 0 0 20px rgba(0, 217, 255, 0.2), 0 0 30px rgba(0, 217, 255, 0.1);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 10 -->
+        <div class="variant-section variant-10">
+            <h2 class="variant-title">Вариант 10: Градиентная обводка</h2>
+            <p class="variant-desc">2px градиентная граница (голубой → синий)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> background-image: linear-gradient(...), linear-gradient(135deg, #00d9ff, #0099ff); background-origin: border-box; background-clip: padding-box, border-box;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 11 -->
+        <div class="variant-section variant-11">
+            <h2 class="variant-title">Вариант 11: Внутреннее + внешнее свечение</h2>
+            <p class="variant-desc">1px обводка + свечение внутри и снаружи</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: inset 0 0 10px rgba(0, 217, 255, 0.1), 0 0 15px rgba(0, 217, 255, 0.3);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 12 -->
+        <div class="variant-section variant-12">
+            <h2 class="variant-title">Вариант 12: Минималистичный (без тени)</h2>
+            <p class="variant-desc">Только обводка и цвет текста, без свечения</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> border: 1px solid #00d9ff; box-shadow: none;
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Интерактивность
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.subcategory-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.subcategory-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

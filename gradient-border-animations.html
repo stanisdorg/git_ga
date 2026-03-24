@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Градиентная обводка - Варианты анимации</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .variant-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .variant-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #00d9ff;
+        }
+
+        .variant-desc {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            background: rgba(30, 35, 45, 0.4);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .subcategories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Общие стили для неактивных табов */
+        .tab {
+            padding: 10px 18px;
+            background: rgba(30, 35, 45, 0.7);
+            border: 1px solid rgba(100, 150, 200, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #aaa;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: rgba(40, 50, 65, 0.8);
+            border-color: rgba(100, 150, 200, 0.3);
+            color: #fff;
+        }
+
+        /* Общие стили для подкатегорий */
+        .subcategory-card {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .subcategory-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .subcategory-card.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        /* ==================== ВАРИАНТ 1: Плавное появление ==================== */
+        .variant-1 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: gradientFadeIn 0.4s ease-out;
+        }
+
+        @keyframes gradientFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ==================== ВАРИАНТ 2: Скольжение границы ==================== */
+        .variant-2 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .variant-2 .tab.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.2), transparent);
+            animation: borderSlide 0.6s ease-out;
+        }
+
+        @keyframes borderSlide {
+            from {
+                left: -100%;
+            }
+            to {
+                left: 100%;
+            }
+        }
+
+        /* ==================== ВАРИАНТ 3: Пульсация ==================== */
+        .variant-3 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: pulse 0.5s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            }
+        }
+
+        /* ==================== ВАРИАНТ 4: Вращающаяся граница ==================== */
+        .variant-4 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            position: relative;
+        }
+
+        .variant-4 .tab.active::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #00d9ff, #0099ff, #00d9ff, #0099ff);
+            background-size: 300% 300%;
+            z-index: -1;
+            animation: gradientRotate 3s linear infinite;
+            opacity: 0;
+            animation: borderAppear 0.4s ease-out forwards, gradientRotate 3s linear infinite;
+        }
+
+        @keyframes borderAppear {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes gradientRotate {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* ==================== ВАРИАНТ 5: Волна ==================== */
+        .variant-5 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: waveIn 0.5s ease-out;
+        }
+
+        @keyframes waveIn {
+            0% {
+                transform: scaleX(0.8) scaleY(0.9);
+                opacity: 0;
+            }
+            60% {
+                transform: scaleX(1.02) scaleY(1.02);
+                opacity: 1;
+            }
+            100% {
+                transform: scaleX(1) scaleY(1);
+            }
+        }
+
+        /* ==================== ВАРИАНТ 6: Быстрое появление ==================== */
+        .variant-6 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: quickAppear 0.2s ease-out;
+        }
+
+        @keyframes quickAppear {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== ВАРИАНТ 7: Медленное появление ==================== */
+        .variant-7 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: slowAppear 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slowAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* ==================== ВАРИАНТ 8: От центра ==================== */
+        .variant-8 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: expandFromCenter 0.4s ease-out;
+        }
+
+        @keyframes expandFromCenter {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ==================== ВАРИАНТ 9: Пружина ==================== */
+        .variant-9 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            animation: spring 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes spring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ==================== ВАРИАНТ 10: Без анимации ==================== */
+        .variant-10 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(30, 35, 45, 0.95), rgba(30, 35, 45, 0.95)), linear-gradient(135deg, #00d9ff, #0099ff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            /* No animation */
+        }
+
+        .tech-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .animation-info {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #00d9ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Градиентная обводка - Варианты анимации</h1>
+
+        <!-- ВАРИАНТ 1 -->
+        <div class="variant-section variant-1">
+            <h2 class="variant-title">Вариант 1: Плавное появление (0.4s)</h2>
+            <p class="variant-desc">Мягкое увеличение и появление</p>
+            <div class="animation-info">⏱ 0.4s ease-out | scale(0.95 → 1) + opacity</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: gradientFadeIn 0.4s ease-out;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 2 -->
+        <div class="variant-section variant-2">
+            <h2 class="variant-title">Вариант 2: Скольжение границы</h2>
+            <p class="variant-desc">Световая волна проходит по границе</p>
+            <div class="animation-info">⏱ 0.6s ease-out | sliding highlight</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: borderSlide 0.6s ease-out;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 3 -->
+        <div class="variant-section variant-3">
+            <h2 class="variant-title">Вариант 3: Пульсация</h2>
+            <p class="variant-desc">Увеличение с усилением свечения</p>
+            <div class="animation-info">⏱ 0.5s | scale(1 → 1.05 → 1) + glow</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: pulse 0.5s ease-out;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 4 -->
+        <div class="variant-section variant-4">
+            <h2 class="variant-title">Вариант 4: Вращающаяся граница</h2>
+            <p class="variant-desc">Градиент вращается по границе</p>
+            <div class="animation-info">⏱ 3s infinite | rotating gradient</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: gradientRotate 3s linear infinite;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5 -->
+        <div class="variant-section variant-5">
+            <h2 class="variant-title">Вариант 5: Волна</h2>
+            <p class="variant-desc">Эффект волны при появлении</p>
+            <div class="animation-info">⏱ 0.5s ease-out | scaleX/scaleY wave</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: waveIn 0.5s ease-out;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 6 -->
+        <div class="variant-section variant-6">
+            <h2 class="variant-title">Вариант 6: Быстрое появление</h2>
+            <p class="variant-desc">Моментальное появление с небольшим подъёмом</p>
+            <div class="animation-info">⏱ 0.2s ease-out | translateY(5px)</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: quickAppear 0.2s ease-out;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 7 -->
+        <div class="variant-section variant-7">
+            <h2 class="variant-title">Вариант 7: Медленное появление</h2>
+            <p class="variant-desc">Плавное появление с cubic-bezier</p>
+            <div class="animation-info">⏱ 0.8s cubic-bezier(0.4, 0, 0.2, 1)</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: slowAppear 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 8 -->
+        <div class="variant-section variant-8">
+            <h2 class="variant-title">Вариант 8: От центра</h2>
+            <p class="variant-desc">Расширение из центра (0 → 1)</p>
+            <div class="animation-info">⏱ 0.4s ease-out | scale(0 → 1)</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: expandFromCenter 0.4s ease-out;
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 9 -->
+        <div class="variant-section variant-9">
+            <h2 class="variant-title">Вариант 9: Пружина</h2>
+            <p class="variant-desc">Эффект пружины с overshoot</p>
+            <div class="animation-info">⏱ 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> animation: spring 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 10 -->
+        <div class="variant-section variant-10">
+            <h2 class="variant-title">Вариант 10: Без анимации</h2>
+            <p class="variant-desc">Мгновенное появление без эффектов</p>
+            <div class="animation-info">⏱ Нет анимации | instant</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+                <div class="tab">Тестирование</div>
+                <div class="tab">Техники тест дизайна</div>
+                <div class="tab">Технические</div>
+                <div class="tab">Типы, виды тестирования</div>
+                <div class="tab active">DevOps</div>
+                <div class="tab">Graphql, grpc</div>
+                <div class="tab">MindMap</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card active">Коммуникация</div>
+                <div class="subcategory-card">Планирование</div>
+            </div>
+            <div class="tech-note">
+                <strong>CSS:</strong> No animation (instant state change)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Интерактивность
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.subcategory-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.subcategory-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

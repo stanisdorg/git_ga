@@ -110,7 +110,8 @@ body:has(#stats-container) {
     max-width: none;
     margin: 0 12px 0 calc(48px + 12px); /* Отступ: 60px слева (сайдбар 48px + 12px), 12px справа */
     padding: 0 0 80px 0; /* Отступ для навигации снизу */
-    overflow-y: visible; /* Скролл на body */
+    overflow-y: visible !important; /* Скролл на body */
+    overflow-x: visible !important;
     max-height: none; /* Убираем ограничение */
 }
 

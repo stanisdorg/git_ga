@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Варианты заливки активной категории</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .variant-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .variant-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #00d9ff;
+        }
+
+        .variant-desc {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(30, 35, 45, 0.4);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .subcategories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Общие стили для неактивных табов */
+        .tab {
+            padding: 10px 18px;
+            background: rgba(30, 35, 45, 0.7);
+            border: 1px solid rgba(100, 150, 200, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .tab:hover {
+            background: rgba(40, 50, 65, 0.8);
+            border-color: rgba(100, 150, 200, 0.3);
+            color: #fff;
+        }
+
+        /* Общие стили для подкатегорий (текущие цвета) */
+        .subcategory-card {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .subcategory-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .subcategory-card.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        /* ==================== ВАРИАНТ 1: Оригинал (светлый) ==================== */
+        .variant-1 .tab.active {
+            background: linear-gradient(135deg, #00d9ff, #0099ff);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 2: Чуть темнее ==================== */
+        .variant-2 .tab.active {
+            background: linear-gradient(135deg, #00c0e6, #0088cc);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 3: Ещё темнее ==================== */
+        .variant-3 .tab.active {
+            background: linear-gradient(135deg, #00a8d0, #0077b5);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 4: Средний тон ==================== */
+        .variant-4 .tab.active {
+            background: linear-gradient(135deg, #0090ba, #006699);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 5: Тёмно-голубой ==================== */
+        .variant-5 .tab.active {
+            background: linear-gradient(135deg, #0078a3, #005580);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 6: Тёмный с обводкой ==================== */
+        .variant-6 .tab.active {
+            background: rgba(30, 35, 45, 0.95);
+            border: 2px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 7: Тёмный фон + светлый текст ==================== */
+        .variant-7 .tab.active {
+            background: rgba(20, 25, 35, 0.95);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 8: Полупрозрачный голубой ==================== */
+        .variant-8 .tab.active {
+            background: rgba(0, 217, 255, 0.25);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 9: Полупрозрачный темнее ==================== */
+        .variant-9 .tab.active {
+            background: rgba(0, 217, 255, 0.2);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 10: Как подкатегории ==================== */
+        .variant-10 .tab.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 11: Бирюзовый тёмный ==================== */
+        .variant-11 .tab.active {
+            background: linear-gradient(135deg, #008b8b, #006666);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4), 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        /* ==================== ВАРИАНТ 12: Циан тёмный ==================== */
+        .variant-12 .tab.active {
+            background: linear-gradient(135deg, #007a7a, #005555);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4), 0 0 10px rgba(0, 217, 255, 0.2);
+        }
+
+        .color-comparison {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Варианты заливки активной категории</h1>
+
+        <!-- ВАРИАНТ 1 -->
+        <div class="variant-section variant-1">
+            <h2 class="variant-title">Вариант 1: Оригинал (светло-голубой)</h2>
+            <p class="variant-desc">Яркий голубой градиент — как сейчас на design-variants.html</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #00d9ff, #0099ff);">#00d9ff</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 2 -->
+        <div class="variant-section variant-2">
+            <h2 class="variant-title">Вариант 2: Чуть темнее</h2>
+            <p class="variant-desc">Лёгкое затемнение (#00c0e6 → #0088cc)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #00c0e6, #0088cc);">#00c0e6</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 3 -->
+        <div class="variant-section variant-3">
+            <h2 class="variant-title">Вариант 3: Ещё темнее</h2>
+            <p class="variant-desc">Среднее затемнение (#00a8d0 → #0077b5)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #00a8d0, #0077b5);">#00a8d0</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 4 -->
+        <div class="variant-section variant-4">
+            <h2 class="variant-title">Вариант 4: Средний тон</h2>
+            <p class="variant-desc">Средний тон между светлым и тёмным (#0090ba → #006699)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #0090ba, #006699);">#0090ba</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5 -->
+        <div class="variant-section variant-5">
+            <h2 class="variant-title">Вариант 5: Тёмно-голубой</h2>
+            <p class="variant-desc">Тёмный голубой градиент (#0078a3 → #005580)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #0078a3, #005580);">#0078a3</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 6 -->
+        <div class="variant-section variant-6">
+            <h2 class="variant-title">Вариант 6: Тёмный фон + яркая обводка</h2>
+            <p class="variant-desc">Тёмный фон + двойная голубая обводка</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: rgba(30, 35, 45, 0.95); border: 2px solid #00d9ff;">Тёмный</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 7 -->
+        <div class="variant-section variant-7">
+            <h2 class="variant-title">Вариант 7: Тёмный фон + обводка</h2>
+            <p class="variant-desc">Очень тёмный фон + одинарная обводка</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: rgba(20, 25, 35, 0.95); border: 1px solid #00d9ff;">Тёмный</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 8 -->
+        <div class="variant-section variant-8">
+            <h2 class="variant-title">Вариант 8: Полупрозрачный голубой (25%)</h2>
+            <p class="variant-desc">Полупрозрачный голубой фон + обводка</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.25); border: 1px solid #00d9ff;">25%</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 9 -->
+        <div class="variant-section variant-9">
+            <h2 class="variant-title">Вариант 9: Полупрозрачный (20%)</h2>
+            <p class="variant-desc">Полупрозрачный как подкатегории (20%)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">20%</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 10 -->
+        <div class="variant-section variant-10">
+            <h2 class="variant-title">Вариант 10: Полупрозрачный (15%)</h2>
+            <p class="variant-desc">Чуть прозрачнее чем подкатегории (15%)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.15); border: 1px solid #00d9ff;">15%</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 11 -->
+        <div class="variant-section variant-11">
+            <h2 class="variant-title">Вариант 11: Бирюзовый тёмный</h2>
+            <p class="variant-desc">Тёмная бирюза (#008b8b → #006666)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #008b8b, #006666);">#008b8b</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 12 -->
+        <div class="variant-section variant-12">
+            <h2 class="variant-title">Вариант 12: Циан тёмный</h2>
+            <p class="variant-desc">Тёмный циан (#007a7a → #005555)</p>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+            </div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация</div>
+                <div class="subcategory-card">Баги</div>
+            </div>
+            <div class="color-comparison">
+                <div class="color-swatch" style="background: linear-gradient(135deg, #007a7a, #005555);">#007a7a</div>
+                <div class="color-swatch" style="background: rgba(0, 217, 255, 0.2); border: 1px solid #00d9ff;">Подкат</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Интерактивность
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.subcategory-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.subcategory-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

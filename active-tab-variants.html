@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Варианты активной категории</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e24;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .variant-section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .variant-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #00d9ff;
+        }
+
+        .variant-desc {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(30, 35, 45, 0.4);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .subcategories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Общие стили для неактивных табов */
+        .tab {
+            padding: 10px 18px;
+            background: rgba(30, 35, 45, 0.7);
+            border: 1px solid rgba(100, 150, 200, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .tab:hover {
+            background: rgba(40, 50, 65, 0.8);
+            border-color: rgba(100, 150, 200, 0.3);
+            color: #fff;
+        }
+
+        /* Общие стили для подкатегорий (текущие цвета) */
+        .subcategory-card {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .subcategory-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .subcategory-card.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+
+        /* ==================== ВАРИАНТ 1: Тёмно-синий (текущий) ==================== */
+        .variant-1 .tab.active {
+            background: linear-gradient(135deg, #00d9ff, #0099ff);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 2: Тёмно-синий приглушённый ==================== */
+        .variant-2 .tab.active {
+            background: linear-gradient(135deg, #1a5f7a, #159895);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(26, 95, 122, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 3: Глубокий синий ==================== */
+        .variant-3 .tab.active {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border-color: rgba(0, 217, 255, 0.5);
+            color: #00d9ff;
+            box-shadow: 0 4px 15px rgba(15, 52, 96, 0.5);
+        }
+
+        /* ==================== ВАРИАНТ 4: Фиолетово-синий ==================== */
+        .variant-4 .tab.active {
+            background: linear-gradient(135deg, #3d5a80, #293241);
+            border-color: rgba(98, 162, 255, 0.4);
+            color: #e0fbfc;
+            box-shadow: 0 4px 15px rgba(61, 90, 128, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 5: Тёмный циан ==================== */
+        .variant-5 .tab.active {
+            background: linear-gradient(135deg, #006d77, #008b8b);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 109, 119, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 6: Индиго ==================== */
+        .variant-6 .tab.active {
+            background: linear-gradient(135deg, #2d4059, #394e6a);
+            border-color: rgba(100, 150, 200, 0.4);
+            color: #e8e8e8;
+            box-shadow: 0 4px 15px rgba(45, 64, 89, 0.5);
+        }
+
+        /* ==================== ВАРИАНТ 7: Тёмный градиент с акцентом ==================== */
+        .variant-7 .tab.active {
+            background: linear-gradient(135deg, #1e3a5f, #0a1628);
+            border-top: 2px solid #00d9ff;
+            border-color: rgba(0, 217, 255, 0.3);
+            color: #00d9ff;
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.2);
+        }
+
+        /* ==================== ВАРИАНТ 8: Минималистичный тёмный ==================== */
+        .variant-8 .tab.active {
+            background: rgba(30, 40, 55, 0.9);
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ==================== ВАРИАНТ 9: Синий с внутренней тенью ==================== */
+        .variant-9 .tab.active {
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+            border: 1px solid rgba(100, 150, 200, 0.25);
+            color: #bee3f8;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 15px rgba(26, 54, 93, 0.4);
+        }
+
+        /* ==================== ВАРИАНТ 10: Приглушённый бирюзовый ==================== */
+        .variant-10 .tab.active {
+            background: linear-gradient(135deg, #2c7a7b, #285e61);
+            border-color: transparent;
+            color: #e6fffa;
+            box-shadow: 0 4px 15px rgba(44, 122, 123, 0.4);
+        }
+
+        .category-label {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Варианты активной категории</h1>
+
+        <!-- ВАРИАНТ 1 -->
+        <div class="variant-section variant-1">
+            <h2 class="variant-title">Вариант 1: Текущий (ярко-голубой)</h2>
+            <p class="variant-desc">Яркий голубой градиент — как сейчас на сайте</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 2 -->
+        <div class="variant-section variant-2">
+            <h2 class="variant-title">Вариант 2: Тёмно-синий приглушённый</h2>
+            <p class="variant-desc">Приглушённый сине-зелёный градиент</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 3 -->
+        <div class="variant-section variant-3">
+            <h2 class="variant-title">Вариант 3: Глубокий синий</h2>
+            <p class="variant-desc">Тёмно-синий фон + голубая граница + голубой текст</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 4 -->
+        <div class="variant-section variant-4">
+            <h2 class="variant-title">Вариант 4: Фиолетово-синий</h2>
+            <p class="variant-desc">Серо-синий с фиолетовым оттенком</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 5 -->
+        <div class="variant-section variant-5">
+            <h2 class="variant-title">Вариант 5: Тёмный циан</h2>
+            <p class="variant-desc">Тёмный циан/бирюза</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 6 -->
+        <div class="variant-section variant-6">
+            <h2 class="variant-title">Вариант 6: Индиго</h2>
+            <p class="variant-desc">Тёмный индиго с серым оттенком</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 7 -->
+        <div class="variant-section variant-7">
+            <h2 class="variant-title">Вариант 7: Тёмный с верхней границей</h2>
+            <p class="variant-desc">Тёмный фон + голубая верхняя граница</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 8 -->
+        <div class="variant-section variant-8">
+            <h2 class="variant-title">Вариант 8: Минималистичный тёмный</h2>
+            <p class="variant-desc">Просто тёмный фон с тонкой границей</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 9 -->
+        <div class="variant-section variant-9">
+            <h2 class="variant-title">Вариант 9: Синий с внутренней тенью</h2>
+            <p class="variant-desc">Синий градиент + внутренняя тень для объёма</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+
+        <!-- ВАРИАНТ 10 -->
+        <div class="variant-section variant-10">
+            <h2 class="variant-title">Вариант 10: Приглушённый бирюзовый</h2>
+            <p class="variant-desc">Тёмная бирюза/морская волна</p>
+            <div class="category-label">Категории:</div>
+            <div class="tabs-container">
+                <div class="tab">Все вопросы</div>
+                <div class="tab">★</div>
+                <div class="tab">Архитектура</div>
+                <div class="tab">Безопасность</div>
+                <div class="tab active">Взаимодействие</div>
+                <div class="tab">Документация</div>
+                <div class="tab">Опыт</div>
+                <div class="tab">Процессы</div>
+            </div>
+            <div class="category-label">Подкатегории (текущие цвета):</div>
+            <div class="subcategories-container">
+                <div class="subcategory-card active">Все подкатегории</div>
+                <div class="subcategory-card">Адаптация нового сотрудника</div>
+                <div class="subcategory-card">Баги и Отчеты</div>
+                <div class="subcategory-card">Взаимодействие</div>
+                <div class="subcategory-card">Взаимодействие с другими командами</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Интерактивность для демонстрации
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.subcategory-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.subcategory-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
