@@ -271,7 +271,8 @@ const server = http.createServer((req, res) => {
                        req.url.startsWith('/metadata') || 
                        req.url.startsWith('/trash') || 
                        req.url.startsWith('/restore') || 
-                       req.url.startsWith('/duplicate');
+                       req.url.startsWith('/duplicate') ||
+                       req.url.includes('/bot-webhook/');
 
   // 🔒 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ ПРАВ
   // isEditor: true для проверки прав editor/admin, false для проверки только admin
@@ -417,28 +418,36 @@ const server = http.createServer((req, res) => {
     loginAttempts.delete(ip);
   }
 
-  // 🤖 Telegram Bot Webhook (v6.09.4)
-  if (req.method === 'POST' && req.url === `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`) {
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', async () => {
-      try {
-        const update = JSON.parse(body);
-        if (update.message) {
-          await handleBotCommand(update.message);
+    // 🤖 Telegram Bot Webhook (v6.09.4)
+    const webhookUrl = `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`;
+    if (req.method === 'POST' && req.url === webhookUrl) {
+      console.log('[TG Bot Webhook] Получено входящее обновление');
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', async () => {
+        try {
+          if (!body) {
+            console.warn('[TG Bot Webhook] Пустое тело запроса');
+            res.writeHead(200);
+            res.end();
+            return;
+          }
+          const update = JSON.parse(body);
+          if (update.message) {
+            await handleBotCommand(update.message);
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (e) {
+          console.error('[TG Bot Webhook] Error:', e);
+          res.writeHead(200); // Telegram требует 200 чтобы не слать повторно
+          res.end();
         }
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: true }));
-      } catch (e) {
-        console.error('[TG Bot Webhook] Error:', e);
-        res.writeHead(200); // Telegram требует 200 чтобы не слать повторно
-        res.end();
-      }
-    });
-    return;
-  }
+      });
+      return;
+    }
 
-  // POST /api/auth/telegram - Вход через Telegram (v6.09)
+    // POST /api/auth/telegram - Вход через Telegram (v6.09)
   if (req.method === 'POST' && req.url === '/api/auth/telegram') {
     console.log('[TG Auth] Входящий запрос на авторизацию');
     let body = '';
@@ -1740,4 +1749,32 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, IP, () => {
   console.log(`Server running at http://${IP}:${PORT}/`);
   console.log(`Open http://localhost:${PORT}/ in your browser`);
+
+  // Автоматическая установка команд меню в Telegram (v6.09.4)
+  const menuCommands = JSON.stringify({
+    commands: [
+      { command: 'users', description: 'Список всех пользователей' },
+      { command: 'setrole', description: 'Изменить роль (username role)' },
+      { command: 'start', description: 'Перезапустить / Справка' }
+    ]
+  });
+
+  const options = {
+    hostname: 'api.telegram.org',
+    path: `/bot${TELEGRAM_BOT_TOKEN}/setMyCommands`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(menuCommands)
+    }
+  };
+
+  const req = http.request(options, (res) => {
+    let body = '';
+    res.on('data', chunk => body += chunk);
+    res.on('end', () => console.log('[TG Bot] Команды меню обновлены:', body));
+  });
+  req.on('error', (e) => console.error('[TG Bot] Ошибка обновления команд меню:', e));
+  req.write(menuCommands);
+  req.end();
 });
