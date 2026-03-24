@@ -2032,10 +2032,12 @@ body.learning-mode #bottom-nav {
     .username-display {
         font-size: 11px !important;
         margin-right: 4px !important;
-        max-width: 80px !important;
+        max-width: 120px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
     }
     .level-container-right {
         margin-left: 4px !important;
@@ -2261,10 +2263,12 @@ body.learning-mode #bottom-nav {
     .username-display {
         font-size: 11px !important;
         margin-right: 4px !important;
-        max-width: 60px !important;
+        max-width: 100px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
     }
     .level-container-right {
         margin-left: auto !important;
