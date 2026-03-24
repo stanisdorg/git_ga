@@ -294,7 +294,7 @@ async function autoLoadUserData() {
 
     // Загружаем данные через srs/storage.js
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.09');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.09.4');
         await loadFromServer();
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);

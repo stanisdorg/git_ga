@@ -1,8 +1,8 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.09';
-import { syncFavorite } from './storage.js?v=6.09';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09';
-import { getTodaysSession } from './category-scheduler.js?v=6.09';
-import { startLearnSession } from './learn-ui.js?v=6.09';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.09.4';
+import { syncFavorite } from './storage.js?v=6.09.4';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09.4';
+import { getTodaysSession } from './category-scheduler.js?v=6.09.4';
+import { startLearnSession } from './learn-ui.js?v=6.09.4';
 import { applyFormatting } from './text-formatter.js';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)

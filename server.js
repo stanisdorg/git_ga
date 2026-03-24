@@ -1,4 +1,5 @@
 import http from 'http';
+import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.09.2 (Bypass fix)';
+const VERSION = '6.09.4 (Webhook fix)';
 
 console.log('========================================');
 console.log(`[SERVER] Starting QA Assistant v${VERSION}...`);
@@ -89,7 +90,7 @@ async function checkTelegramSubscription(userId) {
   try {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getChatMember?chat_id=${TELEGRAM_CHANNEL_ID}&user_id=${userId}`;
     const response = await new Promise((resolve, reject) => {
-      http.get(url, (res) => {
+      https.get(url, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => resolve(JSON.parse(data)));
@@ -130,7 +131,7 @@ async function sendTelegramMessage(chatId, text) {
     };
 
     return new Promise((resolve, reject) => {
-      const req = http.request(options, (res) => {
+      const req = https.request(options, (res) => {
         let responseBody = '';
         res.on('data', chunk => responseBody += chunk);
         res.on('end', () => resolve(JSON.parse(responseBody)));
@@ -238,6 +239,41 @@ const server = http.createServer((req, res) => {
   }, 'HTTP');
 
   console.log(`${ts} - ${req.method} ${req.url}`);
+
+  // 🤖 [CRITICAL] Telegram Bot Webhook (v6.09.4)
+  // Выносим в самое начало, до любых проверок прав и статики
+  const webhookUrl = `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`;
+  if (req.method === 'POST' && (urlObj.pathname === webhookUrl || urlObj.pathname === webhookUrl + '/')) {
+    console.log(`[TG Bot Webhook] >>> Входящее обновление (${req.url})`);
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        if (!body) {
+          console.warn('[TG Bot Webhook] Пустое тело запроса');
+          res.writeHead(200);
+          res.end();
+          return;
+        }
+        
+        const update = JSON.parse(body);
+        console.log('[TG Bot Webhook] JSON распарсен, тип:', update.message ? 'message' : 'other');
+        
+        if (update.message) {
+          console.log(`[TG Bot Webhook] Команда от ${update.message.from.username || update.message.from.id}: ${update.message.text}`);
+          await handleBotCommand(update.message);
+        }
+        
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        console.error('[TG Bot Webhook] CRITICAL ERROR:', e);
+        res.writeHead(200); // Telegram требует 200 чтобы не слать повторно
+        res.end();
+      }
+    });
+    return;
+  }
 
   // Логирование всех POST запросов для отладки
   if (req.method === 'POST') {
@@ -380,71 +416,42 @@ const server = http.createServer((req, res) => {
   // };
   const activeTokens = new Map(); // Keep for future use
 
-  // 🔒 RATE LIMITING ДЛЯ LOGIN (защита от brute-force)
-  const loginAttempts = new Map(); // IP → { count, lastAttempt }
-  const MAX_ATTEMPTS = 5;
-  const BLOCK_TIME_MS = 15 * 60 * 1000; // 15 минут блокировки
+    // 🔒 RATE LIMITING ДЛЯ LOGIN (защита от brute-force)
+    const loginAttempts = new Map(); // IP → { count, lastAttempt }
+    const MAX_ATTEMPTS = 5;
+    const BLOCK_TIME_MS = 15 * 60 * 1000; // 15 минут блокировки
 
-  function checkRateLimit(ip) {
-    const now = Date.now();
-    const attempt = loginAttempts.get(ip);
+    function checkRateLimit(ip) {
+      const now = Date.now();
+      const attempt = loginAttempts.get(ip);
 
-    if (attempt) {
-      // Если прошло больше BLOCK_TIME_MS, сбрасываем счётчик
-      if (now - attempt.lastAttempt > BLOCK_TIME_MS) {
-        loginAttempts.delete(ip);
+      if (attempt) {
+        // Если прошло больше BLOCK_TIME_MS, сбрасываем счётчик
+        if (now - attempt.lastAttempt > BLOCK_TIME_MS) {
+          loginAttempts.delete(ip);
+          return { allowed: true };
+        }
+
+        // Если превышен лимит попыток
+        if (attempt.count >= MAX_ATTEMPTS) {
+          const remainingTime = Math.ceil((BLOCK_TIME_MS - (now - attempt.lastAttempt)) / 60000);
+          return { allowed: false, remainingMinutes: remainingTime };
+        }
+
+        // Увеличиваем счётчик
+        attempt.count++;
+        attempt.lastAttempt = now;
+        loginAttempts.set(ip, attempt);
         return { allowed: true };
       }
 
-      // Если превышен лимит попыток
-      if (attempt.count >= MAX_ATTEMPTS) {
-        const remainingTime = Math.ceil((BLOCK_TIME_MS - (now - attempt.lastAttempt)) / 60000);
-        return { allowed: false, remainingMinutes: remainingTime };
-      }
-
-      // Увеличиваем счётчик
-      attempt.count++;
-      attempt.lastAttempt = now;
-      loginAttempts.set(ip, attempt);
+      // Первая попытка
+      loginAttempts.set(ip, { count: 1, lastAttempt: now });
       return { allowed: true };
     }
 
-    // Первая попытка
-    loginAttempts.set(ip, { count: 1, lastAttempt: now });
-    return { allowed: true };
-  }
-
-  function resetRateLimit(ip) {
-    loginAttempts.delete(ip);
-  }
-
-    // 🤖 Telegram Bot Webhook (v6.09.4)
-    const webhookUrl = `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`;
-    if (req.method === 'POST' && req.url === webhookUrl) {
-      console.log('[TG Bot Webhook] Получено входящее обновление');
-      let body = '';
-      req.on('data', chunk => { body += chunk; });
-      req.on('end', async () => {
-        try {
-          if (!body) {
-            console.warn('[TG Bot Webhook] Пустое тело запроса');
-            res.writeHead(200);
-            res.end();
-            return;
-          }
-          const update = JSON.parse(body);
-          if (update.message) {
-            await handleBotCommand(update.message);
-          }
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ ok: true }));
-        } catch (e) {
-          console.error('[TG Bot Webhook] Error:', e);
-          res.writeHead(200); // Telegram требует 200 чтобы не слать повторно
-          res.end();
-        }
-      });
-      return;
+    function resetRateLimit(ip) {
+      loginAttempts.delete(ip);
     }
 
     // POST /api/auth/telegram - Вход через Telegram (v6.09)
@@ -1769,7 +1776,7 @@ server.listen(PORT, IP, () => {
     }
   };
 
-  const req = http.request(options, (res) => {
+  const req = https.request(options, (res) => {
     let body = '';
     res.on('data', chunk => body += chunk);
     res.on('end', () => console.log('[TG Bot] Команды меню обновлены:', body));
