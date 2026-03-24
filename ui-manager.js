@@ -6,14 +6,14 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '6.09.4';
+export const APP_VERSION = '6.10.0';
 
 let uiInitialized = false;
 
 // Функция для инициализации UI
 export function initUI() {
     console.log('initUI called');
-    
+
     // Скрываем строку поиска СРАЗУ если это страница статистики
     const isStats = location.hash && location.hash.includes('stats');
     if (isStats) {
@@ -102,11 +102,11 @@ function addStyles() {
     // Удаляем существующие стили для UI вариантов
     const existingStylesheet = document.getElementById('ui-variant-styles');
     if (existingStylesheet) existingStylesheet.remove();
-    
+
     // Создаем новый элемент style
     const stylesheet = document.createElement('style');
     stylesheet.id = 'ui-variant-styles';
-    
+
     // Добавляем общие стили с измененными параметрами для span элементов
     stylesheet.textContent = `
         /* Общие стили */
@@ -168,7 +168,7 @@ function addStyles() {
             color: #aaa;
         }
     `;
-    
+
     // Добавляем стили для табов и карточек
     stylesheet.textContent += `
         /* Стили для табов */
@@ -271,7 +271,7 @@ function addStyles() {
         .fav-btn svg path { fill: none; stroke: #d0d0d0; stroke-width: 1.6; }
         .fav-btn.fav-active svg path { fill: #d0d0d0; stroke: #d0d0d0; }
     `;
-    
+
     document.head.appendChild(stylesheet);
 }
 

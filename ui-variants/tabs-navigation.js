@@ -1438,38 +1438,103 @@ export function initTabsNavigation(appVersion) {
                 ov.id = 'login-overlay';
                 ov.style.position = 'fixed';
                 ov.style.inset = '0';
-                ov.style.background = 'rgba(0,0,0,0.6)';
+                ov.style.background = 'rgba(0, 0, 0, 0.2)';
+                ov.style.backdropFilter = 'blur(8px)';
+                ov.style.webkitBackdropFilter = 'blur(8px)';
                 ov.style.display = 'flex';
                 ov.style.alignItems = 'center';
                 ov.style.justifyContent = 'center';
                 ov.style.zIndex = '5000';
                 ov.innerHTML = `
-                <div style="background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
-                    <div style="font-weight:600;margin-bottom:10px">Вход</div>
-                    <form id="login-form" autocomplete="on" style="display:flex;flex-direction:column;gap:8px">
-                        <input id="login-username" name="username" autocomplete="username" placeholder="Логин" style="width:100%;box-sizing:border-box;padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                <div class="glass-card" style="
+                    position: relative;
+                    background: linear-gradient(135deg, 
+                        rgba(255,255,255,0.1) 0%, 
+                        rgba(255,255,255,0.05) 50%, 
+                        rgba(255,255,255,0.02) 100%);
+                    backdrop-filter: blur(40px) saturate(180%);
+                    -webkit-backdrop-filter: blur(40px) saturate(180%);
+                    padding: 24px 28px;
+                    border-radius: 20px;
+                    width: 360px;
+                    box-shadow: 
+                        0 20px 60px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.2),
+                        inset 0 -1px 0 rgba(0,0,0,0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
+                    border-top: 1px solid rgba(255, 255, 255, 0.3);
+                    border-left: 1px solid rgba(255, 255, 255, 0.2);
+                    overflow: hidden;
+                ">
+                    <!-- Блик сверху -->
+                    <div style="
+                        position: absolute;
+                        top: 0; left: 0; right: 0;
+                        height: 1px;
+                        background: linear-gradient(90deg, 
+                            transparent, 
+                            rgba(255,255,255,0.4), 
+                            transparent);
+                    "></div>
+                    
+                    <div style="font-weight:600;margin-bottom:16px;color:#fff;font-size:18px;letter-spacing:-0.3px;text-align:center">Вход</div>
+                    <form id="login-form" autocomplete="on" style="display:flex;flex-direction:column;gap:10px">
+                        <input id="login-username" name="username" autocomplete="username" placeholder="Логин" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
                         <div style="position:relative;display:block">
-                            <input id="login-password" name="password" autocomplete="current-password" placeholder="Пароль" type="password" style="width:100%;box-sizing:border-box;padding:8px 36px 8px 8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
-                            <button type="button" id="login-pass-eye" title="Показать пароль" aria-label="Показать пароль" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:#ccc;width:22px;height:22px">
+                            <input id="login-password" name="password" autocomplete="current-password" placeholder="Пароль" type="password" style="width:100%;box-sizing:border-box;padding:10px 36px 10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
+                            <button type="button" id="login-pass-eye" title="Показать пароль" aria-label="Показать пароль" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:rgba(255,255,255,0.6);width:22px;height:22px;cursor:pointer;transition:color 0.2s">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
-                        <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:#ddd">
-                            <input type="checkbox" id="login-remember" checked />
+                        <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:rgba(255,255,255,0.6)">
+                            <input type="checkbox" id="login-remember" checked style="accent-color:rgba(255,255,255,0.3)"/>
                             Оставаться в системе
                         </label>
-                        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
-                            <button id="login-cancel" type="button" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Отмена</button>
-                            <button id="login-submit" type="submit" style="padding:8px 12px;border-radius:6px;border:1px solid #e0b000;background:#ffd54f;color:#111;font-weight:700">Войти</button>
+                        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+                            <button id="login-cancel" type="button" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;transition:all 0.2s">Отмена</button>
+                            <button id="login-submit" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s">Войти</button>
                         </div>
-                        <div style="margin-top:12px;border-top:1px solid #444;padding-top:12px;display:flex;flex-direction:column;align-items:center;gap:8px">
-                            <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px">Или войти через</div>
+                        <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.15);padding-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px">
+                            <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">Или войти через</div>
                             <div id="telegram-login-container"></div>
                         </div>
                     </form>
                 </div>
             `;
                 document.body.appendChild(ov);
+
+                // Добавляем стили для hover-эффектов
+                const loginStyles = document.createElement('style');
+                loginStyles.textContent = `
+                    #login-username:hover,
+                    #login-password:hover {
+                        background: rgba(255,255,255,0.12) !important;
+                        border-color: rgba(255,255,255,0.3) !important;
+                    }
+                    #login-username:focus,
+                    #login-password:focus {
+                        background: rgba(255,255,255,0.15) !important;
+                        border-color: rgba(255,255,255,0.4) !important;
+                        outline: none;
+                        box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+                    }
+                    #login-pass-eye:hover {
+                        color: rgba(255,255,255,0.9) !important;
+                    }
+                    #login-cancel:hover {
+                        background: rgba(255,255,255,0.15) !important;
+                        border-color: rgba(255,255,255,0.3) !important;
+                        color: #fff !important;
+                    }
+                    #login-submit:hover {
+                        background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%) !important;
+                        border-color: rgba(255,255,255,0.4) !important;
+                    }
+                    #login-submit:active {
+                        transform: scale(0.98);
+                    }
+                `;
+                document.head.appendChild(loginStyles);
 
                 // Рендерим виджет Telegram динамически
                 const tgContainer = ov.querySelector('#telegram-login-container');
@@ -1486,7 +1551,7 @@ export function initTabsNavigation(appVersion) {
                 }
 
                 // Глобальный коллбэк для виджета
-                window.onTelegramAuth = async function(user) {
+                window.onTelegramAuth = async function (user) {
                     console.log('[TG Auth] Data received from widget:', user);
                     const authUrl = `${BACKEND_URL}/api/auth/telegram`;
                     console.log('[TG Auth] Sending request to:', authUrl);
@@ -1504,16 +1569,264 @@ export function initTabsNavigation(appVersion) {
                             // Сохраняем данные для автозагрузки
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'telegram');
-                            
+
                             setLoggedUser({ username: data.username, role: data.role });
                             ov.remove();
-                            
+
                             // 🔄 Перезагружаем страницу для чистого входа
                             window.location.reload();
                         } else {
                             if (data.error === 'not_subscribed') {
-                                alert(data.message || 'Чтобы войти, подпишитесь на наш канал!');
+                                // Сохраняем данные пользователя для повторной проверки
+                                sessionStorage.setItem('tgAuthUser', JSON.stringify(user));
+
+                                // Создаём кастомное модальное окно в стиле Liquid Glass
+                                const modal = document.createElement('div');
+                                modal.className = 'tg-subscription-modal';
+                                modal.style.cssText = `
+                                    position: fixed;
+                                    top: 0; left: 0; right: 0; bottom: 0;
+                                    background: rgba(0, 0, 0, 0.2);
+                                    backdrop-filter: blur(8px);
+                                    -webkit-backdrop-filter: blur(8px);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    z-index: 10000;
+                                    animation: fadeIn 0.3s ease;
+                                `;
+                                modal.innerHTML = `
+                                    <div class="glass-card" style="
+                                        position: relative;
+                                        background: linear-gradient(135deg, 
+                                            rgba(255,255,255,0.1) 0%, 
+                                            rgba(255,255,255,0.05) 50%, 
+                                            rgba(255,255,255,0.02) 100%);
+                                        backdrop-filter: blur(40px) saturate(180%);
+                                        -webkit-backdrop-filter: blur(40px) saturate(180%);
+                                        padding: 40px 32px;
+                                        border-radius: 24px;
+                                        max-width: 380px;
+                                        text-align: center;
+                                        box-shadow: 
+                                            0 20px 60px rgba(0, 0, 0, 0.3),
+                                            inset 0 1px 0 rgba(255,255,255,0.2),
+                                            inset 0 -1px 0 rgba(0,0,0,0.1);
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-top: 1px solid rgba(255, 255, 255, 0.3);
+                                        border-left: 1px solid rgba(255, 255, 255, 0.2);
+                                        animation: slideUp 0.4s ease;
+                                        overflow: hidden;
+                                    ">
+                                        <!-- Блик сверху -->
+                                        <div style="
+                                            position: absolute;
+                                            top: 0; left: 0; right: 0;
+                                            height: 1px;
+                                            background: linear-gradient(90deg, 
+                                                transparent, 
+                                                rgba(255,255,255,0.4), 
+                                                transparent);
+                                        "></div>
+                                        
+                                        <!-- Градиентный блик -->
+                                        <div style="
+                                            position: absolute;
+                                            top: -50%; left: -50%;
+                                            width: 200%; height: 200%;
+                                            background: radial-gradient(circle, 
+                                                rgba(255,255,255,0.08) 0%, 
+                                                transparent 60%);
+                                            transform: rotate(30deg);
+                                            pointer-events: none;
+                                        "></div>
+                                        
+                                        <div style="
+                                            position: relative;
+                                            z-index: 1;
+                                        ">
+                                            <div style="
+                                                width: 64px;
+                                                height: 64px;
+                                                margin: 0 auto 20px;
+                                                background: linear-gradient(135deg, 
+                                                    rgba(255,255,255,0.2) 0%, 
+                                                    rgba(255,255,255,0.05) 100%);
+                                                border-radius: 16px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                box-shadow: 
+                                                    0 8px 32px rgba(0,0,0,0.2),
+                                                    inset 0 1px 0 rgba(255,255,255,0.2);
+                                                border: 1px solid rgba(255,255,255,0.1);
+                                            ">
+                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="url(#lockGradient)"/>
+                                                    <defs>
+                                                        <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                            <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+                                                            <stop offset="100%" stop-color="#fff" stop-opacity="0.6"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                </svg>
+                                            </div>
+                                            <h3 style="
+                                                margin: 0 0 12px 0;
+                                                color: #fff;
+                                                font-size: 22px;
+                                                font-weight: 600;
+                                                letter-spacing: -0.3px;
+                                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                            ">Доступ ограничен</h3>
+                                            <p style="
+                                                margin: 0 0 28px 0;
+                                                color: rgba(255, 255, 255, 0.6);
+                                                font-size: 15px;
+                                                line-height: 1.5;
+                                            ">
+                                                Для входа подпишитесь на канал<br>
+                                                <a href="https://t.me/brotherhood_qa" target="_blank" 
+                                                   style="
+                                                       color: #fff;
+                                                       text-decoration: none;
+                                                       font-weight: 500;
+                                                       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                                                       transition: all 0.2s;
+                                                   "
+                                                   onmouseover="this.style.borderColor='rgba(255,255,255,0.6)'"
+                                                   onmouseout="this.style.borderColor='rgba(255,255,255,0.3)'">
+                                                    @brotherhood_qa
+                                                </a>
+                                            </p>
+                                            <button id="tg-check-btn" class="glass-button" style="
+                                                position: relative;
+                                                background: linear-gradient(135deg, 
+                                                    rgba(255,255,255,0.15) 0%, 
+                                                    rgba(255,255,255,0.05) 100%);
+                                                backdrop-filter: blur(20px);
+                                                -webkit-backdrop-filter: blur(20px);
+                                                color: #fff;
+                                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                                border-top: 1px solid rgba(255, 255, 255, 0.3);
+                                                padding: 14px 28px;
+                                                border-radius: 12px;
+                                                font-size: 15px;
+                                                font-weight: 500;
+                                                cursor: pointer;
+                                                width: 100%;
+                                                margin-bottom: 10px;
+                                                transition: all 0.3s ease;
+                                                letter-spacing: -0.2px;
+                                                box-shadow: 
+                                                    0 4px 16px rgba(0,0,0,0.2),
+                                                    inset 0 1px 0 rgba(255,255,255,0.1);
+                                            ">Проверить подписку</button>
+                                            <button id="tg-cancel-btn" style="
+                                                position: relative;
+                                                background: transparent;
+                                                color: rgba(255, 255, 255, 0.5);
+                                                border: none;
+                                                padding: 12px 20px;
+                                                border-radius: 10px;
+                                                font-size: 14px;
+                                                cursor: pointer;
+                                                width: 100%;
+                                                transition: all 0.2s ease;
+                                            ">Отмена</button>
+                                        </div>
+                                    </div>
+                                `;
+                                document.body.appendChild(modal);
+
+                                // Добавляем анимации и стили
+                                const style = document.createElement('style');
+                                style.textContent = `
+                                    @keyframes fadeIn {
+                                        from { opacity: 0; }
+                                        to { opacity: 1; }
+                                    }
+                                    @keyframes slideUp {
+                                        from { opacity: 0; transform: translateY(30px); }
+                                        to { opacity: 1; transform: translateY(0); }
+                                    }
+                                    .glass-button:hover {
+                                        background: linear-gradient(135deg, 
+                                            rgba(255,255,255,0.25) 0%, 
+                                            rgba(255,255,255,0.15) 100%) !important;
+                                        border-color: rgba(255, 255, 255, 0.4) !important;
+                                        border-top-color: rgba(255, 255, 255, 0.5) !important;
+                                    }
+                                    .glass-button:active {
+                                        transform: scale(0.98);
+                                    }
+                                    #tg-cancel-btn:hover {
+                                        color: rgba(255, 255, 255, 0.7);
+                                        background: rgba(255, 255, 255, 0.05);
+                                    }
+                                    .glass-card {
+                                        animation: glassShine 3s ease-in-out infinite;
+                                    }
+                                    @keyframes glassShine {
+                                        0%, 100% { 
+                                            border-color: rgba(255,255,255,0.15);
+                                        }
+                                        50% { 
+                                            border-color: rgba(255,255,255,0.25);
+                                        }
+                                    }
+                                `;
+                                document.head.appendChild(style);
+
+                                // Открываем канал сразу при показе окна
                                 window.open('https://t.me/brotherhood_qa', '_blank');
+
+                                // Кнопка проверки
+                                document.getElementById('tg-check-btn').addEventListener('click', async () => {
+                                    const btn = document.getElementById('tg-check-btn');
+                                    btn.textContent = '⏳ Проверка...';
+                                    btn.style.opacity = '0.7';
+                                    btn.disabled = true;
+
+                                    // Берём сохранённые данные пользователя
+                                    const savedUser = JSON.parse(sessionStorage.getItem('tgAuthUser') || '{}');
+
+                                    // Повторный запрос к серверу
+                                    try {
+                                        const res = await fetch(authUrl, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify(savedUser)
+                                        });
+                                        const data = await res.json();
+
+                                        if (res.ok && data.ok) {
+                                            // Успешный вход
+                                            localStorage.setItem('qaUsername', data.username);
+                                            localStorage.setItem('qaAuthType', 'telegram');
+                                            sessionStorage.removeItem('tgAuthUser');
+                                            setLoggedUser({ username: data.username, role: data.role });
+                                            modal.remove();
+                                            window.location.reload();
+                                        } else {
+                                            // Всё ещё не подписан
+                                            btn.textContent = 'Проверить подписку';
+                                            btn.style.opacity = '1';
+                                            btn.disabled = false;
+                                            alert('Вы всё ещё не подписаны на канал');
+                                        }
+                                    } catch (err) {
+                                        btn.textContent = 'Проверить подписку';
+                                        btn.style.opacity = '1';
+                                        btn.disabled = false;
+                                        alert('Ошибка проверки');
+                                    }
+                                });
+
+                                // Кнопка отмены
+                                document.getElementById('tg-cancel-btn').addEventListener('click', () => {
+                                    modal.remove();
+                                });
                             } else {
                                 alert('Ошибка авторизации через Telegram: ' + (data.error || 'Неизвестная ошибка'));
                             }
