@@ -2033,10 +2033,186 @@
       "answer": "Функциональные — это как работает система. Нефункциональные — это про UI, UX, дизайн, насколько удобно пользователю, например, доступность не менее 99,9% времени в год.\\n\\n--- Дополнительный ответ ---\\nфункц-то как работает система, нефункц-про ui, ux, дизайн, про то насколько удобно пользователю, нефункц- по нагрузке, например: доступность не менее 99,9% времени в год"
     }
   ],
-  "_achievements": {},
+  "_achievements": {
+    "firstSessionCompleted": true
+  },
   "_favorites": [],
-  "_srsProgress": {},
-  "_stats": {},
+  "_srsProgress": {
+    "Access Token": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387784991,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774387784991,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "Access Token"
+    },
+    "2/3ех/многоуровневая": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387786838,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774387786838,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "2/3ех/многоуровневая"
+    },
+    "Foreign Key": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387788479,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774387788479,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "Foreign Key"
+    },
+    "PCT/IP": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387790347,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774387790347,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "PCT/IP"
+    },
+    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387795865,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774387795865,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
+    },
+    "брокеры, кафка, как взаимодействовали сервисы?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387798044,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774387798044,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "брокеры, кафка, как взаимодействовали сервисы?"
+    },
+    "для чего виртуальное окружение?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387799898,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774387799898,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "для чего виртуальное окружение?"
+    },
+    "что в Elements смотришь обычно?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774387801974,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774387801974,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 3,
+      "question": "что в Elements смотришь обычно?"
+    }
+  },
+  "_stats": {
+    "total": 8,
+    "timeSpent": 19030,
+    "points": 35,
+    "correct": 2
+  },
   "_meta": {
     "username": "user_8333264308",
     "role": "admin",

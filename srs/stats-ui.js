@@ -2817,9 +2817,9 @@ function renderStats() {
         <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
-            <div class="st-cat-progress-header">
+            <div class="st-cat-progress-header" onclick="window.toggleCategoryList()" style="cursor: pointer;">
               <div class="st-cat-progress-title">Категории <span id="st-cat-count" style="font-size:12px;color:var(--st-muted);font-weight:400;"></span></div>
-              <button class="st-cat-toggle-btn" onclick="window.toggleCategoryList()" title="Свернуть/развернуть">
+              <button class="st-cat-toggle-btn" title="Свернуть/развернуть" style="pointer-events: none;">
                 <svg class="st-cat-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -4620,7 +4620,7 @@ window.openDiffModal = (index) => {
     const heartFills = getHeartFillPercentages(ef);
     const heartsSvg = renderHeartsSvg(heartFills, 'modal-' + idx);
     const isFav = favorites.has(q.question);
-    
+
     // Применяем форматирование к вопросу и ответу
     const questionFormatting = q.formatting?.question || [];
     const answerFormatting = q.formatting?.answer || [];
@@ -4703,7 +4703,7 @@ window.openCategoryModal = (categoryName) => {
     const heartFills = getHeartFillPercentages(ef);
     const heartsSvg = renderHeartsSvg(heartFills, 'cat-' + idx);
     const isFav = favorites.has(q.question);
-    
+
     // Применяем форматирование к вопросу и ответу
     const questionFormatting = q.formatting?.question || [];
     const answerFormatting = q.formatting?.answer || [];
