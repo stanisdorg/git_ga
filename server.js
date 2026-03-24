@@ -342,7 +342,12 @@ const server = http.createServer((req, res) => {
 
         // 2. Проверка подписки на канал
         const isSubscribed = await checkTelegramSubscription(authData.id);
+        
+        // 🔍 ЛОГ ДЛЯ ОТЛАДКИ (v6.09.3)
+        console.log(`[TG Auth] Результат проверки подписки для ${authData.id}: ${isSubscribed}`);
+
         if (!isSubscribed) {
+          console.warn(`[TG Auth] Доступ запрещен: пользователь ${authData.id} не подписан.`);
           logger.info('Отказано во входе: пользователь не подписан на канал', { id: authData.id }, 'Auth');
           res.writeHead(403, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
@@ -352,6 +357,8 @@ const server = http.createServer((req, res) => {
           }));
           return;
         }
+
+        console.log(`[TG Auth] Доступ разрешен для ${authData.id}. Продолжаем вход...`);
 
         // 3. Работа с базой пользователей
         const usersPath = path.join(__dirname, 'data', 'users.json');
