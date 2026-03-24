@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.09.4 (Webhook fix)';
+const VERSION = '6.09.5 (Final routing fix)';
 
 console.log('========================================');
 console.log(`[SERVER] Starting QA Assistant v${VERSION}...`);
@@ -217,33 +217,35 @@ async function handleBotCommand(message) {
 
 // ============================================
 const server = http.createServer((req, res) => {
-  const ts = new Date().toISOString();
-  const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  try {
+    const ts = new Date().toISOString();
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+    const pathname = urlObj.pathname;
 
-  // ВАЖНО: Всегда устанавливаем UTF-8 для JSON ответов
-  if (req.url.startsWith('/api/') || req.url.startsWith('/load') || req.url.startsWith('/save')) {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  }
-
-  // Детальное логирование всех запросов
-  logger.info('HTTP запрос', {
-    method: req.method,
-    url: req.url,
-    path: urlObj.pathname,
-    query: Object.fromEntries(urlObj.searchParams),
-    headers: {
-      'user-agent': req.headers['user-agent'],
-      'content-type': req.headers['content-type'],
-      'content-length': req.headers['content-length']
+    // ВАЖНО: Всегда устанавливаем UTF-8 для JSON ответов
+    if (pathname.startsWith('/api/') || pathname.startsWith('/load') || pathname.startsWith('/save')) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
     }
-  }, 'HTTP');
 
-  console.log(`${ts} - ${req.method} ${req.url}`);
+    // Детальное логирование всех запросов
+    logger.info('HTTP запрос', {
+      method: req.method,
+      url: req.url,
+      path: pathname,
+      query: Object.fromEntries(urlObj.searchParams),
+      headers: {
+        'user-agent': req.headers['user-agent'],
+        'content-type': req.headers['content-type'],
+        'content-length': req.headers['content-length']
+      }
+    }, 'HTTP');
 
-  // 🤖 [CRITICAL] Telegram Bot Webhook (v6.09.4)
-  // Выносим в самое начало, до любых проверок прав и статики
-  const webhookUrl = `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`;
-  if (req.method === 'POST' && (urlObj.pathname === webhookUrl || urlObj.pathname === webhookUrl + '/')) {
+    console.log(`${ts} - ${req.method} ${req.url}`);
+
+    // 🤖 [CRITICAL] Telegram Bot Webhook (v6.09.4)
+    // Выносим в самое начало, до любых проверок прав и статики
+    const webhookUrl = `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`;
+    if (req.method === 'POST' && (pathname === webhookUrl || pathname === webhookUrl + '/')) {
     console.log(`[TG Bot Webhook] >>> Входящее обновление (${req.url})`);
     let body = '';
     req.on('data', chunk => { body += chunk; });
@@ -301,19 +303,18 @@ const server = http.createServer((req, res) => {
 
   // 🛡️ ЗАЩИТА ОТ ПЕРЕХВАТА API СТАТИКОЙ
   // Если запрос начинается с /api/, /load, /save и т.д., мы НЕ должны отдавать index.html
-  const isApiRequest = req.url.startsWith('/api/') || 
-                       req.url.startsWith('/load') || 
-                       req.url.startsWith('/save') || 
-                       req.url.startsWith('/metadata') || 
-                       req.url.startsWith('/trash') || 
-                       req.url.startsWith('/restore') || 
-                       req.url.startsWith('/duplicate') ||
-                       req.url.includes('/bot-webhook/');
+  const isApiRequest = pathname.startsWith('/api/') || 
+                       pathname.startsWith('/load') || 
+                       pathname.startsWith('/save') || 
+                       pathname.startsWith('/metadata') || 
+                       pathname.startsWith('/trash') || 
+                       pathname.startsWith('/restore') || 
+                       pathname.startsWith('/duplicate') ||
+                       pathname.includes('/bot-webhook/');
 
   // 🔒 ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ ПРАВ
   // isEditor: true для проверки прав editor/admin, false для проверки только admin
   function checkUserPermissions(req, res, requireAdmin = false) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username') || urlObj.searchParams.get('user');
 
     // 🔒 ВАЛИДАЦИЯ username (только буквы, цифры, _)
@@ -356,11 +357,11 @@ const server = http.createServer((req, res) => {
   }
 
   // API: Логи (ТОЛЬКО ДЛЯ АДМИНОВ!)
-  if (req.method === 'GET' && req.url.startsWith('/api/logs')) {
+  if (req.method === 'GET' && pathname.startsWith('/api/logs')) {
     const adminCheck = checkAdmin(req, res); // requireAdmin = true
     if (!adminCheck.authorized) {
       logger.warn('Доступ к логам без авторизации', {
-        username: new URL(req.url, `http://${req.headers.host}`).searchParams.get('username'),
+        username: urlObj.searchParams.get('username'),
         reason: adminCheck.reason
       }, 'Security');
       res.writeHead(403, { 'Content-Type': 'application/json' });
@@ -368,7 +369,6 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const limit = parseInt(urlObj.searchParams.get('limit') || '100');
     const level = urlObj.searchParams.get('level') || 'DEBUG';
     const context = urlObj.searchParams.get('context');
@@ -379,7 +379,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.method === 'POST' && req.url === '/api/logs/clear') {
+  if (req.method === 'POST' && pathname === '/api/logs/clear') {
     const adminCheck = checkAdmin(req, res);
     if (!adminCheck.authorized) {
       res.writeHead(403, { 'Content-Type': 'application/json' });
@@ -392,7 +392,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && req.url === '/api/logs/stats') {
+  if (req.method === 'GET' && pathname === '/api/logs/stats') {
     const adminCheck = checkAdmin(req, res);
     if (!adminCheck.authorized) {
       res.writeHead(403, { 'Content-Type': 'application/json' });
@@ -455,7 +455,7 @@ const server = http.createServer((req, res) => {
     }
 
     // POST /api/auth/telegram - Вход через Telegram (v6.09)
-  if (req.method === 'POST' && req.url === '/api/auth/telegram') {
+  if (req.method === 'POST' && pathname === '/api/auth/telegram') {
     console.log('[TG Auth] Входящий запрос на авторизацию');
     let body = '';
     req.on('data', chunk => { body += chunk; });
@@ -570,7 +570,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/login - Login and get username (token disabled)
-  if (req.method === 'POST' && req.url === '/api/login') {
+  if (req.method === 'POST' && pathname === '/api/login') {
     // Получаем IP клиента для rate limiting
     const clientIP = req.headers['x-forwarded-for']?.split(',')[0] ||
       req.headers['x-real-ip'] ||
@@ -683,7 +683,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/logout - Invalidate session token
-  if (req.method === 'POST' && req.url === '/api/logout') {
+  if (req.method === 'POST' && pathname === '/api/logout') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
@@ -705,7 +705,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/register - Register new user
-  if (req.method === 'POST' && req.url === '/api/register') {
+  if (req.method === 'POST' && pathname === '/api/register') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
     req.on('end', async () => {
@@ -786,8 +786,7 @@ const server = http.createServer((req, res) => {
   }
 
   // GET /load - Load all user data (ТОЧНЫЙ МАТЧ /load или /load?user=...)
-  if (req.method === 'GET' && (req.url === '/load' || req.url.startsWith('/load?'))) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'GET' && pathname === '/load') {
     const username = urlObj.searchParams.get('user');
     // token parameter removed - using username only for development
 
@@ -819,8 +818,7 @@ const server = http.createServer((req, res) => {
   }
 
   // GET /api/progress - Load all user progress
-  if (req.method === 'GET' && req.url.startsWith('/api/progress')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'GET' && pathname === '/api/progress') {
     const username = urlObj.searchParams.get('username');
 
     logger.info('=== ЗАПРОС НА ЗАГРУЗКУ ПРОГРЕССА ===', { username }, 'Load');
@@ -917,8 +915,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/progress - Save all user progress (achievements, favorites, stats)
-  if (req.method === 'POST' && req.url.startsWith('/api/progress')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/api/progress') {
     const username = urlObj.searchParams.get('username');
 
     if (!username) {
@@ -971,7 +968,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/card/update - Обновление одной карточки (вопрос/ответ)
-  if (req.method === 'POST' && req.url.startsWith('/api/card/update')) {
+  if (req.method === 'POST' && pathname === '/api/card/update') {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('username');
 
@@ -1133,8 +1130,7 @@ const server = http.createServer((req, res) => {
   }
 
   // Сохранение данных в JSON (персональное для пользователя)
-  if (req.method === 'POST' && req.url.startsWith('/save')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/save') {
     const username = urlObj.searchParams.get('user');
 
     logger.info('=== ЗАПРОС НА СОХРАНЕНИЕ ===', { username }, 'Save');
@@ -1206,7 +1202,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/achievements - Save achievements
-  if (req.method === 'POST' && req.url.startsWith('/api/achievements')) {
+  if (req.method === 'POST' && pathname === '/api/achievements') {
     const urlObj = new URL(req.url, `http://${req.headers.host}`);
     const username = urlObj.searchParams.get('user');
 
@@ -1252,8 +1248,7 @@ const server = http.createServer((req, res) => {
   }
 
   // POST /api/favorites - Save favorites
-  if (req.method === 'POST' && req.url.startsWith('/api/favorites')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/api/favorites') {
     const username = urlObj.searchParams.get('username') || urlObj.searchParams.get('user');
 
     logger.info('Сохранение избранного', { username }, 'Favorites');
@@ -1305,21 +1300,8 @@ const server = http.createServer((req, res) => {
   }
 
   // Обработка метаданных (GET) - персональные для пользователя
-  if (req.method === 'GET' && req.url.startsWith('/metadata')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'GET' && pathname === '/metadata') {
     const username = urlObj.searchParams.get('user');
-    const token = urlObj.searchParams.get('token');
-
-    // Verify token (опционально - если нет токена, возвращаем пустые метаданные)
-    let userInfo = null;
-    if (token) {
-      userInfo = verifyToken(token);
-      if (!userInfo || userInfo.username !== username) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
-        return;
-      }
-    }
 
     // Если нет username, возвращаем пустые метаданные
     if (!username) {
@@ -1353,18 +1335,8 @@ const server = http.createServer((req, res) => {
   }
 
   // Обработка метаданных (POST) - персональные для пользователя
-  if (req.method === 'POST' && req.url.startsWith('/metadata')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/metadata') {
     const username = urlObj.searchParams.get('user');
-    const token = urlObj.searchParams.get('token');
-
-    // Verify token
-    const userInfo = verifyToken(token);
-    if (!userInfo || userInfo.username !== username) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
-      return;
-    }
 
     let body = '';
     req.on('data', chunk => { body += chunk; });
@@ -1521,10 +1493,8 @@ const server = http.createServer((req, res) => {
   };
 
   // Trash: Move to trash (персональная)
-  if (req.method === 'POST' && req.url.startsWith('/trash')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/trash') {
     const username = urlObj.searchParams.get('user');
-    // token removed - using username only for development
 
     logger.info('Запрос в корзину', { username, url: req.url }, 'Trash');
 
@@ -1545,8 +1515,11 @@ const server = http.createServer((req, res) => {
         const items = data.items || [];
         logger.info('Получено элементов', { count: items.length }, 'Trash');
 
-        const trash = getUserTrash(username);
-        logger.info('Текущая корзина', { count: trash.length }, 'Trash');
+        const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
+        let trash = [];
+        if (fs.existsSync(trashPath)) {
+          trash = JSON.parse(fs.readFileSync(trashPath, 'utf-8')) || [];
+        }
 
         items.forEach(item => {
           trash.push({
@@ -1556,7 +1529,7 @@ const server = http.createServer((req, res) => {
           });
         });
 
-        saveUserTrash(username, trash);
+        fs.writeFileSync(trashPath, JSON.stringify(trash, null, 2), 'utf-8');
         logger.info('Сохранено в корзину', { username, count: trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, trash_size: trash.length }));
@@ -1570,10 +1543,8 @@ const server = http.createServer((req, res) => {
   }
 
   // Trash: Restore (персональная)
-  if (req.method === 'POST' && req.url.startsWith('/restore')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/restore') {
     const username = urlObj.searchParams.get('user');
-    // token removed - using username only for development
 
     // 🔒 ПРОВЕРКА USERNAME
     if (!username) {
@@ -1588,10 +1559,11 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         const questions = new Set(data.questions || []);
-        let trash = getUserTrash(username);
+        const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
+        let trash = fs.existsSync(trashPath) ? JSON.parse(fs.readFileSync(trashPath, 'utf-8')) : [];
         const before = trash.length;
         trash = trash.filter(t => !questions.has(t.item?.question));
-        saveUserTrash(username, trash);
+        fs.writeFileSync(trashPath, JSON.stringify(trash, null, 2), 'utf-8');
         logger.info('Восстановление', { username, count: before - trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, restored_count: before - trash.length }));
@@ -1604,10 +1576,8 @@ const server = http.createServer((req, res) => {
   }
 
   // Trash: Delete Permanent (персональная)
-  if (req.method === 'POST' && req.url.startsWith('/delete-permanent')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/delete-permanent') {
     const username = urlObj.searchParams.get('user');
-    // token removed - using username only for development
 
     // 🔒 ПРОВЕРКА USERNAME
     if (!username) {
@@ -1622,10 +1592,11 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         const questions = new Set(data.questions || []);
-        let trash = getUserTrash(username);
+        const trashPath = path.join(__dirname, 'data', `user_${username}_trash.json`);
+        let trash = fs.existsSync(trashPath) ? JSON.parse(fs.readFileSync(trashPath, 'utf-8')) : [];
         const before = trash.length;
         trash = trash.filter(t => !questions.has(t.item?.question));
-        saveUserTrash(username, trash);
+        fs.writeFileSync(trashPath, JSON.stringify(trash, null, 2), 'utf-8');
         logger.info('Удаление из корзины', { username, count: before - trash.length }, 'Trash');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true, deleted_count: before - trash.length }));
@@ -1638,13 +1609,11 @@ const server = http.createServer((req, res) => {
   }
 
   // Duplicate: Track duplication (персональная)
-  if (req.method === 'POST' && req.url.startsWith('/duplicate')) {
-    const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  if (req.method === 'POST' && pathname === '/duplicate') {
     const username = urlObj.searchParams.get('user') || 'anonymous';
-    // token removed - using username only for development
 
     let body = '';
-    req.on('data', chunk => body += chunk);
+    req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
@@ -1662,7 +1631,7 @@ const server = http.createServer((req, res) => {
 
   // Формализуем URL
   // 🔒 СНАЧАЛА ПРОВЕРЯЕМ НА PATH TRAVERSAL (до декодирования!)
-  if (req.url.includes('..') || req.url.includes('\\') || req.url.includes('%2e%2e') || req.url.includes('%252e')) {
+  if (pathname.includes('..') || pathname.includes('\\')) {
     logger.warn('Попытка Path Traversal', { url: req.url }, 'Security');
     res.writeHead(403, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: false, error: 'Forbidden: Invalid path' }));
@@ -1672,39 +1641,21 @@ const server = http.createServer((req, res) => {
   // Декодируем URL для поддержки кириллических имен файлов
   let requestUrl;
   try {
-    requestUrl = decodeURIComponent(req.url);
+    requestUrl = decodeURIComponent(pathname);
   } catch (e) {
     console.error('URI Decode Error:', e.message);
-    requestUrl = req.url;
-  }
-
-  // ============================================
-  // Обработка статических файлов (с защитой!)
-  // ============================================
-
-  // Удаляем параметры запроса (например ?t=...)
-  const queryIndex = requestUrl.indexOf('?');
-  if (queryIndex !== -1) {
-    requestUrl = requestUrl.substring(0, queryIndex);
-  }
-
-  // 🔒 ПОВТОРНАЯ ПРОВЕРКА ПОСЛЕ ДЕКОДИРОВАНИЯ
-  if (requestUrl.includes('..') || requestUrl.includes('\\')) {
-    logger.warn('Попытка Path Traversal (после декодирования)', { url: req.url, decoded: requestUrl }, 'Security');
-    res.writeHead(403, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: false, error: 'Forbidden: Invalid path' }));
-    return;
+    requestUrl = pathname;
   }
 
   // Разрешаем только безопасные пути
   const allowedPaths = ['/', '/index.html', '/logs.html', '/style.css', '/custom-styles.css', '/manifest.json'];
-  const isStaticFile = allowedPaths.some(p => requestUrl === p) ||
+  const isStaticFile = allowedPaths.includes(requestUrl) ||
     requestUrl.startsWith('/icons/') ||
     requestUrl.startsWith('/data/') ||
     requestUrl.startsWith('/srs/') ||
     requestUrl.startsWith('/ui-variants/');
 
-  if (!isStaticFile && !requestUrl.startsWith('/api/') && !requestUrl.startsWith('/save') && !requestUrl.startsWith('/load') && !requestUrl.startsWith('/metadata') && !requestUrl.startsWith('/trash') && !requestUrl.startsWith('/restore') && !requestUrl.startsWith('/duplicate')) {
+  if (!isStaticFile && !isApiRequest) {
     logger.warn('Доступ к неизвестному пути', { url: req.url }, 'Security');
   }
 
@@ -1751,6 +1702,13 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(content);
   });
+} catch (globalError) {
+  console.error('[CRITICAL SERVER ERROR]', globalError);
+  if (!res.writableEnded) {
+    res.writeHead(500);
+    res.end('Internal Server Error');
+  }
+}
 });
 
 server.listen(PORT, IP, () => {

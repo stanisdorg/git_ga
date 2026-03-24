@@ -59,9 +59,12 @@ function flushBuffer() {
     if (logBuffer.length === 0) return;
     const logsToWrite = [...logBuffer];
     logBuffer = [];
-    fs.appendFile(path.join(LOGS_DIR, getLogFileName()), logsToWrite.join('\n') + '\n', (err) => {
-        if (err) console.error('[Logger] Ошибка записи:', err);
-    });
+    try {
+        const logPath = path.join(LOGS_DIR, getLogFileName());
+        fs.appendFileSync(logPath, logsToWrite.join('\n') + '\n', 'utf8');
+    } catch (err) {
+        console.error('[Logger] Ошибка записи в файл:', err);
+    }
 }
 
 function scheduleFlush() {
