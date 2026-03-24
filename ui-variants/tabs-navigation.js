@@ -796,11 +796,7 @@ export function initTabsNavigation(appVersion) {
         ensureDefaultUsers();
         loginMainBtn.addEventListener('click', () => {
             if (loggedInUser) {
-                const username = loggedInUser.username || 'пользователь';
-                if (confirm(`Выйти из аккаунта ${username}?`)) {
-                    setLoggedUser(null);
-                    loginMainBtn.title = 'Войти';
-                }
+                window.qaAuth.logout();
             } else {
                 openLoginModal();
             }
@@ -1023,7 +1019,12 @@ export function initTabsNavigation(appVersion) {
         if (!window.qaAuth) window.qaAuth = {};
         window.qaAuth.getUser = () => loggedInUser;
         window.qaAuth.openLogin = () => openLoginModal();
-        window.qaAuth.logout = () => setLoggedUser(null);
+        window.qaAuth.logout = async () => {
+            if (confirm('Вы уверены, что хотите выйти из системы?')) {
+                await setLoggedUser(null);
+                window.location.reload();
+            }
+        };
         // Плашка уровня и XP
         import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
             // Добавляем имя пользователя

@@ -45,7 +45,7 @@ function verifyPassword(password, hash) {
 // ============================================
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8636706073:AAFKjiCtuU0zlhYCJI-glCc_Bc_xKpWqTcI';
 const TELEGRAM_CHANNEL_ID = '@brotherhood_qa';
-const TELEGRAM_ADMIN_IDS = [721236696, 8333264308]; // 🛡️ Ваши ID для гарантированного входа
+const TELEGRAM_ADMIN_IDS = [721236696]; // 🛡️ Только ваш основной ID для гарантированного входа
 
 /**
  * Проверка подписи Telegram (защита от подделки)
@@ -80,9 +80,9 @@ async function checkTelegramSubscription(userId) {
   const numId = Number(userId);
   console.log(`[TG API] Проверка подписки для ID: ${numId} (тип: ${typeof numId})`);
   
-  // 🛡️ БАЙПАС ДЛЯ ВАШИХ АККАУНТОВ
+  // 🛡️ БАЙПАС ТОЛЬКО ДЛЯ ВАШЕГО ОСНОВНОГО АККАУНТА
   if (TELEGRAM_ADMIN_IDS.includes(numId)) {
-    console.log(`[TG API] !!! БАЙПАС СРАБОТАЛ !!! Вход разрешен для ID ${numId}`);
+    console.log(`[TG API] !!! БАЙПАС СРАБОТАЛ !!! Вход разрешен для ID ${numId} (Станислав)`);
     return true;
   }
 

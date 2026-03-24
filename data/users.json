@@ -4,7 +4,7 @@
     "password": "eb653343d706617af1347831b5717c2609ffa4502217ab88a20acf1b9b9dd21c",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
-    "lastLoginAt": "2026-03-23T21:34:28.679Z"
+    "lastLoginAt": "2026-03-23T23:59:38.874Z"
   },
   {
     "username": "jeff",
@@ -47,5 +47,14 @@
     "role": "admin",
     "createdAt": "2026-03-23T23:47:57.109Z",
     "lastLoginAt": "2026-03-23T23:50:37.511Z"
+  },
+  {
+    "username": "user_8333264308",
+    "telegramId": 8333264308,
+    "firstName": "Stanis",
+    "lastName": "Dorg",
+    "role": "admin",
+    "createdAt": "2026-03-23T23:58:28.121Z",
+    "lastLoginAt": "2026-03-24T00:01:07.447Z"
   }
 ]
