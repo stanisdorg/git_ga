@@ -4,6 +4,10 @@
   "description": "Система интервального обучения. Запоминай термины, концепции и готовые ответы для технических собеседований.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#6B5B95",
   "theme_color": "#6B5B95",
   "icons": [
@@ -38,7 +42,11 @@
       "purpose": "any"
     }
   ],
-  "categories": ["education", "productivity", "developer tools"],
+  "categories": [
+    "education",
+    "productivity",
+    "developer tools"
+  ],
   "lang": "ru",
   "dir": "ltr"
 }
