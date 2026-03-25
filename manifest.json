@@ -48,5 +48,6 @@
     "developer tools"
   ],
   "lang": "ru",
-  "dir": "ltr"
+  "dir": "ltr",
+  "gcm_sender_id": "103953800507"
 }

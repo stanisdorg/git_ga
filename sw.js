@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bytecards-v10';  // Увеличиваем версию при изменениях статики
+const CACHE_NAME = 'bytecards-v11';  // Увеличиваем версию при изменениях статики
 
 // Ресурсы для кэширования (статика)
 const STATIC_ASSETS = [
@@ -7,6 +7,8 @@ const STATIC_ASSETS = [
     '/style.css',
     '/custom-styles.css',
     '/update-modal.css',
+    '/push-notifications.css',
+    '/push-notifications.js',
     '/manifest.json',
     '/icons/icon-96x96.png',
     '/icons/icon-144x144.png',
@@ -115,6 +117,70 @@ self.addEventListener('fetch', event => {
                         }
                         throw err;
                     });
+            })
+    );
+});
+
+// ===================================================================
+// Push Notifications Handler
+// ===================================================================
+
+// Обработка входящих push-уведомлений
+self.addEventListener('push', event => {
+    console.log('[SW] Push received');
+
+    let data = {};
+
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data = { title: 'ByteCards', body: event.data.text() };
+        }
+    }
+
+    const title = data.title || 'ByteCards';
+    const options = {
+        body: data.body || 'Новое уведомление',
+        icon: data.icon || '/icons/icon-192x192.png',
+        badge: data.badge || '/icons/icon-96x96.png',
+        vibrate: data.vibrate || [200, 100, 200],
+        data: data.data || {},
+        tag: data.tag || 'default',
+        requireInteraction: data.requireInteraction || false,
+        actions: data.actions || [
+            { action: 'open', title: 'Открыть' },
+            { action: 'dismiss', title: 'Закрыть' }
+        ]
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
+
+// Обработка клика по уведомлению
+self.addEventListener('notificationclick', event => {
+    console.log('[SW] Notification click:', event.action);
+
+    event.notification.close();
+
+    if (event.action === 'dismiss') {
+        return;
+    }
+
+    // Открываем приложение или фокусируем существующую вкладку
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(clientList => {
+                for (const client of clientList) {
+                    if (client.url === '/' && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                if (clients.openWindow) {
+                    return clients.openWindow('/');
+                }
             })
     );
 });
