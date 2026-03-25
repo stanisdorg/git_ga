@@ -10,7 +10,17 @@
       "category": "DevOps",
       "subcategory": "CI/CD",
       "question": "Из чего состоит Kafka и как работает?",
-      "answer": "из **Брокеров** (серверов, которые хранят и обрабатывают сообщения)\n        **Топиков** (логических каналов для передачи сообщений)\n        **Партиций** (разделов внутри топика для масштабирования и параллельной обработки)\n        **Продюсеров** (отправляют сообщения в Kafka)\n        **Консьюмеров** (забирают сообщения из Kafka)\n        Работает так: продюсер пишет сообщение в топик, брокер хранит его в партиции, консьюмер читает сообщение. Сообщения асинхронно обрабатываются и гарантируется их доставка."
+      "answer": "из **Брокеров** (серверов, которые хранят и обрабатывают сообщения)\n        **Топиков** (логических каналов для передачи сообщений)\n        **Партиций** (разделов внутри топика для масштабирования и параллельной обработки)\n        **Продюсеров** (отправляют сообщения в Kafka)\n        **Консьюмеров** (забирают сообщения из Kafka)\n        Работает так: продюсер пишет сообщение в топик, брокер хранит его в партиции, консьюмер читает сообщение. Сообщения асинхронно обрабатываются и гарантируется их доставка.",
+      "formatting": {
+        "question": [
+          {
+            "start": 16,
+            "end": 21,
+            "color": "#FF9F7C"
+          }
+        ],
+        "answer": []
+      }
     },
     {
       "category": "DevOps",
@@ -2078,7 +2088,8 @@
     "ninetyAccuracy": true
   },
   "_favorites": [
-    "Какие принципы тестирования ты знаешь?"
+    "Какие принципы тестирования ты знаешь?",
+    "Из чего состоит Kafka и как работает?"
   ],
   "_srsProgress": {
     "Какие принципы тестирования ты знаешь?": {
@@ -2101,13 +2112,97 @@
       "lastReviewed": "2026-03-25",
       "lastReviewedTime": 3,
       "question": "Какие принципы тестирования ты знаешь?"
+    },
+    "403 Forbidden": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774391106150,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774391106150,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 4,
+      "question": "403 Forbidden"
+    },
+    "radis?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774391109214,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774391109214,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 4,
+      "question": "radis?"
+    },
+    "2/3ех/многоуровневая": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774391110837,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774391110837,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 4,
+      "question": "2/3ех/многоуровневая"
+    },
+    "Из чего состоит Kafka и как работает?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774391139063,
+      "nextReviewDate": 1774486800000,
+      "dueDate": "2026-03-26T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774391139063,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-25",
+      "lastReviewedTime": 4,
+      "question": "Из чего состоит Kafka и как работает?"
     }
   },
   "_stats": {
-    "total": 1,
-    "timeSpent": 5239,
-    "correct": 1,
-    "points": 10
+    "total": 5,
+    "timeSpent": 14568,
+    "correct": 2,
+    "points": 35
   },
   "_meta": {
     "username": "doroganov_stanislav",
@@ -2115,6 +2210,6 @@
     "createdAt": "2026-03-23T23:47:57.109Z",
     "lastLoginAt": "2026-03-23T23:47:57.109Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-03-24T21:25:03.486Z"
+    "lastSavedAt": "2026-03-24T22:25:24.443Z"
   }
 }
