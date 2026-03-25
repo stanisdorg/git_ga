@@ -70,58 +70,47 @@ body:has(#stats-container) {
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        justify-content: flex-start !important; /* Изменили с space-between */
+        justify-content: space-between !important;
         padding: 4px 12px !important;
-        overflow-x: auto !important; /* Горизонтальный скролл */
-        overflow-y: hidden !important;
-        -webkit-overflow-scrolling: touch !important; /* Плавный скролл на iOS */
-        scrollbar-width: none !important; /* Скрыть скроллбар Firefox */
-        -ms-overflow-style: none !important; /* Скрыть скроллбар IE/Edge */
-    }
-    /* Скрыть скроллбар для Webkit */
-    .top-actions-bar::-webkit-scrollbar {
-        display: none !important;
+        overflow: hidden !important; /* Обрезать всё что не влезает */
     }
     /* Распределяем контент шапки на мобильном */
     .top-actions-bar .st-top-actions {
         display: flex !important;
-        gap: 8px !important;
+        gap: 6px !important; /* Меньше gap */
         flex-shrink: 0 !important;
-        overflow-x: auto !important; /* Скролл для кнопок */
+        overflow: hidden !important;
     }
     .top-actions-bar .app-version-display {
         display: none !important; /* Скрываем версию на мобильном */
     }
     .top-actions-bar .st-top-metrics {
         display: flex !important;
-        gap: 8px !important; /* Уменьшили gap */
+        gap: 6px !important; /* Меньше gap */
         flex-shrink: 0 !important;
+        overflow: hidden !important;
     }
     .top-actions-bar .st-top-metrics .metric {
-        font-size: 10px !important; /* Ещё меньше шрифт */
-        white-space: nowrap !important; /* Не переносить текст */
-    }
-    .top-actions-bar #st-continue-top-btn {
-        margin-left: 8px !important;
-        flex-shrink: 0 !important; /* Не сжимать кнопку */
-    }
-    .top-actions-bar .st-level-inline {
-        margin-left: 8px !important;
-        flex-shrink: 0 !important; /* Не сжимать */
-    }
-    /* Кнопки не сжимаются */
-    .top-actions-bar .nav-icon-btn,
-    .top-actions-bar .tab {
-        flex-shrink: 0 !important;
-    }
-    /* Имя пользователя - сокращённое */
-    .top-actions-bar .username-display {
-        max-width: 80px !important;
+        font-size: 9px !important; /* Ещё меньше шрифт */
+        max-width: 60px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-        flex-shrink: 0 !important;
-        font-size: 12px !important; /* Меньше шрифт */
+    }
+    .top-actions-bar #st-continue-top-btn {
+        margin-left: auto !important;
+    }
+    .top-actions-bar .st-level-inline {
+        margin-left: 4px !important;
+    }
+    /* Имя пользователя - сильно сокращённое */
+    .top-actions-bar .username-display {
+        max-width: 60px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        font-size: 11px !important; /* Меньше шрифт */
+        flex-shrink: 1 !important; /* Сжимать имя в первую очередь */
     }
 }
 
