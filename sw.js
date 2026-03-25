@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bytecards-v9';  // Увеличиваем версию при изменениях статики
+const CACHE_NAME = 'bytecards-v10';  // Увеличиваем версию при изменениях статики
 
 // Ресурсы для кэширования (статика)
 const STATIC_ASSETS = [
@@ -6,6 +6,7 @@ const STATIC_ASSETS = [
     '/index.html',
     '/style.css',
     '/custom-styles.css',
+    '/update-modal.css',
     '/manifest.json',
     '/icons/icon-96x96.png',
     '/icons/icon-144x144.png',

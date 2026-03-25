@@ -1,0 +1,157 @@
+/* =================================================================== */
+/* Update Notification Modal - Glass Style */
+/* =================================================================== */
+
+.update-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.update-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.update-modal {
+    background: rgba(30, 30, 36, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: scale(0.9) translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.update-modal-overlay.active .update-modal {
+    transform: scale(1) translateY(0);
+}
+
+.update-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.update-modal-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.update-modal-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.update-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text, #fff);
+    margin: 0;
+}
+
+.update-modal-body {
+    margin-bottom: 20px;
+}
+
+.update-modal-message {
+    font-size: 14px;
+    color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+    line-height: 1.5;
+    margin: 0;
+}
+
+.update-modal-version {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+    font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.update-modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.update-modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.update-modal-btn.cancel {
+    background: transparent;
+    color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.update-modal-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.update-modal-btn.update {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    color: #fff;
+    border: 1px solid transparent;
+}
+
+.update-modal-btn.update:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+}
+
+.update-modal-btn:active {
+    transform: translateY(0);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .update-modal {
+        padding: 20px;
+        max-width: none;
+        margin: 16px;
+    }
+    
+    .update-modal-footer {
+        flex-direction: column;
+    }
+    
+    .update-modal-btn {
+        width: 100%;
+        padding: 12px 20px;
+    }
+}
