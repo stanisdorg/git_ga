@@ -70,31 +70,58 @@ body:has(#stats-container) {
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        justify-content: space-between !important;
+        justify-content: flex-start !important; /* Изменили с space-between */
         padding: 4px 12px !important;
+        overflow-x: auto !important; /* Горизонтальный скролл */
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important; /* Плавный скролл на iOS */
+        scrollbar-width: none !important; /* Скрыть скроллбар Firefox */
+        -ms-overflow-style: none !important; /* Скрыть скроллбар IE/Edge */
+    }
+    /* Скрыть скроллбар для Webkit */
+    .top-actions-bar::-webkit-scrollbar {
+        display: none !important;
     }
     /* Распределяем контент шапки на мобильном */
     .top-actions-bar .st-top-actions {
         display: flex !important;
         gap: 8px !important;
         flex-shrink: 0 !important;
+        overflow-x: auto !important; /* Скролл для кнопок */
     }
     .top-actions-bar .app-version-display {
         display: none !important; /* Скрываем версию на мобильном */
     }
     .top-actions-bar .st-top-metrics {
         display: flex !important;
-        gap: 12px !important;
+        gap: 8px !important; /* Уменьшили gap */
         flex-shrink: 0 !important;
     }
     .top-actions-bar .st-top-metrics .metric {
-        font-size: 11px !important;
+        font-size: 10px !important; /* Ещё меньше шрифт */
+        white-space: nowrap !important; /* Не переносить текст */
     }
     .top-actions-bar #st-continue-top-btn {
-        margin-left: auto !important;
+        margin-left: 8px !important;
+        flex-shrink: 0 !important; /* Не сжимать кнопку */
     }
     .top-actions-bar .st-level-inline {
         margin-left: 8px !important;
+        flex-shrink: 0 !important; /* Не сжимать */
+    }
+    /* Кнопки не сжимаются */
+    .top-actions-bar .nav-icon-btn,
+    .top-actions-bar .tab {
+        flex-shrink: 0 !important;
+    }
+    /* Имя пользователя - сокращённое */
+    .top-actions-bar .username-display {
+        max-width: 80px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        font-size: 12px !important; /* Меньше шрифт */
     }
 }
 
