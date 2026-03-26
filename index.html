@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>ByteCards — Интервальное повторение</title>
     <link rel="icon" type="image/png" href="icons/favicon.png">
     <link rel="stylesheet" href="style.css?v=6.12.3">
@@ -644,21 +643,27 @@
             setTimeout(function () {
                 var isStandalone = window.navigator.standalone === true;
                 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                var isPWA = isStandalone || (window.matchMedia('(display-mode: standalone)').matches);
 
-                logs.push('=== iOS SAFE AREAS DEBUG v4 ===');
-                logs.push('MODE: ' + (isStandalone ? 'PWA (Standalone)' : 'Browser (Safari)'));
+                logs.push('=== iOS SAFE AREAS DEBUG v5 ===');
+                logs.push('MODE: ' + (isPWA ? 'PWA (Standalone)' : 'Browser (Safari)'));
                 logs.push('Platform: ' + (isIOS ? 'iOS' : 'Other'));
                 logs.push('URL: ' + window.location.href);
                 logs.push('Screen: ' + screen.width + 'x' + screen.height);
                 logs.push('Window: ' + window.innerWidth + 'x' + window.innerHeight);
+
+                // ВАЖНО: Для iOS PWA применяем фиксированные отступы
+                if (isPWA && isIOS) {
+                    logs.push('[iOS PWA DETECTED] Applying fixed safe areas...');
+                    document.body.style.setProperty('padding-top', '60px', 'important');
+                    document.body.style.setProperty('padding-bottom', '34px', 'important');
+                }
 
                 var container = document.querySelector('.container');
                 var appWrapper = document.querySelector('.app-wrapper');
                 var body = document.body;
                 var topBar = document.querySelector('.top-actions-bar');
                 var loginBtn = document.querySelector('.login-main-btn');
-                var statsBtn = document.querySelector('.nav-icon-btn.tab:nth-child(2)');
-                var learnBtn = document.querySelector('.nav-icon-btn.tab:nth-child(3)');
 
                 logs.push('Container element: ' + (container ? 'FOUND' : 'NOT FOUND'));
                 logs.push('App-wrapper element: ' + (appWrapper ? 'FOUND' : 'NOT FOUND'));
@@ -668,10 +673,6 @@
                     var topBarRect = topBar.getBoundingClientRect();
                     logs.push('Top-bar: position=' + getComputedStyle(topBar).position + ', top=' + getComputedStyle(topBar).top + ', height=' + topBar.offsetHeight + 'px');
                     logs.push('Top-bar RECT: top=' + topBarRect.top + ', bottom=' + topBarRect.bottom + ', height=' + topBarRect.height);
-
-                    // Сдвигаем шапку вниз!
-                    topBar.style.setProperty('top', '50px', 'important');
-                    logs.push('Top-bar AFTER: top=' + getComputedStyle(topBar).top);
                 }
 
                 if (loginBtn) {
