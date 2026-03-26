@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.10.0';
+const VERSION = '6.13.0';
 
 console.log('========================================');
 console.log(`[SERVER] Starting QA Assistant v${VERSION}...`);
