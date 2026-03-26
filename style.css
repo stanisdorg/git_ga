@@ -17,9 +17,16 @@ body {
     height: 100vh;
 }
 
-/* Для страницы статистики тоже добавляем отступ */
-body:has(#stats-container) {
-    padding-top: 50px !important;
+/* iOS Safe Areas - отступы для челки и полоски Home */
+@supports (padding: max(0px)) {
+    body {
+        padding-top: max(50px, env(safe-area-inset-top, 50px)) !important;
+        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;
+    }
+    
+    body:has(#stats-container) {
+        padding-top: max(50px, env(safe-area-inset-top, 50px)) !important;
+    }
 }
 
 .container {
