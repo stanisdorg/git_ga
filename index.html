@@ -586,18 +586,23 @@
                 var appWrapper = document.querySelector('.app-wrapper');
                 var body = document.body;
 
+                console.log('[iOS Fix] Container:', container ? 'FOUND' : 'NOT FOUND');
+                console.log('[iOS Fix] App-wrapper:', appWrapper ? 'FOUND' : 'NOT FOUND');
+
                 if (container) {
                     container.style.paddingTop = '60px';
                     container.style.paddingBottom = '40px';
-                    console.log('[iOS Fix] Container padding applied');
+                    console.log('[iOS Fix] Container padding applied:', getComputedStyle(container).paddingTop);
                 }
                 if (appWrapper) {
                     appWrapper.style.paddingTop = '60px';
                     appWrapper.style.paddingBottom = '20px';
                     console.log('[iOS Fix] App-wrapper padding applied');
                 }
-                console.log('[iOS Fix] Body padding:', getComputedStyle(body).paddingTop, getComputedStyle(body).paddingBottom);
-            }, 100);
+
+                // Логируем структуру
+                console.log('[iOS Fix] Body children:', Array.from(body.children).map(el => (el.className || el.tagName)).join(', '));
+            }, 500);
         });
     </script>
 </body>
