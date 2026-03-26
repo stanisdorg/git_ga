@@ -629,9 +629,15 @@
         // Применяем отступы и отправляем логи
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
-                logs.push('=== iOS SAFE AREAS DEBUG v2 ===');
+                var isStandalone = window.navigator.standalone === true;
+                var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+                logs.push('=== iOS SAFE AREAS DEBUG v3 ===');
+                logs.push('MODE: ' + (isStandalone ? 'PWA (Standalone)' : 'Browser (Safari)'));
+                logs.push('Platform: ' + (isIOS ? 'iOS' : 'Other'));
                 logs.push('URL: ' + window.location.href);
-                logs.push('Standalone: ' + (window.navigator.standalone ? 'YES' : 'NO'));
+                logs.push('Screen: ' + screen.width + 'x' + screen.height);
+                logs.push('Window: ' + window.innerWidth + 'x' + window.innerHeight);
 
                 var container = document.querySelector('.container');
                 var appWrapper = document.querySelector('.app-wrapper');
@@ -643,21 +649,21 @@
                 logs.push('Top-bar element: ' + (topBar ? 'FOUND' : 'NOT FOUND'));
 
                 if (container) {
-                    logs.push('Container before: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
+                    logs.push('Container BEFORE: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container CSS rules: ' + container.getAttribute('style'));
 
                     container.style.setProperty('padding-top', '60px', 'important');
                     container.style.setProperty('padding-bottom', '40px', 'important');
 
-                    logs.push('Container after: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
+                    logs.push('Container AFTER: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container inline styles: ' + container.getAttribute('style'));
                 }
 
                 if (appWrapper) {
-                    logs.push('App-wrapper before: top=' + getComputedStyle(appWrapper).paddingTop);
+                    logs.push('App-wrapper BEFORE: top=' + getComputedStyle(appWrapper).paddingTop);
                     appWrapper.style.setProperty('padding-top', '60px', 'important');
                     appWrapper.style.setProperty('padding-bottom', '20px', 'important');
-                    logs.push('App-wrapper after: top=' + getComputedStyle(appWrapper).paddingTop);
+                    logs.push('App-wrapper AFTER: top=' + getComputedStyle(appWrapper).paddingTop);
                 }
 
                 if (topBar) {
@@ -673,7 +679,7 @@
                 }
 
                 logs.push('Body: top=' + getComputedStyle(body).paddingTop + ', bottom=' + getComputedStyle(body).paddingBottom);
-                logs.push('===========================');
+                logs.push('=====================================');
 
                 // Отправляем логи на сервер
                 fetch('/api/iphone-logs', {
@@ -682,6 +688,7 @@
                     body: JSON.stringify({
                         userAgent: navigator.userAgent,
                         url: window.location.href,
+                        isStandalone: isStandalone,
                         timestamp: new Date().toISOString(),
                         logs: logs
                     })
@@ -689,7 +696,7 @@
                     if (d.ok) console.log('[Logs] Sent to server successfully');
                 }).catch(e => console.error('[Logs] Send error:', e));
 
-            }, 1500);
+            }, 2000);
         });
     </script>
 </body>
