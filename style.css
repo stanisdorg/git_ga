@@ -21,9 +21,11 @@ body {
     max-width: none;
     margin: 0;
     padding: 0;
-    /* Отступ чтобы контент начинался под шапкой (шапка 40px + 4px отступ) */
-    padding-top: 44px !important;
-    padding-bottom: 20px !important;
+}
+
+/* Добавляем отступ для первого элемента внутри container */
+.container > *:first-child {
+    margin-top: 44px !important;
 }
 
 /* Поле поиска */

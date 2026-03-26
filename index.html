@@ -685,7 +685,15 @@
                     logs.push('Container BEFORE: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container RECT: top=' + containerRect.top + ', bottom=' + containerRect.bottom);
 
-                    // CSS уже применил padding, только логируем
+                    // Логируем первый элемент внутри container
+                    var firstChild = container.firstElementChild;
+                    if (firstChild) {
+                        var firstChildRect = firstChild.getBoundingClientRect();
+                        logs.push('First child: ' + firstChild.className);
+                        logs.push('First child RECT: top=' + firstChildRect.top + ', bottom=' + firstChildRect.bottom);
+                        logs.push('First child margin-top: ' + getComputedStyle(firstChild).marginTop);
+                    }
+
                     logs.push('Container AFTER: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container inline styles: ' + container.getAttribute('style'));
                 }
