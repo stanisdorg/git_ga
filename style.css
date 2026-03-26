@@ -5,7 +5,11 @@
 
 body {
     margin: 0;
-    padding: 50px 0 0 0; /* Отступ для фиксированной шапки */
+    /* Отступы для iOS safe areas + фиксированной шапки */
+    padding-top: max(50px, env(safe-area-inset-top, 50px)) !important;
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--color-bg);
     color: var(--color-text);
@@ -17,22 +21,17 @@ body {
     height: 100vh;
 }
 
-/* iOS Safe Areas - отступы для челки и полоски Home */
-@supports (padding: max(0px)) {
-    body {
-        padding-top: max(50px, env(safe-area-inset-top, 50px)) !important;
-        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;
-    }
-    
-    body:has(#stats-container) {
-        padding-top: max(50px, env(safe-area-inset-top, 50px)) !important;
-    }
+/* Для страницы статистики тоже добавляем отступ */
+body:has(#stats-container) {
+    padding-top: max(50px, env(safe-area-inset-top, 50px)) !important;
 }
 
 .container {
     max-width: none;
     margin: 0;
     padding: 0;
+    /* iOS safe areas для контейнера */
+    padding-bottom: max(40px, env(safe-area-inset-bottom, 40px)) !important;
 }
 
 /* Поле поиска */
