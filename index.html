@@ -632,7 +632,7 @@
                 var isStandalone = window.navigator.standalone === true;
                 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-                logs.push('=== iOS SAFE AREAS DEBUG v3 ===');
+                logs.push('=== iOS SAFE AREAS DEBUG v4 ===');
                 logs.push('MODE: ' + (isStandalone ? 'PWA (Standalone)' : 'Browser (Safari)'));
                 logs.push('Platform: ' + (isIOS ? 'iOS' : 'Other'));
                 logs.push('URL: ' + window.location.href);
@@ -643,14 +643,29 @@
                 var appWrapper = document.querySelector('.app-wrapper');
                 var body = document.body;
                 var topBar = document.querySelector('.top-actions-bar');
+                var loginBtn = document.querySelector('.login-main-btn');
+                var statsBtn = document.querySelector('.nav-icon-btn.tab:nth-child(2)');
+                var learnBtn = document.querySelector('.nav-icon-btn.tab:nth-child(3)');
 
                 logs.push('Container element: ' + (container ? 'FOUND' : 'NOT FOUND'));
                 logs.push('App-wrapper element: ' + (appWrapper ? 'FOUND' : 'NOT FOUND'));
                 logs.push('Top-bar element: ' + (topBar ? 'FOUND' : 'NOT FOUND'));
 
+                if (topBar) {
+                    var topBarRect = topBar.getBoundingClientRect();
+                    logs.push('Top-bar: position=' + getComputedStyle(topBar).position + ', top=' + getComputedStyle(topBar).top + ', height=' + topBar.offsetHeight + 'px');
+                    logs.push('Top-bar RECT: top=' + topBarRect.top + ', bottom=' + topBarRect.bottom + ', height=' + topBarRect.height);
+                }
+
+                if (loginBtn) {
+                    var loginRect = loginBtn.getBoundingClientRect();
+                    logs.push('Login-btn RECT: top=' + loginRect.top + ', bottom=' + loginRect.bottom + ', height=' + loginRect.height);
+                }
+
                 if (container) {
+                    var containerRect = container.getBoundingClientRect();
                     logs.push('Container BEFORE: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
-                    logs.push('Container CSS rules: ' + container.getAttribute('style'));
+                    logs.push('Container RECT: top=' + containerRect.top + ', bottom=' + containerRect.bottom);
 
                     container.style.setProperty('padding-top', '60px', 'important');
                     container.style.setProperty('padding-bottom', '40px', 'important');
@@ -664,10 +679,6 @@
                     appWrapper.style.setProperty('padding-top', '60px', 'important');
                     appWrapper.style.setProperty('padding-bottom', '20px', 'important');
                     logs.push('App-wrapper AFTER: top=' + getComputedStyle(appWrapper).paddingTop);
-                }
-
-                if (topBar) {
-                    logs.push('Top-bar: position=' + getComputedStyle(topBar).position + ', top=' + getComputedStyle(topBar).top + ', height=' + topBar.offsetHeight + 'px');
                 }
 
                 logs.push('Body: top=' + getComputedStyle(body).paddingTop + ', bottom=' + getComputedStyle(body).paddingBottom);
