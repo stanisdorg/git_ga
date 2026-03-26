@@ -670,14 +670,6 @@
                     logs.push('Top-bar: position=' + getComputedStyle(topBar).position + ', top=' + getComputedStyle(topBar).top + ', height=' + topBar.offsetHeight + 'px');
                 }
 
-                // Добавляем margin для контента чтобы не перекрывался шапкой
-                var firstChild = container ? container.firstElementChild : null;
-                if (firstChild) {
-                    logs.push('First child: ' + firstChild.className);
-                    firstChild.style.setProperty('margin-top', '50px', 'important');
-                    logs.push('First child margin-top applied: ' + getComputedStyle(firstChild).marginTop);
-                }
-
                 logs.push('Body: top=' + getComputedStyle(body).paddingTop + ', bottom=' + getComputedStyle(body).paddingBottom);
                 logs.push('=====================================');
 
