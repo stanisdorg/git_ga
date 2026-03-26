@@ -577,32 +577,74 @@
     <!-- Push Notifications -->
     <script src="push-notifications.js"></script>
 
-    <!-- iOS Safe Areas Fix - принудительные отступы -->
+    <!-- iOS Safe Areas Fix - принудительные отступы + отправка логов -->
     <script>
-        // Применяем отступы сразу после загрузки DOM
+        // Собираем логи
+        var logs = [];
+        var originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn
+        };
+
+        console.log = function () {
+            var msg = Array.from(arguments).join(' ');
+            logs.push('[LOG] ' + msg);
+            originalConsole.log.apply(console, arguments);
+        };
+        console.error = function () {
+            var msg = Array.from(arguments).join(' ');
+            logs.push('[ERROR] ' + msg);
+            originalConsole.error.apply(console, arguments);
+        };
+        console.warn = function () {
+            var msg = Array.from(arguments).join(' ');
+            logs.push('[WARN] ' + msg);
+            originalConsole.warn.apply(console, arguments);
+        };
+
+        // Применяем отступы и отправляем логи
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 var container = document.querySelector('.container');
                 var appWrapper = document.querySelector('.app-wrapper');
                 var body = document.body;
 
-                console.log('[iOS Fix] Container:', container ? 'FOUND' : 'NOT FOUND');
-                console.log('[iOS Fix] App-wrapper:', appWrapper ? 'FOUND' : 'NOT FOUND');
+                logs.push('=== iOS SAFE AREAS DEBUG ===');
+                logs.push('Container: ' + (container ? 'FOUND' : 'NOT FOUND'));
+                logs.push('App-wrapper: ' + (appWrapper ? 'FOUND' : 'NOT FOUND'));
 
                 if (container) {
                     container.style.paddingTop = '60px';
                     container.style.paddingBottom = '40px';
-                    console.log('[iOS Fix] Container padding applied:', getComputedStyle(container).paddingTop);
+                    logs.push('Container padding-top applied: ' + getComputedStyle(container).paddingTop);
+                    logs.push('Container padding-bottom applied: ' + getComputedStyle(container).paddingBottom);
                 }
                 if (appWrapper) {
                     appWrapper.style.paddingTop = '60px';
                     appWrapper.style.paddingBottom = '20px';
-                    console.log('[iOS Fix] App-wrapper padding applied');
+                    logs.push('App-wrapper padding applied');
                 }
 
-                // Логируем структуру
-                console.log('[iOS Fix] Body children:', Array.from(body.children).map(el => (el.className || el.tagName)).join(', '));
-            }, 500);
+                logs.push('Body padding-top: ' + getComputedStyle(body).paddingTop);
+                logs.push('Body padding-bottom: ' + getComputedStyle(body).paddingBottom);
+                logs.push('===========================');
+
+                // Отправляем логи на сервер
+                fetch('/api/iphone-logs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userAgent: navigator.userAgent,
+                        url: window.location.href,
+                        timestamp: new Date().toISOString(),
+                        logs: logs
+                    })
+                }).then(r => r.json()).then(d => {
+                    if (d.ok) console.log('[Logs] Sent to server successfully');
+                }).catch(e => console.error('[Logs] Send error:', e));
+
+            }, 1000);
         });
     </script>
 </body>

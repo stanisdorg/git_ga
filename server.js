@@ -1692,6 +1692,35 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    // ============================================
+    // POST /api/iphone-logs - Приём логов с iPhone
+    // ============================================
+    if (req.method === 'POST' && pathname === '/api/iphone-logs') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const logsDir = path.join(__dirname, 'logs');
+          if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
+
+          const logFile = path.join(logsDir, 'iphone-logs.txt');
+          const timestamp = new Date().toISOString();
+          const logEntry = `\n\n========== ${timestamp} ==========\n${body}\n`;
+
+          fs.appendFileSync(logFile, logEntry, 'utf8');
+          console.log('[iPhone Logs] Saved to logs/iphone-logs.txt');
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (e) {
+          console.error('[iPhone Logs] Error:', e);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
     // Формализуем URL
     // 🔒 СНАЧАЛА ПРОВЕРЯЕМ НА PATH TRAVERSAL (до декодирования!)
     if (pathname.includes('..') || pathname.includes('\\')) {
