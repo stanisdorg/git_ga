@@ -606,28 +606,42 @@
         // Применяем отступы и отправляем логи
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
+                logs.push('=== iOS SAFE AREAS DEBUG v2 ===');
+                logs.push('URL: ' + window.location.href);
+                logs.push('Standalone: ' + (window.navigator.standalone ? 'YES' : 'NO'));
+
                 var container = document.querySelector('.container');
                 var appWrapper = document.querySelector('.app-wrapper');
                 var body = document.body;
+                var topBar = document.querySelector('.top-actions-bar');
 
-                logs.push('=== iOS SAFE AREAS DEBUG ===');
-                logs.push('Container: ' + (container ? 'FOUND' : 'NOT FOUND'));
-                logs.push('App-wrapper: ' + (appWrapper ? 'FOUND' : 'NOT FOUND'));
+                logs.push('Container element: ' + (container ? 'FOUND' : 'NOT FOUND'));
+                logs.push('App-wrapper element: ' + (appWrapper ? 'FOUND' : 'NOT FOUND'));
+                logs.push('Top-bar element: ' + (topBar ? 'FOUND' : 'NOT FOUND'));
 
                 if (container) {
+                    logs.push('Container before: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
+                    logs.push('Container CSS rules: ' + container.getAttribute('style'));
+
                     container.style.setProperty('padding-top', '60px', 'important');
                     container.style.setProperty('padding-bottom', '40px', 'important');
-                    logs.push('Container padding-top applied: ' + getComputedStyle(container).paddingTop);
-                    logs.push('Container padding-bottom applied: ' + getComputedStyle(container).paddingBottom);
-                }
-                if (appWrapper) {
-                    appWrapper.style.setProperty('padding-top', '60px', 'important');
-                    appWrapper.style.setProperty('padding-bottom', '20px', 'important');
-                    logs.push('App-wrapper padding applied');
+
+                    logs.push('Container after: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
+                    logs.push('Container inline styles: ' + container.getAttribute('style'));
                 }
 
-                logs.push('Body padding-top: ' + getComputedStyle(body).paddingTop);
-                logs.push('Body padding-bottom: ' + getComputedStyle(body).paddingBottom);
+                if (appWrapper) {
+                    logs.push('App-wrapper before: top=' + getComputedStyle(appWrapper).paddingTop);
+                    appWrapper.style.setProperty('padding-top', '60px', 'important');
+                    appWrapper.style.setProperty('padding-bottom', '20px', 'important');
+                    logs.push('App-wrapper after: top=' + getComputedStyle(appWrapper).paddingTop);
+                }
+
+                if (topBar) {
+                    logs.push('Top-bar: position=' + getComputedStyle(topBar).position + ', top=' + getComputedStyle(topBar).top + ', height=' + topBar.offsetHeight + 'px');
+                }
+
+                logs.push('Body: top=' + getComputedStyle(body).paddingTop + ', bottom=' + getComputedStyle(body).paddingBottom);
                 logs.push('===========================');
 
                 // Отправляем логи на сервер
@@ -644,7 +658,7 @@
                     if (d.ok) console.log('[Logs] Sent to server successfully');
                 }).catch(e => console.error('[Logs] Send error:', e));
 
-            }, 1000);
+            }, 1500);
         });
     </script>
 </body>
