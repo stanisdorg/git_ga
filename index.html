@@ -576,6 +576,30 @@
 
     <!-- Push Notifications -->
     <script src="push-notifications.js"></script>
+
+    <!-- iOS Safe Areas Fix - принудительные отступы -->
+    <script>
+        // Применяем отступы сразу после загрузки DOM
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                var container = document.querySelector('.container');
+                var appWrapper = document.querySelector('.app-wrapper');
+                var body = document.body;
+
+                if (container) {
+                    container.style.paddingTop = '60px';
+                    container.style.paddingBottom = '40px';
+                    console.log('[iOS Fix] Container padding applied');
+                }
+                if (appWrapper) {
+                    appWrapper.style.paddingTop = '60px';
+                    appWrapper.style.paddingBottom = '20px';
+                    console.log('[iOS Fix] App-wrapper padding applied');
+                }
+                console.log('[iOS Fix] Body padding:', getComputedStyle(body).paddingTop, getComputedStyle(body).paddingBottom);
+            }, 100);
+        });
+    </script>
 </body>
 
 </html>
