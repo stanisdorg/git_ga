@@ -21,9 +21,9 @@ body {
     max-width: none;
     margin: 0;
     padding: 0;
-    /* Отступы чтобы контент не перекрывался шапкой и навигацией */
-    padding-top: 60px !important;
-    padding-bottom: max(40px, env(safe-area-inset-bottom, 40px)) !important;
+    /* Отступ чтобы контент начинался под шапкой (шапка 40px + 4px отступ) */
+    padding-top: 44px !important;
+    padding-bottom: 20px !important;
 }
 
 /* Поле поиска */

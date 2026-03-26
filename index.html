@@ -685,11 +685,7 @@
                     logs.push('Container BEFORE: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container RECT: top=' + containerRect.top + ', bottom=' + containerRect.bottom);
 
-                    // Добавляем padding на container чтобы контент был под шапкой
-                    // Шапка 40px + небольшой отступ
-                    container.style.setProperty('padding-top', '44px', 'important');
-                    container.style.setProperty('padding-bottom', '20px', 'important');
-
+                    // CSS уже применил padding, только логируем
                     logs.push('Container AFTER: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container inline styles: ' + container.getAttribute('style'));
                 }
@@ -720,7 +716,7 @@
                     if (d.ok) console.log('[Logs] Sent to server successfully');
                 }).catch(e => console.error('[Logs] Send error:', e));
 
-            }, 2000);
+            }, 500);
         });
     </script>
 </body>
