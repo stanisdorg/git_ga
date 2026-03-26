@@ -653,10 +653,10 @@
                 logs.push('Window: ' + window.innerWidth + 'x' + window.innerHeight);
 
                 // ВАЖНО: Для iOS PWA применяем фиксированные отступы
+                // НО НЕ для body - шапка должна быть у верха!
                 if (isPWA && isIOS) {
-                    logs.push('[iOS PWA DETECTED] Applying fixed safe areas...');
-                    document.body.style.setProperty('padding-top', '60px', 'important');
-                    document.body.style.setProperty('padding-bottom', '34px', 'important');
+                    logs.push('[iOS PWA DETECTED] Applying safe areas...');
+                    // Отступы будут на container, не на body
                 }
 
                 var container = document.querySelector('.container');
@@ -685,9 +685,10 @@
                     logs.push('Container BEFORE: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container RECT: top=' + containerRect.top + ', bottom=' + containerRect.bottom);
 
-                    // Убираем padding из container - он уже есть на body
-                    container.style.setProperty('padding-top', '0px', 'important');
-                    container.style.setProperty('padding-bottom', '0px', 'important');
+                    // Добавляем padding на container чтобы контент был под шапкой
+                    // Шапка 40px + небольшой отступ
+                    container.style.setProperty('padding-top', '44px', 'important');
+                    container.style.setProperty('padding-bottom', '20px', 'important');
 
                     logs.push('Container AFTER: top=' + getComputedStyle(container).paddingTop + ', bottom=' + getComputedStyle(container).paddingBottom);
                     logs.push('Container inline styles: ' + container.getAttribute('style'));
@@ -695,7 +696,7 @@
 
                 if (appWrapper) {
                     logs.push('App-wrapper BEFORE: top=' + getComputedStyle(appWrapper).paddingTop);
-                    // Убираем padding из app-wrapper - он уже есть на body
+                    // Убираем padding из app-wrapper
                     appWrapper.style.setProperty('padding-top', '0px', 'important');
                     appWrapper.style.setProperty('padding-bottom', '0px', 'important');
                     logs.push('App-wrapper AFTER: top=' + getComputedStyle(appWrapper).paddingTop);
