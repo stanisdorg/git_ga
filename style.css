@@ -30,7 +30,8 @@ body:has(#stats-container) {
     max-width: none;
     margin: 0;
     padding: 0;
-    /* iOS safe areas для контейнера */
+    /* Отступы чтобы контент не перекрывался шапкой и навигацией */
+    padding-top: 60px !important;
     padding-bottom: max(40px, env(safe-area-inset-bottom, 40px)) !important;
 }
 
