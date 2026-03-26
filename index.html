@@ -615,14 +615,14 @@
                 logs.push('App-wrapper: ' + (appWrapper ? 'FOUND' : 'NOT FOUND'));
 
                 if (container) {
-                    container.style.paddingTop = '60px';
-                    container.style.paddingBottom = '40px';
+                    container.style.setProperty('padding-top', '60px', 'important');
+                    container.style.setProperty('padding-bottom', '40px', 'important');
                     logs.push('Container padding-top applied: ' + getComputedStyle(container).paddingTop);
                     logs.push('Container padding-bottom applied: ' + getComputedStyle(container).paddingBottom);
                 }
                 if (appWrapper) {
-                    appWrapper.style.paddingTop = '60px';
-                    appWrapper.style.paddingBottom = '20px';
+                    appWrapper.style.setProperty('padding-top', '60px', 'important');
+                    appWrapper.style.setProperty('padding-bottom', '20px', 'important');
                     logs.push('App-wrapper padding applied');
                 }
 
