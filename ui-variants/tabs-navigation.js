@@ -1593,12 +1593,10 @@ export function initTabsNavigation(appVersion) {
                 const googleBtn = ov.querySelector('#google-login-btn');
                 if (googleBtn) {
                     googleBtn.addEventListener('click', function () {
-                        console.log('[Google Auth] === BUTTON CLICKED ===');
                         // Загружаем Google OAuth скрипт
                         const script = document.createElement('script');
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
-                            console.log('[Google Auth] Script loaded');
                             // Инициализируем Google OAuth
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
@@ -1606,19 +1604,13 @@ export function initTabsNavigation(appVersion) {
                                 auto_select: false,
                                 ux_mode: 'popup'
                             });
-                            console.log('[Google Auth] Initialized, showing prompt...');
                             // Показываем prompt
                             google.accounts.id.prompt((notification) => {
-                                console.log('[Google Auth] Prompt callback:', notification);
                                 if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                                    console.log('[Google Auth] Prompt not shown, reason:', notification.getNotDisplayedReason() || notification.getSkippedReason());
                                     // Если prompt не сработал, пробуем renderButton
                                     renderGoogleOneTap();
                                 }
                             });
-                        };
-                        script.onerror = function () {
-                            console.error('[Google Auth] Script failed to load');
                         };
                         document.body.appendChild(script);
                     });
@@ -1626,7 +1618,6 @@ export function initTabsNavigation(appVersion) {
 
                 // Функция для рендера Google One Tap кнопки (fallback)
                 function renderGoogleOneTap() {
-                    console.log('[Google Auth] Rendering One Tap button...');
                     const googleBtnContainer = document.createElement('div');
                     googleBtnContainer.id = 'google-one-tap';
                     googleBtnContainer.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;';
@@ -1645,10 +1636,7 @@ export function initTabsNavigation(appVersion) {
                     // Автоматически кликаем через 500мс
                     setTimeout(() => {
                         const button = googleBtnContainer.querySelector('button');
-                        if (button) {
-                            console.log('[Google Auth] Auto-clicking One Tap button');
-                            button.click();
-                        }
+                        if (button) button.click();
                     }, 500);
                 }
 
@@ -1656,7 +1644,6 @@ export function initTabsNavigation(appVersion) {
                 const githubBtn = ov.querySelector('#github-login-btn');
                 if (githubBtn) {
                     githubBtn.addEventListener('click', function () {
-                        console.log('[GitHub Auth] Button clicked - coming soon');
                         alert('GitHub авторизация скоро будет доступна!');
                     });
                 }
@@ -1691,49 +1678,20 @@ export function initTabsNavigation(appVersion) {
 
                 // Глобальный коллбэк для Google OAuth
                 window.handleGoogleSignIn = async function (response) {
-                    console.log('[Google Auth] === RESPONSE RECEIVED ===');
-                    console.log('[Google Auth] Full response:', JSON.stringify(response, null, 2));
-
                     try {
                         // Проверяем что credential существует
                         if (!response || !response.credential) {
-                            console.error('[Google Auth] No credential in response');
                             alert('Ошибка: Google не вернул токен. Попробуйте ещё раз.');
                             return;
                         }
 
-                        console.log('[Google Auth] Credential received (first 50 chars):', response.credential.substring(0, 50) + '...');
-
-                        // Разделяем JWT на части
+                        // Google использует URL-safe base64, нужно заменить - на + и _ на /
                         const parts = response.credential.split('.');
-                        console.log('[Google Auth] JWT parts count:', parts.length);
-                        console.log('[Google Auth] JWT part 1 (header):', parts[0].substring(0, 50) + '...');
-                        console.log('[Google Auth] JWT part 2 (payload):', parts[1].substring(0, 50) + '...');
-
-                        // Декодируем JWT payload
-                        let decodedPayload;
-                        try {
-                            // Google использует URL-safe base64, нужно заменить - на + и _ на /
-                            let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-                            decodedPayload = atob(base64);
-                            console.log('[Google Auth] Decoded payload:', decodedPayload);
-                        } catch (atobError) {
-                            console.error('[Google Auth] atob error:', atobError);
-                            console.error('[Google Auth] Invalid base64 in part 2:', parts[1]);
-                            // Пробуем добавить padding
-                            let padded = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-                            padded = padded.padEnd(padded.length + (4 - padded.length % 4) % 4, '=');
-                            console.log('[Google Auth] Padded:', padded);
-                            decodedPayload = atob(padded);
-                            console.log('[Google Auth] Decoded with padding:', decodedPayload);
-                        }
-
-                        const userInfo = JSON.parse(decodedPayload);
-                        console.log('[Google Auth] User info:', userInfo);
+                        let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                        const userInfo = JSON.parse(atob(base64));
 
                         // Отправляем на сервер
                         const authUrl = `${BACKEND_URL}/api/auth/google`;
-                        console.log('[Google Auth] Sending to:', authUrl);
                         const res = await fetch(authUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1745,16 +1703,11 @@ export function initTabsNavigation(appVersion) {
                             })
                         });
 
-                        console.log('[Google Auth] Response status:', res.status);
                         const data = await res.json();
-                        console.log('[Google Auth] Response data:', data);
-
                         if (res.ok && data.ok) {
-                            console.log('[Google Auth] SUCCESS! Username:', data.username);
                             // Сохраняем данные для автозагрузки
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'google');
-
                             setLoggedUser({ username: data.username, role: data.role });
 
                             // Закрываем модальное окно
@@ -1764,14 +1717,10 @@ export function initTabsNavigation(appVersion) {
                             // Перезагружаем страницу
                             window.location.reload();
                         } else {
-                            console.error('[Google Auth] Server error:', data.error);
                             alert('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'));
                         }
                     } catch (e) {
-                        console.error('[Google Auth] === ERROR ===');
-                        console.error('[Google Auth] Error type:', e.name);
-                        console.error('[Google Auth] Error message:', e.message);
-                        console.error('[Google Auth] Stack:', e.stack);
+                        console.error('[Google Auth] Error:', e);
                         alert('Ошибка авторизации: ' + e.message);
                     }
                 };
