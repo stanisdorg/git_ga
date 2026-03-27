@@ -594,7 +594,12 @@ const server = http.createServer((req, res) => {
 
     // POST /api/auth/telegram - Вход через Telegram (v6.09)
     if (req.method === 'POST' && pathname === '/api/auth/telegram') {
-      console.log('[TG Auth] Входящий запрос на авторизацию');
+      console.log('========================================');
+      console.log('[TG Auth] 🔐 ВХОДЯЩИЙ ЗАПРОС НА АВТОРИЗАЦИЮ');
+      console.log('[TG Auth] Headers:', JSON.stringify(req.headers, null, 2));
+      console.log('[TG Auth] Origin:', req.headers.origin);
+      console.log('[TG Auth] TELEGRAM_BOT_TOKEN (first 8 chars):', TELEGRAM_BOT_TOKEN.substring(0, 8) + '...');
+
       let body = '';
       req.on('data', chunk => {
         body += chunk;
@@ -607,16 +612,29 @@ const server = http.createServer((req, res) => {
       req.on('end', async () => {
         try {
           if (!body) {
-            console.error('[TG Auth] Пустое тело запроса');
+            console.error('[TG Auth] ❌ Пустое тело запроса');
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'Empty body' }));
             return;
           }
+
+          console.log('[TG Auth] Сырое тело запроса:', body);
+
           const authData = JSON.parse(body);
-          console.log('[TG Auth] Данные получены для ID:', authData.id);
+          console.log('[TG Auth] 📥 Данные получены:', JSON.stringify(authData, null, 2));
+          console.log('[TG Auth] ID:', authData.id);
+          console.log('[TG Auth] Username:', authData.username);
+          console.log('[TG Auth] Hash:', authData.hash);
+          console.log('[TG Auth] Auth date:', authData.auth_date);
 
           // 1. Проверка подписи Telegram
-          if (!verifyTelegramAuth(authData)) {
+          console.log('[TG Auth] 🔍 Начало проверки подписи Telegram...');
+          const isValid = verifyTelegramAuth(authData);
+          console.log('[TG Auth] Результат проверки подписи:', isValid ? '✅ VALID' : '❌ INVALID');
+
+          if (!isValid) {
+            console.error('[TG Auth] ❌ ОШИБКА: Неверная подпись Telegram');
+            console.error('[TG Auth] Данные для проверки:', JSON.stringify(authData, null, 2));
             logger.warn('Попытка входа с неверным хешем Telegram', { id: authData.id }, 'Auth');
             res.writeHead(403, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: false, error: 'Invalid Telegram hash' }));
@@ -624,13 +642,14 @@ const server = http.createServer((req, res) => {
           }
 
           // 2. Проверка подписки на канал (с таймаутом)
+          console.log('[TG Auth] 🔍 Проверка подписки на канал...');
           const isSubscribed = await checkTelegramSubscription(authData.id);
 
           // 🔍 ЛОГ ДЛЯ ОТЛАДКИ (v6.09.3)
           console.log(`[TG Auth] Результат проверки подписки для ${authData.id}: ${isSubscribed}`);
 
           if (!isSubscribed) {
-            console.warn(`[TG Auth] Доступ запрещен: пользователь ${authData.id} не подписан.`);
+            console.warn(`[TG Auth] ❌ Доступ запрещен: пользователь ${authData.id} не подписан.`);
             logger.info('Отказано во входе: пользователь не подписан на канал', { id: authData.id }, 'Auth');
             res.writeHead(403, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({
@@ -641,7 +660,7 @@ const server = http.createServer((req, res) => {
             return;
           }
 
-          console.log(`[TG Auth] Доступ разрешен для ${authData.id}. Продолжаем вход...`);
+          console.log(`[TG Auth] ✅ Доступ разрешен для ${authData.id}. Продолжаем вход...`);
 
           // 3. Работа с базой пользователей
           const usersPath = path.join(__dirname, 'data', 'users.json');

@@ -1044,7 +1044,11 @@ export function initTabsNavigation(appVersion) {
         window.qaAuth.getUser = () => loggedInUser;
         window.qaAuth.openLogin = () => openLoginModal();
         window.qaAuth.logout = async () => {
-            if (confirm('Вы уверены, что хотите выйти из системы?')) {
+            const confirmed = confirm('❗ Вы уверены, что хотите выйти из системы?\n\nВсе несохранённые изменения будут потеряны.');
+            if (confirmed) {
+                // 🔥 Очищаем данные Telegram OAuth перед выходом
+                sessionStorage.removeItem('tgAuthUser');
+
                 await setLoggedUser(null);
                 window.location.reload();
             }
@@ -1339,9 +1343,15 @@ export function initTabsNavigation(appVersion) {
             if (loggedInUser && !user) {
                 console.log('[LOGOUT] === НАЧАЛО ВЫХОДА ===');
 
-                // Очищаем ключи Telegram авторизации
+                // 🔥 Очищаем ключи Telegram авторизации в localStorage
                 localStorage.removeItem('qaUsername');
                 localStorage.removeItem('qaAuthType');
+
+                // 🔥 Очищаем данные Telegram OAuth в sessionStorage
+                sessionStorage.removeItem('tgAuthUser');
+
+                // 🔥 Очищаем сессию Telegram (если вдруг осталась)
+                sessionStorage.removeItem('telegramUser');
 
                 // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
                 // 🔥 ИСПРАВЛЕНИЕ: Не сохраняем если данные уже сохранены (qaNewItems пуст)
@@ -1529,11 +1539,11 @@ export function initTabsNavigation(appVersion) {
                                 <button id="github-login-btn" type="button" title="Войти через GitHub" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                                 </button>
-                                <!-- Telegram -->
-                                <button id="telegram-login-btn" type="button" title="Войти через Telegram" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                                </button>
                             </div>
+                            <!-- Telegram -->
+                            <button id="telegram-login-btn" type="button" title="Войти через Telegram" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -1648,32 +1658,18 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // Telegram кнопка
+                // Telegram кнопка - вход через бота с проверкой подписки
                 const telegramBtn = ov.querySelector('#telegram-login-btn');
                 if (telegramBtn) {
                     telegramBtn.addEventListener('click', function () {
                         console.log('[Telegram Auth] Button clicked');
-                        // Открываем Telegram OAuth
+                        // Открываем Telegram OAuth через бота
                         window.open(
-                            'https://oauth.telegram.org/auth?bot_id=862467912934&origin=https://bytecards.ru',
+                            'https://oauth.telegram.org/auth?bot_id=8636706073&origin=https://bytecards.ru',
                             '_blank',
                             'width=600,height=400'
                         );
                     });
-                }
-
-                // Рендерим виджет Telegram динамически (старый способ, для совместимости)
-                const tgContainer = ov.querySelector('#telegram-login-container');
-                if (tgContainer) {
-                    const script = document.createElement('script');
-                    script.async = true;
-                    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-                    script.setAttribute('data-telegram-login', 'ByteCards_bot');
-                    script.setAttribute('data-size', 'medium');
-                    script.setAttribute('data-radius', '8');
-                    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-                    script.setAttribute('data-request-access', 'write');
-                    tgContainer.appendChild(script);
                 }
 
                 // Глобальный коллбэк для Google OAuth
@@ -1725,11 +1721,12 @@ export function initTabsNavigation(appVersion) {
                     }
                 };
 
-                // Глобальный коллбэк для виджета
+                // Глобальный коллбэк для виджета Telegram
                 window.onTelegramAuth = async function (user) {
-                    console.log('[TG Auth] Data received from widget:', user);
+                    console.log('[TG Auth] Данные от Telegram:', user);
+
                     const authUrl = `${BACKEND_URL}/api/auth/telegram`;
-                    console.log('[TG Auth] Sending request to:', authUrl);
+
                     try {
                         const res = await fetch(authUrl, {
                             method: 'POST',
@@ -1737,280 +1734,28 @@ export function initTabsNavigation(appVersion) {
                             body: JSON.stringify(user)
                         });
 
-                        console.log('[TG Auth] Response status:', res.status);
                         const data = await res.json();
-                        console.log('[TG Auth] Response data:', data);
-                        if (res.ok && data.ok) {
-                            // Сохраняем данные для автозагрузки
-                            localStorage.setItem('qaUsername', data.username);
-                            localStorage.setItem('qaAuthType', 'telegram');
+                        console.log('[TG Auth] Ответ сервера:', data);
 
+                        if (res.ok && data.ok) {
+                            // 🔥 НЕ сохраняем данные для автозагрузки - просто входим
                             setLoggedUser({ username: data.username, role: data.role });
                             ov.remove();
-
-                            // 🔄 Перезагружаем страницу для чистого входа
                             window.location.reload();
                         } else {
+                            // Показываем ошибку
                             if (data.error === 'not_subscribed') {
-                                // Сохраняем данные пользователя для повторной проверки
-                                sessionStorage.setItem('tgAuthUser', JSON.stringify(user));
-
-                                // Создаём кастомное модальное окно в стиле Liquid Glass
-                                const modal = document.createElement('div');
-                                modal.className = 'tg-subscription-modal';
-                                modal.style.cssText = `
-                                    position: fixed;
-                                    top: 0; left: 0; right: 0; bottom: 0;
-                                    background: rgba(0, 0, 0, 0.2);
-                                    backdrop-filter: blur(8px);
-                                    -webkit-backdrop-filter: blur(8px);
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    z-index: 10000;
-                                    animation: fadeIn 0.3s ease;
-                                `;
-                                modal.innerHTML = `
-                                    <div class="glass-card" style="
-                                        position: relative;
-                                        background: linear-gradient(135deg, 
-                                            rgba(255,255,255,0.1) 0%, 
-                                            rgba(255,255,255,0.05) 50%, 
-                                            rgba(255,255,255,0.02) 100%);
-                                        backdrop-filter: blur(40px) saturate(180%);
-                                        -webkit-backdrop-filter: blur(40px) saturate(180%);
-                                        padding: 40px 32px;
-                                        border-radius: 24px;
-                                        max-width: 380px;
-                                        text-align: center;
-                                        box-shadow: 
-                                            0 20px 60px rgba(0, 0, 0, 0.3),
-                                            inset 0 1px 0 rgba(255,255,255,0.2),
-                                            inset 0 -1px 0 rgba(0,0,0,0.1);
-                                        border: 1px solid rgba(255, 255, 255, 0.15);
-                                        border-top: 1px solid rgba(255, 255, 255, 0.3);
-                                        border-left: 1px solid rgba(255, 255, 255, 0.2);
-                                        animation: slideUp 0.4s ease;
-                                        overflow: hidden;
-                                    ">
-                                        <!-- Блик сверху -->
-                                        <div style="
-                                            position: absolute;
-                                            top: 0; left: 0; right: 0;
-                                            height: 1px;
-                                            background: linear-gradient(90deg, 
-                                                transparent, 
-                                                rgba(255,255,255,0.4), 
-                                                transparent);
-                                        "></div>
-                                        
-                                        <!-- Градиентный блик -->
-                                        <div style="
-                                            position: absolute;
-                                            top: -50%; left: -50%;
-                                            width: 200%; height: 200%;
-                                            background: radial-gradient(circle, 
-                                                rgba(255,255,255,0.08) 0%, 
-                                                transparent 60%);
-                                            transform: rotate(30deg);
-                                            pointer-events: none;
-                                        "></div>
-                                        
-                                        <div style="
-                                            position: relative;
-                                            z-index: 1;
-                                        ">
-                                            <div style="
-                                                width: 64px;
-                                                height: 64px;
-                                                margin: 0 auto 20px;
-                                                background: linear-gradient(135deg, 
-                                                    rgba(255,255,255,0.2) 0%, 
-                                                    rgba(255,255,255,0.05) 100%);
-                                                border-radius: 16px;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                box-shadow: 
-                                                    0 8px 32px rgba(0,0,0,0.2),
-                                                    inset 0 1px 0 rgba(255,255,255,0.2);
-                                                border: 1px solid rgba(255,255,255,0.1);
-                                            ">
-                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="url(#lockGradient)"/>
-                                                    <defs>
-                                                        <linearGradient id="lockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                            <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
-                                                            <stop offset="100%" stop-color="#fff" stop-opacity="0.6"/>
-                                                        </linearGradient>
-                                                    </defs>
-                                                </svg>
-                                            </div>
-                                            <h3 style="
-                                                margin: 0 0 12px 0;
-                                                color: #fff;
-                                                font-size: 22px;
-                                                font-weight: 600;
-                                                letter-spacing: -0.3px;
-                                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                                            ">Доступ ограничен</h3>
-                                            <p style="
-                                                margin: 0 0 28px 0;
-                                                color: rgba(255, 255, 255, 0.6);
-                                                font-size: 15px;
-                                                line-height: 1.5;
-                                            ">
-                                                Для входа подпишитесь на канал<br>
-                                                <a href="https://t.me/brotherhood_qa" target="_blank" 
-                                                   style="
-                                                       color: #fff;
-                                                       text-decoration: none;
-                                                       font-weight: 500;
-                                                       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-                                                       transition: all 0.2s;
-                                                   "
-                                                   onmouseover="this.style.borderColor='rgba(255,255,255,0.6)'"
-                                                   onmouseout="this.style.borderColor='rgba(255,255,255,0.3)'">
-                                                    @brotherhood_qa
-                                                </a>
-                                            </p>
-                                            <button id="tg-check-btn" class="glass-button" style="
-                                                position: relative;
-                                                background: linear-gradient(135deg, 
-                                                    rgba(255,255,255,0.15) 0%, 
-                                                    rgba(255,255,255,0.05) 100%);
-                                                backdrop-filter: blur(20px);
-                                                -webkit-backdrop-filter: blur(20px);
-                                                color: #fff;
-                                                border: 1px solid rgba(255, 255, 255, 0.2);
-                                                border-top: 1px solid rgba(255, 255, 255, 0.3);
-                                                padding: 14px 28px;
-                                                border-radius: 12px;
-                                                font-size: 15px;
-                                                font-weight: 500;
-                                                cursor: pointer;
-                                                width: 100%;
-                                                margin-bottom: 10px;
-                                                transition: all 0.3s ease;
-                                                letter-spacing: -0.2px;
-                                                box-shadow: 
-                                                    0 4px 16px rgba(0,0,0,0.2),
-                                                    inset 0 1px 0 rgba(255,255,255,0.1);
-                                            ">Проверить подписку</button>
-                                            <button id="tg-cancel-btn" style="
-                                                position: relative;
-                                                background: transparent;
-                                                color: rgba(255, 255, 255, 0.5);
-                                                border: none;
-                                                padding: 12px 20px;
-                                                border-radius: 10px;
-                                                font-size: 14px;
-                                                cursor: pointer;
-                                                width: 100%;
-                                                transition: all 0.2s ease;
-                                            ">Отмена</button>
-                                        </div>
-                                    </div>
-                                `;
-                                document.body.appendChild(modal);
-
-                                // Добавляем анимации и стили
-                                const style = document.createElement('style');
-                                style.textContent = `
-                                    @keyframes fadeIn {
-                                        from { opacity: 0; }
-                                        to { opacity: 1; }
-                                    }
-                                    @keyframes slideUp {
-                                        from { opacity: 0; transform: translateY(30px); }
-                                        to { opacity: 1; transform: translateY(0); }
-                                    }
-                                    .glass-button:hover {
-                                        background: linear-gradient(135deg, 
-                                            rgba(255,255,255,0.25) 0%, 
-                                            rgba(255,255,255,0.15) 100%) !important;
-                                        border-color: rgba(255, 255, 255, 0.4) !important;
-                                        border-top-color: rgba(255, 255, 255, 0.5) !important;
-                                    }
-                                    .glass-button:active {
-                                        transform: scale(0.98);
-                                    }
-                                    #tg-cancel-btn:hover {
-                                        color: rgba(255, 255, 255, 0.7);
-                                        background: rgba(255, 255, 255, 0.05);
-                                    }
-                                    .glass-card {
-                                        animation: glassShine 3s ease-in-out infinite;
-                                    }
-                                    @keyframes glassShine {
-                                        0%, 100% { 
-                                            border-color: rgba(255,255,255,0.15);
-                                        }
-                                        50% { 
-                                            border-color: rgba(255,255,255,0.25);
-                                        }
-                                    }
-                                `;
-                                document.head.appendChild(style);
-
-                                // Открываем канал сразу при показе окна
-                                window.open('https://t.me/brotherhood_qa', '_blank');
-
-                                // Кнопка проверки
-                                document.getElementById('tg-check-btn').addEventListener('click', async () => {
-                                    const btn = document.getElementById('tg-check-btn');
-                                    btn.textContent = '⏳ Проверка...';
-                                    btn.style.opacity = '0.7';
-                                    btn.disabled = true;
-
-                                    // Берём сохранённые данные пользователя
-                                    const savedUser = JSON.parse(sessionStorage.getItem('tgAuthUser') || '{}');
-
-                                    // Повторный запрос к серверу
-                                    try {
-                                        const res = await fetch(authUrl, {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify(savedUser)
-                                        });
-                                        const data = await res.json();
-
-                                        if (res.ok && data.ok) {
-                                            // Успешный вход
-                                            localStorage.setItem('qaUsername', data.username);
-                                            localStorage.setItem('qaAuthType', 'telegram');
-                                            sessionStorage.removeItem('tgAuthUser');
-                                            setLoggedUser({ username: data.username, role: data.role });
-                                            modal.remove();
-                                            window.location.reload();
-                                        } else {
-                                            // Всё ещё не подписан
-                                            btn.textContent = 'Проверить подписку';
-                                            btn.style.opacity = '1';
-                                            btn.disabled = false;
-                                            alert('Вы всё ещё не подписаны на канал');
-                                        }
-                                    } catch (err) {
-                                        btn.textContent = 'Проверить подписку';
-                                        btn.style.opacity = '1';
-                                        btn.disabled = false;
-                                        alert('Ошибка проверки');
-                                    }
-                                });
-
-                                // Кнопка отмены
-                                document.getElementById('tg-cancel-btn').addEventListener('click', () => {
-                                    modal.remove();
-                                });
+                                alert('❗ Для входа необходимо подписаться на канал:\n' + TELEGRAM_CHANNEL_ID);
                             } else {
-                                alert('Ошибка авторизации через Telegram: ' + (data.error || 'Неизвестная ошибка'));
+                                alert('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'));
                             }
                         }
-                    } catch (err) {
-                        console.error('[TG Auth] Fetch error:', err);
-                        alert('Ошибка связи с сервером');
+                    } catch (e) {
+                        console.error('[TG Auth] Error:', e);
+                        alert('Ошибка авторизации: ' + e.message);
                     }
                 };
+
                 ov.querySelector('#login-cancel').addEventListener('click', () => ov.remove());
                 ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
                 ov.querySelector('#login-pass-eye').addEventListener('click', () => {
@@ -2028,7 +1773,7 @@ export function initTabsNavigation(appVersion) {
                         // Local auth only (локальный сервер)
                         try {
                             // Пробуем войти через локальный API
-                            const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
+                            const loginRes = await fetch(`${BACKEND_URL} /api/login`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ username: u, password: p })
@@ -2094,7 +1839,7 @@ export function initTabsNavigation(appVersion) {
                 ov.style.justifyContent = 'center';
                 ov.style.zIndex = '5000';
                 ov.innerHTML = `
-                <div style="background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
+            < div style = "background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)" >
                     <div style="font-weight:600;margin-bottom:10px">Добавить пользователя</div>
                     <div style="display:flex;flex-direction:column;gap:8px">
                         <input id="new-username" placeholder="Логин" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
@@ -2109,7 +1854,7 @@ export function initTabsNavigation(appVersion) {
                             <button id="admin-add" style="padding:8px 12px;border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:#fff">Добавить</button>
                         </div>
                     </div>
-                </div>
+                </div >
             `;
                 document.body.appendChild(ov);
                 ov.querySelector('#admin-cancel').addEventListener('click', () => ov.remove());
@@ -2158,7 +1903,7 @@ export function initTabsNavigation(appVersion) {
                 ov.style.justifyContent = 'center';
                 ov.style.zIndex = '5000';
                 ov.innerHTML = `
-                <div style="background:#1f1f1f;color:#fff;padding:16px 20px;border-radius:10px;width:560px;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,0.35)">
+            < div style = "background:#1f1f1f;color:#fff;padding:16px 20px;border-radius:10px;width:560px;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,0.35)" >
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
                         <div style="font-weight:600">Supabase данные</div>
                         <button id="cloud-close" style="padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px">Закрыть</button>
@@ -2173,7 +1918,7 @@ export function initTabsNavigation(appVersion) {
                             <div id="cloud-stats" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
                         </div>
                     </div>
-                </div>
+                </div >
             `;
                 document.body.appendChild(ov);
                 ov.querySelector('#cloud-close').addEventListener('click', () => ov.remove());
@@ -2185,7 +1930,7 @@ export function initTabsNavigation(appVersion) {
             statsEl.textContent = 'Загрузка...';
             client.from('users').select('*').then(({ data, error }) => {
                 if (error) { usersEl.textContent = 'Ошибка'; return; }
-                usersEl.innerHTML = (data || []).map(u => `<div>${u.username} • роль: ${u.role || 'user'}</div>`).join('') || '<div>Пусто</div>';
+                usersEl.innerHTML = (data || []).map(u => `< div > ${u.username} • роль: ${u.role || 'user'}</div > `).join('') || '<div>Пусто</div>';
             }).catch(() => { usersEl.textContent = 'Ошибка'; });
             const loadStats = () => {
                 client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
@@ -2207,7 +1952,7 @@ export function initTabsNavigation(appVersion) {
                             const d = (result && typeof result.daily === 'number') ? result.daily : 0;
                             const c = (result && typeof result.cards === 'number') ? result.cards : 0;
                             window.__cloudLastMigration = { daily: d, cards: c, at: Date.now() };
-                            btn.textContent = `Готово: достижения ${d}, карточки ${c}`;
+                            btn.textContent = `Готово: достижения ${d}, карточки ${c} `;
                             setTimeout(() => { btn.textContent = 'Привязать device_* к текущему пользователю'; }, 1800);
                             loadStats();
                         });
@@ -2215,12 +1960,12 @@ export function initTabsNavigation(appVersion) {
                     if (window.__cloudLastMigration && typeof window.__cloudLastMigration.daily === 'number') {
                         const info = document.createElement('div');
                         info.style.cssText = 'margin:6px 0;padding:6px 10px;border:1px solid #444;background:#222;color:#ddd;border-radius:6px';
-                        info.textContent = `Последняя миграция: достижения ${window.__cloudLastMigration.daily}, карточки ${window.__cloudLastMigration.cards}`;
+                        info.textContent = `Последняя миграция: достижения ${window.__cloudLastMigration.daily}, карточки ${window.__cloudLastMigration.cards} `;
                         statsEl.appendChild(info);
                         // очистить через короткое время, чтобы не мешало
                         setTimeout(() => { try { delete window.__cloudLastMigration; } catch { } }, 2500);
                     }
-                    const rows = list.map(s => `<div>${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div>`).join('');
+                    const rows = list.map(s => `< div > ${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div > `).join('');
                     statsEl.innerHTML += rows || '<div>Пусто</div>';
                 }).catch(() => { statsEl.textContent = 'Ошибка'; });
             };
@@ -2329,7 +2074,7 @@ export function initTabsNavigation(appVersion) {
                 tabsContainer.appendChild(tab);
             });
             // Восстанавливаем активный таб, если возможно
-            const toActivate = tabsContainer.querySelector(`.tab[data-category="${activeId}"]`) || allTab;
+            const toActivate = tabsContainer.querySelector(`.tab[data - category="${activeId}"]`) || allTab;
             toActivate.classList.add('active');
             // Обновляем меню редактирования
             refreshCategoryEditMenus();
@@ -2389,14 +2134,14 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            <button data-act="rename">Переименовать</button>
+            < button data - act="rename" > Переименовать</button >
             <button data-act="duplicate">Дублировать</button>
             <button data-act="delete">Удалить</button>
         `;
             document.body.appendChild(menu);
             const rect = tabEl.getBoundingClientRect();
-            menu.style.left = `${rect.right + 6}px`;
-            menu.style.top = `${rect.top}px`;
+            menu.style.left = `${rect.right + 6} px`;
+            menu.style.top = `${rect.top} px`;
             const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
             document.addEventListener('click', onDocClick);
             menu.addEventListener('click', async (e) => {
@@ -2497,14 +2242,14 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            <button data-act="rename">Переименовать</button>
+            < button data - act="rename" > Переименовать</button >
             <button data-act="duplicate">Дублировать</button>
             <button data-act="delete">Удалить</button>
         `;
             document.body.appendChild(menu);
             const rect = cardEl.getBoundingClientRect();
-            menu.style.left = `${rect.right + 6}px`;
-            menu.style.top = `${rect.top}px`;
+            menu.style.left = `${rect.right + 6} px`;
+            menu.style.top = `${rect.top} px`;
             const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
             document.addEventListener('click', onDocClick);
             menu.addEventListener('click', async (e) => {
