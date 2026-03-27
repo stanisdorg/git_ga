@@ -1713,13 +1713,16 @@ export function initTabsNavigation(appVersion) {
                         // Декодируем JWT payload
                         let decodedPayload;
                         try {
-                            decodedPayload = atob(parts[1]);
+                            // Google использует URL-safe base64, нужно заменить - на + и _ на /
+                            let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                            decodedPayload = atob(base64);
                             console.log('[Google Auth] Decoded payload:', decodedPayload);
                         } catch (atobError) {
                             console.error('[Google Auth] atob error:', atobError);
                             console.error('[Google Auth] Invalid base64 in part 2:', parts[1]);
                             // Пробуем добавить padding
-                            let padded = parts[1].padEnd(parts[1].length + (4 - parts[1].length % 4) % 4, '=');
+                            let padded = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                            padded = padded.padEnd(padded.length + (4 - padded.length % 4) % 4, '=');
                             console.log('[Google Auth] Padded:', padded);
                             decodedPayload = atob(padded);
                             console.log('[Google Auth] Decoded with padding:', decodedPayload);
