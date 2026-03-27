@@ -1044,7 +1044,7 @@ export function initTabsNavigation(appVersion) {
         window.qaAuth.getUser = () => loggedInUser;
         window.qaAuth.openLogin = () => openLoginModal();
         window.qaAuth.logout = async () => {
-            const confirmed = confirm('❗ Вы уверены, что хотите выйти из системы?\n\nВсе несохранённые изменения будут потеряны.');
+            const confirmed = confirm('❗ Вы уверены, что хотите выйти из системы?');
             if (confirmed) {
                 // 🔥 Очищаем данные Telegram OAuth перед выходом
                 sessionStorage.removeItem('tgAuthUser');
