@@ -508,6 +508,90 @@ const server = http.createServer((req, res) => {
       loginAttempts.delete(ip);
     }
 
+    // POST /api/auth/google - Вход через Google OAuth
+    if (req.method === 'POST' && pathname === '/api/auth/google') {
+      console.log('[Google Auth] Входящий запрос на авторизацию');
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', async () => {
+        try {
+          const { email, name, picture, googleId } = JSON.parse(body);
+          console.log('[Google Auth] Данные получены:', email);
+
+          const usersPath = path.join(__dirname, 'data', 'users.json');
+          let users = [];
+          if (fs.existsSync(usersPath)) {
+            users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+          }
+
+          // Ищем пользователя по email или googleId
+          let user = users.find(u => u.email === email || u.googleId === googleId);
+
+          if (!user) {
+            // Создаём нового пользователя
+            const username = email.split('@')[0].toLowerCase(); // hello@gmail.com → hello
+            user = {
+              username: username,
+              email: email,
+              googleId: googleId,
+              name: name,
+              picture: picture,
+              role: 'editor',  // Дефолтная роль
+              password: crypto.randomBytes(32).toString('hex'), // Случайный пароль
+              createdAt: new Date().toISOString(),
+              lastLoginAt: new Date().toISOString()
+            };
+            users.push(user);
+            fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
+            logger.info('Новый пользователь зарегистрирован через Google', { username: user.username }, 'Auth');
+
+            // Создаём файл данных пользователя
+            const newUserPath = path.join(__dirname, 'data', `user_${user.username}.json`);
+            const globalPath = path.join(__dirname, 'data', 'global.json');
+            let initialCards = [];
+            if (fs.existsSync(globalPath)) {
+              initialCards = JSON.parse(fs.readFileSync(globalPath, 'utf-8'));
+            }
+            const initialData = {
+              _cards: initialCards,
+              _achievements: {},
+              _favorites: [],
+              _srsProgress: {},
+              _stats: {},
+              _meta: {
+                username: user.username,
+                role: user.role,
+                createdAt: user.createdAt,
+                lastLoginAt: user.lastLoginAt,
+                cardsCount: initialCards.length
+              }
+            };
+            fs.writeFileSync(newUserPath, JSON.stringify(initialData, null, 2), 'utf-8');
+            logger.info('Файл данных создан для ' + user.username, null, 'Auth');
+          } else {
+            // Обновляем lastLoginAt
+            user.lastLoginAt = new Date().toISOString();
+            user.name = name || user.name;
+            user.picture = picture || user.picture;
+            fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
+            logger.info('Пользователь вошёл через Google', { username: user.username }, 'Auth');
+          }
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            ok: true,
+            username: user.username,
+            role: user.role
+          }));
+        } catch (e) {
+          console.error('[Google Auth] Ошибка:', e.message);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
     // POST /api/auth/telegram - Вход через Telegram (v6.09)
     if (req.method === 'POST' && pathname === '/api/auth/telegram') {
       console.log('[TG Auth] Входящий запрос на авторизацию');

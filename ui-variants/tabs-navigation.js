@@ -1520,7 +1520,20 @@ export function initTabsNavigation(appVersion) {
                         </div>
                         <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.15);padding-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px">
                             <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">Или войти через</div>
-                            <div id="telegram-login-container"></div>
+                            <div style="display:flex;gap:12px;justify-content:center;align-items:center">
+                                <!-- Google -->
+                                <button id="google-login-btn" type="button" title="Войти через Google" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                                </button>
+                                <!-- GitHub -->
+                                <button id="github-login-btn" type="button" title="Войти через GitHub" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                </button>
+                                <!-- Telegram -->
+                                <button id="telegram-login-btn" type="button" title="Войти через Telegram" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -1557,10 +1570,70 @@ export function initTabsNavigation(appVersion) {
                     #login-submit:active {
                         transform: scale(0.98);
                     }
+                    /* Кнопки соцсетей */
+                    #google-login-btn:hover,
+                    #github-login-btn:hover,
+                    #telegram-login-btn:hover {
+                        background: rgba(255,255,255,0.15) !important;
+                        border-color: rgba(255,255,255,0.3) !important;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    }
+                    #google-login-btn:active,
+                    #github-login-btn:active,
+                    #telegram-login-btn:active {
+                        transform: translateY(0) scale(0.95);
+                    }
                 `;
                 document.head.appendChild(loginStyles);
 
-                // Рендерим виджет Telegram динамически
+                // === ОБРАБОТЧИКИ ДЛЯ КНОПОК СОЦСЕТЕЙ ===
+
+                // Google кнопка
+                const googleBtn = ov.querySelector('#google-login-btn');
+                if (googleBtn) {
+                    googleBtn.addEventListener('click', function () {
+                        console.log('[Google Auth] Button clicked');
+                        // Загружаем Google OAuth скрипт
+                        const script = document.createElement('script');
+                        script.src = 'https://accounts.google.com/gsi/client';
+                        script.onload = function () {
+                            // Инициализируем Google OAuth
+                            google.accounts.id.initialize({
+                                client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
+                                callback: handleGoogleSignIn
+                            });
+                            // Показываем prompt
+                            google.accounts.id.prompt();
+                        };
+                        document.body.appendChild(script);
+                    });
+                }
+
+                // GitHub кнопка (пока заглушка)
+                const githubBtn = ov.querySelector('#github-login-btn');
+                if (githubBtn) {
+                    githubBtn.addEventListener('click', function () {
+                        console.log('[GitHub Auth] Button clicked - coming soon');
+                        alert('GitHub авторизация скоро будет доступна!');
+                    });
+                }
+
+                // Telegram кнопка
+                const telegramBtn = ov.querySelector('#telegram-login-btn');
+                if (telegramBtn) {
+                    telegramBtn.addEventListener('click', function () {
+                        console.log('[Telegram Auth] Button clicked');
+                        // Открываем Telegram OAuth
+                        window.open(
+                            'https://oauth.telegram.org/auth?bot_id=862467912934&origin=https://bytecards.ru',
+                            '_blank',
+                            'width=600,height=400'
+                        );
+                    });
+                }
+
+                // Рендерим виджет Telegram динамически (старый способ, для совместимости)
                 const tgContainer = ov.querySelector('#telegram-login-container');
                 if (tgContainer) {
                     const script = document.createElement('script');
@@ -1573,6 +1646,54 @@ export function initTabsNavigation(appVersion) {
                     script.setAttribute('data-request-access', 'write');
                     tgContainer.appendChild(script);
                 }
+
+                // Глобальный коллбэк для Google OAuth
+                window.handleGoogleSignIn = async function (response) {
+                    console.log('[Google Auth] Response received:', response);
+                    try {
+                        // Декодируем JWT токен
+                        const userInfo = JSON.parse(atob(response.credential.split('.')[1]));
+                        console.log('[Google Auth] User info:', userInfo);
+
+                        // Отправляем на сервер
+                        const authUrl = `${BACKEND_URL}/api/auth/google`;
+                        const res = await fetch(authUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: userInfo.email,
+                                name: userInfo.name,
+                                picture: userInfo.picture,
+                                googleId: userInfo.sub
+                            })
+                        });
+
+                        console.log('[Google Auth] Response status:', res.status);
+                        const data = await res.json();
+                        console.log('[Google Auth] Response data:', data);
+
+                        if (res.ok && data.ok) {
+                            // Сохраняем данные для автозагрузки
+                            localStorage.setItem('qaUsername', data.username);
+                            localStorage.setItem('qaAuthType', 'google');
+
+                            setLoggedUser({ username: data.username, role: data.role });
+
+                            // Закрываем модальное окно
+                            const ov = document.getElementById('login-overlay');
+                            if (ov) ov.remove();
+
+                            // Перезагружаем страницу
+                            window.location.reload();
+                        } else {
+                            console.error('[Google Auth] Error:', data.error);
+                            alert('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'));
+                        }
+                    } catch (e) {
+                        console.error('[Google Auth] Error:', e);
+                        alert('Ошибка авторизации: ' + e.message);
+                    }
+                };
 
                 // Глобальный коллбэк для виджета
                 window.onTelegramAuth = async function (user) {
