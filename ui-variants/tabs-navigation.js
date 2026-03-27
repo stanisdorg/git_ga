@@ -1607,47 +1607,18 @@ export function initTabsNavigation(appVersion) {
                         const script = document.createElement('script');
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
-                            // Инициализируем Google OAuth
+                            // Инициализируем Google OAuth с redirect mode (надёжнее для PWA)
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
                                 callback: handleGoogleSignIn,
-                                auto_select: false,
-                                ux_mode: 'popup'
+                                auto_select: true,  // Автоматический выбор если уже входил
+                                ux_mode: 'redirect'  // Редирект вместо popup (надёжнее для iOS PWA)
                             });
                             // Показываем prompt
-                            google.accounts.id.prompt((notification) => {
-                                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                                    // Если prompt не сработал, пробуем renderButton
-                                    renderGoogleOneTap();
-                                }
-                            });
+                            google.accounts.id.prompt();
                         };
                         document.body.appendChild(script);
                     });
-                }
-
-                // Функция для рендера Google One Tap кнопки (fallback)
-                function renderGoogleOneTap() {
-                    const googleBtnContainer = document.createElement('div');
-                    googleBtnContainer.id = 'google-one-tap';
-                    googleBtnContainer.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;';
-                    document.body.appendChild(googleBtnContainer);
-
-                    google.accounts.id.renderButton(
-                        googleBtnContainer,
-                        {
-                            theme: 'outline',
-                            size: 'large',
-                            text: 'signin_with',
-                            width: 300
-                        }
-                    );
-
-                    // Автоматически кликаем через 500мс
-                    setTimeout(() => {
-                        const button = googleBtnContainer.querySelector('button');
-                        if (button) button.click();
-                    }, 500);
                 }
 
                 // GitHub кнопка (пока заглушка)
@@ -1658,17 +1629,32 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // Telegram кнопка - вход через бота с проверкой подписки
+                // Telegram кнопка - вход через OAuth
                 const telegramBtn = ov.querySelector('#telegram-login-btn');
+                console.log('[TG DEBUG] Кнопка Telegram найдена:', !!telegramBtn);
+
                 if (telegramBtn) {
                     telegramBtn.addEventListener('click', function () {
-                        console.log('[Telegram Auth] Button clicked');
-                        // Открываем Telegram OAuth через бота
-                        window.open(
-                            'https://oauth.telegram.org/auth?bot_id=8636706073&origin=https://bytecards.ru',
-                            '_blank',
-                            'width=600,height=400'
+                        console.log('========================================');
+                        console.log('[TG Auth] 🔐 КЛИК ПО КНОПКЕ TELEGRAM');
+
+                        // Используем правильный URL для Telegram OAuth
+                        const oauthUrl = 'https://oauth.telegram.org/auth?bot_id=8636706073&origin=https://bytecards.ru&return_to=/';
+
+                        console.log('[TG Auth] Открываем:', oauthUrl);
+
+                        const newWindow = window.open(
+                            oauthUrl,
+                            'telegram_oauth',
+                            'width=600,height=400,left=' + Math.round((screen.width - 600) / 2) + ',top=' + Math.round((screen.height - 400) / 2)
                         );
+
+                        if (!newWindow) {
+                            console.error('[TG Auth] ❌ Блокировщик поп-апов!');
+                            alert('⚠️ Браузер заблокировал окно авторизации.\n\nРазрешите поп-апы для https://bytecards.ru');
+                        } else {
+                            console.log('[TG Auth] ✅ Окно открыто');
+                        }
                     });
                 }
 
