@@ -1540,10 +1540,8 @@ export function initTabsNavigation(appVersion) {
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                                 </button>
                             </div>
-                            <!-- Telegram -->
-                            <button id="telegram-login-btn" type="button" title="Войти через Telegram" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                            </button>
+                            <!-- Telegram Login Widget - видимый -->
+                            <div id="tg-widget-container" style="margin-top:12px;display:flex;justify-content:center;"></div>
                         </div>
                     </form>
                 </div>
@@ -1603,19 +1601,31 @@ export function initTabsNavigation(appVersion) {
                 const googleBtn = ov.querySelector('#google-login-btn');
                 if (googleBtn) {
                     googleBtn.addEventListener('click', function () {
+                        console.log('[Google Auth] Button clicked');
                         // Загружаем Google OAuth скрипт
                         const script = document.createElement('script');
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
-                            // Инициализируем Google OAuth с redirect mode (надёжнее для PWA)
+                            console.log('[Google Auth] Script loaded, initializing...');
+                            // Инициализируем Google OAuth с popup mode (работает без FedCM)
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
                                 callback: handleGoogleSignIn,
-                                auto_select: true,  // Автоматический выбор если уже входил
-                                ux_mode: 'redirect'  // Редирект вместо popup (надёжнее для iOS PWA)
+                                auto_select: false,
+                                ux_mode: 'popup',  // Popup вместо redirect (работает без FedCM)
+                                federated_login: 'google'  // Явно указываем провайдера
                             });
+                            console.log('[Google Auth] Initialized, showing prompt...');
                             // Показываем prompt
-                            google.accounts.id.prompt();
+                            google.accounts.id.prompt((notification) => {
+                                console.log('[Google Auth] Prompt callback:', notification);
+                                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                                    console.log('[Google Auth] Prompt not shown, reason:', notification.getNotDisplayedReason() || notification.getSkippedReason());
+                                }
+                            });
+                        };
+                        script.onerror = function () {
+                            console.error('[Google Auth] Script failed to load');
                         };
                         document.body.appendChild(script);
                     });
@@ -1629,51 +1639,72 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // Telegram кнопка - вход через OAuth
-                const telegramBtn = ov.querySelector('#telegram-login-btn');
-                console.log('[TG DEBUG] Кнопка Telegram найдена:', !!telegramBtn);
+                // Telegram Login Widget - загружаем сразу
+                const widgetContainer = ov.querySelector('#tg-widget-container');
+                console.log('[TG DEBUG] Контейнер виджета найден:', !!widgetContainer);
 
-                if (telegramBtn) {
-                    telegramBtn.addEventListener('click', function () {
-                        console.log('========================================');
-                        console.log('[TG Auth] 🔐 КЛИК ПО КНОПКЕ TELEGRAM');
+                if (widgetContainer) {
+                    const script = document.createElement('script');
+                    script.async = true;
+                    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+                    script.setAttribute('data-telegram-login', 'ByteCards_bot');
+                    script.setAttribute('data-size', 'medium');
+                    script.setAttribute('data-radius', '12');
+                    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+                    script.setAttribute('data-request-access', 'write');
 
-                        // Используем правильный URL для Telegram OAuth
-                        const oauthUrl = 'https://oauth.telegram.org/auth?bot_id=8636706073&origin=https://bytecards.ru&return_to=/';
+                    script.onload = () => {
+                        console.log('[TG Auth] ✅ Виджет Telegram загружен');
+                    };
 
-                        console.log('[TG Auth] Открываем:', oauthUrl);
-
-                        const newWindow = window.open(
-                            oauthUrl,
-                            'telegram_oauth',
-                            'width=600,height=400,left=' + Math.round((screen.width - 600) / 2) + ',top=' + Math.round((screen.height - 400) / 2)
-                        );
-
-                        if (!newWindow) {
-                            console.error('[TG Auth] ❌ Блокировщик поп-апов!');
-                            alert('⚠️ Браузер заблокировал окно авторизации.\n\nРазрешите поп-апы для https://bytecards.ru');
-                        } else {
-                            console.log('[TG Auth] ✅ Окно открыто');
-                        }
-                    });
+                    widgetContainer.appendChild(script);
                 }
 
                 // Глобальный коллбэк для Google OAuth
                 window.handleGoogleSignIn = async function (response) {
+                    console.log('[Google Auth] === RESPONSE RECEIVED ===');
+                    console.log('[Google Auth] Full response:', JSON.stringify(response, null, 2));
+
                     try {
                         // Проверяем что credential существует
                         if (!response || !response.credential) {
+                            console.error('[Google Auth] No credential in response');
                             alert('Ошибка: Google не вернул токен. Попробуйте ещё раз.');
                             return;
                         }
 
-                        // Google использует URL-safe base64, нужно заменить - на + и _ на /
+                        console.log('[Google Auth] Credential received');
+
+                        // Разделяем JWT на части
                         const parts = response.credential.split('.');
+
+                        // Google использует URL-safe base64, нужно заменить - на + и _ на /
                         let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
                         const userInfo = JSON.parse(atob(base64));
 
-                        // Отправляем на сервер
+                        console.log('[Google Auth] User info:', userInfo);
+
+                        // ОТПРАВЛЯЕМ ЛОГИ НА СЕРВЕР
+                        console.log('[Google Auth] Sending logs to server...');
+                        await fetch('/api/iphone-logs', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userAgent: navigator.userAgent,
+                                url: window.location.href,
+                                timestamp: new Date().toISOString(),
+                                logs: [
+                                    '[Google Auth] === RESPONSE RECEIVED ===',
+                                    '[Google Auth] User: ' + userInfo.email,
+                                    '[Google Auth] Name: ' + userInfo.name,
+                                    '[Google Auth] Google ID: ' + userInfo.sub
+                                ]
+                            })
+                        }).catch(err => console.error('[Google Auth] Failed to send logs:', err));
+
+                        // Отправляем на сервер для авторизации
                         const authUrl = `${BACKEND_URL}/api/auth/google`;
+                        console.log('[Google Auth] Sending to:', authUrl);
                         const res = await fetch(authUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1685,8 +1716,12 @@ export function initTabsNavigation(appVersion) {
                             })
                         });
 
+                        console.log('[Google Auth] Response status:', res.status);
                         const data = await res.json();
+                        console.log('[Google Auth] Response data:', data);
+
                         if (res.ok && data.ok) {
+                            console.log('[Google Auth] SUCCESS! Username:', data.username);
                             // Сохраняем данные для автозагрузки
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'google');
@@ -1699,10 +1734,14 @@ export function initTabsNavigation(appVersion) {
                             // Перезагружаем страницу
                             window.location.reload();
                         } else {
+                            console.error('[Google Auth] Server error:', data.error);
                             alert('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'));
                         }
                     } catch (e) {
-                        console.error('[Google Auth] Error:', e);
+                        console.error('[Google Auth] === ERROR ===');
+                        console.error('[Google Auth] Error type:', e.name);
+                        console.error('[Google Auth] Error message:', e.message);
+                        console.error('[Google Auth] Stack:', e.stack);
                         alert('Ошибка авторизации: ' + e.message);
                     }
                 };
