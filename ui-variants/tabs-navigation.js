@@ -1607,22 +1607,16 @@ export function initTabsNavigation(appVersion) {
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
                             console.log('[Google Auth] Script loaded, initializing...');
-                            // Инициализируем Google OAuth с popup mode (работает без FedCM)
+                            // Инициализируем Google OAuth с redirect mode (надёжнее без FedCM)
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
                                 callback: handleGoogleSignIn,
                                 auto_select: false,
-                                ux_mode: 'popup',  // Popup вместо redirect (работает без FedCM)
-                                federated_login: 'google'  // Явно указываем провайдера
+                                ux_mode: 'redirect'  // Redirect вместо popup (надёжнее)
                             });
-                            console.log('[Google Auth] Initialized, showing prompt...');
-                            // Показываем prompt
-                            google.accounts.id.prompt((notification) => {
-                                console.log('[Google Auth] Prompt callback:', notification);
-                                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                                    console.log('[Google Auth] Prompt not shown, reason:', notification.getNotDisplayedReason() || notification.getSkippedReason());
-                                }
-                            });
+                            console.log('[Google Auth] Initialized, redirecting to Google...');
+                            // Перенаправляем на Google
+                            google.accounts.id.prompt();
                         };
                         script.onerror = function () {
                             console.error('[Google Auth] Script failed to load');
