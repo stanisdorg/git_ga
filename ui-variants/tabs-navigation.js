@@ -2074,7 +2074,7 @@ export function initTabsNavigation(appVersion) {
                 tabsContainer.appendChild(tab);
             });
             // Восстанавливаем активный таб, если возможно
-            const toActivate = tabsContainer.querySelector(`.tab[data - category="${activeId}"]`) || allTab;
+            const toActivate = tabsContainer.querySelector(`.tab[data-category="${activeId}"]`) || allTab;
             toActivate.classList.add('active');
             // Обновляем меню редактирования
             refreshCategoryEditMenus();
