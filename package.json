@@ -20,6 +20,8 @@
     "supertest": "^7.2.2"
   },
   "dependencies": {
+    "@sentry/browser": "^10.46.0",
+    "@sentry/node": "^10.46.0",
     "playwright": "^1.58.2"
   },
   "repository": {

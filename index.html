@@ -282,6 +282,30 @@
         </div>
     </div>
 
+    <!-- Sentry Error Tracking -->
+    <script src="https://js-de.sentry-cdn.com/d8c49f00037ecc68e3bcd53f94a54445.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Инициализация Sentry для браузера
+        if (typeof Sentry !== 'undefined') {
+            Sentry.init({
+                dsn: 'https://d8c49f00037ecc68e3bcd53f94a54445@o4511124590297088.ingest.de.sentry.io/4511124610809936',
+                environment: 'production',
+                release: 'bytecards@6.17.1',
+                integrations: [
+                    Sentry.browserTracingIntegration(),
+                    Sentry.replayIntegration({
+                        maskAllText: true,
+                        blockAllMedia: true,
+                    }),
+                ],
+                tracesSampleRate: 0.1, // 10% транзакций
+                replaysSessionSampleRate: 0.1, // 10% сессий
+                replaysOnErrorSampleRate: 1.0, // 100% ошибок
+            });
+            console.log('[Sentry] Инициализирован');
+        }
+    </script>
+
     <script src="all-data.js" type="module"></script>
     <script src="ui-manager.js?v=6.17.1" type="module"></script>
     <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
@@ -371,7 +395,7 @@
     <!-- Скрипт управления Splash Screen -->
     <script>
         // Устанавливаем версию приложения глобально
-        window.currentAppVersion = '6.13.0';
+        window.currentAppVersion = '6.18';
 
         // Splash Screen - управление загрузкой приложения
         (function () {

@@ -5,13 +5,31 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { logger } from './logger.js';
+import * as Sentry from '@sentry/node';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.13.0';
+const VERSION = '6.18';
+
+// ============================================
+// Sentry Error Tracking
+// ============================================
+const SENTRY_DSN = process.env.SENTRY_DSN || '';
+
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 0.1, // 10% транзакций
+    release: `bytecards@${VERSION}`,
+  });
+  console.log('[Sentry] Инициализирован');
+} else {
+  console.log('[Sentry] Не настроен (SENTRY_DSN не указан)');
+}
 
 console.log('========================================');
 console.log(`[SERVER] Starting QA Assistant v${VERSION}...`);
@@ -1937,4 +1955,21 @@ server.listen(PORT, IP, () => {
   req.on('error', (e) => console.error('[TG Bot] Ошибка обновления команд меню:', e));
   req.write(menuCommands);
   req.end();
+});
+
+// ============================================
+// Global Error Handling with Sentry
+// ============================================
+process.on('uncaughtException', (error) => {
+  console.error('[FATAL] Uncaught Exception:', error);
+  if (SENTRY_DSN) {
+    Sentry.captureException(error);
+  }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[FATAL] Unhandled Rejection at:', promise, 'reason:', reason);
+  if (SENTRY_DSN) {
+    Sentry.captureException(reason);
+  }
 });

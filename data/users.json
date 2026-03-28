@@ -46,7 +46,7 @@
     "lastName": "Дороганов",
     "role": "admin",
     "createdAt": "2026-03-23T23:47:57.109Z",
-    "lastLoginAt": "2026-03-25T14:37:45.286Z"
+    "lastLoginAt": "2026-03-28T23:18:24.727Z"
   },
   {
     "username": "user_8333264308",
@@ -66,6 +66,6 @@
     "role": "editor",
     "password": "0cbd6486a97bef3f8e1e3df8f2ac6a202743f22b532a90b0e43c3414f8131dfd",
     "createdAt": "2026-03-27T00:30:58.223Z",
-    "lastLoginAt": "2026-03-27T01:59:58.174Z"
+    "lastLoginAt": "2026-03-28T22:46:35.926Z"
   }
 ]

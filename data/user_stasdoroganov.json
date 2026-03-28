@@ -16,7 +16,11 @@
       "category": "DevOps",
       "subcategory": "CI/CD",
       "question": "брокеры?",
-      "answer": "не работал, но слышал, у меня монолит проект был, недостаточно большой чтобы превращать его в микросервисы и внедрять брокера\n        брокер позволяет настривать взаимодействие между микросервисами, иметь определенную асинхронность, распределять нагрузку, запросы могут приходить в брокер, но не отправляться сразу, а подождать если необходимо, kafka сам отдает сообщения rabbitmq там микросервис сам должен обратиться чтобы проверить есть ли у него сообщения, забрать"
+      "answer": "Не работал, но слышал, у меня монолит проект был, недостаточно большой чтобы превращать его в микросервисы и внедрять брокера\n        брокер позволяет настривать взаимодействие между микросервисами, иметь определенную асинхронность, распределять нагрузку, запросы могут приходить в брокер, но не отправляться сразу, а подождать если необходимо, kafka сам отдает сообщения rabbitmq там микросервис сам должен обратиться чтобы проверить есть ли у него сообщения, забрать",
+      "formatting": {
+        "question": [],
+        "answer": []
+      }
     },
     {
       "category": "DevOps",
@@ -76,19 +80,129 @@
       "category": "DevOps",
       "subcategory": "CI/CD",
       "question": "как с kibana работал?  уровни ошибок ?",
-      "answer": "90 процентов request id+фильтры(период времени короткий)\n        также можно по микросервису, по времени, по статус коду, по уровню ошибок это расширенные-trace, INFO-просто, WARNING, DEBUG-разработчики могут подменять данные. У нас в основном не использовались, у нас стоял уровень ERROR, если требовалось могли до warning поднять, fatal(никогда не видел) \n        Регулярные выражения редко (…).*\n        В окд в сервисах, в редких кейсах в самом ребите можно зайти, последнее там сообщение посмотреть \n    - docker, kuber"
+      "answer": "90 процентов request id+фильтры(период времени короткий)\n        также можно по микросервису, по статус коду, по уровню ошибок это расширенные-trace, INFO-просто, WARNING, DEBUG-разработчики могут подменять данные. У нас в основном не использовались, у нас стоял уровень ERROR, если требовалось могли до warning поднять, fatal(никогда не видел) \n        Регулярные выражения редко (…).*\n        В окд в сервисах, в редких кейсах в самом ребите можно зайти, последнее там сообщение посмотреть \n    - docker, kuber",
+      "formatting": {
+        "question": [],
+        "answer": []
+      }
     },
     {
       "category": "DevOps",
       "subcategory": "CI/CD",
       "question": "docker команды?",
-      "answer": "скачать образ -pull, запустить контейнер который мы создали на основе образа -run, посмотреть все запущенные контейнеры -PS, ls-папки посмотреть, остановить -docker stop и название контенера либо его id, логи это-logs, удалить-rm(так же как и с папкой)-удалить контейнер, а RMI-это image удалить(образ), images-посмотреть какие есть образы в докере"
+      "answer": "скачать образ -pull, запустить контейнер который мы создали на основе образа -run, посмотреть все запущенные контейнеры -PS, ls-папки посмотреть, остановить -docker stop и название контенера либо его id, логи это-logs, удалить-rm(так же как и с папкой)-удалить контейнер, а RMI-это image удалить(образ), images-посмотреть какие есть образы в докере",
+      "formatting": {
+        "question": [],
+        "answer": [
+          {
+            "start": 0,
+            "end": 15,
+            "color": "#B794F4"
+          },
+          {
+            "start": 15,
+            "end": 19,
+            "color": "#B794F4"
+          },
+          {
+            "start": 19,
+            "end": 20,
+            "color": "#B794F4"
+          },
+          {
+            "start": 21,
+            "end": 81,
+            "color": "#7FCDCD"
+          },
+          {
+            "start": 83,
+            "end": 123,
+            "color": "#B794F4"
+          },
+          {
+            "start": 125,
+            "end": 144,
+            "color": "#4ECDC4"
+          },
+          {
+            "start": 146,
+            "end": 169,
+            "color": "#B794F4"
+          },
+          {
+            "start": 169,
+            "end": 201,
+            "color": "#B794F4"
+          },
+          {
+            "start": 201,
+            "end": 202,
+            "color": "#B794F4"
+          },
+          {
+            "start": 204,
+            "end": 217,
+            "color": "#4ECDC4"
+          },
+          {
+            "start": 219,
+            "end": 270,
+            "color": "#B794F4"
+          },
+          {
+            "start": 274,
+            "end": 302,
+            "color": "#4ECDC4"
+          },
+          {
+            "start": 304,
+            "end": 348,
+            "color": "#B794F4"
+          }
+        ]
+      }
     },
     {
       "category": "DevOps",
       "subcategory": "CI/CD",
       "question": "сущности в докере?",
-      "answer": "docker image-это образ который представляет набор правил по созданию виртуальной машины, какого то окружения своего\n        docker image создан при помощи docker file-это описание, манифест докера о том как он должен запуститься, какие скрипты должны выполниться и тд\n        docker container-экземпляр нашего образа(image), который изолирован от остальной ОС где мы запустились и от остальных контейнеров если они есть и запущены на этой же ОС \n        docker compose-управляет несколькими контейнерами на одном сервере"
+      "answer": "docker image-это образ который представляет набор правил по созданию виртуальной машины, какого то окружения своего\n        docker image создан при помощи docker file-это описание, манифест докера о том как он должен запуститься, какие скрипты должны выполниться и тд\n        docker container-экземпляр нашего образа(image), который изолирован от остальной ОС где мы запустились и от остальных контейнеров если они есть и запущены на этой же ОС \n        docker compose(yaml) -управляет несколькими контейнерами на одном сервере",
+      "formatting": {
+        "question": [
+          {
+            "start": 11,
+            "end": 17,
+            "color": "#FF6B6B",
+            "bold": true
+          }
+        ],
+        "answer": [
+          {
+            "start": 0,
+            "end": 12,
+            "color": "#F5B042",
+            "bold": true
+          },
+          {
+            "start": 155,
+            "end": 166,
+            "color": "#F5B042",
+            "bold": true
+          },
+          {
+            "start": 276,
+            "end": 292,
+            "color": "#F5B042",
+            "bold": true
+          },
+          {
+            "start": 454,
+            "end": 468,
+            "color": "#F5B042",
+            "bold": true
+          }
+        ]
+      }
     },
     {
       "category": "DevOps",
@@ -220,8 +334,38 @@
       "category": "MindMap",
       "subcategory": "General",
       "question": "502 Bad Gateway",
-      "answer": "Приложение упало",
-      "raw_category": "MindMap Node"
+      "answer": "Вышестоящий прокси не дождался ответа от приложения     Примеры:1) Приложение потребляло слишком много памяти.Kubernetes убил контейнер Пока новый контейнер стартовал, Ingress отдавал 502.         2) Nginx был настроен на localhost:8080, а приложение слушало 3000.Прокси пытался подключиться, но порт был закрыт → 502.",
+      "raw_category": "MindMap Node",
+      "formatting": {
+        "question": [],
+        "answer": [
+          {
+            "start": 0,
+            "end": 51,
+            "color": "#FF8C42"
+          },
+          {
+            "start": 56,
+            "end": 62,
+            "color": "#4ECDC4"
+          },
+          {
+            "start": 62,
+            "end": 63,
+            "color": "#4ECDC4"
+          },
+          {
+            "start": 63,
+            "end": 65,
+            "color": "#FF6B6B"
+          },
+          {
+            "start": 196,
+            "end": 199,
+            "color": "#FF6B6B"
+          }
+        ]
+      }
     },
     {
       "category": "MindMap",
@@ -1921,12 +2065,6 @@
     {
       "category": "Технические",
       "subcategory": "Ошибки",
-      "question": "Как передать?",
-      "answer": "Через токен, через логин и пароль."
-    },
-    {
-      "category": "Технические",
-      "subcategory": "Ошибки",
       "question": "401 vs 403?",
       "answer": "Мы авторизованы, но нет прав."
     },
@@ -2031,17 +2169,338 @@
       "subcategory": "Типы требований",
       "question": "Какие виды требований знаете?",
       "answer": "Функциональные — это как работает система. Нефункциональные — это про UI, UX, дизайн, насколько удобно пользователю, например, доступность не менее 99,9% времени в год.\\n\\n--- Дополнительный ответ ---\\nфункц-то как работает система, нефункц-про ui, ux, дизайн, про то насколько удобно пользователю, нефункц- по нагрузке, например: доступность не менее 99,9% времени в год"
+    },
+    {
+      "question": "500 код",
+      "answer": "При 500 сначала смотрю Network: статус и Response. Дальше смотрю на UI: есть ли сообщение об ошибке, разблокирована ли кнопка. Если пользователь висит без обратной связи — это баг фронта, потому что он должен обработать любой ответ сервера. Если сообщение есть, но 500 при валидных данных — отдаю бэкенду с приложенным Response и Payload",
+      "category": "Технические",
+      "subcategory": "Ошибки"
+    },
+    {
+      "category": "Технические",
+      "subcategory": "Ошибки",
+      "question": "400",
+      "answer": "При 400 сначала смотрю Payload: если фронт отправил невалидные данные (например, пустое поле или неверный формат), то баг фронтовой — плохая валидация перед отправкой. Если данные валидные, а бэк все равно 400 — баг бэкенда. Также проверяю, обработал ли фронт эту ошибку: показал ли сообщение пользователю и разблокировал ли кнопку. Если нет — это тоже фронт"
     }
   ],
-  "_achievements": {},
-  "_favorites": [],
-  "_srsProgress": {},
-  "_stats": {},
+  "_achievements": {
+    "firstSessionCompleted": true
+  },
+  "_favorites": [
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?"
+  ],
+  "_srsProgress": {
+    "как с kibana работал?  уровни ошибок ?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774611488735,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774611488735,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 17,
+      "question": "как с kibana работал?  уровни ошибок ?"
+    },
+    "Local Storage:": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774611497238,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774611497238,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 17,
+      "question": "Local Storage:"
+    },
+    "сущности в докере?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774613940735,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774613940735,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 18,
+      "question": "сущности в докере?"
+    },
+    "502 Bad Gateway": {
+      "interval": 3,
+      "easeFactor": 2.3999999999999995,
+      "streak": 2,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1774693103924,
+      "nextReviewDate": 1774918800000,
+      "dueDate": "2026-03-31T01:00:00.000Z",
+      "repetitions": 2,
+      "historyArray": [
+        {
+          "date": 1774615025877,
+          "grade": 3
+        },
+        {
+          "date": 1774693103924,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 16,
+      "question": "502 Bad Gateway"
+    },
+    "UAT пользовательское": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774622359962,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774622359962,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 20,
+      "question": "UAT пользовательское"
+    },
+    "логи кафка": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774622378831,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774622378831,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 20,
+      "question": "логи кафка"
+    },
+    "Session Storage:": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774622392681,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774622392681,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 20,
+      "question": "Session Storage:"
+    },
+    "брокеры?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774622711501,
+      "nextReviewDate": 1774659600000,
+      "dueDate": "2026-03-28T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774622711501,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-27",
+      "lastReviewedTime": 20,
+      "question": "брокеры?"
+    },
+    "kafka отличие партиций от топика": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774678608158,
+      "nextReviewDate": 1774746000000,
+      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774678608158,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 12,
+      "question": "kafka отличие партиций от топика"
+    },
+    "radis?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774692807121,
+      "nextReviewDate": 1774746000000,
+      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774692807121,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 16,
+      "question": "radis?"
+    },
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774692853694,
+      "nextReviewDate": 1774746000000,
+      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774692853694,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 16,
+      "question": "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?"
+    },
+    "пример для чего подмена запросов?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774693077076,
+      "nextReviewDate": 1774746000000,
+      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774693077076,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 16,
+      "question": "пример для чего подмена запросов?"
+    },
+    "docker команды?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774696828133,
+      "nextReviewDate": 1774746000000,
+      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774696828133,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 17,
+      "question": "docker команды?"
+    },
+    "Foreign Key": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774696841760,
+      "nextReviewDate": 1774746000000,
+      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1774696841760,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-28",
+      "lastReviewedTime": 17,
+      "question": "Foreign Key"
+    }
+  },
+  "_stats": {
+    "total": 15,
+    "timeSpent": 855297,
+    "points": 125,
+    "correct": 11
+  },
   "_meta": {
     "username": "stasdoroganov",
     "role": "editor",
     "createdAt": "2026-03-27T00:30:58.223Z",
-    "lastLoginAt": "2026-03-27T00:30:58.223Z",
-    "cardsCount": 316
+    "lastLoginAt": "2026-03-28T23:01:26.621Z",
+    "cardsCount": 317,
+    "lastSavedAt": "2026-03-28T23:01:26.621Z"
   }
 }
