@@ -938,26 +938,13 @@ export function startLearnSession(candidateQuestions, options = {}) {
         }
     }
 
-    console.log('[TIMER DEBUG] === НАЧАЛО РАБОТЫ С ТАЙМЕРОМ ===');
-    console.log('[TIMER DEBUG] options.mode:', options.mode);
-    console.log('[TIMER DEBUG] candidateQuestions.length:', candidateQuestions?.length);
-
     // 🔧 ПЕРЕМЕЩАЕМ ТАЙМЕР И СЧЁТЧИК В .learn-header
     const timerEl2 = document.getElementById('mode-timer');
     const counterEl = document.getElementById('learn-counter');
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
-    console.log('[TIMER DEBUG] timerEl2 (mode-timer):', timerEl2);
-    console.log('[TIMER DEBUG] learnHeader2:', learnHeader2);
-    console.log('[TIMER DEBUG] exitBtn:', exitBtn);
-    console.log('[TIMER DEBUG] counterEl:', counterEl);
-
     if (timerEl2 && learnHeader2 && exitBtn) {
-        console.log('[TIMER DEBUG] Элементы найдены, применяем стили...');
-        console.log('[TIMER DEBUG] timerEl2 до изменений display:', timerEl2.style.display);
-        console.log('[TIMER DEBUG] timerEl2 до изменений position:', timerEl2.style.position);
-
         timerEl2.style.setProperty('display', 'block', 'important');
         timerEl2.style.setProperty('position', 'static', 'important');
         timerEl2.style.setProperty('transform', 'none', 'important');
@@ -968,50 +955,28 @@ export function startLearnSession(candidateQuestions, options = {}) {
         timerEl2.style.zIndex = 'auto';
         timerEl2.style.setProperty('min-width', '60px', 'important');
 
-        console.log('[TIMER DEBUG] timerEl2 после изменений display:', timerEl2.style.display);
-        console.log('[TIMER DEBUG] timerEl2 после изменений position:', timerEl2.style.position);
-        console.log('[TIMER DEBUG] timerEl2 getComputedStyle display:', getComputedStyle(timerEl2).display);
-
         if (exitBtn.nextSibling) {
             learnHeader2.insertBefore(timerEl2, exitBtn.nextSibling);
-            console.log('[TIMER DEBUG] timerEl2 вставлен после exitBtn.nextSibling');
         } else {
             learnHeader2.appendChild(timerEl2);
-            console.log('[TIMER DEBUG] timerEl2 добавлен в конец learnHeader2');
         }
-        console.log('[TIMER DEBUG] timerEl2.parentElement:', timerEl2.parentElement);
-    } else {
-        console.error('[TIMER DEBUG] ОШИБКА: не найдены элементы!');
-        if (!timerEl2) console.error('[TIMER DEBUG] - timerEl2 не найден');
-        if (!learnHeader2) console.error('[TIMER DEBUG] - learnHeader2 не найден');
-        if (!exitBtn) console.error('[TIMER DEBUG] - exitBtn не найден');
     }
 
     if (counterEl && learnHeader2) {
         learnHeader2.appendChild(counterEl);
-        console.log('[TIMER DEBUG] counterEl добавлен в learnHeader2');
     }
 
     // 🔧 ВЫНОСИМ .learn-progress ИЗ .learn-header - будет отдельным блоком снизу
     const learnProgressEl = document.querySelector('.learn-progress');
     if (learnProgressEl && learnHeader2) {
         learnHeader2.parentNode.insertBefore(learnProgressEl, learnHeader2.nextSibling);
-        console.log('[TIMER DEBUG] learnProgressEl вынесен из learnHeader2');
     }
-
-    // Initialize Session Timer UI
-    // Используем .mode-timer вместо создания отдельного #learn-timer
-    const timerEl = document.querySelector('.mode-timer');
-    console.log('[TIMER DEBUG] timerEl (querySelector .mode-timer):', timerEl);
-    console.log('[TIMER DEBUG] timerEl === timerEl2:', timerEl === timerEl2);
 
     // Start Timer
     if (timerInterval) clearInterval(timerInterval);
     sessionTimerStart = Date.now();
-    console.log('[TIMER DEBUG] sessionTimerStart:', sessionTimerStart);
     updateTimerDisplay();
     timerInterval = setInterval(updateTimerDisplay, 1000);
-    console.log('[TIMER DEBUG] timerInterval запущен:', timerInterval);
 
     let sessionCards = [];
 
@@ -1546,9 +1511,11 @@ function renderCardState(state) {
                 timerEl.style.color = '#ff4d4d';
                 timerEl.style.transform = 'translateX(-50%) scale(1)';
             }
-        } else {
+        } else if (state.mode === 'time_attack') {
+            // В режиме time_attack скрываем таймер, если время не показано
             timerEl.style.display = 'none';
         }
+        // Для остальных режимов (cram, ordinary) НЕ скрываем таймер - он управляется через updateTimerDisplay
     }
 }
 
@@ -2473,11 +2440,7 @@ function getLevelFromXP(xp) {
 function updateTimerDisplay() {
     // Обновляем .mode-timer вместо #learn-timer
     const el = document.querySelector('.mode-timer');
-    console.log('[TIMER DEBUG] updateTimerDisplay вызвана, el:', el);
-    if (!el) {
-        console.error('[TIMER DEBUG] updateTimerDisplay: элемент .mode-timer не найден!');
-        return;
-    }
+    if (!el) return;
 
     // Show time for current continuous block
     const now = Date.now();
@@ -2487,14 +2450,7 @@ function updateTimerDisplay() {
     const diff = Math.floor((now - startTime) / 1000);
     const m = Math.floor(diff / 60).toString().padStart(2, '0');
     const s = (diff % 60).toString().padStart(2, '0');
-    const timeStr = `${m}:${s}`;
-
-    console.log('[TIMER DEBUG] updateTimerDisplay: устанавливаем время:', timeStr);
-    console.log('[TIMER DEBUG] updateTimerDisplay: el.textContent до:', el.textContent);
-    el.textContent = timeStr;
-    console.log('[TIMER DEBUG] updateTimerDisplay: el.textContent после:', el.textContent);
-    console.log('[TIMER DEBUG] updateTimerDisplay: el.style.display:', el.style.display);
-    console.log('[TIMER DEBUG] updateTimerDisplay: getComputedStyle(el).display:', getComputedStyle(el).display);
+    el.textContent = `${m}:${s}`;
 }
 
 function showSmartPause(rec) {
