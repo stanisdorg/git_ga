@@ -530,7 +530,8 @@ const server = http.createServer((req, res) => {
     // GitHub OAuth - Редирект на GitHub
     // ============================================
     if (req.method === 'GET' && pathname === '/api/auth/github') {
-      const githubClientId = process.env.GITHUB_CLIENT_ID || 'your_client_id_here';
+      const githubClientId = 'Ov23li8WqD2Iyq7Zemxh';
+      const githubClientSecret = '3b9e89c1f9d218fa73a8c0d7475aaa098e93da35';
       const redirectUri = encodeURIComponent(`${BACKEND_URL}/api/auth/github/callback`);
       const authUrl = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=user:email`;
 
@@ -564,6 +565,9 @@ const server = http.createServer((req, res) => {
 
       console.log('[GitHub Auth] Code received, exchanging for token...');
 
+      const githubClientId = 'Ov23li8WqD2Iyq7Zemxh';
+      const githubClientSecret = '3b9e89c1f9d218fa73a8c0d7475aaa098e93da35';
+
       // Обмениваем code на access token
       const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
@@ -572,8 +576,8 @@ const server = http.createServer((req, res) => {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          client_id: process.env.GITHUB_CLIENT_ID || 'your_client_id_here',
-          client_secret: process.env.GITHUB_CLIENT_SECRET || 'your_client_secret_here',
+          client_id: githubClientId,
+          client_secret: githubClientSecret,
           code: code,
           redirect_uri: `${BACKEND_URL}/api/auth/github/callback`
         })
