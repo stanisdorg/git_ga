@@ -911,6 +911,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const status = currentScheduler.getScheduleStatus();
 
     // Inject/Update Header Info safely
+    // Показываем learn-schedule-info только для обычного режима обучения (не cram)
     let infoEl = document.getElementById('learn-schedule-info');
     if (!infoEl) {
         // If not exists, create it and insert it after the exit button
@@ -928,10 +929,12 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     if (infoEl) {
         if (options.mode === 'cram') {
-            infoEl.textContent = `Углубленное обучение • ${candidateQuestions.length} карт`;
+            // В режиме углубленного обучения скрываем этот блок
+            infoEl.style.display = 'none';
         } else {
             // Убираем День X/Y и Прогресс - не нужно в режиме обучения
             infoEl.textContent = '';
+            infoEl.style.display = '';
         }
     }
 
