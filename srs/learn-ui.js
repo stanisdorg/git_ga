@@ -16,6 +16,8 @@ let currentScheduler = null;
 let timerInterval = null;
 let sessionTimerStart = 0;
 let userScrolled = false; // Флаг ручного скролла прогресс-бара
+let timerPaused = false; // Флаг паузы таймера
+let pausedTimeRemaining = 0; // Накопленное время при паузе
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -156,6 +158,70 @@ export function initLearnUI() {
                     z-index: 20;
                     display: none;
                 }
+
+                /* Timer controls - кнопка паузы и таймер */
+                .timer-controls {
+                    position: absolute;
+                    top: 12px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    z-index: 20;
+                    display: none;
+                    align-items: center;
+                    gap: 4px;
+                }
+
+                .timer-pause-btn {
+                    background: transparent;
+                    border: none;
+                    padding: 4px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: rgba(255, 255, 255, 0.7);
+                    transition: all 0.2s ease;
+                }
+
+                .timer-pause-btn svg {
+                    width: 20px;
+                    height: 20px;
+                }
+
+                .timer-pause-btn:hover {
+                    color: #fff;
+                }
+
+                /* Свечение для кнопки */
+                .timer-pause-btn.running {
+                    color: rgba(255, 255, 255, 0.7);
+                    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+                }
+
+                .timer-pause-btn.paused {
+                    color: rgba(255, 255, 255, 0.9);
+                    filter: drop-shadow(0 0 5px rgba(127, 255, 212, 0.7));
+                }
+
+                .pause-icon, .play-icon {
+                    display: block;
+                }
+
+                .timer-pause-btn.running .pause-icon {
+                    display: none;
+                }
+
+                .timer-pause-btn.running .play-icon {
+                    display: block;
+                }
+
+                .timer-pause-btn.paused .pause-icon {
+                    display: block;
+                }
+
+                .timer-pause-btn.paused .play-icon {
+                    display: none;
+                }
             </style>
             <div class="learn-header">
                 <button id="learn-exit-btn">✕ Выход</button>
@@ -169,7 +235,18 @@ export function initLearnUI() {
             
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <div id="mode-timer" class="mode-timer"></div>
+                    <div class="timer-controls" id="timer-controls" title="Пауза/Старт (клик по таймеру)">
+                        <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Пауза/Старт">
+                            <svg class="pause-icon" viewBox="0 0 24 24" style="display:none">
+                                <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
+                                <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
+                            </svg>
+                            <svg class="play-icon" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <div id="mode-timer" class="mode-timer"></div>
+                    </div>
                     <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
@@ -998,8 +1075,14 @@ export function startLearnSession(candidateQuestions, options = {}) {
     console.log('[TIMER FIX] Запуск таймера...');
     if (timerInterval) clearInterval(timerInterval);
     sessionTimerStart = Date.now();
+    timerPaused = false;
+    pausedTimeRemaining = 0;
     updateTimerDisplay();
     timerInterval = setInterval(updateTimerDisplay, 1000);
+
+    // Setup timer pause/resume functionality
+    setupTimerControls();
+
     console.log('[TIMER FIX] === КОНЕЦ ===');
 
     let sessionCards = [];
@@ -2464,32 +2547,150 @@ function getLevelFromXP(xp) {
 function updateTimerDisplay() {
     // Обновляем .mode-timer вместо #learn-timer
     const el = document.querySelector('.mode-timer');
-    console.log('[TIMER FIX] updateTimerDisplay вызвана, el:', el);
-    if (!el) {
-        console.error('[TIMER FIX] updateTimerDisplay: элемент не найден!');
+    if (!el) return;
+
+    // Если таймер на паузе - не обновляем время
+    if (timerPaused) {
         return;
     }
-
-    console.log('[TIMER FIX] updateTimerDisplay getComputedStyle:', {
-        display: getComputedStyle(el).display,
-        visibility: getComputedStyle(el).visibility,
-        position: getComputedStyle(el).position,
-        left: getComputedStyle(el).left,
-        top: getComputedStyle(el).top,
-        transform: getComputedStyle(el).transform,
-        color: getComputedStyle(el).color
-    });
 
     // Show time for current continuous block
     const now = Date.now();
     // If session exists, use session.lastPauseTime to track current block
     const startTime = (session && session.lastPauseTime) ? session.lastPauseTime : sessionTimerStart;
 
-    const diff = Math.floor((now - startTime) / 1000);
+    const diff = Math.floor((now - startTime) / 1000) + pausedTimeRemaining;
     const m = Math.floor(diff / 60).toString().padStart(2, '0');
     const s = (diff % 60).toString().padStart(2, '0');
     el.textContent = `${m}:${s}`;
-    console.log('[TIMER FIX] updateTimerDisplay установлено время:', el.textContent);
+}
+
+/**
+ * Toggle timer pause/resume
+ */
+function toggleTimerPause() {
+    const pauseBtn = document.getElementById('timer-pause-btn');
+    const timerControls = document.getElementById('timer-controls');
+
+    if (!pauseBtn) return;
+
+    timerPaused = !timerPaused;
+
+    if (timerPaused) {
+        // PAUSE: сохраняем накопленное время
+        const now = Date.now();
+        const startTime = (session && session.lastPauseTime) ? session.lastPauseTime : sessionTimerStart;
+        pausedTimeRemaining += Math.floor((now - startTime) / 1000);
+
+        // Останавливаем интервал
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        // Визуально: иконка паузы, мятное свечение
+        pauseBtn.classList.remove('running');
+        pauseBtn.classList.add('paused');
+
+        if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
+    } else {
+        // RESUME: сбрасываем lastPauseTime для продолжения отсчёта
+        sessionTimerStart = Date.now();
+
+        // Запускаем интервал
+        timerInterval = setInterval(updateTimerDisplay, 1000);
+        updateTimerDisplay();
+
+        // Визуально: иконка play, белое свечение
+        pauseBtn.classList.remove('paused');
+        pauseBtn.classList.add('running');
+
+        if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
+    }
+}
+
+/**
+ * Setup timer controls event listeners
+ */
+function setupTimerControls() {
+    const pauseBtn = document.getElementById('timer-pause-btn');
+    const timerControls = document.getElementById('timer-controls');
+    const timerEl = document.getElementById('mode-timer');
+
+    // Флаг: была ли ручная пауза пользователем
+    let wasManuallyPausedByUser = false;
+
+    // Клик по кнопке паузы
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
+            toggleTimerPause();
+        });
+    }
+
+    // Клик по таймеру (тоже пауза/старт)
+    if (timerEl) {
+        timerEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
+            toggleTimerPause();
+        });
+    }
+
+    // Клик по контейнеру timer-controls
+    if (timerControls) {
+        timerControls.addEventListener('click', (e) => {
+            // Если клик не по кнопке и не по таймеру - тоже пауза
+            if (e.target !== pauseBtn && e.target !== timerEl) {
+                wasManuallyPausedByUser = !timerPaused;
+                toggleTimerPause();
+            }
+        });
+    }
+
+    // Инициализация: устанавливаем иконку play (режим воспроизведения)
+    if (pauseBtn) {
+        pauseBtn.classList.add('running');
+        pauseBtn.classList.remove('paused');
+    }
+    if (timerControls) {
+        timerControls.title = 'Нажмите для паузы таймера';
+    }
+
+    // Автоматическая пауза при уходе со страницы (visibilitychange)
+    document.addEventListener('visibilitychange', () => {
+        const isHidden = document.hidden;
+
+        if (isHidden) {
+            // Страница скрыта (ушли на другую вкладку, свернули браузер, заблокировали телефон)
+            // Всегда ставим на паузу при уходе
+            if (!timerPaused) {
+                toggleTimerPause();
+            }
+        } else {
+            // Страница снова видима
+            // Если не было ручной паузы пользователем - автоматически запускаем таймер
+            if (!wasManuallyPausedByUser && timerPaused) {
+                toggleTimerPause();
+            }
+        }
+    });
+
+    // Обработчики первого взаимодействия для снятия ручной паузы
+    const handleFirstInteraction = () => {
+        // Если была ручная пауза - не делаем ничего, пользователь сам нажмёт
+        // Если не было - таймер уже запущен при visibilitychange
+        document.removeEventListener('click', handleFirstInteraction);
+        document.removeEventListener('mousemove', handleFirstInteraction);
+        document.removeEventListener('touchstart', handleFirstInteraction);
+        document.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('mousemove', handleFirstInteraction);
+    document.addEventListener('touchstart', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
 }
 
 function showSmartPause(rec) {

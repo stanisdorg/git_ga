@@ -3598,6 +3598,52 @@ body.learning-mode #bottom-nav {
         text-align: center !important;
         white-space: nowrap !important;
         z-index: 10 !important;
+        cursor: pointer !important;
+    }
+
+    /* Timer controls для ПК версии */
+    .timer-controls {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 10 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        cursor: pointer !important;
+    }
+
+    .timer-pause-btn {
+        background: transparent !important;
+        border: none !important;
+        padding: 4px !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .timer-pause-btn svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .timer-pause-btn:hover {
+        color: #fff !important;
+    }
+
+    /* Свечение для кнопки */
+    .timer-pause-btn.running {
+        color: rgba(255, 255, 255, 0.7) !important;
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5)) !important;
+    }
+
+    .timer-pause-btn.paused {
+        color: rgba(255, 255, 255, 0.9) !important;
+        filter: drop-shadow(0 0 5px rgba(127, 255, 212, 0.7)) !important;
     }
 
     /* learn-header должен быть relative для абсолютного позиционирования таймера */
