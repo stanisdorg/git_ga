@@ -35,49 +35,41 @@ export function createFormatToolbar(field) {
     toolbar.dataset.field = field || 'both';
 
     // Структура: 2 ряда
-    // Ряд 1: B I U C | 7 цветов текста
-    // Ряд 2: 7 цветов фона | ✕
+    // Ряд 1: 11 кнопок в grid (4 формата + 7 цветов)
+    // Ряд 2: 8 кнопок в grid (7 цветов + ✕)
     toolbar.innerHTML = `
         <div class="format-toolbar-row">
-            <div class="format-toolbar-format">
-                <button class="format-btn" data-action="bold" title="Жирный (Ctrl+B)">
-                    <strong>B</strong>
-                </button>
-                <button class="format-btn" data-action="italic" title="Курсив (Ctrl+I)">
-                    <em>I</em>
-                </button>
-                <button class="format-btn" data-action="underline" title="Подчёркивание (Ctrl+U)">
-                    <u>U</u>
-                </button>
-                <button class="format-btn" data-action="code" title="Код (Ctrl+E)">
-                    &lt;/&gt;
-                </button>
-            </div>
-            <div class="format-toolbar-divider"></div>
-            <div class="format-toolbar-colors">
-                <button class="format-color-btn format-text-color-btn" data-color="#F5B042" style="background-color: #F5B042" title="Цвет текста #F5B042"></button>
-                <button class="format-color-btn format-text-color-btn" data-color="#FF8C42" style="background-color: #FF8C42" title="Цвет текста #FF8C42"></button>
-                <button class="format-color-btn format-text-color-btn" data-color="#4ECDC4" style="background-color: #4ECDC4" title="Цвет текста #4ECDC4"></button>
-                <button class="format-color-btn format-text-color-btn" data-color="#B794F4" style="background-color: #B794F4" title="Цвет текста #B794F4"></button>
-                <button class="format-color-btn format-text-color-btn" data-color="#FF9F7C" style="background-color: #FF9F7C" title="Цвет текста #FF9F7C"></button>
-                <button class="format-color-btn format-text-color-btn" data-color="#7FCDCD" style="background-color: #7FCDCD" title="Цвет текста #7FCDCD"></button>
-                <button class="format-color-btn format-text-color-btn" data-color="#FF6B6B" style="background-color: #FF6B6B" title="Цвет текста #FF6B6B"></button>
-            </div>
+            <button class="format-btn" data-action="bold" title="Жирный (Ctrl+B)">
+                <strong>B</strong>
+            </button>
+            <button class="format-btn" data-action="italic" title="Курсив (Ctrl+I)">
+                <em>I</em>
+            </button>
+            <button class="format-btn" data-action="underline" title="Подчёркивание (Ctrl+U)">
+                <u>U</u>
+            </button>
+            <button class="format-btn" data-action="code" title="Код (Ctrl+E)">
+                &lt;/&gt;
+            </button>
+            <button class="format-color-btn format-text-color-btn" data-color="#F5B042" style="background-color: #F5B042" title="Цвет текста #F5B042"></button>
+            <button class="format-color-btn format-text-color-btn" data-color="#FF8C42" style="background-color: #FF8C42" title="Цвет текста #FF8C42"></button>
+            <button class="format-color-btn format-text-color-btn" data-color="#4ECDC4" style="background-color: #4ECDC4" title="Цвет текста #4ECDC4"></button>
+            <button class="format-color-btn format-text-color-btn" data-color="#B794F4" style="background-color: #B794F4" title="Цвет текста #B794F4"></button>
+            <button class="format-color-btn format-text-color-btn" data-color="#FF9F7C" style="background-color: #FF9F7C" title="Цвет текста #FF9F7C"></button>
+            <button class="format-color-btn format-text-color-btn" data-color="#7FCDCD" style="background-color: #7FCDCD" title="Цвет текста #7FCDCD"></button>
+            <button class="format-color-btn format-text-color-btn" data-color="#FF6B6B" style="background-color: #FF6B6B" title="Цвет текста #FF6B6B"></button>
         </div>
         <div class="format-toolbar-row">
-            <div class="format-toolbar-colors">
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(245, 176, 66, 0.2)" style="background-color: rgba(245, 176, 66, 0.2)" title="Цвет фона"></button>
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 140, 66, 0.2)" style="background-color: rgba(255, 140, 66, 0.2)" title="Цвет фона"></button>
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(78, 205, 196, 0.2)" style="background-color: rgba(78, 205, 196, 0.2)" title="Цвет фона"></button>
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(183, 148, 244, 0.2)" style="background-color: rgba(183, 148, 244, 0.2)" title="Цвет фона"></button>
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 159, 124, 0.2)" style="background-color: rgba(255, 159, 124, 0.2)" title="Цвет фона"></button>
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(127, 205, 205, 0.2)" style="background-color: rgba(127, 205, 205, 0.2)" title="Цвет фона"></button>
-                <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 107, 107, 0.2)" style="background-color: rgba(255, 107, 107, 0.2)" title="Цвет фона"></button>
-            </div>
-            <div class="format-toolbar-divider"></div>
             <button class="format-btn format-clear-btn" data-action="clear" title="Очистить всё форматирование">
                 ✕
             </button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(245, 176, 66, 0.2)" style="background-color: rgba(245, 176, 66, 0.2)" title="Цвет фона"></button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 140, 66, 0.2)" style="background-color: rgba(255, 140, 66, 0.2)" title="Цвет фона"></button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(78, 205, 196, 0.2)" style="background-color: rgba(78, 205, 196, 0.2)" title="Цвет фона"></button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(183, 148, 244, 0.2)" style="background-color: rgba(183, 148, 244, 0.2)" title="Цвет фона"></button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 159, 124, 0.2)" style="background-color: rgba(255, 159, 124, 0.2)" title="Цвет фона"></button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(127, 205, 205, 0.2)" style="background-color: rgba(127, 205, 205, 0.2)" title="Цвет фона"></button>
+            <button class="format-color-btn format-bg-color-btn" data-color="rgba(255, 107, 107, 0.2)" style="background-color: rgba(255, 107, 107, 0.2)" title="Цвет фона"></button>
         </div>
     `;
 
@@ -100,6 +92,27 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
     console.log('[FORMAT-TOOLBAR] initFormatToolbar called', { toolbar, editor1, editor2 });
     console.log('[FORMAT-TOOLBAR] Initial formatting:', currentFormatting);
 
+    // 🔍 ЛОГИРОВАНИЕ РАЗМЕРОВ
+    setTimeout(() => {
+        const rows = toolbar.querySelectorAll('.format-toolbar-row');
+        const allBtns = toolbar.querySelectorAll('.format-btn, .format-color-btn');
+
+        const rowData = Array.from(rows).map((row, i) => ({
+            row: i + 1,
+            width: row.offsetWidth,
+            children: row.children.length
+        }));
+        console.log('[FORMAT-TOOLBAR] 🔵 Размеры рядов:', JSON.stringify(rowData, null, 2));
+
+        const btnData = Array.from(allBtns).map((btn, i) => ({
+            index: i,
+            width: btn.offsetWidth,
+            height: btn.offsetHeight,
+            className: btn.className
+        }));
+        console.log('[FORMAT-TOOLBAR] 🔵 Размеры ВСЕХ кнопок:', JSON.stringify(btnData, null, 2));
+    }, 100);
+
     // Функция для получения актуального formatting (всегда берём свежий)
     function getFormatting() {
         return currentFormatting;
@@ -110,14 +123,14 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
         const editor = field === 'question' ? editor1 : editor2;
         const rules = currentFormatting[field] || [];
         const text = editor.innerText;
-        
-        console.log('[FORMAT-TOOLBAR] updateEditorVisuals:', { 
-            field, 
-            text: text.substring(0, 30), 
+
+        console.log('[FORMAT-TOOLBAR] updateEditorVisuals:', {
+            field,
+            text: text.substring(0, 30),
             rules: JSON.stringify(rules),
-            editor: editor?.id 
+            editor: editor?.id
         });
-        
+
         // Сохраняем позицию курсора
         const selection = window.getSelection();
         let range = null;
@@ -126,12 +139,12 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
             range = selection.getRangeAt(0);
             offset = range.startOffset;
         }
-        
+
         // Применяем форматирование
         editor.innerHTML = applyFormatting(text, rules);
-        
+
         console.log('[FORMAT-TOOLBAR] After applyFormatting:', editor.innerHTML.substring(0, 50));
-        
+
         // Восстанавливаем курсор (примерно)
         if (range && editor.childNodes.length > 0) {
             try {
@@ -156,7 +169,7 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
         if (selection.rangeCount > 0) {
             const range = selection.getRangeAt(0);
             const commonAncestor = range.commonAncestorContainer;
-            
+
             // Проверяем, в каком редакторе находится выделение
             if (editor2 && (editor2 === commonAncestor || editor2.contains(commonAncestor))) {
                 currentField = 'answer';
@@ -170,7 +183,7 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
                 return { editor: editor1, field: 'question' };
             }
         }
-        
+
         // Если нет выделения, используем последний известный редактор
         console.log('[FORMAT-TOOLBAR] getCurrentEditor: using cached', { field: currentField });
         return { editor: currentEditor, field: currentField };
@@ -182,7 +195,7 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
         currentEditor = editor1;
         console.log('[FORMAT-TOOLBAR] Focus on question editor');
     });
-    
+
     editor2?.addEventListener('focus', () => {
         currentField = 'answer';
         currentEditor = editor2;
@@ -192,12 +205,12 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
     // Обработчик кнопок форматирования (B, I, U, Code)
     const formatButtons = toolbar.querySelectorAll('.format-btn[data-action]');
     console.log('[FORMAT-TOOLBAR] Format buttons found:', formatButtons.length);
-    
+
     formatButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const action = btn.dataset.action;
             const { editor, field } = getCurrentEditor();  // Определяем по выделению!
             const currentFmt = getFormatting();
@@ -234,14 +247,14 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const color = btn.dataset.color || null;
             const { editor, field } = getCurrentEditor();  // Определяем по выделению!
             const currentFmt = getFormatting();
 
-            console.log('[FORMAT-TOOLBAR] Text color button clicked:', { 
-                color, 
-                field, 
+            console.log('[FORMAT-TOOLBAR] Text color button clicked:', {
+                color,
+                field,
                 editorId: editor?.id,
                 editor1Id: editor1?.id,
                 editor2Id: editor2?.id
@@ -250,7 +263,7 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
 
             const selection = getSelectionFromEditor(editor);
             console.log('[FORMAT-TOOLBAR] Selection:', selection);
-            
+
             if (!selection || selection.start === selection.end) {
                 showToolbarHint('Выделите текст для применения цвета');
                 return;
@@ -270,7 +283,7 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const backgroundColor = btn.dataset.color || null;
             const { editor, field } = getCurrentEditor();  // Определяем по выделению!
             const currentFmt = getFormatting();
@@ -320,7 +333,7 @@ export function initFormatToolbar(toolbar, editor1, editor2, formatting, onChang
 
     setupHotkeys(editor1);
     setupHotkeys(editor2);
-    
+
     console.log('[FORMAT-TOOLBAR] Toolbar initialized successfully');
 }
 

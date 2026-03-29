@@ -527,6 +527,39 @@
     background: rgba(255,255,255,0.1) !important;
 }
 
+/* ========== ╨а╨Х╨Ц╨Ш╨Ь ╨а╨Х╨Ф╨Р╨Ъ╨в╨Ш╨а╨Ю╨Т╨Р╨Э╨Ш╨п - ╨║╨╜╨╛╨┐╨║╨░ ╨║╨░╤А╨░╨╜╨┤╨░╤И╨░ ========== */
+/* ╨Т╤Л╨║╨╗╤О╤З╨╡╨╜╨╜╨░╤П ╨║╨╜╨╛╨┐╨║╨░ - ╤Б╨╡╤А╨░╤П */
+.nav-icon-btn.edit-mode-btn {
+    padding: 6px !important;
+    background: none !important;
+    border: none !important;
+    color: #9BA3AF !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav-icon-btn.edit-mode-btn:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.1) !important;
+}
+
+/* ╨Т╨║╨╗╤О╤З╨╡╨╜╨╜╨░╤П ╨║╨╜╨╛╨┐╨║╨░ - ╨╖╨╡╨╗╤С╨╜╤Л╨╣ ╨║╨░╤А╨░╨╜╨┤╨░╤И ╨▒╨╡╨╖ ╤Д╨╛╨╜╨░, ╨╕╨║╨╛╨╜╨║╨░ ╤Г╨▓╨╡╨╗╨╕╤З╨╡╨╜╨░ ╨╜╨░ 5% */
+.nav-icon-btn.edit-mode-btn.on {
+    padding: 6px !important;
+    background: none !important;
+    border: none !important;
+}
+
+.nav-icon-btn.edit-mode-btn.on svg {
+    fill: #4CAF50 !important;
+    width: 21px !important; /* 20px + 5% */
+    height: 21px !important; /* 20px + 5% */
+}
+
+.nav-icon-btn.edit-mode-btn.on:hover {
+    background: rgba(255,255,255,0.1) !important;
+}
+
 /* Top Actions Container */
 .top-actions {
     display: flex;
@@ -3691,10 +3724,10 @@ body.learning-mode #bottom-nav {
 
 ""  
 "/* =================================================================== */"  
-"/* iOS PWA SAFE AREAS - отступы для челки, скруглений, полоски Home */"  
+"/* iOS PWA SAFE AREAS - я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ челя┐╜я┐╜, я┐╜я┐╜угля┐╜я┐╜я┐╜я┐╜, я┐╜я┐╜я┐╜я┐╜ски Home */"  
 "/* =================================================================== */"  
 ""  
-"/* Базовые отступы для body с учетом safe areas */"  
+"/* я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ body я┐╜ я┐╜я┐╜том safe areas */"  
 "@supports (padding: max(0px)) {"  
 "    body {"  
 "        padding-top: max(50px, env(safe-area-inset-top)) !important;"  
@@ -3703,20 +3736,20 @@ body.learning-mode #bottom-nav {
 "        padding-right: max(0px, env(safe-area-inset-right)) !important;"  
 "    }"  
 "    "  
-"    /* Для страницы статистики */"  
+"    /* я┐╜я┐╜я┐╜ я┐╜я┐╜раня┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜тикя┐╜ */"  
 "    body:has(#stats-container) {"  
 "        padding-top: max(50px, env(safe-area-inset-top)) !important;"  
 "    }"  
 "}"  
 ""  
-"/* Фиксированная шапка - отступ сверху для safe area */"  
+"/* я┐╜я┐╜я┐╜я┐╜ровя┐╜я┐╜я┐╜я┐╜я┐╜ шапя┐╜я┐╜ - я┐╜я┐╜я┐╜я┐╜я┐╜ свея┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ safe area */"  
 "@supports (padding: max(0px)) {"  
 "    .top-actions-bar {"  
 "        padding-top: env(safe-area-inset-top, 0px) !important;"  
 "    }"  
 "}"  
 ""  
-"/* Bottom sheet - отступ снизу для полоски Home */"  
+"/* Bottom sheet - я┐╜я┐╜я┐╜я┐╜я┐╜ сния┐╜я┐╜ я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ски Home */"  
 "@supports (padding: max(0px)) {"  
 "    .sheet-footer {"  
 "        padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;"  
@@ -3727,7 +3760,7 @@ body.learning-mode #bottom-nav {
 "    }"  
 "}"  
 ""  
-"/* Сайдбар - отступы для safe areas */"  
+"/* я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ - я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ safe areas */"  
 "@supports (padding: max(0px)) {"  
 "    .sidebar {"  
 "        padding-top: env(safe-area-inset-top, 0px) !important;"  
@@ -3735,7 +3768,7 @@ body.learning-mode #bottom-nav {
 "    }"  
 "}"  
 ""  
-"/* Контейнер приложения - ограничиваем по высоте */"  
+"/* я┐╜я┐╜я┐╜тейя┐╜я┐╜я┐╜ я┐╜риля┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ - я┐╜я┐╜раня┐╜чивя┐╜я┐╜я┐╜ я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜ */"  
 ".app-wrapper {"  
 "    min-height: 100vh;"  
 "    min-height: 100dvh;"  
@@ -3744,10 +3777,10 @@ body.learning-mode #bottom-nav {
 "}" 
 ""  
 "/* =================================================================== */"  
-"/* iOS FIX - Фиксированные отступы для iPhone с челкой/Dynamic Island */"  
+"/* iOS FIX - я┐╜я┐╜я┐╜я┐╜ровя┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ iPhone я┐╜ челя┐╜я┐╜я┐╜/Dynamic Island */"  
 "/* =================================================================== */"  
 ""  
-"/* Минимальные отступы для всех iPhone с notch */"  
+"/* я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ я┐╜я┐╜я┐╜ iPhone я┐╜ notch */"  
 "@supports (padding: max(0px)) {"  
 "    body {"  
 "        padding-top: max(60px, env(safe-area-inset-top, 60px)) !important;"  

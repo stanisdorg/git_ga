@@ -7,7 +7,8 @@ import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
 import { getProgressMap } from '../srs/stats-utils.js';
 import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
-import { applyFormatting } from '../srs/text-formatter.js';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from '../srs/text-formatter.js';
+import { createFormatToolbar, initFormatToolbar } from '../srs/format-toolbar.js';
 
 console.log('[TABS-NAVIGATION] Imports completed');
 
@@ -98,7 +99,7 @@ function getRuntimeData() {
     const overrides = getOverrides();
     const newItems = getNewItems();
     const deleted = getDeletedItems();
-    // Применяем overrides (категория/подкатегория/вопрос/ответ)
+    // Применяем overrides (категория/подкатегория/вопрос/ответ/форматирование)
     const byQuestion = new Map(base.map(i => [i.question, i]));
     Object.keys(overrides).forEach(origQ => {
         const ov = overrides[origQ];
@@ -110,6 +111,7 @@ function getRuntimeData() {
             if (ov.subcategory) updated.subcategory = ov.subcategory;
             if (ov.question) updated.question = ov.question;
             if (ov.answer) updated.answer = ov.answer;
+            if (ov.formatting) updated.formatting = ov.formatting;  // 🔥 Применяем форматирование
             // Если изменилось ключевое поле вопроса — обновляем ключ в Map
             if (ov.question && ov.question !== origQ) {
                 byQuestion.delete(origQ);
@@ -124,6 +126,7 @@ function getRuntimeData() {
                 answer: ov.answer || '',
                 category: ov.category || 'Без категории',
                 subcategory: ov.subcategory || 'Общее',
+                formatting: ov.formatting || createEmptyFormatting()  // 🔥 Форматирование для новых карточек
             });
         }
     });
@@ -296,9 +299,10 @@ async function autoLoadUserData() {
     }
 
     // Загружаем данные через srs/storage.js
+    // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
         const { loadFromServer } = await import('../srs/storage.js?v=6.09.4');
-        await loadFromServer();
+        await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
     }
@@ -828,9 +832,7 @@ export function initTabsNavigation(appVersion) {
 
         const editToggleBtn = document.createElement('button');
         editToggleBtn.title = 'Режим редактирования';
-        editToggleBtn.className = 'nav-icon-btn tab';
-        editToggleBtn.style.minWidth = 'auto';
-        editToggleBtn.style.padding = window.innerWidth <= 420 ? '0 6px' : '0 10px';
+        editToggleBtn.className = 'nav-icon-btn edit-mode-btn';
         editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
         editToggleBtn.style.display = 'none';
 
@@ -1257,6 +1259,10 @@ export function initTabsNavigation(appVersion) {
 
         // Применяем сохранённый режим редактирования при инициализации
         if (editMode) {
+            // 🔥 Добавляем класс on кнопке редактирования
+            editToggleBtn.classList.add('on');
+            editToggleBtn.title = 'Выключить режим редактирования';
+
             try {
                 const sidebar = document.querySelector('.sidebar');
                 if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при старте в режиме редактирования
@@ -1625,11 +1631,45 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // GitHub кнопка (пока заглушка)
+                // GitHub кнопка - OAuth через popup
                 const githubBtn = ov.querySelector('#github-login-btn');
                 if (githubBtn) {
                     githubBtn.addEventListener('click', function () {
-                        alert('GitHub авторизация скоро будет доступна!');
+                        console.log('[GitHub Auth] Button clicked');
+                        // Открываем GitHub OAuth в popup окне
+                        const popup = window.open(
+                            `${BACKEND_URL}/api/auth/github`,
+                            'GitHub Auth',
+                            'width=600,height=400,left=' + (screen.width / 2 - 300) + ',top=' + (screen.height / 2 - 200)
+                        );
+
+                        // Слушаем сообщение от popup
+                        const handleMessage = (event) => {
+                            if (event.data && event.data.type === 'github-auth') {
+                                console.log('[GitHub Auth] Success:', event.data);
+                                // Сохраняем данные
+                                localStorage.setItem('qaUsername', event.data.username);
+                                localStorage.setItem('qaAuthType', 'github');
+                                setLoggedUser({ username: event.data.username, role: event.data.role });
+                                // Закрываем модальное окно
+                                const ov = document.getElementById('login-overlay');
+                                if (ov) ov.remove();
+                                // Перезагружаем страницу
+                                window.location.reload();
+                                // Удаляем слушатель
+                                window.removeEventListener('message', handleMessage);
+                            }
+                        };
+
+                        window.addEventListener('message', handleMessage);
+
+                        // Проверяем закрытие popup
+                        const checkClosed = setInterval(() => {
+                            if (popup.closed) {
+                                clearInterval(checkClosed);
+                                window.removeEventListener('message', handleMessage);
+                            }
+                        }, 500);
                     });
                 }
 
@@ -2587,6 +2627,16 @@ export function initTabsNavigation(appVersion) {
 
         editToggleBtn.addEventListener('click', () => {
             editMode = !editMode;
+
+            // 🔥 Переключаем визуальный стиль кнопки
+            if (editMode) {
+                editToggleBtn.classList.add('on');
+                editToggleBtn.title = 'Выключить режим редактирования';
+            } else {
+                editToggleBtn.classList.remove('on');
+                editToggleBtn.title = 'Включить режим редактирования';
+            }
+
             // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
             try { setNormalizationDisabled(editMode); } catch { }
             // Позиция кнопок ✎ и Вход НЕ меняется — остаются над категориями
@@ -2916,7 +2966,7 @@ async function saveMergedToServer(skipReload = false) {
 
         // 🔍 ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
         const fixEncoding = (text) => {
-            if (!text) return text;
+            if (!text || typeof text !== 'string') return text;
             return text
                 .replace(/\uFFFD/g, '?')  // U+FFFD → ?
                 .replace(/Д\?{1,10}кументация/g, 'Документация')
@@ -3129,6 +3179,12 @@ async function saveMergedToServer(skipReload = false) {
         setSaveStatus('success');
 
         console.log('[saveMergedToServer] Сервер ответил:', { ok, responseJson });
+
+        // 🔥 ОБНОВЛЯЕМ localDataTimestamp после успешного сохранения на сервер
+        // Это нужно для корректной синхронизации между устройствами
+        const serverTimestamp = responseJson?.updatedAt || Date.now();
+        localStorage.setItem('localDataTimestamp', serverTimestamp.toString());
+        console.log('[saveMergedToServer] localDataTimestamp обновлён:', serverTimestamp);
 
         // Отправляем событие успешной синхронизации
         window.dispatchEvent(new Event('sync-success'));
@@ -3919,82 +3975,305 @@ export function displayQuestions(questions, title) {
                     kebabBtn.style.padding = '2px 6px';
                     qRow.appendChild(kebabBtn);
 
+                    // 🔥 Глобальное состояние модального окна редактирования
+                    let editModalState = {
+                        originalCard: null,
+                        formatting: null,
+                        oldQuestion: null
+                    };
+
                     const launchEditor = () => {
                         const categoriesData = buildCategoriesFromData(getRuntimeData());
                         const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}" ${item.category === cat.name ? 'selected' : ''}>${cat.name}</option>`).join('');
                         const selectedCategory = categoriesData.find(cat => cat.name === item.category);
                         const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
-                        resultItem.innerHTML = `
-                    <div class="editor-row">
-                        <div class="editor-field-group">
-                            <label class="edit-mode-label">Категория</label>
-                            <select class="edit-category">${categoryOptions}</select>
-                        </div>
-                        <div class="editor-field-group">
-                            <label class="edit-mode-label">Подкатегория</label>
-                            <select class="edit-subcategory">${subcategoryOptions}</select>
-                        </div>
-                    </div>
-                    <div class="editor-field-group">
-                        <label class="edit-mode-label">Вопрос</label>
-                        <textarea class="edit-question">${item.question}</textarea>
-                    </div>
-                    <div class="editor-field-group">
-                        <label class="edit-mode-label">Ответ</label>
-                        <textarea class="edit-answer">${item.answer}</textarea>
-                    </div>
-                    <button class="save-inline" title="Сохранить">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                    </button>
-                `;
-                        const editCategory = resultItem.querySelector('.edit-category');
-                        const editSubcategory = resultItem.querySelector('.edit-subcategory');
-                        const editQuestion = resultItem.querySelector('.edit-question');
-                        const editAnswer = resultItem.querySelector('.edit-answer');
-                        setTimeout(() => {
-                            editQuestion.focus();
-                            const qLen = editQuestion.value.length;
-                            editQuestion.setSelectionRange(qLen, qLen);
-                        }, 0);
-                        editCategory.addEventListener('change', () => {
-                            const newCategory = editCategory.value;
-                            const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
-                            editSubcategory.innerHTML = newSubs;
-                        });
-                        resultItem.querySelector('.save-inline').addEventListener('click', async () => {
-                            const newCategory = editCategory.value;
-                            const newSubcategory = editSubcategory.value;
-                            const newQuestion = editQuestion.value.trim();
-                            const newAnswer = editAnswer.value.trim();
-                            if (!newQuestion || !newAnswer) { alert('Вопрос и ответ не могут быть пустыми'); return; }
 
-                            const oldQuestion = item.question;
+                        // Получаем форматирование из карточки или создаём пустое
+                        const formatting = item.formatting || createEmptyFormatting();
+
+                        // Сохраняем состояние
+                        editModalState = {
+                            originalCard: { ...item },
+                            formatting: { ...formatting },
+                            oldQuestion: item.question
+                        };
+
+                        // Создаём модальное окно с панелью форматирования
+                        const modalHTML = `
+                            <div class="edit-modal-overlay" id="edit-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 10px;">
+                                <div class="edit-modal" style="background: #1e1e1e; border-radius: 12px; padding: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); box-sizing: border-box;">
+                                    
+                                    <!-- Категория и подкатегория в 2 ряда -->
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                                        <div>
+                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Категория</label>
+                                            <select class="edit-category" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${categoryOptions}</select>
+                                        </div>
+                                        <div>
+                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Подкатегория</label>
+                                            <select class="edit-subcategory" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${subcategoryOptions}</select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Панель форматирования -->
+                                    <div style="margin-bottom: 12px;">
+                                        <div class="format-toolbar" id="main-format-toolbar" style="width: 100%; box-sizing: border-box;"></div>
+                                    </div>
+                                    
+                                    <!-- Вопрос -->
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Вопрос</label>
+                                        <div class="edit-field-editor" id="edit-question-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
+                                    </div>
+                                    
+                                    <!-- Ответ -->
+                                    <div style="margin-bottom: 16px;">
+                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Ответ</label>
+                                        <div class="edit-field-editor" id="edit-answer-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
+                                    </div>
+                                    
+                                    <!-- Кнопки -->
+                                    <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+                                        <button class="edit-modal-btn cancel" id="edit-cancel-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #444; border-radius: 6px; color: #aaa; cursor: pointer; font-size: 14px; flex-shrink: 0;">Отмена</button>
+                                        <button class="edit-modal-btn save" id="edit-save-btn" style="padding: 10px 20px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; flex-shrink: 0;">Сохранить</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <style>
+                                /* Все элементы на 100% ширины */
+                                #main-format-toolbar,
+                                #edit-question-editor,
+                                #edit-answer-editor,
+                                .edit-category,
+                                .edit-subcategory {
+                                    width: 100% !important;
+                                    max-width: 100% !important;
+                                    box-sizing: border-box !important;
+                                }
+                                
+                                /* Адаптивные стили для модального окна */
+                                @media (max-width: 768px) {
+                                    .edit-modal {
+                                        padding: 16px !important;
+                                        max-width: 100% !important;
+                                    }
+                                    .edit-field-editor {
+                                        font-size: 13px !important;
+                                        min-height: 60px !important;
+                                    }
+                                    .format-toolbar {
+                                        padding: 4px !important;
+                                    }
+                                    .format-btn {
+                                        font-size: 12px !important;
+                                    }
+                                    .edit-modal-btn {
+                                        padding: 10px 18px !important;
+                                        font-size: 13px !important;
+                                    }
+                                }
+                                @media (max-width: 480px) {
+                                    .edit-modal-overlay {
+                                        padding: 0 !important;
+                                        align-items: stretch !important;
+                                        padding-top: 0 !important;
+                                        overflow-y: auto !important;
+                                    }
+                                    .edit-modal {
+                                        padding: 12px !important;
+                                        border-radius: 0 !important;
+                                        max-height: none !important;
+                                        min-height: 100vh !important;
+                                        width: 100% !important;
+                                        max-width: 100% !important;
+                                        box-sizing: border-box !important;
+                                        display: flex !important;
+                                        flex-direction: column !important;
+                                    }
+                                    .edit-field-editor {
+                                        font-size: 14px !important;
+                                        min-height: 70px !important;
+                                        padding: 10px 12px !important;
+                                    }
+                                    .format-toolbar {
+                                        padding: 3px !important;
+                                    }
+                                    .format-toolbar-row {
+                                        gap: 0 !important;
+                                        width: 100% !important;
+                                    }
+                                    .format-btn {
+                                        font-size: 11px !important;
+                                    }
+                                    /* Кнопки в ряд на мобильном */
+                                    .edit-modal > div:last-child {
+                                        display: flex !important;
+                                        flex-direction: row !important;
+                                        gap: 10px !important;
+                                        margin-top: auto !important;
+                                        padding-top: 12px !important;
+                                        flex-shrink: 0 !important;
+                                    }
+                                    .edit-modal-btn {
+                                        padding: 12px 16px !important;
+                                        font-size: 14px !important;
+                                        flex: 1 !important;
+                                        max-width: none !important;
+                                        width: auto !important;
+                                    }
+                                }
+                                @media (max-width: 400px) {
+                                    .format-btn {
+                                        width: 26px !important;
+                                        height: 26px !important;
+                                    }
+                                    .format-color-btn {
+                                        width: 26px !important;
+                                        height: 26px !important;
+                                    }
+                                }
+                                @media (max-width: 370px) {
+                                    .format-btn {
+                                        width: 24px !important;
+                                        height: 24px !important;
+                                    }
+                                    .format-color-btn {
+                                        width: 24px !important;
+                                        height: 24px !important;
+                                    }
+                                }
+                                @media (max-width: 350px) {
+                                    .format-btn {
+                                        width: 22px !important;
+                                        height: 22px !important;
+                                    }
+                                    .format-color-btn {
+                                        width: 22px !important;
+                                        height: 22px !important;
+                                    }
+                                }
+                            </style>
+                        `;
+
+                        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                        // Инициализация редакторов
+                        const toolbarContainer = document.getElementById('main-format-toolbar');
+                        const questionEditor = document.getElementById('edit-question-editor');
+                        const answerEditor = document.getElementById('edit-answer-editor');
+                        const categorySelect = document.querySelector('.edit-category');
+                        const subcategorySelect = document.querySelector('.edit-subcategory');
+
+                        // Применяем форматирование к редакторам
+                        if (questionEditor) {
+                            renderFormattingInEditor(questionEditor, item.question, formatting.question || []);
+                        }
+                        if (answerEditor) {
+                            renderFormattingInEditor(answerEditor, item.answer, formatting.answer || []);
+                        }
+
+                        // Создаём и инициализируем toolbar
+                        if (toolbarContainer) {
+                            const mainToolbar = createFormatToolbar('both');
+                            toolbarContainer.appendChild(mainToolbar);
+
+                            // Инициализируем toolbar с обоими редакторами
+                            initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
+                                editModalState.formatting = newFormatting;
+                            });
+                        }
+
+                        // Обработчик смены категории
+                        categorySelect.addEventListener('change', () => {
+                            const newCategory = categorySelect.value;
+                            const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
+                            subcategorySelect.innerHTML = newSubs;
+                        });
+
+                        // Обработчик отмены
+                        document.getElementById('edit-cancel-btn').addEventListener('click', () => {
+                            document.getElementById('edit-modal-overlay').remove();
+                        });
+
+                        // Обработчик сохранения
+                        document.getElementById('edit-save-btn').addEventListener('click', async () => {
+                            // Получаем HTML из редакторов
+                            const questionHTML = questionEditor.innerHTML.trim();
+                            const answerHTML = answerEditor.innerHTML.trim();
+
+                            // Конвертируем HTML в текст + форматирование
+                            const questionData = convertHtmlToTextAndFormatting(questionHTML);
+                            const answerData = convertHtmlToTextAndFormatting(answerHTML);
+
+                            const newCategory = categorySelect.value;
+                            const newSubcategory = subcategorySelect.value;
+                            const newQuestion = questionData.text.trim();
+                            const newAnswer = answerData.text.trim();
+
+                            if (!newQuestion || !newAnswer) {
+                                alert('Вопрос и ответ не могут быть пустыми');
+                                return;
+                            }
+
+                            const oldQuestion = editModalState.oldQuestion;
+
+                            // Получаем текущее форматирование
+                            const currentFormatting = editModalState.formatting || createEmptyFormatting();
+
+                            // Обновляем форматирование новыми данными
+                            currentFormatting.question = questionData.formatting || [];
+                            currentFormatting.answer = answerData.formatting || [];
+
+                            // Сохраняем в override с форматированием
                             const overrides = getOverrides();
-                            // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
-                            overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
+
+                            const overrideData = {
+                                category: newCategory,
+                                subcategory: newSubcategory,
+                                question: newQuestion,
+                                answer: newAnswer,
+                                formatting: currentFormatting
+                            };
+
+                            if (newQuestion !== oldQuestion) {
+                                delete overrides[oldQuestion];
+                                overrides[newQuestion] = overrideData;
+                            } else {
+                                overrides[oldQuestion] = overrideData;
+                            }
                             setOverrides(overrides);
 
-                            // Если карточка была в избранном — обновляем ключ в избранном
+                            // Обновляем избранное если нужно
                             const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
                             if (favorites.has(oldQuestion)) {
                                 favorites.delete(oldQuestion);
                                 favorites.add(newQuestion);
                                 localStorage.setItem('qaFavorites', JSON.stringify(Array.from(favorites)));
 
-                                // Отправляем обновлённое избранное на сервер
                                 import('../srs/storage.js').then(({ syncFavorite }) => {
-                                    try {
-                                        syncFavorite(newQuestion, true);
-                                    } catch (e) { }
+                                    try { syncFavorite(newQuestion, true); } catch (e) { }
                                 }).catch(() => { });
                             }
 
-                            // После сохранения — перерисовка с карандашом и меню
-                            displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
+                            // Закрываем модальное окно
+                            document.getElementById('edit-modal-overlay').remove();
+
+                            // Перерисовываем вопросы
+                            displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer, formatting: currentFormatting } : q), title);
+
+                            // Сохраняем на сервер
                             const rowEl = resultItem.querySelector('.question-row');
                             setInlineSaveStatus(rowEl, 'saving');
                             const ok = await saveMergedToServer();
                             setInlineSaveStatus(rowEl, ok ? 'success' : 'error');
+                        });
+
+                        // Закрытие по клику на overlay
+                        document.getElementById('edit-modal-overlay').addEventListener('click', (e) => {
+                            if (e.target === e.currentTarget) {
+                                document.getElementById('edit-modal-overlay').remove();
+                            }
                         });
                     };
 

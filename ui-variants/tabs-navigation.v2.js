@@ -101,18 +101,18 @@ export function initTabsNavigation() {
     // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
     const legacyAdminPanel = document.querySelector('.admin-panel');
     if (legacyAdminPanel) legacyAdminPanel.remove();
-    
+
     // Создаем контейнер для навигации
     const navigationContainer = document.createElement('div');
     navigationContainer.className = 'tabs-navigation';
-    
+
     // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
     const categories = buildCategoriesFromData(getRuntimeData());
 
     // Создаем контейнер для табов
     const tabsContainer = document.createElement('div');
     tabsContainer.className = 'tabs-container';
-    
+
     // Создаем таб "Все вопросы"
     const allTab = document.createElement('div');
     allTab.className = 'tab';
@@ -126,7 +126,7 @@ export function initTabsNavigation() {
     // Иконка избранного: звезда
     favTab.textContent = '★';
     tabsContainer.appendChild(favTab);
-    
+
     // Добавляем табы для всех категорий
     categories.forEach(category => {
         const tab = document.createElement('div');
@@ -135,7 +135,7 @@ export function initTabsNavigation() {
         tab.textContent = category.displayName || category.name;
         tabsContainer.appendChild(tab);
     });
-    
+
     // Создаем контейнер для подкатегорий
     const subcategoriesContainer = document.createElement('div');
     subcategoriesContainer.className = 'subcategories-container';
@@ -171,19 +171,19 @@ export function initTabsNavigation() {
         allTab.classList.add('active');
         subcategoriesContainer.style.display = 'none';
     }
-    
+
     // Добавляем обработчики клика по табам
-    tabsContainer.addEventListener('click', function(e) {
+    tabsContainer.addEventListener('click', function (e) {
         if (e.target.classList.contains('tab')) {
             // Удаляем класс active у всех табов
             const tabs = tabsContainer.querySelectorAll('.tab');
             tabs.forEach(tab => tab.classList.remove('active'));
-            
+
             // Добавляем класс active выбранному табу
             e.target.classList.add('active');
-            
+
             const categoryId = e.target.dataset.category;
-            
+
             if (categoryId === 'all') {
                 // Если выбраны все вопросы, скрываем контейнер подкатегорий
                 subcategoriesContainer.style.display = 'none';
@@ -201,20 +201,20 @@ export function initTabsNavigation() {
             }
         }
     });
-    
+
     // Добавляем обработчики клика по карточкам подкатегорий
-    subcategoriesContainer.addEventListener('click', function(e) {
+    subcategoriesContainer.addEventListener('click', function (e) {
         if (e.target.classList.contains('subcategory-card')) {
             // Удаляем класс active у всех карточек
             const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
             cards.forEach(card => card.classList.remove('active'));
-            
+
             // Добавляем класс active выбранной карточке
             e.target.classList.add('active');
-            
+
             const subcategoryId = e.target.dataset.subcategory;
             const categoryId = e.target.dataset.category || tabsContainer.querySelector('.tab.active').dataset.category;
-            
+
             if (subcategoryId === 'all') {
                 // Если выбраны все подкатегории, фильтруем только по категории
                 const selectedCategory = categories.find(cat => cat.id == categoryId);
@@ -225,12 +225,12 @@ export function initTabsNavigation() {
                 const selectedSubcategory = selectedCategory.subcategories.find(
                     subcat => subcat.id == subcategoryId
                 );
-                
+
                 filterQuestionsBySubcategory(selectedCategory.name, selectedSubcategory.name);
             }
         }
     });
-    
+
     // Создаем верхнюю строку навигации: только табы без кнопки сброса
     const tabsHeader = document.createElement('div');
     tabsHeader.className = 'tabs-header';
@@ -294,7 +294,7 @@ export function initTabsNavigation() {
     // Старая панель управления скрыта, вместо неё будет верхняя панель
     controls.style.display = 'none';
     // tabsHeader.appendChild(controls);
-    
+
     // Верхняя панель (над категориями): ✎ и Вход
     const topControls = document.createElement('div');
     topControls.className = 'top-controls';
@@ -350,7 +350,7 @@ export function initTabsNavigation() {
     // navigationContainer.appendChild(tabsContainer);
     navigationContainer.appendChild(tabsHeader);
     navigationContainer.appendChild(subcategoriesContainer);
-    
+
     // Вставляем контейнер навигации перед контейнером поиска
     // Вставляем верхнюю панель и корзину перед навигацией
     container.insertBefore(topControls, searchContainer);
@@ -367,7 +367,7 @@ export function initTabsNavigation() {
             if (meta.orderOverrides && typeof meta.orderOverrides === 'object') setLS('qaOrderOverrides', meta.orderOverrides);
             await refreshServerTrash();
             refreshCategoriesTabs();
-        } catch {}
+        } catch { }
     })();
 
     // Функции меню категорий в режиме редактирования
@@ -421,7 +421,7 @@ export function initTabsNavigation() {
                 const idx = new Map(order.map((name, i) => [name, i]));
                 cats.sort((a, b) => (idx.get(a.name) ?? 1e9) - (idx.get(b.name) ?? 1e9));
             }
-        } catch {}
+        } catch { }
         cats.forEach(category => {
             const tab = document.createElement('div');
             tab.className = 'tab';
@@ -547,7 +547,7 @@ export function initTabsNavigation() {
                         itemsToTrash.forEach(it => serverTrashSet.add(it.question));
                         await refreshServerTrash();
                     }
-                } catch {}
+                } catch { }
                 renderTrashPanel();
                 saveMergedToServer();
                 refreshCategoriesTabs();
@@ -660,7 +660,7 @@ export function initTabsNavigation() {
                         itemsToTrash.forEach(it => serverTrashSet.add(it.question));
                         await refreshServerTrash();
                     }
-                } catch {}
+                } catch { }
                 renderTrashPanel();
                 saveMergedToServer();
                 rebuildSubcategoriesForCategory(categoryName);
@@ -689,7 +689,7 @@ export function initTabsNavigation() {
                 const idx = new Map(scOrder.map((name, i) => [name, i]));
                 catObj.subcategories.sort((a, b) => (idx.get(a.name) ?? 1e9) - (idx.get(b.name) ?? 1e9));
             }
-        } catch {}
+        } catch { }
         catObj.subcategories.forEach(subcategory => {
             const card = document.createElement('div');
             card.className = 'subcategory-card';
@@ -834,11 +834,11 @@ export function initTabsNavigation() {
                 try { restoreOk = await restoreFromServerTrash([q]); } catch (_) { restoreOk = false; }
                 if (!restoreOk) {
                     // Обновляем корзину с сервера на случай рассинхронизации
-                    try { await refreshServerTrash(); } catch (_) {}
+                    try { await refreshServerTrash(); } catch (_) { }
                     setSaveStatus('error', 'Сервер восстановления недоступен');
                     restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                 } else {
-                    try { await refreshServerTrash(); } catch (_) {}
+                    try { await refreshServerTrash(); } catch (_) { }
                     // Если восстановленной карточки нет в базовом наборе и среди новых — добавим в новые для сохранения
                     const baseHas = !!uniqueQaData.find(i => i.question === q);
                     const newItemsArr = getNewItems();
@@ -850,7 +850,7 @@ export function initTabsNavigation() {
                     } else {
                         console.log('[restore-click(inner)] Карточка уже присутствует, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
                     }
-                    try { window.__lastRestoredQuestion = q; } catch (_) {}
+                    try { window.__lastRestoredQuestion = q; } catch (_) { }
                     // Сохраняем объединённые данные на сервер, чтобы восстановленная карточка стала частью основного файла
                     try {
                         const saved = await saveMergedToServer();
@@ -882,7 +882,7 @@ export function initTabsNavigation() {
                         const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
                         renderTrashPanel();
                         refreshCurrentContext();
-                        try { await saveMergedToServer(); } catch {}
+                        try { await saveMergedToServer(); } catch { }
                         setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
                         setSaveStatus('error', 'Ошибка окончательного удаления');
@@ -932,7 +932,7 @@ export function initTabsNavigation() {
     editToggleBtn.addEventListener('click', () => {
         editMode = !editMode;
         // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
-        try { setNormalizationDisabled(editMode); } catch {}
+        try { setNormalizationDisabled(editMode); } catch { }
         // Позиция кнопок ✎ и Вход НЕ меняется — остаются над категориями
         // Показать/скрыть панель корзины и перенести её в левую боковую панель
         const sidebar = document.querySelector('.sidebar');
@@ -959,7 +959,7 @@ export function initTabsNavigation() {
                 try {
                     const panel = document.querySelector('.trash-panel');
                     if (panel) sidebar.insertBefore(panel, searchHistory);
-                } catch {}
+                } catch { }
             }
         } else {
             const panel = document.querySelector('.trash-panel');
@@ -1329,7 +1329,7 @@ async function saveMergedToServer() {
         try {
             responseJson = await resp.json();
             if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
-        } catch (_) {}
+        } catch (_) { }
         console.log('[saveMergedToServer] Ответ сервера', { ok, responseJson });
         if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
 
@@ -1369,8 +1369,8 @@ async function restoreFromServerTrash(questions) {
         });
         let ok = resp.ok;
         let jsonResp = null;
-        try { jsonResp = await resp.json(); if (typeof jsonResp?.ok === 'boolean') ok = ok && jsonResp.ok; } catch (_) {}
-        try { window.__lastRestoredQuestion = Array.isArray(questions) ? questions[0] : null; } catch (_) {}
+        try { jsonResp = await resp.json(); if (typeof jsonResp?.ok === 'boolean') ok = ok && jsonResp.ok; } catch (_) { }
+        try { window.__lastRestoredQuestion = Array.isArray(questions) ? questions[0] : null; } catch (_) { }
         console.log('[restoreFromServerTrash] Результат', { ok, restored_count: jsonResp?.restored_count, questions });
         return ok;
     } catch (e) {
@@ -1543,7 +1543,7 @@ function renderTrashPanel() {
                 // Пытаемся восстановить на сервере
                 let ok = false; try { ok = await restoreFromServerTrash([q]); } catch (e) { console.error('[restore-click] Ошибка запроса к серверу /restore', e); ok = false; }
                 if (ok) {
-                    try { await refreshServerTrash(); } catch (_) {}
+                    try { await refreshServerTrash(); } catch (_) { }
                     // Если восстановленной карточки нет в текущем базовом наборе (uniqueQaData)
                     // и она не числится среди новых элементов — добавим её в новые для последующего сохранения.
                     const baseHas = !!uniqueQaData.find(i => i.question === q);
@@ -1556,14 +1556,14 @@ function renderTrashPanel() {
                     } else {
                         console.log('[restore-click] Карточка уже присутствует в данных, добавление в qaNewItems не требуется', { question: q, baseHas, newHas });
                     }
-                    try { window.__lastRestoredQuestion = q; } catch (_) {}
+                    try { window.__lastRestoredQuestion = q; } catch (_) { }
                     // После успешного восстановления сразу сохраняем объединённые данные на сервер,
                     // чтобы карточка не пропадала после очистки данных сайта.
                     try { const saved = await saveMergedToServer(); console.log('[restore-click] Сохранение после восстановления завершено', { ok: saved }); } catch (e) { console.error('[restore-click] Ошибка сохранения после восстановления', e); }
                     setSaveStatus('success', 'Карточка восстановлена');
                     restoreBtn.textContent = 'Готово'; setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
                 } else {
-                    try { await refreshServerTrash(); } catch (_) {}
+                    try { await refreshServerTrash(); } catch (_) { }
                     setSaveStatus('error', 'Ошибка восстановления на сервере');
                     restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                 }
@@ -1585,7 +1585,7 @@ function renderTrashPanel() {
                         const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
                         renderTrashPanel();
                         refreshCurrentContext();
-                        try { await saveMergedToServer(); } catch {}
+                        try { await saveMergedToServer(); } catch { }
                         setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
                         setSaveStatus('error', 'Ошибка окончательного удаления');
@@ -1676,14 +1676,14 @@ function displayQuestions(questions, title) {
         const idx = new Map(order.map((q, i) => [q, i]));
         currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
     }
-    
+
     // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
     // Без заголовка категории — только счётчик
     resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
-    
+
     // Добавляем вопросы
     currentQuestions.forEach((item, index) => {
         const resultItem = document.createElement('div');
@@ -1718,7 +1718,7 @@ function displayQuestions(questions, title) {
                 }
             });
         }
-        
+
         // Избранное
         const favorites = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
         const isFav = favorites.includes(item.question);
@@ -1809,12 +1809,23 @@ function displayQuestions(questions, title) {
                     const newQuestion = editQuestion.value.trim();
                     const newAnswer = editAnswer.value.trim();
                     if (!newQuestion || !newAnswer) { alert('Вопрос и ответ не могут быть пустыми'); return; }
+
+                    const oldQuestion = item.question;
                     const overrides = getOverrides();
-                    // Храним override под ключом исходного вопроса, чтобы лоадер корректно применил замену
-                    overrides[item.question] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
+
+                    // Если вопрос изменился — нужно обновить ключ override
+                    if (newQuestion !== oldQuestion) {
+                        // Удаляем старый override
+                        delete overrides[oldQuestion];
+                        // Сохраняем override под новым ключом (новый вопрос)
+                        overrides[newQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
+                    } else {
+                        // Вопрос не изменился — просто обновляем override
+                        overrides[oldQuestion] = { category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer };
+                    }
                     setOverrides(overrides);
                     // После сохранения — перерисовка с карандашом и меню
-                    displayQuestions(currentQuestions.map(q => q.question === item.question ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
+                    displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer } : q), title);
                     const rowEl = resultItem.querySelector('.question-row');
                     setInlineSaveStatus(rowEl, 'saving');
                     const ok = await saveMergedToServer();
@@ -1855,9 +1866,9 @@ function displayQuestions(questions, title) {
                 const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
                 document.addEventListener('click', onDocClick);
 
-        menu.addEventListener('click', async (e) => {
-            const act = e.target?.dataset?.act; if (!act) return;
-            e.stopPropagation();
+                menu.addEventListener('click', async (e) => {
+                    const act = e.target?.dataset?.act; if (!act) return;
+                    e.stopPropagation();
                     if (act === 'delete') {
                         // Показать индикатор прогресса
                         const rowEl = resultItem.querySelector('.question-row');
@@ -1874,7 +1885,7 @@ function displayQuestions(questions, title) {
                                         { item: { ...item } },
                                         ...serverTrashItems.filter(t => t.item?.question !== item.question)
                                     ];
-                                } catch (_) {}
+                                } catch (_) { }
 
                                 // Убедимся, что панель корзины видна в режиме редактирования
                                 const tp = document.querySelector('.trash-panel');
@@ -1885,7 +1896,7 @@ function displayQuestions(questions, title) {
                                 refreshCurrentContext();
 
                                 // Пытаемся синхронизировать с серверной корзиной (не блокирует UI)
-                                try { await refreshServerTrash(); } catch (_) {}
+                                try { await refreshServerTrash(); } catch (_) { }
 
                                 setInlineSaveStatus(rowEl, 'success');
                                 setSaveStatus('success', 'Карточка перемещена в корзину');
@@ -1902,38 +1913,38 @@ function displayQuestions(questions, title) {
                         // Show visual indicator
                         const rowEl = resultItem.querySelector('.question-row');
                         setInlineSaveStatus(rowEl, 'saving');
-                        
+
                         const newItems = getNewItems();
                         const copyQ = genUniqueQuestion(item.question);
                         const duplicatedItem = { ...item, question: copyQ };
-                        
+
                         // Track duplication on server first
                         trackServerDuplication(item.question, copyQ).then(trackOk => {
                             if (trackOk) {
                                 // Then update local state
                                 newItems.push(duplicatedItem);
                                 setLS('qaNewItems', newItems);
-                                
-                        // Update UI, сохраняя текущую категорию
-                        const activeTab = tabsContainer.querySelector('.tab.active');
-                        if (activeTab) {
-                            if (activeTab.dataset.category === 'all') {
-                                showAllQuestions();
-                            } else if (activeTab.dataset.category === 'favorites') {
-                                showFavorites();
-                            } else {
-                                const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
-                                if (selectedCategory) {
-                                    filterQuestionsByCategory(selectedCategory.name);
+
+                                // Update UI, сохраняя текущую категорию
+                                const activeTab = tabsContainer.querySelector('.tab.active');
+                                if (activeTab) {
+                                    if (activeTab.dataset.category === 'all') {
+                                        showAllQuestions();
+                                    } else if (activeTab.dataset.category === 'favorites') {
+                                        showFavorites();
+                                    } else {
+                                        const selectedCategory = categories.find(cat => cat.id == activeTab.dataset.category);
+                                        if (selectedCategory) {
+                                            filterQuestionsByCategory(selectedCategory.name);
+                                        } else {
+                                            showAllQuestions();
+                                        }
+                                    }
                                 } else {
                                     showAllQuestions();
                                 }
-                            }
-                        } else {
-                            showAllQuestions();
-                        }
-                        setInlineSaveStatus(rowEl, 'success');
-                                
+                                setInlineSaveStatus(rowEl, 'success');
+
                                 // Save to server
                                 saveMergedToServer().then(saveOk => {
                                     if (!saveOk) {

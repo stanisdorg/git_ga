@@ -198,70 +198,114 @@ body {
 .format-toolbar {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    padding: 6px;
+    gap: 4px;
+    padding: 4px;
     background: var(--color-bg-tertiary, #333333);
-    border-radius: 4px;
+    border-radius: 6px;
     width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-.format-toolbar-row {
+/* Верхний ряд: 11 кнопок (4 формат + 7 цветов) */
+.format-toolbar-row:first-child {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    flex-wrap: nowrap;
+    gap: 0;
+    width: max-content;  /* По контенту */
 }
 
-.format-toolbar-format {
+/* Кнопки формата - фиксированная ширина */
+.format-toolbar-row:first-child .format-btn {
+    flex: 0 0 35px;  /* Фиксированная ширина 35px */
+    aspect-ratio: 1;
+}
+
+/* Кнопки цветов - фиксированная ширина */
+.format-toolbar-row:first-child .format-color-btn {
+    flex: 0 0 35px;  /* Фиксированная ширина 35px */
+    aspect-ratio: 1;
+}
+
+/* Нижний ряд: 8 кнопок (✕ + 7 цветов) */
+.format-toolbar-row:last-child {
     display: flex;
-    gap: 2px;
-    flex-shrink: 0;
+    gap: 0;
+    width: max-content;  /* По контенту */
 }
 
-.format-toolbar-colors {
-    display: flex;
-    gap: 3px;
-    align-items: center;
+/* Кнопка очистки - квадратная */
+.format-toolbar-row:last-child .format-clear-btn {
+    aspect-ratio: 1;
+    width: 35px;  /* Ширина на десктопе */
     flex-shrink: 0;
+    padding-right: 4px;  /* Отступ от цветов */
+    box-sizing: border-box;
 }
 
-.format-toolbar-divider {
-    width: 1px;
-    height: 20px;
-    background: var(--color-border, #3a3a3a);
-    margin: 0 4px;
-    flex-shrink: 0;
+/* 7 цветов фона - такой же ширины */
+.format-toolbar-row:last-child .format-color-btn {
+    flex: 0 0 35px;  /* Фиксированная ширина 35px */
+    aspect-ratio: 1;
 }
 
-/* Кнопки форматирования (B, I, U, Code) */
-.format-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 3px;
-    border: 1px solid var(--color-border, #3a3a3a);
-    background: var(--color-bg, #1e1e1e);
-    color: var(--color-text, #fff);
+/* Все кнопки - квадраты */
+.format-btn,
+.format-color-btn {
+    aspect-ratio: 1;  /* Квадрат! */
+    width: 35px;  /* Ширина на десктопе */
+    height: 35px;
+    border-radius: 4px;
+    border: none;  /* Убираем рамку у ВСЕХ кнопок */
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: bold;
     transition: all 0.15s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    flex-shrink: 0;
+    box-sizing: border-box;  /* Важно для одинакового размера */
 }
 
-.format-btn:hover {
+/* Адаптация под маленькие экраны */
+@media (max-width: 600px) {
+    .format-toolbar {
+        padding: 3px;
+    }
+    
+    /* Верхний ряд на мобильном */
+    .format-toolbar-row:first-child .format-btn,
+    .format-toolbar-row:first-child .format-color-btn {
+        flex: 0 0 22px !important;  /* Мобильный размер 22px */
+    }
+    
+    /* Нижний ряд на мобильном */
+    .format-toolbar-row:last-child .format-clear-btn,
+    .format-toolbar-row:last-child .format-color-btn {
+        width: 22px !important;
+        flex: 0 0 22px !important;
+    }
+    
+    .format-btn,
+    .format-color-btn {
+        width: 22px !important;  /* Мобильный размер */
+        height: 22px !important;
+        font-size: 12px;
+    }
+}
+
+/* Кнопки формата */
+.format-btn:not(.format-clear-btn) {
+    background: var(--color-bg, #1e1e1e);
+    color: var(--color-text, #fff);
+}
+
+.format-btn:not(.format-clear-btn):hover {
     background: var(--color-bg-hover, #2a2a2a);
     border-color: var(--color-border-hover, #4a4a4a);
 }
 
-.format-btn:active {
+.format-btn:not(.format-clear-btn):active {
     background: var(--color-bg-active, #333);
     transform: scale(0.95);
 }
@@ -280,16 +324,15 @@ body {
 
 .format-btn[data-action="code"] {
     font-family: monospace;
-    font-size: 9px;
+    font-size: 11px;
 }
 
+/* Кнопка очистки */
 .format-clear-btn {
-    width: auto !important;
-    padding: 0 8px !important;
-    font-size: 10px !important;
     background: rgba(255, 107, 107, 0.15);
     border-color: rgba(255, 107, 107, 0.3);
     color: #FF6B6B;
+    font-size: 16px !important;
 }
 
 .format-clear-btn:hover {
@@ -298,86 +341,17 @@ body {
 
 /* Кнопки цветов */
 .format-color-btn {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid var(--color-border, #3a3a3a);
-    cursor: pointer;
-    transition: all 0.15s ease;
-    flex-shrink: 0;
+    border: none;
+    margin: 0;
 }
 
 .format-color-btn:hover {
-    transform: scale(1.1);
-    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+    filter: brightness(1.1);
 }
 
 .format-color-btn:active {
-    transform: scale(0.95);
-}
-
-/* Адаптация под разные размеры экрана */
-@media (max-width: 340px) {
-    .format-toolbar {
-        max-width: 100%;
-    }
-    
-    .format-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 9px;
-    }
-    
-    .format-color-btn {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .format-toolbar-divider {
-        height: 16px;
-    }
-}
-
-@media (min-width: 341px) and (max-width: 400px) {
-    .format-toolbar {
-        max-width: 300px;
-    }
-    
-    .format-btn {
-        width: 26px;
-        height: 26px;
-        font-size: 10px;
-    }
-    
-    .format-color-btn {
-        width: 18px;
-        height: 18px;
-    }
-    
-    .format-toolbar-divider {
-        height: 18px;
-    }
-}
-
-@media (min-width: 401px) {
-    .format-toolbar {
-        max-width: 320px;
-    }
-    
-    .format-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 11px;
-    }
-    
-    .format-color-btn {
-        width: 20px;
-        height: 20px;
-    }
-    
-    .format-toolbar-divider {
-        height: 20px;
-    }
+    transform: scale(0.98);
 }
 
 /* Подсветка синтаксиса кода */
