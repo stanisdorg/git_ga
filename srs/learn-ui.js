@@ -1060,54 +1060,6 @@ export function startLearnSession(candidateQuestions, options = {}) {
     // Setup timer pause/resume functionality
     setupTimerControls();
 
-    // Debug: логирование позиционирования после рендера
-    setTimeout(() => {
-        const timerControls = document.getElementById('timer-controls');
-        const pauseBtn = document.getElementById('timer-pause-btn');
-        const timerEl = document.getElementById('mode-timer');
-
-        console.log('[TIMER MOBILE DEBUG] Элементы:');
-        console.log('[TIMER MOBILE DEBUG] timerControls:', timerControls);
-        console.log('[TIMER MOBILE DEBUG] pauseBtn:', pauseBtn);
-        console.log('[TIMER MOBILE DEBUG] timerEl:', timerEl);
-        console.log('[TIMER MOBILE DEBUG] timerControls.parentElement:', timerControls?.parentElement);
-
-        if (timerControls) {
-            console.log('[TIMER MOBILE DEBUG] timerControls.style.cssText:', timerControls.style.cssText);
-            console.log('[TIMER MOBILE DEBUG] timerControls getComputedStyle:', {
-                display: getComputedStyle(timerControls).display,
-                flexDirection: getComputedStyle(timerControls).flexDirection,
-                alignItems: getComputedStyle(timerControls).alignItems,
-                gap: getComputedStyle(timerControls).gap,
-                position: getComputedStyle(timerControls).position,
-                left: getComputedStyle(timerControls).left,
-                top: getComputedStyle(timerControls).top,
-                transform: getComputedStyle(timerControls).transform,
-                width: getComputedStyle(timerControls).width,
-                height: getComputedStyle(timerControls).height
-            });
-        }
-
-        if (pauseBtn) {
-            console.log('[TIMER MOBILE DEBUG] pauseBtn.style.cssText:', pauseBtn.style.cssText);
-            console.log('[TIMER MOBILE DEBUG] pauseBtn getComputedStyle:', {
-                display: getComputedStyle(pauseBtn).display,
-                position: getComputedStyle(pauseBtn).position,
-                width: getComputedStyle(pauseBtn).width,
-                color: getComputedStyle(pauseBtn).color
-            });
-        }
-
-        if (timerEl) {
-            console.log('[TIMER MOBILE DEBUG] timerEl.style.cssText:', timerEl.style.cssText);
-            console.log('[TIMER MOBILE DEBUG] timerEl getComputedStyle:', {
-                display: getComputedStyle(timerEl).display,
-                position: getComputedStyle(timerEl).position,
-                width: getComputedStyle(timerEl).width
-            });
-        }
-    }, 1500);
-
     let sessionCards = [];
 
     if (options.mode === 'cram') {
