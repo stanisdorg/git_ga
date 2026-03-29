@@ -1281,14 +1281,80 @@ body.learning-mode #bottom-nav {
         align-items: center !important;
         gap: 8px !important;
         cursor: pointer !important;
+        padding: 4px 8px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
     }
+
+    /* Hover эффект для всего контейнера таймера */
+    .timer-controls:hover {
+        background: rgba(0, 255, 136, 0.05) !important;
+    }
+
+    .timer-controls:hover .timer-pause-btn {
+        color: #00ff88 !important;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8)) !important;
+        background: rgba(0, 255, 136, 0.1) !important;
+    }
+
+    .timer-controls:hover .mode-timer {
+        color: #00ff88 !important;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5) !important;
+    }
+
+    /* Вариант 3: Неоновое свечение - базовые стили для мобильной версии */
+    .timer-pause-btn {
+        width: 30px !important;
+        height: 30px !important;
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+        transition: all 0.2s ease !important;
+        flex-shrink: 0 !important;
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3)) !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .timer-pause-btn:focus {
+        outline: none !important;
+        border: none !important;
+    }
+
+    .timer-pause-btn svg {
+        width: 16px !important;
+        height: 16px !important;
+        display: block !important;
+    }
+
+    .timer-pause-btn:hover {
+        filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8)) !important;
+        background: rgba(0, 255, 136, 0.1) !important;
+    }
+
+    .timer-pause-btn.running {
+        color: #00ff88 !important;
+        filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5)) !important;
+    }
+
+    .timer-pause-btn.paused {
+        color: #00ff88 !important;
+        filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.7)) !important;
+    }
+
     .mode-timer {
         /* Таймер - внутри .timer-controls (inline-block) */
         order: 1 !important;
         font-size: 14px !important;
         font-weight: 600 !important;
-        color: rgba(255, 255, 255, 0.7) !important;
-        text-shadow: none !important;
+        color: #00ff88 !important;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5) !important;
         display: inline-block !important;
         visibility: visible !important;
         min-width: 60px !important;
@@ -3613,40 +3679,72 @@ body.learning-mode #bottom-nav {
         align-items: center !important;
         gap: 8px !important;
         cursor: pointer !important;
+        padding: 4px 8px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
     }
 
+    /* Hover эффект для всего контейнера таймера */
+    .timer-controls:hover {
+        background: rgba(0, 255, 136, 0.05) !important;
+    }
+
+    .timer-controls:hover .timer-pause-btn {
+        color: #00ff88 !important;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8)) !important;
+        background: rgba(0, 255, 136, 0.1) !important;
+    }
+
+    .timer-controls:hover .mode-timer {
+        color: #00ff88 !important;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5) !important;
+    }
+
+    /* Вариант 3: Неоновое свечение */
     .timer-pause-btn {
+        width: 30px !important;
+        height: 30px !important;
         background: transparent !important;
         border: none !important;
-        padding: 4px !important;
+        outline: none !important;
+        border-radius: 6px !important;
         cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        color: rgba(255, 255, 255, 0.7) !important;
+        color: rgba(255, 255, 255, 0.5) !important;
         transition: all 0.2s ease !important;
         flex-shrink: 0 !important;
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3)) !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    .timer-pause-btn:focus {
+        outline: none !important;
+        border: none !important;
     }
 
     .timer-pause-btn svg {
-        width: 20px !important;
-        height: 20px !important;
+        width: 16px !important;
+        height: 16px !important;
         display: block !important;
     }
 
     .timer-pause-btn:hover {
-        color: #fff !important;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8)) !important;
+        background: rgba(0, 255, 136, 0.1) !important;
     }
 
     /* Свечение для кнопки */
     .timer-pause-btn.running {
-        color: rgba(255, 255, 255, 0.7) !important;
-        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5)) !important;
+        color: #00ff88 !important;
+        filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5)) !important;
     }
 
     .timer-pause-btn.paused {
-        color: rgba(255, 255, 255, 0.9) !important;
-        filter: drop-shadow(0 0 5px rgba(127, 255, 212, 0.7)) !important;
+        color: #00ff88 !important;
+        filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.7)) !important;
     }
 
     .timer-pause-btn.running .pause-icon {
@@ -3665,12 +3763,12 @@ body.learning-mode #bottom-nav {
         display: none !important;
     }
 
-    /* Таймер для ПК версии */
+    /* Таймер для ПК версии - Вариант 3: Неоновое свечение */
     .mode-timer {
         font-size: 14px !important;
         font-weight: 600 !important;
-        color: rgba(255, 255, 255, 0.7) !important;
-        text-shadow: none !important;
+        color: #00ff88 !important;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5) !important;
         display: inline-block !important;
         visibility: visible !important;
         min-width: 60px !important;

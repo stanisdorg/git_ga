@@ -172,38 +172,42 @@ export function initLearnUI() {
                     flex-direction: row !important;
                 }
 
+                /* Вариант 3: Неоновое свечение */
                 .timer-pause-btn {
+                    width: 30px;
+                    height: 30px;
                     background: transparent;
-                    border: none;
-                    padding: 4px;
+                    border-radius: 6px;
                     cursor: pointer;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
-                    color: rgba(255, 255, 255, 0.7);
+                    color: #00ff88;
                     transition: all 0.2s ease;
                     flex-shrink: 0 !important;
+                    filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
                 }
 
                 .timer-pause-btn svg {
-                    width: 20px;
-                    height: 20px;
+                    width: 16px;
+                    height: 16px;
                     display: block;
                 }
 
                 .timer-pause-btn:hover {
-                    color: #fff;
+                    filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8));
+                    background: rgba(0, 255, 136, 0.1);
                 }
 
                 /* Свечение для кнопки */
                 .timer-pause-btn.running {
-                    color: rgba(255, 255, 255, 0.7);
-                    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+                    color: #00ff88;
+                    filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
                 }
 
                 .timer-pause-btn.paused {
-                    color: rgba(255, 255, 255, 0.9);
-                    filter: drop-shadow(0 0 5px rgba(127, 255, 212, 0.7));
+                    color: #00ff88;
+                    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.7));
                 }
 
                 .timer-pause-btn.running .pause-icon {
@@ -227,8 +231,8 @@ export function initLearnUI() {
                     transform: none;
                     font-size: 14px;
                     font-weight: 600;
-                    color: rgba(255, 255, 255, 0.7);
-                    text-shadow: none;
+                    color: #00ff88;
+                    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
                     z-index: auto;
                     display: inline-block;
                     min-width: 60px;
