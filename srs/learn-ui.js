@@ -944,6 +944,13 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
+    console.log('[TIMER FIX] === НАЧАЛО ===');
+    console.log('[TIMER FIX] timerEl2:', timerEl2);
+    console.log('[TIMER FIX] learnHeader2:', learnHeader2);
+    console.log('[TIMER FIX] exitBtn:', exitBtn);
+    console.log('[TIMER FIX] timerEl2.style до изменений:', timerEl2 ? timerEl2.style.cssText : 'N/A');
+    console.log('[TIMER FIX] getComputedStyle до:', timerEl2 ? getComputedStyle(timerEl2).display : 'N/A');
+
     if (timerEl2 && learnHeader2 && exitBtn) {
         timerEl2.style.setProperty('display', 'block', 'important');
         timerEl2.style.setProperty('position', 'absolute', 'important');
@@ -958,11 +965,23 @@ export function startLearnSession(candidateQuestions, options = {}) {
         timerEl2.style.setProperty('min-width', '60px', 'important');
         timerEl2.style.setProperty('text-align', 'center', 'important');
 
+        console.log('[TIMER FIX] timerEl2.style после изменений:', timerEl2.style.cssText);
+        console.log('[TIMER FIX] getComputedStyle после:', getComputedStyle(timerEl2).display);
+        console.log('[TIMER FIX] getComputedStyle position:', getComputedStyle(timerEl2).position);
+        console.log('[TIMER FIX] getComputedStyle left:', getComputedStyle(timerEl2).left);
+        console.log('[TIMER FIX] getComputedStyle transform:', getComputedStyle(timerEl2).transform);
+
         if (exitBtn.nextSibling) {
             learnHeader2.insertBefore(timerEl2, exitBtn.nextSibling);
         } else {
             learnHeader2.appendChild(timerEl2);
         }
+        console.log('[TIMER FIX] timerEl2.parentElement:', timerEl2.parentElement);
+    } else {
+        console.error('[TIMER FIX] ОШИБКА: элементы не найдены!');
+        if (!timerEl2) console.error('[TIMER FIX] - timerEl2 не найден');
+        if (!learnHeader2) console.error('[TIMER FIX] - learnHeader2 не найден');
+        if (!exitBtn) console.error('[TIMER FIX] - exitBtn не найден');
     }
 
     if (counterEl && learnHeader2) {
@@ -976,10 +995,12 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
 
     // Start Timer
+    console.log('[TIMER FIX] Запуск таймера...');
     if (timerInterval) clearInterval(timerInterval);
     sessionTimerStart = Date.now();
     updateTimerDisplay();
     timerInterval = setInterval(updateTimerDisplay, 1000);
+    console.log('[TIMER FIX] === КОНЕЦ ===');
 
     let sessionCards = [];
 
@@ -2443,7 +2464,21 @@ function getLevelFromXP(xp) {
 function updateTimerDisplay() {
     // Обновляем .mode-timer вместо #learn-timer
     const el = document.querySelector('.mode-timer');
-    if (!el) return;
+    console.log('[TIMER FIX] updateTimerDisplay вызвана, el:', el);
+    if (!el) {
+        console.error('[TIMER FIX] updateTimerDisplay: элемент не найден!');
+        return;
+    }
+
+    console.log('[TIMER FIX] updateTimerDisplay getComputedStyle:', {
+        display: getComputedStyle(el).display,
+        visibility: getComputedStyle(el).visibility,
+        position: getComputedStyle(el).position,
+        left: getComputedStyle(el).left,
+        top: getComputedStyle(el).top,
+        transform: getComputedStyle(el).transform,
+        color: getComputedStyle(el).color
+    });
 
     // Show time for current continuous block
     const now = Date.now();
@@ -2454,6 +2489,7 @@ function updateTimerDisplay() {
     const m = Math.floor(diff / 60).toString().padStart(2, '0');
     const s = (diff % 60).toString().padStart(2, '0');
     el.textContent = `${m}:${s}`;
+    console.log('[TIMER FIX] updateTimerDisplay установлено время:', el.textContent);
 }
 
 function showSmartPause(rec) {
