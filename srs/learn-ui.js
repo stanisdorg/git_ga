@@ -1020,46 +1020,10 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
-    console.log('[TIMER FIX] === НАЧАЛО ===');
-    console.log('[TIMER FIX] timerEl2:', timerEl2);
-    console.log('[TIMER FIX] learnHeader2:', learnHeader2);
-    console.log('[TIMER FIX] exitBtn:', exitBtn);
-    console.log('[TIMER FIX] timerEl2.style до изменений:', timerEl2 ? timerEl2.style.cssText : 'N/A');
-    console.log('[TIMER FIX] getComputedStyle до:', timerEl2 ? getComputedStyle(timerEl2).display : 'N/A');
+    // НЕ перемещаем таймер! Он остаётся внутри .timer-controls внутри .flashcard
+    // Просто обновляем стили для ПК версии через CSS классы
 
-    if (timerEl2 && learnHeader2 && exitBtn) {
-        timerEl2.style.setProperty('display', 'block', 'important');
-        timerEl2.style.setProperty('position', 'absolute', 'important');
-        timerEl2.style.setProperty('left', '50%', 'important');
-        timerEl2.style.setProperty('top', '50%', 'important');
-        timerEl2.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
-        timerEl2.style.fontSize = '14px';
-        timerEl2.style.fontWeight = '600';
-        timerEl2.style.color = 'rgba(255, 255, 255, 0.7)';
-        timerEl2.style.textShadow = 'none';
-        timerEl2.style.zIndex = 'auto';
-        timerEl2.style.setProperty('min-width', '60px', 'important');
-        timerEl2.style.setProperty('text-align', 'center', 'important');
-
-        console.log('[TIMER FIX] timerEl2.style после изменений:', timerEl2.style.cssText);
-        console.log('[TIMER FIX] getComputedStyle после:', getComputedStyle(timerEl2).display);
-        console.log('[TIMER FIX] getComputedStyle position:', getComputedStyle(timerEl2).position);
-        console.log('[TIMER FIX] getComputedStyle left:', getComputedStyle(timerEl2).left);
-        console.log('[TIMER FIX] getComputedStyle transform:', getComputedStyle(timerEl2).transform);
-
-        if (exitBtn.nextSibling) {
-            learnHeader2.insertBefore(timerEl2, exitBtn.nextSibling);
-        } else {
-            learnHeader2.appendChild(timerEl2);
-        }
-        console.log('[TIMER FIX] timerEl2.parentElement:', timerEl2.parentElement);
-    } else {
-        console.error('[TIMER FIX] ОШИБКА: элементы не найдены!');
-        if (!timerEl2) console.error('[TIMER FIX] - timerEl2 не найден');
-        if (!learnHeader2) console.error('[TIMER FIX] - learnHeader2 не найден');
-        if (!exitBtn) console.error('[TIMER FIX] - exitBtn не найден');
-    }
-
+    // Перемещаем только learn-counter в learn-header
     if (counterEl && learnHeader2) {
         learnHeader2.appendChild(counterEl);
     }
@@ -1071,7 +1035,6 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
 
     // Start Timer
-    console.log('[TIMER FIX] Запуск таймера...');
     if (timerInterval) clearInterval(timerInterval);
     sessionTimerStart = Date.now();
     timerPaused = false;
@@ -1081,49 +1044,6 @@ export function startLearnSession(candidateQuestions, options = {}) {
 
     // Setup timer pause/resume functionality
     setupTimerControls();
-
-    console.log('[TIMER FIX] === КОНЕЦ ===');
-
-    // Debug: логирование позиционирования после рендера
-    setTimeout(() => {
-        const timerControls = document.getElementById('timer-controls');
-        const pauseBtn = document.getElementById('timer-pause-btn');
-        const timerEl = document.getElementById('mode-timer');
-
-        console.log('[TIMER DEBUG] Элементы после рендера:');
-        console.log('[TIMER DEBUG] timerControls:', timerControls);
-        console.log('[TIMER DEBUG] pauseBtn:', pauseBtn);
-        console.log('[TIMER DEBUG] timerEl:', timerEl);
-
-        if (timerControls) {
-            console.log('[TIMER DEBUG] timerControls.style:', timerControls.style.cssText);
-            console.log('[TIMER DEBUG] timerControls getComputedStyle:', {
-                display: getComputedStyle(timerControls).display,
-                position: getComputedStyle(timerControls).position,
-                left: getComputedStyle(timerControls).left,
-                top: getComputedStyle(timerControls).top,
-                transform: getComputedStyle(timerControls).transform,
-                flexDirection: getComputedStyle(timerControls).flexDirection,
-                gap: getComputedStyle(timerControls).gap
-            });
-        }
-
-        if (pauseBtn) {
-            console.log('[TIMER DEBUG] pauseBtn.classList:', pauseBtn.classList);
-            console.log('[TIMER DEBUG] pauseBtn getComputedStyle:', {
-                display: getComputedStyle(pauseBtn).display,
-                color: getComputedStyle(pauseBtn).color
-            });
-        }
-
-        if (timerEl) {
-            console.log('[TIMER DEBUG] timerEl getComputedStyle:', {
-                display: getComputedStyle(timerEl).display,
-                position: getComputedStyle(timerEl).position,
-                left: getComputedStyle(timerEl).left
-            });
-        }
-    }, 1000);
 
     let sessionCards = [];
 
