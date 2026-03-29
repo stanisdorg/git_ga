@@ -161,14 +161,15 @@ export function initLearnUI() {
 
                 /* Timer controls - кнопка паузы и таймер */
                 .timer-controls {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 8px !important;
                     position: absolute;
                     left: 50%;
                     top: 50%;
                     transform: translate(-50%, -50%);
                     z-index: 20;
+                    flex-direction: row !important;
                 }
 
                 .timer-pause-btn {
@@ -176,12 +177,12 @@ export function initLearnUI() {
                     border: none;
                     padding: 4px;
                     cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
                     color: rgba(255, 255, 255, 0.7);
                     transition: all 0.2s ease;
-                    flex-shrink: 0;
+                    flex-shrink: 0 !important;
                 }
 
                 .timer-pause-btn svg {
