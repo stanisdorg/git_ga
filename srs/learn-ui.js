@@ -946,14 +946,17 @@ export function startLearnSession(candidateQuestions, options = {}) {
 
     if (timerEl2 && learnHeader2 && exitBtn) {
         timerEl2.style.setProperty('display', 'block', 'important');
-        timerEl2.style.setProperty('position', 'static', 'important');
-        timerEl2.style.setProperty('transform', 'none', 'important');
+        timerEl2.style.setProperty('position', 'absolute', 'important');
+        timerEl2.style.setProperty('left', '50%', 'important');
+        timerEl2.style.setProperty('top', '50%', 'important');
+        timerEl2.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
         timerEl2.style.fontSize = '14px';
         timerEl2.style.fontWeight = '600';
-        timerEl2.style.color = '#ff4d4d';
+        timerEl2.style.color = 'rgba(255, 255, 255, 0.7)';
         timerEl2.style.textShadow = 'none';
         timerEl2.style.zIndex = 'auto';
         timerEl2.style.setProperty('min-width', '60px', 'important');
+        timerEl2.style.setProperty('text-align', 'center', 'important');
 
         if (exitBtn.nextSibling) {
             learnHeader2.insertBefore(timerEl2, exitBtn.nextSibling);
