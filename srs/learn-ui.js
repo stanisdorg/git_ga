@@ -945,15 +945,15 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const exitBtn = document.getElementById('learn-exit-btn');
 
     if (timerEl2 && learnHeader2 && exitBtn) {
-        timerEl2.style.display = 'block !important';
-        timerEl2.style.position = 'static';
-        timerEl2.style.transform = 'none';
+        timerEl2.style.setProperty('display', 'block', 'important');
+        timerEl2.style.setProperty('position', 'static', 'important');
+        timerEl2.style.setProperty('transform', 'none', 'important');
         timerEl2.style.fontSize = '14px';
         timerEl2.style.fontWeight = '600';
         timerEl2.style.color = '#ff4d4d';
         timerEl2.style.textShadow = 'none';
         timerEl2.style.zIndex = 'auto';
-        timerEl2.style.minWidth = '60px';
+        timerEl2.style.setProperty('min-width', '60px', 'important');
         if (exitBtn.nextSibling) {
             learnHeader2.insertBefore(timerEl2, exitBtn.nextSibling);
         } else {
