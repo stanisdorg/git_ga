@@ -824,7 +824,10 @@ export function initTabsNavigation(appVersion) {
         ensureDefaultUsers();
         loginMainBtn.addEventListener('click', () => {
             if (loggedInUser) {
-                window.qaAuth.logout();
+                const username = loggedInUser.username || loggedInUser.email || 'пользователь';
+                if (confirm(`Выйти из аккаунта ${username}?`)) {
+                    window.qaAuth.logout();
+                }
             } else {
                 openLoginModal();
             }
@@ -1046,14 +1049,11 @@ export function initTabsNavigation(appVersion) {
         window.qaAuth.getUser = () => loggedInUser;
         window.qaAuth.openLogin = () => openLoginModal();
         window.qaAuth.logout = async () => {
-            const confirmed = confirm('❗ Вы уверены, что хотите выйти из системы?');
-            if (confirmed) {
-                // 🔥 Очищаем данные Telegram OAuth перед выходом
-                sessionStorage.removeItem('tgAuthUser');
+            // 🔥 Очищаем данные Telegram OAuth перед выходом
+            sessionStorage.removeItem('tgAuthUser');
 
-                await setLoggedUser(null);
-                window.location.reload();
-            }
+            await setLoggedUser(null);
+            window.location.reload();
         };
         // Плашка уровня и XP
         import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
