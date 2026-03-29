@@ -1084,6 +1084,47 @@ export function startLearnSession(candidateQuestions, options = {}) {
 
     console.log('[TIMER FIX] === КОНЕЦ ===');
 
+    // Debug: логирование позиционирования после рендера
+    setTimeout(() => {
+        const timerControls = document.getElementById('timer-controls');
+        const pauseBtn = document.getElementById('timer-pause-btn');
+        const timerEl = document.getElementById('mode-timer');
+
+        console.log('[TIMER DEBUG] Элементы после рендера:');
+        console.log('[TIMER DEBUG] timerControls:', timerControls);
+        console.log('[TIMER DEBUG] pauseBtn:', pauseBtn);
+        console.log('[TIMER DEBUG] timerEl:', timerEl);
+
+        if (timerControls) {
+            console.log('[TIMER DEBUG] timerControls.style:', timerControls.style.cssText);
+            console.log('[TIMER DEBUG] timerControls getComputedStyle:', {
+                display: getComputedStyle(timerControls).display,
+                position: getComputedStyle(timerControls).position,
+                left: getComputedStyle(timerControls).left,
+                top: getComputedStyle(timerControls).top,
+                transform: getComputedStyle(timerControls).transform,
+                flexDirection: getComputedStyle(timerControls).flexDirection,
+                gap: getComputedStyle(timerControls).gap
+            });
+        }
+
+        if (pauseBtn) {
+            console.log('[TIMER DEBUG] pauseBtn.classList:', pauseBtn.classList);
+            console.log('[TIMER DEBUG] pauseBtn getComputedStyle:', {
+                display: getComputedStyle(pauseBtn).display,
+                color: getComputedStyle(pauseBtn).color
+            });
+        }
+
+        if (timerEl) {
+            console.log('[TIMER DEBUG] timerEl getComputedStyle:', {
+                display: getComputedStyle(timerEl).display,
+                position: getComputedStyle(timerEl).position,
+                left: getComputedStyle(timerEl).left
+            });
+        }
+    }, 1000);
+
     let sessionCards = [];
 
     if (options.mode === 'cram') {
