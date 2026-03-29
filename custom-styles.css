@@ -3582,23 +3582,9 @@ body.learning-mode #bottom-nav {
         border: none !important;
     }
 
-    /* Таймер для ПК версии - ПО ЦЕНТРУ */
-    .mode-timer {
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        color: rgba(255, 255, 255, 0.7) !important;
-        text-shadow: none !important;
-        display: inline-block !important;
-        visibility: visible !important;
-        min-width: 60px !important;
-        text-align: center !important;
-        white-space: nowrap !important;
-        z-index: 10 !important;
-        cursor: pointer !important;
-        position: static !important;
-        left: auto !important;
-        top: auto !important;
-        transform: none !important;
+    /* learn-header должен быть relative для абсолютного позиционирования таймера */
+    .learn-header {
+        position: relative !important;
     }
 
     /* Timer controls для ПК версии - контейнер по центру */
@@ -3665,9 +3651,23 @@ body.learning-mode #bottom-nav {
         display: none !important;
     }
 
-    /* learn-header должен быть relative для абсолютного позиционирования таймера */
-    .learn-header {
-        position: relative !important;
+    /* Таймер для ПК версии */
+    .mode-timer {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        text-shadow: none !important;
+        display: inline-block !important;
+        visibility: visible !important;
+        min-width: 60px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        z-index: 10 !important;
+        cursor: pointer !important;
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
     }
 
     /* Список результатов: отступы внутри контейнера */

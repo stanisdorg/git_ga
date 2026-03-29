@@ -161,15 +161,14 @@ export function initLearnUI() {
 
                 /* Timer controls - кнопка паузы и таймер */
                 .timer-controls {
-                    position: absolute;
-                    top: 12px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    z-index: 20;
-                    display: none;
+                    display: flex;
                     align-items: center;
                     gap: 8px;
-                    flex-direction: row;
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 20;
                 }
 
                 .timer-pause-btn {
@@ -221,9 +220,36 @@ export function initLearnUI() {
                 .timer-pause-btn.paused .play-icon {
                     display: none !important;
                 }
+
+                .mode-timer {
+                    position: static;
+                    transform: none;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: rgba(255, 255, 255, 0.7);
+                    text-shadow: none;
+                    z-index: auto;
+                    display: inline-block;
+                    min-width: 60px;
+                    text-align: center;
+                    white-space: nowrap;
+                    cursor: pointer;
+                }
             </style>
             <div class="learn-header">
                 <button id="learn-exit-btn">✕ Выход</button>
+                <div class="timer-controls" id="timer-controls" title="Пауза/Старт (клик по таймеру)">
+                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Пауза/Старт">
+                        <svg class="pause-icon" viewBox="0 0 24 24" style="display:none">
+                            <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
+                            <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
+                        </svg>
+                        <svg class="play-icon" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <div id="mode-timer" class="mode-timer"></div>
+                </div>
                 <div class="learn-progress">
                     <div class="learn-progress-bar">
                         <div class="learn-progress-segments" id="learn-segments"></div>
@@ -231,21 +257,9 @@ export function initLearnUI() {
                     <span id="learn-counter">0/0</span>
                 </div>
             </div>
-            
+
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <div class="timer-controls" id="timer-controls" title="Пауза/Старт (клик по таймеру)">
-                        <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Пауза/Старт">
-                            <svg class="pause-icon" viewBox="0 0 24 24" style="display:none">
-                                <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
-                                <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
-                            </svg>
-                            <svg class="play-icon" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" fill="currentColor"/>
-                            </svg>
-                        </button>
-                        <div id="mode-timer" class="mode-timer"></div>
-                    </div>
                     <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
