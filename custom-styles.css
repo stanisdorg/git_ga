@@ -1287,16 +1287,17 @@ body.learning-mode #bottom-nav {
         margin: 0 !important;
     }
     #learn-counter {
-        /* Learn Counter - ПО ЦЕНТРУ (абсолютное позиционирование) */
+        /* Learn Counter - СПРАВА (абсолютное позиционирование) */
         order: 99 !important;
         position: absolute !important;
-        left: 50% !important;
+        right: 10px !important;
         top: 50% !important;
-        transform: translate(-50%, -50%) !important;
+        transform: translateY(-50%) !important;
         font-size: 12px !important;
         white-space: nowrap !important;
         text-align: center !important;
         flex-shrink: 0 !important;
+        left: auto !important;
     }
     .learn-progress {
         /* Progress bar - ОТДЕЛЬНЫЙ БЛОК под .learn-header, на всю ширину */
