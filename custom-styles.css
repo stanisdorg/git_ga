@@ -3599,6 +3599,11 @@ body.learning-mode #bottom-nav {
         z-index: 10 !important;
     }
 
+    /* learn-header должен быть relative для абсолютного позиционирования таймера */
+    .learn-header {
+        position: relative !important;
+    }
+
     /* Список результатов: отступы внутри контейнера */
     #results-list {
         padding: 0 var(--content-padding-x) 20px var(--content-padding-x) !important;
