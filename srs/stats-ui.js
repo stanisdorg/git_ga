@@ -1,8 +1,8 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.09.4';
-import { syncFavorite } from './storage.js?v=6.09.4';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09.4';
-import { getTodaysSession } from './category-scheduler.js?v=6.09.4';
-import { startLearnSession } from './learn-ui.js?v=6.09.4';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.09.5';
+import { syncFavorite } from './storage.js?v=6.09.5';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09.5';
+import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
+import { startLearnSession } from './learn-ui.js?v=6.09.5';
 import { applyFormatting } from './text-formatter.js';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
@@ -2705,8 +2705,9 @@ function renderStats() {
 
   // Calculate Hearts Distribution (New)
   const heartsDist = getHeartsDistribution();
-  const learningStage = getLearningStage(heartsDist, totalRated);
-  const understandingIndex = getUnderstandingIndex(heartsDist, totalRated);
+  const totalCount = currentCards.length; // Общее количество карточек для расчёта прогресса
+  const learningStage = getLearningStage(heartsDist, totalCount);
+  const understandingIndex = getUnderstandingIndex(heartsDist, totalCount);
   const riskZones = getRiskZones(uniqueQaData);
 
   // Check login status

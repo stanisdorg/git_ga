@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
 const VERSION = '6.19';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://bytecards.ru';
 
 // ============================================
 // Sentry Error Tracking
@@ -314,7 +315,7 @@ const server = http.createServer((req, res) => {
 
     console.log(`${ts} - ${req.method} ${req.url}`);
 
-    // 🤖 [CRITICAL] Telegram Bot Webhook (v6.09.4)
+    // 🤖 [CRITICAL] Telegram Bot Webhook (v6.09.5)
     // Выносим в самое начало, до любых проверок прав и статики
     const webhookUrl = `/api/bot-webhook/${TELEGRAM_BOT_TOKEN}`;
     if (req.method === 'POST' && (pathname === webhookUrl || pathname === webhookUrl + '/')) {
@@ -2106,7 +2107,7 @@ server.listen(PORT, IP, () => {
   console.log(`Server running at http://${IP}:${PORT}/`);
   console.log(`Open http://localhost:${PORT}/ in your browser`);
 
-  // Автоматическая установка команд меню в Telegram (v6.09.4)
+  // Автоматическая установка команд меню в Telegram (v6.09.5)
   const menuCommands = JSON.stringify({
     commands: [
       { command: 'users', description: 'Список всех пользователей' },
