@@ -545,179 +545,161 @@ const server = http.createServer((req, res) => {
     // GitHub OAuth - Callback от GitHub
     // ============================================
     if (req.method === 'GET' && pathname === '/api/auth/github/callback') {
-      const urlObj = new URL(req.url, `http://${req.headers.host}`);
-      const code = urlObj.searchParams.get('code');
-      const error = urlObj.searchParams.get('error');
+      (async () => {
+        const urlObj = new URL(req.url, `http://${req.headers.host}`);
+        const code = urlObj.searchParams.get('code');
+        const error = urlObj.searchParams.get('error');
 
-      if (error) {
-        console.error('[GitHub Auth] Error:', error);
-        res.writeHead(400, { 'Content-Type': 'text/html' });
-        res.end(`<html><body><h1>GitHub Auth Error</h1><p>${error}</p><a href="/">Back to app</a></body></html>`);
-        return;
-      }
-
-      if (!code) {
-        console.error('[GitHub Auth] No code provided');
-        res.writeHead(400, { 'Content-Type': 'text/html' });
-        res.end('<html><body><h1>No authorization code</h1><a href="/">Back to app</a></body></html>');
-        return;
-      }
-
-      console.log('[GitHub Auth] Code received, exchanging for token...');
-
-      const githubClientId = 'Ov23li8WqD2Iyq7Zemxh';
-      const githubClientSecret = '3b9e89c1f9d218fa73a8c0d7475aaa098e93da35';
-
-      // Обмениваем code на access token
-      const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          client_id: githubClientId,
-          client_secret: githubClientSecret,
-          code: code,
-          redirect_uri: `${BACKEND_URL}/api/auth/github/callback`
-        })
-      });
-
-      const tokenData = await tokenResponse.json();
-      console.log('[GitHub Auth] Token response:', tokenData);
-
-      if (tokenData.error) {
-        console.error('[GitHub Auth] Token error:', tokenData.error);
-        res.writeHead(400, { 'Content-Type': 'text/html' });
-        res.end(`<html><body><h1>Token Error</h1><p>${tokenData.error_description || tokenData.error}</p><a href="/">Back to app</a></body></html>`);
-        return;
-      }
-
-      const accessToken = tokenData.access_token;
-
-      // Получаем данные пользователя
-      const userResponse = await fetch('https://api.github.com/user', {
-        headers: {
-          'Authorization': `token ${accessToken}`,
-          'Accept': 'application/json'
+        if (error) {
+          console.error('[GitHub Auth] Error:', error);
+          res.writeHead(400, { 'Content-Type': 'text/html' });
+          res.end(`<html><body><h1>GitHub Auth Error</h1><p>${error}</p><a href="/">Back to app</a></body></html>`);
+          return;
         }
-      });
 
-      const userData = await userResponse.json();
-      console.log('[GitHub Auth] User data:', userData);
+        if (!code) {
+          console.error('[GitHub Auth] No code provided');
+          res.writeHead(400, { 'Content-Type': 'text/html' });
+          res.end('<html><body><h1>No authorization code</h1><a href="/">Back to app</a></body></html>');
+          return;
+        }
 
-      if (userData.error) {
-        console.error('[GitHub Auth] User data error:', userData.error);
-        res.writeHead(400, { 'Content-Type': 'text/html' });
-        res.end(`<html><body><h1>User Data Error</h1><p>${userData.message}</p><a href="/">Back to app</a></body></html>`);
-        return;
-      }
+        console.log('[GitHub Auth] Code received, exchanging for token...');
 
-      // Получаем email (может быть в отдельном endpoint)
-      let email = userData.email;
-      if (!email) {
-        const emailsResponse = await fetch('https://api.github.com/user/emails', {
+        const githubClientId = 'Ov23li8WqD2Iyq7Zemxh';
+        const githubClientSecret = '3b9e89c1f9d218fa73a8c0d7475aaa098e93da35';
+
+        // Обмениваем code на access token
+        const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            client_id: githubClientId,
+            client_secret: githubClientSecret,
+            code: code,
+            redirect_uri: `${BACKEND_URL}/api/auth/github/callback`
+          })
+        });
+
+        const tokenData = await tokenResponse.json();
+        console.log('[GitHub Auth] Token response:', tokenData);
+
+        if (tokenData.error) {
+          console.error('[GitHub Auth] Token error:', tokenData.error);
+          res.writeHead(400, { 'Content-Type': 'text/html' });
+          res.end(`<html><body><h1>Token Error</h1><p>${tokenData.error_description || tokenData.error}</p><a href="/">Back to app</a></body></html>`);
+          return;
+        }
+
+        const accessToken = tokenData.access_token;
+
+        // Получаем данные пользователя
+        const userResponse = await fetch('https://api.github.com/user', {
           headers: {
             'Authorization': `token ${accessToken}`,
             'Accept': 'application/json'
           }
         });
-        const emails = await emailsResponse.json();
-        email = emails.find(e => e.primary)?.email || `${userData.login}@users.noreply.github.com`;
-      }
 
-      // Создаём или находим пользователя
-      const usersPath = path.join(__dirname, 'data', 'users.json');
-      let users = [];
-      if (fs.existsSync(usersPath)) {
-        users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-      }
+        const userData = await userResponse.json();
+        console.log('[GitHub Auth] User data:', userData);
 
-      // Ищем по GitHub ID или email
-      let user = users.find(u => u.githubId === userData.id.toString() || u.email === email);
-
-      if (!user) {
-        // Создаём нового пользователя
-        const username = userData.login.toLowerCase();
-        user = {
-          username: username,
-          email: email,
-          githubId: userData.id.toString(),
-          name: userData.name || userData.login,
-          picture: userData.avatar_url,
-          role: 'editor',  // Дефолтная роль
-          password: crypto.randomBytes(32).toString('hex'),
-          createdAt: new Date().toISOString(),
-          lastLoginAt: new Date().toISOString()
-        };
-        users.push(user);
-        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
-        logger.info('Новый пользователь зарегистрирован через GitHub', { username: user.username }, 'Auth');
-
-        // Создаём файл данных пользователя
-        const newUserPath = path.join(__dirname, 'data', `user_${user.username}.json`);
-        const globalPath = path.join(__dirname, 'data', 'global.json');
-        let initialCards = [];
-        if (fs.existsSync(globalPath)) {
-          initialCards = JSON.parse(fs.readFileSync(globalPath, 'utf-8'));
+        if (userData.error) {
+          console.error('[GitHub Auth] User data error:', userData.error);
+          res.writeHead(400, { 'Content-Type': 'text/html' });
+          res.end(`<html><body><h1>User Data Error</h1><p>${userData.message}</p><a href="/">Back to app</a></body></html>`);
+          return;
         }
-        const initialData = {
-          _cards: initialCards,
-          _achievements: {},
-          _favorites: [],
-          _srsProgress: {},
-          _stats: {},
-          _meta: {
-            username: user.username,
-            role: user.role,
-            createdAt: user.createdAt,
-            lastLoginAt: user.lastLoginAt,
-            cardsCount: initialCards.length
+
+        // Получаем email (может быть в отдельном endpoint)
+        let email = userData.email;
+        if (!email) {
+          const emailsResponse = await fetch('https://api.github.com/user/emails', {
+            headers: {
+              'Authorization': `token ${accessToken}`,
+              'Accept': 'application/json'
+            }
+          });
+          const emails = await emailsResponse.json();
+          email = emails.find(e => e.primary)?.email || `${userData.login}@users.noreply.github.com`;
+        }
+
+        // Создаём или находим пользователя
+        const usersPath = path.join(__dirname, 'data', 'users.json');
+        let users = [];
+        if (fs.existsSync(usersPath)) {
+          users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+        }
+
+        // Ищем по GitHub ID или email
+        let user = users.find(u => u.githubId === userData.id.toString() || u.email === email);
+
+        if (!user) {
+          // Создаём нового пользователя
+          const username = userData.login.toLowerCase();
+          user = {
+            username: username,
+            email: email,
+            githubId: userData.id.toString(),
+            name: userData.name || userData.login,
+            picture: userData.avatar_url,
+            role: 'editor',
+            password: crypto.randomBytes(32).toString('hex'),
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString()
+          };
+          users.push(user);
+          fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
+          logger.info('Новый пользователь зарегистрирован через GitHub', { username: user.username }, 'Auth');
+
+          // Создаём файл данных пользователя
+          const newUserPath = path.join(__dirname, 'data', `user_${user.username}.json`);
+          const globalPath = path.join(__dirname, 'data', 'global.json');
+          let initialCards = [];
+          if (fs.existsSync(globalPath)) {
+            initialCards = JSON.parse(fs.readFileSync(globalPath, 'utf-8'));
           }
-        };
-        fs.writeFileSync(newUserPath, JSON.stringify(initialData, null, 2), 'utf-8');
-        logger.info('Файл данных создан для ' + user.username, null, 'Auth');
-      } else {
-        // Обновляем lastLoginAt
-        user.lastLoginAt = new Date().toISOString();
-        user.name = userData.name || user.name;
-        user.picture = userData.avatar_url || user.picture;
-        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
-        logger.info('Пользователь вошёл через GitHub', { username: user.username }, 'Auth');
-      }
+          const initialData = {
+            _cards: initialCards,
+            _achievements: {},
+            _favorites: [],
+            _srsProgress: {},
+            _stats: {},
+            _meta: {
+              username: user.username,
+              role: user.role,
+              createdAt: user.createdAt,
+              lastLoginAt: user.lastLoginAt,
+              cardsCount: initialCards.length
+            }
+          };
+          fs.writeFileSync(newUserPath, JSON.stringify(initialData, null, 2), 'utf-8');
+          logger.info('Файл данных создан для ' + user.username, null, 'Auth');
+        } else {
+          user.lastLoginAt = new Date().toISOString();
+          user.name = userData.name || user.name;
+          user.picture = userData.avatar_url || user.picture;
+          fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf-8');
+          logger.info('Пользователь вошёл через GitHub', { username: user.username }, 'Auth');
+        }
 
-      // Возвращаем HTML с редиректом обратно в приложение
-      const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>GitHub Auth Success</title>
-          <script>
-            // Сохраняем данные и перенаправляем
-            window.opener && window.opener.postMessage({
-              type: 'github-auth',
-              username: '${user.username}',
-              role: '${user.role}'
-            }, '*');
-            window.close();
-          </script>
-        </head>
-        <body>
-          <h1>GitHub Auth Success!</h1>
-          <p>Welcome, ${user.name}!</p>
-          <p>Redirecting...</p>
-          <script>
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 1000);
-          </script>
-        </body>
-        </html>
-      `;
+        // Возвращаем HTML с редиректом
+        const html = `
+          <!DOCTYPE html>
+          <html>
+          <head><meta charset="UTF-8"><title>GitHub Auth</title>
+          <script>window.opener&&window.opener.postMessage({type:'github-auth',username:'${user.username}',role:'${user.role}'},'*');window.close();</script>
+          </head>
+          <body><h1>Success!</h1><p>Welcome, ${user.name}!</p></body>
+          </html>
+        `;
 
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(html);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(html);
+      })();
       return;
     }
 
