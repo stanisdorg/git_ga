@@ -3584,24 +3584,24 @@ body.learning-mode #bottom-nav {
 
     /* Таймер для ПК версии - ПО ЦЕНТРУ */
     .mode-timer {
-        position: absolute !important;
-        left: 50% !important;
-        top: 50% !important;
-        transform: translate(-50%, -50%) !important;
         font-size: 14px !important;
         font-weight: 600 !important;
         color: rgba(255, 255, 255, 0.7) !important;
         text-shadow: none !important;
-        display: block !important;
+        display: inline-block !important;
         visibility: visible !important;
         min-width: 60px !important;
         text-align: center !important;
         white-space: nowrap !important;
         z-index: 10 !important;
         cursor: pointer !important;
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
     }
 
-    /* Timer controls для ПК версии */
+    /* Timer controls для ПК версии - контейнер по центру */
     .timer-controls {
         position: absolute !important;
         left: 50% !important;
@@ -3609,8 +3609,9 @@ body.learning-mode #bottom-nav {
         transform: translate(-50%, -50%) !important;
         z-index: 10 !important;
         display: flex !important;
+        flex-direction: row !important;
         align-items: center !important;
-        gap: 4px !important;
+        gap: 8px !important;
         cursor: pointer !important;
     }
 
@@ -3624,11 +3625,13 @@ body.learning-mode #bottom-nav {
         justify-content: center !important;
         color: rgba(255, 255, 255, 0.7) !important;
         transition: all 0.2s ease !important;
+        flex-shrink: 0 !important;
     }
 
     .timer-pause-btn svg {
         width: 20px !important;
         height: 20px !important;
+        display: block !important;
     }
 
     .timer-pause-btn:hover {
@@ -3644,6 +3647,22 @@ body.learning-mode #bottom-nav {
     .timer-pause-btn.paused {
         color: rgba(255, 255, 255, 0.9) !important;
         filter: drop-shadow(0 0 5px rgba(127, 255, 212, 0.7)) !important;
+    }
+
+    .timer-pause-btn.running .pause-icon {
+        display: none !important;
+    }
+
+    .timer-pause-btn.running .play-icon {
+        display: block !important;
+    }
+
+    .timer-pause-btn.paused .pause-icon {
+        display: block !important;
+    }
+
+    .timer-pause-btn.paused .play-icon {
+        display: none !important;
     }
 
     /* learn-header должен быть relative для абсолютного позиционирования таймера */

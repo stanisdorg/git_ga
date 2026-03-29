@@ -168,7 +168,8 @@ export function initLearnUI() {
                     z-index: 20;
                     display: none;
                     align-items: center;
-                    gap: 4px;
+                    gap: 8px;
+                    flex-direction: row;
                 }
 
                 .timer-pause-btn {
@@ -181,11 +182,13 @@ export function initLearnUI() {
                     justify-content: center;
                     color: rgba(255, 255, 255, 0.7);
                     transition: all 0.2s ease;
+                    flex-shrink: 0;
                 }
 
                 .timer-pause-btn svg {
                     width: 20px;
                     height: 20px;
+                    display: block;
                 }
 
                 .timer-pause-btn:hover {
@@ -203,24 +206,20 @@ export function initLearnUI() {
                     filter: drop-shadow(0 0 5px rgba(127, 255, 212, 0.7));
                 }
 
-                .pause-icon, .play-icon {
-                    display: block;
-                }
-
                 .timer-pause-btn.running .pause-icon {
-                    display: none;
+                    display: none !important;
                 }
 
                 .timer-pause-btn.running .play-icon {
-                    display: block;
+                    display: block !important;
                 }
 
                 .timer-pause-btn.paused .pause-icon {
-                    display: block;
+                    display: block !important;
                 }
 
                 .timer-pause-btn.paused .play-icon {
-                    display: none;
+                    display: none !important;
                 }
             </style>
             <div class="learn-header">
@@ -2556,12 +2555,11 @@ function updateTimerDisplay() {
 
     // Show time for current continuous block
     const now = Date.now();
-    // If session exists, use session.lastPauseTime to track current block
-    const startTime = (session && session.lastPauseTime) ? session.lastPauseTime : sessionTimerStart;
+    const elapsed = Math.floor((now - sessionTimerStart) / 1000);
+    const totalTime = pausedTimeRemaining + elapsed;
 
-    const diff = Math.floor((now - startTime) / 1000) + pausedTimeRemaining;
-    const m = Math.floor(diff / 60).toString().padStart(2, '0');
-    const s = (diff % 60).toString().padStart(2, '0');
+    const m = Math.floor(totalTime / 60).toString().padStart(2, '0');
+    const s = (totalTime % 60).toString().padStart(2, '0');
     el.textContent = `${m}:${s}`;
 }
 
@@ -2574,13 +2572,25 @@ function toggleTimerPause() {
 
     if (!pauseBtn) return;
 
-    timerPaused = !timerPaused;
-
     if (timerPaused) {
+        // RESUME: продолжаем отсчёт
+        sessionTimerStart = Date.now();
+
+        // Запускаем интервал
+        timerInterval = setInterval(updateTimerDisplay, 1000);
+        updateTimerDisplay();
+
+        // Визуально: иконка play, белое свечение
+        pauseBtn.classList.remove('paused');
+        pauseBtn.classList.add('running');
+
+        if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
+    } else {
         // PAUSE: сохраняем накопленное время
         const now = Date.now();
-        const startTime = (session && session.lastPauseTime) ? session.lastPauseTime : sessionTimerStart;
-        pausedTimeRemaining += Math.floor((now - startTime) / 1000);
+        const startTime = sessionTimerStart;
+        const elapsed = Math.floor((now - startTime) / 1000);
+        pausedTimeRemaining += elapsed;
 
         // Останавливаем интервал
         if (timerInterval) {
@@ -2593,20 +2603,9 @@ function toggleTimerPause() {
         pauseBtn.classList.add('paused');
 
         if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
-    } else {
-        // RESUME: сбрасываем lastPauseTime для продолжения отсчёта
-        sessionTimerStart = Date.now();
-
-        // Запускаем интервал
-        timerInterval = setInterval(updateTimerDisplay, 1000);
-        updateTimerDisplay();
-
-        // Визуально: иконка play, белое свечение
-        pauseBtn.classList.remove('paused');
-        pauseBtn.classList.add('running');
-
-        if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
     }
+
+    timerPaused = !timerPaused;
 }
 
 /**
@@ -2659,20 +2658,58 @@ function setupTimerControls() {
     }
 
     // Автоматическая пауза при уходе со страницы (visibilitychange)
+    let autoPaused = false;
+
     document.addEventListener('visibilitychange', () => {
         const isHidden = document.hidden;
+        const pauseBtn = document.getElementById('timer-pause-btn');
+        const timerControls = document.getElementById('timer-controls');
 
         if (isHidden) {
             // Страница скрыта (ушли на другую вкладку, свернули браузер, заблокировали телефон)
             // Всегда ставим на паузу при уходе
             if (!timerPaused) {
-                toggleTimerPause();
+                // PAUSE: сохраняем накопленное время
+                const now = Date.now();
+                const elapsed = Math.floor((now - sessionTimerStart) / 1000);
+                pausedTimeRemaining += elapsed;
+
+                // Останавливаем интервал
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+
+                timerPaused = true;
+                autoPaused = true;
+
+                // Визуально: иконка паузы, мятное свечение
+                if (pauseBtn) {
+                    pauseBtn.classList.remove('running');
+                    pauseBtn.classList.add('paused');
+                }
+                if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
             }
         } else {
             // Страница снова видима
             // Если не было ручной паузы пользователем - автоматически запускаем таймер
-            if (!wasManuallyPausedByUser && timerPaused) {
-                toggleTimerPause();
+            if (!wasManuallyPausedByUser && timerPaused && autoPaused) {
+                // RESUME: продолжаем отсчёт
+                sessionTimerStart = Date.now();
+
+                // Запускаем интервал
+                timerInterval = setInterval(updateTimerDisplay, 1000);
+                updateTimerDisplay();
+
+                timerPaused = false;
+                autoPaused = false;
+
+                // Визуально: иконка play, белое свечение
+                if (pauseBtn) {
+                    pauseBtn.classList.remove('paused');
+                    pauseBtn.classList.add('running');
+                }
+                if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
             }
         }
     });
