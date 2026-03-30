@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.09.5';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.09.5';
-import { getProgressMap } from './stats-utils.js?v=6.09.5';
-import { checkAchievements } from './stats-utils.js?v=6.09.5';
-import { Scheduler } from './scheduler.js?v=6.09.5';
-import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.09.5';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.09.5';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.09.5';
+import { LearningSession } from './session.js?v=6.20.8';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.20.8';
+import { getProgressMap } from './stats-utils.js?v=6.20.8';
+import { checkAchievements } from './stats-utils.js?v=6.20.8';
+import { Scheduler } from './scheduler.js?v=6.20.8';
+import { getTodaysSession } from './category-scheduler.js?v=6.20.8';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.20.8';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.20.8';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.20.8';
 
 // DOM Elements
 let container = null;
@@ -2175,7 +2175,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=6.09').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=6.20.8').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
