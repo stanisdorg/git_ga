@@ -15,9 +15,9 @@ let session = null;
 let currentScheduler = null;
 let timerInterval = null;
 let sessionTimerStart = 0;
-let userScrolled = false; // Р¤Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р° РїСЂРѕРіСЂРµСЃСЃ-Р±Р°СЂР°
-let timerPaused = false; // Р¤Р»Р°Рі РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°
-let pausedTimeRemaining = 0; // РќР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ РїСЂРё РїР°СѓР·Рµ
+let userScrolled = false; // Р В¤Р В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В° Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ-Р В±Р В°РЎР‚Р В°
+let timerPaused = false; // Р В¤Р В»Р В°Р С– Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°
+let pausedTimeRemaining = 0; // Р СњР В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ Р С—РЎР‚Р С‘ Р С—Р В°РЎС“Р В·Р Вµ
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -159,7 +159,7 @@ export function initLearnUI() {
                     display: none;
                 }
 
-                /* Timer controls - РєРЅРѕРїРєР° РїР°СѓР·С‹ Рё С‚Р°Р№РјРµСЂ */
+                /* Timer controls - Р С”Р Р…Р С•Р С—Р С”Р В° Р С—Р В°РЎС“Р В·РЎвЂ№ Р С‘ РЎвЂљР В°Р в„–Р СР ВµРЎР‚ */
                 .timer-controls {
                     display: flex !important;
                     align-items: center !important;
@@ -172,7 +172,7 @@ export function initLearnUI() {
                     flex-direction: row !important;
                 }
 
-                /* Р’Р°СЂРёР°РЅС‚ 3: РќРµРѕРЅРѕРІРѕРµ СЃРІРµС‡РµРЅРёРµ */
+                /* Р вЂ™Р В°РЎР‚Р С‘Р В°Р Р…РЎвЂљ 3: Р СњР ВµР С•Р Р…Р С•Р Р†Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ */
                 .timer-pause-btn {
                     width: 30px;
                     height: 30px;
@@ -199,7 +199,7 @@ export function initLearnUI() {
                     background: rgba(0, 255, 136, 0.1);
                 }
 
-                /* РЎРІРµС‡РµРЅРёРµ РґР»СЏ РєРЅРѕРїРєРё */
+                /* Р РЋР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ Р Т‘Р В»РЎРЏ Р С”Р Р…Р С•Р С—Р С”Р С‘ */
                 .timer-pause-btn.running {
                     color: #00ff88;
                     filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
@@ -242,9 +242,9 @@ export function initLearnUI() {
                 }
             </style>
             <div class="learn-header">
-                <button id="learn-exit-btn">вњ• Р’С‹С…РѕРґ</button>
-                <div class="timer-controls" id="timer-controls" title="РџР°СѓР·Р°/РЎС‚Р°СЂС‚ (РєР»РёРє РїРѕ С‚Р°Р№РјРµСЂСѓ)">
-                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="РџР°СѓР·Р°/РЎС‚Р°СЂС‚">
+                <button id="learn-exit-btn">РІСљвЂў Р вЂ™РЎвЂ№РЎвЂ¦Р С•Р Т‘</button>
+                <div class="timer-controls" id="timer-controls" title="Р СџР В°РЎС“Р В·Р В°/Р РЋРЎвЂљР В°РЎР‚РЎвЂљ (Р С”Р В»Р С‘Р С” Р С—Р С• РЎвЂљР В°Р в„–Р СР ВµРЎР‚РЎС“)">
+                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Р СџР В°РЎС“Р В·Р В°/Р РЋРЎвЂљР В°РЎР‚РЎвЂљ">
                         <svg class="pause-icon" viewBox="0 0 24 24" style="display:none">
                             <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
                             <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
@@ -265,55 +265,55 @@ export function initLearnUI() {
 
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="РќР°Р·Р°Рґ (РЎС‚СЂРµР»РєР° РІР»РµРІРѕ)" aria-label="РќР°Р·Р°Рґ">
+                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="Р СњР В°Р В·Р В°Р Т‘ (Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р В»Р ВµР Р†Р С•)" aria-label="Р СњР В°Р В·Р В°Р Т‘">
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
                     <div class="flashcard-front">
-                        <button class="edit-btn learn-edit-btn" title="Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ" style="top:10px;left:10px;z-index:10">
+                        <button class="edit-btn learn-edit-btn" title="Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ" style="top:10px;left:10px;z-index:10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
-                        <button class="favorite-btn learn-fav-btn" title="Р’ РёР·Р±СЂР°РЅРЅРѕРµ" style="top:10px;right:10px;z-index:10"></button>
+                        <button class="favorite-btn learn-fav-btn" title="Р вЂ™ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-content" id="learn-question"></div>
-                        <div class="flashcard-hint">РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР», С‡С‚РѕР±С‹ СѓРІРёРґРµС‚СЊ РѕС‚РІРµС‚</div>
+                        <div class="flashcard-hint">Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р СџРЎР‚Р С•Р В±Р ВµР В», РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎС“Р Р†Р С‘Р Т‘Р ВµРЎвЂљРЎРЉ Р С•РЎвЂљР Р†Р ВµРЎвЂљ</div>
                     </div>
                     <div class="flashcard-back">
-                        <button class="edit-btn learn-edit-btn" title="Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ" style="top:10px;left:10px;z-index:10">
+                        <button class="edit-btn learn-edit-btn" title="Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ" style="top:10px;left:10px;z-index:10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
-                        <button class="favorite-btn learn-fav-btn" title="Р’ РёР·Р±СЂР°РЅРЅРѕРµ" style="top:10px;right:10px;z-index:10"></button>
+                        <button class="favorite-btn learn-fav-btn" title="Р вЂ™ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-back-question" id="learn-back-question"></div>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
-                            <button class="rate-btn rate-again" data-grade="0">РЎРЅРѕРІР° (1)</button>
-                            <button class="rate-btn rate-hard" data-grade="1">РўСЂСѓРґРЅРѕ (2)</button>
-                            <button class="rate-btn rate-good" data-grade="2">РҐРѕСЂРѕС€Рѕ (3)</button>
-                            <button class="rate-btn rate-easy" data-grade="3">Р›РµРіРєРѕ (4)</button>
+                            <button class="rate-btn rate-again" data-grade="0">Р РЋР Р…Р С•Р Р†Р В° (1)</button>
+                            <button class="rate-btn rate-hard" data-grade="1">Р СћРЎР‚РЎС“Р Т‘Р Р…Р С• (2)</button>
+                            <button class="rate-btn rate-good" data-grade="2">Р ТђР С•РЎР‚Р С•РЎв‚¬Р С• (3)</button>
+                            <button class="rate-btn rate-easy" data-grade="3">Р вЂєР ВµР С–Р С”Р С• (4)</button>
                         </div>
                     </div>
-                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Р’РїРµСЂРµРґ (РЎС‚СЂРµР»РєР° РІРїСЂР°РІРѕ)" aria-label="Р’РїРµСЂРµРґ">
+                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Р вЂ™Р С—Р ВµРЎР‚Р ВµР Т‘ (Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р С—РЎР‚Р В°Р Р†Р С•)" aria-label="Р вЂ™Р С—Р ВµРЎР‚Р ВµР Т‘">
                         <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </button>
                 </div>
             </div>
 
             <div id="learn-stats" style="display:none">
-                <h2>РЎРµСЃСЃРёСЏ Р·Р°РІРµСЂС€РµРЅР°!</h2>
+                <h2>Р РЋР ВµРЎРѓРЎРѓР С‘РЎРЏ Р В·Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р ВµР Р…Р В°!</h2>
                 <div class="stats-grid">
-                    <div class="stat-item"><span>Р’СЃРµРіРѕ:</span> <span id="stat-total">0</span></div>
-                    <div class="stat-item"><span>РЎРЅРѕРІР°:</span> <span id="stat-again">0</span></div>
-                    <div class="stat-item"><span>РўСЂСѓРґРЅРѕ:</span> <span id="stat-hard">0</span></div>
-                    <div class="stat-item"><span>РҐРѕСЂРѕС€Рѕ:</span> <span id="stat-good">0</span></div>
-                    <div class="stat-item"><span>Р›РµРіРєРѕ:</span> <span id="stat-easy">0</span></div>
+                    <div class="stat-item"><span>Р вЂ™РЎРѓР ВµР С–Р С•:</span> <span id="stat-total">0</span></div>
+                    <div class="stat-item"><span>Р РЋР Р…Р С•Р Р†Р В°:</span> <span id="stat-again">0</span></div>
+                    <div class="stat-item"><span>Р СћРЎР‚РЎС“Р Т‘Р Р…Р С•:</span> <span id="stat-hard">0</span></div>
+                    <div class="stat-item"><span>Р ТђР С•РЎР‚Р С•РЎв‚¬Р С•:</span> <span id="stat-good">0</span></div>
+                    <div class="stat-item"><span>Р вЂєР ВµР С–Р С”Р С•:</span> <span id="stat-easy">0</span></div>
                 </div>
-                <button id="learn-finish-btn" class="primary-btn">Р’РµСЂРЅСѓС‚СЊСЃСЏ Рє СЃРїРёСЃРєСѓ</button>
+                <button id="learn-finish-btn" class="primary-btn">Р вЂ™Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉРЎРѓРЎРЏ Р С” РЎРѓР С—Р С‘РЎРѓР С”РЎС“</button>
             </div>
         `;
         appWrapper.appendChild(container);
@@ -363,29 +363,29 @@ export function initLearnUI() {
 
         // Rating buttons
         const rates = container.querySelectorAll('.rate-btn');
-        console.log('[LEARN-UI] РќР°Р№РґРµРЅРѕ РєРЅРѕРїРѕРє РѕС†РµРЅРєРё:', rates.length);
+        console.log('[LEARN-UI] Р СњР В°Р в„–Р Т‘Р ВµР Р…Р С• Р С”Р Р…Р С•Р С—Р С•Р С” Р С•РЎвЂ Р ВµР Р…Р С”Р С‘:', rates.length);
         rates.forEach((btn, index) => {
-            console.log(`[LEARN-UI] РљРЅРѕРїРєР° ${index}:`, btn.className, btn.dataset.grade);
+            console.log(`[LEARN-UI] Р С™Р Р…Р С•Р С—Р С”Р В° ${index}:`, btn.className, btn.dataset.grade);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const grade = parseInt(btn.dataset.grade);
                 console.log('========================================');
-                console.log('[RATE BUTTON CLICK] РљР»РёРє РїРѕ РєРЅРѕРїРєРµ!');
+                console.log('[RATE BUTTON CLICK] Р С™Р В»Р С‘Р С” Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ!');
                 console.log('[RATE BUTTON CLICK] Grade:', grade);
 
-                // Р’СЂРµРјРµРЅРЅРѕ РѕС‚РєР»СЋС‡Р°РµРј pointer-events С‡С‚РѕР±С‹ СЃРЅСЏС‚СЊ hover
+                // Р вЂ™РЎР‚Р ВµР СР ВµР Р…Р Р…Р С• Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С pointer-events РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР Р…РЎРЏРЎвЂљРЎРЉ hover
                 btn.style.pointerEvents = 'none';
                 console.log('[RATE BUTTON CLICK] pointerEvents: none');
 
-                // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р° РїРµСЂРµРґ РѕС‚РІРµС‚РѕРј
+                // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В° Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљР С•Р С
                 userScrolled = false;
 
                 if (session) session.rate(grade);
-                // РЎР±СЂР°СЃС‹РІР°РµРј С„РѕРєСѓСЃ СЃ РєРЅРѕРїРєРё С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ РѕР±РІРѕРґРєРё
+                // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР С•Р С”РЎС“РЎРѓ РЎРѓ Р С”Р Р…Р С•Р С—Р С”Р С‘ РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р В±РЎвЂ№Р В»Р С• Р С•Р В±Р Р†Р С•Р Т‘Р С”Р С‘
                 btn.blur();
                 console.log('[RATE BUTTON CLICK] Focus blurred from button');
 
-                // Р’РѕР·РІСЂР°С‰Р°РµРј pointer-events С‡РµСЂРµР· РЅРµР±РѕР»СЊС€СѓСЋ Р·Р°РґРµСЂР¶РєСѓ
+                // Р вЂ™Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµР С pointer-events РЎвЂЎР ВµРЎР‚Р ВµР В· Р Р…Р ВµР В±Р С•Р В»РЎРЉРЎв‚¬РЎС“РЎР‹ Р В·Р В°Р Т‘Р ВµРЎР‚Р В¶Р С”РЎС“
                 setTimeout(() => {
                     btn.style.pointerEvents = '';
                     console.log('[RATE BUTTON CLICK] pointerEvents: restored');
@@ -395,15 +395,15 @@ export function initLearnUI() {
             });
         });
 
-        // Edit buttons - РѕС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+        // Edit buttons - Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
         container.querySelectorAll('.learn-edit-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!session || !session.currentCard) {
-                    console.log('[EDIT] РќРµС‚ Р°РєС‚РёРІРЅРѕР№ РєР°СЂС‚РѕС‡РєРё РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ');
+                    console.log('[EDIT] Р СњР ВµРЎвЂљ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ');
                     return;
                 }
-                console.log('[EDIT] РћС‚РєСЂС‹С‚РёРµ СЂРµРґР°РєС‚РѕСЂР° РґР»СЏ РєР°СЂС‚РѕС‡РєРё:', session.currentCard.question?.substring(0, 50));
+                console.log('[EDIT] Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В° Р Т‘Р В»РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:', session.currentCard.question?.substring(0, 50));
                 openEditModal(session.currentCard);
             });
         });
@@ -416,7 +416,7 @@ export function initLearnUI() {
 }
 
 // ==========================================
-// Р Р•Р”РђРљРўРР РћР’РђРќРР• РљРђР РўРћР§Р•Рљ
+// Р В Р вЂўР вЂќР С’Р С™Р СћР ВР В Р С›Р вЂ™Р С’Р СњР ВР вЂў Р С™Р С’Р В Р СћР С›Р В§Р вЂўР С™
 // ==========================================
 
 let editModalState = {
@@ -424,14 +424,14 @@ let editModalState = {
     originalCard: null,
     editedQuestion: '',
     editedAnswer: '',
-    formatting: null  // formatting РѕР±СЉРµРєС‚ { question: [], answer: [] }
+    formatting: null  // formatting Р С•Р В±РЎР‰Р ВµР С”РЎвЂљ { question: [], answer: [] }
 };
 
-// РћС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+// Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
 function openEditModal(card) {
-    console.log('[EDIT MODAL] РћС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°');
+    console.log('[EDIT MODAL] Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В°');
 
-    // РџРѕР»СѓС‡Р°РµРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ РёР· session.currentCard (РЅРµ РёР· card!)
+    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С‘Р В· session.currentCard (Р Р…Р Вµ Р С‘Р В· card!)
     const currentCard = session?.currentCard;
     const question = currentCard?.question || card.question || '';
     const answer = currentCard?.answer || currentCard?.item?.answer || card.answer || card.item?.answer || '';
@@ -439,10 +439,10 @@ function openEditModal(card) {
     console.log('[EDIT MODAL] card.question:', question);
     console.log('[EDIT MODAL] answer:', answer?.substring(0, 50));
 
-    // РџРѕР»СѓС‡Р°РµРј formatting РёР· РєР°СЂС‚РѕС‡РєРё РёР»Рё СЃРѕР·РґР°С‘Рј РїСѓСЃС‚РѕР№
+    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С formatting Р С‘Р В· Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р С‘Р В»Р С‘ РЎРѓР С•Р В·Р Т‘Р В°РЎвЂР С Р С—РЎС“РЎРѓРЎвЂљР С•Р в„–
     const formatting = card.formatting || createEmptyFormatting();
 
-    // РЎРѕС…СЂР°РЅСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ - РІСЃРµРіРґР° Р±РµСЂРµРј РёР· session.currentCard
+    // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р С‘РЎРѓРЎвЂ¦Р С•Р Т‘Р Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ - Р Р†РЎРѓР ВµР С–Р Т‘Р В° Р В±Р ВµРЎР‚Р ВµР С Р С‘Р В· session.currentCard
     editModalState = {
         isOpen: true,
         originalCard: {
@@ -453,37 +453,37 @@ function openEditModal(card) {
         },
         editedQuestion: question,
         editedAnswer: answer,
-        formatting: { ...formatting },  // РљРѕРїРёСЂСѓРµРј formatting
-        // РЎРѕС…СЂР°РЅСЏРµРј oldQuestion РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё
+        formatting: { ...formatting },  // Р С™Р С•Р С—Р С‘РЎР‚РЎС“Р ВµР С formatting
+        // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С oldQuestion Р Т‘Р В»РЎРЏ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘
         oldQuestion: question
     };
 
     console.log('[EDIT MODAL] editModalState.originalCard.question:', editModalState.originalCard.question);
     console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion);
 
-    // Р‘Р»РѕРєРёСЂСѓРµРј РЅР°РІРёРіР°С†РёСЋ Рё РїРµСЂРµРІРѕСЂРѕС‚ РєР°СЂС‚РѕС‡РєРё
+    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ Р С—Р ВµРЎР‚Р ВµР Р†Р С•РЎР‚Р С•РЎвЂљ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘
     if (session) {
         session.pauseNavigation = true;
         session.blockFlip = true;
     }
 
-    // Р‘Р»РѕРєРёСЂСѓРµРј РєР»РёРєРё РїРѕ РєР°СЂС‚РѕС‡РєРµ
+    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ Р С—Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = 'none';
         console.log('[EDIT MODAL] Card clicks blocked');
     }
 
-    // РЎРѕР·РґР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃ РћР”РќРћР™ РїР°РЅРµР»СЊСЋ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
+    // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• РЎРѓ Р С›Р вЂќР СњР С›Р в„ў Р С—Р В°Р Р…Р ВµР В»РЎРЉРЎР‹ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
     const modalHTML = `
         <div class="edit-modal-overlay" id="edit-modal-overlay">
             <div class="edit-modal">
                 <div class="edit-modal-content">
-                    <!-- РћР”РќРђ РћР‘Р©РђРЇ РџРђРќР•Р›Р¬ Р¤РћР РњРђРўРР РћР’РђРќРРЇ -->
+                    <!-- Р С›Р вЂќР СњР С’ Р С›Р вЂР В©Р С’Р Р‡ Р СџР С’Р СњР вЂўР вЂєР В¬ Р В¤Р С›Р В Р СљР С’Р СћР ВР В Р С›Р вЂ™Р С’Р СњР ВР Р‡ -->
                     <div class="format-toolbar" id="main-format-toolbar"></div>
 
                     <div class="edit-field-group">
-                        <label class="edit-field-label">Р’РѕРїСЂРѕСЃ</label>
+                        <label class="edit-field-label">Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ</label>
                         <div
                             class="edit-field-editor"
                             id="edit-question-editor"
@@ -492,7 +492,7 @@ function openEditModal(card) {
                         ></div>
                     </div>
                     <div class="edit-field-group">
-                        <label class="edit-field-label">РћС‚РІРµС‚</label>
+                        <label class="edit-field-label">Р С›РЎвЂљР Р†Р ВµРЎвЂљ</label>
                         <div
                             class="edit-field-editor"
                             id="edit-answer-editor"
@@ -502,8 +502,8 @@ function openEditModal(card) {
                     </div>
                 </div>
                 <div class="edit-modal-footer">
-                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">РћС‚РјРµРЅР°</button>
-                    <button class="edit-modal-btn save" id="edit-save-btn">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
+                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
+                    <button class="edit-modal-btn save" id="edit-save-btn">Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ</button>
                 </div>
             </div>
         </div>
@@ -513,13 +513,13 @@ function openEditModal(card) {
 
     console.log('[EDIT MODAL] Modal HTML inserted, checking element:', document.getElementById('edit-modal-overlay'));
 
-    // РЎРѕР·РґР°С‘Рј toolbar
+    // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С toolbar
     const toolbarContainer = document.getElementById('main-format-toolbar');
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
     if (toolbarContainer) {
-        const mainToolbar = createFormatToolbar('both');  // 'both' РѕР·РЅР°С‡Р°РµС‚ РѕР±С‰РёР№ РґР»СЏ РІСЃРµС…
+        const mainToolbar = createFormatToolbar('both');  // 'both' Р С•Р В·Р Р…Р В°РЎвЂЎР В°Р ВµРЎвЂљ Р С•Р В±РЎвЂ°Р С‘Р в„– Р Т‘Р В»РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦
         toolbarContainer.appendChild(mainToolbar);
 
         console.log('[EDIT MODAL] Toolbar created:', mainToolbar);
@@ -528,17 +528,17 @@ function openEditModal(card) {
     console.log('[EDIT MODAL] Editors found:', { questionEditor, answerEditor });
 
     if (questionEditor) {
-        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“
         renderFormattingInEditor(questionEditor, question, formatting.question || []);
         console.log('[EDIT MODAL] Question set:', question?.substring(0, 50));
     }
     if (answerEditor) {
-        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РѕС‚РІРµС‚Сѓ
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р С•РЎвЂљР Р†Р ВµРЎвЂљРЎС“
         renderFormattingInEditor(answerEditor, answer, formatting.answer || []);
         console.log('[EDIT MODAL] Answer set:', answer?.substring(0, 50));
     }
 
-    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј toolbar СЃ РћР‘РћРРњР СЂРµРґР°РєС‚РѕСЂР°РјРё
+    // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С toolbar РЎРѓ Р С›Р вЂР С›Р ВР СљР В РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В°Р СР С‘
     const mainToolbar = toolbarContainer?.querySelector('.format-toolbar');
     if (mainToolbar && questionEditor && answerEditor) {
         initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
@@ -546,14 +546,14 @@ function openEditModal(card) {
         });
     }
 
-    // РћР±СЂР°Р±РѕС‚С‡РёРєРё РєРЅРѕРїРѕРє
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С”Р Р…Р С•Р С—Р С•Р С”
     const cancelBtn = document.getElementById('edit-cancel-btn');
     const saveBtn = document.getElementById('edit-save-btn');
     const overlay = document.getElementById('edit-modal-overlay');
 
     console.log('[EDIT MODAL] Buttons found:', { cancelBtn, saveBtn, overlay });
 
-    // Р”РѕР±Р°РІР»СЏРµРј РѕС‚Р»Р°РґРѕС‡РЅС‹Рµ Р»РѕРіРё РґР»СЏ РєРЅРѕРїРѕРє
+    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С•РЎвЂљР В»Р В°Р Т‘Р С•РЎвЂЎР Р…РЎвЂ№Р Вµ Р В»Р С•Р С–Р С‘ Р Т‘Р В»РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С”
     cancelBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         console.log('[EDIT MODAL] Cancel button clicked');
@@ -574,9 +574,9 @@ function openEditModal(card) {
         }
     });
 
-    // РћР±СЂР°Р±РѕС‚С‡РёРє Enter (Ctrl+Enter РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ)
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Enter (Ctrl+Enter Р Т‘Р В»РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ)
     const handleKeyDown = (e) => {
-        // Р‘Р»РѕРєРёСЂСѓРµРј РІСЃРµ СЃРѕР±С‹С‚РёСЏ РєР»Р°РІРёР°С‚СѓСЂС‹ РѕС‚ РїРµСЂРµРґР°С‡Рё РЅР° РєР°СЂС‚РѕС‡РєСѓ
+        // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р Р†РЎРѓР Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ Р С”Р В»Р В°Р Р†Р С‘Р В°РЎвЂљРЎС“РЎР‚РЎвЂ№ Р С•РЎвЂљ Р С—Р ВµРЎР‚Р ВµР Т‘Р В°РЎвЂЎР С‘ Р Р…Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
         e.stopPropagation();
         e.preventDefault();
 
@@ -585,13 +585,13 @@ function openEditModal(card) {
         } else if (e.key === 'Escape') {
             closeEditModal(true);
         }
-        // РћСЃС‚Р°Р»СЊРЅС‹Рµ РєР»Р°РІРёС€Рё СЂР°Р±РѕС‚Р°СЋС‚ РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ С‚РµРєСЃС‚Р°
+        // Р С›РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р В»Р В°Р Р†Р С‘РЎв‚¬Р С‘ РЎР‚Р В°Р В±Р С•РЎвЂљР В°РЎР‹РЎвЂљ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
     };
 
-    // Р‘Р»РѕРєРёСЂСѓРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЃРѕР±С‹С‚РёСЏ РєР»Р°РІРёР°С‚СѓСЂС‹ РґР»СЏ СЂРµРґР°РєС‚РѕСЂРѕРІ
+    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С РЎРѓРЎвЂљР В°Р Р…Р Т‘Р В°РЎР‚РЎвЂљР Р…РЎвЂ№Р Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ Р С”Р В»Р В°Р Р†Р С‘Р В°РЎвЂљРЎС“РЎР‚РЎвЂ№ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
     questionEditor?.addEventListener('keydown', (e) => {
         e.stopPropagation();
-        // Р Р°Р·СЂРµС€Р°РµРј С‚РѕР»СЊРєРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ
+        // Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
         if (e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             saveEditChanges();
@@ -611,7 +611,7 @@ function openEditModal(card) {
         }
     });
 
-    // Р¤РѕРєСѓСЃ РЅР° РїРµСЂРІС‹Р№ СЂРµРґР°РєС‚РѕСЂ
+    // Р В¤Р С•Р С”РЎС“РЎРѓ Р Р…Р В° Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р в„– РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚
     setTimeout(() => {
         const overlay = document.getElementById('edit-modal-overlay');
         const modal = document.querySelector('.edit-modal');
@@ -626,12 +626,12 @@ function openEditModal(card) {
         questionEditor?.focus();
     }, 100);
 
-    console.log('[EDIT MODAL] РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РѕС‚РєСЂС‹С‚Рѕ');
+    console.log('[EDIT MODAL] Р СљР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С•');
 }
 
-// Р—Р°РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°
+// Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В°
 function closeEditModal(discardChanges = true) {
-    console.log('[EDIT MODAL] Р—Р°РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°, discardChanges:', discardChanges);
+    console.log('[EDIT MODAL] Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В°, discardChanges:', discardChanges);
 
     const modal = document.getElementById('edit-modal-overlay');
     if (modal) {
@@ -643,49 +643,49 @@ function closeEditModal(discardChanges = true) {
 
     editModalState.isOpen = false;
 
-    // Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј РЅР°РІРёРіР°С†РёСЋ Рё РєР°СЂС‚РѕС‡РєСѓ
+    // Р В Р В°Р В·Р В±Р В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
     if (session) {
         session.pauseNavigation = false;
         session.blockFlip = false;
     }
 
-    // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєР»РёРєРё РїРѕ РєР°СЂС‚РѕС‡РєРµ
+    // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ Р С—Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = '';
         console.log('[EDIT MODAL] Card clicks restored');
     }
 
-    console.log('[EDIT MODAL] РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ Р·Р°РєСЂС‹С‚Рѕ');
+    console.log('[EDIT MODAL] Р СљР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С•');
 }
 
-// РЎРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№
+// Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„–
 async function saveEditChanges() {
-    console.log('[EDIT MODAL] РЎРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№');
+    console.log('[EDIT MODAL] Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„–');
 
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
     if (!questionEditor || !answerEditor) {
-        console.error('[EDIT MODAL] Р РµРґР°РєС‚РѕСЂС‹ РЅРµ РЅР°Р№РґРµРЅС‹');
+        console.error('[EDIT MODAL] Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚РЎвЂ№ Р Р…Р Вµ Р Р…Р В°Р в„–Р Т‘Р ВµР Р…РЎвЂ№');
         return;
     }
 
-    // РџРѕР»СѓС‡Р°РµРј HTML РёР· СЂРµРґР°РєС‚РѕСЂРѕРІ
+    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С HTML Р С‘Р В· РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
     const questionHTML = questionEditor.innerHTML.trim();
     const answerHTML = answerEditor.innerHTML.trim();
 
-    // РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј HTML РІ С‡РёСЃС‚С‹Р№ С‚РµРєСЃС‚ + formatting
+    // Р С™Р С•Р Р…Р Р†Р ВµРЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С HTML Р Р† РЎвЂЎР С‘РЎРѓРЎвЂљРЎвЂ№Р в„– РЎвЂљР ВµР С”РЎРѓРЎвЂљ + formatting
     const questionData = convertHtmlToTextAndFormatting(questionHTML);
     const answerData = convertHtmlToTextAndFormatting(answerHTML);
 
     const newQuestion = questionData.text.trim();
     const newAnswer = answerData.text.trim();
 
-    // РџРѕР»СѓС‡Р°РµРј formatting РёР· editModalState Рё РѕР±РЅРѕРІР»СЏРµРј РµРіРѕ СЃ РЅРѕРІС‹РјРё РґР°РЅРЅС‹РјРё
+    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С formatting Р С‘Р В· editModalState Р С‘ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р ВµР С–Р С• РЎРѓ Р Р…Р С•Р Р†РЎвЂ№Р СР С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р СР С‘
     const currentFormatting = editModalState.formatting || createEmptyFormatting();
 
-    console.log('[EDIT MODAL] РќРѕРІС‹Рµ РґР°РЅРЅС‹Рµ:', {
+    console.log('[EDIT MODAL] Р СњР С•Р Р†РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ:', {
         newQuestion: newQuestion.substring(0, 50),
         newAnswer: newAnswer.substring(0, 50),
         hasFormatting: !!(currentFormatting.question?.length || currentFormatting.answer?.length)
@@ -695,38 +695,38 @@ async function saveEditChanges() {
     console.log('[EDIT MODAL] New question length:', newQuestion.length);
     console.log('[EDIT MODAL] New answer length:', newAnswer.length);
 
-    // Р’Р°Р»РёРґР°С†РёСЏ
+    // Р вЂ™Р В°Р В»Р С‘Р Т‘Р В°РЎвЂ Р С‘РЎРЏ
     if (!newQuestion) {
-        showEditNotification('Р’РѕРїСЂРѕСЃ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј', 'error');
+        showEditNotification('Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ Р Р…Р Вµ Р СР С•Р В¶Р ВµРЎвЂљ Р В±РЎвЂ№РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљРЎвЂ№Р С', 'error');
         questionEditor.focus();
         return;
     }
 
     if (!newAnswer) {
-        showEditNotification('РћС‚РІРµС‚ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј', 'error');
+        showEditNotification('Р С›РЎвЂљР Р†Р ВµРЎвЂљ Р Р…Р Вµ Р СР С•Р В¶Р ВµРЎвЂљ Р В±РЎвЂ№РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљРЎвЂ№Р С', 'error');
         answerEditor.focus();
         return;
     }
 
-    // Р‘Р»РѕРєРёСЂСѓРµРј РєРЅРѕРїРєСѓ СЃРѕС…СЂР°РЅРµРЅРёСЏ
+    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ
     const saveBtn = document.getElementById('edit-save-btn');
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.textContent = 'РЎРѕС…СЂР°РЅРµРЅРёРµ...';
+        saveBtn.textContent = 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ...';
     }
 
     try {
-        // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (РїСЂРѕРІРµСЂСЏРµРј РѕР±Р° РєР»СЋС‡Р°)
+        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ (Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р С•Р В±Р В° Р С”Р В»РЎР‹РЎвЂЎР В°)
         let username = null;
 
-        // РџСЂРѕР±СѓРµРј РїРѕР»СѓС‡РёС‚СЊ РёР· UserSystem (currentUser)
+        // Р СџРЎР‚Р С•Р В±РЎС“Р ВµР С Р С—Р С•Р В»РЎС“РЎвЂЎР С‘РЎвЂљРЎРЉ Р С‘Р В· UserSystem (currentUser)
         const currentUser = window.UserSystem?.getCurrentUser?.();
         if (currentUser?.username) {
             username = currentUser.username;
-            console.log('[EDIT MODAL] РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РёР· UserSystem:', username);
+            console.log('[EDIT MODAL] Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р С‘Р В· UserSystem:', username);
         }
 
-        // Р•СЃР»Рё РЅРµ РЅР°С€Р»Рё, РїСЂРѕР±СѓРµРј qaSessionUser
+        // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р Р…Р В°РЎв‚¬Р В»Р С‘, Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С qaSessionUser
         if (!username) {
             try {
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -734,25 +734,25 @@ async function saveEditChanges() {
                     const sessionUser = JSON.parse(sessionUserRaw);
                     if (sessionUser?.username) {
                         username = sessionUser.username;
-                        console.log('[EDIT MODAL] РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РёР· qaSessionUser:', username);
+                        console.log('[EDIT MODAL] Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р С‘Р В· qaSessionUser:', username);
                     }
                 }
             } catch (e) {
-                console.warn('[EDIT MODAL] РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· qaSessionUser:', e);
+                console.warn('[EDIT MODAL] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р С—Р С•Р В»РЎС“РЎвЂЎР С‘РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ Р С‘Р В· qaSessionUser:', e);
             }
         }
 
         if (!username) {
-            throw new Error('РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅ');
+            throw new Error('Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р Р…Р Вµ Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р С•Р Р†Р В°Р Р…');
         }
 
-        // Р‘Р•Р Р•Рњ oldQuestion РР— SESSION.CURRENTCARD РџР•Р Р•Р” РћРўРџР РђР’РљРћР™
-        // Р­С‚Рѕ РіР°СЂР°РЅС‚РёСЂСѓРµС‚, С‡С‚Рѕ РјС‹ РёСЃРїРѕР»СЊР·СѓРµРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ РєР°СЂС‚РѕС‡РєРё
+        // Р вЂР вЂўР В Р вЂўР Сљ oldQuestion Р ВР вЂ” SESSION.CURRENTCARD Р СџР вЂўР В Р вЂўР вЂќ Р С›Р СћР СџР В Р С’Р вЂ™Р С™Р С›Р в„ў
+        // Р В­РЎвЂљР С• Р С–Р В°РЎР‚Р В°Р Р…РЎвЂљР С‘РЎР‚РЎС“Р ВµРЎвЂљ, РЎвЂЎРЎвЂљР С• Р СРЎвЂ№ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘
         const currentCard = session?.currentCard;
         const oldQuestion = currentCard?.question;
         const oldAnswer = currentCard?.answer || currentCard?.item?.answer;
 
-        console.log('[EDIT MODAL] РћС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С… РЅР° СЃРµСЂРІРµСЂ', {
+        console.log('[EDIT MODAL] Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р В° Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚', {
             username,
             oldQuestion: oldQuestion?.substring(0, 50),
             newQuestion: newQuestion.substring(0, 50),
@@ -766,7 +766,7 @@ async function saveEditChanges() {
         const requestUrl = `/api/card/update?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
         console.log('[EDIT MODAL] Request URL:', requestUrl);
 
-        // РћС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ
+        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
         const response = await fetch(requestUrl, {
             method: 'POST',
             headers: {
@@ -785,9 +785,9 @@ async function saveEditChanges() {
 
         const result = await response.json();
 
-        console.log('[EDIT MODAL] РћС‚РІРµС‚ СЃРµСЂРІРµСЂР°:', result);
+        console.log('[EDIT MODAL] Р С›РЎвЂљР Р†Р ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', result);
 
-        // Р’С‹РІРѕРґРёРј debug РёРЅС„РѕСЂРјР°С†РёСЋ РѕС‚ СЃРµСЂРІРµСЂР°
+        // Р вЂ™РЎвЂ№Р Р†Р С•Р Т‘Р С‘Р С debug Р С‘Р Р…РЎвЂћР С•РЎР‚Р СР В°РЎвЂ Р С‘РЎР‹ Р С•РЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°
         if (result.debug) {
             console.log('[EDIT MODAL] SERVER DEBUG:', result.debug);
             if (result.debug.questionsInFile) {
@@ -796,12 +796,12 @@ async function saveEditChanges() {
         }
 
         if (response.ok && result.ok) {
-            // РЈСЃРїРµС…
-            console.log('[EDIT MODAL] РљР°СЂС‚РѕС‡РєР° СѓСЃРїРµС€РЅРѕ РѕР±РЅРѕРІР»РµРЅР°');
+            // Р Р€РЎРѓР С—Р ВµРЎвЂ¦
+            console.log('[EDIT MODAL] Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С• Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°');
 
             const currentIndex = session.currentIndex || 0;
 
-            // 1. РћР±РЅРѕРІР»СЏРµРј session.queue
+            // 1. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С session.queue
             if (session.queue && session.queue[currentIndex]) {
                 session.queue[currentIndex].question = newQuestion;
                 session.queue[currentIndex].answer = newAnswer;
@@ -813,7 +813,7 @@ async function saveEditChanges() {
                 }
             }
 
-            // 2. РћР±РЅРѕРІР»СЏРµРј session.currentCard РџРћРЎР›Р• goTo()
+            // 2. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С session.currentCard Р СџР С›Р РЋР вЂєР вЂў goTo()
             session.goTo(currentIndex);
 
             if (session && session.currentCard) {
@@ -827,7 +827,7 @@ async function saveEditChanges() {
                 console.log('[EDIT MODAL] Updated session.currentCard:', session.currentCard.question?.substring(0, 50));
             }
 
-            // 3. РћР±РЅРѕРІР»СЏРµРј localStorage (Р’РђР–РќРћ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РїРѕСЃР»Рµ РїРµСЂРµР·Р°РіСЂСѓР·РєРё!)
+            // 3. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С localStorage (Р вЂ™Р С’Р вЂ“Р СњР С› Р Т‘Р В»РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р С—Р С•РЎРѓР В»Р Вµ Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘!)
             try {
                 const allCardsRaw = localStorage.getItem('qaUserCards');
                 if (allCardsRaw) {
@@ -838,58 +838,58 @@ async function saveEditChanges() {
                         allCards[cardIndex].answer = newAnswer;
                         allCards[cardIndex].formatting = currentFormatting;
                         localStorage.setItem('qaUserCards', JSON.stringify(allCards));
-                        console.log('[EDIT MODAL] localStorage РѕР±РЅРѕРІР»С‘РЅ');
+                        console.log('[EDIT MODAL] localStorage Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…');
                     } else {
-                        console.warn('[EDIT MODAL] РљР°СЂС‚РѕС‡РєР° РЅРµ РЅР°Р№РґРµРЅР° РІ localStorage РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ');
+                        console.warn('[EDIT MODAL] Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р…Р Вµ Р Р…Р В°Р в„–Р Т‘Р ВµР Р…Р В° Р Р† localStorage Р Т‘Р В»РЎРЏ Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ');
                     }
                 }
             } catch (e) {
-                console.error('[EDIT MODAL] РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ localStorage:', e);
+                console.error('[EDIT MODAL] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ localStorage:', e);
             }
 
-            // 4. РћР±РЅРѕРІР»СЏРµРј originalCard РІ state
+            // 4. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С originalCard Р Р† state
             editModalState.originalCard.question = newQuestion;
             editModalState.originalCard.answer = newAnswer;
             editModalState.originalCard.formatting = currentFormatting;
 
-            console.log('[EDIT MODAL] editModalState.originalCard РѕР±РЅРѕРІР»С‘РЅ:', {
+            console.log('[EDIT MODAL] editModalState.originalCard Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…:', {
                 question: editModalState.originalCard.question?.substring(0, 50)
             });
 
-            // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ
+            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
             closeEditModal(false);
 
-            // РџРѕРєР°Р·С‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ
-            showEditNotification('РР·РјРµРЅРµРЅРёСЏ СЃРѕС…СЂР°РЅРµРЅС‹', 'success');
+            // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ
+            showEditNotification('Р ВР В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№', 'success');
 
-            // РЎРёРЅС…СЂРѕРЅРёР·РёСЂСѓРµРј СЃ СЃРµСЂРІРµСЂРѕРј
+            // Р РЋР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р С•Р С
             syncWithServer();
         } else {
-            // РћС€РёР±РєР° СЃРµСЂРІРµСЂР°
-            console.error('[EDIT MODAL] РћС€РёР±РєР° СЃРµСЂРІРµСЂР°:', result);
-            throw new Error(result.error || 'РћС€РёР±РєР° СЃРµСЂРІРµСЂР°');
+            // Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°
+            console.error('[EDIT MODAL] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', result);
+            throw new Error(result.error || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°');
         }
     } catch (error) {
-        console.error('[EDIT MODAL] РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ:', error);
-        showEditNotification(`РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ: ${error.message}`, 'error');
+        console.error('[EDIT MODAL] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ:', error);
+        showEditNotification(`Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ: ${error.message}`, 'error');
     } finally {
-        // Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј РєРЅРѕРїРєСѓ
+        // Р В Р В°Р В·Р В±Р В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“
         const saveBtn = document.getElementById('edit-save-btn');
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.textContent = 'РЎРѕС…СЂР°РЅРёС‚СЊ';
+            saveBtn.textContent = 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ';
         }
     }
 }
 
-// РџРѕРєР°Р· СѓРІРµРґРѕРјР»РµРЅРёСЏ
+// Р СџР С•Р С”Р В°Р В· РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘РЎРЏ
 function showEditNotification(message, type = 'success') {
-    console.log('[EDIT NOTIFICATION] РџРѕРєР°Р· СѓРІРµРґРѕРјР»РµРЅРёСЏ:', message, type);
+    console.log('[EDIT NOTIFICATION] Р СџР С•Р С”Р В°Р В· РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘РЎРЏ:', message, type);
 
-    // РЈРґР°Р»СЏРµРј РїСЂРµРґС‹РґСѓС‰РµРµ СѓРІРµРґРѕРјР»РµРЅРёРµ РµСЃР»Рё РµСЃС‚СЊ
+    // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р ВµР Вµ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ Р ВµРЎРѓР В»Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ
     const existingNotification = document.querySelector('.edit-notification');
     if (existingNotification) {
-        console.log('[EDIT NOTIFICATION] РЈРґР°Р»СЏРµРј СЃС‚Р°СЂРѕРµ СѓРІРµРґРѕРјР»РµРЅРёРµ');
+        console.log('[EDIT NOTIFICATION] Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР В°РЎР‚Р С•Р Вµ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ');
         existingNotification.remove();
     }
 
@@ -906,7 +906,7 @@ function showEditNotification(message, type = 'success') {
 
     document.body.insertAdjacentHTML('beforeend', notificationHTML);
 
-    // РџРѕРєР°Р·С‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ
+    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ
     const notification = document.getElementById('edit-notification');
     console.log('[EDIT NOTIFICATION] Notification element:', notification);
     console.log('[EDIT NOTIFICATION] Computed styles:', notification ? getComputedStyle(notification) : 'N/A');
@@ -919,7 +919,7 @@ function showEditNotification(message, type = 'success') {
         }
     }, 10);
 
-    // РЎРєСЂС‹РІР°РµРј С‡РµСЂРµР· 3 СЃРµРєСѓРЅРґС‹
+    // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂЎР ВµРЎР‚Р ВµР В· 3 РЎРѓР ВµР С”РЎС“Р Р…Р Т‘РЎвЂ№
     setTimeout(() => {
         notification?.classList.remove('show');
         setTimeout(() => {
@@ -976,16 +976,16 @@ export function startLearnSession(candidateQuestions, options = {}) {
     console.log('[startLearnSession] __navigatingToHome:', window.__navigatingToHome);
     console.log('[startLearnSession] Stack trace:', new Error().stack);
 
-    // РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РїРµСЂРµС€Р»Рё Р»Рё РјС‹ РЅР° РіР»Р°РІРЅСѓСЋ РІРѕ РІСЂРµРјСЏ Р·Р°РїСѓСЃРєР°
+    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р Р…Р Вµ Р С—Р ВµРЎР‚Р ВµРЎв‚¬Р В»Р С‘ Р В»Р С‘ Р СРЎвЂ№ Р Р…Р В° Р С–Р В»Р В°Р Р†Р Р…РЎС“РЎР‹ Р Р†Р С• Р Р†РЎР‚Р ВµР СРЎРЏ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°
     if (window.__navigatingToHome) {
         console.log('[startLearnSession] ABORTED - navigating to home!');
-        window.__navigatingToHome = false;  // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі
+        window.__navigatingToHome = false;  // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С–
         return;
     }
 
     initLearnUI(); // Ensure UI exists
 
-    // РЎРєСЂС‹РІР°РµРј РЅР°РІРёРіР°С†РёСЋ Рё РґРѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ РЅР° body
+    // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ Р Р…Р В° body
     document.body.classList.add('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'none';
@@ -1006,7 +1006,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const status = currentScheduler.getScheduleStatus();
 
     // Inject/Update Header Info safely
-    // РџРѕРєР°Р·С‹РІР°РµРј learn-schedule-info С‚РѕР»СЊРєРѕ РґР»СЏ РѕР±С‹С‡РЅРѕРіРѕ СЂРµР¶РёРјР° РѕР±СѓС‡РµРЅРёСЏ (РЅРµ cram)
+    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С learn-schedule-info РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Т‘Р В»РЎРЏ Р С•Р В±РЎвЂ№РЎвЂЎР Р…Р С•Р С–Р С• РЎР‚Р ВµР В¶Р С‘Р СР В° Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ (Р Р…Р Вµ cram)
     let infoEl = document.getElementById('learn-schedule-info');
     if (!infoEl) {
         // If not exists, create it and insert it after the exit button
@@ -1024,30 +1024,30 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     if (infoEl) {
         if (options.mode === 'cram') {
-            // Р’ СЂРµР¶РёРјРµ СѓРіР»СѓР±Р»РµРЅРЅРѕРіРѕ РѕР±СѓС‡РµРЅРёСЏ СЃРєСЂС‹РІР°РµРј СЌС‚РѕС‚ Р±Р»РѕРє
+            // Р вЂ™ РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎС“Р С–Р В»РЎС“Р В±Р В»Р ВµР Р…Р Р…Р С•Р С–Р С• Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎРЊРЎвЂљР С•РЎвЂљ Р В±Р В»Р С•Р С”
             infoEl.style.display = 'none';
         } else {
-            // РЈР±РёСЂР°РµРј Р”РµРЅСЊ X/Y Рё РџСЂРѕРіСЂРµСЃСЃ - РЅРµ РЅСѓР¶РЅРѕ РІ СЂРµР¶РёРјРµ РѕР±СѓС‡РµРЅРёСЏ
+            // Р Р€Р В±Р С‘РЎР‚Р В°Р ВµР С Р вЂќР ВµР Р…РЎРЉ X/Y Р С‘ Р СџРЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ - Р Р…Р Вµ Р Р…РЎС“Р В¶Р Р…Р С• Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
             infoEl.textContent = '';
             infoEl.style.display = '';
         }
     }
 
-    // рџ”§ РџР•Р Р•РњР•Р©РђР•Рњ РўРђР™РњР•Р  Р РЎР§РЃРўР§РРљ Р’ .learn-header
+    // СЂСџвЂќВ§ Р СџР вЂўР В Р вЂўР СљР вЂўР В©Р С’Р вЂўР Сљ Р СћР С’Р в„ўР СљР вЂўР В  Р В Р РЋР В§Р РѓР СћР В§Р ВР С™ Р вЂ™ .learn-header
     const timerEl2 = document.getElementById('mode-timer');
     const counterEl = document.getElementById('learn-counter');
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
-    // РќР• РїРµСЂРµРјРµС‰Р°РµРј С‚Р°Р№РјРµСЂ! РћРЅ РѕСЃС‚Р°С‘С‚СЃСЏ РІРЅСѓС‚СЂРё .timer-controls РІРЅСѓС‚СЂРё .flashcard
-    // РџСЂРѕСЃС‚Рѕ РѕР±РЅРѕРІР»СЏРµРј СЃС‚РёР»Рё РґР»СЏ РџРљ РІРµСЂСЃРёРё С‡РµСЂРµР· CSS РєР»Р°СЃСЃС‹
+    // Р СњР вЂў Р С—Р ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚! Р С›Р Р… Р С•РЎРѓРЎвЂљР В°РЎвЂРЎвЂљРЎРѓРЎРЏ Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ .timer-controls Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ .flashcard
+    // Р СџРЎР‚Р С•РЎРѓРЎвЂљР С• Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р Т‘Р В»РЎРЏ Р СџР С™ Р Р†Р ВµРЎР‚РЎРѓР С‘Р С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· CSS Р С”Р В»Р В°РЎРѓРЎРѓРЎвЂ№
 
-    // РџРµСЂРµРјРµС‰Р°РµРј С‚РѕР»СЊРєРѕ learn-counter РІ learn-header
+    // Р СџР ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р В°Р ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• learn-counter Р Р† learn-header
     if (counterEl && learnHeader2) {
         learnHeader2.appendChild(counterEl);
     }
 
-    // рџ”§ Р’Р«РќРћРЎРРњ .learn-progress РР— .learn-header - Р±СѓРґРµС‚ РѕС‚РґРµР»СЊРЅС‹Рј Р±Р»РѕРєРѕРј СЃРЅРёР·Сѓ
+    // СЂСџвЂќВ§ Р вЂ™Р В«Р СњР С›Р РЋР ВР Сљ .learn-progress Р ВР вЂ” .learn-header - Р В±РЎС“Р Т‘Р ВµРЎвЂљ Р С•РЎвЂљР Т‘Р ВµР В»РЎРЉР Р…РЎвЂ№Р С Р В±Р В»Р С•Р С”Р С•Р С РЎРѓР Р…Р С‘Р В·РЎС“
     const learnProgressEl = document.querySelector('.learn-progress');
     if (learnProgressEl && learnHeader2) {
         learnHeader2.parentNode.insertBefore(learnProgressEl, learnHeader2.nextSibling);
@@ -1098,7 +1098,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
             startLearnSession(candidateQuestions, { mode: 'cram' });
             return;
         }
-        alert('РќРµС‚ РєР°СЂС‚РѕС‡РµРє РґР»СЏ РѕР±СѓС‡РµРЅРёСЏ.');
+        alert('Р СњР ВµРЎвЂљ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” Р Т‘Р В»РЎРЏ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ.');
         return;
     }
 
@@ -1172,7 +1172,7 @@ function stopLearnSession() {
         console.log('[stopLearnSession] sidebar display reset');
     }
 
-    // Р’РѕР·РІСЂР°С‰Р°РµРј РЅР°РІРёРіР°С†РёСЋ Рё СѓР±РёСЂР°РµРј РєР»Р°СЃСЃ СЃ body
+    // Р вЂ™Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ РЎС“Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ РЎРѓ body
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) {
@@ -1180,7 +1180,7 @@ function stopLearnSession() {
         console.log('[stopLearnSession] bottom-nav display set to flex');
     }
 
-    // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј search-container Рё top-actions-bar
+    // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С search-container Р С‘ top-actions-bar
     const searchContainer = document.querySelector('.search-container');
     if (searchContainer) {
         searchContainer.style.display = '';
@@ -1227,13 +1227,13 @@ function renderCardState(state) {
     const progressFill = container.querySelector('.learn-progress-fill');
 
     // Update segments
-    // РСЃРїРѕР»СЊР·СѓРµРј session.currentIndex РІРјРµСЃС‚Рѕ state.currentIndex
+    // Р ВРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С session.currentIndex Р Р†Р СР ВµРЎРѓРЎвЂљР С• state.currentIndex
     const currentIndex = session ? (session.currentIndex || 0) : 0;
-    console.log('[SEGMENTS DEBUG] РџРµСЂРµРґ updateSegments: currentIndex=', currentIndex, 'total=', state.total);
+    console.log('[SEGMENTS DEBUG] Р СџР ВµРЎР‚Р ВµР Т‘ updateSegments: currentIndex=', currentIndex, 'total=', state.total);
     console.log('[SEGMENTS DEBUG] results=', state.results, 'length=', state.results.length);
     console.log('[SEGMENTS DEBUG] session.results=', session ? session.results : 'no session', 'session.currentIndex=', session ? session.currentIndex : 'no session');
     updateSegments(state.results, state.total, currentIndex, true);
-    console.log('[SEGMENTS DEBUG] РџРѕСЃР»Рµ updateSegments');
+    console.log('[SEGMENTS DEBUG] Р СџР С•РЎРѓР В»Р Вµ updateSegments');
     // Update nav buttons availability
     try {
         const prevBtn = document.getElementById('learn-prev-btn');
@@ -1253,15 +1253,15 @@ function renderCardState(state) {
     } catch { }
 
     if (qEl && state.card) {
-        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ
-        // Р‘РµСЂС‘Рј formatting РёР· session.currentCard (С‚Р°Рј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ)
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“
+        // Р вЂР ВµРЎР‚РЎвЂР С formatting Р С‘Р В· session.currentCard (РЎвЂљР В°Р С Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ)
         const sessionCard = session?.currentCard;
         const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
-        const questionText = sessionCard?.question || state.card.question || '(РџСѓСЃС‚РѕР№ РІРѕРїСЂРѕСЃ)';
+        const questionText = sessionCard?.question || state.card.question || '(Р СџРЎС“РЎРѓРЎвЂљР С•Р в„– Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         qEl.innerHTML = questionHTML;
 
-        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РІСЃС‚Р°РІРёР»РѕСЃСЊ
+        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, РЎвЂЎРЎвЂљР С• Р Р†РЎРѓРЎвЂљР В°Р Р†Р С‘Р В»Р С•РЎРѓРЎРЉ
         console.log('[RENDER CARD] Question rendered:', {
             text: questionText,
             formatting: questionFormatting,
@@ -1271,12 +1271,12 @@ function renderCardState(state) {
             spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
 
-        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј СЃС‚РёР»Рё РїРµСЂРІРѕРіРѕ span
+        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• span
         setTimeout(() => {
             const firstSpan = qEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] вќ— First QUESTION span STYLES:', {
+                console.log('[RENDER CARD] РІСњвЂ” First QUESTION span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1288,14 +1288,14 @@ function renderCardState(state) {
         }, 100);
     }
     if (aEl && state.card) {
-        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РѕС‚РІРµС‚Сѓ
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р С•РЎвЂљР Р†Р ВµРЎвЂљРЎС“
         const sessionCard = session?.currentCard;
         const answerFormatting = sessionCard?.formatting?.answer || state.card.formatting?.answer || [];
-        const answerText = sessionCard?.answer || state.card.answer || '(РџСѓСЃС‚РѕР№ РѕС‚РІРµС‚)';
+        const answerText = sessionCard?.answer || state.card.answer || '(Р СџРЎС“РЎРѓРЎвЂљР С•Р в„– Р С•РЎвЂљР Р†Р ВµРЎвЂљ)';
         const answerHTML = applyFormatting(answerText, answerFormatting);
         aEl.innerHTML = answerHTML;
 
-        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РІСЃС‚Р°РІРёР»РѕСЃСЊ
+        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, РЎвЂЎРЎвЂљР С• Р Р†РЎРѓРЎвЂљР В°Р Р†Р С‘Р В»Р С•РЎРѓРЎРЉ
         console.log('[RENDER CARD] Answer rendered:', {
             text: answerText,
             formatting: answerFormatting,
@@ -1305,12 +1305,12 @@ function renderCardState(state) {
             spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
 
-        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј СЃС‚РёР»Рё РїРµСЂРІРѕРіРѕ span
+        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• span
         setTimeout(() => {
             const firstSpan = aEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] вќ— First ANSWER span STYLES:', {
+                console.log('[RENDER CARD] РІСњвЂ” First ANSWER span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1322,9 +1322,9 @@ function renderCardState(state) {
         }, 100);
     }
 
-    // DEBUG: Р›РѕРіРёСЂСѓРµРј СЃС‚РёР»Рё РѕС‚РІРµС‚Р°
-    console.log('\nрџ“¦ FLASHCARD ANSWER DEBUG:');
-    console.log('   #learn-answer СЌР»РµРјРµРЅС‚:', aEl);
+    // DEBUG: Р вЂєР С•Р С–Р С‘РЎР‚РЎС“Р ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°
+    console.log('\nСЂСџвЂњВ¦ FLASHCARD ANSWER DEBUG:');
+    console.log('   #learn-answer РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ:', aEl);
     if (aEl) {
         const styles = window.getComputedStyle(aEl);
         console.log('   padding-top:', styles.paddingTop);
@@ -1338,8 +1338,8 @@ function renderCardState(state) {
         console.log('      display:', backStyles.display);
     }
 
-    // РџСЂРѕРІРµСЂРєР° РїРµСЂРµРєСЂС‹С‚РёСЏ front/back
-    console.log('\nрџ”„ FRONT/BACK OVERLAP CHECK:');
+    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° Р С—Р ВµРЎР‚Р ВµР С”РЎР‚РЎвЂ№РЎвЂљР С‘РЎРЏ front/back
+    console.log('\nСЂСџвЂќвЂћ FRONT/BACK OVERLAP CHECK:');
     if (front && back) {
         const frontStyles = window.getComputedStyle(front);
         const backStyles = window.getComputedStyle(back);
@@ -1370,16 +1370,16 @@ function renderCardState(state) {
         console.log('      transform-style:', cardStyles.transformStyle);
     }
 
-    // РџСЂРѕРІРµСЂРєР° custom-styles.css
-    console.log('\nрџ“њ CUSTOM-styles.css CHECK:');
+    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° custom-styles.css
+    console.log('\nСЂСџвЂњСљ CUSTOM-styles.css CHECK:');
     const allStyles = Array.from(document.styleSheets);
-    console.log('   Р’СЃРµРіРѕ style sheets:', allStyles.length);
+    console.log('   Р вЂ™РЎРѓР ВµР С–Р С• style sheets:', allStyles.length);
     allStyles.forEach((sheet, i) => {
         try {
             const rules = Array.from(sheet.cssRules || []);
             const hasFlashcardBack = rules.some(r => r.selectorText && r.selectorText.includes('.flashcard-back'));
             if (hasFlashcardBack) {
-                console.log(`   Sheet ${i}: СЃРѕРґРµСЂР¶РёС‚ .flashcard-back РїСЂР°РІРёР»Р°`);
+                console.log(`   Sheet ${i}: РЎРѓР С•Р Т‘Р ВµРЎР‚Р В¶Р С‘РЎвЂљ .flashcard-back Р С—РЎР‚Р В°Р Р†Р С‘Р В»Р В°`);
                 rules.forEach(r => {
                     if (r.selectorText && r.selectorText.includes('.flashcard-back .flashcard-content')) {
                         console.log(`      Rule: ${r.selectorText} -> padding-top: ${r.style.paddingTop}, margin-top: ${r.style.marginTop}`);
@@ -1391,12 +1391,12 @@ function renderCardState(state) {
         }
     });
 
-    // РћР±РЅРѕРІР»СЏРµРј РІРѕРїСЂРѕСЃ РЅР° back-СЃС‚РѕСЂРѕРЅРµ РЎ Р¤РћР РњРђРўРР РћР’РђРќРР•Рњ
+    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ Р Р…Р В° back-РЎРѓРЎвЂљР С•РЎР‚Р С•Р Р…Р Вµ Р РЋ Р В¤Р С›Р В Р СљР С’Р СћР ВР В Р С›Р вЂ™Р С’Р СњР ВР вЂўР Сљ
     const backQuestionEl = document.getElementById('learn-back-question');
     if (backQuestionEl && state.card) {
         const sessionCard = session?.currentCard;
         const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
-        const questionText = sessionCard?.question || state.card.question || '(РџСѓСЃС‚РѕР№ РІРѕРїСЂРѕСЃ)';
+        const questionText = sessionCard?.question || state.card.question || '(Р СџРЎС“РЎРѓРЎвЂљР С•Р в„– Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         backQuestionEl.innerHTML = questionHTML;
 
@@ -1407,12 +1407,12 @@ function renderCardState(state) {
             innerHTML: backQuestionEl.innerHTML
         });
 
-        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј СЃС‚РёР»Рё РїРµСЂРІРѕРіРѕ span
+        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• span
         setTimeout(() => {
             const firstSpan = backQuestionEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] вќ— First BACK QUESTION span STYLES:', {
+                console.log('[RENDER CARD] РІСњвЂ” First BACK QUESTION span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1497,8 +1497,8 @@ function renderCardState(state) {
         if (ef === null) {
             // Render "NEW" state
             container.querySelectorAll('.learn-hearts').forEach(el => {
-                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">РќРћР’РђРЇ</span>`;
-                el.title = 'РљР°СЂС‚РѕС‡РєР° РµС‰Рµ РЅРµ РёР·СѓС‡Р°Р»Р°СЃСЊ';
+                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">Р СњР С›Р вЂ™Р С’Р Р‡</span>`;
+                el.title = 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°Р Вµ Р Р…Р Вµ Р С‘Р В·РЎС“РЎвЂЎР В°Р В»Р В°РЎРѓРЎРЉ';
 
                 // Remove old label if exists
                 const oldLabel = el.nextElementSibling;
@@ -1510,10 +1510,10 @@ function renderCardState(state) {
 
             // Map level to Russian text
             const levelNames = {
-                'VERY_HARD': 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ',
-                'HARD': 'РўСЂСѓРґРЅС‹Рµ',
-                'STANDARD': 'РЎС‚Р°РЅРґР°СЂС‚',
-                'EASY': 'Р›РµРіРєРёРµ'
+                'VERY_HARD': 'Р С›РЎвЂЎР ВµР Р…РЎРЉ РЎвЂљРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
+                'HARD': 'Р СћРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
+                'STANDARD': 'Р РЋРЎвЂљР В°Р Р…Р Т‘Р В°РЎР‚РЎвЂљ',
+                'EASY': 'Р вЂєР ВµР С–Р С”Р С‘Р Вµ'
             };
 
             // Recalculate hearts count for title
@@ -1529,7 +1529,7 @@ function renderCardState(state) {
                 const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
 
                 el.innerHTML = labelHtml + renderHearts(ef);
-                el.title = `РЈСЂРѕРІРµРЅСЊ: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nРЎРµСЂРґРµС‡РµРє: ${heartsCount.toFixed(2)}`;
+                el.title = `Р Р€РЎР‚Р С•Р Р†Р ВµР Р…РЎРЉ: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nР РЋР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”: ${heartsCount.toFixed(2)}`;
 
                 // Cleanup old sibling label if it exists (from previous version)
                 const oldLabel = el.nextElementSibling;
@@ -1546,15 +1546,15 @@ function renderCardState(state) {
             if (!canEasy) {
                 easyBtn.style.opacity = '0.5';
                 easyBtn.style.cursor = 'not-allowed';
-                easyBtn.title = 'Р”РѕСЃС‚СѓРїРЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ РєР°СЂС‚РѕС‡РµРє СѓСЂРѕРІРЅСЏ "Р›РµРіРєРёРµ" СЃ РїСЂРѕРіСЂРµСЃСЃРѕРј > 70%';
+                easyBtn.title = 'Р вЂќР С•РЎРѓРЎвЂљРЎС“Р С—Р Р…Р С• РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Т‘Р В»РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ "Р вЂєР ВµР С–Р С”Р С‘Р Вµ" РЎРѓ Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓР С•Р С > 70%';
                 easyBtn.setAttribute('data-locked', 'true');
-                easyBtn.innerHTML = 'Р›РµРіРєРѕ рџ”’ (4)';
+                easyBtn.innerHTML = 'Р вЂєР ВµР С–Р С”Р С• СЂСџвЂќвЂ™ (4)';
             } else {
                 easyBtn.style.opacity = '1';
                 easyBtn.style.cursor = 'pointer';
                 easyBtn.title = '';
                 easyBtn.removeAttribute('data-locked');
-                easyBtn.innerHTML = 'Р›РµРіРєРѕ (4)';
+                easyBtn.innerHTML = 'Р вЂєР ВµР С–Р С”Р С• (4)';
             }
         }
     }
@@ -1598,10 +1598,10 @@ function renderCardState(state) {
                 timerEl.style.transform = 'translateX(-50%) scale(1)';
             }
         } else if (state.mode === 'time_attack') {
-            // Р’ СЂРµР¶РёРјРµ time_attack СЃРєСЂС‹РІР°РµРј С‚Р°Р№РјРµСЂ, РµСЃР»Рё РІСЂРµРјСЏ РЅРµ РїРѕРєР°Р·Р°РЅРѕ
+            // Р вЂ™ РЎР‚Р ВµР В¶Р С‘Р СР Вµ time_attack РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚, Р ВµРЎРѓР В»Р С‘ Р Р†РЎР‚Р ВµР СРЎРЏ Р Р…Р Вµ Р С—Р С•Р С”Р В°Р В·Р В°Р Р…Р С•
             timerEl.style.display = 'none';
         }
-        // Р”Р»СЏ РѕСЃС‚Р°Р»СЊРЅС‹С… СЂРµР¶РёРјРѕРІ (cram, ordinary) РќР• СЃРєСЂС‹РІР°РµРј С‚Р°Р№РјРµСЂ - РѕРЅ СѓРїСЂР°РІР»СЏРµС‚СЃСЏ С‡РµСЂРµР· updateTimerDisplay
+        // Р вЂќР В»РЎРЏ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎР‚Р ВµР В¶Р С‘Р СР С•Р Р† (cram, ordinary) Р СњР вЂў РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚ - Р С•Р Р… РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ РЎвЂЎР ВµРЎР‚Р ВµР В· updateTimerDisplay
     }
 }
 
@@ -1609,24 +1609,24 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // Р’СЃРµРіРґР° РїРѕРєР°Р·С‹РІР°РµРј 6 СЃРµРіРјРµРЅС‚РѕРІ: 3 РїСЂРѕР№РґРµРЅРЅС‹С… + 1 С‚РµРєСѓС‰РёР№ + 2 СЃР»РµРґСѓСЋС‰РёС…
+    // Р вЂ™РЎРѓР ВµР С–Р Т‘Р В° Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С 6 РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р†: 3 Р С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р Р…РЎвЂ№РЎвЂ¦ + 1 РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– + 2 РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘РЎвЂ¦
     const visibleCount = 6;
-    let startIdx = currentIndex - 3; // 3 РґРѕ С‚РµРєСѓС‰РµРіРѕ
-    let endIdx = currentIndex + 2;   // 2 РїРѕСЃР»Рµ С‚РµРєСѓС‰РµРіРѕ
+    let startIdx = currentIndex - 3; // 3 Р Т‘Р С• РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•
+    let endIdx = currentIndex + 2;   // 2 Р С—Р С•РЎРѓР В»Р Вµ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•
 
-    // Р•СЃР»Рё РЅРµ С…РІР°С‚Р°РµС‚ СЃРµРіРјРµРЅС‚РѕРІ РїРѕСЃР»Рµ С‚РµРєСѓС‰РµРіРѕ, СЃРґРІРёРіР°РµРј РґРёР°РїР°Р·РѕРЅ РІРїСЂР°РІРѕ
+    // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ РЎвЂ¦Р Р†Р В°РЎвЂљР В°Р ВµРЎвЂљ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р† Р С—Р С•РЎРѓР В»Р Вµ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•, РЎРѓР Т‘Р Р†Р С‘Р С–Р В°Р ВµР С Р Т‘Р С‘Р В°Р С—Р В°Р В·Р С•Р Р… Р Р†Р С—РЎР‚Р В°Р Р†Р С•
     if (endIdx >= total) {
         endIdx = total - 1;
         startIdx = Math.max(0, endIdx - visibleCount + 1);
     }
 
-    // Р•СЃР»Рё РЅРµ С…РІР°С‚Р°РµС‚ СЃРµРіРјРµРЅС‚РѕРІ РґРѕ С‚РµРєСѓС‰РµРіРѕ, СЃРґРІРёРіР°РµРј РґРёР°РїР°Р·РѕРЅ РІР»РµРІРѕ
+    // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ РЎвЂ¦Р Р†Р В°РЎвЂљР В°Р ВµРЎвЂљ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р† Р Т‘Р С• РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•, РЎРѓР Т‘Р Р†Р С‘Р С–Р В°Р ВµР С Р Т‘Р С‘Р В°Р С—Р В°Р В·Р С•Р Р… Р Р†Р В»Р ВµР Р†Р С•
     if (startIdx < 0) {
         startIdx = 0;
         endIdx = Math.min(total - 1, visibleCount - 1);
     }
 
-    // РЎРѕР·РґР°С‘Рј РІСЃРµ СЃРµРіРјРµРЅС‚С‹ РѕРґРёРЅ СЂР°Р·
+    // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С Р Р†РЎРѓР Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№ Р С•Р Т‘Р С‘Р Р… РЎР‚Р В°Р В·
     if (segs.childElementCount !== total) {
         segs.innerHTML = '';
         for (let i = 0; i < total; i++) {
@@ -1637,34 +1637,34 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         }
     }
 
-    // РџРѕРєР°Р·С‹РІР°РµРј Р’РЎР• СЃРµРіРјРµРЅС‚С‹
-    // Р—Р°РєСЂР°С€РµРЅРЅС‹Рµ СЃРµРіРјРµРЅС‚С‹ - СЏСЂРєРёРµ, РЅРµРїСЂРѕР№РґРµРЅРЅС‹Рµ - СЃРµСЂС‹Рµ
+    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р вЂ™Р РЋР вЂў РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№
+    // Р вЂ”Р В°Р С”РЎР‚Р В°РЎв‚¬Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№ - РЎРЏРЎР‚Р С”Р С‘Р Вµ, Р Р…Р ВµР С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р Р…РЎвЂ№Р Вµ - РЎРѓР ВµРЎР‚РЎвЂ№Р Вµ
     Array.from(segs.children).forEach((el, i) => {
-        // isColored: СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ СЌС‚РѕРіРѕ СЃРµРіРјРµРЅС‚Р° СЃСѓС‰РµСЃС‚РІСѓРµС‚ Рё РЅРµ null
+        // isColored: РЎР‚Р ВµР В·РЎС“Р В»РЎРЉРЎвЂљР В°РЎвЂљ Р Т‘Р В»РЎРЏ РЎРЊРЎвЂљР С•Р С–Р С• РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР В° РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ Р С‘ Р Р…Р Вµ null
         const isColored = results && i < results.length && results[i] !== null && results[i] !== undefined;
 
         if (isColored) {
-            // Р—Р°РєСЂР°С€РµРЅРЅС‹Р№ СЃРµРіРјРµРЅС‚ - РїРѕР»РЅРѕСЃС‚СЊСЋ РІРёРґРёРјС‹Р№
+            // Р вЂ”Р В°Р С”РЎР‚Р В°РЎв‚¬Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ - Р С—Р С•Р В»Р Р…Р С•РЎРѓРЎвЂљРЎРЉРЎР‹ Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№Р в„–
             el.style.opacity = '1';
         } else {
-            // РќРµРїСЂРѕР№РґРµРЅРЅС‹Р№ СЃРµРіРјРµРЅС‚ - РїРѕР»СѓРїСЂРѕР·СЂР°С‡РЅС‹Р№ СЃРµСЂС‹Р№
+            // Р СњР ВµР С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ - Р С—Р С•Р В»РЎС“Р С—РЎР‚Р С•Р В·РЎР‚Р В°РЎвЂЎР Р…РЎвЂ№Р в„– РЎРѓР ВµРЎР‚РЎвЂ№Р в„–
             el.style.opacity = '0.5';
         }
     });
 
-    // Р¦РµРЅС‚СЂРёСЂСѓРµРј С‚РµРєСѓС‰РёР№ СЃРµРіРјРµРЅС‚
+    // Р В¦Р ВµР Р…РЎвЂљРЎР‚Р С‘РЎР‚РЎС“Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ
     const currentEl = segs.children[currentIndex];
     console.log('[SEGMENTS] currentEl=', currentEl, 'autoScroll=', autoScroll, 'userScrolled=', userScrolled);
 
-    // Р•СЃР»Рё Р±С‹Р» СЂСѓС‡РЅРѕР№ СЃРєСЂРѕР»Р» Рё autoScroll РЅРµ РІРєР»СЋС‡С‘РЅ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ - РЅРµ СЃРєСЂРѕР»Р»РёРј
+    // Р вЂўРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В» РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– РЎРѓР С”РЎР‚Р С•Р В»Р В» Р С‘ autoScroll Р Р…Р Вµ Р Р†Р С”Р В»РЎР‹РЎвЂЎРЎвЂР Р… Р С—РЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• - Р Р…Р Вµ РЎРѓР С”РЎР‚Р С•Р В»Р В»Р С‘Р С
     const shouldScroll = autoScroll && !userScrolled;
 
     if (currentEl && shouldScroll) {
-        // РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РїРѕРєР°Р·С‹РІР°РµРј С‚РµРєСѓС‰РёР№ СЃРµРіРјРµРЅС‚ РґР»СЏ РїСЂРѕРєСЂСѓС‚РєРё
+        // Р СџРЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”Р С‘
         currentEl.style.opacity = '1';
 
-        // РџРѕР·РёС†РёРѕРЅРёСЂСѓРµРј С‚Р°Рє, С‡С‚РѕР±С‹ С‚РµРєСѓС‰РёР№ Р±С‹Р» 4-Рј СЃР»РµРІР° (3-1-2)
-        // Р”Р»СЏ СЌС‚РѕРіРѕ СЃРєСЂРѕР»Р»РёРј С‚Р°Рє, С‡С‚РѕР±С‹ startIdx Р±С‹Р» РІРёРґРµРЅ СЃР»РµРІР°
+        // Р СџР С•Р В·Р С‘РЎвЂ Р С‘Р С•Р Р…Р С‘РЎР‚РЎС“Р ВµР С РЎвЂљР В°Р С”, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р В±РЎвЂ№Р В» 4-Р С РЎРѓР В»Р ВµР Р†Р В° (3-1-2)
+        // Р вЂќР В»РЎРЏ РЎРЊРЎвЂљР С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р С‘Р С РЎвЂљР В°Р С”, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ startIdx Р В±РЎвЂ№Р В» Р Р†Р С‘Р Т‘Р ВµР Р… РЎРѓР В»Р ВµР Р†Р В°
         const segWidth = currentEl.offsetWidth + 2; // width + gap
         const targetPosition = startIdx * segWidth;
 
@@ -1678,12 +1678,12 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         currentEl.classList.add('current');
         console.log('[SEGMENTS] Added class current to segment', currentIndex);
     } else if (currentEl) {
-        // РџСЂРѕСЃС‚Рѕ РґРѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ current Р±РµР· СЃРєСЂРѕР»Р»Р°
+        // Р СџРЎР‚Р С•РЎРѓРЎвЂљР С• Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ current Р В±Р ВµР В· РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В°
         currentEl.classList.add('current');
         console.log('[SEGMENTS] Added class current (no scroll) to segment', currentIndex);
     }
 
-    // РЈР±РёСЂР°РµРј РєР»Р°СЃСЃ current Сѓ РѕСЃС‚Р°Р»СЊРЅС‹С…
+    // Р Р€Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ current РЎС“ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦
     Array.from(segs.children).forEach((el, i) => {
         if (i !== currentIndex) {
             el.classList.remove('current');
@@ -1696,13 +1696,13 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
 
     if (results && results.length) {
-        // results[i] СЃРѕРґРµСЂР¶РёС‚ РѕС†РµРЅРєСѓ РґР»СЏ РєР°СЂС‚РѕС‡РєРё СЃ РёРЅРґРµРєСЃРѕРј i
-        // null РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РєР°СЂС‚РѕС‡РєР° РµС‰С‘ РЅРµ РїСЂРѕР№РґРµРЅР°
+        // results[i] РЎРѓР С•Р Т‘Р ВµРЎР‚Р В¶Р С‘РЎвЂљ Р С•РЎвЂ Р ВµР Р…Р С”РЎС“ Р Т‘Р В»РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ РЎРѓ Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓР С•Р С i
+        // null Р С•Р В·Р Р…Р В°РЎвЂЎР В°Р ВµРЎвЂљ, РЎвЂЎРЎвЂљР С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°РЎвЂ Р Р…Р Вµ Р С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р В°
         let coloredCount = 0;
         for (let idx = 0; idx < results.length && idx < total; idx++) {
             const g = results[idx];
             if (g === null || g === undefined) {
-                // РљР°СЂС‚РѕС‡РєР° РµС‰С‘ РЅРµ РїСЂРѕР№РґРµРЅР°, РїСЂРѕРїСѓСЃРєР°РµРј
+                // Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°РЎвЂ Р Р…Р Вµ Р С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р В°, Р С—РЎР‚Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С
                 continue;
             }
             const el = segs.children[idx];
@@ -1711,19 +1711,19 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
                 continue;
             }
 
-            // РџСЂРѕРІРµСЂСЏРµРј, СЏРІР»СЏРµС‚СЃСЏ Р»Рё СЌС‚РѕС‚ СЃРµРіРјРµРЅС‚ С‚РµРєСѓС‰РёРј
+            // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, РЎРЏР Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ Р В»Р С‘ РЎРЊРЎвЂљР С•РЎвЂљ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р С
             const isCurrent = (idx === currentIndex);
             console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'isCurrent=', isCurrent, 'currentIndex=', currentIndex);
             console.log('[SEGMENTS COLOR] el.className BEFORE=', el.className);
 
-            // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р±Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ + С†РІРµС‚
+            // Р Р€РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р В±Р В°Р В·Р С•Р Р†РЎвЂ№Р в„– Р С”Р В»Р В°РЎРѓРЎРѓ + РЎвЂ Р Р†Р ВµРЎвЂљ
             el.className = 'learn-progress-segment';
             if (g === 0) el.classList.add('seg-again');
             else if (g === 1) el.classList.add('seg-hard');
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
 
-            // Р”РѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ current, РµСЃР»Рё СЌС‚Рѕ С‚РµРєСѓС‰РёР№ СЃРµРіРјРµРЅС‚
+            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ current, Р ВµРЎРѓР В»Р С‘ РЎРЊРЎвЂљР С• РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ
             if (isCurrent) {
                 el.classList.add('current');
                 console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
@@ -1739,10 +1739,10 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     }
     console.log('[SEGMENTS COLOR] === END ===');
 
-    // Р¤РёРЅР°Р»СЊРЅР°СЏ РѕС‚Р»Р°РґРєР°
+    // Р В¤Р С‘Р Р…Р В°Р В»РЎРЉР Р…Р В°РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р В°
     console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
 
-    // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ СЃРµРіРјРµРЅС‚С‹ РїРѕСЃР»Рµ РїРѕРєСЂР°СЃРєРё
+    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р†РЎРѓР Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№ Р С—Р С•РЎРѓР В»Р Вµ Р С—Р С•Р С”РЎР‚Р В°РЎРѓР С”Р С‘
     console.log('[SEGMENTS FINAL] === ALL SEGMENTS STATE ===');
     Array.from(segs.children).forEach((el, i) => {
         console.log('[SEGMENTS FINAL] idx=', i, 'className=', el.className, 'classList=', Array.from(el.classList));
@@ -1753,13 +1753,13 @@ function wireSegmentsInteractions(sess) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // РћС‚СЃР»РµР¶РёРІР°РµРј СЂСѓС‡РЅРѕР№ СЃРєСЂРѕР»Р» РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+    // Р С›РЎвЂљРЎРѓР В»Р ВµР В¶Р С‘Р Р†Р В°Р ВµР С РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– РЎРѓР С”РЎР‚Р С•Р В»Р В» Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
     segs.addEventListener('scroll', () => {
         console.log('[SEGMENTS] user scrolled');
         userScrolled = true;
     }, { passive: true });
 
-    // РџСЂРѕРєСЂСѓС‚РєР° РєРѕР»РµСЃРёРєРѕРј
+    // Р СџРЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”Р В° Р С”Р С•Р В»Р ВµРЎРѓР С‘Р С”Р С•Р С
     segs.addEventListener('wheel', (e) => {
         if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
             e.preventDefault();
@@ -1767,7 +1767,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: false });
 
-    // === РРЅРµСЂС†РёРѕРЅРЅР°СЏ РїСЂРѕРєСЂСѓС‚РєР° РґР»СЏ touch СѓСЃС‚СЂРѕР№СЃС‚РІ ===
+    // === Р ВР Р…Р ВµРЎР‚РЎвЂ Р С‘Р С•Р Р…Р Р…Р В°РЎРЏ Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”Р В° Р Т‘Р В»РЎРЏ touch РЎС“РЎРѓРЎвЂљРЎР‚Р С•Р в„–РЎРѓРЎвЂљР Р† ===
     let isDragging = false;
     let startX = 0;
     let scrollLeft = 0;
@@ -1777,7 +1777,7 @@ function wireSegmentsInteractions(sess) {
     let velocity = 0;
     let animationFrame = null;
 
-    // РћР±СЂР°Р±РѕС‚РєР° РЅР°С‡Р°Р»Р° РєР°СЃР°РЅРёСЏ
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р Р…Р В°РЎвЂЎР В°Р В»Р В° Р С”Р В°РЎРѓР В°Р Р…Р С‘РЎРЏ
     segs.addEventListener('touchstart', (e) => {
         isDragging = true;
         startX = e.touches[0].clientX;
@@ -1787,49 +1787,49 @@ function wireSegmentsInteractions(sess) {
         lastTime = startTime;
         velocity = 0;
 
-        // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСЂРµРґС‹РґСѓС‰СѓСЋ Р°РЅРёРјР°С†РёСЋ
+        // Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°РЎС“РЎР‹ Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
             animationFrame = null;
         }
     }, { passive: true });
 
-    // РћР±СЂР°Р±РѕС‚РєР° РґРІРёР¶РµРЅРёСЏ РїР°Р»СЊС†Р°
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р Т‘Р Р†Р С‘Р В¶Р ВµР Р…Р С‘РЎРЏ Р С—Р В°Р В»РЎРЉРЎвЂ Р В°
     segs.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
 
         const currentX = e.touches[0].clientX;
         const currentTime = Date.now();
 
-        // Р’С‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ
-        const walk = (currentX - startX) * 1.5; // РЈРІРµР»РёС‡РµРЅРЅС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚ РґР»СЏ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚Рё
+        // Р вЂ™РЎвЂ№РЎвЂЎР С‘РЎРѓР В»РЎРЏР ВµР С РЎРѓР СР ВµРЎвЂ°Р ВµР Р…Р С‘Р Вµ
+        const walk = (currentX - startX) * 1.5; // Р Р€Р Р†Р ВµР В»Р С‘РЎвЂЎР ВµР Р…Р Р…РЎвЂ№Р в„– Р С”Р С•РЎРЊРЎвЂћРЎвЂћР С‘РЎвЂ Р С‘Р ВµР Р…РЎвЂљ Р Т‘Р В»РЎРЏ РЎвЂЎРЎС“Р Р†РЎРѓРЎвЂљР Р†Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С•РЎРѓРЎвЂљР С‘
         segs.scrollLeft = scrollLeft - walk;
 
-        // Р’С‹С‡РёСЃР»СЏРµРј СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ РёРЅРµСЂС†РёРё
+        // Р вЂ™РЎвЂ№РЎвЂЎР С‘РЎРѓР В»РЎРЏР ВµР С РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ Р Т‘Р В»РЎРЏ Р С‘Р Р…Р ВµРЎР‚РЎвЂ Р С‘Р С‘
         const deltaX = currentX - lastX;
         const deltaTime = currentTime - lastTime;
 
         if (deltaTime > 0) {
-            velocity = deltaX / deltaTime; // РїРёРєСЃРµР»РµР№ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґСѓ
+            velocity = deltaX / deltaTime; // Р С—Р С‘Р С”РЎРѓР ВµР В»Р ВµР в„– Р Р† Р СР С‘Р В»Р В»Р С‘РЎРѓР ВµР С”РЎС“Р Р…Р Т‘РЎС“
         }
 
         lastX = currentX;
         lastTime = currentTime;
     }, { passive: true });
 
-    // РћР±СЂР°Р±РѕС‚РєР° РѕРєРѕРЅС‡Р°РЅРёСЏ РєР°СЃР°РЅРёСЏ - Р·Р°РїСѓСЃРє РёРЅРµСЂС†РёРё
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р С•Р С”Р С•Р Р…РЎвЂЎР В°Р Р…Р С‘РЎРЏ Р С”Р В°РЎРѓР В°Р Р…Р С‘РЎРЏ - Р В·Р В°Р С—РЎС“РЎРѓР С” Р С‘Р Р…Р ВµРЎР‚РЎвЂ Р С‘Р С‘
     segs.addEventListener('touchend', (e) => {
         isDragging = false;
 
-        // Р•СЃР»Рё СЃРєРѕСЂРѕСЃС‚СЊ РґРѕСЃС‚Р°С‚РѕС‡РЅР°СЏ, Р·Р°РїСѓСЃРєР°РµРј РёРЅРµСЂС†РёРѕРЅРЅСѓСЋ РїСЂРѕРєСЂСѓС‚РєСѓ
+        // Р вЂўРЎРѓР В»Р С‘ РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ Р Т‘Р С•РЎРѓРЎвЂљР В°РЎвЂљР С•РЎвЂЎР Р…Р В°РЎРЏ, Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р С‘Р Р…Р ВµРЎР‚РЎвЂ Р С‘Р С•Р Р…Р Р…РЎС“РЎР‹ Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”РЎС“
         if (Math.abs(velocity) > 0.3) {
             const inertialScroll = () => {
-                velocity *= 0.92; // РљРѕСЌС„С„РёС†РёРµРЅС‚ Р·Р°С‚СѓС…Р°РЅРёСЏ (0.92 = РїР»Р°РІРЅРѕРµ Р·Р°РјРµРґР»РµРЅРёРµ)
+                velocity *= 0.92; // Р С™Р С•РЎРЊРЎвЂћРЎвЂћР С‘РЎвЂ Р С‘Р ВµР Р…РЎвЂљ Р В·Р В°РЎвЂљРЎС“РЎвЂ¦Р В°Р Р…Р С‘РЎРЏ (0.92 = Р С—Р В»Р В°Р Р†Р Р…Р С•Р Вµ Р В·Р В°Р СР ВµР Т‘Р В»Р ВµР Р…Р С‘Р Вµ)
 
-                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms в‰€ 60fps
+                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms РІвЂ°в‚¬ 60fps
                 segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
 
-                // РџСЂРѕРґРѕР»Р¶Р°РµРј Р°РЅРёРјР°С†РёСЋ, РїРѕРєР° СЃРєРѕСЂРѕСЃС‚СЊ Р·РЅР°С‡РёРјР°СЏ
+                // Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹, Р С—Р С•Р С”Р В° РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ Р В·Р Р…Р В°РЎвЂЎР С‘Р СР В°РЎРЏ
                 if (Math.abs(velocity) > 0.1) {
                     animationFrame = requestAnimationFrame(inertialScroll);
                 } else {
@@ -1841,7 +1841,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: true });
 
-    // РћР±СЂР°Р±РѕС‚РєР° РѕС‚РјРµРЅС‹ РєР°СЃР°РЅРёСЏ
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р С•РЎвЂљР СР ВµР Р…РЎвЂ№ Р С”Р В°РЎРѓР В°Р Р…Р С‘РЎРЏ
     segs.addEventListener('touchcancel', (e) => {
         isDragging = false;
         if (animationFrame) {
@@ -1850,7 +1850,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: true });
 
-    // Drag РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ РґР»СЏ РјС‹С€Рё
+    // Drag Р С—Р ВµРЎР‚Р ВµРЎвЂљР В°РЎРѓР С”Р С‘Р Р†Р В°Р Р…Р С‘Р Вµ Р Т‘Р В»РЎРЏ Р СРЎвЂ№РЎв‚¬Р С‘
     let isMouseDragging = false;
     let mouseStartX = 0;
     let mouseScrollLeft = 0;
@@ -1883,7 +1883,7 @@ function wireSegmentsInteractions(sess) {
         isMouseDragging = false;
         segs.style.cursor = 'grab';
 
-        // РРЅРµСЂС†РёСЏ РґР»СЏ РјС‹С€Рё С‚РѕР¶Рµ
+        // Р ВР Р…Р ВµРЎР‚РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р СРЎвЂ№РЎв‚¬Р С‘ РЎвЂљР С•Р В¶Р Вµ
         if (Math.abs(mouseVelocity) > 0.3) {
             const inertialScroll = () => {
                 mouseVelocity *= 0.92;
@@ -1912,7 +1912,7 @@ function wireSegmentsInteractions(sess) {
         const walk = (currentX - mouseStartX) * 2;
         segs.scrollLeft = mouseScrollLeft - walk;
 
-        // Р’С‹С‡РёСЃР»СЏРµРј СЃРєРѕСЂРѕСЃС‚СЊ
+        // Р вЂ™РЎвЂ№РЎвЂЎР С‘РЎРѓР В»РЎРЏР ВµР С РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ
         const deltaX = currentX - mouseLastX;
         const deltaTime = currentTime - mouseLastTime;
 
@@ -1941,15 +1941,15 @@ function wireSegmentsInteractions(sess) {
             el.style.fontSize = '13px';
             el.style.color = 'var(--color-text, #E6EDF3)';
             el.style.display = 'none';
-            el.style.pointerEvents = 'auto'; /* Р Р°Р·СЂРµС€Р°РµРј РєР»РёРєРё */
+            el.style.pointerEvents = 'auto'; /* Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ */
             el.style.cursor = 'pointer';
             el.onclick = (e) => {
-                e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ */
+                e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ */
                 e.preventDefault();
                 hidePreview();
             };
             el.ontouchend = (e) => {
-                e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ */
+                e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ */
                 e.preventDefault();
                 hidePreview();
             };
@@ -1961,11 +1961,11 @@ function wireSegmentsInteractions(sess) {
         const el = ensurePreviewEl();
         const q = sess.queue[index]?.item?.question || '';
         const a = sess.queue[index]?.item?.answer || '';
-        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">РќР°Р¶РјРёС‚Рµ, С‡С‚РѕР±С‹ Р·Р°РєСЂС‹С‚СЊ</div>`;
+        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ</div>`;
         const r = anchor.getBoundingClientRect();
         const isMobile = window.innerWidth < 768;
         el.style.display = 'block';
-        el.style.pointerEvents = 'auto'; /* Р Р°Р·СЂРµС€Р°РµРј РєР»РёРєРё */
+        el.style.pointerEvents = 'auto'; /* Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ */
         const pw = el.offsetWidth || 260;
         const ph = el.offsetHeight || 140;
         if (isMobile) {
@@ -1999,7 +1999,7 @@ function wireSegmentsInteractions(sess) {
         const i = Number(seg.dataset.index || '0');
         seg.style.cursor = 'pointer';
         seg.addEventListener('click', (e) => {
-            e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ Рє РєР°СЂС‚РѕС‡РєРµ */
+            e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ */
             e.preventDefault();
 
             console.log('[SEGMENT CLICK] === CLICK START ===');
@@ -2007,18 +2007,18 @@ function wireSegmentsInteractions(sess) {
             console.log('[SEGMENT CLICK] sess.currentIndex BEFORE goTo=', sess.currentIndex);
             console.log('[SEGMENT CLICK] sess.results BEFORE goTo=', sess.results);
 
-            // РџРµСЂРµС…РѕРґРёРј Рє РєР°СЂС‚РѕС‡РєРµ
+            // Р СџР ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘Р С‘Р С Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
             sess.goTo(i);
             hidePreview();
 
             console.log('[SEGMENT CLICK] sess.currentIndex AFTER goTo=', sess.currentIndex);
             console.log('[SEGMENT CLICK] sess.results AFTER goTo=', sess.results);
 
-            // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р°
+            // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В°
             userScrolled = false;
 
-            // Р’С‹Р·С‹РІР°РµРј updateSegments СЃ autoScroll=true РґР»СЏ РІРѕР·РІСЂР°С‚Р° Рє 3-1-2
-            // sess.results - СЌС‚Рѕ СѓР¶Рµ РјР°СЃСЃРёРІ С‡РёСЃРµР» (РѕС†РµРЅРѕРє)
+            // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С updateSegments РЎРѓ autoScroll=true Р Т‘Р В»РЎРЏ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂљР В° Р С” 3-1-2
+            // sess.results - РЎРЊРЎвЂљР С• РЎС“Р В¶Р Вµ Р СР В°РЎРѓРЎРѓР С‘Р Р† РЎвЂЎР С‘РЎРѓР ВµР В» (Р С•РЎвЂ Р ВµР Р…Р С•Р С”)
             console.log('[SEGMENT CLICK] Calling updateSegments with results=', sess.results);
             updateSegments(sess.results, sess.queue.length, i, true);
 
@@ -2033,18 +2033,18 @@ function wireSegmentsInteractions(sess) {
             touchTimer = setTimeout(() => { showPreview(i, target); touchTimer = null; }, 300);
         }, { passive: true });
         seg.addEventListener('touchend', (e) => {
-            e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ Рє РєР°СЂС‚РѕС‡РєРµ */
+            e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ */
             if (touchTimer) {
                 clearTimeout(touchTimer);
                 touchTimer = null;
 
-                // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р°
+                // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В°
                 userScrolled = false;
 
                 sess.goTo(i);
 
-                // Р’С‹Р·С‹РІР°РµРј updateSegments СЃ autoScroll=true РґР»СЏ РІРѕР·РІСЂР°С‚Р° Рє 3-1-2
-                // sess.results - СЌС‚Рѕ СѓР¶Рµ РјР°СЃСЃРёРІ С‡РёСЃРµР» (РѕС†РµРЅРѕРє)
+                // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С updateSegments РЎРѓ autoScroll=true Р Т‘Р В»РЎРЏ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂљР В° Р С” 3-1-2
+                // sess.results - РЎРЊРЎвЂљР С• РЎС“Р В¶Р Вµ Р СР В°РЎРѓРЎРѓР С‘Р Р† РЎвЂЎР С‘РЎРѓР ВµР В» (Р С•РЎвЂ Р ВµР Р…Р С•Р С”)
                 console.log('[SEGMENT TOUCHEND] sess.results=', sess.results);
                 updateSegments(sess.results, sess.queue.length, i, true);
             }
@@ -2083,28 +2083,28 @@ function showStats(stats, results, total) {
                 <div class="stats-grid">
                     <div class="stat-item" id="stat-total">
                         <div class="stat-value" id="sum-total">0</div>
-                        <div class="stat-label">РџРѕРІС‚РѕСЂРµРЅРѕ</div>
+                        <div class="stat-label">Р СџР С•Р Р†РЎвЂљР С•РЎР‚Р ВµР Р…Р С•</div>
                     </div>
                     <div class="stat-item" id="stat-accuracy">
                         <div class="stat-value" id="sum-accuracy">0%</div>
-                        <div class="stat-label">РўРѕС‡РЅРѕСЃС‚СЊ</div>
+                        <div class="stat-label">Р СћР С•РЎвЂЎР Р…Р С•РЎРѓРЎвЂљРЎРЉ</div>
                     </div>
                     <div class="stat-item" id="stat-streak">
                         <div class="stat-value" id="sum-streak">0</div>
-                        <div class="stat-label">Р”РЅРµР№ РїРѕРґСЂСЏРґ</div>
+                        <div class="stat-label">Р вЂќР Р…Р ВµР в„– Р С—Р С•Р Т‘РЎР‚РЎРЏР Т‘</div>
                     </div>
                 </div>
                 <div class="motivation" id="sum-motivation"></div>
                 <div id="sum-xp" class="xp-line"></div>
                 <div class="summary-actions">
-                    <button id="sum-continue" class="btn btn-primary" title="РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ" aria-label="РџСЂРѕРґРѕР»Р¶РёС‚СЊ">
-                        <span>в–¶</span> РџСЂРѕРґРѕР»Р¶РёС‚СЊ
+                    <button id="sum-continue" class="btn btn-primary" title="Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ" aria-label="Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ">
+                        <span>РІвЂ“В¶</span> Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ
                     </button>
-                    <button id="sum-exit" class="btn btn-secondary" title="РџРµСЂРµР№С‚Рё Рє СЃС‚Р°С‚РёСЃС‚РёРєРµ" aria-label="РџРµСЂРµР№С‚Рё Рє СЃС‚Р°С‚РёСЃС‚РёРєРµ">
+                    <button id="sum-exit" class="btn btn-secondary" title="Р СџР ВµРЎР‚Р ВµР в„–РЎвЂљР С‘ Р С” РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р Вµ" aria-label="Р СџР ВµРЎР‚Р ВµР в„–РЎвЂљР С‘ Р С” РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р Вµ">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"/>
                         </svg>
-                        РЎС‚Р°С‚РёСЃС‚РёРєР°
+                        Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°
                     </button>
                 </div>
             </div>
@@ -2112,7 +2112,7 @@ function showStats(stats, results, total) {
         console.log('[MODAL.TEMPLATE] New template created with .stats-grid and .stat-item');
         container.appendChild(overlay);
 
-        // РљРЅРѕРїРєР° "РЎС‚Р°С‚РёСЃС‚РёРєР°" - РїРµСЂРµС…РѕРґ РЅР° СЃС‚СЂР°РЅРёС†Сѓ СЃС‚Р°С‚РёСЃС‚РёРєРё
+        // Р С™Р Р…Р С•Р С—Р С”Р В° "Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°" - Р С—Р ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘ Р Р…Р В° РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎС“ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
             console.log('========================================');
             console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
@@ -2120,39 +2120,39 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
             console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
 
-            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ Р·Р°РІРµСЂС€Р°РµРј СЃРµСЃСЃРёСЋ РѕР±СѓС‡РµРЅРёСЏ
+            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› Р В·Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р В°Р ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
             if (currentScheduler) {
                 currentScheduler = null;
                 console.log('[STATS BUTTON] Cleared currentScheduler');
             }
 
-            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ СѓР±РёСЂР°РµРј РєР»Р°СЃСЃ learning-mode
+            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› РЎС“Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ learning-mode
             document.body.classList.remove('learning-mode');
             console.log('[STATS BUTTON] Removed learning-mode');
 
-            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ РїРѕРєР°Р·С‹РІР°РµРј РЅР°РІРёРіР°С†РёСЋ
+            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹
             const bottomNav = document.getElementById('bottom-nav');
             if (bottomNav) {
                 bottomNav.style.display = 'flex';
                 console.log('[STATS BUTTON] Showed bottomNav');
             }
 
-            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ СЃРєСЂС‹РІР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РѕР±СѓС‡РµРЅРёСЏ
+            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
             const learnContainer = document.getElementById('learn-container');
             if (learnContainer) {
                 learnContainer.style.display = 'none';
                 console.log('[STATS BUTTON] Hid learn-container');
             }
 
-            // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»РєСѓ
+            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»Р С”РЎС“
             overlay.remove();
             console.log('[STATS BUTTON] Removed overlay');
 
-            // РРЎРџР РђР’Р›Р•РќРР•: Р’С‹Р·С‹РІР°РµРј initStatsPage() РЅР°РїСЂСЏРјСѓСЋ, Р° РЅРµ С‡РµСЂРµР· hashchange
-            // РџРѕС‚РѕРјСѓ С‡С‚Рѕ РµСЃР»Рё hash СѓР¶Рµ #/stats, СЃРѕР±С‹С‚РёРµ hashchange РЅРµ СЃСЂР°Р±РѕС‚Р°РµС‚
+            // Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С initStatsPage() Р Р…Р В°Р С—РЎР‚РЎРЏР СРЎС“РЎР‹, Р В° Р Р…Р Вµ РЎвЂЎР ВµРЎР‚Р ВµР В· hashchange
+            // Р СџР С•РЎвЂљР С•Р СРЎС“ РЎвЂЎРЎвЂљР С• Р ВµРЎРѓР В»Р С‘ hash РЎС“Р В¶Р Вµ #/stats, РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ hashchange Р Р…Р Вµ РЎРѓРЎР‚Р В°Р В±Р С•РЎвЂљР В°Р ВµРЎвЂљ
             console.log('[STATS BUTTON] Calling initStatsPage() directly...');
 
-            // РџРѕРєР°Р·С‹РІР°РµРј placeholder Р”Рћ Р·Р°РіСЂСѓР·РєРё РјРѕРґСѓР»СЏ
+            // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С placeholder Р вЂќР С› Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р СР С•Р Т‘РЎС“Р В»РЎРЏ
             console.log('[STATS BUTTON] Creating loading placeholder...');
             const skeletonPlaceholder = document.createElement('div');
             skeletonPlaceholder.id = 'stats-skeleton-placeholder';
@@ -2169,13 +2169,13 @@ function showStats(stats, results, total) {
                 justify-content: center;
             `;
             skeletonPlaceholder.innerHTML = `
-                <div style="color: #8B949E; font-size: 14px;">Р—Р°РіСЂСѓР·РєР° СЃС‚Р°С‚РёСЃС‚РёРєРё...</div>
+                <div style="color: #8B949E; font-size: 14px;">Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘...</div>
             `;
             document.body.appendChild(skeletonPlaceholder);
             console.log('[STATS BUTTON] Loading placeholder shown');
 
-            // РРјРїРѕСЂС‚РёСЂСѓРµРј Рё РІС‹Р·С‹РІР°РµРј initStatsPage
-            import('./stats-ui.js?v=6.09').then(({ initStatsPage }) => {
+            // Р ВР СР С—Р С•РЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С Р С‘ Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С initStatsPage
+            import('./stats-ui.js?v=6.20.8).then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
@@ -2187,7 +2187,7 @@ function showStats(stats, results, total) {
             console.log('========================================');
         });
 
-        // РљРЅРѕРїРєР° "РџСЂРѕРґРѕР»Р¶РёС‚СЊ" - СЃР»РµРґСѓСЋС‰РёР№ РєСЂСѓРі РѕР±СѓС‡РµРЅРёСЏ
+        // Р С™Р Р…Р С•Р С—Р С”Р В° "Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ" - РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘Р в„– Р С”РЎР‚РЎС“Р С– Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
             console.log('[CONTINUE BTN] Clicked!');
             console.log('[CONTINUE BTN] __lastCandidates:', window.__lastCandidates ? 'EXISTS' : 'null');
@@ -2228,14 +2228,14 @@ function showStats(stats, results, total) {
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
-    // Р—Р°РІРµСЂС€Р°РµРј СЃРµСЃСЃРёСЋ РѕР±СѓС‡РµРЅРёСЏ
+    // Р вЂ”Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р В°Р ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
     console.log('[showStats] Ending learning session...');
     if (currentScheduler) {
         currentScheduler = null;
         console.log('[showStats] Cleared currentScheduler');
     }
 
-    // РЈР±РёСЂР°РµРј РєР»Р°СЃСЃ learning-mode
+    // Р Р€Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ learning-mode
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'flex';
@@ -2243,26 +2243,26 @@ function showStats(stats, results, total) {
     console.log('[showStats] Removed learning-mode, showed bottomNav');
 
     // Motivational Message Logic (Expert Psychology)
-    let motivation = 'РџСЂРѕРґРѕР»Р¶Р°Р№С‚Рµ РІ С‚РѕРј Р¶Рµ РґСѓС…Рµ!';
+    let motivation = 'Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р в„–РЎвЂљР Вµ Р Р† РЎвЂљР С•Р С Р В¶Р Вµ Р Т‘РЎС“РЎвЂ¦Р Вµ!';
     if (currentScheduler) {
         const sched = currentScheduler.getScheduleStatus();
         const daysLeft = sched.daysRemaining;
 
         if (accuracy >= 90) {
-            motivation = `РџРѕС‚СЂСЏСЃР°СЋС‰Р°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ! Р’С‹ СѓРІРµСЂРµРЅРЅРѕ РёРґРµС‚Рµ Рє С†РµР»Рё Р·Р° ${daysLeft} РґРЅ.`;
+            motivation = `Р СџР С•РЎвЂљРЎР‚РЎРЏРЎРѓР В°РЎР‹РЎвЂ°Р В°РЎРЏ РЎвЂљР С•РЎвЂЎР Р…Р С•РЎРѓРЎвЂљРЎРЉ! Р вЂ™РЎвЂ№ РЎС“Р Р†Р ВµРЎР‚Р ВµР Р…Р Р…Р С• Р С‘Р Т‘Р ВµРЎвЂљР Вµ Р С” РЎвЂ Р ВµР В»Р С‘ Р В·Р В° ${daysLeft} Р Т‘Р Р….`;
         } else if (accuracy >= 75) {
-            motivation = `РћС‚Р»РёС‡РЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚! РћСЃС‚Р°Р»РѕСЃСЊ ${daysLeft} РґРЅРµР№ РґРѕ С„РёРЅРёС€Р°.`;
+            motivation = `Р С›РЎвЂљР В»Р С‘РЎвЂЎР Р…РЎвЂ№Р в„– РЎР‚Р ВµР В·РЎС“Р В»РЎРЉРЎвЂљР В°РЎвЂљ! Р С›РЎРѓРЎвЂљР В°Р В»Р С•РЎРѓРЎРЉ ${daysLeft} Р Т‘Р Р…Р ВµР в„– Р Т‘Р С• РЎвЂћР С‘Р Р…Р С‘РЎв‚¬Р В°.`;
         } else if (accuracy < 50) {
-            motivation = `РўСЏР¶РµР»Рѕ РІ СѓС‡РµРЅРёРё вЂ” Р»РµРіРєРѕ РІ Р±РѕСЋ. Р—Р°РІС‚СЂР° Р±СѓРґРµС‚ Р»СѓС‡С€Рµ!`;
+            motivation = `Р СћРЎРЏР В¶Р ВµР В»Р С• Р Р† РЎС“РЎвЂЎР ВµР Р…Р С‘Р С‘ РІР‚вЂќ Р В»Р ВµР С–Р С”Р С• Р Р† Р В±Р С•РЎР‹. Р вЂ”Р В°Р Р†РЎвЂљРЎР‚Р В° Р В±РЎС“Р Т‘Р ВµРЎвЂљ Р В»РЎС“РЎвЂЎРЎв‚¬Р Вµ!`;
         } else {
-            motivation = `РҐРѕСЂРѕС€РёР№ С‚РµРјРї. Р’С‹СѓС‡РµРЅРѕ ${sched.learnedCount} РёР· ${sched.learnedCount + sched.unseenCount}.`;
+            motivation = `Р ТђР С•РЎР‚Р С•РЎв‚¬Р С‘Р в„– РЎвЂљР ВµР СР С—. Р вЂ™РЎвЂ№РЎС“РЎвЂЎР ВµР Р…Р С• ${sched.learnedCount} Р С‘Р В· ${sched.learnedCount + sched.unseenCount}.`;
         }
 
         if (sched.dayNumber > 40) {
-            motivation += " Р¤РёРЅРёС€ СѓР¶Рµ Р±Р»РёР·РєРѕ!";
+            motivation += " Р В¤Р С‘Р Р…Р С‘РЎв‚¬ РЎС“Р В¶Р Вµ Р В±Р В»Р С‘Р В·Р С”Р С•!";
         }
     } else {
-        motivation = accuracy > 80 ? 'РћС‚Р»РёС‡РЅРѕ! рџ’Є' : 'РџСЂРѕРґРѕР»Р¶Р°Р№С‚Рµ! рџљЂ';
+        motivation = accuracy > 80 ? 'Р С›РЎвЂљР В»Р С‘РЎвЂЎР Р…Р С•! СЂСџвЂ™Р„' : 'Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р в„–РЎвЂљР Вµ! СЂСџС™Р‚';
     }
 
     overlay.querySelector('#sum-motivation').textContent = motivation;
@@ -2270,7 +2270,7 @@ function showStats(stats, results, total) {
     const bonus = Math.min(100, (st.current || 0) * 5);
     const dayBonus = bonus > 0 ? Math.min(5, bonus) : 0;
     const streakBonus = Math.max(0, bonus - dayBonus);
-    overlay.querySelector('#sum-xp').textContent = `+${earned} XP вЂў Р±РѕРЅСѓСЃС‹: РґРµРЅСЊ +${dayBonus} XP, СЃС‚СЂРёРє +${streakBonus} XP`;
+    overlay.querySelector('#sum-xp').textContent = `+${earned} XP РІР‚Сћ Р В±Р С•Р Р…РЎС“РЎРѓРЎвЂ№: Р Т‘Р ВµР Р…РЎРЉ +${dayBonus} XP, РЎРѓРЎвЂљРЎР‚Р С‘Р С” +${streakBonus} XP`;
     // Apply bonus split to stats and daily points
     const todayKey = (() => {
         try {
@@ -2307,7 +2307,7 @@ function showStats(stats, results, total) {
         const lvl = getCurrentLevel();
         console.log('[MODAL.ANIM] Current level:', lvl.level, 'XP:', lvl.xp);
 
-        overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} вЂў ${lvl.xp} XP`;
+        overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} РІР‚Сћ ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
         const earned = session.stats.pointsEarned || 0;
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
@@ -2316,7 +2316,7 @@ function showStats(stats, results, total) {
 
         console.log('[MODAL.ANIM] startXP:', startXP, 'earned:', earned, 'bonus:', bonus);
 
-        // РћРїСЂРµРґРµР»СЏРµРј, Р±С‹Р»Рѕ Р»Рё РїРѕРІС‹С€РµРЅРёРµ СѓСЂРѕРІРЅСЏ
+        // Р С›Р С—РЎР‚Р ВµР Т‘Р ВµР В»РЎРЏР ВµР С, Р В±РЎвЂ№Р В»Р С• Р В»Р С‘ Р С—Р С•Р Р†РЎвЂ№РЎв‚¬Р ВµР Р…Р С‘Р Вµ РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
@@ -2333,7 +2333,7 @@ function showStats(stats, results, total) {
         if (leveledUp) {
             console.log('[MODAL.ANIM] === LEVEL UP ANIMATION ===');
 
-            // 1. РћС‚РєР»СЋС‡Р°РµРј transition РґР»СЏ РјРіРЅРѕРІРµРЅРЅРѕР№ СѓСЃС‚Р°РЅРѕРІРєРё
+            // 1. Р С›РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р Т‘Р В»РЎРЏ Р СР С–Р Р…Р С•Р Р†Р ВµР Р…Р Р…Р С•Р в„– РЎС“РЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С”Р С‘
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
@@ -2345,12 +2345,12 @@ function showStats(stats, results, total) {
 
             console.log('[MODAL.ANIM] Step 1: Set to 100% (transition: none)');
 
-            // 2. Р’РєР»СЋС‡Р°РµРј transition Рё Р·Р°РїСѓСЃРєР°РµРј Р°РЅРёРјР°С†РёСЋ
+            // 2. Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р С‘ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
 
-                // 3. Р’СЃРїС‹С€РєР° СѓСЂРѕРІРЅСЏ
+                // 3. Р вЂ™РЎРѓР С—РЎвЂ№РЎв‚¬Р С”Р В° РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ
                 const levelEl = overlay.querySelector('#sum-level');
                 levelEl.classList.add('flash');
                 levelEl.textContent = `LV:${endLevel}!`;
@@ -2358,17 +2358,17 @@ function showStats(stats, results, total) {
 
                 setTimeout(() => {
                     levelEl.classList.remove('flash');
-                    levelEl.textContent = `LV:${endLevel} вЂў ${lvl.xp} XP`;
+                    levelEl.textContent = `LV:${endLevel} РІР‚Сћ ${lvl.xp} XP`;
                     console.log('[MODAL.ANIM] Step 4: Remove flash');
 
-                    // 4. Р‘С‹СЃС‚СЂРѕРµ СЃР¶Р°С‚РёРµ (200ms)
+                    // 4. Р вЂРЎвЂ№РЎРѓРЎвЂљРЎР‚Р С•Р Вµ РЎРѓР В¶Р В°РЎвЂљР С‘Р Вµ (200ms)
                     oldEl.style.transition = 'width 0.2s ease';
                     oldEl.style.width = '0%';
                     console.log('[MODAL.ANIM] Step 5: Shrink old (200ms)');
 
                     setTimeout(() => {
                         console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
-                        // 5. Р—Р°РїРѕР»РЅРµРЅРёРµ РЅРѕРІРѕРіРѕ СѓСЂРѕРІРЅСЏ (1.5s)
+                        // 5. Р вЂ”Р В°Р С—Р С•Р В»Р Р…Р ВµР Р…Р С‘Р Вµ Р Р…Р С•Р Р†Р С•Р С–Р С• РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
                         earnEl.style.left = '0%';
@@ -2390,7 +2390,7 @@ function showStats(stats, results, total) {
         } else {
             console.log('[MODAL.ANIM] === NORMAL ANIMATION (no level up) ===');
 
-            // РћС‚РєР»СЋС‡Р°РµРј transition РґР»СЏ РјРіРЅРѕРІРµРЅРЅРѕР№ СѓСЃС‚Р°РЅРѕРІРєРё
+            // Р С›РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р Т‘Р В»РЎРЏ Р СР С–Р Р…Р С•Р Р†Р ВµР Р…Р Р…Р С•Р в„– РЎС“РЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С”Р С‘
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
@@ -2408,7 +2408,7 @@ function showStats(stats, results, total) {
 
             console.log('[MODAL.ANIM] Step 1: Set startPct:', startPct * 100);
 
-            // Р’РєР»СЋС‡Р°РµРј transition Рё Р·Р°РїСѓСЃРєР°РµРј Р°РЅРёРјР°С†РёСЋ
+            // Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р С‘ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
@@ -2524,11 +2524,11 @@ function getLevelFromXP(xp) {
 }
 
 function updateTimerDisplay() {
-    // РћР±РЅРѕРІР»СЏРµРј .mode-timer РІРјРµСЃС‚Рѕ #learn-timer
+    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С .mode-timer Р Р†Р СР ВµРЎРѓРЎвЂљР С• #learn-timer
     const el = document.querySelector('.mode-timer');
     if (!el) return;
 
-    // Р•СЃР»Рё С‚Р°Р№РјРµСЂ РЅР° РїР°СѓР·Рµ - РЅРµ РѕР±РЅРѕРІР»СЏРµРј РІСЂРµРјСЏ
+    // Р вЂўРЎРѓР В»Р С‘ РЎвЂљР В°Р в„–Р СР ВµРЎР‚ Р Р…Р В° Р С—Р В°РЎС“Р В·Р Вµ - Р Р…Р Вµ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†РЎР‚Р ВµР СРЎРЏ
     if (timerPaused) {
         return;
     }
@@ -2553,36 +2553,36 @@ function toggleTimerPause() {
     if (!pauseBtn) return;
 
     if (timerPaused) {
-        // RESUME: РїСЂРѕРґРѕР»Р¶Р°РµРј РѕС‚СЃС‡С‘С‚
+        // RESUME: Р С—РЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р ВµР С Р С•РЎвЂљРЎРѓРЎвЂЎРЎвЂРЎвЂљ
         sessionTimerStart = Date.now();
 
-        // Р—Р°РїСѓСЃРєР°РµРј РёРЅС‚РµСЂРІР°Р»
+        // Р вЂ”Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
         timerInterval = setInterval(updateTimerDisplay, 1000);
         updateTimerDisplay();
 
-        // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° play, Р±РµР»РѕРµ СЃРІРµС‡РµРЅРёРµ
+        // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° play, Р В±Р ВµР В»Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
         pauseBtn.classList.remove('paused');
         pauseBtn.classList.add('running');
 
-        if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°';
+        if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
     } else {
-        // PAUSE: СЃРѕС…СЂР°РЅСЏРµРј РЅР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ
+        // PAUSE: РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ
         const now = Date.now();
         const startTime = sessionTimerStart;
         const elapsed = Math.floor((now - startTime) / 1000);
         pausedTimeRemaining += elapsed;
 
-        // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРЅС‚РµСЂРІР°Р»
+        // Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
 
-        // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° РїР°СѓР·С‹, РјСЏС‚РЅРѕРµ СЃРІРµС‡РµРЅРёРµ
+        // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° Р С—Р В°РЎС“Р В·РЎвЂ№, Р СРЎРЏРЎвЂљР Р…Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
         pauseBtn.classList.remove('running');
         pauseBtn.classList.add('paused');
 
-        if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ Р·Р°РїСѓСЃРєР° С‚Р°Р№РјРµСЂР°';
+        if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В° РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
     }
 
     timerPaused = !timerPaused;
@@ -2596,31 +2596,31 @@ function setupTimerControls() {
     const timerControls = document.getElementById('timer-controls');
     const timerEl = document.getElementById('mode-timer');
 
-    // Р¤Р»Р°Рі: Р±С‹Р»Р° Р»Рё СЂСѓС‡РЅР°СЏ РїР°СѓР·Р° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј
+    // Р В¤Р В»Р В°Р С–: Р В±РЎвЂ№Р В»Р В° Р В»Р С‘ РЎР‚РЎС“РЎвЂЎР Р…Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В° Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР С
     let wasManuallyPausedByUser = false;
 
-    // РљР»РёРє РїРѕ РєРЅРѕРїРєРµ РїР°СѓР·С‹
+    // Р С™Р В»Р С‘Р С” Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ Р С—Р В°РЎС“Р В·РЎвЂ№
     if (pauseBtn) {
         pauseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Р—Р°РїРѕРјРёРЅР°РµРј РЅР°РјРµСЂРµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+            wasManuallyPausedByUser = !timerPaused; // Р вЂ”Р В°Р С—Р С•Р СР С‘Р Р…Р В°Р ВµР С Р Р…Р В°Р СР ВµРЎР‚Р ВµР Р…Р С‘Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
             toggleTimerPause();
         });
     }
 
-    // РљР»РёРє РїРѕ С‚Р°Р№РјРµСЂСѓ (С‚РѕР¶Рµ РїР°СѓР·Р°/СЃС‚Р°СЂС‚)
+    // Р С™Р В»Р С‘Р С” Р С—Р С• РЎвЂљР В°Р в„–Р СР ВµРЎР‚РЎС“ (РЎвЂљР С•Р В¶Р Вµ Р С—Р В°РЎС“Р В·Р В°/РЎРѓРЎвЂљР В°РЎР‚РЎвЂљ)
     if (timerEl) {
         timerEl.addEventListener('click', (e) => {
             e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Р—Р°РїРѕРјРёРЅР°РµРј РЅР°РјРµСЂРµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+            wasManuallyPausedByUser = !timerPaused; // Р вЂ”Р В°Р С—Р С•Р СР С‘Р Р…Р В°Р ВµР С Р Р…Р В°Р СР ВµРЎР‚Р ВµР Р…Р С‘Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
             toggleTimerPause();
         });
     }
 
-    // РљР»РёРє РїРѕ РєРѕРЅС‚РµР№РЅРµСЂСѓ timer-controls
+    // Р С™Р В»Р С‘Р С” Р С—Р С• Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚РЎС“ timer-controls
     if (timerControls) {
         timerControls.addEventListener('click', (e) => {
-            // Р•СЃР»Рё РєР»РёРє РЅРµ РїРѕ РєРЅРѕРїРєРµ Рё РЅРµ РїРѕ С‚Р°Р№РјРµСЂСѓ - С‚РѕР¶Рµ РїР°СѓР·Р°
+            // Р вЂўРЎРѓР В»Р С‘ Р С”Р В»Р С‘Р С” Р Р…Р Вµ Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ Р С‘ Р Р…Р Вµ Р С—Р С• РЎвЂљР В°Р в„–Р СР ВµРЎР‚РЎС“ - РЎвЂљР С•Р В¶Р Вµ Р С—Р В°РЎС“Р В·Р В°
             if (e.target !== pauseBtn && e.target !== timerEl) {
                 wasManuallyPausedByUser = !timerPaused;
                 toggleTimerPause();
@@ -2628,16 +2628,16 @@ function setupTimerControls() {
         });
     }
 
-    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ: СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРєРѕРЅРєСѓ play (СЂРµР¶РёРј РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ)
+    // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ: РЎС“РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С‘Р С”Р С•Р Р…Р С”РЎС“ play (РЎР‚Р ВµР В¶Р С‘Р С Р Р†Р С•РЎРѓР С—РЎР‚Р С•Р С‘Р В·Р Р†Р ВµР Т‘Р ВµР Р…Р С‘РЎРЏ)
     if (pauseBtn) {
         pauseBtn.classList.add('running');
         pauseBtn.classList.remove('paused');
     }
     if (timerControls) {
-        timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°';
+        timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
     }
 
-    // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РїР°СѓР·Р° РїСЂРё СѓС…РѕРґРµ СЃРѕ СЃС‚СЂР°РЅРёС†С‹ (visibilitychange)
+    // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В° Р С—РЎР‚Р С‘ РЎС“РЎвЂ¦Р С•Р Т‘Р Вµ РЎРѓР С• РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ (visibilitychange)
     let autoPaused = false;
 
     document.addEventListener('visibilitychange', () => {
@@ -2646,15 +2646,15 @@ function setupTimerControls() {
         const timerControls = document.getElementById('timer-controls');
 
         if (isHidden) {
-            // РЎС‚СЂР°РЅРёС†Р° СЃРєСЂС‹С‚Р° (СѓС€Р»Рё РЅР° РґСЂСѓРіСѓСЋ РІРєР»Р°РґРєСѓ, СЃРІРµСЂРЅСѓР»Рё Р±СЂР°СѓР·РµСЂ, Р·Р°Р±Р»РѕРєРёСЂРѕРІР°Р»Рё С‚РµР»РµС„РѕРЅ)
-            // Р’СЃРµРіРґР° СЃС‚Р°РІРёРј РЅР° РїР°СѓР·Сѓ РїСЂРё СѓС…РѕРґРµ
+            // Р РЋРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљР В° (РЎС“РЎв‚¬Р В»Р С‘ Р Р…Р В° Р Т‘РЎР‚РЎС“Р С–РЎС“РЎР‹ Р Р†Р С”Р В»Р В°Р Т‘Р С”РЎС“, РЎРѓР Р†Р ВµРЎР‚Р Р…РЎС“Р В»Р С‘ Р В±РЎР‚Р В°РЎС“Р В·Р ВµРЎР‚, Р В·Р В°Р В±Р В»Р С•Р С”Р С‘РЎР‚Р С•Р Р†Р В°Р В»Р С‘ РЎвЂљР ВµР В»Р ВµРЎвЂћР С•Р Р…)
+            // Р вЂ™РЎРѓР ВµР С–Р Т‘Р В° РЎРѓРЎвЂљР В°Р Р†Р С‘Р С Р Р…Р В° Р С—Р В°РЎС“Р В·РЎС“ Р С—РЎР‚Р С‘ РЎС“РЎвЂ¦Р С•Р Т‘Р Вµ
             if (!timerPaused) {
-                // PAUSE: СЃРѕС…СЂР°РЅСЏРµРј РЅР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ
+                // PAUSE: РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ
                 const now = Date.now();
                 const elapsed = Math.floor((now - sessionTimerStart) / 1000);
                 pausedTimeRemaining += elapsed;
 
-                // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРЅС‚РµСЂРІР°Р»
+                // Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -2663,41 +2663,41 @@ function setupTimerControls() {
                 timerPaused = true;
                 autoPaused = true;
 
-                // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° РїР°СѓР·С‹, РјСЏС‚РЅРѕРµ СЃРІРµС‡РµРЅРёРµ
+                // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° Р С—Р В°РЎС“Р В·РЎвЂ№, Р СРЎРЏРЎвЂљР Р…Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
                 if (pauseBtn) {
                     pauseBtn.classList.remove('running');
                     pauseBtn.classList.add('paused');
                 }
-                if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ Р·Р°РїСѓСЃРєР° С‚Р°Р№РјРµСЂР°';
+                if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В° РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
             }
         } else {
-            // РЎС‚СЂР°РЅРёС†Р° СЃРЅРѕРІР° РІРёРґРёРјР°
-            // Р•СЃР»Рё РЅРµ Р±С‹Р»Рѕ СЂСѓС‡РЅРѕР№ РїР°СѓР·С‹ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј - Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РїСѓСЃРєР°РµРј С‚Р°Р№РјРµСЂ
+            // Р РЋРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓР Р…Р С•Р Р†Р В° Р Р†Р С‘Р Т‘Р С‘Р СР В°
+            // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р В±РЎвЂ№Р В»Р С• РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– Р С—Р В°РЎС“Р В·РЎвЂ№ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР С - Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚
             if (!wasManuallyPausedByUser && timerPaused && autoPaused) {
-                // RESUME: РїСЂРѕРґРѕР»Р¶Р°РµРј РѕС‚СЃС‡С‘С‚
+                // RESUME: Р С—РЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р ВµР С Р С•РЎвЂљРЎРѓРЎвЂЎРЎвЂРЎвЂљ
                 sessionTimerStart = Date.now();
 
-                // Р—Р°РїСѓСЃРєР°РµРј РёРЅС‚РµСЂРІР°Р»
+                // Р вЂ”Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
                 timerInterval = setInterval(updateTimerDisplay, 1000);
                 updateTimerDisplay();
 
                 timerPaused = false;
                 autoPaused = false;
 
-                // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° play, Р±РµР»РѕРµ СЃРІРµС‡РµРЅРёРµ
+                // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° play, Р В±Р ВµР В»Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
                 if (pauseBtn) {
                     pauseBtn.classList.remove('paused');
                     pauseBtn.classList.add('running');
                 }
-                if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°';
+                if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
             }
         }
     });
 
-    // РћР±СЂР°Р±РѕС‚С‡РёРєРё РїРµСЂРІРѕРіРѕ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ РґР»СЏ СЃРЅСЏС‚РёСЏ СЂСѓС‡РЅРѕР№ РїР°СѓР·С‹
+    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• Р Р†Р В·Р В°Р С‘Р СР С•Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎРѓР Р…РЎРЏРЎвЂљР С‘РЎРЏ РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– Р С—Р В°РЎС“Р В·РЎвЂ№
     const handleFirstInteraction = () => {
-        // Р•СЃР»Рё Р±С‹Р»Р° СЂСѓС‡РЅР°СЏ РїР°СѓР·Р° - РЅРµ РґРµР»Р°РµРј РЅРёС‡РµРіРѕ, РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃР°Рј РЅР°Р¶РјС‘С‚
-        // Р•СЃР»Рё РЅРµ Р±С‹Р»Рѕ - С‚Р°Р№РјРµСЂ СѓР¶Рµ Р·Р°РїСѓС‰РµРЅ РїСЂРё visibilitychange
+        // Р вЂўРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В»Р В° РЎР‚РЎС“РЎвЂЎР Р…Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В° - Р Р…Р Вµ Р Т‘Р ВµР В»Р В°Р ВµР С Р Р…Р С‘РЎвЂЎР ВµР С–Р С•, Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ РЎРѓР В°Р С Р Р…Р В°Р В¶Р СРЎвЂРЎвЂљ
+        // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р В±РЎвЂ№Р В»Р С• - РЎвЂљР В°Р в„–Р СР ВµРЎР‚ РЎС“Р В¶Р Вµ Р В·Р В°Р С—РЎС“РЎвЂ°Р ВµР Р… Р С—РЎР‚Р С‘ visibilitychange
         document.removeEventListener('click', handleFirstInteraction);
         document.removeEventListener('mousemove', handleFirstInteraction);
         document.removeEventListener('touchstart', handleFirstInteraction);
@@ -2720,26 +2720,26 @@ function showSmartPause(rec) {
 
     overlay.innerHTML = `
         <div class="summary-box" style="max-width: 400px;">
-            <div style="font-size: 48px; margin-bottom: 16px;">в•</div>
-            <h2 style="margin:0 0 8px 0;">РЈРјРЅР°СЏ РїР°СѓР·Р°</h2>
+            <div style="font-size: 48px; margin-bottom: 16px;">РІВвЂў</div>
+            <h2 style="margin:0 0 8px 0;">Р Р€Р СР Р…Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В°</h2>
             <div style="color: var(--color-text-secondary); margin-bottom: 24px; font-size: 16px;">
                 ${rec.reason}
             </div>
             
             <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
                 <div class="stat-item">
-                    <span>Р’СЂРµРјСЏ</span>
-                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} РјРёРЅ</span>
+                    <span>Р вЂ™РЎР‚Р ВµР СРЎРЏ</span>
+                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} Р СР С‘Р Р…</span>
                 </div>
                 <div class="stat-item">
-                    <span>РўРѕС‡РЅРѕСЃС‚СЊ</span>
+                    <span>Р СћР С•РЎвЂЎР Р…Р С•РЎРѓРЎвЂљРЎРЉ</span>
                     <span style="font-size: 20px; font-weight: 600; color: ${rec.accuracy >= 80 ? '#4ade80' : rec.accuracy >= 50 ? '#fbbf24' : '#ef4444'}">${rec.accuracy}%</span>
                 </div>
             </div>
             
             <div style="display: flex; gap: 12px; flex-direction: column;">
-                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">РЎРґРµР»Р°С‚СЊ РїРµСЂРµСЂС‹РІ (5 РјРёРЅ)</button>
-                <button id="pause-skip-btn" class="secondary-btn">РџСЂРѕРїСѓСЃС‚РёС‚СЊ Рё РїСЂРѕРґРѕР»Р¶РёС‚СЊ</button>
+                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">Р РЋР Т‘Р ВµР В»Р В°РЎвЂљРЎРЉ Р С—Р ВµРЎР‚Р ВµРЎР‚РЎвЂ№Р Р† (5 Р СР С‘Р Р…)</button>
+                <button id="pause-skip-btn" class="secondary-btn">Р СџРЎР‚Р С•Р С—РЎС“РЎРѓРЎвЂљР С‘РЎвЂљРЎРЉ Р С‘ Р С—РЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ</button>
             </div>
         </div>
     `;
@@ -2761,15 +2761,15 @@ function showSmartPause(rec) {
 function startBreakCountdown(overlay, seconds) {
     const box = overlay.querySelector('.summary-box');
     box.innerHTML = `
-        <div style="font-size: 48px; margin-bottom: 16px;">рџ§</div>
-        <h2 style="margin:0 0 8px 0;">РћС‚РґС‹С…Р°РµРј...</h2>
+        <div style="font-size: 48px; margin-bottom: 16px;">СЂСџВ§В</div>
+        <h2 style="margin:0 0 8px 0;">Р С›РЎвЂљР Т‘РЎвЂ№РЎвЂ¦Р В°Р ВµР С...</h2>
         <div id="break-timer" style="font-size: 48px; font-weight: 700; font-family: monospace; margin: 24px 0;">
             05:00
         </div>
         <div style="color: var(--color-text-secondary); margin-bottom: 24px;">
-            Р“Р»СѓР±РѕРєРѕ РІРґРѕС…РЅРёС‚Рµ Рё СЂР°СЃСЃР»Р°Р±СЊС‚РµСЃСЊ.
+            Р вЂњР В»РЎС“Р В±Р С•Р С”Р С• Р Р†Р Т‘Р С•РЎвЂ¦Р Р…Р С‘РЎвЂљР Вµ Р С‘ РЎР‚Р В°РЎРѓРЎРѓР В»Р В°Р В±РЎРЉРЎвЂљР ВµРЎРѓРЎРЉ.
         </div>
-        <button id="break-skip-btn" class="secondary-btn">Р’РµСЂРЅСѓС‚СЊСЃСЏ Рє РѕР±СѓС‡РµРЅРёСЋ</button>
+        <button id="break-skip-btn" class="secondary-btn">Р вЂ™Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉРЎРѓРЎРЏ Р С” Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎР‹</button>
     `;
 
     let left = seconds;
@@ -2794,27 +2794,27 @@ function startBreakCountdown(overlay, seconds) {
     });
 }
 
-// РџСЂРѕСЃС‚Р°СЏ РѕС‚Р»Р°РґРєР° СЃРµРіРјРµРЅС‚РѕРІ
+// Р СџРЎР‚Р С•РЎРѓРЎвЂљР В°РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р В° РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р†
 window.debugSegments = () => {
     const segs = document.getElementById('learn-segments');
     if (!segs) {
-        console.log('вќЊ learn-segments РЅРµ РЅР°Р№РґРµРЅ');
+        console.log('РІСњРЉ learn-segments Р Р…Р Вµ Р Р…Р В°Р в„–Р Т‘Р ВµР Р…');
         return;
     }
-    console.log('вњ… learn-segments РЅР°Р№РґРµРЅ');
-    console.log('   Р’СЃРµРіРѕ СЃРµРіРјРµРЅС‚РѕРІ:', segs.children.length);
-    console.log('   РЁРёСЂРёРЅР° РєРѕРЅС‚РµР№РЅРµСЂР°:', segs.offsetWidth, 'px');
+    console.log('РІСљвЂ¦ learn-segments Р Р…Р В°Р в„–Р Т‘Р ВµР Р…');
+    console.log('   Р вЂ™РЎРѓР ВµР С–Р С• РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р†:', segs.children.length);
+    console.log('   Р РЃР С‘РЎР‚Р С‘Р Р…Р В° Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р В°:', segs.offsetWidth, 'px');
     console.log('   scrollLeft:', segs.scrollLeft);
 
     const visible = Array.from(segs.children).filter(el => el.style.display !== 'none').length;
-    console.log('   Р’РёРґРёРјС‹Рµ СЃРµРіРјРµРЅС‚С‹:', visible);
+    console.log('   Р вЂ™Р С‘Р Т‘Р С‘Р СРЎвЂ№Р Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№:', visible);
 
-    // РџРѕРєР°Р·С‹РІР°РµРј РёРЅРґРµРєСЃС‹ РІРёРґРёРјС‹С…
+    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓРЎвЂ№ Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№РЎвЂ¦
     const visibleIndices = [];
     segs.children.forEach((el, i) => {
         if (el.style.display !== 'none') visibleIndices.push(i);
     });
-    console.log('   РРЅРґРµРєСЃС‹ РІРёРґРёРјС‹С…:', visibleIndices);
+    console.log('   Р ВР Р…Р Т‘Р ВµР С”РЎРѓРЎвЂ№ Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№РЎвЂ¦:', visibleIndices);
 };
 
 console.log('[LEARN-UI] debugSegments loaded. Run window.debugSegments() in console');

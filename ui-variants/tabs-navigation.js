@@ -1,7 +1,7 @@
-// Р’Р°СЂРёР°РЅС‚ 3: РўР°Р±С‹ РґР»СЏ РєР°С‚РµРіРѕСЂРёР№ Рё РєР°СЂС‚РѕС‡РєРё РґР»СЏ РїРѕРґРєР°С‚РµРіРѕСЂРёР№
+// Р вЂ™Р В°РЎР‚Р С‘Р В°Р Р…РЎвЂљ 3: Р СћР В°Р В±РЎвЂ№ Р Т‘Р В»РЎРЏ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Т‘Р В»РЎРЏ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
 console.log('[TABS-NAVIGATION] Module loaded');
 
-// РРјРїРѕСЂС‚РёСЂСѓРµРј РґР°РЅРЅС‹Рµ Рё РіРµРЅРµСЂР°С‚РѕСЂ РєР°С‚РµРіРѕСЂРёР№
+// Р ВР СР С—Р С•РЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С‘ Р С–Р ВµР Р…Р ВµРЎР‚Р В°РЎвЂљР С•РЎР‚ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
@@ -12,20 +12,20 @@ import { createFormatToolbar, initFormatToolbar } from '../srs/format-toolbar.js
 
 console.log('[TABS-NAVIGATION] Imports completed');
 
-// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ С„Р»Р°РіРё/СЃРѕСЃС‚РѕСЏРЅРёСЏ РґР»СЏ СЂРµР¶РёРјР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ Рё Р»РѕРіРёРЅР°
+// Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ РЎвЂћР В»Р В°Р С–Р С‘/РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР В¶Р С‘Р СР В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С‘ Р В»Р С•Р С–Р С‘Р Р…Р В°
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
 let currentContextKey = 'all';
 let currentQuestions = [];
 let sortMode = 'default'; // Global sort state
 let resultsListRef = null;
-// РљСЌС€ РєРѕСЂР·РёРЅС‹ РЅР° СЃС‚РѕСЂРѕРЅРµ СЃРµСЂРІРµСЂР° (РЅРµ РёСЃРїРѕР»СЊР·СѓРµРј localStorage РґР»СЏ СѓРґР°Р»С‘РЅРЅС‹С… РєР°СЂС‚РѕС‡РµРє)
+// Р С™РЎРЊРЎв‚¬ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р Р…Р В° РЎРѓРЎвЂљР С•РЎР‚Р С•Р Р…Р Вµ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (Р Р…Р Вµ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С localStorage Р Т‘Р В»РЎРЏ РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№РЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”)
 let serverTrashSet = new Set();
 let serverTrashItems = [];
-// РљРѕРЅС„РёРіСѓСЂРёСЂСѓРµРјС‹Р№ URL Р±СЌРєРµРЅРґР° (РјРѕР¶РЅРѕ Р·Р°РґР°С‚СЊ С‡РµСЂРµР· localStorage РєР»СЋС‡ 'qaBackendUrl')
-// РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РёСЃРїРѕР»СЊР·СѓРµРј РїРѕСЂС‚ 8765, С‚Р°Рє РєР°Рє Р»РѕРєР°Р»СЊРЅС‹Р№ СЃРµСЂРІРµСЂ Р·Р°РїСѓС‰РµРЅ С‚Р°Рј
+// Р С™Р С•Р Р…РЎвЂћР С‘Р С–РЎС“РЎР‚Р С‘РЎР‚РЎС“Р ВµР СРЎвЂ№Р в„– URL Р В±РЎРЊР С”Р ВµР Р…Р Т‘Р В° (Р СР С•Р В¶Р Р…Р С• Р В·Р В°Р Т‘Р В°РЎвЂљРЎРЉ РЎвЂЎР ВµРЎР‚Р ВµР В· localStorage Р С”Р В»РЎР‹РЎвЂЎ 'qaBackendUrl')
+// Р СџР С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С Р С—Р С•РЎР‚РЎвЂљ 8765, РЎвЂљР В°Р С” Р С”Р В°Р С” Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р В·Р В°Р С—РЎС“РЎвЂ°Р ВµР Р… РЎвЂљР В°Р С
 const BACKEND_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('qaBackendUrl')) || window.location.origin;
 
-// рџ”’ HELPER: User-specific localStorage keys (РРЎРџР РђР’Р›Р•РќРР•: Сѓ РєР°Р¶РґРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃРІРѕР№ РєР»СЋС‡)
+// СЂСџвЂќвЂ™ HELPER: User-specific localStorage keys (Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: РЎС“ Р С”Р В°Р В¶Р Т‘Р С•Р С–Р С• Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ РЎРѓР Р†Р С•Р в„– Р С”Р В»РЎР‹РЎвЂЎ)
 function getQaUserCardsKey() {
     try {
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -68,7 +68,7 @@ function clearQaUserCards() {
     }
 }
 
-// Р›РѕРєР°Р»СЊРЅС‹Рµ С…РµР»РїРµСЂС‹ РґР»СЏ storage
+// Р вЂєР С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ РЎвЂ¦Р ВµР В»Р С—Р ВµРЎР‚РЎвЂ№ Р Т‘Р В»РЎРЏ storage
 function getLS(key, fallback) {
     try { return JSON.parse(localStorage.getItem(key) || fallback); } catch { return JSON.parse(fallback); }
 }
@@ -76,15 +76,15 @@ function setLS(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 function getOrderForContext(ctx) { const o = getLS('qaOrderOverrides', '{}'); return o[ctx] || null; }
 function setOrderForContext(ctx, orderArr) { const o = getLS('qaOrderOverrides', '{}'); o[ctx] = orderArr; setLS('qaOrderOverrides', o); }
 function getOverrides() { return getLS('qaAdminOverrides', '{}'); }
-// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј overrides РІ localStorage (РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РёР·РјРµРЅРµРЅРёР№ РєР°СЂС‚РѕС‡РµРє)
+// Р Р€РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С overrides Р Р† localStorage (Р Т‘Р В»РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”)
 function setOverrides(map) { setLS('qaAdminOverrides', map); }
 function getNewItems() { return getLS('qaNewItems', '[]'); }
 function getDeletedItems() { return getLS('qaDeletedItems', '{}'); }
 function setDeletedItems(map) { setLS('qaDeletedItems', map); }
 
-// РџРѕР»СѓС‡РµРЅРёРµ Р°РєС‚СѓР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С… СЃ СѓС‡РµС‚РѕРј СѓРґР°Р»РµРЅРЅС‹С…
+// Р СџР С•Р В»РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓ РЎС“РЎвЂЎР ВµРЎвЂљР С•Р С РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р Р…РЎвЂ№РЎвЂ¦
 function getRuntimeData() {
-    // РЎРЅР°С‡Р°Р»Р° РїСЂРѕР±СѓРµРј Р·Р°РіСЂСѓР·РёС‚СЊ РґР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· localStorage
+    // Р РЋР Р…Р В°РЎвЂЎР В°Р В»Р В° Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С‘РЎвЂљРЎРЉ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ Р С‘Р В· localStorage
     let baseData = uniqueQaData;
     try {
         const userCards = getQaUserCards();
@@ -92,14 +92,14 @@ function getRuntimeData() {
             baseData = userCards;
         }
     } catch (e) {
-        console.warn('[getRuntimeData] РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё userCards:', e);
+        console.warn('[getRuntimeData] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ userCards:', e);
     }
 
     const base = baseData.map(item => ({ ...item }));
     const overrides = getOverrides();
     const newItems = getNewItems();
     const deleted = getDeletedItems();
-    // РџСЂРёРјРµРЅСЏРµРј overrides (РєР°С‚РµРіРѕСЂРёСЏ/РїРѕРґРєР°С‚РµРіРѕСЂРёСЏ/РІРѕРїСЂРѕСЃ/РѕС‚РІРµС‚/С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ)
+    // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С overrides (Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ/Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ/Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ/Р С•РЎвЂљР Р†Р ВµРЎвЂљ/РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ)
     const byQuestion = new Map(base.map(i => [i.question, i]));
     Object.keys(overrides).forEach(origQ => {
         const ov = overrides[origQ];
@@ -111,8 +111,8 @@ function getRuntimeData() {
             if (ov.subcategory) updated.subcategory = ov.subcategory;
             if (ov.question) updated.question = ov.question;
             if (ov.answer) updated.answer = ov.answer;
-            if (ov.formatting) updated.formatting = ov.formatting;  // рџ”Ґ РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
-            // Р•СЃР»Рё РёР·РјРµРЅРёР»РѕСЃСЊ РєР»СЋС‡РµРІРѕРµ РїРѕР»Рµ РІРѕРїСЂРѕСЃР° вЂ” РѕР±РЅРѕРІР»СЏРµРј РєР»СЋС‡ РІ Map
+            if (ov.formatting) updated.formatting = ov.formatting;  // СЂСџвЂќТђ Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+            // Р вЂўРЎРѓР В»Р С‘ Р С‘Р В·Р СР ВµР Р…Р С‘Р В»Р С•РЎРѓРЎРЉ Р С”Р В»РЎР‹РЎвЂЎР ВµР Р†Р С•Р Вµ Р С—Р С•Р В»Р Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В° РІР‚вЂќ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С”Р В»РЎР‹РЎвЂЎ Р Р† Map
             if (ov.question && ov.question !== origQ) {
                 byQuestion.delete(origQ);
                 byQuestion.set(updated.question, updated);
@@ -120,26 +120,26 @@ function getRuntimeData() {
                 byQuestion.set(origQ, updated);
             }
         } else {
-            // Р•СЃР»Рё РёСЃС…РѕРґРЅРѕРіРѕ РІРѕРїСЂРѕСЃР° РЅРµС‚ РІ Р±Р°Р·Рµ, СЂР°СЃСЃРјР°С‚СЂРёРІР°РµРј РєР°Рє РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚
+            // Р вЂўРЎРѓР В»Р С‘ Р С‘РЎРѓРЎвЂ¦Р С•Р Т‘Р Р…Р С•Р С–Р С• Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В° Р Р…Р ВµРЎвЂљ Р Р† Р В±Р В°Р В·Р Вµ, РЎР‚Р В°РЎРѓРЎРѓР СР В°РЎвЂљРЎР‚Р С‘Р Р†Р В°Р ВµР С Р С”Р В°Р С” Р Р…Р С•Р Р†РЎвЂ№Р в„– РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ
             byQuestion.set(ov.question || origQ, {
                 question: ov.question || origQ,
                 answer: ov.answer || '',
-                category: ov.category || 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё',
-                subcategory: ov.subcategory || 'РћР±С‰РµРµ',
-                formatting: ov.formatting || createEmptyFormatting()  // рџ”Ґ Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РґР»СЏ РЅРѕРІС‹С… РєР°СЂС‚РѕС‡РµРє
+                category: ov.category || 'Р вЂР ВµР В· Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘',
+                subcategory: ov.subcategory || 'Р С›Р В±РЎвЂ°Р ВµР Вµ',
+                formatting: ov.formatting || createEmptyFormatting()  // СЂСџвЂќТђ Р В¤Р С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р Т‘Р В»РЎРЏ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”
             });
         }
     });
-    // Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹
+    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№
     newItems.forEach(ni => {
         if (!byQuestion.has(ni.question)) byQuestion.set(ni.question, { ...ni });
     });
-    // РСЃРєР»СЋС‡Р°РµРј СѓРґР°Р»С‘РЅРЅС‹Рµ
+    // Р ВРЎРѓР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р Вµ
     const merged = Array.from(byQuestion.values()).filter(i => !deleted[i.question] && !serverTrashSet.has(i.question));
     return merged;
 }
 
-// рџ”Ґ Р¤СѓРЅРєС†РёСЏ РёСЃРїСЂР°РІР»РµРЅРёСЏ РєРѕРґРёСЂРѕРІРєРё РІ РєР°СЂС‚РѕС‡РєР°С…
+// СЂСџвЂќТђ Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”Р С‘ Р Р† Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°РЎвЂ¦
 function fixEncodingIssues(data) {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) return;
@@ -159,15 +159,15 @@ function fixEncodingIssues(data) {
         const originalCategory = card.category;
         const originalSubcategory = card.subcategory;
 
-        // рџ”§ РСЃРїСЂР°РІР»СЏРµРј РёСЃРєР°Р¶С‘РЅРЅСѓСЋ РєРѕРґРёСЂРѕРІРєСѓ РІ category
-        if (card.category === 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ' || card.category === 'Р”РєСѓРјРµРЅС‚Р°С†РёСЏ' || card.category === 'Р”РєСѓРјРµРЅС‚Р°С†РёСЏ') {
-            card.category = 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ';
+        // СЂСџвЂќВ§ Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р С‘РЎРѓР С”Р В°Р В¶РЎвЂР Р…Р Р…РЎС“РЎР‹ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”РЎС“ Р Р† category
+        if (card.category === 'Р вЂќР С•Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ' || card.category === 'Р вЂќР С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ' || card.category === 'Р вЂќР С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ') {
+            card.category = 'Р вЂќР С•Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ';
             changed = true;
         }
 
-        // рџ”§ РСЃРїСЂР°РІР»СЏРµРј РёСЃРєР°Р¶С‘РЅРЅСѓСЋ РєРѕРґРёСЂРѕРІРєСѓ РІ subcategory
-        if (card.subcategory === 'РўРёРїС‹ С‚СЂРµР±РѕРІР°РЅРёР№' || card.subcategory === 'РўРёРїС‹ С‚СЂРµРѕРІР°РЅРёР№' || card.subcategory === 'РўРёРїС‹ С‚СЂРµРѕРІР°РЅРёР№') {
-            card.subcategory = 'РўРёРїС‹ С‚СЂРµР±РѕРІР°РЅРёР№';
+        // СЂСџвЂќВ§ Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р С‘РЎРѓР С”Р В°Р В¶РЎвЂР Р…Р Р…РЎС“РЎР‹ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”РЎС“ Р Р† subcategory
+        if (card.subcategory === 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР В±Р С•Р Р†Р В°Р Р…Р С‘Р в„–' || card.subcategory === 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР С•Р Р†Р В°Р Р…Р С‘Р в„–' || card.subcategory === 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР С•Р Р†Р В°Р Р…Р С‘Р в„–') {
+            card.subcategory = 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР В±Р С•Р Р†Р В°Р Р…Р С‘Р в„–';
             changed = true;
         }
 
@@ -175,29 +175,29 @@ function fixEncodingIssues(data) {
     });
 
     if (changed) {
-        // РџРѕРґСЃС‡РёС‚С‹РІР°РµРј СЃРєРѕР»СЊРєРѕ РєР°СЂС‚РѕС‡РµРє Р±С‹Р»Рѕ РёСЃРїСЂР°РІР»РµРЅРѕ
+        // Р СџР С•Р Т‘РЎРѓРЎвЂЎР С‘РЎвЂљРЎвЂ№Р Р†Р В°Р ВµР С РЎРѓР С”Р С•Р В»РЎРЉР С”Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” Р В±РЎвЂ№Р В»Р С• Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С•
         const fixedCount = userCards.filter((c, i) =>
             c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
         ).length;
 
         setQaUserCards(fixedCards);
-        // рџ”Ґ РќР• РѕС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё вЂ” РёСЃРїСЂР°РІР»РµРЅРёСЏ СЃРѕС…СЂР°РЅСЏС‚СЃСЏ РїСЂРё СЃР»РµРґСѓСЋС‰РµРј СЏРІРЅРѕРј СЃРѕС…СЂР°РЅРµРЅРёРё
-        console.log('[fixEncodingIssues] РСЃРїСЂР°РІР»РµРЅРѕ РєР°СЂС‚РѕС‡РµРє:', fixedCount, '(СЃРѕС…СЂР°РЅСЏС‚СЃСЏ РїСЂРё СЃР»РµРґСѓСЋС‰РµРј СЃРѕС…СЂР°РЅРµРЅРёРё)');
+        // СЂСџвЂќТђ Р СњР вЂў Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ РІР‚вЂќ Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂљРЎРѓРЎРЏ Р С—РЎР‚Р С‘ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С РЎРЏР Р†Р Р…Р С•Р С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘
+        console.log('[fixEncodingIssues] Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”:', fixedCount, '(РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂљРЎРѓРЎРЏ Р С—РЎР‚Р С‘ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘)');
     }
 }
 
 function getCategoryPlaceholders() { return getLS('qaCategoryPlaceholders', '{}'); }
 function setCategoryPlaceholders(obj) { setLS('qaCategoryPlaceholders', obj); }
-// РџРѕСЂСЏРґРѕРє РєР°С‚РµРіРѕСЂРёР№: С…СЂР°РЅРёС‚СЃСЏ РєР°Рє РјР°СЃСЃРёРІ РёРјС‘РЅ РєР°С‚РµРіРѕСЂРёР№
+// Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–: РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРѓРЎРЏ Р С”Р В°Р С” Р СР В°РЎРѓРЎРѓР С‘Р Р† Р С‘Р СРЎвЂР Р… Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
 function getCategoryOrder() { return getLS('qaCategoryOrder', '[]'); }
 function setCategoryOrder(arr) { setLS('qaCategoryOrder', Array.isArray(arr) ? arr : []); }
-// РџРѕСЂСЏРґРѕРє РїРѕРґРєР°С‚РµРіРѕСЂРёР№ РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј
+// Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏР С
 function getSubcategoryOrderMap() { return getLS('qaSubcategoryOrder', '{}'); }
 function setSubcategoryOrderMap(map) { setLS('qaSubcategoryOrder', map); }
 function getSubcategoryOrderFor(categoryName) { const m = getSubcategoryOrderMap(); return m[categoryName] || []; }
 function setSubcategoryOrderFor(categoryName, arr) { const m = getSubcategoryOrderMap(); m[categoryName] = Array.isArray(arr) ? arr : []; setSubcategoryOrderMap(m); }
 
-// РРЅРґРёРєР°С‚РѕСЂ РёРЅР»Р°Р№РЅ-СЃРѕС…СЂР°РЅРµРЅРёСЏ РЅР° СЃС‚СЂРѕРєРµ РєР°СЂС‚РѕС‡РєРё
+// Р ВР Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р С‘Р Р…Р В»Р В°Р в„–Р Р…-РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Р…Р В° РЎРѓРЎвЂљРЎР‚Р С•Р С”Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘
 function setInlineSaveStatus(rowEl, status, message = '') {
     if (!rowEl) return;
     let badge = rowEl.querySelector('.inline-save-status');
@@ -211,7 +211,7 @@ function setInlineSaveStatus(rowEl, status, message = '') {
         rowEl.appendChild(badge);
     }
     const colors = { saving: '#444', success: '#2e7d32', error: '#c62828' };
-    const texts = { saving: 'РЎРѕС…СЂР°РЅРµРЅРёРµвЂ¦', success: 'РЎРѕС…СЂР°РЅРµРЅРѕ', error: 'РћС€РёР±РєР°' };
+    const texts = { saving: 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р ВµРІР‚В¦', success: 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С•', error: 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°' };
     badge.textContent = message || texts[status] || '';
     badge.style.background = colors[status] || '#444';
     badge.style.color = '#eee';
@@ -221,17 +221,17 @@ function setInlineSaveStatus(rowEl, status, message = '') {
     }
 }
 
-// Р“РµРЅРµСЂР°С‚РѕСЂ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ С‚РµРєСЃС‚Р° РІРѕРїСЂРѕСЃР° РґР»СЏ РєРѕРїРёР№
+// Р вЂњР ВµР Р…Р ВµРЎР‚Р В°РЎвЂљР С•РЎР‚ РЎС“Р Р…Р С‘Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• РЎвЂљР ВµР С”РЎРѓРЎвЂљР В° Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В° Р Т‘Р В»РЎРЏ Р С”Р С•Р С—Р С‘Р в„–
 function genUniqueQuestionGlobal(baseQ) {
-    // РћС‡РёС‰Р°РµРј Р±Р°Р·РѕРІС‹Р№ РІРѕРїСЂРѕСЃ РѕС‚ СЃСѓС„С„РёРєСЃРѕРІ РєРѕРїРёР№
-    const cleanBase = baseQ.replace(/ \(РєРѕРїРёСЏ( \d+)?\)$/, '');
+    // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р В±Р В°Р В·Р С•Р Р†РЎвЂ№Р в„– Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ Р С•РЎвЂљ РЎРѓРЎС“РЎвЂћРЎвЂћР С‘Р С”РЎРѓР С•Р Р† Р С”Р С•Р С—Р С‘Р в„–
+    const cleanBase = baseQ.replace(/ \(Р С”Р С•Р С—Р С‘РЎРЏ( \d+)?\)$/, '');
 
     const exists = (q) => {
-        // РџСЂРѕРІРµСЂСЏРµРј РІ uniqueQaData
+        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р† uniqueQaData
         if (uniqueQaData.some(i => i.question === q)) return true;
-        // РџСЂРѕРІРµСЂСЏРµРј РІ newItems
+        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р† newItems
         if (getNewItems().some(i => i.question === q)) return true;
-        // РџСЂРѕРІРµСЂСЏРµРј РІ qaUserCards
+        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р† qaUserCards
         try {
             const userCardsRaw = localStorage.getItem('qaUserCards');
             if (userCardsRaw) {
@@ -242,16 +242,16 @@ function genUniqueQuestionGlobal(baseQ) {
         return false;
     };
 
-    // РС‰РµРј РІСЃРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РєРѕРїРёРё
+    // Р ВРЎвЂ°Р ВµР С Р Р†РЎРѓР Вµ РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“РЎР‹РЎвЂ°Р С‘Р Вµ Р С”Р С•Р С—Р С‘Р С‘
     let i = 1;
-    let candidate = `${cleanBase} (РєРѕРїРёСЏ)`;
+    let candidate = `${cleanBase} (Р С”Р С•Р С—Р С‘РЎРЏ)`;
     while (exists(candidate)) {
         i++;
-        candidate = `${cleanBase} (РєРѕРїРёСЏ ${i})`;
+        candidate = `${cleanBase} (Р С”Р С•Р С—Р С‘РЎРЏ ${i})`;
     }
     return candidate;
 }
-// РџР»РµР№СЃС…РѕР»РґРµСЂС‹ РґР»СЏ РѕС‚РѕР±СЂР°Р¶Р°РµРјС‹С… РЅР°Р·РІР°РЅРёР№ РїРѕРґРєР°С‚РµРіРѕСЂРёР№ (РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј)
+// Р СџР В»Р ВµР в„–РЎРѓРЎвЂ¦Р С•Р В»Р Т‘Р ВµРЎР‚РЎвЂ№ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµР СРЎвЂ№РЎвЂ¦ Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р в„– Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– (Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏР С)
 function getSubcategoryPlaceholders() { return getLS('qaSubcategoryPlaceholders', '{}'); }
 function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', obj); }
 
@@ -259,7 +259,7 @@ function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', ob
 async function fetchWithAuth(url, options = {}) {
     const user = loggedInUser;
 
-    // Р”РѕР±Р°РІР»СЏРµРј username РІ query РїР°СЂР°РјРµС‚СЂС‹
+    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С username Р Р† query Р С—Р В°РЎР‚Р В°Р СР ВµРЎвЂљРЎР‚РЎвЂ№
     const urlObj = new URL(url, BACKEND_URL);
     if (user && user.username) {
         urlObj.searchParams.set('user', user.username);
@@ -279,7 +279,7 @@ async function fetchWithAuth(url, options = {}) {
 
 // Auto-load user data on page load if user is logged in (qaSessionUser exists)
 async function autoLoadUserData() {
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё Р°РєС‚РёРІРЅР°СЏ СЃРµСЃСЃРёСЏ
+    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р ВµРЎРѓРЎвЂљРЎРЉ Р В»Р С‘ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р В°РЎРЏ РЎРѓР ВµРЎРѓРЎРѓР С‘РЎРЏ
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) {
         return;
@@ -290,7 +290,7 @@ async function autoLoadUserData() {
         const u = JSON.parse(sessionUserRaw);
         if (u && u.username) username = u.username;
     } catch (e) {
-        console.error('[AutoLoad] РћС€РёР±РєР° РїР°СЂСЃРёРЅРіР° qaSessionUser:', e);
+        console.error('[AutoLoad] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С—Р В°РЎР‚РЎРѓР С‘Р Р…Р С–Р В° qaSessionUser:', e);
         return;
     }
 
@@ -298,29 +298,29 @@ async function autoLoadUserData() {
         return;
     }
 
-    // Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ С‡РµСЂРµР· srs/storage.js
-    // рџ”Ґ forceReload=true РґР»СЏ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РјРµР¶РґСѓ СѓСЃС‚СЂРѕР№СЃС‚РІР°РјРё
+    // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎвЂЎР ВµРЎР‚Р ВµР В· srs/storage.js
+    // СЂСџвЂќТђ forceReload=true Р Т‘Р В»РЎРЏ Р С–Р В°РЎР‚Р В°Р Р…РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р СР ВµР В¶Р Т‘РЎС“ РЎС“РЎРѓРЎвЂљРЎР‚Р С•Р в„–РЎРѓРЎвЂљР Р†Р В°Р СР С‘
     try {
         const { loadFromServer } = await import('../srs/storage.js?v=6.20.8');
         await loadFromServer(true);
     } catch (e) {
-        console.error('[AutoLoad] РћС€РёР±РєР° Р°РІС‚РѕР·Р°РіСЂСѓР·РєРё:', e);
+        console.error('[AutoLoad] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘:', e);
     }
 }
 
-// РџСЂРѕСЃС‚РµР№С€Р°СЏ Р·Р°РіР»СѓС€РєР° Р»РѕРіРёРЅР° вЂ” Р·Р°РјРµРЅРёС‚Рµ verifyCredentialsWithSupabase РЅР° СЂРµР°Р»СЊРЅСѓСЋ РїСЂРѕРІРµСЂРєСѓ
+// Р СџРЎР‚Р С•РЎРѓРЎвЂљР ВµР в„–РЎв‚¬Р В°РЎРЏ Р В·Р В°Р С–Р В»РЎС“РЎв‚¬Р С”Р В° Р В»Р С•Р С–Р С‘Р Р…Р В° РІР‚вЂќ Р В·Р В°Р СР ВµР Р…Р С‘РЎвЂљР Вµ verifyCredentialsWithSupabase Р Р…Р В° РЎР‚Р ВµР В°Р В»РЎРЉР Р…РЎС“РЎР‹ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”РЎС“
 let loggedInUser = null;
 function verifyCredentialsWithSupabase(email, password) {
-    // TODO: Р·РґРµСЃСЊ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Supabase (REST/JS SDK) Рё РїСЂРѕРІРµСЂРєР° С…РµС€Р° РїР°СЂРѕР»СЏ
-    // РџРѕРєР° РґРѕРїСѓСЃРєР°РµРј Р»СЋР±РѕР№ РЅРµРїСѓСЃС‚РѕР№ Р»РѕРіРёРЅ
+    // TODO: Р В·Р Т‘Р ВµРЎРѓРЎРЉ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р Вµ Р С” Supabase (REST/JS SDK) Р С‘ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° РЎвЂ¦Р ВµРЎв‚¬Р В° Р С—Р В°РЎР‚Р С•Р В»РЎРЏ
+    // Р СџР С•Р С”Р В° Р Т‘Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р В»РЎР‹Р В±Р С•Р в„– Р Р…Р ВµР С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р В»Р С•Р С–Р С‘Р Р…
     return true;
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РЅР°РІРёРіР°С†РёРё СЃ С‚Р°Р±Р°РјРё
-// Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РёРЅРґРёРєР°С‚РѕСЂ СЃРѕС…СЂР°РЅРµРЅРёСЏ (СЌР»РµРјРµРЅС‚ РІРµСЂС…РЅРµР№ РїР°РЅРµР»Рё)
+// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘ РЎРѓ РЎвЂљР В°Р В±Р В°Р СР С‘
+// Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ (РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ Р Р†Р ВµРЎР‚РЎвЂ¦Р Р…Р ВµР в„– Р С—Р В°Р Р…Р ВµР В»Р С‘)
 let globalSaveStatusEl = null;
 
-// ========== Р¤СѓРЅРєС†РёРё СѓРїСЂР°РІР»РµРЅРёСЏ Р°РЅРёРјР°С†РёРµР№ Р·Р°РіСЂСѓР·РєРё ==========
+// ========== Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘Р С‘ РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘Р ВµР в„– Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ ==========
 function showLoading() {
     const loadingContainer = document.getElementById('loading-container');
     const resultsList = document.getElementById('results-list');
@@ -337,17 +337,17 @@ function hideLoading() {
 // ===========================================================
 
 export function initTabsNavigation(appVersion) {
-    // РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РѕС‚РєСЂС‹С‚Р° Р»Рё СЃС‚СЂР°РЅРёС†Р° СЃС‚Р°С‚РёСЃС‚РёРєРё
+    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р Р…Р Вµ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В° Р В»Р С‘ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘
     const isStatsPage = location.hash === '#/stats';
     console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
 
-    // РџРѕРєР°Р·С‹РІР°РµРј Р°РЅРёРјР°С†РёСЋ Р·Р°РіСЂСѓР·РєРё РїСЂРё СЃС‚Р°СЂС‚Рµ
+    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р С—РЎР‚Р С‘ РЎРѓРЎвЂљР В°РЎР‚РЎвЂљР Вµ
     showLoading();
 
     try {
         const container = document.querySelector('.container');
-        // Р“Р°СЂР°РЅС‚РёСЂСѓРµРј РІРёРґРёРјРѕСЃС‚СЊ РєРѕРЅС‚РµР№РЅРµСЂРѕРІ (РЅР° СЃР»СѓС‡Р°Р№ РµСЃР»Рё РѕРЅРё Р±С‹Р»Рё СЃРєСЂС‹С‚С‹ СЃС‚СЂР°РЅРёС†РµР№ СЃС‚Р°С‚РёСЃС‚РёРєРё)
-        // РќРћ РќР• РґР»СЏ СЃС‚СЂР°РЅРёС†С‹ СЃС‚Р°С‚РёСЃС‚РёРєРё!
+        // Р вЂњР В°РЎР‚Р В°Р Р…РЎвЂљР С‘РЎР‚РЎС“Р ВµР С Р Р†Р С‘Р Т‘Р С‘Р СР С•РЎРѓРЎвЂљРЎРЉ Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р С•Р Р† (Р Р…Р В° РЎРѓР В»РЎС“РЎвЂЎР В°Р в„– Р ВµРЎРѓР В»Р С‘ Р С•Р Р…Р С‘ Р В±РЎвЂ№Р В»Р С‘ РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎвЂ№ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р ВµР в„– РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘)
+        // Р СњР С› Р СњР вЂў Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
         if (container && !isStatsPage) {
             container.style.display = '';
             console.log('[initTabsNavigation] container display reset');
@@ -359,9 +359,9 @@ export function initTabsNavigation(appVersion) {
         }
 
         const searchContainer = document.querySelector('.search-container');
-        // РЎРљР Р«Р’РђР•Рњ СЃС‚СЂРѕРєСѓ РїРѕРёСЃРєР° РґР»СЏ СЃС‚СЂР°РЅРёС†С‹ СЃС‚Р°С‚РёСЃС‚РёРєРё!
+        // Р РЋР С™Р В Р В«Р вЂ™Р С’Р вЂўР Сљ РЎРѓРЎвЂљРЎР‚Р С•Р С”РЎС“ Р С—Р С•Р С‘РЎРѓР С”Р В° Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
         if (searchContainer) {
-            // Р”Р»СЏ СЃС‚Р°С‚РёСЃС‚РёРєРё РѕСЃС‚Р°РІР»СЏРµРј display:none, РґР»СЏ РѕСЃС‚Р°Р»СЊРЅС‹С… СЃС‚СЂР°РЅРёС† РїРѕРєР°Р·С‹РІР°РµРј
+            // Р вЂќР В»РЎРЏ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘ Р С•РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С display:none, Р Т‘Р В»РЎРЏ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ  Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С
             if (!isStatsPage) {
                 searchContainer.style.display = '';
                 console.log('[initTabsNavigation] search-container display reset');
@@ -370,24 +370,24 @@ export function initTabsNavigation(appVersion) {
                 console.log('[initTabsNavigation] search-container hidden (stats page)');
             }
         }
-        // РЈРґР°Р»СЏРµРј СЃС‚Р°СЂСѓСЋ Р°РґРјРёРЅ-РїР°РЅРµР»СЊ РёР· DOM (РЅРѕРІР°СЏ Р»РѕРіРёРєР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃРІРµСЂС…Сѓ)
+        // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР В°РЎР‚РЎС“РЎР‹ Р В°Р Т‘Р СР С‘Р Р…-Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С‘Р В· DOM (Р Р…Р С•Р Р†Р В°РЎРЏ Р В»Р С•Р С–Р С‘Р С”Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ РЎРѓР Р†Р ВµРЎР‚РЎвЂ¦РЎС“)
         const legacyAdminPanel = document.querySelector('.admin-panel');
         if (legacyAdminPanel) legacyAdminPanel.remove();
 
-        // РЎРѕР·РґР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РЅР°РІРёРіР°С†РёРё
+        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘
         const navigationContainer = document.createElement('div');
         navigationContainer.className = 'tabs-navigation';
 
-        // РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РІРµСЂС…РЅРёС… РґРµР№СЃС‚РІРёР№ (СЃС‚Р°С‚РёСЃС‚РёРєР°, Р°РґРјРёРЅРєР°)
+        // Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р Р†Р ВµРЎР‚РЎвЂ¦Р Р…Р С‘РЎвЂ¦ Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘Р в„– (РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°, Р В°Р Т‘Р СР С‘Р Р…Р С”Р В°)
         const topActions = document.createElement('div');
         topActions.className = 'top-actions-bar';
-        // РЎРљР Р«Р’РђР•Рњ top-actions-bar РґР»СЏ СЃС‚СЂР°РЅРёС†С‹ СЃС‚Р°С‚РёСЃС‚РёРєРё!
+        // Р РЋР С™Р В Р В«Р вЂ™Р С’Р вЂўР Сљ top-actions-bar Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
         topActions.style.display = isStatsPage ? 'none' : 'flex';
         topActions.style.alignItems = 'center';
         topActions.style.justifyContent = 'flex-start';
         topActions.style.padding = '4px 0';
 
-        // РЎРѕР·РґР°С‘Рј MutationObserver РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ РёР·РјРµРЅРµРЅРёР№ display
+        // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С MutationObserver Р Т‘Р В»РЎРЏ Р С•РЎвЂљРЎРѓР В»Р ВµР В¶Р С‘Р Р†Р В°Р Р…Р С‘РЎРЏ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„– display
         if (isStatsPage) {
             window.__statsTopActionsObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
@@ -402,7 +402,7 @@ export function initTabsNavigation(appVersion) {
             window.__statsTopActionsObserver.observe(topActions, { attributes: true });
         }
 
-        // Р’РµСЂСЃРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ
+        // Р вЂ™Р ВµРЎР‚РЎРѓР С‘РЎРЏ Р С—РЎР‚Р С‘Р В»Р С•Р В¶Р ВµР Р…Р С‘РЎРЏ
         const verEl = document.createElement('div');
         verEl.textContent = `v${appVersion}`;
         verEl.className = 'app-version-display';
@@ -411,22 +411,22 @@ export function initTabsNavigation(appVersion) {
         verEl.style.fontWeight = 'bold';
         verEl.style.marginLeft = '10px';
 
-        // РљРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РїСЂР°РІРѕР№ С‡Р°СЃС‚Рё (РЈСЂРѕРІРµРЅСЊ + РЎС‚СЂРёРє)
+        // Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р В°Р Р†Р С•Р в„– РЎвЂЎР В°РЎРѓРЎвЂљР С‘ (Р Р€РЎР‚Р С•Р Р†Р ВµР Р…РЎРЉ + Р РЋРЎвЂљРЎР‚Р С‘Р С”)
         const levelContainer = document.createElement('div');
         levelContainer.className = 'level-container-right';
         levelContainer.style.marginLeft = 'auto';
         levelContainer.style.display = 'flex';
         levelContainer.style.alignItems = 'center';
 
-        // РџРѕРєР°Р·С‹РІР°РµРј РІСЃРµ РІРѕРїСЂРѕСЃС‹ РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
+        // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р Р†РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р С—РЎР‚Р С‘ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
         showAllQuestions();
 
-        // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ Р·Р°РіСЂСѓР·РєР° СЃ СѓС‡С‘С‚РѕРј С‚РµРєСѓС‰РµРіРѕ РєРѕРЅС‚РµРєСЃС‚Р°
-        // РћР±РЅРѕРІР»СЏРµРј РєРѕРЅС‚РµРєСЃС‚ С‡РµСЂРµР· 100РјСЃ (РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С… РёР· all-data.js)
+        // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р В°РЎРЏ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В° РЎРѓ РЎС“РЎвЂЎРЎвЂРЎвЂљР С•Р С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
+        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ РЎвЂЎР ВµРЎР‚Р ВµР В· 100Р СРЎРѓ (Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р С‘Р В· all-data.js)
         setTimeout(() => {
             refreshCurrentContext();
 
-            // Р›РѕРіРёСЂРѕРІР°РЅРёРµ СЂР°Р·РјРµСЂРѕРІ РґР»СЏ РѕС‚Р»Р°РґРєРё
+            // Р вЂєР С•Р С–Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ РЎР‚Р В°Р В·Р СР ВµРЎР‚Р С•Р Р† Р Т‘Р В»РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р С‘
             /* DEBUG
             const topBar = document.querySelector('.top-actions-bar');
             const container = document.querySelector('.container');
@@ -454,54 +454,54 @@ export function initTabsNavigation(appVersion) {
             */
         }, 100);
 
-        // РЎР»СѓС€Р°РµРј РѕР±РЅРѕРІР»РµРЅРёРµ РёР·Р±СЂР°РЅРЅРѕРіРѕ РёР· РѕР±Р»Р°РєР°
+        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р С–Р С• Р С‘Р В· Р С•Р В±Р В»Р В°Р С”Р В°
         window.addEventListener('favoritesUpdated', () => {
             refreshCurrentContext();
         });
 
-        // РЎР»СѓС€Р°РµРј dataLoaded РѕС‚ all-data.js РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С…
+        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С dataLoaded Р С•РЎвЂљ all-data.js Р Т‘Р В»РЎРЏ Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
         document.addEventListener('dataLoaded', (e) => {
             const data = e.detail?.data;
 
-            // РЎРєСЂС‹РІР°РµРј Р°РЅРёРјР°С†РёСЋ Р·Р°РіСЂСѓР·РєРё
+            // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘
             hideLoading();
 
             if (data && data.length > 0) {
-                // РџРµСЂРµСЃС‚СЂР°РёРІР°РµРј С‚Р°Р±С‹ РєР°С‚РµРіРѕСЂРёР№ СЃ РЅРѕРІС‹РјРё РґР°РЅРЅС‹РјРё
+                // Р СџР ВµРЎР‚Р ВµРЎРѓРЎвЂљРЎР‚Р В°Р С‘Р Р†Р В°Р ВµР С РЎвЂљР В°Р В±РЎвЂ№ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– РЎРѓ Р Р…Р С•Р Р†РЎвЂ№Р СР С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р СР С‘
                 refreshCategoriesTabs();
-                // РћР±РЅРѕРІР»СЏРµРј С‚РµРєСѓС‰РёР№ РєРѕРЅС‚РµРєСЃС‚
+                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ
                 refreshCurrentContext();
             }
         });
 
-        // рџ”Ґ РРЎРџР РђР’Р›Р•РќРР• РљРћР”РР РћР’РљР: РџРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С… СЃ СЃРµСЂРІРµСЂР°
-        // Р’С‹Р·С‹РІР°РµРј РїРѕСЃР»Рµ loadFromServer, РєРѕРіРґР° РґР°РЅРЅС‹Рµ СѓР¶Рµ РІ localStorage
+        // СЂСџвЂќТђ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў Р С™Р С›Р вЂќР ВР В Р С›Р вЂ™Р С™Р В: Р СџР С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°
+        // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С—Р С•РЎРѓР В»Р Вµ loadFromServer, Р С”Р С•Р С–Р Т‘Р В° Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ Р Р† localStorage
         window.addEventListener('qaDataLoadedFromServer', () => {
             fixEncodingIssues();
             refreshCategoriesTabs();
             refreshCurrentContext();
         });
 
-        // РЎС‚СЂРѕРёРј РєР°С‚РµРіРѕСЂРёРё РїРѕ РґР°РЅРЅС‹Рј (СЃ СѓС‡С‘С‚РѕРј Р»РѕРєР°Р»СЊРЅС‹С… РїСЂР°РІРѕРє/РЅРѕРІС‹С… СЌР»РµРјРµРЅС‚РѕРІ/СѓРґР°Р»РµРЅРёР№)
+        // Р РЋРЎвЂљРЎР‚Р С•Р С‘Р С Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р С—Р С• Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р С (РЎРѓ РЎС“РЎвЂЎРЎвЂРЎвЂљР С•Р С Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р С—РЎР‚Р В°Р Р†Р С•Р С”/Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р†/РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„–)
         let categories = buildCategoriesFromData(getRuntimeData());
 
-        // РЎРѕР·РґР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ С‚Р°Р±РѕРІ
+        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ РЎвЂљР В°Р В±Р С•Р Р†
         const tabsContainer = document.createElement('div');
         tabsContainer.className = 'tabs-container';
         console.log('[TABS-NAVIGATION] tabsContainer created:', tabsContainer);
         console.log('[TABS-NAVIGATION] tabs-container parent will be:', document.querySelector('.tabs-header'));
 
-        // РЎРѕР·РґР°РµРј С‚Р°Р± "Р’СЃРµ РІРѕРїСЂРѕСЃС‹"
+        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С РЎвЂљР В°Р В± "Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№"
         const allTab = document.createElement('div');
         allTab.className = 'tab';
         allTab.dataset.category = 'all';
-        allTab.textContent = 'Р’СЃРµ РІРѕРїСЂРѕСЃС‹';
+        allTab.textContent = 'Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№';
         tabsContainer.appendChild(allTab);
-        // РЎРѕР·РґР°РµРј С‚Р°Р± "РР·Р±СЂР°РЅРЅРѕРµ"
+        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С РЎвЂљР В°Р В± "Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ"
         const favTab = document.createElement('div');
         favTab.className = 'tab';
         favTab.dataset.category = 'favorites';
-        // РРєРѕРЅРєР° РёР·Р±СЂР°РЅРЅРѕРіРѕ: Р·РІРµР·РґР° (SVG)
+        // Р ВР С”Р С•Р Р…Р С”Р В° Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р С–Р С•: Р В·Р Р†Р ВµР В·Р Т‘Р В° (SVG)
         favTab.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align: middle;">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
@@ -511,7 +511,7 @@ export function initTabsNavigation(appVersion) {
     `;
         tabsContainer.appendChild(favTab);
 
-        // Р”РѕР±Р°РІР»СЏРµРј С‚Р°Р±С‹ РґР»СЏ РІСЃРµС… РєР°С‚РµРіРѕСЂРёР№
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎвЂљР В°Р В±РЎвЂ№ Р Т‘Р В»РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
         categories.forEach((category, index) => {
             const tab = document.createElement('div');
             tab.className = 'tab';
@@ -525,12 +525,12 @@ export function initTabsNavigation(appVersion) {
 
         console.log('[TABS-NAVIGATION] All tabs created, total:', tabsContainer.querySelectorAll('.tab').length);
 
-        // РЎРѕР·РґР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РґР»СЏ РїРѕРґРєР°С‚РµРіРѕСЂРёР№
+        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
         const subcategoriesContainer = document.createElement('div');
         subcategoriesContainer.className = 'subcategories-container';
         subcategoriesContainer.style.display = 'none';
 
-        // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕРґСЃРІРµС‚РєСѓ Р°РєС‚РёРІРЅРѕРіРѕ С‚Р°Р±Р° РёР· С‚РµРєСѓС‰РµРіРѕ РєРѕРЅС‚РµРєСЃС‚Р°
+        // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С—Р С•Р Т‘РЎРѓР Р†Р ВµРЎвЂљР С”РЎС“ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•Р С–Р С• РЎвЂљР В°Р В±Р В° Р С‘Р В· РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
         try {
             const key = currentContextKey || 'all';
             tabsContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -547,7 +547,7 @@ export function initTabsNavigation(appVersion) {
                     const tabEl = tabsContainer.querySelector(`.tab[data-category="${selectedCategory.id}"]`);
                     if (tabEl) tabEl.classList.add('active');
                     subcategoriesContainer.style.display = 'flex';
-                    // РџРѕРґРєР°С‚РµРіРѕСЂРёРё Р±СѓРґСѓС‚ РїРµСЂРµСЃС‚СЂРѕРµРЅС‹ РїСЂРё render/refresh; Р·РґРµСЃСЊ С‚РѕР»СЊРєРѕ РІРёР·СѓР°Р»СЊРЅРѕ РїРѕРєР°Р·С‹РІР°РµРј Р±Р»РѕРє
+                    // Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р В±РЎС“Р Т‘РЎС“РЎвЂљ Р С—Р ВµРЎР‚Р ВµРЎРѓРЎвЂљРЎР‚Р С•Р ВµР Р…РЎвЂ№ Р С—РЎР‚Р С‘ render/refresh; Р В·Р Т‘Р ВµРЎРѓРЎРЉ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С• Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р В±Р В»Р С•Р С”
                 } else {
                     allTab.classList.add('active');
                     subcategoriesContainer.style.display = 'none';
@@ -561,7 +561,7 @@ export function initTabsNavigation(appVersion) {
             subcategoriesContainer.style.display = 'none';
         }
 
-        // Р”РѕР±Р°РІР»СЏРµРј РѕР±СЂР°Р±РѕС‚С‡РёРєРё РєР»РёРєР° РїРѕ С‚Р°Р±Р°Рј
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С”Р В»Р С‘Р С”Р В° Р С—Р С• РЎвЂљР В°Р В±Р В°Р С
         tabsContainer.addEventListener('click', function (e) {
             console.log('[TABS-NAVIGATION] Click on tabsContainer, target:', e.target);
             if (e.target.classList.contains('tab')) {
@@ -572,11 +572,11 @@ export function initTabsNavigation(appVersion) {
                     position: window.getComputedStyle(e.target).position
                 });
 
-                // РЈРґР°Р»СЏРµРј РєР»Р°СЃСЃ active Сѓ РІСЃРµС… С‚Р°Р±РѕРІ
+                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active РЎС“ Р Р†РЎРѓР ВµРЎвЂ¦ РЎвЂљР В°Р В±Р С•Р Р†
                 const tabs = tabsContainer.querySelectorAll('.tab');
                 tabs.forEach(tab => tab.classList.remove('active'));
 
-                // Р”РѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ active РІС‹Р±СЂР°РЅРЅРѕРјСѓ С‚Р°Р±Сѓ
+                // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р СРЎС“ РЎвЂљР В°Р В±РЎС“
                 e.target.classList.add('active');
 
                 console.log('[TABS-NAVIGATION] Tab after active:', {
@@ -588,11 +588,11 @@ export function initTabsNavigation(appVersion) {
                 const categoryId = e.target.dataset.category;
 
                 if (categoryId === 'all') {
-                    // Р•СЃР»Рё РІС‹Р±СЂР°РЅС‹ РІСЃРµ РІРѕРїСЂРѕСЃС‹, СЃРєСЂС‹РІР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РїРѕРґРєР°С‚РµРіРѕСЂРёР№
+                    // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…РЎвЂ№ Р Р†РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№, РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
                     subcategoriesContainer.style.display = 'none';
                     showAllQuestions();
                 } else if (categoryId === 'favorites') {
-                    // РР·Р±СЂР°РЅРЅРѕРµ Р±РµР· РїРѕРґРєР°С‚РµРіРѕСЂРёР№
+                    // Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ Р В±Р ВµР В· Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
                     subcategoriesContainer.style.display = 'none';
                     showFavorites();
                 } else {
@@ -605,25 +605,25 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // Р”РѕР±Р°РІР»СЏРµРј РѕР±СЂР°Р±РѕС‚С‡РёРєРё РєР»РёРєР° РїРѕ РєР°СЂС‚РѕС‡РєР°Рј РїРѕРґРєР°С‚РµРіРѕСЂРёР№
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С”Р В»Р С‘Р С”Р В° Р С—Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°Р С Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
         subcategoriesContainer.addEventListener('click', function (e) {
             if (e.target.classList.contains('subcategory-card')) {
-                // РЈРґР°Р»СЏРµРј РєР»Р°СЃСЃ active Сѓ РІСЃРµС… РєР°СЂС‚РѕС‡РµРє
+                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active РЎС“ Р Р†РЎРѓР ВµРЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”
                 const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
                 cards.forEach(card => card.classList.remove('active'));
 
-                // Р”РѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ active РІС‹Р±СЂР°РЅРЅРѕР№ РєР°СЂС‚РѕС‡РєРµ
+                // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
                 e.target.classList.add('active');
 
                 const subcategoryId = e.target.dataset.subcategory;
                 const categoryId = e.target.dataset.category || tabsContainer.querySelector('.tab.active').dataset.category;
 
                 if (subcategoryId === 'all') {
-                    // Р•СЃР»Рё РІС‹Р±СЂР°РЅС‹ РІСЃРµ РїРѕРґРєР°С‚РµРіРѕСЂРёРё, С„РёР»СЊС‚СЂСѓРµРј С‚РѕР»СЊРєРѕ РїРѕ РєР°С‚РµРіРѕСЂРёРё
+                    // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…РЎвЂ№ Р Р†РЎРѓР Вµ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘, РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚РЎС“Р ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
                     const selectedCategory = categories.find(cat => cat.id == categoryId);
                     filterQuestionsByCategory(selectedCategory.name);
                 } else {
-                    // Р•СЃР»Рё РІС‹Р±СЂР°РЅР° РєРѕРЅРєСЂРµС‚РЅР°СЏ РїРѕРґРєР°С‚РµРіРѕСЂРёСЏ, С„РёР»СЊС‚СЂСѓРµРј РїРѕ РєР°С‚РµРіРѕСЂРёРё Рё РїРѕРґРєР°С‚РµРіРѕСЂРёРё
+                    // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р В° Р С”Р С•Р Р…Р С”РЎР‚Р ВµРЎвЂљР Р…Р В°РЎРЏ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ, РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚РЎС“Р ВµР С Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р С‘ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
                     const selectedCategory = categories.find(cat => cat.id == categoryId);
                     const selectedSubcategory = selectedCategory.subcategories.find(
                         subcat => subcat.id == subcategoryId
@@ -634,10 +634,10 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // РРЅС‚РµРіСЂРёСЂСѓРµРј РєРЅРѕРїРєСѓ С„РёР»СЊС‚СЂРѕРІ РІРЅСѓС‚СЂСЊ СЃРїРёСЃРєР° С‚Р°Р±РѕРІ РєР°Рє РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ (sticky left)
+        // Р ВР Р…РЎвЂљР ВµР С–РЎР‚Р С‘РЎР‚РЎС“Р ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р† Р Р†Р Р…РЎС“РЎвЂљРЎР‚РЎРЉ РЎРѓР С—Р С‘РЎРѓР С”Р В° РЎвЂљР В°Р В±Р С•Р Р† Р С”Р В°Р С” Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р в„– РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ (sticky left)
         const filtersBtn = document.createElement('button');
         filtersBtn.className = 'tab';
-        filtersBtn.title = 'Р¤РёР»СЊС‚СЂС‹';
+        filtersBtn.title = 'Р В¤Р С‘Р В»РЎРЉРЎвЂљРЎР‚РЎвЂ№';
         filtersBtn.style.padding = '0 10px';
         filtersBtn.style.minWidth = 'auto';
         filtersBtn.style.position = 'sticky';
@@ -654,12 +654,12 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // Р’СЃС‚Р°РІР»СЏРµРј РєРЅРѕРїРєСѓ С„РёР»СЊС‚СЂРѕРІ РїРµСЂРµРґ РѕСЃС‚Р°Р»СЊРЅС‹РјРё С‚Р°Р±Р°РјРё
+        // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р† Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№Р СР С‘ РЎвЂљР В°Р В±Р В°Р СР С‘
         tabsContainer.insertBefore(filtersBtn, tabsContainer.firstChild);
 
-        // РљРЅРѕРїРєР° СЂРµР¶РёРјР° РѕР±СѓС‡РµРЅРёСЏ (СЃРєСЂС‹С‚Р° РЅР° РјРѕР±РёР»СЊРЅС‹С… С‡РµСЂРµР· CSS .learn-main-btn)
+        // Р С™Р Р…Р С•Р С—Р С”Р В° РЎР‚Р ВµР В¶Р С‘Р СР В° Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ (РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљР В° Р Р…Р В° Р СР С•Р В±Р С‘Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎвЂЎР ВµРЎР‚Р ВµР В· CSS .learn-main-btn)
         const learnBtn = document.createElement('button');
-        learnBtn.title = 'РќР°С‡Р°С‚СЊ РѕР±СѓС‡РµРЅРёРµ';
+        learnBtn.title = 'Р СњР В°РЎвЂЎР В°РЎвЂљРЎРЉ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ';
         learnBtn.className = 'nav-icon-btn tab';
         learnBtn.style.padding = '0 10px';
         learnBtn.style.minWidth = 'auto';
@@ -675,13 +675,13 @@ export function initTabsNavigation(appVersion) {
 
                 if (!currentQuestions || currentQuestions.length === 0) {
                     console.warn('[Learn] No questions in current context');
-                    alert('Р’ С‚РµРєСѓС‰РµРј СЃРїРёСЃРєРµ РЅРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ. Р’С‹Р±РµСЂРёС‚Рµ РєР°С‚РµРіРѕСЂРёСЋ РёР»Рё "Р’СЃРµ РІРѕРїСЂРѕСЃС‹".');
+                    alert('Р вЂ™ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С РЎРѓР С—Р С‘РЎРѓР С”Р Вµ Р Р…Р ВµРЎвЂљ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р Т‘Р В»РЎРЏ Р С‘Р В·РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ. Р вЂ™РЎвЂ№Р В±Р ВµРЎР‚Р С‘РЎвЂљР Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ Р С‘Р В»Р С‘ "Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№".');
                     return;
                 }
 
                 let module;
                 try {
-                    module = await import('../srs/learn-ui.js?v=6.09');
+                    module = await import('../srs/learn-ui.js?v=6.20.8);
                 } catch (e1) {
                     console.warn('[Learn] Import v2.42 failed, trying plain import', e1);
                     try {
@@ -699,46 +699,46 @@ export function initTabsNavigation(appVersion) {
                 startLearnSession(currentQuestions);
             } catch (err) {
                 console.error('[Learn] Error:', err);
-                alert('РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РїСѓСЃС‚РёС‚СЊ СЂРµР¶РёРј РѕР±СѓС‡РµРЅРёСЏ: ' + err.message);
+                alert('Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р В·Р В°Р С—РЎС“РЎРѓРЎвЂљР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ: ' + err.message);
             }
         });
 
-        // РљРЅРѕРїРєР° СЃС‚Р°С‚РёСЃС‚РёРєРё
+        // Р С™Р Р…Р С•Р С—Р С”Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘
         const statsBtn = document.createElement('button');
         statsBtn.className = 'nav-icon-btn tab';
-        statsBtn.title = 'РЎС‚Р°С‚РёСЃС‚РёРєР°';
+        statsBtn.title = 'Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°';
         statsBtn.style.minWidth = 'auto';
         statsBtn.style.padding = '0 10px';
         statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
         statsBtn.addEventListener('click', async () => {
-            // РћС‡РёС‰Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СѓС‡РµРЅРёСЏ РџР•Р Р•Р” РїРµСЂРµС…РѕРґРѕРј РЅР° СЃС‚Р°С‚РёСЃС‚РёРєСѓ
+            // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ Р СџР вЂўР В Р вЂўР вЂќ Р С—Р ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘Р С•Р С Р Р…Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”РЎС“
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.09');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8);
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
 
-        // РћР±СЂР°Р±РѕС‚С‡РёРє РёР·РјРµРЅРµРЅРёСЏ hash (РґР»СЏ РїРµСЂРµС…РѕРґР° РёР· РјРѕРґР°Р»РєРё)
+        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ hash (Р Т‘Р В»РЎРЏ Р С—Р ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘Р В° Р С‘Р В· Р СР С•Р Т‘Р В°Р В»Р С”Р С‘)
         window.addEventListener('hashchange', async () => {
-            // РЎРќРђР§РђР›Рђ РѕС‚РєР»СЋС‡Р°РµРј MutationObserver!
+            // Р РЋР СњР С’Р В§Р С’Р вЂєР С’ Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С MutationObserver!
             if (window.__statsTopActionsObserver) {
                 window.__statsTopActionsObserver.disconnect();
                 window.__statsTopActionsObserver = null;
             }
 
             if (location.hash === '#/stats') {
-                // РџР РћР’Р•Р РЇР•Рњ: СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё stats-container
+                // Р СџР В Р С›Р вЂ™Р вЂўР В Р Р‡Р вЂўР Сљ: РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ Р В»Р С‘ stats-container
                 const statsContainerExists = document.getElementById('stats-container');
 
-                // Р•СЃР»Рё stats-container РќР• СЃСѓС‰РµСЃС‚РІСѓРµС‚, СЃРѕР·РґР°РµРј РµРіРѕ
+                // Р вЂўРЎРѓР В»Р С‘ stats-container Р СњР вЂў РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ, РЎРѓР С•Р В·Р Т‘Р В°Р ВµР С Р ВµР С–Р С•
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.09');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8);
                     initStatsPage(appVersion);
                 }
 
-                // РЎРєСЂС‹РІР°РµРј РіР»Р°РІРЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ Рё sidebar
+                // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С–Р В»Р В°Р Р†Р Р…РЎвЂ№Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С‘ sidebar
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'none';
@@ -748,30 +748,30 @@ export function initTabsNavigation(appVersion) {
                     sidebar.style.display = 'none';
                 }
             } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
-                // РџРµСЂРµС…РѕРґ РЅР° РіР»Р°РІРЅСѓСЋ - Р·Р°РєСЂС‹РІР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РµСЃР»Рё РѕС‚РєСЂС‹С‚Р°
+                // Р СџР ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘ Р Р…Р В° Р С–Р В»Р В°Р Р†Р Р…РЎС“РЎР‹ - Р В·Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”РЎС“ Р ВµРЎРѓР В»Р С‘ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В°
                 console.log('[HASHCHANGE #/] Navigating to home page...');
 
-                // РћС‡РёС‰Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СѓС‡РµРЅРёСЏ РµСЃР»Рё РµСЃС‚СЊ
+                // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ Р ВµРЎРѓР В»Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ
                 if (window.__lastCandidates) {
                     window.__lastCandidates = null;
                     console.log('[HASHCHANGE #/] Cleared __lastCandidates');
                 }
 
-                // Р—Р°РєСЂС‹РІР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РµСЃР»Рё РѕС‚РєСЂС‹С‚Р°
+                // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”РЎС“ Р ВµРЎРѓР В»Р С‘ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В°
                 const statsContainer = document.getElementById('stats-container');
                 if (statsContainer) {
                     statsContainer.remove();
                     console.log('[HASHCHANGE #/] Removed stats-container');
                 }
 
-                // РџРѕРєР°Р·С‹РІР°РµРј РіР»Р°РІРЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ
+                // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С–Р В»Р В°Р Р†Р Р…РЎвЂ№Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'block';
                     console.log('[HASHCHANGE #/] mainContainer display set to block');
                 }
 
-                // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј sidebar
+                // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С sidebar
                 const sidebar = document.querySelector('.sidebar');
                 if (sidebar) {
                     sidebar.style.display = '';
@@ -780,7 +780,7 @@ export function initTabsNavigation(appVersion) {
                     console.warn('[HASHCHANGE #/] sidebar NOT FOUND!');
                 }
 
-                // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј top-actions-bar
+                // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С top-actions-bar
                 const topActionsBar = document.querySelector('.top-actions-bar');
                 if (topActionsBar) {
                     topActionsBar.style.display = 'flex';
@@ -789,7 +789,7 @@ export function initTabsNavigation(appVersion) {
                     console.warn('[HASHCHANGE #/] top-actions-bar NOT FOUND!');
                 }
 
-                // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј search-container
+                // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С search-container
                 const searchContainer = document.querySelector('.search-container');
                 if (searchContainer) {
                     searchContainer.style.display = '';
@@ -798,20 +798,20 @@ export function initTabsNavigation(appVersion) {
                     console.warn('[HASHCHANGE #/] search-container NOT FOUND!');
                 }
 
-                // РћС‚РєР»СЋС‡Р°РµРј MutationObserver РґР»СЏ top-actions-bar
+                // Р С›РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С MutationObserver Р Т‘Р В»РЎРЏ top-actions-bar
                 if (window.__statsTopActionsObserver) {
                     window.__statsTopActionsObserver.disconnect();
                     window.__statsTopActionsObserver = null;
                     console.log('[HASHCHANGE #/] Disconnected __statsTopActionsObserver');
                 }
 
-                // РћР±РЅРѕРІР»СЏРµРј С‚РµРєСѓС‰РёР№ РєРѕРЅС‚РµРєСЃС‚
+                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ
                 refreshCurrentContext();
                 console.log('[HASHCHANGE #] Home page setup complete');
             }
         });
 
-        // РљРЅРѕРїРєР° РїСЂРѕС„РёР»СЏ / Р’РѕР№С‚Рё
+        // Р С™Р Р…Р С•Р С—Р С”Р В° Р С—РЎР‚Р С•РЎвЂћР С‘Р В»РЎРЏ / Р вЂ™Р С•Р в„–РЎвЂљР С‘
         const loginMainBtn = document.createElement('button');
         loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
         loginMainBtn.style.minWidth = 'auto';
@@ -820,12 +820,12 @@ export function initTabsNavigation(appVersion) {
 
         const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
         loginMainBtn.innerHTML = userIconSvg;
-        loginMainBtn.title = 'Р’РѕР№С‚Рё';
+        loginMainBtn.title = 'Р вЂ™Р С•Р в„–РЎвЂљР С‘';
         ensureDefaultUsers();
         loginMainBtn.addEventListener('click', () => {
             if (loggedInUser) {
-                const username = loggedInUser.username || loggedInUser.email || 'РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ';
-                if (confirm(`Р’С‹Р№С‚Рё РёР· Р°РєРєР°СѓРЅС‚Р° ${username}?`)) {
+                const username = loggedInUser.username || loggedInUser.email || 'Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ';
+                if (confirm(`Р вЂ™РЎвЂ№Р в„–РЎвЂљР С‘ Р С‘Р В· Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР В° ${username}?`)) {
                     window.qaAuth.logout();
                 }
             } else {
@@ -834,15 +834,15 @@ export function initTabsNavigation(appVersion) {
         });
 
         const editToggleBtn = document.createElement('button');
-        editToggleBtn.title = 'Р РµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ';
+        editToggleBtn.title = 'Р В Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
         editToggleBtn.className = 'nav-icon-btn edit-mode-btn';
         editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
         editToggleBtn.style.display = 'none';
 
-        // РљРЅРѕРїРєР° Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР° РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ (РїРѕСЏРІР»СЏРµС‚СЃСЏ РїРѕСЃР»Рµ РІС…РѕРґР° Р°РґРјРёРЅР°)
+        // Р С™Р Р…Р С•Р С—Р С”Р В° Р В°Р Т‘Р СР С‘Р Р…Р С‘РЎРѓРЎвЂљРЎР‚Р В°РЎвЂљР С•РЎР‚Р В° Р Т‘Р В»РЎРЏ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР в„– (Р С—Р С•РЎРЏР Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ Р С—Р С•РЎРѓР В»Р Вµ Р Р†РЎвЂ¦Р С•Р Т‘Р В° Р В°Р Т‘Р СР С‘Р Р…Р В°)
         const adminUsersBtn = document.createElement('button');
         adminUsersBtn.className = 'nav-icon-btn tab';
-        adminUsersBtn.title = 'Р”РѕР±Р°РІРёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ';
+        adminUsersBtn.title = 'Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ';
         adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
         adminUsersBtn.style.display = 'none';
         adminUsersBtn.style.minWidth = 'auto';
@@ -850,67 +850,67 @@ export function initTabsNavigation(appVersion) {
         adminUsersBtn.addEventListener('click', openAdminUsersPanel);
 
         const cloudBtn = document.createElement('button');
-        cloudBtn.title = 'РћР±Р»Р°РєРѕ';
-        cloudBtn.textContent = 'РћР±Р»Р°РєРѕ';
+        cloudBtn.title = 'Р С›Р В±Р В»Р В°Р С”Р С•';
+        cloudBtn.textContent = 'Р С›Р В±Р В»Р В°Р С”Р С•';
         cloudBtn.className = 'tab';
         cloudBtn.style.display = 'none';
         cloudBtn.style.width = 'auto';
         // Removed manual styles to match app style
         cloudBtn.addEventListener('click', openCloudOverview);
 
-        // Р”РѕР±Р°РІР»СЏРµРј РєРЅРѕРїРєРё: РЅР° РјРѕР±РёР»СЊРЅС‹С… РІ topActions, РЅР° desktop С‚РѕР¶Рµ РІ topActions
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р Р…Р С•Р С—Р С”Р С‘: Р Р…Р В° Р СР С•Р В±Р С‘Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р Р† topActions, Р Р…Р В° desktop РЎвЂљР С•Р В¶Р Вµ Р Р† topActions
         const isMobile = window.matchMedia('(max-width: 768px)').matches;
         const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
 
-        // рџ”Ґ Р’РЎР•Р“Р”Рђ РґРѕР±Р°РІР»СЏРµРј РєРЅРѕРїРєРё РІ topActions (Рё mobile, Рё desktop)
-        topActions.appendChild(loginMainBtn); /* Р’С…РѕРґ/Р’С‹С…РѕРґ - РїРµСЂРІС‹Р№ */
-        topActions.appendChild(statsBtn); /* РЎС‚Р°С‚РёСЃС‚РёРєР° - РІС‚РѕСЂРѕР№ */
-        topActions.appendChild(learnBtn); /* РћР±СѓС‡РµРЅРёРµ - С‚СЂРµС‚РёР№ */
+        // СЂСџвЂќТђ Р вЂ™Р РЋР вЂўР вЂњР вЂќР С’ Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† topActions (Р С‘ mobile, Р С‘ desktop)
+        topActions.appendChild(loginMainBtn); /* Р вЂ™РЎвЂ¦Р С•Р Т‘/Р вЂ™РЎвЂ№РЎвЂ¦Р С•Р Т‘ - Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р в„– */
+        topActions.appendChild(statsBtn); /* Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В° - Р Р†РЎвЂљР С•РЎР‚Р С•Р в„– */
+        topActions.appendChild(learnBtn); /* Р С›Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ - РЎвЂљРЎР‚Р ВµРЎвЂљР С‘Р в„– */
         topActions.appendChild(levelContainer);
 
         if (isMobile) {
-            // Mobile: РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РєРЅРѕРїРєРё РІ topActions
+            // Mobile: Р Т‘Р С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† topActions
             loginMainBtn.style.position = 'sticky';
             loginMainBtn.style.right = '0';
             loginMainBtn.style.zIndex = '10';
             loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
 
-            // Р’РµСЂСЃРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ (РєРѕРјРїР°РєС‚РЅР°СЏ)
+            // Р вЂ™Р ВµРЎР‚РЎРѓР С‘РЎРЏ Р С—РЎР‚Р С‘Р В»Р С•Р В¶Р ВµР Р…Р С‘РЎРЏ (Р С”Р С•Р СР С—Р В°Р С”РЎвЂљР Р…Р В°РЎРЏ)
             topActions.appendChild(verEl);
 
-            // РљРЅРѕРїРєР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ (РґР»СЏ admin Рё editor)
+            // Р С™Р Р…Р С•Р С—Р С”Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ (Р Т‘Р В»РЎРЏ admin Р С‘ editor)
             topActions.appendChild(editToggleBtn);
 
-            // РљРЅРѕРїРєР° РґРѕР±Р°РІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (С‚РѕР»СЊРєРѕ admin)
+            // Р С™Р Р…Р С•Р С—Р С”Р В° Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ (РЎвЂљР С•Р В»РЎРЉР С”Р С• admin)
             topActions.appendChild(adminUsersBtn);
 
-            // рџ”Ґ РЎР РђР—РЈ РїСЂРѕРІРµСЂСЏРµРј РїСЂР°РІР° РґРѕСЃС‚СѓРїР° РїРѕСЃР»Рµ РґРѕР±Р°РІР»РµРЅРёСЏ РєРЅРѕРїРѕРє РІ DOM
+            // СЂСџвЂќТђ Р РЋР В Р С’Р вЂ”Р Р€ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р С—РЎР‚Р В°Р Р†Р В° Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р В° Р С—Р С•РЎРѓР В»Р Вµ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С” Р Р† DOM
             setTimeout(() => {
                 try {
                     const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
 
-                    // РљРЅРѕРїРєР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ: admin Рё editor
+                    // Р С™Р Р…Р С•Р С—Р С”Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ: admin Р С‘ editor
                     if (user && ['admin', 'editor'].includes(user.role)) {
                         editToggleBtn.style.setProperty('display', 'inline-block', 'important');
                     } else {
                         editToggleBtn.style.setProperty('display', 'none', 'important');
                     }
 
-                    // РљРЅРѕРїРєР° РґРѕР±Р°РІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ: С‚РѕР»СЊРєРѕ admin
+                    // Р С™Р Р…Р С•Р С—Р С”Р В° Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ: РЎвЂљР С•Р В»РЎРЉР С”Р С• admin
                     if (user && user.role === 'admin') {
                         adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
                     } else {
                         adminUsersBtn.style.setProperty('display', 'none', 'important');
                     }
                 } catch (e) {
-                    console.error('[MOBILE ACCESS] РћС€РёР±РєР° РїСЂРѕРІРµСЂРєРё РїСЂР°РІ:', e);
-                    // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃРєСЂС‹РІР°РµРј РєРЅРѕРїРєРё
+                    console.error('[MOBILE ACCESS] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С‘ Р С—РЎР‚Р В°Р Р†:', e);
+                    // Р СџР С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹ РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С”Р Р…Р С•Р С—Р С”Р С‘
                     editToggleBtn.style.setProperty('display', 'none', 'important');
                     adminUsersBtn.style.setProperty('display', 'none', 'important');
                 }
             }, 50);
         } else {
-            // Desktop: РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РєРЅРѕРїРєРё РІ topActions
+            // Desktop: Р Т‘Р С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† topActions
             // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
             topActions.appendChild(verEl);
             topActions.appendChild(editToggleBtn);
@@ -918,17 +918,17 @@ export function initTabsNavigation(appVersion) {
             topActions.appendChild(adminUsersBtn);
         }
 
-        // Р”РѕР±Р°РІР»СЏРµРј РєРѕРЅС‚РµР№РЅРµСЂ С‚Р°Р±РѕРІ РІ РЅР°РІРёРіР°С†РёСЋ РЅР°РїСЂСЏРјСѓСЋ
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ РЎвЂљР В°Р В±Р С•Р Р† Р Р† Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р Р…Р В°Р С—РЎР‚РЎРЏР СРЎС“РЎР‹
         navigationContainer.appendChild(tabsContainer);
 
-        // Bottom sheet С„РёР»СЊС‚СЂРѕРІ
+        // Bottom sheet РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р†
         let activeFilters = { status: null, ef: null };
         const sheet = document.getElementById('filters-sheet');
 
         if (sheet) {
             const overlay = document.getElementById('sheet-overlay');
 
-            // РџСЂРёРІСЏР·С‹РІР°РµРј РѕР±СЂР°Р±РѕС‚С‡РёРєРё Рє СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРј СЌР»РµРјРµРЅС‚Р°Рј РёР· index.html
+            // Р СџРЎР‚Р С‘Р Р†РЎРЏР В·РЎвЂ№Р Р†Р В°Р ВµР С Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С” РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“РЎР‹РЎвЂ°Р С‘Р С РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР В°Р С Р С‘Р В· index.html
             const closeBtn = document.getElementById('close-filters');
             const resetBtn = document.getElementById('reset-filters');
             const applyBtn = document.getElementById('apply-filters');
@@ -950,7 +950,7 @@ export function initTabsNavigation(appVersion) {
                 activeFilters = { status: null, ef: null };
                 refreshCurrentContext();
                 closeSheet();
-                // РЎР±СЂРѕСЃ РІРёР·СѓР°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ С‡РёРїРѕРІ
+                // Р РЋР В±РЎР‚Р С•РЎРѓ Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘РЎРЏ РЎвЂЎР С‘Р С—Р С•Р Р†
                 sheet.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
             });
 
@@ -959,10 +959,10 @@ export function initTabsNavigation(appVersion) {
                 closeSheet();
             });
 
-            // РћС‚РєСЂС‹С‚РёРµ РїРѕ РєРЅРѕРїРєРµ С„РёР»СЊС‚СЂРѕРІ
+            // Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р†
             filtersBtn.addEventListener('click', openSheet);
 
-            // РћР±СЂР°Р±РѕС‚РєР° РєР»РёРєРѕРІ РїРѕ С‡РёРїР°Рј
+            // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р С”Р В»Р С‘Р С”Р С•Р Р† Р С—Р С• РЎвЂЎР С‘Р С—Р В°Р С
             sheet.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
                     const filterData = chip.dataset.filter; // "status:new" or "difficulty:easy"
@@ -977,7 +977,7 @@ export function initTabsNavigation(appVersion) {
                         activeFilters.ef = activeFilters.ef === value ? null : value;
                     }
 
-                    // РћР±РЅРѕРІР»СЏРµРј РІРёР·СѓР°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+                    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•Р Вµ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ
                     updateChipsVisuals();
                 });
             });
@@ -1035,11 +1035,11 @@ export function initTabsNavigation(appVersion) {
             displayQuestions(filtered, '');
         }
 
-        // РЈРґР°Р»С‘РЅ РїСЂРµР¶РЅРёР№ РѕРіРѕРЅС‘Рє РґРѕ РІРёРґР¶РµС‚Р° СѓСЂРѕРІРЅСЏ вЂ” РїРµСЂРµРЅРµСЃС‘РЅ Р±Р»РёР¶Рµ Рє С€РєР°Р»Рµ
+        // Р Р€Р Т‘Р В°Р В»РЎвЂР Р… Р С—РЎР‚Р ВµР В¶Р Р…Р С‘Р в„– Р С•Р С–Р С•Р Р…РЎвЂР С” Р Т‘Р С• Р Р†Р С‘Р Т‘Р В¶Р ВµРЎвЂљР В° РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ РІР‚вЂќ Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓРЎвЂР Р… Р В±Р В»Р С‘Р В¶Р Вµ Р С” РЎв‚¬Р С”Р В°Р В»Р Вµ
 
         // Logic to update icon/tooltip on login change
         function updateLoginBtnState() {
-            loginMainBtn.title = loggedInUser ? 'Р’С‹Р№С‚Рё' : 'Р’РѕР№С‚Рё';
+            loginMainBtn.title = loggedInUser ? 'Р вЂ™РЎвЂ№Р в„–РЎвЂљР С‘' : 'Р вЂ™Р С•Р в„–РЎвЂљР С‘';
             const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
             loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
             // loginMainBtn.style.color = '#d0d0d0';
@@ -1049,15 +1049,15 @@ export function initTabsNavigation(appVersion) {
         window.qaAuth.getUser = () => loggedInUser;
         window.qaAuth.openLogin = () => openLoginModal();
         window.qaAuth.logout = async () => {
-            // рџ”Ґ РћС‡РёС‰Р°РµРј РґР°РЅРЅС‹Рµ Telegram OAuth РїРµСЂРµРґ РІС‹С…РѕРґРѕРј
+            // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Telegram OAuth Р С—Р ВµРЎР‚Р ВµР Т‘ Р Р†РЎвЂ№РЎвЂ¦Р С•Р Т‘Р С•Р С
             sessionStorage.removeItem('tgAuthUser');
 
             await setLoggedUser(null);
             window.location.reload();
         };
-        // РџР»Р°С€РєР° СѓСЂРѕРІРЅСЏ Рё XP
+        // Р СџР В»Р В°РЎв‚¬Р С”Р В° РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ Р С‘ XP
         import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
-            // Р”РѕР±Р°РІР»СЏРµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С‘Р СРЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
             const usernameSpan = document.createElement('span');
             usernameSpan.className = 'username-display';
             usernameSpan.style.marginRight = '8px';
@@ -1065,7 +1065,7 @@ export function initTabsNavigation(appVersion) {
             usernameSpan.style.color = '#4ec9b0';
             usernameSpan.style.fontWeight = '600';
 
-            // РџРѕР»СѓС‡Р°РµРј РёРјСЏ РёР· СЃРµСЃСЃРёРё
+            // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С Р С‘Р СРЎРЏ Р С‘Р В· РЎРѓР ВµРЎРѓРЎРѓР С‘Р С‘
             try {
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 if (sessionUserRaw) {
@@ -1073,15 +1073,15 @@ export function initTabsNavigation(appVersion) {
                     if (user && user.username) {
                         usernameSpan.textContent = user.username;
                     } else {
-                        usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+                        usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
                         usernameSpan.style.color = '#808080';
                     }
                 } else {
-                    usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+                    usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
                     usernameSpan.style.color = '#808080';
                 }
             } catch (e) {
-                usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+                usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
                 usernameSpan.style.color = '#808080';
             }
 
@@ -1093,14 +1093,14 @@ export function initTabsNavigation(appVersion) {
             box.style.transition = 'all 0.2s ease';
             box.style.padding = '4px 8px';
             box.style.borderRadius = '8px';
-            box.title = 'РЈСЂРѕРІРЅРё Рё XP';
+            box.title = 'Р Р€РЎР‚Р С•Р Р†Р Р…Р С‘ Р С‘ XP';
             box.onclick = () => {
-                // РЎРЅР°С‡Р°Р»Р° РїСЂРѕР±СѓРµРј С‡РµСЂРµР· window (РµСЃР»Рё stats-ui Р·Р°РіСЂСѓР¶РµРЅ)
+                // Р РЋР Р…Р В°РЎвЂЎР В°Р В»Р В° Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С РЎвЂЎР ВµРЎР‚Р ВµР В· window (Р ВµРЎРѓР В»Р С‘ stats-ui Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…)
                 if (window.openLevelInfoModal) {
                     window.openLevelInfoModal();
                 } else {
-                    // РРЅР°С‡Рµ Р·Р°РіСЂСѓР¶Р°РµРј stats-ui
-                    import('../srs/stats-ui.js?v=6.09').then(() => {
+                    // Р ВР Р…Р В°РЎвЂЎР Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С stats-ui
+                    import('../srs/stats-ui.js?v=6.20.8).then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {
@@ -1149,13 +1149,13 @@ export function initTabsNavigation(appVersion) {
             bar.appendChild(fill); bar.appendChild(txt);
             box.appendChild(label); box.appendChild(bar);
             levelContainer.appendChild(box);
-            // РћРіРѕРЅС‘Рє СЃС‚СЂРёРєР° СЂСЏРґРѕРј СЃРѕ С€РєР°Р»РѕР№ СѓСЂРѕРІРЅСЏ
+            // Р С›Р С–Р С•Р Р…РЎвЂР С” РЎРѓРЎвЂљРЎР‚Р С‘Р С”Р В° РЎР‚РЎРЏР Т‘Р С•Р С РЎРѓР С• РЎв‚¬Р С”Р В°Р В»Р С•Р в„– РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ
             const streakRaw = localStorage.getItem('studyStreak') || '{}';
             let streakVal = 0;
             try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch { }
             if (streakVal > 0) {
                 const flame = document.createElement('span');
-                flame.textContent = `рџ”Ґ ${streakVal}`;
+                flame.textContent = `СЂСџвЂќТђ ${streakVal}`;
                 flame.className = 'streak-flame';
                 flame.style.fontSize = '12px';
                 flame.style.marginLeft = '4px';
@@ -1176,7 +1176,7 @@ export function initTabsNavigation(appVersion) {
                     const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
                     if (tx) tx.textContent = `${cur}/${tot}`;
 
-                    // РћР±РЅРѕРІР»СЏРµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+                    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р СРЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
                     const usernameSpan = levelContainer.querySelector('.username-display');
                     if (usernameSpan) {
                         try {
@@ -1187,7 +1187,7 @@ export function initTabsNavigation(appVersion) {
                                     usernameSpan.textContent = user.username;
                                     usernameSpan.style.color = '#4ec9b0';
                                 } else {
-                                    usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+                                    usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
                                     usernameSpan.style.color = '#808080';
                                 }
                             }
@@ -1199,10 +1199,10 @@ export function initTabsNavigation(appVersion) {
             window.addEventListener('statsClosed', updateLevelInline);
         }).catch(() => { });
 
-        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРЅРѕРїРѕРє РїРѕ СЃРѕС…СЂР°РЅС‘РЅРЅРѕРјСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ
+        // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С” Р С—Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…Р С•Р СРЎС“ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎР‹
         try { setLoggedUser(loggedInUser); } catch { }
 
-        // РџР°РЅРµР»СЊ РєРѕСЂР·РёРЅС‹ (РІРёРґРЅР° С‚РѕР»СЊРєРѕ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ)
+        // Р СџР В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ (Р Р†Р С‘Р Т‘Р Р…Р В° РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ)
         const trashPanel = document.createElement('div');
         trashPanel.className = 'trash-panel';
         trashPanel.style.display = 'none';
@@ -1210,19 +1210,19 @@ export function initTabsNavigation(appVersion) {
         trashPanel.style.borderRadius = '6px';
         trashPanel.style.padding = '8px';
         trashPanel.style.marginBottom = '8px';
-        // Р’РєР»СЋС‡Р°РµРј РїСЂРѕРєСЂСѓС‚РєСѓ РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ СЂРµР¶РёРјР°
+        // Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”РЎС“ Р Р…Р ВµР В·Р В°Р Р†Р С‘РЎРѓР С‘Р СР С• Р С•РЎвЂљ РЎР‚Р ВµР В¶Р С‘Р СР В°
         trashPanel.style.overflowY = 'auto';
-        // trashPanel.style.maxHeight СѓРґР°Р»РµРЅ, СѓРїСЂР°РІР»СЏРµС‚СЃСЏ CSS
+        // trashPanel.style.maxHeight РЎС“Р Т‘Р В°Р В»Р ВµР Р…, РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ CSS
         trashPanel.innerHTML = '<div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
 
-        // Р”РѕР±Р°РІР»СЏРµРј СЌР»РµРјРµРЅС‚С‹ РІ РєРѕРЅС‚РµР№РЅРµСЂ РЅР°РІРёРіР°С†РёРё
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ Р Р† Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘
         navigationContainer.appendChild(topActions);
         navigationContainer.appendChild(tabsContainer);
         navigationContainer.appendChild(subcategoriesContainer);
 
-        // Р’СЃС‚Р°РІР»СЏРµРј РєРѕРЅС‚РµР№РЅРµСЂ РЅР°РІРёРіР°С†РёРё РїРµСЂРµРґ РєРѕРЅС‚РµР№РЅРµСЂРѕРј РїРѕРёСЃРєР°
-        // Р’СЃС‚Р°РІР»СЏРµРј РІРµСЂС…РЅСЋСЋ РїР°РЅРµР»СЊ Рё РєРѕСЂР·РёРЅСѓ РїРµСЂРµРґ РЅР°РІРёРіР°С†РёРµР№
-        // container.insertBefore(topControls, searchContainer); // РЈРґР°Р»РµРЅРѕ
+        // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘ Р С—Р ВµРЎР‚Р ВµР Т‘ Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р С•Р С Р С—Р С•Р С‘РЎРѓР С”Р В°
+        // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Р†Р ВµРЎР‚РЎвЂ¦Р Р…РЎР‹РЎР‹ Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С‘ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“ Р С—Р ВµРЎР‚Р ВµР Т‘ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р ВµР в„–
+        // container.insertBefore(topControls, searchContainer); // Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р С•
 
         if (container) {
             if (searchContainer && searchContainer.parentNode === container) {
@@ -1235,15 +1235,15 @@ export function initTabsNavigation(appVersion) {
             console.error('Main container not found, cannot insert navigation');
         }
 
-        // РЎР»СѓС€Р°РµРј dataLoaded РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ РєРѕСЂР·РёРЅС‹ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С…
+        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С dataLoaded Р Т‘Р В»РЎРЏ Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
         document.addEventListener('dataLoaded', () => {
             refreshServerTrash();
         });
 
-        // Р”РµР»Р°РµРј refreshServerTrash РіР»РѕР±Р°Р»СЊРЅРѕ РґРѕСЃС‚СѓРїРЅРѕР№
+        // Р вЂќР ВµР В»Р В°Р ВµР С refreshServerTrash Р С–Р В»Р С•Р В±Р В°Р В»РЎРЉР Р…Р С• Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р Р…Р С•Р в„–
         window.refreshServerTrash = refreshServerTrash;
 
-        // РџСЂРёРІСЏР·С‹РІР°РµРј РіР»РѕР±Р°Р»СЊРЅСѓСЋ СЃСЃС‹Р»РєСѓ РЅР° РёРЅРґРёРєР°С‚РѕСЂ СЃРѕС…СЂР°РЅРµРЅРёСЏ
+        // Р СџРЎР‚Р С‘Р Р†РЎРЏР В·РЎвЂ№Р Р†Р В°Р ВµР С Р С–Р В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎС“РЎР‹ РЎРѓРЎРѓРЎвЂ№Р В»Р С”РЎС“ Р Р…Р В° Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ
         // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
 
         (async () => {
@@ -1252,28 +1252,28 @@ export function initTabsNavigation(appVersion) {
                 if (Array.isArray(meta.categoryOrder)) setCategoryOrder(meta.categoryOrder);
                 if (meta.subcategoryOrder && typeof meta.subcategoryOrder === 'object') setSubcategoryOrderMap(meta.subcategoryOrder);
                 if (meta.orderOverrides && typeof meta.orderOverrides === 'object') setLS('qaOrderOverrides', meta.orderOverrides);
-                // refreshServerTrash() РІС‹Р·С‹РІР°РµС‚СЃСЏ РџРћРЎР›Р• Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С… СЃ СЃРµСЂРІРµСЂР° (РІ loadFromServer)
+                // refreshServerTrash() Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµРЎвЂљРЎРѓРЎРЏ Р СџР С›Р РЋР вЂєР вЂў Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (Р Р† loadFromServer)
                 refreshCategoriesTabs();
             } catch { }
         })();
 
-        // РџСЂРёРјРµРЅСЏРµРј СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р в„– РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С—РЎР‚Р С‘ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
         if (editMode) {
-            // рџ”Ґ Р”РѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ on РєРЅРѕРїРєРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+            // СЂСџвЂќТђ Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ on Р С”Р Р…Р С•Р С—Р С”Р Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
             editToggleBtn.classList.add('on');
-            editToggleBtn.title = 'Р’С‹РєР»СЋС‡РёС‚СЊ СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ';
+            editToggleBtn.title = 'Р вЂ™РЎвЂ№Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
 
             try {
                 const sidebar = document.querySelector('.sidebar');
-                if (sidebar) sidebar.classList.remove('collapsed'); // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЂР°Р·РІРѕСЂР°С‡РёРІР°РµРј РїСЂРё СЃС‚Р°СЂС‚Рµ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+                if (sidebar) sidebar.classList.remove('collapsed'); // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ РЎР‚Р В°Р В·Р Р†Р С•РЎР‚Р В°РЎвЂЎР С‘Р Р†Р В°Р ВµР С Р С—РЎР‚Р С‘ РЎРѓРЎвЂљР В°РЎР‚РЎвЂљР Вµ Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
                 const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
                 const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (!existingTrashBtn && sidebarButtons) {
                     const trashBtn = document.createElement('button');
                     trashBtn.id = 'trash-mode-button';
-                    trashBtn.title = 'РљРѕСЂР·РёРЅР°';
-                    trashBtn.setAttribute('aria-label', 'РљРѕСЂР·РёРЅР°');
+                    trashBtn.title = 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°';
+                    trashBtn.setAttribute('aria-label', 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°');
                     trashBtn.className = 'nav-icon-btn';
                     trashBtn.style.padding = '6px';
                     trashBtn.style.minWidth = 'auto';
@@ -1294,7 +1294,7 @@ export function initTabsNavigation(appVersion) {
             } catch { }
         }
 
-        // ===== Р›РѕРєР°Р»СЊРЅР°СЏ Р°РІС‚РѕСЂРёР·Р°С†РёСЏ =====
+        // ===== Р вЂєР С•Р С”Р В°Р В»РЎРЉР Р…Р В°РЎРЏ Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ =====
         function ensureDefaultUsers() {
             const raw = localStorage.getItem('usersDB') || '[]';
             let users;
@@ -1328,94 +1328,94 @@ export function initTabsNavigation(appVersion) {
         ];
 
         async function setLoggedUser(user, token = null) {
-            // РџРµСЂРµРєР»СЋС‡РµРЅРёРµ Guest -> User (Login)
+            // Р СџР ВµРЎР‚Р ВµР С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р Вµ Guest -> User (Login)
             if (!loggedInUser && user) {
-                // Р‘СЌРєР°Рї РґР°РЅРЅС‹С… РіРѕСЃС‚СЏ
+                // Р вЂРЎРЊР С”Р В°Р С— Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р С–Р С•РЎРѓРЎвЂљРЎРЏ
                 const backup = {};
                 DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
                 localStorage.setItem('guest_backup', JSON.stringify(backup));
 
-                // РћС‡РёС‰Р°РµРј РґР°РЅРЅС‹Рµ, С‡С‚РѕР±С‹ Р·Р°РіСЂСѓР·РёС‚СЊ РїСЂРѕС„РёР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅР°С‡РёСЃС‚Рѕ
+                // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С‘РЎвЂљРЎРЉ Р С—РЎР‚Р С•РЎвЂћР С‘Р В»РЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ Р Р…Р В°РЎвЂЎР С‘РЎРѓРЎвЂљР С•
                 DATA_KEYS.forEach(k => localStorage.removeItem(k));
                 localStorage.removeItem('localDataTimestamp');
 
-                // РЎРѕС…СЂР°РЅСЏРµРј С‚РѕРєРµРЅ РµСЃР»Рё РµСЃС‚СЊ
+                // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С РЎвЂљР С•Р С”Р ВµР Р… Р ВµРЎРѓР В»Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ
                 if (token) {
                     localStorage.setItem('sessionToken', token);
                 }
             }
 
-            // РџРµСЂРµРєР»СЋС‡РµРЅРёРµ User -> Guest (Logout)
+            // Р СџР ВµРЎР‚Р ВµР С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р Вµ User -> Guest (Logout)
             if (loggedInUser && !user) {
-                console.log('[LOGOUT] === РќРђР§РђР›Рћ Р’Р«РҐРћР”Рђ ===');
+                console.log('[LOGOUT] === Р СњР С’Р В§Р С’Р вЂєР С› Р вЂ™Р В«Р ТђР С›Р вЂќР С’ ===');
 
-                // рџ”Ґ РћС‡РёС‰Р°РµРј РєР»СЋС‡Рё Telegram Р°РІС‚РѕСЂРёР·Р°С†РёРё РІ localStorage
+                // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р С”Р В»РЎР‹РЎвЂЎР С‘ Telegram Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р Р† localStorage
                 localStorage.removeItem('qaUsername');
                 localStorage.removeItem('qaAuthType');
 
-                // рџ”Ґ РћС‡РёС‰Р°РµРј РґР°РЅРЅС‹Рµ Telegram OAuth РІ sessionStorage
+                // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Telegram OAuth Р Р† sessionStorage
                 sessionStorage.removeItem('tgAuthUser');
 
-                // рџ”Ґ РћС‡РёС‰Р°РµРј СЃРµСЃСЃРёСЋ Telegram (РµСЃР»Рё РІРґСЂСѓРі РѕСЃС‚Р°Р»Р°СЃСЊ)
+                // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Telegram (Р ВµРЎРѓР В»Р С‘ Р Р†Р Т‘РЎР‚РЎС“Р С– Р С•РЎРѓРЎвЂљР В°Р В»Р В°РЎРѓРЎРЉ)
                 sessionStorage.removeItem('telegramUser');
 
-                // вљ пёЏ Р’РђР–РќРћ: РЎРѕС…СЂР°РЅСЏРµРј Р’РЎР• РґР°РЅРЅС‹Рµ РЅР° СЃРµСЂРІРµСЂ РџР•Р Р•Р” РІС‹С…РѕРґРѕРј
-                // рџ”Ґ РРЎРџР РђР’Р›Р•РќРР•: РќРµ СЃРѕС…СЂР°РЅСЏРµРј РµСЃР»Рё РґР°РЅРЅС‹Рµ СѓР¶Рµ СЃРѕС…СЂР°РЅРµРЅС‹ (qaNewItems РїСѓСЃС‚)
+                // РІС™В РїС‘РЏ Р вЂ™Р С’Р вЂ“Р СњР С›: Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р вЂ™Р РЋР вЂў Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р СџР вЂўР В Р вЂўР вЂќ Р Р†РЎвЂ№РЎвЂ¦Р С•Р Т‘Р С•Р С
+                // СЂСџвЂќТђ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: Р СњР Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р ВµРЎРѓР В»Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№ (qaNewItems Р С—РЎС“РЎРѓРЎвЂљ)
                 const newItems = getNewItems();
                 const deletedItems = getDeletedItems();
                 const hasUnsavedChanges = (newItems && newItems.length > 0) ||
                     (deletedItems && Object.keys(deletedItems).length > 0);
 
-                console.log('[LOGOUT] РџСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё РЅРµСЃРѕС…СЂР°РЅС‘РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ:', {
+                console.log('[LOGOUT] Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р ВµРЎРѓРЎвЂљРЎРЉ Р В»Р С‘ Р Р…Р ВµРЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ:', {
                     hasUnsavedChanges,
                     newItemsCount: newItems?.length || 0,
                     deletedCount: Object.keys(deletedItems || {}).length
                 });
 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] РЎРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ РЅР° СЃРµСЂРІРµСЂРµ РїРµСЂРµРґ РІС‹С…РѕРґРѕРј...');
+                    console.log('[LOGOUT] Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ Р С—Р ВµРЎР‚Р ВµР Т‘ Р Р†РЎвЂ№РЎвЂ¦Р С•Р Т‘Р С•Р С...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
                         console.error('[Logout] Failed to save data before logout:', e);
                     }
                 } else {
-                    console.log('[LOGOUT] Р’СЃРµ РґР°РЅРЅС‹Рµ СѓР¶Рµ СЃРѕС…СЂР°РЅРµРЅС‹, РїСЂРѕРїСѓСЃРєР°РµРј saveMergedToServer');
+                    console.log('[LOGOUT] Р вЂ™РЎРѓР Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№, Р С—РЎР‚Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С saveMergedToServer');
                 }
 
-                // вљ пёЏ Р’РђР–РќРћ: РџРѕР»РЅРѕСЃС‚СЊСЋ РѕС‡РёС‰Р°РµРј localStorage РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
-                // Р”Р°РЅРЅС‹Рµ СѓР¶Рµ СЃРѕС…СЂР°РЅРµРЅС‹ РЅР° СЃРµСЂРІРµСЂРµ, РїСЂРё СЃР»РµРґСѓСЋС‰РµРј РІС…РѕРґРµ Р·Р°РіСЂСѓР·РёРј РѕС‚С‚СѓРґР°
+                // РІС™В РїС‘РЏ Р вЂ™Р С’Р вЂ“Р СњР С›: Р СџР С•Р В»Р Р…Р С•РЎРѓРЎвЂљРЎРЉРЎР‹ Р С•РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С localStorage Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
+                // Р вЂќР В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ, Р С—РЎР‚Р С‘ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С Р Р†РЎвЂ¦Р С•Р Т‘Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С‘Р С Р С•РЎвЂљРЎвЂљРЎС“Р Т‘Р В°
                 const DATA_KEYS_TO_CLEAR = [
-                    // РљР°СЂС‚РѕС‡РєРё, РёР·Р±СЂР°РЅРЅРѕРµ, РєРѕСЂР·РёРЅР°
+                    // Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘, Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ, Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р В°
                     'qaUserCards_admin', 'qaUserCards_jeff', 'qaUserCards_stas',
                     'qaFavorites_admin', 'qaFavorites_jeff', 'qaFavorites_stas',
                     'qaUserTrash_admin', 'qaUserTrash_jeff', 'qaUserTrash_stas',
                     'qaUserCards_guest', 'qaFavorites_guest', 'qaUserTrash_guest',
-                    // РђРґРјРёРЅРєР° Рё overrides
+                    // Р С’Р Т‘Р СР С‘Р Р…Р С”Р В° Р С‘ overrides
                     'qaAdminOverrides', 'qaNewItems', 'qaDeletedItems',
                     'qaCategoryPlaceholders', 'qaCategoryOrder', 'qaOrderOverrides',
-                    // РЎРµСЃСЃРёСЏ
+                    // Р РЋР ВµРЎРѓРЎРѓР С‘РЎРЏ
                     'localDataTimestamp', 'qaSessionUser', 'sessionToken', 'currentUser',
-                    // рџ”Ґ РџР РћР“Р Р•РЎРЎ Р Р”РћРЎРўРР–Р•РќРРЇ (С‡С‚РѕР±С‹ РіРѕСЃС‚СЊ РЅРµ РІРёРґРµР» РґР°РЅРЅС‹Рµ Р°РґРјРёРЅР°)
+                    // СЂСџвЂќТђ Р СџР В Р С›Р вЂњР В Р вЂўР РЋР РЋ Р В Р вЂќР С›Р РЋР СћР ВР вЂ“Р вЂўР СњР ВР Р‡ (РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С–Р С•РЎРѓРЎвЂљРЎРЉ Р Р…Р Вµ Р Р†Р С‘Р Т‘Р ВµР В» Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р В°Р Т‘Р СР С‘Р Р…Р В°)
                     'srsProgress', 'studyAchievements', 'studyStreak',
                     'dailyPoints', 'dailyBonusPoints', 'dailyDayBonusPoints',
                     'studyStats'
                 ];
                 DATA_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
 
-                console.log('[LOGOUT] localStorage РѕС‡РёС‰РµРЅ, РєР»СЋС‡Рё:', DATA_KEYS_TO_CLEAR);
+                console.log('[LOGOUT] localStorage Р С•РЎвЂЎР С‘РЎвЂ°Р ВµР Р…, Р С”Р В»РЎР‹РЎвЂЎР С‘:', DATA_KEYS_TO_CLEAR);
 
-                // РўР°РєР¶Рµ РѕС‡РёС‰Р°РµРј СЃС‚Р°СЂС‹Рµ РєР»СЋС‡Рё Р±РµР· СЃСѓС„С„РёРєСЃРѕРІ
+                // Р СћР В°Р С”Р В¶Р Вµ Р С•РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓРЎвЂљР В°РЎР‚РЎвЂ№Р Вµ Р С”Р В»РЎР‹РЎвЂЎР С‘ Р В±Р ВµР В· РЎРѓРЎС“РЎвЂћРЎвЂћР С‘Р С”РЎРѓР С•Р Р†
                 ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
 
-                // рџ”Ґ Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РѕС‡РёС‰Р°РµРј РїСЂРѕРіСЂРµСЃСЃ Р±РµР· СЃСѓС„С„РёРєСЃРѕРІ
+                // СЂСџвЂќТђ Р вЂќР С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• Р С•РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ Р В±Р ВµР В· РЎРѓРЎС“РЎвЂћРЎвЂћР С‘Р С”РЎРѓР С•Р Р†
                 ['srsProgress', 'studyAchievements', 'studyStreak', 'dailyPoints', 'dailyBonusPoints', 'dailyDayBonusPoints', 'studyStats']
                     .forEach(key => localStorage.removeItem(key));
 
-                // вљ пёЏ Р’РђР–РќРћ: РЈРґР°Р»СЏРµРј СЃРµСЃСЃРёСЋ РїРѕР»РЅРѕСЃС‚СЊСЋ
+                // РІС™В РїС‘РЏ Р вЂ™Р С’Р вЂ“Р СњР С›: Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Р С—Р С•Р В»Р Р…Р С•РЎРѓРЎвЂљРЎРЉРЎР‹
                 clearQaUserCards();
 
-                console.log('[LOGOUT] === Р’Р«РҐРћР” Р—РђР’Р•Р РЁР•Рќ ===');
+                console.log('[LOGOUT] === Р вЂ™Р В«Р ТђР С›Р вЂќ Р вЂ”Р С’Р вЂ™Р вЂўР В Р РЃР вЂўР Сњ ===');
             }
 
             loggedInUser = user;
@@ -1430,12 +1430,12 @@ export function initTabsNavigation(appVersion) {
                 }
             } catch { }
             updateLoginBtnState();
-            // РџРѕРєР°Р·Р°С‚СЊ/СЃРєСЂС‹С‚СЊ Р°РґРјРёРЅСЃРєРёРµ РєРЅРѕРїРєРё РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂРѕР»Рё
+            // Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ/РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р В°Р Т‘Р СР С‘Р Р…РЎРѓР С”Р С‘Р Вµ Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† Р В·Р В°Р Р†Р С‘РЎРѓР С‘Р СР С•РЎРѓРЎвЂљР С‘ Р С•РЎвЂљ РЎР‚Р С•Р В»Р С‘
             try {
-                adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // РўРѕР»СЊРєРѕ admin РјРѕР¶РµС‚ СЃРѕР·РґР°РІР°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
-                // editToggleBtn РґРѕСЃС‚СѓРїРµРЅ admin Рё editor
+                adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Р СћР С•Р В»РЎРЉР С”Р С• admin Р СР С•Р В¶Р ВµРЎвЂљ РЎРѓР С•Р В·Р Т‘Р В°Р Р†Р В°РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР в„–
+                // editToggleBtn Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р… admin Р С‘ editor
                 editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
-                // genStatsBtn РґРѕСЃС‚СѓРїРµРЅ С‚РѕР»СЊРєРѕ admin
+                // genStatsBtn Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р… РЎвЂљР С•Р В»РЎРЉР С”Р С• admin
                 genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
             } catch { }
             try { migrateDeviceRecordsToUser(); } catch { }
@@ -1444,21 +1444,21 @@ export function initTabsNavigation(appVersion) {
                     if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
                         mod.hydrateLocalFromSupabase().then(() => {
                             const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
-                            // РўР°РєР¶Рµ РѕР±РЅРѕРІР»СЏРµРј РёР·Р±СЂР°РЅРЅРѕРµ
+                            // Р СћР В°Р С”Р В¶Р Вµ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ
                             window.dispatchEvent(new Event('favoritesUpdated'));
-                            // РћР±РЅРѕРІР»СЏРµРј UI С‚Р°Р±РѕРІ РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С…
+                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С UI РЎвЂљР В°Р В±Р С•Р Р† Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
                             window.dispatchEvent(new Event('dataLoaded'));
                         }).catch(() => { });
                     }
                 }).catch(() => { });
             } else {
-                // Р•СЃР»Рё РІС‹С€Р»Рё (Guest), С‚РѕР¶Рµ РѕР±РЅРѕРІРёРј UI
+                // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№РЎв‚¬Р В»Р С‘ (Guest), РЎвЂљР С•Р В¶Р Вµ Р С•Р В±Р Р…Р С•Р Р†Р С‘Р С UI
                 window.dispatchEvent(new Event('xpUpdated'));
                 window.dispatchEvent(new Event('favoritesUpdated'));
-                // РћР±РЅРѕРІР»СЏРµРј РёРјСЏ РЅР° "Р“РѕСЃС‚СЊ"
+                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р СРЎРЏ Р Р…Р В° "Р вЂњР С•РЎРѓРЎвЂљРЎРЉ"
                 const usernameSpan = document.querySelector('.username-display');
                 if (usernameSpan) {
-                    usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+                    usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
                     usernameSpan.style.color = '#808080';
                 }
             }
@@ -1468,7 +1468,7 @@ export function initTabsNavigation(appVersion) {
         window.setLoggedUser = setLoggedUser;
 
         // Auto-load user data on page load if credentials are saved
-        // Р’С‹Р·С‹РІР°РµРј СЃ Р·Р°РґРµСЂР¶РєРѕР№ С‡С‚РѕР±С‹ РІСЃРµ С„СѓРЅРєС†РёРё Р±С‹Р»Рё РѕРїСЂРµРґРµР»РµРЅС‹
+        // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎРѓ Р В·Р В°Р Т‘Р ВµРЎР‚Р В¶Р С”Р С•Р в„– РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р†РЎРѓР Вµ РЎвЂћРЎС“Р Р…Р С”РЎвЂ Р С‘Р С‘ Р В±РЎвЂ№Р В»Р С‘ Р С•Р С—РЎР‚Р ВµР Т‘Р ВµР В»Р ВµР Р…РЎвЂ№
         setTimeout(() => autoLoadUserData(), 1000);
 
         function openLoginModal() {
@@ -1506,7 +1506,7 @@ export function initTabsNavigation(appVersion) {
                     border-left: 1px solid rgba(255, 255, 255, 0.2);
                     overflow: hidden;
                 ">
-                    <!-- Р‘Р»РёРє СЃРІРµСЂС…Сѓ -->
+                    <!-- Р вЂР В»Р С‘Р С” РЎРѓР Р†Р ВµРЎР‚РЎвЂ¦РЎС“ -->
                     <div style="
                         position: absolute;
                         top: 0; left: 0; right: 0;
@@ -1517,36 +1517,36 @@ export function initTabsNavigation(appVersion) {
                             transparent);
                     "></div>
                     
-                    <div style="font-weight:600;margin-bottom:16px;color:#fff;font-size:18px;letter-spacing:-0.3px;text-align:center">Р’С…РѕРґ</div>
+                    <div style="font-weight:600;margin-bottom:16px;color:#fff;font-size:18px;letter-spacing:-0.3px;text-align:center">Р вЂ™РЎвЂ¦Р С•Р Т‘</div>
                     <form id="login-form" autocomplete="on" style="display:flex;flex-direction:column;gap:10px">
-                        <input id="login-username" name="username" autocomplete="username" placeholder="Р›РѕРіРёРЅ" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
+                        <input id="login-username" name="username" autocomplete="username" placeholder="Р вЂєР С•Р С–Р С‘Р Р…" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
                         <div style="position:relative;display:block">
-                            <input id="login-password" name="password" autocomplete="current-password" placeholder="РџР°СЂРѕР»СЊ" type="password" style="width:100%;box-sizing:border-box;padding:10px 36px 10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
-                            <button type="button" id="login-pass-eye" title="РџРѕРєР°Р·Р°С‚СЊ РїР°СЂРѕР»СЊ" aria-label="РџРѕРєР°Р·Р°С‚СЊ РїР°СЂРѕР»СЊ" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:rgba(255,255,255,0.6);width:22px;height:22px;cursor:pointer;transition:color 0.2s">
+                            <input id="login-password" name="password" autocomplete="current-password" placeholder="Р СџР В°РЎР‚Р С•Р В»РЎРЉ" type="password" style="width:100%;box-sizing:border-box;padding:10px 36px 10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
+                            <button type="button" id="login-pass-eye" title="Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ" aria-label="Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:rgba(255,255,255,0.6);width:22px;height:22px;cursor:pointer;transition:color 0.2s">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                         <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:rgba(255,255,255,0.6)">
                             <input type="checkbox" id="login-remember" checked style="accent-color:rgba(255,255,255,0.3)"/>
-                            РћСЃС‚Р°РІР°С‚СЊСЃСЏ РІ СЃРёСЃС‚РµРјРµ
+                            Р С›РЎРѓРЎвЂљР В°Р Р†Р В°РЎвЂљРЎРЉРЎРѓРЎРЏ Р Р† РЎРѓР С‘РЎРѓРЎвЂљР ВµР СР Вµ
                         </label>
                         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-                            <button id="login-cancel" type="button" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;transition:all 0.2s">РћС‚РјРµРЅР°</button>
-                            <button id="login-submit" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s">Р’РѕР№С‚Рё</button>
+                            <button id="login-cancel" type="button" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;transition:all 0.2s">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
+                            <button id="login-submit" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s">Р вЂ™Р С•Р в„–РЎвЂљР С‘</button>
                         </div>
                         <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.15);padding-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px">
-                            <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">РР»Рё РІРѕР№С‚Рё С‡РµСЂРµР·</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">Р ВР В»Р С‘ Р Р†Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В·</div>
                             <div style="display:flex;gap:12px;justify-content:center;align-items:center">
                                 <!-- Google -->
-                                <button id="google-login-btn" type="button" title="Р’РѕР№С‚Рё С‡РµСЂРµР· Google" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                <button id="google-login-btn" type="button" title="Р вЂ™Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· Google" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                                 </button>
                                 <!-- GitHub -->
-                                <button id="github-login-btn" type="button" title="Р’РѕР№С‚Рё С‡РµСЂРµР· GitHub" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                <button id="github-login-btn" type="button" title="Р вЂ™Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· GitHub" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                                 </button>
                             </div>
-                            <!-- Telegram Login Widget - РІРёРґРёРјС‹Р№ -->
+                            <!-- Telegram Login Widget - Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№Р в„– -->
                             <div id="tg-widget-container" style="margin-top:12px;display:flex;justify-content:center;"></div>
                         </div>
                     </form>
@@ -1554,7 +1554,7 @@ export function initTabsNavigation(appVersion) {
             `;
                 document.body.appendChild(ov);
 
-                // Р”РѕР±Р°РІР»СЏРµРј СЃС‚РёР»Рё РґР»СЏ hover-СЌС„С„РµРєС‚РѕРІ
+                // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р Т‘Р В»РЎРЏ hover-РЎРЊРЎвЂћРЎвЂћР ВµР С”РЎвЂљР С•Р Р†
                 const loginStyles = document.createElement('style');
                 loginStyles.textContent = `
                     #login-username:hover,
@@ -1584,7 +1584,7 @@ export function initTabsNavigation(appVersion) {
                     #login-submit:active {
                         transform: scale(0.98);
                     }
-                    /* РљРЅРѕРїРєРё СЃРѕС†СЃРµС‚РµР№ */
+                    /* Р С™Р Р…Р С•Р С—Р С”Р С‘ РЎРѓР С•РЎвЂ РЎРѓР ВµРЎвЂљР ВµР в„– */
                     #google-login-btn:hover,
                     #github-login-btn:hover,
                     #telegram-login-btn:hover {
@@ -1601,27 +1601,27 @@ export function initTabsNavigation(appVersion) {
                 `;
                 document.head.appendChild(loginStyles);
 
-                // === РћР‘Р РђР‘РћРўР§РРљР Р”Р›РЇ РљРќРћРџРћРљ РЎРћР¦РЎР•РўР•Р™ ===
+                // === Р С›Р вЂР В Р С’Р вЂР С›Р СћР В§Р ВР С™Р В Р вЂќР вЂєР Р‡ Р С™Р СњР С›Р СџР С›Р С™ Р РЋР С›Р В¦Р РЋР вЂўР СћР вЂўР в„ў ===
 
-                // Google РєРЅРѕРїРєР°
+                // Google Р С”Р Р…Р С•Р С—Р С”Р В°
                 const googleBtn = ov.querySelector('#google-login-btn');
                 if (googleBtn) {
                     googleBtn.addEventListener('click', function () {
                         console.log('[Google Auth] Button clicked');
-                        // Р—Р°РіСЂСѓР¶Р°РµРј Google OAuth СЃРєСЂРёРїС‚
+                        // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Google OAuth РЎРѓР С”РЎР‚Р С‘Р С—РЎвЂљ
                         const script = document.createElement('script');
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
                             console.log('[Google Auth] Script loaded, initializing...');
-                            // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Google OAuth СЃ redirect mode (РЅР°РґС‘Р¶РЅРµРµ Р±РµР· FedCM)
+                            // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С Google OAuth РЎРѓ redirect mode (Р Р…Р В°Р Т‘РЎвЂР В¶Р Р…Р ВµР Вµ Р В±Р ВµР В· FedCM)
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
                                 callback: handleGoogleSignIn,
                                 auto_select: false,
-                                ux_mode: 'redirect'  // Redirect РІРјРµСЃС‚Рѕ popup (РЅР°РґС‘Р¶РЅРµРµ)
+                                ux_mode: 'redirect'  // Redirect Р Р†Р СР ВµРЎРѓРЎвЂљР С• popup (Р Р…Р В°Р Т‘РЎвЂР В¶Р Р…Р ВµР Вµ)
                             });
                             console.log('[Google Auth] Initialized, redirecting to Google...');
-                            // РџРµСЂРµРЅР°РїСЂР°РІР»СЏРµРј РЅР° Google
+                            // Р СџР ВµРЎР‚Р ВµР Р…Р В°Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° Google
                             google.accounts.id.prompt();
                         };
                         script.onerror = function () {
@@ -1631,39 +1631,39 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // GitHub РєРЅРѕРїРєР° - OAuth С‡РµСЂРµР· popup
+                // GitHub Р С”Р Р…Р С•Р С—Р С”Р В° - OAuth РЎвЂЎР ВµРЎР‚Р ВµР В· popup
                 const githubBtn = ov.querySelector('#github-login-btn');
                 if (githubBtn) {
                     githubBtn.addEventListener('click', function () {
                         console.log('[GitHub Auth] Button clicked');
-                        // РћС‚РєСЂС‹РІР°РµРј GitHub OAuth РІ popup РѕРєРЅРµ
+                        // Р С›РЎвЂљР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С GitHub OAuth Р Р† popup Р С•Р С”Р Р…Р Вµ
                         const popup = window.open(
                             `${BACKEND_URL}/api/auth/github`,
                             'GitHub Auth',
                             'width=600,height=400,left=' + (screen.width / 2 - 300) + ',top=' + (screen.height / 2 - 200)
                         );
 
-                        // РЎР»СѓС€Р°РµРј СЃРѕРѕР±С‰РµРЅРёРµ РѕС‚ popup
+                        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р Вµ Р С•РЎвЂљ popup
                         const handleMessage = (event) => {
                             if (event.data && event.data.type === 'github-auth') {
                                 console.log('[GitHub Auth] Success:', event.data);
-                                // РЎРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ
+                                // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ
                                 localStorage.setItem('qaUsername', event.data.username);
                                 localStorage.setItem('qaAuthType', 'github');
                                 setLoggedUser({ username: event.data.username, role: event.data.role });
-                                // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ
+                                // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
                                 const ov = document.getElementById('login-overlay');
                                 if (ov) ov.remove();
-                                // РџРµСЂРµР·Р°РіСЂСѓР¶Р°РµРј СЃС‚СЂР°РЅРёС†Сѓ
+                                // Р СџР ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎС“
                                 window.location.reload();
-                                // РЈРґР°Р»СЏРµРј СЃР»СѓС€Р°С‚РµР»СЊ
+                                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓР В»РЎС“РЎв‚¬Р В°РЎвЂљР ВµР В»РЎРЉ
                                 window.removeEventListener('message', handleMessage);
                             }
                         };
 
                         window.addEventListener('message', handleMessage);
 
-                        // РџСЂРѕРІРµСЂСЏРµРј Р·Р°РєСЂС‹С‚РёРµ popup
+                        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ popup
                         const checkClosed = setInterval(() => {
                             if (popup.closed) {
                                 clearInterval(checkClosed);
@@ -1673,9 +1673,9 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // Telegram Login Widget - Р·Р°РіСЂСѓР¶Р°РµРј СЃСЂР°Р·Сѓ
+                // Telegram Login Widget - Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С РЎРѓРЎР‚Р В°Р В·РЎС“
                 const widgetContainer = ov.querySelector('#tg-widget-container');
-                console.log('[TG DEBUG] РљРѕРЅС‚РµР№РЅРµСЂ РІРёРґР¶РµС‚Р° РЅР°Р№РґРµРЅ:', !!widgetContainer);
+                console.log('[TG DEBUG] Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Р†Р С‘Р Т‘Р В¶Р ВµРЎвЂљР В° Р Р…Р В°Р в„–Р Т‘Р ВµР Р…:', !!widgetContainer);
 
                 if (widgetContainer) {
                     const script = document.createElement('script');
@@ -1688,37 +1688,37 @@ export function initTabsNavigation(appVersion) {
                     script.setAttribute('data-request-access', 'write');
 
                     script.onload = () => {
-                        console.log('[TG Auth] вњ… Р’РёРґР¶РµС‚ Telegram Р·Р°РіСЂСѓР¶РµРЅ');
+                        console.log('[TG Auth] РІСљвЂ¦ Р вЂ™Р С‘Р Т‘Р В¶Р ВµРЎвЂљ Telegram Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…');
                     };
 
                     widgetContainer.appendChild(script);
                 }
 
-                // Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РєРѕР»Р»Р±СЌРє РґР»СЏ Google OAuth
+                // Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– Р С”Р С•Р В»Р В»Р В±РЎРЊР С” Р Т‘Р В»РЎРЏ Google OAuth
                 window.handleGoogleSignIn = async function (response) {
                     console.log('[Google Auth] === RESPONSE RECEIVED ===');
                     console.log('[Google Auth] Full response:', JSON.stringify(response, null, 2));
 
                     try {
-                        // РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ credential СЃСѓС‰РµСЃС‚РІСѓРµС‚
+                        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎвЂЎРЎвЂљР С• credential РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ
                         if (!response || !response.credential) {
                             console.error('[Google Auth] No credential in response');
-                            alert('РћС€РёР±РєР°: Google РЅРµ РІРµСЂРЅСѓР» С‚РѕРєРµРЅ. РџРѕРїСЂРѕР±СѓР№С‚Рµ РµС‰С‘ СЂР°Р·.');
+                            alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: Google Р Р…Р Вµ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» РЎвЂљР С•Р С”Р ВµР Р…. Р СџР С•Р С—РЎР‚Р С•Р В±РЎС“Р в„–РЎвЂљР Вµ Р ВµРЎвЂ°РЎвЂ РЎР‚Р В°Р В·.');
                             return;
                         }
 
                         console.log('[Google Auth] Credential received');
 
-                        // Р Р°Р·РґРµР»СЏРµРј JWT РЅР° С‡Р°СЃС‚Рё
+                        // Р В Р В°Р В·Р Т‘Р ВµР В»РЎРЏР ВµР С JWT Р Р…Р В° РЎвЂЎР В°РЎРѓРЎвЂљР С‘
                         const parts = response.credential.split('.');
 
-                        // Google РёСЃРїРѕР»СЊР·СѓРµС‚ URL-safe base64, РЅСѓР¶РЅРѕ Р·Р°РјРµРЅРёС‚СЊ - РЅР° + Рё _ РЅР° /
+                        // Google Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµРЎвЂљ URL-safe base64, Р Р…РЎС“Р В¶Р Р…Р С• Р В·Р В°Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ - Р Р…Р В° + Р С‘ _ Р Р…Р В° /
                         let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
                         const userInfo = JSON.parse(atob(base64));
 
                         console.log('[Google Auth] User info:', userInfo);
 
-                        // РћРўРџР РђР’Р›РЇР•Рњ Р›РћР“Р РќРђ РЎР•Р Р’Р•Р 
+                        // Р С›Р СћР СџР В Р С’Р вЂ™Р вЂєР Р‡Р вЂўР Сљ Р вЂєР С›Р вЂњР В Р СњР С’ Р РЋР вЂўР В Р вЂ™Р вЂўР В 
                         console.log('[Google Auth] Sending logs to server...');
                         await fetch('/api/iphone-logs', {
                             method: 'POST',
@@ -1736,7 +1736,7 @@ export function initTabsNavigation(appVersion) {
                             })
                         }).catch(err => console.error('[Google Auth] Failed to send logs:', err));
 
-                        // РћС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ РґР»СЏ Р°РІС‚РѕСЂРёР·Р°С†РёРё
+                        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
                         const authUrl = `${BACKEND_URL}/api/auth/google`;
                         console.log('[Google Auth] Sending to:', authUrl);
                         const res = await fetch(authUrl, {
@@ -1756,33 +1756,33 @@ export function initTabsNavigation(appVersion) {
 
                         if (res.ok && data.ok) {
                             console.log('[Google Auth] SUCCESS! Username:', data.username);
-                            // РЎРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ РґР»СЏ Р°РІС‚РѕР·Р°РіСЂСѓР·РєРё
+                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'google');
                             setLoggedUser({ username: data.username, role: data.role });
 
-                            // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ
+                            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
                             const ov = document.getElementById('login-overlay');
                             if (ov) ov.remove();
 
-                            // РџРµСЂРµР·Р°РіСЂСѓР¶Р°РµРј СЃС‚СЂР°РЅРёС†Сѓ
+                            // Р СџР ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎС“
                             window.location.reload();
                         } else {
                             console.error('[Google Auth] Server error:', data.error);
-                            alert('РћС€РёР±РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё: ' + (data.error || 'РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР°'));
+                            alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + (data.error || 'Р СњР ВµР С‘Р В·Р Р†Р ВµРЎРѓРЎвЂљР Р…Р В°РЎРЏ Р С•РЎв‚¬Р С‘Р В±Р С”Р В°'));
                         }
                     } catch (e) {
                         console.error('[Google Auth] === ERROR ===');
                         console.error('[Google Auth] Error type:', e.name);
                         console.error('[Google Auth] Error message:', e.message);
                         console.error('[Google Auth] Stack:', e.stack);
-                        alert('РћС€РёР±РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё: ' + e.message);
+                        alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + e.message);
                     }
                 };
 
-                // Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ РєРѕР»Р»Р±СЌРє РґР»СЏ РІРёРґР¶РµС‚Р° Telegram
+                // Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– Р С”Р С•Р В»Р В»Р В±РЎРЊР С” Р Т‘Р В»РЎРЏ Р Р†Р С‘Р Т‘Р В¶Р ВµРЎвЂљР В° Telegram
                 window.onTelegramAuth = async function (user) {
-                    console.log('[TG Auth] Р”Р°РЅРЅС‹Рµ РѕС‚ Telegram:', user);
+                    console.log('[TG Auth] Р вЂќР В°Р Р…Р Р…РЎвЂ№Р Вµ Р С•РЎвЂљ Telegram:', user);
 
                     const authUrl = `${BACKEND_URL}/api/auth/telegram`;
 
@@ -1794,24 +1794,24 @@ export function initTabsNavigation(appVersion) {
                         });
 
                         const data = await res.json();
-                        console.log('[TG Auth] РћС‚РІРµС‚ СЃРµСЂРІРµСЂР°:', data);
+                        console.log('[TG Auth] Р С›РЎвЂљР Р†Р ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', data);
 
                         if (res.ok && data.ok) {
-                            // рџ”Ґ РќР• СЃРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ РґР»СЏ Р°РІС‚РѕР·Р°РіСЂСѓР·РєРё - РїСЂРѕСЃС‚Рѕ РІС…РѕРґРёРј
+                            // СЂСџвЂќТђ Р СњР вЂў РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ - Р С—РЎР‚Р С•РЎРѓРЎвЂљР С• Р Р†РЎвЂ¦Р С•Р Т‘Р С‘Р С
                             setLoggedUser({ username: data.username, role: data.role });
                             ov.remove();
                             window.location.reload();
                         } else {
-                            // РџРѕРєР°Р·С‹РІР°РµРј РѕС€РёР±РєСѓ
+                            // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“
                             if (data.error === 'not_subscribed') {
-                                alert('вќ— Р”Р»СЏ РІС…РѕРґР° РЅРµРѕР±С…РѕРґРёРјРѕ РїРѕРґРїРёСЃР°С‚СЊСЃСЏ РЅР° РєР°РЅР°Р»:\n' + TELEGRAM_CHANNEL_ID);
+                                alert('РІСњвЂ” Р вЂќР В»РЎРЏ Р Р†РЎвЂ¦Р С•Р Т‘Р В° Р Р…Р ВµР С•Р В±РЎвЂ¦Р С•Р Т‘Р С‘Р СР С• Р С—Р С•Р Т‘Р С—Р С‘РЎРѓР В°РЎвЂљРЎРЉРЎРѓРЎРЏ Р Р…Р В° Р С”Р В°Р Р…Р В°Р В»:\n' + TELEGRAM_CHANNEL_ID);
                             } else {
-                                alert('РћС€РёР±РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё: ' + (data.error || 'РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР°'));
+                                alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + (data.error || 'Р СњР ВµР С‘Р В·Р Р†Р ВµРЎРѓРЎвЂљР Р…Р В°РЎРЏ Р С•РЎв‚¬Р С‘Р В±Р С”Р В°'));
                             }
                         }
                     } catch (e) {
                         console.error('[TG Auth] Error:', e);
-                        alert('РћС€РёР±РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё: ' + e.message);
+                        alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + e.message);
                     }
                 };
 
@@ -1829,9 +1829,9 @@ export function initTabsNavigation(appVersion) {
                         const p = ov.querySelector('#login-password').value;
                         const remember = ov.querySelector('#login-remember')?.checked;
 
-                        // Local auth only (Р»РѕРєР°Р»СЊРЅС‹Р№ СЃРµСЂРІРµСЂ)
+                        // Local auth only (Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚)
                         try {
-                            // РџСЂРѕР±СѓРµРј РІРѕР№С‚Рё С‡РµСЂРµР· Р»РѕРєР°Р»СЊРЅС‹Р№ API
+                            // Р СџРЎР‚Р С•Р В±РЎС“Р ВµР С Р Р†Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– API
                             const loginRes = await fetch(`${BACKEND_URL} /api/login`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -1841,7 +1841,7 @@ export function initTabsNavigation(appVersion) {
                             if (loginRes.ok) {
                                 const loginData = await loginRes.json();
                                 if (loginData.ok) {
-                                    // РЎРѕС…СЂР°РЅСЏРµРј username/password РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµР№ Р·Р°РіСЂСѓР·РєРё РґР°РЅРЅС‹С…
+                                    // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С username/password Р Т‘Р В»РЎРЏ Р С—Р С•РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР в„– Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
                                     if (remember) {
                                         localStorage.setItem('qaUsername', u);
                                         localStorage.setItem('qaPassword', p);
@@ -1860,17 +1860,17 @@ export function initTabsNavigation(appVersion) {
                         const match = users.find(x => x.username === u && x.password === p);
                         if (match) {
                             setLoggedUser({ username: match.username, role: match.role });
-                            // РЎРѕС…СЂР°РЅСЏРµРј credentials РґР»СЏ Р°РІС‚РѕР·Р°РіСЂСѓР·РєРё
+                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С credentials Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘
                             if (remember) {
                                 localStorage.setItem('qaUsername', u);
                                 localStorage.setItem('qaPassword', p);
                             }
                             ov.remove();
                         } else {
-                            alert('РќРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ РёР»Рё РїР°СЂРѕР»СЊ');
+                            alert('Р СњР ВµР Р†Р ВµРЎР‚Р Р…РЎвЂ№Р в„– Р В»Р С•Р С–Р С‘Р Р… Р С‘Р В»Р С‘ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ');
                         }
                     } catch {
-                        alert('РћС€РёР±РєР° РІС…РѕРґР°');
+                        alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р Р†РЎвЂ¦Р С•Р Т‘Р В°');
                     }
                 });
                 // Enter to submit
@@ -1899,18 +1899,18 @@ export function initTabsNavigation(appVersion) {
                 ov.style.zIndex = '5000';
                 ov.innerHTML = `
             < div style = "background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)" >
-                    <div style="font-weight:600;margin-bottom:10px">Р”РѕР±Р°РІРёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ</div>
+                    <div style="font-weight:600;margin-bottom:10px">Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ</div>
                     <div style="display:flex;flex-direction:column;gap:8px">
-                        <input id="new-username" placeholder="Р›РѕРіРёРЅ" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
-                        <input id="new-password" placeholder="РџР°СЂРѕР»СЊ" type="password" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <input id="new-username" placeholder="Р вЂєР С•Р С–Р С‘Р Р…" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <input id="new-password" placeholder="Р СџР В°РЎР‚Р С•Р В»РЎРЉ" type="password" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
                         <select id="new-role" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff">
-                            <option value="user">РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ</option>
-                            <option value="editor">Р РµРґР°РєС‚РѕСЂ</option>
-                            <option value="admin">РђРґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂ</option>
+                            <option value="user">Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ</option>
+                            <option value="editor">Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚</option>
+                            <option value="admin">Р С’Р Т‘Р СР С‘Р Р…Р С‘РЎРѓРЎвЂљРЎР‚Р В°РЎвЂљР С•РЎР‚</option>
                         </select>
                         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
-                            <button id="admin-cancel" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">РћС‚РјРµРЅР°</button>
-                            <button id="admin-add" style="padding:8px 12px;border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:#fff">Р”РѕР±Р°РІРёС‚СЊ</button>
+                            <button id="admin-cancel" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
+                            <button id="admin-add" style="padding:8px 12px;border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:#fff">Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ</button>
                         </div>
                     </div>
                 </div >
@@ -1922,7 +1922,7 @@ export function initTabsNavigation(appVersion) {
                     const u = ov.querySelector('#new-username').value.trim();
                     const p = ov.querySelector('#new-password').value;
                     const r = ov.querySelector('#new-role').value;
-                    if (!u || !p) { alert('Р›РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹'); return; }
+                    if (!u || !p) { alert('Р вЂєР С•Р С–Р С‘Р Р… Р С‘ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ Р С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№'); return; }
                     const client = window.__supabaseClient;
                     (async () => {
                         if (client) {
@@ -1930,18 +1930,18 @@ export function initTabsNavigation(appVersion) {
                                 const { error } = await client.from('users').upsert({ username: u, password: p, role: r }, { onConflict: 'username' });
                                 if (error) throw error;
                                 ov.remove();
-                                alert('РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РґРѕР±Р°РІР»РµРЅ');
+                                alert('Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…');
                                 return;
                             } catch { }
                         }
                         const raw = localStorage.getItem('usersDB') || '[]';
                         let users = [];
                         try { users = JSON.parse(raw); } catch { }
-                        if (users.find(x => x.username === u)) { alert('РўР°РєРѕР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚'); return; }
+                        if (users.find(x => x.username === u)) { alert('Р СћР В°Р С”Р С•Р в„– Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ РЎС“Р В¶Р Вµ РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ'); return; }
                         users.push({ username: u, password: p, role: r });
                         localStorage.setItem('usersDB', JSON.stringify(users));
                         ov.remove();
-                        alert('РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РґРѕР±Р°РІР»РµРЅ');
+                        alert('Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…');
                     })();
                 });
             }
@@ -1949,7 +1949,7 @@ export function initTabsNavigation(appVersion) {
 
         function openCloudOverview() {
             const client = window.__supabaseClient;
-            if (!client) { alert('Supabase РЅРµРґРѕСЃС‚СѓРїРµРЅ'); return; }
+            if (!client) { alert('Supabase Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…'); return; }
             let ov = document.getElementById('cloud-overview-overlay');
             if (!ov) {
                 ov = document.createElement('div');
@@ -1964,16 +1964,16 @@ export function initTabsNavigation(appVersion) {
                 ov.innerHTML = `
             < div style = "background:#1f1f1f;color:#fff;padding:16px 20px;border-radius:10px;width:560px;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,0.35)" >
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                        <div style="font-weight:600">Supabase РґР°РЅРЅС‹Рµ</div>
-                        <button id="cloud-close" style="padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px">Р—Р°РєСЂС‹С‚СЊ</button>
+                        <div style="font-weight:600">Supabase Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ</div>
+                        <button id="cloud-close" style="padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px">Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ</button>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                         <div>
-                            <div style="font-weight:600;margin-bottom:6px">РџРѕР»СЊР·РѕРІР°С‚РµР»Рё</div>
+                            <div style="font-weight:600;margin-bottom:6px">Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р С‘</div>
                             <div id="cloud-users" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
                         </div>
                         <div>
-                            <div style="font-weight:600;margin-bottom:6px">Р”РѕСЃС‚РёР¶РµРЅРёСЏ (daily_stats)</div>
+                            <div style="font-weight:600;margin-bottom:6px">Р вЂќР С•РЎРѓРЎвЂљР С‘Р В¶Р ВµР Р…Р С‘РЎРЏ (daily_stats)</div>
                             <div id="cloud-stats" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
                         </div>
                     </div>
@@ -1985,48 +1985,48 @@ export function initTabsNavigation(appVersion) {
             }
             const usersEl = ov.querySelector('#cloud-users');
             const statsEl = ov.querySelector('#cloud-stats');
-            usersEl.textContent = 'Р—Р°РіСЂСѓР·РєР°...';
-            statsEl.textContent = 'Р—Р°РіСЂСѓР·РєР°...';
+            usersEl.textContent = 'Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В°...';
+            statsEl.textContent = 'Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В°...';
             client.from('users').select('*').then(({ data, error }) => {
-                if (error) { usersEl.textContent = 'РћС€РёР±РєР°'; return; }
-                usersEl.innerHTML = (data || []).map(u => `< div > ${u.username} вЂў СЂРѕР»СЊ: ${u.role || 'user'}</div > `).join('') || '<div>РџСѓСЃС‚Рѕ</div>';
-            }).catch(() => { usersEl.textContent = 'РћС€РёР±РєР°'; });
+                if (error) { usersEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; return; }
+                usersEl.innerHTML = (data || []).map(u => `< div > ${u.username} РІР‚Сћ РЎР‚Р С•Р В»РЎРЉ: ${u.role || 'user'}</div > `).join('') || '<div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
+            }).catch(() => { usersEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; });
             const loadStats = () => {
                 client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
-                    if (error) { statsEl.textContent = 'РћС€РёР±РєР°'; return; }
+                    if (error) { statsEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; return; }
                     const list = data || [];
                     const hasDevices = list.some(s => String(s.user_id || '').startsWith('device_'));
                     const btn = document.createElement('button');
-                    btn.textContent = 'РџСЂРёРІСЏР·Р°С‚СЊ device_* Рє С‚РµРєСѓС‰РµРјСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ';
+                    btn.textContent = 'Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ device_* Р С” РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР СРЎС“ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎР‹';
                     btn.style.cssText = 'margin-bottom:8px;padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px';
                     statsEl.innerHTML = '';
                     if (hasDevices) {
                         statsEl.appendChild(btn);
                         btn.addEventListener('click', async () => {
                             btn.disabled = true;
-                            btn.textContent = 'РњРёРіСЂР°С†РёСЏ...';
+                            btn.textContent = 'Р СљР С‘Р С–РЎР‚Р В°РЎвЂ Р С‘РЎРЏ...';
                             let result = null;
                             try { result = await migrateDeviceRecordsToUser(); } catch { }
                             btn.disabled = false;
                             const d = (result && typeof result.daily === 'number') ? result.daily : 0;
                             const c = (result && typeof result.cards === 'number') ? result.cards : 0;
                             window.__cloudLastMigration = { daily: d, cards: c, at: Date.now() };
-                            btn.textContent = `Р“РѕС‚РѕРІРѕ: РґРѕСЃС‚РёР¶РµРЅРёСЏ ${d}, РєР°СЂС‚РѕС‡РєРё ${c} `;
-                            setTimeout(() => { btn.textContent = 'РџСЂРёРІСЏР·Р°С‚СЊ device_* Рє С‚РµРєСѓС‰РµРјСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ'; }, 1800);
+                            btn.textContent = `Р вЂњР С•РЎвЂљР С•Р Р†Р С•: Р Т‘Р С•РЎРѓРЎвЂљР С‘Р В¶Р ВµР Р…Р С‘РЎРЏ ${d}, Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ ${c} `;
+                            setTimeout(() => { btn.textContent = 'Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ device_* Р С” РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР СРЎС“ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎР‹'; }, 1800);
                             loadStats();
                         });
                     }
                     if (window.__cloudLastMigration && typeof window.__cloudLastMigration.daily === 'number') {
                         const info = document.createElement('div');
                         info.style.cssText = 'margin:6px 0;padding:6px 10px;border:1px solid #444;background:#222;color:#ddd;border-radius:6px';
-                        info.textContent = `РџРѕСЃР»РµРґРЅСЏСЏ РјРёРіСЂР°С†РёСЏ: РґРѕСЃС‚РёР¶РµРЅРёСЏ ${window.__cloudLastMigration.daily}, РєР°СЂС‚РѕС‡РєРё ${window.__cloudLastMigration.cards} `;
+                        info.textContent = `Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…РЎРЏРЎРЏ Р СР С‘Р С–РЎР‚Р В°РЎвЂ Р С‘РЎРЏ: Р Т‘Р С•РЎРѓРЎвЂљР С‘Р В¶Р ВµР Р…Р С‘РЎРЏ ${window.__cloudLastMigration.daily}, Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ ${window.__cloudLastMigration.cards} `;
                         statsEl.appendChild(info);
-                        // РѕС‡РёСЃС‚РёС‚СЊ С‡РµСЂРµР· РєРѕСЂРѕС‚РєРѕРµ РІСЂРµРјСЏ, С‡С‚РѕР±С‹ РЅРµ РјРµС€Р°Р»Рѕ
+                        // Р С•РЎвЂЎР С‘РЎРѓРЎвЂљР С‘РЎвЂљРЎРЉ РЎвЂЎР ВµРЎР‚Р ВµР В· Р С”Р С•РЎР‚Р С•РЎвЂљР С”Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р СР ВµРЎв‚¬Р В°Р В»Р С•
                         setTimeout(() => { try { delete window.__cloudLastMigration; } catch { } }, 2500);
                     }
-                    const rows = list.map(s => `< div > ${s.user_id} вЂў ${s.date} вЂў xp:${s.xp} вЂў Р±РѕРЅСѓСЃ:${s.bonus} вЂў РґРµРЅСЊ:${s.day_bonus} вЂў СЃС‚СЂРёРє:${s.streak}</div > `).join('');
-                    statsEl.innerHTML += rows || '<div>РџСѓСЃС‚Рѕ</div>';
-                }).catch(() => { statsEl.textContent = 'РћС€РёР±РєР°'; });
+                    const rows = list.map(s => `< div > ${s.user_id} РІР‚Сћ ${s.date} РІР‚Сћ xp:${s.xp} РІР‚Сћ Р В±Р С•Р Р…РЎС“РЎРѓ:${s.bonus} РІР‚Сћ Р Т‘Р ВµР Р…РЎРЉ:${s.day_bonus} РІР‚Сћ РЎРѓРЎвЂљРЎР‚Р С‘Р С”:${s.streak}</div > `).join('');
+                    statsEl.innerHTML += rows || '<div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
+                }).catch(() => { statsEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; });
             };
             loadStats();
         }
@@ -2076,7 +2076,7 @@ export function initTabsNavigation(appVersion) {
             } catch { }
             return { daily: 0, cards: 0 };
         }
-        // Р¤СѓРЅРєС†РёРё РјРµРЅСЋ РєР°С‚РµРіРѕСЂРёР№ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+        // Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘Р С‘ Р СР ВµР Р…РЎР‹ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
         function refreshCategoryEditMenus() {
             const tabs = tabsContainer.querySelectorAll('.tab');
             tabs.forEach(tab => {
@@ -2087,9 +2087,9 @@ export function initTabsNavigation(appVersion) {
                 if (!editMode) return;
                 const btn = document.createElement('button');
                 btn.className = 'cat-menu-btn';
-                btn.title = 'РњРµРЅСЋ РєР°С‚РµРіРѕСЂРёРё';
-                btn.textContent = 'в‹®';
-                // РЎС‚РёР»Рё РїРµСЂРµРЅРµСЃРµРЅС‹ РІ CSS
+                btn.title = 'Р СљР ВµР Р…РЎР‹ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘';
+                btn.textContent = 'РІвЂ№В®';
+                // Р РЋРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓР ВµР Р…РЎвЂ№ Р Р† CSS
                 tab.appendChild(btn);
                 btn.addEventListener('click', (ev) => {
                     ev.stopPropagation();
@@ -2098,9 +2098,9 @@ export function initTabsNavigation(appVersion) {
             });
         }
 
-        // РџРµСЂРµСЂРёСЃРѕРІРєР° С‚Р°Р±РѕРІ РєР°С‚РµРіРѕСЂРёР№
+        // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†Р С”Р В° РЎвЂљР В°Р В±Р С•Р Р† Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
         function refreshCategoriesTabs(oldName = null, newName = null) {
-            // рџ”Ґ РћР±РЅРѕРІР»СЏРµРј categories РёР· Р°РєС‚СѓР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С…
+            // СЂСџвЂќТђ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С categories Р С‘Р В· Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
             categories = buildCategoriesFromData(getRuntimeData());
 
             const active = tabsContainer.querySelector('.tab.active');
@@ -2109,15 +2109,15 @@ export function initTabsNavigation(appVersion) {
             const allTab = document.createElement('div');
             allTab.className = 'tab';
             allTab.dataset.category = 'all';
-            allTab.textContent = 'Р’СЃРµ РІРѕРїСЂРѕСЃС‹';
+            allTab.textContent = 'Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№';
             tabsContainer.appendChild(allTab);
             const favTab = document.createElement('div');
             favTab.className = 'tab';
             favTab.dataset.category = 'favorites';
-            favTab.textContent = 'в…';
+            favTab.textContent = 'РІВвЂ¦';
             tabsContainer.appendChild(favTab);
             const cats = buildCategoriesFromData(getRuntimeData());
-            // РџСЂРёРјРµРЅСЏРµРј СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ РїРѕСЂСЏРґРѕРє РєР°С‚РµРіРѕСЂРёР№, РµСЃР»Рё РѕРЅ РµСЃС‚СЊ
+            // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р в„– Р С—Р С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–, Р ВµРЎРѓР В»Р С‘ Р С•Р Р… Р ВµРЎРѓРЎвЂљРЎРЉ
             try {
                 const order = getCategoryOrder();
                 if (order && order.length) {
@@ -2132,12 +2132,12 @@ export function initTabsNavigation(appVersion) {
                 tab.textContent = category.displayName || category.name;
                 tabsContainer.appendChild(tab);
             });
-            // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р°РєС‚РёРІРЅС‹Р№ С‚Р°Р±, РµСЃР»Рё РІРѕР·РјРѕР¶РЅРѕ
+            // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р В°Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р в„– РЎвЂљР В°Р В±, Р ВµРЎРѓР В»Р С‘ Р Р†Р С•Р В·Р СР С•Р В¶Р Р…Р С•
             const toActivate = tabsContainer.querySelector(`.tab[data-category="${activeId}"]`) || allTab;
             toActivate.classList.add('active');
-            // РћР±РЅРѕРІР»СЏРµРј РјРµРЅСЋ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р СР ВµР Р…РЎР‹ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
             refreshCategoryEditMenus();
-            // Р’РєР»СЋС‡Р°РµРј РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ РєР°С‚РµРіРѕСЂРёР№ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+            // Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р С—Р ВµРЎР‚Р ВµРЎвЂљР В°РЎРѓР С”Р С‘Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
             if (editMode) {
                 const catsNow = Array.from(tabsContainer.querySelectorAll('.tab'))
                     .filter(el => el.dataset.category !== 'all' && el.dataset.category !== 'favorites');
@@ -2166,11 +2166,11 @@ export function initTabsNavigation(appVersion) {
                         names.splice(toIdx, 0, moved);
                         setCategoryOrder(names);
                         (async () => {
-                            setSaveStatus('saving', 'РЎРѕС…СЂР°РЅРµРЅРёРµ РїРѕСЂСЏРґРєР° РєР°С‚РµРіРѕСЂРёР№...');
+                            setSaveStatus('saving', 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”Р В° Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–...');
                             const meta = await getServerMetadata();
                             meta.categoryOrder = names;
                             const ok = await updateServerMetadata(meta);
-                            setSaveStatus(ok ? 'success' : 'error', ok ? 'РџРѕСЂСЏРґРѕРє СЃРѕС…СЂР°РЅС‘РЅ' : 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ');
+                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…' : 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
                             refreshCategoriesTabs();
                         })();
                     });
@@ -2193,9 +2193,9 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            < button data - act="rename" > РџРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ</button >
-            <button data-act="duplicate">Р”СѓР±Р»РёСЂРѕРІР°С‚СЊ</button>
-            <button data-act="delete">РЈРґР°Р»РёС‚СЊ</button>
+            < button data - act="rename" > Р СџР ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°РЎвЂљРЎРЉ</button >
+            <button data-act="duplicate">Р вЂќРЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ</button>
+            <button data-act="delete">Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ</button>
         `;
             document.body.appendChild(menu);
             const rect = tabEl.getBoundingClientRect();
@@ -2208,19 +2208,19 @@ export function initTabsNavigation(appVersion) {
                 if (!act) return;
                 e.stopPropagation();
                 if (act === 'rename') {
-                    const newName = prompt('РќРѕРІРѕРµ РЅР°Р·РІР°РЅРёРµ РєР°С‚РµРіРѕСЂРёРё:', catObj.name);
+                    const newName = prompt('Р СњР С•Р Р†Р С•Р Вµ Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', catObj.name);
                     if (newName && newName !== catObj.name) {
                         const ov = getOverrides();
                         uniqueQaData.forEach(it => { if (it.category === catObj.name) { ov[it.question] = { ...ov[it.question], category: newName }; } });
                         setLS('qaAdminOverrides', ov);
-                        // РђРІС‚РѕСЃРѕС…СЂР°РЅРµРЅРёРµ
+                        // Р С’Р Р†РЎвЂљР С•РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ
                         saveMergedToServer();
-                        // РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј С‚Р°Р±С‹, С‡С‚РѕР±С‹ СЃСЂР°Р·Сѓ СѓРІРёРґРµС‚СЊ РЅРѕРІРѕРµ РёРјСЏ
+                        // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р В±РЎвЂ№, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“ РЎС“Р Р†Р С‘Р Т‘Р ВµРЎвЂљРЎРЉ Р Р…Р С•Р Р†Р С•Р Вµ Р С‘Р СРЎРЏ
                         refreshCategoriesTabs(catObj.name, newName);
-                        setSaveStatus('success', 'РљР°С‚РµРіРѕСЂРёСЏ РїРµСЂРµРёРјРµРЅРѕРІР°РЅР°');
+                        setSaveStatus('success', 'Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С—Р ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°Р Р…Р В°');
                     }
                 } else if (act === 'duplicate') {
-                    const dupName = prompt('РќР°Р·РІР°РЅРёРµ РєРѕРїРёРё РєР°С‚РµРіРѕСЂРёРё:', `${catObj.name} (РєРѕРїРёСЏ)`);
+                    const dupName = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р С•Р С—Р С‘Р С‘ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', `${catObj.name} (Р С”Р С•Р С—Р С‘РЎРЏ)`);
                     if (!dupName) return;
                     const placeholders = getCategoryPlaceholders();
                     if (!placeholders[dupName]) placeholders[dupName] = { _cid: Date.now(), sub: [] };
@@ -2232,11 +2232,11 @@ export function initTabsNavigation(appVersion) {
                     setLS('qaNewItems', newItemsArr);
                     setCategoryPlaceholders(placeholders);
                     saveMergedToServer();
-                    // РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј С‚Р°Р±С‹, С‡С‚РѕР±С‹ СЃСЂР°Р·Сѓ РїРѕСЏРІРёР»Р°СЃСЊ РЅРѕРІР°СЏ РєР°С‚РµРіРѕСЂРёСЏ
+                    // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р В±РЎвЂ№, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“ Р С—Р С•РЎРЏР Р†Р С‘Р В»Р В°РЎРѓРЎРЉ Р Р…Р С•Р Р†Р В°РЎРЏ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ
                     refreshCategoriesTabs();
-                    setSaveStatus('success', 'РљР°С‚РµРіРѕСЂРёСЏ РґСѓР±Р»РёСЂРѕРІР°РЅР°');
+                    setSaveStatus('success', 'Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘РЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р В°');
                 } else if (act === 'delete') {
-                    if (!confirm('РЈРґР°Р»РёС‚СЊ РєР°С‚РµРіРѕСЂРёСЋ РІ РєРѕСЂР·РёРЅСѓ?')) return;
+                    if (!confirm('Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“?')) return;
                     const trashCats = getLS('qaTrashCategories', '{}');
                     trashCats[catObj.name] = true;
                     setLS('qaTrashCategories', trashCats);
@@ -2254,13 +2254,13 @@ export function initTabsNavigation(appVersion) {
                     renderTrashPanel();
                     saveMergedToServer();
                     refreshCategoriesTabs();
-                    setSaveStatus('success', 'РљР°С‚РµРіРѕСЂРёСЏ СѓРґР°Р»РµРЅР° РІ РєРѕСЂР·РёРЅСѓ');
+                    setSaveStatus('success', 'Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“');
                 }
                 menu.remove();
             });
         }
 
-        // РњРµРЅСЋ РїРѕРґРєР°С‚РµРіРѕСЂРёР№ РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+        // Р СљР ВµР Р…РЎР‹ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
         function refreshSubcategoryEditMenus(categoryName) {
             const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
             cards.forEach(card => {
@@ -2271,10 +2271,10 @@ export function initTabsNavigation(appVersion) {
                 if (!editMode) return;
                 const btn = document.createElement('button');
                 btn.className = 'subcat-menu-btn';
-                btn.title = 'РњРµРЅСЋ РїРѕРґРєР°С‚РµРіРѕСЂРёРё';
-                btn.textContent = 'в‹®';
+                btn.title = 'Р СљР ВµР Р…РЎР‹ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘';
+                btn.textContent = 'РІвЂ№В®';
                 btn.style.marginLeft = '8px';
-                // РўС‘РјРЅРѕ-СЃРµСЂС‹Р№ СЃС‚РёР»СЊ
+                // Р СћРЎвЂР СР Р…Р С•-РЎРѓР ВµРЎР‚РЎвЂ№Р в„– РЎРѓРЎвЂљР С‘Р В»РЎРЉ
                 btn.style.background = '#444';
                 btn.style.color = '#eee';
                 btn.style.border = '1px solid #333';
@@ -2301,9 +2301,9 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            < button data - act="rename" > РџРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ</button >
-            <button data-act="duplicate">Р”СѓР±Р»РёСЂРѕРІР°С‚СЊ</button>
-            <button data-act="delete">РЈРґР°Р»РёС‚СЊ</button>
+            < button data - act="rename" > Р СџР ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°РЎвЂљРЎРЉ</button >
+            <button data-act="duplicate">Р вЂќРЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ</button>
+            <button data-act="delete">Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ</button>
         `;
             document.body.appendChild(menu);
             const rect = cardEl.getBoundingClientRect();
@@ -2315,13 +2315,13 @@ export function initTabsNavigation(appVersion) {
                 const act = e.target?.dataset?.act; if (!act) return;
                 e.stopPropagation();
                 if (act === 'rename') {
-                    const newName = prompt('РќРѕРІРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕРґРєР°С‚РµРіРѕСЂРёРё:', subcatName);
+                    const newName = prompt('Р СњР С•Р Р†Р С•Р Вµ Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', subcatName);
                     if (newName && newName !== subcatName) {
                         const scPlaceholders = getSubcategoryPlaceholders();
                         if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
                         scPlaceholders[categoryName][subcatName] = { displayName: newName };
                         setSubcategoryPlaceholders(scPlaceholders);
-                        // РћР±РЅРѕРІР»СЏРµРј РІСЃРµ РєР°СЂС‚РѕС‡РєРё СЌС‚РѕР№ РїРѕРґРєР°С‚РµРіРѕСЂРёРё С‡РµСЂРµР· overrides
+                        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†РЎРѓР Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ РЎРЊРЎвЂљР С•Р в„– Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· overrides
                         const ov = getOverrides();
                         getRuntimeData().forEach(it => {
                             if (it.category === categoryName && it.subcategory === subcatName) {
@@ -2331,10 +2331,10 @@ export function initTabsNavigation(appVersion) {
                         setLS('qaAdminOverrides', ov);
                         rebuildSubcategoriesForCategory(categoryName);
                         saveMergedToServer();
-                        setSaveStatus('success', 'РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ РїРµСЂРµРёРјРµРЅРѕРІР°РЅР°');
+                        setSaveStatus('success', 'Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С—Р ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°Р Р…Р В°');
                     }
                 } else if (act === 'duplicate') {
-                    const dupName = prompt('РќР°Р·РІР°РЅРёРµ РєРѕРїРёРё РїРѕРґРєР°С‚РµРіРѕСЂРёРё:', `${subcatName} (РєРѕРїРёСЏ)`);
+                    const dupName = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р С•Р С—Р С‘Р С‘ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', `${subcatName} (Р С”Р С•Р С—Р С‘РЎРЏ)`);
                     if (!dupName) return;
                     const newItemsArr = getNewItems();
                     getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName)
@@ -2343,7 +2343,7 @@ export function initTabsNavigation(appVersion) {
                             newItemsArr.push({ ...it, subcategory: dupName, question: newQuestion });
                         });
                     setLS('qaNewItems', newItemsArr);
-                    // Р”РѕР±Р°РІР»СЏРµРј РїР»РµР№СЃС…РѕР»РґРµСЂ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
+                    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С—Р В»Р ВµР в„–РЎРѓРЎвЂ¦Р С•Р В»Р Т‘Р ВµРЎР‚ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ
                     const scPlaceholders = getSubcategoryPlaceholders();
                     if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
                     scPlaceholders[categoryName][dupName] = { displayName: dupName };
@@ -2354,9 +2354,9 @@ export function initTabsNavigation(appVersion) {
                     rebuildSubcategoriesForCategory(categoryName);
 
                     saveMergedToServer();
-                    setSaveStatus('success', 'РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ РґСѓР±Р»РёСЂРѕРІР°РЅР°');
+                    setSaveStatus('success', 'Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘РЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р В°');
                 } else if (act === 'delete') {
-                    if (!confirm('РЈРґР°Р»РёС‚СЊ РїРѕРґРєР°С‚РµРіРѕСЂРёСЋ РІ РєРѕСЂР·РёРЅСѓ?')) { menu.remove(); return; }
+                    if (!confirm('Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“?')) { menu.remove(); return; }
                     const delMap = getDeletedItems();
                     const itemsToTrash = getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName);
                     itemsToTrash.forEach(it => { delMap[it.question] = true; });
@@ -2371,13 +2371,13 @@ export function initTabsNavigation(appVersion) {
                     renderTrashPanel();
                     saveMergedToServer();
                     rebuildSubcategoriesForCategory(categoryName);
-                    setSaveStatus('success', 'РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ СѓРґР°Р»РµРЅР° РІ РєРѕСЂР·РёРЅСѓ');
+                    setSaveStatus('success', 'Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“');
                 }
                 menu.remove();
             });
         }
 
-        // РџРµСЂРµСЃС‚СЂРѕРёС‚СЊ СЃРїРёСЃРѕРє РїРѕРґРєР°С‚РµРіРѕСЂРёР№ РґР»СЏ РІС‹Р±СЂР°РЅРЅРѕР№ РєР°С‚РµРіРѕСЂРёРё
+        // Р СџР ВµРЎР‚Р ВµРЎРѓРЎвЂљРЎР‚Р С•Р С‘РЎвЂљРЎРЉ РЎРѓР С—Р С‘РЎРѓР С•Р С” Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Т‘Р В»РЎРЏ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р в„– Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
         function rebuildSubcategoriesForCategory(categoryName) {
             const allCats = buildCategoriesFromData(getRuntimeData());
             const catObj = allCats.find(c => c.name === categoryName);
@@ -2387,7 +2387,7 @@ export function initTabsNavigation(appVersion) {
             const allCard = document.createElement('div');
             allCard.className = 'subcategory-card active';
             allCard.dataset.subcategory = 'all';
-            allCard.textContent = 'Р’СЃРµ РїРѕРґРєР°С‚РµРіРѕСЂРёРё';
+            allCard.textContent = 'Р вЂ™РЎРѓР Вµ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘';
             subcategoriesContainer.appendChild(allCard);
             const scPlaceholders = getSubcategoryPlaceholders();
             try {
@@ -2431,12 +2431,12 @@ export function initTabsNavigation(appVersion) {
                         names.splice(toIdx, 0, moved);
                         setSubcategoryOrderFor(categoryName, names);
                         (async () => {
-                            setSaveStatus('saving', 'РЎРѕС…СЂР°РЅРµРЅРёРµ РїРѕСЂСЏРґРєР° РїРѕРґРєР°С‚РµРіРѕСЂРёР№...');
+                            setSaveStatus('saving', 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”Р В° Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–...');
                             const meta = await getServerMetadata();
                             meta.subcategoryOrder = meta.subcategoryOrder || {};
                             meta.subcategoryOrder[categoryName] = names;
                             const ok = await updateServerMetadata(meta);
-                            setSaveStatus(ok ? 'success' : 'error', ok ? 'РџРѕСЂСЏРґРѕРє СЃРѕС…СЂР°РЅС‘РЅ' : 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ');
+                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…' : 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
                             rebuildSubcategoriesForCategory(categoryName);
                         })();
                     });
@@ -2448,8 +2448,8 @@ export function initTabsNavigation(appVersion) {
             if (!editMode) return;
             const catDiv = trashPanel.querySelector('#trash-categories');
             const cardDiv = trashPanel.querySelector('#trash-cards');
-            catDiv.innerHTML = '<div><strong>РљР°С‚РµРіРѕСЂРёРё:</strong></div><div>РџСѓСЃС‚Рѕ</div>';
-            // РЎРїРёСЃРѕРє СѓРґР°Р»С‘РЅРЅС‹С… РІРѕРїСЂРѕСЃРѕРІ + СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РѕСЂРёРіРёРЅР°Р»СЊРЅРѕРјСѓ РїРѕСЂСЏРґРєСѓ ("Р’СЃРµ РІРѕРїСЂРѕСЃС‹")
+            catDiv.innerHTML = '<div><strong>Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:</strong></div><div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
+            // Р РЋР С—Р С‘РЎРѓР С•Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№РЎвЂ¦ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† + РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В»РЎРЉР Р…Р С•Р СРЎС“ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”РЎС“ ("Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№")
             const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
             const baseOrder = getOrderForContext('all') || getRuntimeData().map(i => i.question);
             const idxMap = new Map(baseOrder.map((q, i) => [q, i]));
@@ -2459,7 +2459,7 @@ export function initTabsNavigation(appVersion) {
             // Header + grid container
             cardDiv.innerHTML = '';
             const header = document.createElement('div');
-            header.innerHTML = '<strong>РљР°СЂС‚РѕС‡РєРё:</strong>' + (deletedCards.length ? '' : ' <span>РџСѓСЃС‚Рѕ</span>');
+            header.innerHTML = '<strong>Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:</strong>' + (deletedCards.length ? '' : ' <span>Р СџРЎС“РЎРѓРЎвЂљР С•</span>');
             cardDiv.appendChild(header);
             const grid = document.createElement('div');
             grid.className = 'trash-cards-grid';
@@ -2471,7 +2471,7 @@ export function initTabsNavigation(appVersion) {
                 const mini = document.createElement('div');
                 mini.className = 'result-item trash-mini';
 
-                // Р’РµСЂС…РЅСЏСЏ Р·РѕРЅР°: С‚РµРіРё (РєР°С‚РµРіРѕСЂРёСЏ, РїРѕРґРєР°С‚РµРіРѕСЂРёСЏ)
+                // Р вЂ™Р ВµРЎР‚РЎвЂ¦Р Р…РЎРЏРЎРЏ Р В·Р С•Р Р…Р В°: РЎвЂљР ВµР С–Р С‘ (Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ, Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ)
                 const meta = document.createElement('div');
                 meta.className = 'trash-meta';
                 meta.style.display = 'flex';
@@ -2481,28 +2481,28 @@ export function initTabsNavigation(appVersion) {
                 const subBadge = document.createElement('span'); subBadge.className = 'subcategory-badge'; subBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
                 meta.appendChild(catBadge); meta.appendChild(subBadge);
 
-                // Р’РѕРїСЂРѕСЃ - РїСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+                // Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
                 const qText = document.createElement('div');
                 qText.className = 'question';
                 const questionFormatting = it?.formatting?.question || [];
                 qText.innerHTML = applyFormatting(it?.question || q, questionFormatting);
                 qText.style.marginTop = '6px';
 
-                // РћС‚РІРµС‚ - РїСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+                // Р С›РЎвЂљР Р†Р ВµРЎвЂљ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
                 const aEl = document.createElement('div');
                 aEl.className = 'answer';
                 const answerFormatting = it?.formatting?.answer || [];
                 aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
                 aEl.style.marginTop = '6px';
 
-                // Р”РµР№СЃС‚РІРёСЏ (РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ / СѓРґР°Р»РёС‚СЊ РЅР°РІСЃРµРіРґР°) РІРЅРёР·Сѓ
+                // Р вЂќР ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ (Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ / РЎС“Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°) Р Р†Р Р…Р С‘Р В·РЎС“
                 const actions = document.createElement('div');
                 actions.className = 'trash-actions';
                 actions.style.display = 'flex';
                 actions.style.gap = '8px';
                 actions.style.marginTop = '8px';
-                const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ';
-                const purgeBtn = document.createElement('button'); purgeBtn.className = 'purge-btn'; purgeBtn.textContent = 'РЈРґР°Р»РёС‚СЊ РЅР°РІСЃРµРіРґР°';
+                const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ';
+                const purgeBtn = document.createElement('button'); purgeBtn.className = 'purge-btn'; purgeBtn.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°';
                 actions.appendChild(restoreBtn);
                 actions.appendChild(purgeBtn);
 
@@ -2511,67 +2511,67 @@ export function initTabsNavigation(appVersion) {
                 mini.appendChild(aEl);
                 mini.appendChild(actions);
 
-                // РћРїС‚РёРјРёСЃС‚РёС‡РЅРѕРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃ СЃРѕС…СЂР°РЅРµРЅРёРµРј РЅР° СЃРµСЂРІРµСЂ
+                // Р С›Р С—РЎвЂљР С‘Р СР С‘РЎРѓРЎвЂљР С‘РЎвЂЎР Р…Р С•Р Вµ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ РЎРѓ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
                 restoreBtn.addEventListener('click', async () => {
-                    restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ...'; restoreBtn.disabled = true;
+                    restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ...'; restoreBtn.disabled = true;
 
-                    // РќР°С…РѕРґРёРј РєР°СЂС‚РѕС‡РєСѓ РІ serverTrashItems, С‡С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ РµС‘ РґР°РЅРЅС‹Рµ
+                    // Р СњР В°РЎвЂ¦Р С•Р Т‘Р С‘Р С Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р Р† serverTrashItems, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—Р С•Р В»РЎС“РЎвЂЎР С‘РЎвЂљРЎРЉ Р ВµРЎвЂ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ
                     const trashItem = serverTrashItems.find(t => t.item?.question === q);
                     const itemData = trashItem?.item;
 
-                    // РЈРґР°Р»СЏРµРј РёР· Р»РѕРєР°Р»СЊРЅРѕРіРѕ РєСЌС€Р° РєРѕСЂР·РёРЅС‹ СЃСЂР°Р·Сѓ
+                    // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С‘Р В· Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С”РЎРЊРЎв‚¬Р В° Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“
                     serverTrashSet.delete(q);
                     serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                    // РћС‡РёС‰Р°РµРј Р»РѕРєР°Р»СЊРЅСѓСЋ РєР°СЂС‚Сѓ СѓРґР°Р»РµРЅРёР№ РґР»СЏ СЌС‚РѕР№ РєР°СЂС‚РѕС‡РєРё, РµСЃР»Рё Р±С‹Р»Р° РїРѕРјРµС‡РµРЅР°
+                    // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎС“РЎР‹ Р С”Р В°РЎР‚РЎвЂљРЎС“ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„– Р Т‘Р В»РЎРЏ РЎРЊРЎвЂљР С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘, Р ВµРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В»Р В° Р С—Р С•Р СР ВµРЎвЂЎР ВµР Р…Р В°
                     const delMap = getDeletedItems();
                     if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
 
-                    // рџ”Ґ Р’РђР–РќРћ: Р•СЃР»Рё РєР°СЂС‚РѕС‡РєРё РЅРµС‚ РІ uniqueQaData (РґСѓР±Р»РёРєР°С‚), РґРѕР±Р°РІР»СЏРµРј РµС‘ РІ qaNewItems
+                    // СЂСџвЂќТђ Р вЂ™Р С’Р вЂ“Р СњР С›: Р вЂўРЎРѓР В»Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Р…Р ВµРЎвЂљ Р Р† uniqueQaData (Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ), Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р ВµРЎвЂ Р Р† qaNewItems
                     const isInUnique = !!uniqueQaData.find(i => i.question === q);
                     if (!isInUnique && itemData) {
                         const newItems = getNewItems();
-                        // РџСЂРѕРІРµСЂСЏРµРј, РЅРµС‚ Р»Рё СѓР¶Рµ С‚Р°РєРѕР№ РєР°СЂС‚РѕС‡РєРё РІ newItems
+                        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р Р…Р ВµРЎвЂљ Р В»Р С‘ РЎС“Р В¶Р Вµ РЎвЂљР В°Р С”Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Р† newItems
                         if (!newItems.some(n => n.question === q)) {
                             newItems.push(itemData);
                             localStorage.setItem('qaNewItems', JSON.stringify(newItems));
                         }
                     }
 
-                    // рџ”Ґ Р’РћР—Р’Р РђР©РђР•Рњ РєР°СЂС‚РѕС‡РєСѓ РІ qaUserCards РµСЃР»Рё РѕРЅР° Р±С‹Р»Р° СѓРґР°Р»РµРЅР°
+                    // СЂСџвЂќТђ Р вЂ™Р С›Р вЂ”Р вЂ™Р В Р С’Р В©Р С’Р вЂўР Сљ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р Р† qaUserCards Р ВµРЎРѓР В»Р С‘ Р С•Р Р…Р В° Р В±РЎвЂ№Р В»Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В°
                     const userCards = getQaUserCards();
                     if (userCards && !userCards.some(c => c.question === q) && itemData) {
-                        // РС‰РµРј РїРѕР·РёС†РёСЋ РіРґРµ Р±С‹Р»Р° РєР°СЂС‚РѕС‡РєР° (РїРѕ РёРЅРґРµРєСЃСѓ РІ serverTrashItems)
+                        // Р ВРЎвЂ°Р ВµР С Р С—Р С•Р В·Р С‘РЎвЂ Р С‘РЎР‹ Р С–Р Т‘Р Вµ Р В±РЎвЂ№Р В»Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° (Р С—Р С• Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓРЎС“ Р Р† serverTrashItems)
                         const trashIndex = serverTrashItems.findIndex(t => t.item?.question === q);
                         if (trashIndex >= 0) {
-                            // Р’СЃС‚Р°РІР»СЏРµРј РЅР° РїСЂРёРјРµСЂРЅСѓСЋ РїРѕР·РёС†РёСЋ
+                            // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° Р С—РЎР‚Р С‘Р СР ВµРЎР‚Р Р…РЎС“РЎР‹ Р С—Р С•Р В·Р С‘РЎвЂ Р С‘РЎР‹
                             userCards.push(itemData);
                             setQaUserCards(userCards);
                         }
                     }
 
                     renderTrashPanel();
-                    // РћР±РЅРѕРІР»СЏРµРј Р±РµР· СЃР±СЂРѕСЃР° РєРѕРЅС‚РµРєСЃС‚Р°
+                    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р В±Р ВµР В· РЎРѓР В±РЎР‚Р С•РЎРѓР В° Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
                     refreshCurrentContext();
-                    // РџС‹С‚Р°РµРјСЃСЏ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° СЃРµСЂРІРµСЂРµ
+                    // Р СџРЎвЂ№РЎвЂљР В°Р ВµР СРЎРѓРЎРЏ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ
                     let restoreOk = false;
                     try { restoreOk = await restoreFromServerTrash([q]); } catch (_) { restoreOk = false; }
                     if (!restoreOk) {
-                        // РћР±РЅРѕРІР»СЏРµРј РєРѕСЂР·РёРЅСѓ СЃ СЃРµСЂРІРµСЂР° РЅР° СЃР»СѓС‡Р°Р№ СЂР°СЃСЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+                        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° Р Р…Р В° РЎРѓР В»РЎС“РЎвЂЎР В°Р в„– РЎР‚Р В°РЎРѓРЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
                         try { await refreshServerTrash(); } catch (_) { }
-                        setSaveStatus('error', 'РЎРµСЂРІРµСЂ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РЅРµРґРѕСЃС‚СѓРїРµРЅ');
-                        restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ'; restoreBtn.disabled = false;
+                        setSaveStatus('error', 'Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…');
+                        restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false;
                     } else {
-                        // РљР°СЂС‚РѕС‡РєР° СѓР¶Рµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅР°
-                        setSaveStatus('success', 'РљР°СЂС‚РѕС‡РєР° РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅР°');
-                        restoreBtn.textContent = 'Р“РѕС‚РѕРІРѕ'; setTimeout(() => { restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ'; restoreBtn.disabled = false; }, 1500);
+                        // Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“Р В¶Р Вµ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°
+                        setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°');
+                        restoreBtn.textContent = 'Р вЂњР С•РЎвЂљР С•Р Р†Р С•'; setTimeout(() => { restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false; }, 1500);
                     }
                 });
 
-                // РћРєРѕРЅС‡Р°С‚РµР»СЊРЅРѕРµ СѓРґР°Р»РµРЅРёРµ
+                // Р С›Р С”Р С•Р Р…РЎвЂЎР В°РЎвЂљР ВµР В»РЎРЉР Р…Р С•Р Вµ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ
                 purgeBtn.addEventListener('click', async () => {
-                    purgeBtn.textContent = 'РЈРґР°Р»РµРЅРёРµ...'; purgeBtn.disabled = true;
+                    purgeBtn.textContent = 'Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ...'; purgeBtn.disabled = true;
 
-                    // рџ”’ РџРѕР»СѓС‡Р°РµРј username
+                    // СЂСџвЂќвЂ™ Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username
                     const sessionUserRaw = localStorage.getItem('qaSessionUser');
                     let username = 'guest';
                     try {
@@ -2586,15 +2586,15 @@ export function initTabsNavigation(appVersion) {
                             body: JSON.stringify({ questions: [q] })
                         });
                         if (resp.ok) {
-                            // РЈРґР°Р»СЏРµРј РёР· СЃРµСЂРІРµСЂРЅРѕР№ РєРѕСЂР·РёРЅС‹ Рё Р»РѕРєР°Р»СЊРЅС‹С… РєСЌС€РµР№
+                            // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С‘Р В· РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…Р С•Р в„– Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘ Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р С”РЎРЊРЎв‚¬Р ВµР в„–
                             serverTrashSet.delete(q);
                             serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                            // РџРѕРјРµС‡Р°РµРј РєР°Рє СѓРґР°Р»С‘РЅРЅС‹Р№ Р»РѕРєР°Р»СЊРЅРѕ
+                            // Р СџР С•Р СР ВµРЎвЂЎР В°Р ВµР С Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р в„– Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•
                             const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
-                            // Р•СЃР»Рё РєР°СЂС‚РѕС‡РєР° Р±С‹Р»Р° СЃСЂРµРґРё РЅРѕРІС‹С…, СѓРґР°Р»РёРј РµС‘
+                            // Р вЂўРЎРѓР В»Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р В±РЎвЂ№Р В»Р В° РЎРѓРЎР‚Р ВµР Т‘Р С‘ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦, РЎС“Р Т‘Р В°Р В»Р С‘Р С Р ВµРЎвЂ
                             const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
 
-                            // рџ”’ РћР±РЅРѕРІР»СЏРµРј localStorage СЃ РєРѕСЂР·РёРЅРѕР№
+                            // СЂСџвЂќвЂ™ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С localStorage РЎРѓ Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р С•Р в„–
                             const localTrash = localStorage.getItem('qaUserTrash');
                             if (localTrash) {
                                 const trash = JSON.parse(localTrash);
@@ -2602,57 +2602,57 @@ export function initTabsNavigation(appVersion) {
                                 localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
                             }
 
-                            // РћР±РЅРѕРІР»СЏРµРј UI
+                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С UI
                             renderTrashPanel();
                             refreshCurrentContext();
                             try { await saveMergedToServer(); } catch { }
-                            setSaveStatus('success', 'РљР°СЂС‚РѕС‡РєР° СѓРґР°Р»РµРЅР° РЅР°РІСЃРµРіРґР°');
+                            setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°');
                         } else {
                             const error = await resp.text();
-                            console.error('[delete-permanent] РћС€РёР±РєР°:', resp.status, error);
-                            setSaveStatus('error', 'РћС€РёР±РєР°: ' + error);
+                            console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', resp.status, error);
+                            setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + error);
                         }
                     } catch (e) {
-                        console.error('[delete-permanent] РћС€РёР±РєР°:', e);
-                        setSaveStatus('error', 'РЎРµСЂРІРµСЂ СѓРґР°Р»РµРЅРёСЏ РЅРµРґРѕСЃС‚СѓРїРµРЅ');
+                        console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', e);
+                        setSaveStatus('error', 'Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…');
                     }
-                    purgeBtn.textContent = 'РЈРґР°Р»РёС‚СЊ РЅР°РІСЃРµРіРґР°'; purgeBtn.disabled = false;
+                    purgeBtn.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°'; purgeBtn.disabled = false;
                 });
 
                 grid.appendChild(mini);
             });
         }
 
-        // РЈРґР°Р»РµРЅР° СЃС‚Р°СЂР°СЏ Р»РѕРіРёРєР° РІС‚РѕСЂРѕРіРѕ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° РІС…РѕРґР°
+        // Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р В° РЎРѓРЎвЂљР В°РЎР‚Р В°РЎРЏ Р В»Р С•Р С–Р С‘Р С”Р В° Р Р†РЎвЂљР С•РЎР‚Р С•Р С–Р С• Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° Р Р†РЎвЂ¦Р С•Р Т‘Р В°
 
         editToggleBtn.addEventListener('click', () => {
             editMode = !editMode;
 
-            // рџ”Ґ РџРµСЂРµРєР»СЋС‡Р°РµРј РІРёР·СѓР°Р»СЊРЅС‹Р№ СЃС‚РёР»СЊ РєРЅРѕРїРєРё
+            // СЂСџвЂќТђ Р СџР ВµРЎР‚Р ВµР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓРЎвЂљР С‘Р В»РЎРЉ Р С”Р Р…Р С•Р С—Р С”Р С‘
             if (editMode) {
                 editToggleBtn.classList.add('on');
-                editToggleBtn.title = 'Р’С‹РєР»СЋС‡РёС‚СЊ СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ';
+                editToggleBtn.title = 'Р вЂ™РЎвЂ№Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
             } else {
                 editToggleBtn.classList.remove('on');
-                editToggleBtn.title = 'Р’РєР»СЋС‡РёС‚СЊ СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ';
+                editToggleBtn.title = 'Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
             }
 
-            // Р’ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РѕС‚РєР»СЋС‡Р°РµРј Р°РІС‚Рѕ-РЅРѕСЂРјР°Р»РёР·Р°С†РёСЋ РєР°С‚РµРіРѕСЂРёР№ РїСЂРё Р·Р°РіСЂСѓР·РєРµ
+            // Р вЂ™ РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р В°Р Р†РЎвЂљР С•-Р Р…Р С•РЎР‚Р СР В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎР‹ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р С—РЎР‚Р С‘ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р Вµ
             try { setNormalizationDisabled(editMode); } catch { }
-            // РџРѕР·РёС†РёСЏ РєРЅРѕРїРѕРє вњЋ Рё Р’С…РѕРґ РќР• РјРµРЅСЏРµС‚СЃСЏ вЂ” РѕСЃС‚Р°СЋС‚СЃСЏ РЅР°Рґ РєР°С‚РµРіРѕСЂРёСЏРјРё
-            // РџРѕРєР°Р·Р°С‚СЊ/СЃРєСЂС‹С‚СЊ РїР°РЅРµР»СЊ РєРѕСЂР·РёРЅС‹ Рё РїРµСЂРµРЅРµСЃС‚Рё РµС‘ РІ Р»РµРІСѓСЋ Р±РѕРєРѕРІСѓСЋ РїР°РЅРµР»СЊ
+            // Р СџР С•Р В·Р С‘РЎвЂ Р С‘РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С” РІСљР‹ Р С‘ Р вЂ™РЎвЂ¦Р С•Р Т‘ Р СњР вЂў Р СР ВµР Р…РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ РІР‚вЂќ Р С•РЎРѓРЎвЂљР В°РЎР‹РЎвЂљРЎРѓРЎРЏ Р Р…Р В°Р Т‘ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏР СР С‘
+            // Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ/РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘ Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓРЎвЂљР С‘ Р ВµРЎвЂ Р Р† Р В»Р ВµР Р†РЎС“РЎР‹ Р В±Р С•Р С”Р С•Р Р†РЎС“РЎР‹ Р С—Р В°Р Р…Р ВµР В»РЎРЉ
             const sidebar = document.querySelector('.sidebar');
             const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
             const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
             if (editMode) {
-                if (sidebar) sidebar.classList.remove('collapsed'); // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЂР°Р·РІРѕСЂР°С‡РёРІР°РµРј РїСЂРё РІРєР»СЋС‡РµРЅРёРё СЂРµР¶РёРјР°
+                if (sidebar) sidebar.classList.remove('collapsed'); // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ РЎР‚Р В°Р В·Р Р†Р С•РЎР‚Р В°РЎвЂЎР С‘Р Р†Р В°Р ВµР С Р С—РЎР‚Р С‘ Р Р†Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р С‘ РЎР‚Р ВµР В¶Р С‘Р СР В°
                 trashPanel.style.display = 'block';
-                // РґРѕР±Р°РІРёС‚СЊ РєРІР°РґСЂР°С‚ СЃ РёРєРѕРЅРєРѕР№ РјСѓСЃРѕСЂРЅРѕРіРѕ РІРµРґСЂР° РІ Р·Р°РіРѕР»РѕРІРѕРє Р±РѕРєРѕРІРѕР№ РїР°РЅРµР»Рё
+                // Р Т‘Р С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р С”Р Р†Р В°Р Т‘РЎР‚Р В°РЎвЂљ РЎРѓ Р С‘Р С”Р С•Р Р…Р С”Р С•Р в„– Р СРЎС“РЎРѓР С•РЎР‚Р Р…Р С•Р С–Р С• Р Р†Р ВµР Т‘РЎР‚Р В° Р Р† Р В·Р В°Р С–Р С•Р В»Р С•Р Р†Р С•Р С” Р В±Р С•Р С”Р С•Р Р†Р С•Р в„– Р С—Р В°Р Р…Р ВµР В»Р С‘
                 if (sidebarButtons && !sidebarButtons.querySelector('#trash-mode-button')) {
                     const trashBtn = document.createElement('button');
                     trashBtn.id = 'trash-mode-button';
-                    trashBtn.title = 'РљРѕСЂР·РёРЅР°';
-                    trashBtn.setAttribute('aria-label', 'РљРѕСЂР·РёРЅР°');
+                    trashBtn.title = 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°';
+                    trashBtn.setAttribute('aria-label', 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°');
                     trashBtn.className = 'nav-icon-btn';
                     trashBtn.style.padding = '6px';
                     trashBtn.style.minWidth = 'auto';
@@ -2663,27 +2663,27 @@ export function initTabsNavigation(appVersion) {
                     </svg>`;
                     sidebarButtons.appendChild(trashBtn);
                 }
-                // РїРµСЂРµРЅРµСЃС‚Рё СЃР°РјСѓ РїР°РЅРµР»СЊ РєРѕСЂР·РёРЅС‹ РІ Р»РµРІСѓСЋ РїР°РЅРµР»СЊ, СЃСЂР°Р·Сѓ РїРѕРґ Р·Р°РіРѕР»РѕРІРєРѕРј
+                // Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓРЎвЂљР С‘ РЎРѓР В°Р СРЎС“ Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р Р† Р В»Р ВµР Р†РЎС“РЎР‹ Р С—Р В°Р Р…Р ВµР В»РЎРЉ, РЎРѓРЎР‚Р В°Р В·РЎС“ Р С—Р С•Р Т‘ Р В·Р В°Р С–Р С•Р В»Р С•Р Р†Р С”Р С•Р С
                 if (sidebar && searchHistory) {
                     try { sidebar.insertBefore(trashPanel, searchHistory); } catch { }
                 }
                 container.classList.add('edit-mode');
             } else {
                 trashPanel.style.display = 'none';
-                // СѓР±СЂР°С‚СЊ РёРЅРґРёРєР°С‚РѕСЂ РєРѕСЂР·РёРЅС‹ РёР· Р·Р°РіРѕР»РѕРІРєР° Р±РѕРєРѕРІРѕР№ РїР°РЅРµР»Рё
+                // РЎС“Р В±РЎР‚Р В°РЎвЂљРЎРЉ Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘Р В· Р В·Р В°Р С–Р С•Р В»Р С•Р Р†Р С”Р В° Р В±Р С•Р С”Р С•Р Р†Р С•Р в„– Р С—Р В°Р Р…Р ВµР В»Р С‘
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (existingTrashBtn) existingTrashBtn.remove();
                 container.classList.remove('edit-mode');
             }
             try { localStorage.setItem('qaEditMode', editMode ? 'true' : 'false'); } catch { }
             refreshCategoryEditMenus();
-            // РћР±РЅРѕРІР»СЏРµРј РІРєР»Р°РґРєРё РєР°С‚РµРіРѕСЂРёР№, С‡С‚РѕР±С‹ РІРєР»СЋС‡РёС‚СЊ/РѕС‚РєР»СЋС‡РёС‚СЊ РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ
+            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†Р С”Р В»Р В°Р Т‘Р С”Р С‘ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р†Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ/Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ Р С—Р ВµРЎР‚Р ВµРЎвЂљР В°РЎРѓР С”Р С‘Р Р†Р В°Р Р…Р С‘Р Вµ
             refreshCategoriesTabs();
             renderTrashPanel();
             refreshCurrentContext();
         });
 
-        // РћР±СЂР°Р±РѕС‚С‡РёРєРё РїР°РЅРµР»Рё СѓРїСЂР°РІР»РµРЅРёСЏ - СѓРґР°Р»РµРЅС‹ (legacy)
+        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С—Р В°Р Р…Р ВµР В»Р С‘ РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ - РЎС“Р Т‘Р В°Р В»Р ВµР Р…РЎвЂ№ (legacy)
 
 
         function setSaveStatus(state, msg) {
@@ -2710,20 +2710,20 @@ export function initTabsNavigation(appVersion) {
                 statusEl.style.background = '#333';
                 statusEl.style.color = '#eee';
                 statusEl.style.border = '1px solid #444';
-                statusEl.textContent = msg || 'РЎРѕС…СЂР°РЅРµРЅРёРµ...';
+                statusEl.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ...';
             } else if (state === 'success') {
                 statusEl.style.display = 'block';
-                statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Р—РµР»РµРЅС‹Р№ С„РѕРЅ
+                statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Р вЂ”Р ВµР В»Р ВµР Р…РЎвЂ№Р в„– РЎвЂћР С•Р Р…
                 statusEl.style.color = '#ffffff';
                 statusEl.style.border = '1px solid #2a6b2a';
-                statusEl.textContent = msg || 'РЎРѕС…СЂР°РЅРµРЅРѕ';
+                statusEl.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С•';
                 setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
             } else if (state === 'error') {
                 statusEl.style.display = 'block';
-                statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // РљСЂР°СЃРЅС‹Р№ С„РѕРЅ
+                statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // Р С™РЎР‚Р В°РЎРѓР Р…РЎвЂ№Р в„– РЎвЂћР С•Р Р…
                 statusEl.style.color = '#ffffff';
                 statusEl.style.border = '1px solid #8b2a2a';
-                statusEl.textContent = msg || 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ';
+                statusEl.textContent = msg || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ';
                 setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
             }
         }
@@ -2736,7 +2736,7 @@ export function initTabsNavigation(appVersion) {
                 const deletedMap = getDeletedItems();
                 const merged = [];
                 const seen = new Set();
-                // Р‘Р°Р·РѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ + overrides
+                // Р вЂР В°Р В·Р С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ + overrides
                 uniqueQaData.forEach(item => {
                     if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
                     const ov = overrides[item.question];
@@ -2744,7 +2744,7 @@ export function initTabsNavigation(appVersion) {
                     merged.push(mergedItem);
                     seen.add(item.question);
                 });
-                // РќРѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ + РёС… РІРѕР·РјРѕР¶РЅС‹Рµ overrides
+                // Р СњР С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ + Р С‘РЎвЂ¦ Р Р†Р С•Р В·Р СР С•Р В¶Р Р…РЎвЂ№Р Вµ overrides
                 newItems.forEach(n => {
                     if (!seen.has(n.question) && !deletedMap[n.question] && !serverTrashSet.has(n.question)) {
                         const ov = overrides[n.question];
@@ -2752,7 +2752,7 @@ export function initTabsNavigation(appVersion) {
                         seen.add(n.question);
                     }
                 });
-                // РћС‚РїСЂР°РІРєР° РЅР° СЃРµСЂРІРµСЂ
+                // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р В° Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
                 const resp = await fetchWithAuth('/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2764,20 +2764,20 @@ export function initTabsNavigation(appVersion) {
                     responseJson = await resp.json();
                     if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
                 } catch (_) {
-                    // РЎРµСЂРІРµСЂ РјРѕРі РІРµСЂРЅСѓС‚СЊ РїСѓСЃС‚РѕР№ РѕС‚РІРµС‚ вЂ” РѕСЂРёРµРЅС‚РёСЂСѓРµРјСЃСЏ С‚РѕР»СЊРєРѕ РЅР° СЃС‚Р°С‚СѓСЃ
+                    // Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р СР С•Р С– Р Р†Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С•РЎвЂљР Р†Р ВµРЎвЂљ РІР‚вЂќ Р С•РЎР‚Р С‘Р ВµР Р…РЎвЂљР С‘РЎР‚РЎС“Р ВµР СРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р…Р В° РЎРѓРЎвЂљР В°РЎвЂљРЎС“РЎРѓ
                 }
-                if (!ok) throw new Error('РЎРµСЂРІРµСЂ РІРµСЂРЅСѓР» РѕС€РёР±РєСѓ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё');
+                if (!ok) throw new Error('Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘');
 
-                // РЈСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅРёР»Рё вЂ” СѓРІРµРґРѕРјР»СЏРµРј Рё РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РїРµСЂРµР·Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ РёР· JSON
+                // Р Р€РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘ РІР‚вЂќ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»РЎРЏР ВµР С Р С‘ Р С—РЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С‘Р В· JSON
                 setSaveStatus('success');
-                // Р”Р°РґРёРј UI С‡СѓС‚СЊ РѕР±РЅРѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ, Р·Р°С‚РµРј РёРЅРёС†РёРёСЂСѓРµРј РїРµСЂРµР·Р°РіСЂСѓР·РєСѓ
+                // Р вЂќР В°Р Т‘Р С‘Р С UI РЎвЂЎРЎС“РЎвЂљРЎРЉ Р С•Р В±Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ, Р В·Р В°РЎвЂљР ВµР С Р С‘Р Р…Р С‘РЎвЂ Р С‘Р С‘РЎР‚РЎС“Р ВµР С Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В·Р С”РЎС“
                 setTimeout(() => {
                     window.dispatchEvent(new Event('forceReloadData'));
                 }, 50);
                 return true;
             } catch (e) {
                 console.error('Save failed:', e);
-                setSaveStatus('error', 'РћС€РёР±РєР°: ' + e.message);
+                setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + e.message);
                 return false;
             }
         }
@@ -2816,7 +2816,7 @@ export function initTabsNavigation(appVersion) {
 
         async function trackServerDuplication(originalQuestion, newQuestion) {
             try {
-                // РџРѕР»СѓС‡Р°РµРј username РёР· СЃРµСЃСЃРёРё
+                // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р С‘Р В· РЎРѓР ВµРЎРѓРЎРѓР С‘Р С‘
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 let username = 'anonymous';
                 if (sessionUserRaw) {
@@ -2846,18 +2846,18 @@ export function initTabsNavigation(appVersion) {
 
 
         function addCategoryPlaceholderFlow() {
-            const name = prompt('РќР°Р·РІР°РЅРёРµ РЅРѕРІРѕР№ РєР°С‚РµРіРѕСЂРёРё:');
+            const name = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р Р…Р С•Р Р†Р С•Р в„– Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:');
             if (!name) return;
             const placeholders = getCategoryPlaceholders();
             const id = Math.max(0, ...Object.values(placeholders).map(v => v._cid || 0)) + 1;
             if (!placeholders[name]) placeholders[name] = { _cid: id, sub: [] };
             setCategoryPlaceholders(placeholders);
-            alert('РљР°С‚РµРіРѕСЂРёСЏ РґРѕР±Р°РІР»РµРЅР°. РџРѕСЏРІРёС‚СЃСЏ РІ РјРµРЅСЋ.');
+            alert('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р В°. Р СџР С•РЎРЏР Р†Р С‘РЎвЂљРЎРѓРЎРЏ Р Р† Р СР ВµР Р…РЎР‹.');
         }
         function deleteCategoryFlow() {
-            const name = prompt('РќР°Р·РІР°РЅРёРµ РєР°С‚РµРіРѕСЂРёРё РґР»СЏ СѓРґР°Р»РµРЅРёСЏ:');
+            const name = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р Т‘Р В»РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ:');
             if (!name) return;
-            if (!confirm(`РЈРґР°Р»РёС‚СЊ РєР°С‚РµРіРѕСЂРёСЋ "${name}" Рё РІСЃРµ РµС‘ РєР°СЂС‚РѕС‡РєРё?`)) return;
+            if (!confirm(`Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ "${name}" Р С‘ Р Р†РЎРѓР Вµ Р ВµРЎвЂ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘?`)) return;
             const placeholders = getCategoryPlaceholders();
             delete placeholders[name];
             setCategoryPlaceholders(placeholders);
@@ -2866,24 +2866,24 @@ export function initTabsNavigation(appVersion) {
                 if (item.category === name) del[item.question] = true;
             });
             setDeletedItems(del);
-            alert('РљР°С‚РµРіРѕСЂРёСЏ РѕС‚РјРµС‡РµРЅР° РєР°Рє СѓРґР°Р»С‘РЅРЅР°СЏ. РЎРѕС…СЂР°РЅРёС‚Рµ, С‡С‚РѕР±С‹ РїСЂРёРјРµРЅРёС‚СЊ.');
+            alert('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С•РЎвЂљР СР ВµРЎвЂЎР ВµР Р…Р В° Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…Р В°РЎРЏ. Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљР Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—РЎР‚Р С‘Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ.');
         }
         function addSubcategoryFlow() {
-            const cat = prompt('РљР°С‚РµРіРѕСЂРёСЏ:');
+            const cat = prompt('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ:');
             if (!cat) return;
-            const sub = prompt('РќР°Р·РІР°РЅРёРµ РЅРѕРІРѕР№ РїРѕРґРєР°С‚РµРіРѕСЂРёРё:');
+            const sub = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р Р…Р С•Р Р†Р С•Р в„– Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:');
             if (!sub) return;
             const placeholders = getCategoryPlaceholders();
             if (!placeholders[cat]) placeholders[cat] = { _cid: Date.now(), sub: [] };
             const id = Math.max(0, ...placeholders[cat].sub.map(s => s._sid || 0)) + 1;
             placeholders[cat].sub.push({ name: sub, _sid: id });
             setCategoryPlaceholders(placeholders);
-            alert('РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ РґРѕР±Р°РІР»РµРЅР°. РџРѕСЏРІРёС‚СЃСЏ РІ РјРµРЅСЋ.');
+            alert('Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р В°. Р СџР С•РЎРЏР Р†Р С‘РЎвЂљРЎРѓРЎРЏ Р Р† Р СР ВµР Р…РЎР‹.');
         }
         function deleteSubcategoryFlow() {
-            const cat = prompt('РљР°С‚РµРіРѕСЂРёСЏ:');
+            const cat = prompt('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ:');
             if (!cat) return;
-            const sub = prompt('РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ:');
+            const sub = prompt('Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ:');
             if (!sub) return;
             const placeholders = getCategoryPlaceholders();
             if (placeholders[cat]) {
@@ -2895,7 +2895,7 @@ export function initTabsNavigation(appVersion) {
                 if (item.category === cat && item.subcategory === sub) del[item.question] = true;
             });
             setDeletedItems(del);
-            alert('РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ РѕС‚РјРµС‡РµРЅР° РєР°Рє СѓРґР°Р»С‘РЅРЅР°СЏ. РЎРѕС…СЂР°РЅРёС‚Рµ, С‡С‚РѕР±С‹ РїСЂРёРјРµРЅРёС‚СЊ.');
+            alert('Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С•РЎвЂљР СР ВµРЎвЂЎР ВµР Р…Р В° Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…Р В°РЎРЏ. Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљР Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—РЎР‚Р С‘Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ.');
         }
 
     } catch (e) {
@@ -2907,16 +2907,16 @@ export function initTabsNavigation(appVersion) {
         errDiv.style.border = '1px solid red';
         errDiv.style.margin = '20px';
         errDiv.style.background = '#330000';
-        errDiv.textContent = 'РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РЅР°РІРёРіР°С†РёРё: ' + e.message;
+        errDiv.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘: ' + e.message;
         const c = document.querySelector('.container');
         if (c) c.prepend(errDiv);
         else document.body.prepend(errDiv);
     }
 }
 
-// Р“Р»РѕР±Р°Р»СЊРЅР°СЏ РІРµСЂСЃРёСЏ РёРЅРґРёРєР°С‚РѕСЂР° СЃРѕС…СЂР°РЅРµРЅРёСЏ РґР»СЏ РІС‹Р·РѕРІРѕРІ РІРЅРµ initTabsNavigation
+// Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…Р В°РЎРЏ Р Р†Р ВµРЎР‚РЎРѓР С‘РЎРЏ Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р Р†РЎвЂ№Р В·Р С•Р Р†Р С•Р Р† Р Р†Р Р…Р Вµ initTabsNavigation
 function setSaveStatus(state, msg) {
-    // РџРѕРїСЂРѕР±СѓРµРј РЅР°Р№С‚Рё СЌР»РµРјРµРЅС‚, РµСЃР»Рё РµС‰С‘ РЅРµ РїСЂРёРІСЏР·Р°РЅ
+    // Р СџР С•Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С Р Р…Р В°Р в„–РЎвЂљР С‘ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ, Р ВµРЎРѓР В»Р С‘ Р ВµРЎвЂ°РЎвЂ Р Р…Р Вµ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р В°Р Р…
     if (!globalSaveStatusEl) {
         const el = document.querySelector('.save-status-indicator');
         if (el) globalSaveStatusEl = el; else return;
@@ -2927,20 +2927,20 @@ function setSaveStatus(state, msg) {
         saveStatus.style.background = '#444';
         saveStatus.style.color = '#eee';
         saveStatus.style.border = '1px solid #333';
-        saveStatus.textContent = msg || 'РЎРѕС…СЂР°РЅРµРЅРёРµ...';
+        saveStatus.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ...';
     } else if (state === 'success') {
         saveStatus.style.display = 'inline-block';
         saveStatus.style.background = 'rgba(0, 128, 0, 0.3)';
         saveStatus.style.color = '#cfe9cf';
         saveStatus.style.border = '1px solid #2a6b2a';
-        saveStatus.textContent = msg || 'РЎРѕС…СЂР°РЅРµРЅРѕ';
+        saveStatus.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С•';
         setTimeout(() => { saveStatus.style.display = 'none'; }, 1500);
     } else if (state === 'error') {
         saveStatus.style.display = 'inline-block';
         saveStatus.style.background = 'rgba(128, 0, 0, 0.3)';
         saveStatus.style.color = '#f1c7c7';
         saveStatus.style.border = '1px solid #6b2a2a';
-        saveStatus.textContent = msg || 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ';
+        saveStatus.textContent = msg || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ';
         setTimeout(() => { saveStatus.style.display = 'none'; }, 4000);
     }
 }
@@ -2948,34 +2948,34 @@ function setSaveStatus(state, msg) {
 // --- Global helpers (accessible from outside initTabsNavigation) ---
 // These mirror the inner helpers so that actions in displayQuestions can call them.
 
-// Р¤Р»Р°Рі РґР»СЏ РїСЂРµРґРѕС‚РІСЂР°С‰РµРЅРёСЏ С†РёРєР»РёС‡РµСЃРєРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+// Р В¤Р В»Р В°Р С– Р Т‘Р В»РЎРЏ Р С—РЎР‚Р ВµР Т‘Р С•РЎвЂљР Р†РЎР‚Р В°РЎвЂ°Р ВµР Р…Р С‘РЎРЏ РЎвЂ Р С‘Р С”Р В»Р С‘РЎвЂЎР ВµРЎРѓР С”Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
 let isSyncing = false;
 
 async function saveMergedToServer(skipReload = false) {
-    // Р—Р°С‰РёС‚Р° РѕС‚ СЂРµРєСѓСЂСЃРёРІРЅС‹С… РІС‹Р·РѕРІРѕРІ
+    // Р вЂ”Р В°РЎвЂ°Р С‘РЎвЂљР В° Р С•РЎвЂљ РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘Р Р†Р Р…РЎвЂ№РЎвЂ¦ Р Р†РЎвЂ№Р В·Р С•Р Р†Р С•Р Р†
     if (isSyncing) {
         return false;
     }
 
     try {
         isSyncing = true;
-        // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‹С‚РёРµ РЅР°С‡Р°Р»Р° СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ Р Р…Р В°РЎвЂЎР В°Р В»Р В° РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
         window.dispatchEvent(new Event('sync-start'));
 
-        console.log('[saveMergedToServer] === РќРђР§РђР›Рћ РЎРРќРҐР РћРќРР—РђР¦РР === skipReload:', skipReload);
+        console.log('[saveMergedToServer] === Р СњР С’Р В§Р С’Р вЂєР С› Р РЋР ВР СњР ТђР В Р С›Р СњР ВР вЂ”Р С’Р В¦Р ВР В === skipReload:', skipReload);
 
-        // рџ”Ќ РРЎРџР РђР’Р›Р•РќРР• РљРћР”РР РћР’РљР РџР•Р Р•Р” РћРўРџР РђР’РљРћР™
+        // СЂСџвЂќРЊ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў Р С™Р С›Р вЂќР ВР В Р С›Р вЂ™Р С™Р В Р СџР вЂўР В Р вЂўР вЂќ Р С›Р СћР СџР В Р С’Р вЂ™Р С™Р С›Р в„ў
         const fixEncoding = (text) => {
             if (!text || typeof text !== 'string') return text;
             return text
-                .replace(/\uFFFD/g, '?')  // U+FFFD в†’ ?
-                .replace(/Р”\?{1,10}РєСѓРјРµРЅС‚Р°С†РёСЏ/g, 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ')
-                .replace(/РёРЅС„Сѓ Рѕ\? СЃРµСЂРІРµСЂР°/g, 'РёРЅС„Сѓ РѕС‚ СЃРµСЂРІРµСЂР°')
-                .replace(/РїРѕР»СѓС‡Р°\?Рј/g, 'РїРѕР»СѓС‡Р°РµРј')
-                .replace(/СЃРµ\?{1,5}РІРёСЃС‹/g, 'СЃРµСЂРІРёСЃС‹');
+                .replace(/\uFFFD/g, '?')  // U+FFFD РІвЂ вЂ™ ?
+                .replace(/Р вЂќ\?{1,10}Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ/g, 'Р вЂќР С•Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ')
+                .replace(/Р С‘Р Р…РЎвЂћРЎС“ Р С•\? РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°/g, 'Р С‘Р Р…РЎвЂћРЎС“ Р С•РЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°')
+                .replace(/Р С—Р С•Р В»РЎС“РЎвЂЎР В°\?Р С/g, 'Р С—Р С•Р В»РЎС“РЎвЂЎР В°Р ВµР С')
+                .replace(/РЎРѓР Вµ\?{1,5}Р Р†Р С‘РЎРѓРЎвЂ№/g, 'РЎРѓР ВµРЎР‚Р Р†Р С‘РЎРѓРЎвЂ№');
         };
 
-        // РСЃРїСЂР°РІР»СЏРµРј overrides РїРµСЂРµРґ РѕС‚РїСЂР°РІРєРѕР№
+        // Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С overrides Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С•Р в„–
         const overrides = getOverrides();
         const fixedOverrides = {};
         let hasFixes = false;
@@ -2992,7 +2992,7 @@ async function saveMergedToServer(skipReload = false) {
         }
 
         if (hasFixes) {
-            console.warn('[saveMergedToServer] вљ пёЏ Р”Р°РЅРЅС‹Рµ Р±С‹Р»Рё РёСЃРїСЂР°РІР»РµРЅС‹ РїРµСЂРµРґ РѕС‚РїСЂР°РІРєРѕР№ (РїРѕРІСЂРµР¶РґРµРЅРЅР°СЏ РєРѕРґРёСЂРѕРІРєР°)');
+            console.warn('[saveMergedToServer] РІС™В РїС‘РЏ Р вЂќР В°Р Р…Р Р…РЎвЂ№Р Вµ Р В±РЎвЂ№Р В»Р С‘ Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…РЎвЂ№ Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С•Р в„– (Р С—Р С•Р Р†РЎР‚Р ВµР В¶Р Т‘Р ВµР Р…Р Р…Р В°РЎРЏ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”Р В°)');
             setOverrides(fixedOverrides);
         }
 
@@ -3001,7 +3001,7 @@ async function saveMergedToServer(skipReload = false) {
         const merged = [];
         const seen = new Set();
 
-        // РЎРЅР°С‡Р°Р»Р° РґРѕР±Р°РІР»СЏРµРј Р±Р°Р·РѕРІС‹Рµ РєР°СЂС‚РѕС‡РєРё РёР· global.json
+        // Р РЋР Р…Р В°РЎвЂЎР В°Р В»Р В° Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р В±Р В°Р В·Р С•Р Р†РЎвЂ№Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р С‘Р В· global.json
         uniqueQaData.forEach(item => {
             if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
             const ov = overrides[item.question];
@@ -3010,23 +3010,23 @@ async function saveMergedToServer(skipReload = false) {
             seen.add(item.question);
         });
 
-        // Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Рµ СЌР»РµРјРµРЅС‚С‹ (РґСѓР±Р»РёРєР°С‚С‹, СЃРѕР·РґР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј)
-        // Р’Р°Р¶РЅРѕ: РїСЂРѕРІРµСЂСЏРµРј РїРѕ С‚РѕС‡РЅРѕРјСѓ СЃРѕРІРїР°РґРµРЅРёСЋ РІРѕРїСЂРѕСЃР°, С‡С‚РѕР±С‹ РЅРµ РїРѕС‚РµСЂСЏС‚СЊ РґСѓР±Р»РёРєР°С‚С‹
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ (Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№, РЎРѓР С•Р В·Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР С)
+        // Р вЂ™Р В°Р В¶Р Р…Р С•: Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р С—Р С• РЎвЂљР С•РЎвЂЎР Р…Р С•Р СРЎС“ РЎРѓР С•Р Р†Р С—Р В°Р Т‘Р ВµР Р…Р С‘РЎР‹ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В°, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р С—Р С•РЎвЂљР ВµРЎР‚РЎРЏРЎвЂљРЎРЉ Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№
         newItems.forEach(n => {
             const isDeleted = deletedMap[n.question] || serverTrashSet.has(n.question);
             const isAlreadyAdded = seen.has(n.question);
 
-            // РџСЂРѕРїСѓСЃРєР°РµРј СѓРґР°Р»С‘РЅРЅС‹Рµ Рё СѓР¶Рµ РґРѕР±Р°РІР»РµРЅРЅС‹Рµ
+            // Р СџРЎР‚Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р Вµ Р С‘ РЎС“Р В¶Р Вµ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р Р…РЎвЂ№Р Вµ
             if (isDeleted || isAlreadyAdded) return;
 
-            // Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃ РїСЂРёРјРµРЅС‘РЅРЅС‹РјРё overrides
+            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р С•Р Р†РЎвЂ№Р в„– РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ РЎРѓ Р С—РЎР‚Р С‘Р СР ВµР Р…РЎвЂР Р…Р Р…РЎвЂ№Р СР С‘ overrides
             const ov = overrides[n.question];
             merged.push(ov ? { ...n, ...ov } : n);
             seen.add(n.question);
         });
 
-        // РўР°РєР¶Рµ РїСЂРѕРІРµСЂСЏРµРј qaUserCards РЅР° РЅР°Р»РёС‡РёРµ СЌР»РµРјРµРЅС‚РѕРІ, РєРѕС‚РѕСЂС‹С… РЅРµС‚ РЅРё РІ base, РЅРё РІ newItems
-        // Р­С‚Рѕ РЅСѓР¶РЅРѕ РґР»СЏ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° РґСѓР±Р»РёРєР°С‚С‹ СѓР¶Рµ СЃРѕС…СЂР°РЅРµРЅС‹ РІ localStorage
+        // Р СћР В°Р С”Р В¶Р Вµ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С qaUserCards Р Р…Р В° Р Р…Р В°Р В»Р С‘РЎвЂЎР С‘Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р†, Р С”Р С•РЎвЂљР С•РЎР‚РЎвЂ№РЎвЂ¦ Р Р…Р ВµРЎвЂљ Р Р…Р С‘ Р Р† base, Р Р…Р С‘ Р Р† newItems
+        // Р В­РЎвЂљР С• Р Р…РЎС“Р В¶Р Р…Р С• Р Т‘Р В»РЎРЏ РЎРѓР В»РЎС“РЎвЂЎР В°Р ВµР Р†, Р С”Р С•Р С–Р Т‘Р В° Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№ Р Р† localStorage
         try {
             const sessionUserRaw = localStorage.getItem('qaSessionUser');
             if (sessionUserRaw) {
@@ -3046,20 +3046,20 @@ async function saveMergedToServer(skipReload = false) {
 
                         userCards.forEach(uc => {
                             checkedCount++;
-                            // рџ”Ґ РРЎРџР РђР’Р›Р•РќРР•: Р”СѓР±Р»РёРєР°С‚С‹ (СЃ "РєРѕРїРёСЏ" РІ РЅР°Р·РІР°РЅРёРё) РЅРµ РґРѕР»Р¶РЅС‹ СЃС‡РёС‚Р°С‚СЊСЃСЏ СѓРґР°Р»С‘РЅРЅС‹РјРё
-                            // РµСЃР»Рё РѕРЅРё С‚РѕР»СЊРєРѕ С‡С‚Рѕ СЃРѕР·РґР°РЅС‹ Рё РёС… РЅРµС‚ РІ deletedMap
+                            // СЂСџвЂќТђ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: Р вЂќРЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ (РЎРѓ "Р С”Р С•Р С—Р С‘РЎРЏ" Р Р† Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р С‘) Р Р…Р Вµ Р Т‘Р С•Р В»Р В¶Р Р…РЎвЂ№ РЎРѓРЎвЂЎР С‘РЎвЂљР В°РЎвЂљРЎРЉРЎРѓРЎРЏ РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р СР С‘
+                            // Р ВµРЎРѓР В»Р С‘ Р С•Р Р…Р С‘ РЎвЂљР С•Р В»РЎРЉР С”Р С• РЎвЂЎРЎвЂљР С• РЎРѓР С•Р В·Р Т‘Р В°Р Р…РЎвЂ№ Р С‘ Р С‘РЎвЂ¦ Р Р…Р ВµРЎвЂљ Р Р† deletedMap
                             const isInServerTrash = serverTrashSet.has(uc.question);
                             const isInLocalDeleted = deletedMap[uc.question];
-                            const isDeleted = isInLocalDeleted || (isInServerTrash && !uc.question.includes('РєРѕРїРёСЏ'));
+                            const isDeleted = isInLocalDeleted || (isInServerTrash && !uc.question.includes('Р С”Р С•Р С—Р С‘РЎРЏ'));
 
                             const isAlreadyAdded = seen.has(uc.question);
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
 
-                            // РЎС‡РёС‚Р°РµРј РґСѓР±Р»РёРєР°С‚С‹
-                            if (uc.question.includes('РєРѕРїРёСЏ')) {
+                            // Р РЋРЎвЂЎР С‘РЎвЂљР В°Р ВµР С Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№
+                            if (uc.question.includes('Р С”Р С•Р С—Р С‘РЎРЏ')) {
                                 duplicatesFound++;
-                                console.log('[saveMergedToServer] РќР°Р№РґРµРЅ РґСѓР±Р»РёРєР°С‚ РІ qaUserCards:', {
+                                console.log('[saveMergedToServer] Р СњР В°Р в„–Р Т‘Р ВµР Р… Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р Р† qaUserCards:', {
                                     question: uc.question.substring(0, 50),
                                     isAlreadyAdded,
                                     isInBase,
@@ -3068,7 +3068,7 @@ async function saveMergedToServer(skipReload = false) {
                                 });
                             }
 
-                            // Р”РѕР±Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ РµСЃР»Рё СЌС‚Рѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєР°СЏ РєР°СЂС‚РѕС‡РєР°, РєРѕС‚РѕСЂРѕР№ РЅРµС‚ РІ Р±Р°Р·Рµ Рё РЅРѕРІС‹С… СЌР»РµРјРµРЅС‚Р°С…
+                            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• Р ВµРЎРѓР В»Р С‘ РЎРЊРЎвЂљР С• Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉРЎРѓР С”Р В°РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°, Р С”Р С•РЎвЂљР С•РЎР‚Р С•Р в„– Р Р…Р ВµРЎвЂљ Р Р† Р В±Р В°Р В·Р Вµ Р С‘ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР В°РЎвЂ¦
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
                                 const ov = overrides[uc.question];
                                 merged.push(ov ? { ...uc, ...ov } : uc);
@@ -3077,7 +3077,7 @@ async function saveMergedToServer(skipReload = false) {
                             }
                         });
 
-                        console.log('[saveMergedToServer] РћР±СЂР°Р±РѕС‚Р°РЅРѕ qaUserCards:', {
+                        console.log('[saveMergedToServer] Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР В°Р Р…Р С• qaUserCards:', {
                             checkedCount,
                             duplicatesFound,
                             addedCount,
@@ -3087,11 +3087,11 @@ async function saveMergedToServer(skipReload = false) {
                 }
             }
         } catch (e) {
-            console.warn('[saveMergedToServer] РќРµ СѓРґР°Р»РѕСЃСЊ РґРѕР±Р°РІРёС‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РєР°СЂС‚РѕС‡РєРё:', e);
+            console.warn('[saveMergedToServer] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р Т‘Р С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р Т‘Р С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:', e);
         }
         const lastRestored = typeof window !== 'undefined' ? window.__lastRestoredQuestion : null;
 
-        // РџРѕР»СѓС‡Р°РµРј username РґР»СЏ РѕС‚РїСЂР°РІРєРё РЅР° СЃРµСЂРІРµСЂ
+        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С‘ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
         let username = null;
         try {
             const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -3099,7 +3099,7 @@ async function saveMergedToServer(skipReload = false) {
             if (u && u.username) username = u.username;
         } catch { }
 
-        // рџ”Ќ Р¤РРќРђР›Р¬РќРћР• РРЎРџР РђР’Р›Р•РќРР• РљРћР”РР РћР’РљР РџР•Р Р•Р” РћРўРџР РђР’РљРћР™
+        // СЂСџвЂќРЊ Р В¤Р ВР СњР С’Р вЂєР В¬Р СњР С›Р вЂў Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў Р С™Р С›Р вЂќР ВР В Р С›Р вЂ™Р С™Р В Р СџР вЂўР В Р вЂўР вЂќ Р С›Р СћР СџР В Р С’Р вЂ™Р С™Р С›Р в„ў
         const fixedMerged = merged.map(card => {
             const fixedCard = {};
             let hasFixes = false;
@@ -3114,14 +3114,14 @@ async function saveMergedToServer(skipReload = false) {
                 }
             }
             if (hasFixes) {
-                console.warn(`[saveMergedToServer] РСЃРїСЂР°РІР»РµРЅР° РєР°СЂС‚РѕС‡РєР°: ${card.question?.substring(0, 30)}...`);
+                console.warn(`[saveMergedToServer] Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°: ${card.question?.substring(0, 30)}...`);
             }
             return fixedCard;
         });
 
         const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
 
-        console.log('[saveMergedToServer] РћС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ:', {
+        console.log('[saveMergedToServer] Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚:', {
             mergedCount: merged.length,
             newItemsCount: newItems.length,
             deletedCount: Object.keys(deletedMap).length,
@@ -3129,20 +3129,20 @@ async function saveMergedToServer(skipReload = false) {
             bodyLength: JSON.stringify(fixedMerged).length
         });
 
-        // рџ”Ќ Р›РћР“: РїРµСЂРІС‹Рµ 3 РєР°СЂС‚РѕС‡РєРё РґР»СЏ РїСЂРѕРІРµСЂРєРё
+        // СЂСџвЂќРЊ Р вЂєР С›Р вЂњ: Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р Вµ 3 Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С‘
         const first3 = merged.slice(0, 3).map(c => ({
             question: c.question?.substring(0, 50),
-            hasCopy: c.question?.includes('РєРѕРїРёСЏ'),
+            hasCopy: c.question?.includes('Р С”Р С•Р С—Р С‘РЎРЏ'),
             category: c.category,
             subcategory: c.subcategory
         }));
-        console.log('[saveMergedToServer] РџРµСЂРІС‹Рµ 3 РєР°СЂС‚РѕС‡РєРё:', first3);
+        console.log('[saveMergedToServer] Р СџР ВµРЎР‚Р Р†РЎвЂ№Р Вµ 3 Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:', first3);
 
-        // рџ”Ќ Р›РћР“: РїРѕРёСЃРє РґСѓР±Р»РёРєР°С‚Р° РІРѕ РІСЃС‘Рј РјР°СЃСЃРёРІРµ
-        const dupIndex = merged.findIndex(c => c.question?.includes('РєРѕРїРёСЏ'));
-        console.log('[saveMergedToServer] Р”СѓР±Р»РёРєР°С‚ РЅР°Р№РґРµРЅ РЅР° РёРЅРґРµРєСЃРµ:', dupIndex);
+        // СЂСџвЂќРЊ Р вЂєР С›Р вЂњ: Р С—Р С•Р С‘РЎРѓР С” Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљР В° Р Р†Р С• Р Р†РЎРѓРЎвЂР С Р СР В°РЎРѓРЎРѓР С‘Р Р†Р Вµ
+        const dupIndex = merged.findIndex(c => c.question?.includes('Р С”Р С•Р С—Р С‘РЎРЏ'));
+        console.log('[saveMergedToServer] Р вЂќРЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р Р…Р В°Р в„–Р Т‘Р ВµР Р… Р Р…Р В° Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓР Вµ:', dupIndex);
         if (dupIndex >= 0) {
-            console.log('[saveMergedToServer] Р”СѓР±Р»РёРєР°С‚:', {
+            console.log('[saveMergedToServer] Р вЂќРЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ:', {
                 question: merged[dupIndex].question,
                 category: merged[dupIndex].category,
                 subcategory: merged[dupIndex].subcategory
@@ -3155,7 +3155,7 @@ async function saveMergedToServer(skipReload = false) {
             body: JSON.stringify(fixedMerged)
         });
 
-        console.log('[saveMergedToServer] РћС‚РІРµС‚ СЃРµСЂРІРµСЂР°:', {
+        console.log('[saveMergedToServer] Р С›РЎвЂљР Р†Р ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', {
             status: resp.status,
             ok: resp.ok,
             statusText: resp.statusText
@@ -3164,73 +3164,73 @@ async function saveMergedToServer(skipReload = false) {
         let responseJson = null;
         try {
             responseJson = await resp.json();
-            console.log('[saveMergedToServer] РџРћР›РЈР§Р•РќРћ РћРў РЎР•Р Р’Р•Р Рђ:', responseJson);
+            console.log('[saveMergedToServer] Р СџР С›Р вЂєР Р€Р В§Р вЂўР СњР С› Р С›Р Сћ Р РЋР вЂўР В Р вЂ™Р вЂўР В Р С’:', responseJson);
             if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
         } catch (parseErr) {
-            console.warn('[saveMergedToServer] РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°СЃРїР°СЂСЃРёС‚СЊ РѕС‚РІРµС‚:', parseErr);
+            console.warn('[saveMergedToServer] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ РЎР‚Р В°РЎРѓР С—Р В°РЎР‚РЎРѓР С‘РЎвЂљРЎРЉ Р С•РЎвЂљР Р†Р ВµРЎвЂљ:', parseErr);
         }
 
         if (!ok) {
-            console.error('[saveMergedToServer] РЎРµСЂРІРµСЂ РІРµСЂРЅСѓР» РѕС€РёР±РєСѓ');
-            throw new Error('РЎРµСЂРІРµСЂ РІРµСЂРЅСѓР» РѕС€РёР±РєСѓ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё');
+            console.error('[saveMergedToServer] Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“');
+            throw new Error('Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘');
         }
 
-        // РЈСЃРїРµС€РЅРѕРµ СЃРѕС…СЂР°РЅРµРЅРёРµ
+        // Р Р€РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ
         setSaveStatus('success');
 
-        console.log('[saveMergedToServer] РЎРµСЂРІРµСЂ РѕС‚РІРµС‚РёР»:', { ok, responseJson });
+        console.log('[saveMergedToServer] Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р С•РЎвЂљР Р†Р ВµРЎвЂљР С‘Р В»:', { ok, responseJson });
 
-        // рџ”Ґ РћР‘РќРћР’Р›РЇР•Рњ localDataTimestamp РїРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ СЃРѕС…СЂР°РЅРµРЅРёСЏ РЅР° СЃРµСЂРІРµСЂ
-        // Р­С‚Рѕ РЅСѓР¶РЅРѕ РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РјРµР¶РґСѓ СѓСЃС‚СЂРѕР№СЃС‚РІР°РјРё
+        // СЂСџвЂќТђ Р С›Р вЂР СњР С›Р вЂ™Р вЂєР Р‡Р вЂўР Сљ localDataTimestamp Р С—Р С•РЎРѓР В»Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р С–Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+        // Р В­РЎвЂљР С• Р Р…РЎС“Р В¶Р Р…Р С• Р Т‘Р В»РЎРЏ Р С”Р С•РЎР‚РЎР‚Р ВµР С”РЎвЂљР Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р СР ВµР В¶Р Т‘РЎС“ РЎС“РЎРѓРЎвЂљРЎР‚Р С•Р в„–РЎРѓРЎвЂљР Р†Р В°Р СР С‘
         const serverTimestamp = responseJson?.updatedAt || Date.now();
         localStorage.setItem('localDataTimestamp', serverTimestamp.toString());
-        console.log('[saveMergedToServer] localDataTimestamp РѕР±РЅРѕРІР»С‘РЅ:', serverTimestamp);
+        console.log('[saveMergedToServer] localDataTimestamp Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…:', serverTimestamp);
 
-        // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‹С‚РёРµ СѓСЃРїРµС€РЅРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
         window.dispatchEvent(new Event('sync-success'));
 
-        // РћР‘РќРћР’Р›РЇР•Рњ qaUserCards РІ localStorage
+        // Р С›Р вЂР СњР С›Р вЂ™Р вЂєР Р‡Р вЂўР Сљ qaUserCards Р Р† localStorage
         try {
             setQaUserCards(merged);
-            console.log('[saveMergedToServer] setQaUserCards РІС‹Р·РІР°РЅ:', {
+            console.log('[saveMergedToServer] setQaUserCards Р Р†РЎвЂ№Р В·Р Р†Р В°Р Р…:', {
                 mergedLength: merged.length,
                 savedCards: merged.length
             });
 
-            // рџ”Ќ РџР РћР’Р•Р РЇР•Рњ С‡С‚Рѕ Р·Р°РїРёСЃР°Р»РѕСЃСЊ РІ localStorage
+            // СЂСџвЂќРЊ Р СџР В Р С›Р вЂ™Р вЂўР В Р Р‡Р вЂўР Сљ РЎвЂЎРЎвЂљР С• Р В·Р В°Р С—Р С‘РЎРѓР В°Р В»Р С•РЎРѓРЎРЉ Р Р† localStorage
             const verifyCards = getQaUserCards();
-            console.log('[saveMergedToServer] РџСЂРѕРІРµСЂРєР° localStorage:', {
+            console.log('[saveMergedToServer] Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° localStorage:', {
                 cardsInLocalStorage: verifyCards?.length || 0
             });
 
-            // рџ”Ґ РћР‘РќРћР’Р›РЇР•Рњ uniqueQaData РІ РїР°РјСЏС‚Рё РёР· localStorage
-            // Р­С‚Рѕ РЅСѓР¶РЅРѕ С‡С‚РѕР±С‹ СЃР»РµРґСѓСЋС‰РёРµ РґСѓР±Р»РёРєР°С‚С‹ РёСЃРїРѕР»СЊР·РѕРІР°Р»Рё Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ
-            // РРјРїРѕСЂС‚РёСЂСѓРµРј setUniqueQaData РёР· all-data.js
+            // СЂСџвЂќТђ Р С›Р вЂР СњР С›Р вЂ™Р вЂєР Р‡Р вЂўР Сљ uniqueQaData Р Р† Р С—Р В°Р СРЎРЏРЎвЂљР С‘ Р С‘Р В· localStorage
+            // Р В­РЎвЂљР С• Р Р…РЎС“Р В¶Р Р…Р С• РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘Р Вµ Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°Р В»Р С‘ Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ
+            // Р ВР СР С—Р С•РЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С setUniqueQaData Р С‘Р В· all-data.js
             const { setUniqueQaData } = await import('../all-data.js');
             if (typeof setUniqueQaData === 'function' && verifyCards && verifyCards.length > 0) {
                 setUniqueQaData(verifyCards);
-                console.log('[saveMergedToServer] uniqueQaData РѕР±РЅРѕРІР»С‘РЅ:', {
+                console.log('[saveMergedToServer] uniqueQaData Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…:', {
                     newLength: verifyCards.length
                 });
             }
 
-            // РћС‡РёС‰Р°РµРј qaNewItems РїРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё, С‡С‚РѕР±С‹ РґСѓР±Р»РёРєР°С‚С‹ РЅРµ РґРѕР±Р°РІР»СЏР»РёСЃСЊ РїРѕРІС‚РѕСЂРЅРѕ
+            // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С qaNewItems Р С—Р С•РЎРѓР В»Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ Р Р…Р Вµ Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР В»Р С‘РЎРѓРЎРЉ Р С—Р С•Р Р†РЎвЂљР С•РЎР‚Р Р…Р С•
             const newItems = getNewItems();
-            console.log('[saveMergedToServer] РћС‡РёС‰Р°РµРј qaNewItems:', newItems.length, 'СЌР»РµРјРµРЅС‚РѕРІ');
+            console.log('[saveMergedToServer] Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С qaNewItems:', newItems.length, 'РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р†');
             if (Array.isArray(newItems) && newItems.length > 0) {
                 localStorage.setItem('qaNewItems', JSON.stringify([]));
             }
 
-            // РћС‡РёС‰Р°РµРј qaDeletedItems РїРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+            // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С qaDeletedItems Р С—Р С•РЎРѓР В»Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
             const deletedItems = getDeletedItems();
             if (Object.keys(deletedItems).length > 0) {
                 localStorage.setItem('qaDeletedItems', JSON.stringify({}));
             }
         } catch (e) {
-            console.warn('[saveMergedToServer] РќРµ СѓРґР°Р»РѕСЃСЊ РѕР±РЅРѕРІРёС‚СЊ localStorage:', e);
+            console.warn('[saveMergedToServer] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р С•Р В±Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ localStorage:', e);
         }
 
-        // РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅР°СЏ РїРµСЂРµР·Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… С‡РµСЂРµР· 50РјСЃ
+        // Р СџРЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р В°РЎРЏ Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В° Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎвЂЎР ВµРЎР‚Р ВµР В· 50Р СРЎРѓ
         console.log('[saveMergedToServer] Dispatch forceReloadData:', !skipReload);
         setTimeout(() => {
             if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
@@ -3238,20 +3238,20 @@ async function saveMergedToServer(skipReload = false) {
 
         return true;
     } catch (e) {
-        console.error('[saveMergedToServer] РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ:', e);
-        setSaveStatus('error', 'РћС€РёР±РєР°: ' + e.message);
-        // РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‹С‚РёРµ РѕС€РёР±РєРё СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+        console.error('[saveMergedToServer] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ:', e);
+        setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + e.message);
+        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ Р С•РЎв‚¬Р С‘Р В±Р С”Р С‘ РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
         window.dispatchEvent(new Event('sync-error'));
         return false;
     } finally {
-        // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё
+        // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
         isSyncing = false;
     }
 }
 
 async function moveToServerTrash(items) {
     try {
-        // РџРѕР»СѓС‡Р°РµРј username РґР»СЏ РѕС‚РїСЂР°РІРєРё РЅР° СЃРµСЂРІРµСЂ
+        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С‘ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
         let username = 'guest';
         try {
@@ -3270,19 +3270,19 @@ async function moveToServerTrash(items) {
 
         if (!resp.ok) {
             const error = await resp.text();
-            console.error('[moveToServerTrash] РћС€РёР±РєР° СЃРµСЂРІРµСЂР°:', resp.status, error);
+            console.error('[moveToServerTrash] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', resp.status, error);
         }
 
         return resp.ok;
     } catch (e) {
-        console.error('[moveToServerTrash] РћС€РёР±РєР°:', e);
+        console.error('[moveToServerTrash] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', e);
         return false;
     }
 }
 
 async function restoreFromServerTrash(questions) {
     try {
-        // РџРѕР»СѓС‡Р°РµРј username РґР»СЏ РѕС‚РїСЂР°РІРєРё РЅР° СЃРµСЂРІРµСЂ
+        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С‘ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
         let username = null;
         try {
@@ -3332,7 +3332,7 @@ async function getServerMetadata() {
         if (resp.ok) {
             const data = await resp.json();
             const raw = data.metadata || {};
-            // РќРѕСЂРјР°Р»РёР·СѓРµРј РєР»СЋС‡Рё СЃ СЃРµСЂРІРµСЂР° (snake_case -> camelCase)
+            // Р СњР С•РЎР‚Р СР В°Р В»Р С‘Р В·РЎС“Р ВµР С Р С”Р В»РЎР‹РЎвЂЎР С‘ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (snake_case -> camelCase)
             const normalized = {
                 categoryOrder: Array.isArray(raw.category_order) ? raw.category_order : (raw.categoryOrder || []),
                 subcategoryOrder: typeof raw.subcategory_order === 'object' && raw.subcategory_order !== null ? raw.subcategory_order : (raw.subcategoryOrder || {}),
@@ -3349,19 +3349,19 @@ async function getServerMetadata() {
 
 async function refreshServerTrash() {
     try {
-        // рџ”’ Р—Р°РіСЂСѓР¶Р°РµРј РєРѕСЂР·РёРЅСѓ СЃ СЃРµСЂРІРµСЂР° (С‚РµРїРµСЂСЊ /metadata РІРѕР·РІСЂР°С‰Р°РµС‚ trash_bin)
+        // СЂСџвЂќвЂ™ Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (РЎвЂљР ВµР С—Р ВµРЎР‚РЎРЉ /metadata Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ trash_bin)
         const resp = await fetchWithAuth('/metadata');
         if (resp.ok) {
             const data = await resp.json();
             const bin = Array.isArray(data.trash_bin) ? data.trash_bin : [];
             serverTrashItems = bin;
             serverTrashSet = new Set(bin.map(t => t.item?.question).filter(Boolean));
-            // рџ”’ РЎРѕС…СЂР°РЅСЏРµРј РІ localStorage РґР»СЏ РѕС„Р»Р°Р№РЅ-СЂР°Р±РѕС‚С‹
+            // СЂСџвЂќвЂ™ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р† localStorage Р Т‘Р В»РЎРЏ Р С•РЎвЂћР В»Р В°Р в„–Р Р…-РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂ№
             localStorage.setItem('qaUserTrash', JSON.stringify(serverTrashItems));
             return;
         }
 
-        // Р¤РѕР»Р±СЌРє: РµСЃР»Рё СЃРµСЂРІРµСЂ РЅРµРґРѕСЃС‚СѓРїРµРЅ, Р·Р°РіСЂСѓР¶Р°РµРј РёР· localStorage
+        // Р В¤Р С•Р В»Р В±РЎРЊР С”: Р ВµРЎРѓР В»Р С‘ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…, Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р С‘Р В· localStorage
         const localTrash = localStorage.getItem('qaUserTrash');
         if (localTrash) {
             const trash = JSON.parse(localTrash);
@@ -3370,7 +3370,7 @@ async function refreshServerTrash() {
         }
     } catch (e) {
         console.error('Failed to refresh server trash:', e);
-        // Р¤РѕР»Р±СЌРє: Р·Р°РіСЂСѓР¶Р°РµРј РёР· localStorage РїСЂРё РѕС€РёР±РєРµ
+        // Р В¤Р С•Р В»Р В±РЎРЊР С”: Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р С‘Р В· localStorage Р С—РЎР‚Р С‘ Р С•РЎв‚¬Р С‘Р В±Р С”Р Вµ
         const localTrash = localStorage.getItem('qaUserTrash');
         if (localTrash) {
             const trash = JSON.parse(localTrash);
@@ -3382,7 +3382,7 @@ async function refreshServerTrash() {
 
 async function updateServerMetadata(metadata) {
     try {
-        // РџСЂРµРѕР±СЂР°Р·СѓРµРј РєР»СЋС‡Рё РєР»РёРµРЅС‚Р° (camelCase) РІ СЃРµСЂРІРµСЂРЅС‹Рµ (snake_case)
+        // Р СџРЎР‚Р ВµР С•Р В±РЎР‚Р В°Р В·РЎС“Р ВµР С Р С”Р В»РЎР‹РЎвЂЎР С‘ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљР В° (camelCase) Р Р† РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…РЎвЂ№Р Вµ (snake_case)
         const payload = {};
         if (Array.isArray(metadata.categoryOrder)) payload.category_order = metadata.categoryOrder;
         if (metadata.subcategoryOrder && typeof metadata.subcategoryOrder === 'object') payload.subcategory_order = metadata.subcategoryOrder;
@@ -3405,12 +3405,12 @@ function renderTrashPanel() {
     if (!trashPanel) return;
     const catDiv = trashPanel.querySelector('#trash-categories');
     const cardDiv = trashPanel.querySelector('#trash-cards');
-    if (catDiv) catDiv.innerHTML = '<div><strong>РљР°С‚РµРіРѕСЂРёРё:</strong></div><div>РџСѓСЃС‚Рѕ</div>';
+    if (catDiv) catDiv.innerHTML = '<div><strong>Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:</strong></div><div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
     const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
     if (cardDiv) {
         cardDiv.innerHTML = '';
         const header = document.createElement('div');
-        header.innerHTML = '<strong>РљР°СЂС‚РѕС‡РєРё:</strong>' + (deletedCards.length ? '' : ' <span>РџСѓСЃС‚Рѕ</span>');
+        header.innerHTML = '<strong>Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:</strong>' + (deletedCards.length ? '' : ' <span>Р СџРЎС“РЎРѓРЎвЂљР С•</span>');
         cardDiv.appendChild(header);
         const grid = document.createElement('div');
         grid.className = 'trash-cards-grid';
@@ -3422,7 +3422,7 @@ function renderTrashPanel() {
             const mini = document.createElement('div');
             mini.className = 'result-item trash-mini';
 
-            // Р’РµСЂС…: С‚РµРіРё
+            // Р вЂ™Р ВµРЎР‚РЎвЂ¦: РЎвЂљР ВµР С–Р С‘
             const meta = document.createElement('div');
             meta.className = 'trash-meta';
             meta.style.display = 'flex';
@@ -3432,26 +3432,26 @@ function renderTrashPanel() {
             const scBadge = document.createElement('span'); scBadge.className = 'subcategory-badge'; scBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
             meta.appendChild(catBadge); meta.appendChild(scBadge);
 
-            // Р’РѕРїСЂРѕСЃ - РїСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+            // Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
             const qEl = document.createElement('div'); qEl.className = 'question';
             const questionFormatting = it?.formatting?.question || [];
             qEl.innerHTML = applyFormatting(it?.question || q || '', questionFormatting);
             qEl.style.marginTop = '6px';
 
-            // РћС‚РІРµС‚ - РїСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+            // Р С›РЎвЂљР Р†Р ВµРЎвЂљ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
             const aEl = document.createElement('div'); aEl.className = 'answer';
             const answerFormatting = it?.formatting?.answer || [];
             aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
             aEl.style.marginTop = '6px';
 
-            // Р”РµР№СЃС‚РІРёСЏ
+            // Р вЂќР ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ
             const actions = document.createElement('div');
             actions.className = 'trash-actions';
             actions.style.display = 'flex';
             actions.style.gap = '8px';
             actions.style.marginTop = '8px';
-            const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ';
-            const purgeBtn2 = document.createElement('button'); purgeBtn2.className = 'purge-btn'; purgeBtn2.textContent = 'РЈРґР°Р»РёС‚СЊ РЅР°РІСЃРµРіРґР°';
+            const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ';
+            const purgeBtn2 = document.createElement('button'); purgeBtn2.className = 'purge-btn'; purgeBtn2.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°';
             actions.appendChild(restoreBtn);
             actions.appendChild(purgeBtn2);
 
@@ -3461,25 +3461,25 @@ function renderTrashPanel() {
             mini.appendChild(actions);
             grid.appendChild(mini);
 
-            // РћРїС‚РёРјРёСЃС‚РёС‡РЅРѕРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ + РѕС‡РёСЃС‚РєР° Р»РѕРєР°Р»СЊРЅРѕР№ РєР°СЂС‚С‹ СѓРґР°Р»РµРЅРёР№
+            // Р С›Р С—РЎвЂљР С‘Р СР С‘РЎРѓРЎвЂљР С‘РЎвЂЎР Р…Р С•Р Вµ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ + Р С•РЎвЂЎР С‘РЎРѓРЎвЂљР С”Р В° Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљРЎвЂ№ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„–
             restoreBtn.addEventListener('click', async () => {
-                restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ...'; restoreBtn.disabled = true;
-                // РЈРґР°Р»СЏРµРј РёР· Р»РѕРєР°Р»СЊРЅРѕРіРѕ РєСЌС€Р° РєРѕСЂР·РёРЅС‹ СЃСЂР°Р·Сѓ
+                restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ...'; restoreBtn.disabled = true;
+                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С‘Р В· Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С”РЎРЊРЎв‚¬Р В° Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“
                 serverTrashSet.delete(q);
                 serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                // Р•СЃР»Рё РєР°СЂС‚Р° Р»РѕРєР°Р»СЊРЅС‹С… СѓРґР°Р»РµРЅРёР№ РїРѕРјРµС‡Р°Р»Р° СЌС‚Сѓ РєР°СЂС‚РѕС‡РєСѓ РєР°Рє СѓРґР°Р»С‘РЅРЅСѓСЋ вЂ” РѕС‡РёСЃС‚РёРј
+                // Р вЂўРЎРѓР В»Р С‘ Р С”Р В°РЎР‚РЎвЂљР В° Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„– Р С—Р С•Р СР ВµРЎвЂЎР В°Р В»Р В° РЎРЊРЎвЂљРЎС“ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎС“РЎР‹ РІР‚вЂќ Р С•РЎвЂЎР С‘РЎРѓРЎвЂљР С‘Р С
                 const delMap = getDeletedItems();
                 if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
                 renderTrashPanel();
-                // РћР±РЅРѕРІР»СЏРµРј С‚РµРєСѓС‰РёР№ СЃРїРёСЃРѕРє РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ Р°РєС‚РёРІРЅРѕРіРѕ С‚Р°Р±Р°
-                // РћР±РЅРѕРІР»СЏРµРј Р±РµР· СЃР±СЂРѕСЃР° РєРѕРЅС‚РµРєСЃС‚Р°
+                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР С—Р С‘РЎРѓР С•Р С” Р Р† Р В·Р В°Р Р†Р С‘РЎРѓР С‘Р СР С•РЎРѓРЎвЂљР С‘ Р С•РЎвЂљ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•Р С–Р С• РЎвЂљР В°Р В±Р В°
+                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р В±Р ВµР В· РЎРѓР В±РЎР‚Р С•РЎРѓР В° Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
                 refreshCurrentContext();
-                // РџС‹С‚Р°РµРјСЃСЏ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР° СЃРµСЂРІРµСЂРµ
-                let ok = false; try { ok = await restoreFromServerTrash([q]); } catch (e) { console.error('[restore-click] РћС€РёР±РєР° Р·Р°РїСЂРѕСЃР° Рє СЃРµСЂРІРµСЂСѓ /restore', e); ok = false; }
+                // Р СџРЎвЂ№РЎвЂљР В°Р ВµР СРЎРѓРЎРЏ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ
+                let ok = false; try { ok = await restoreFromServerTrash([q]); } catch (e) { console.error('[restore-click] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В·Р В°Р С—РЎР‚Р С•РЎРѓР В° Р С” РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚РЎС“ /restore', e); ok = false; }
                 if (ok) {
                     try { await refreshServerTrash(); } catch (_) { }
-                    // Р•СЃР»Рё РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕР№ РєР°СЂС‚РѕС‡РєРё РЅРµС‚ РІ С‚РµРєСѓС‰РµРј Р±Р°Р·РѕРІРѕРј РЅР°Р±РѕСЂРµ (uniqueQaData)
-                    // Рё РѕРЅР° РЅРµ С‡РёСЃР»РёС‚СЃСЏ СЃСЂРµРґРё РЅРѕРІС‹С… СЌР»РµРјРµРЅС‚РѕРІ вЂ” РґРѕР±Р°РІРёРј РµС‘ РІ РЅРѕРІС‹Рµ РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµРіРѕ СЃРѕС…СЂР°РЅРµРЅРёСЏ.
+                    // Р вЂўРЎРѓР В»Р С‘ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Р…Р ВµРЎвЂљ Р Р† РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С Р В±Р В°Р В·Р С•Р Р†Р С•Р С Р Р…Р В°Р В±Р С•РЎР‚Р Вµ (uniqueQaData)
+                    // Р С‘ Р С•Р Р…Р В° Р Р…Р Вµ РЎвЂЎР С‘РЎРѓР В»Р С‘РЎвЂљРЎРѓРЎРЏ РЎРѓРЎР‚Р ВµР Т‘Р С‘ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р† РІР‚вЂќ Р Т‘Р С•Р В±Р В°Р Р†Р С‘Р С Р ВµРЎвЂ Р Р† Р Р…Р С•Р Р†РЎвЂ№Р Вµ Р Т‘Р В»РЎРЏ Р С—Р С•РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С–Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ.
                     const baseHas = !!uniqueQaData.find(i => i.question === q);
                     const newItemsArr = getNewItems();
                     const newHas = !!newItemsArr.find(i => i.question === q);
@@ -3488,29 +3488,29 @@ function renderTrashPanel() {
                         setLS('qaNewItems', newItemsArr);
                     }
                     try { window.__lastRestoredQuestion = q; } catch (_) { }
-                    // рџ”Ґ РЎРѕС…СЂР°РЅСЏРµРј РЅР° СЃРµСЂРІРµСЂ Р‘Р•Р— forceReloadData
+                    // СЂСџвЂќТђ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р вЂР вЂўР вЂ” forceReloadData
                     saveMergedToServer(true).then(saveOk => {
                         if (saveOk) {
-                            setSaveStatus('success', 'РљР°СЂС‚РѕС‡РєР° РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅР°');
-                            restoreBtn.textContent = 'Р“РѕС‚РѕРІРѕ';
-                            setTimeout(() => { restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ'; restoreBtn.disabled = false; }, 1500);
+                            setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°');
+                            restoreBtn.textContent = 'Р вЂњР С•РЎвЂљР С•Р Р†Р С•';
+                            setTimeout(() => { restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false; }, 1500);
                         } else {
-                            setSaveStatus('error', 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ');
-                            restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ'; restoreBtn.disabled = false;
+                            setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
+                            restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false;
                         }
                     });
                 } else {
                     try { await refreshServerTrash(); } catch (_) { }
-                    setSaveStatus('error', 'РћС€РёР±РєР° РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РЅР° СЃРµСЂРІРµСЂРµ');
-                    restoreBtn.textContent = 'Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ'; restoreBtn.disabled = false;
+                    setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ');
+                    restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false;
                 }
             });
 
-            // РћРєРѕРЅС‡Р°С‚РµР»СЊРЅРѕРµ СѓРґР°Р»РµРЅРёРµ (РІС‚РѕСЂР°СЏ РІРµС‚РєР°)
+            // Р С›Р С”Р С•Р Р…РЎвЂЎР В°РЎвЂљР ВµР В»РЎРЉР Р…Р С•Р Вµ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ (Р Р†РЎвЂљР С•РЎР‚Р В°РЎРЏ Р Р†Р ВµРЎвЂљР С”Р В°)
             purgeBtn2.addEventListener('click', async () => {
-                purgeBtn2.textContent = 'РЈРґР°Р»РµРЅРёРµ...'; purgeBtn2.disabled = true;
+                purgeBtn2.textContent = 'Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ...'; purgeBtn2.disabled = true;
 
-                // рџ”’ РџРѕР»СѓС‡Р°РµРј username
+                // СЂСџвЂќвЂ™ Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 let username = 'guest';
                 try {
@@ -3528,7 +3528,7 @@ function renderTrashPanel() {
                         serverTrashSet.delete(q);
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
 
-                        // рџ”Ґ Р’РђР–РќРћ: Р”РѕР±Р°РІР»СЏРµРј РІ qaDeletedItems С‡С‚РѕР±С‹ РєР°СЂС‚РѕС‡РєР° РЅРµ РІРµСЂРЅСѓР»Р°СЃСЊ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё
+                        // СЂСџвЂќТђ Р вЂ™Р С’Р вЂ“Р СњР С›: Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р† qaDeletedItems РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р…Р Вµ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В»Р В°РЎРѓРЎРЉ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘
                         const delMap = getDeletedItems();
                         delMap[q] = { deleted_at: new Date().toISOString(), deleted_by: username, permanent: true };
                         setDeletedItems(delMap);
@@ -3536,7 +3536,7 @@ function renderTrashPanel() {
                         const newArr = getNewItems().filter(i => i.question !== q);
                         setLS('qaNewItems', newArr);
 
-                        // рџ”’ РћР±РЅРѕРІР»СЏРµРј localStorage СЃ РєРѕСЂР·РёРЅРѕР№
+                        // СЂСџвЂќвЂ™ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С localStorage РЎРѓ Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р С•Р в„–
                         const localTrash = localStorage.getItem('qaUserTrash');
                         if (localTrash) {
                             const trash = JSON.parse(localTrash);
@@ -3546,35 +3546,35 @@ function renderTrashPanel() {
 
                         renderTrashPanel();
                         refreshCurrentContext();
-                        // рџ”Ґ РќР• РІС‹Р·С‹РІР°РµРј saveMergedToServer() С‡С‚РѕР±С‹ РЅРµ РІРµСЂРЅСѓС‚СЊ РєР°СЂС‚РѕС‡РєСѓ РѕР±СЂР°С‚РЅРѕ!
-                        setSaveStatus('success', 'РљР°СЂС‚РѕС‡РєР° СѓРґР°Р»РµРЅР° РЅР°РІСЃРµРіРґР°');
+                        // СЂСџвЂќТђ Р СњР вЂў Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С saveMergedToServer() РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р Р†Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р С•Р В±РЎР‚Р В°РЎвЂљР Р…Р С•!
+                        setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°');
                     } else {
                         const error = await resp.text();
-                        console.error('[delete-permanent] РћС€РёР±РєР°:', resp.status, error);
-                        setSaveStatus('error', 'РћС€РёР±РєР°: ' + error);
+                        console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', resp.status, error);
+                        setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + error);
                     }
                 } catch (e) {
-                    console.error('[delete-permanent] РћС€РёР±РєР°:', e);
-                    setSaveStatus('error', 'РЎРµСЂРІРµСЂ СѓРґР°Р»РµРЅРёСЏ РЅРµРґРѕСЃС‚СѓРїРµРЅ');
+                    console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', e);
+                    setSaveStatus('error', 'Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…');
                 }
-                purgeBtn2.textContent = 'РЈРґР°Р»РёС‚СЊ РЅР°РІСЃРµРіРґР°'; purgeBtn2.disabled = false;
+                purgeBtn2.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°'; purgeBtn2.disabled = false;
             });
         });
     }
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ С„РёР»СЊС‚СЂР°С†РёРё РІРѕРїСЂРѕСЃРѕРІ РїРѕ РєР°С‚РµРіРѕСЂРёРё
+// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р В°РЎвЂ Р С‘Р С‘ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
 function filterQuestionsByCategory(categoryName) {
     currentContextKey = `category:${categoryName}`;
     const data = getRuntimeData();
-    // Р•СЃР»Рё РёРјСЏ РєР°С‚РµРіРѕСЂРёРё вЂ” РѕС‚РѕР±СЂР°Р¶Р°РµРјРѕРµ, РЅР°Р№РґРµРј РёСЃС…РѕРґРЅРѕРµ РёРјСЏ
+    // Р вЂўРЎРѓР В»Р С‘ Р С‘Р СРЎРЏ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ РІР‚вЂќ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµР СР С•Р Вµ, Р Р…Р В°Р в„–Р Т‘Р ВµР С Р С‘РЎРѓРЎвЂ¦Р С•Р Т‘Р Р…Р С•Р Вµ Р С‘Р СРЎРЏ
     const catPlaceholders = getCategoryPlaceholders();
     const canonicalCategory = Object.entries(catPlaceholders).find(([, v]) => v?.displayName === categoryName)?.[0] || categoryName;
     const filteredData = data.filter(item => item.category === canonicalCategory || item.category === categoryName);
-    displayQuestions(filteredData, `РљР°С‚РµРіРѕСЂРёСЏ: ${categoryName}`);
+    displayQuestions(filteredData, `Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ: ${categoryName}`);
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ С„РёР»СЊС‚СЂР°С†РёРё РІРѕРїСЂРѕСЃРѕРІ РїРѕ РїРѕРґРєР°С‚РµРіРѕСЂРёРё
+// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р В°РЎвЂ Р С‘Р С‘ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р С—Р С• Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
 function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     currentContextKey = `subcategory:${categoryName}#${subcategoryName}`;
     const data = getRuntimeData();
@@ -3584,26 +3584,26 @@ function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     const scMap = scPlaceholders[canonicalCategory] || scPlaceholders[categoryName] || {};
     const canonicalSub = Object.entries(scMap).find(([, v]) => v?.displayName === subcategoryName)?.[0] || subcategoryName;
     const filteredData = data.filter(item => (item.category === canonicalCategory || item.category === categoryName) && (item.subcategory === canonicalSub || item.subcategory === subcategoryName));
-    displayQuestions(filteredData, `РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ: ${subcategoryName}`);
+    displayQuestions(filteredData, `Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ: ${subcategoryName}`);
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІСЃРµС… РІРѕРїСЂРѕСЃРѕРІ
+// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р†
 function showAllQuestions() {
     currentContextKey = 'all';
-    displayQuestions(getRuntimeData(), 'Р’СЃРµ РІРѕРїСЂРѕСЃС‹');
+    displayQuestions(getRuntimeData(), 'Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№');
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РёР·Р±СЂР°РЅРЅС‹С… РІРѕРїСЂРѕСЃРѕРІ
+// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р†
 function showFavorites() {
     currentContextKey = 'favorites';
     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
     const favData = getRuntimeData().filter(item => favorites.has(item.question));
-    displayQuestions(favData, 'РР·Р±СЂР°РЅРЅРѕРµ');
+    displayQuestions(favData, 'Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ');
 }
 
-// РЈРЅРёРІРµСЂСЃР°Р»СЊРЅР°СЏ РїРµСЂРµСЂРёСЃРѕРІРєР° С‚РµРєСѓС‰РµРіРѕ РєРѕРЅС‚РµРєСЃС‚Р° Р±РµР· СЃР±СЂРѕСЃР° РЅР° В«Р’СЃРµ РІРѕРїСЂРѕСЃС‹В»
+// Р Р€Р Р…Р С‘Р Р†Р ВµРЎР‚РЎРѓР В°Р В»РЎРЉР Р…Р В°РЎРЏ Р С—Р ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†Р С”Р В° РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В° Р В±Р ВµР В· РЎРѓР В±РЎР‚Р С•РЎРѓР В° Р Р…Р В° Р’В«Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№Р’В»
 function refreshCurrentContext() {
-    // РќР• РїРѕРєР°Р·С‹РІР°РµРј РІРѕРїСЂРѕСЃС‹ РµСЃР»Рё РѕС‚РєСЂС‹С‚Р° СЃС‚СЂР°РЅРёС†Р° СЃС‚Р°С‚РёСЃС‚РёРєРё!
+    // Р СњР вЂў Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р ВµРЎРѓР В»Р С‘ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В° РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
     if (location.hash === '#/stats') {
         return;
     }
@@ -3633,7 +3633,7 @@ function refreshCurrentContext() {
     }
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІРѕРїСЂРѕСЃРѕРІ
+// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р†
 export function displayQuestions(questions, title) {
     // Safety check and logging
     if (!questions) {
@@ -3654,7 +3654,7 @@ export function displayQuestions(questions, title) {
             // DEBUG INFO
             const totalData = uniqueQaData ? uniqueQaData.length : 'N/A';
             resultsList.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-style: italic;">
-                РЎРїРёСЃРѕРє РІРѕРїСЂРѕСЃРѕРІ РїСѓСЃС‚
+                Р РЋР С—Р С‘РЎРѓР С•Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р С—РЎС“РЎРѓРЎвЂљ
              </div>`;
         } else {
             // Force display grid
@@ -3672,14 +3672,14 @@ export function displayQuestions(questions, title) {
 
         currentQuestions = [...questions];
 
-        // РџСЂРёРјРµРЅСЏРµРј РїРѕСЂСЏРґРѕРє, РµСЃР»Рё Р·Р°РґР°РЅ
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С Р С—Р С•РЎР‚РЎРЏР Т‘Р С•Р С”, Р ВµРЎРѓР В»Р С‘ Р В·Р В°Р Т‘Р В°Р Р…
         const order = getOrderForContext(currentContextKey);
         if (order && sortMode === 'default') {
             const idx = new Map(order.map((q, i) => [q, i]));
             currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
         }
 
-        // РџРѕР»СѓС‡Р°РµРј РїСЂРѕРіСЂРµСЃСЃ РґР»СЏ РІСЃРµС… РєР°СЂС‚РѕС‡РµРє РґР»СЏ СЃРѕСЂС‚РёСЂРѕРІРєРё Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
+        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ Р Т‘Р В»РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” Р Т‘Р В»РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р С‘ Р С‘ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ
         let progressMap = {};
         try {
             progressMap = getProgressMap();
@@ -3687,31 +3687,31 @@ export function displayQuestions(questions, title) {
             console.warn('getProgressMap failed:', e);
         }
 
-        // РџСЂРёРјРµРЅСЏРµРј СЃРѕСЂС‚РёСЂРѕРІРєСѓ РїРѕ EF (СЃРµСЂРґРµС‡РєР°Рј), РµСЃР»Рё РІРєР»СЋС‡РµРЅР°
+        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”РЎС“ Р С—Р С• EF (РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР С”Р В°Р С), Р ВµРЎРѓР В»Р С‘ Р Р†Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р В°
         if (sortMode !== 'default') {
             currentQuestions.sort((a, b) => {
                 const efA = progressMap[a.question]?.easeFactor ?? 2.3;
                 const efB = progressMap[b.question]?.easeFactor ?? 2.3;
 
-                // 1. РџРµСЂРІРёС‡РЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕ EF
+                // 1. Р СџР ВµРЎР‚Р Р†Р С‘РЎвЂЎР Р…Р В°РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• EF
                 if (Math.abs(efA - efB) >= 0.001) {
-                    // asc: РѕС‚ РјРµРЅСЊС€РµРіРѕ Рє Р±РѕР»СЊС€РµРјСѓ (1.3 -> 2.9) - РЎР°РјС‹Рµ СЃР»РѕР¶РЅС‹Рµ СЃРЅР°С‡Р°Р»Р°
+                    // asc: Р С•РЎвЂљ Р СР ВµР Р…РЎРЉРЎв‚¬Р ВµР С–Р С• Р С” Р В±Р С•Р В»РЎРЉРЎв‚¬Р ВµР СРЎС“ (1.3 -> 2.9) - Р РЋР В°Р СРЎвЂ№Р Вµ РЎРѓР В»Р С•Р В¶Р Р…РЎвЂ№Р Вµ РЎРѓР Р…Р В°РЎвЂЎР В°Р В»Р В°
                     return sortMode === 'asc' ? efA - efB : efB - efA;
                 }
 
-                // 2. Р’С‚РѕСЂРёС‡РЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕ ID (РІСЃРµРіРґР° ASC РґР»СЏ СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚Рё)
+                // 2. Р вЂ™РЎвЂљР С•РЎР‚Р С‘РЎвЂЎР Р…Р В°РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• ID (Р Р†РЎРѓР ВµР С–Р Т‘Р В° ASC Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљР В°Р В±Р С‘Р В»РЎРЉР Р…Р С•РЎРѓРЎвЂљР С‘)
                 const idA = parseInt(a.id, 10) || 0;
                 const idB = parseInt(b.id, 10) || 0;
                 if (idA !== idB) {
                     return idA - idB;
                 }
 
-                // 3. РўСЂРµС‚РёС‡РЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕ Р°Р»С„Р°РІРёС‚Сѓ (РІСЃРµРіРґР° ASC РґР»СЏ СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚Рё)
+                // 3. Р СћРЎР‚Р ВµРЎвЂљР С‘РЎвЂЎР Р…Р В°РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• Р В°Р В»РЎвЂћР В°Р Р†Р С‘РЎвЂљРЎС“ (Р Р†РЎРѓР ВµР С–Р Т‘Р В° ASC Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљР В°Р В±Р С‘Р В»РЎРЉР Р…Р С•РЎРѓРЎвЂљР С‘)
                 return a.question.localeCompare(b.question, undefined, { numeric: true, sensitivity: 'base' });
             });
         }
 
-        // РћР±РЅРѕРІР»СЏРµРј СЃС‡РµС‚С‡РёРє СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ (РІС‹РЅРµСЃРµРЅ РёР· grid)
+        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎРѓРЎвЂЎР ВµРЎвЂљРЎвЂЎР С‘Р С” РЎР‚Р ВµР В·РЎС“Р В»РЎРЉРЎвЂљР В°РЎвЂљР С•Р Р† (Р Р†РЎвЂ№Р Р…Р ВµРЎРѓР ВµР Р… Р С‘Р В· grid)
         let countContainer = document.getElementById('results-count-container');
         if (!countContainer) {
             countContainer = document.createElement('div');
@@ -3725,26 +3725,26 @@ export function displayQuestions(questions, title) {
             resultsList.parentNode.insertBefore(countContainer, resultsList);
         }
 
-        // РРєРѕРЅРєРё СЃРѕСЂС‚РёСЂРѕРІРєРё
+        // Р ВР С”Р С•Р Р…Р С”Р С‘ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р С‘
         const sortIcons = {
             default: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5"/></svg>',
-            asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // РЎС‚СЂРµР»РєР° РІРЅРёР· (РІРѕР·СЂР°СЃС‚Р°РЅРёРµ)
-            desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // РЎС‚СЂРµР»РєР° РІРІРµСЂС… (СѓР±С‹РІР°РЅРёРµ)
+            asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р Р…Р С‘Р В· (Р Р†Р С•Р В·РЎР‚Р В°РЎРѓРЎвЂљР В°Р Р…Р С‘Р Вµ)
+            desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р Р†Р ВµРЎР‚РЎвЂ¦ (РЎС“Р В±РЎвЂ№Р Р†Р В°Р Р…Р С‘Р Вµ)
         };
         const sortTitle = {
-            default: 'РЎРѕСЂС‚РёСЂРѕРІРєР°: РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ',
-            asc: 'РЎРѕСЂС‚РёСЂРѕРІРєР°: РћС‚ СЃР»РѕР¶РЅС‹С… Рє Р»РµРіРєРёРј (EF в†‘)',
-            desc: 'РЎРѕСЂС‚РёСЂРѕРІРєР°: РћС‚ Р»РµРіРєРёС… Рє СЃР»РѕР¶РЅС‹Рј (EF в†“)'
+            default: 'Р РЋР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В°: Р СџР С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹',
+            asc: 'Р РЋР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В°: Р С›РЎвЂљ РЎРѓР В»Р С•Р В¶Р Р…РЎвЂ№РЎвЂ¦ Р С” Р В»Р ВµР С–Р С”Р С‘Р С (EF РІвЂ вЂ)',
+            desc: 'Р РЋР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В°: Р С›РЎвЂљ Р В»Р ВµР С–Р С”Р С‘РЎвЂ¦ Р С” РЎРѓР В»Р С•Р В¶Р Р…РЎвЂ№Р С (EF РІвЂ вЂњ)'
         };
 
-        // Р¤РѕСЂРјРёСЂСѓРµРј С‚РµРєСЃС‚ СЃС‡РµС‚С‡РёРєР°
-        // рџ”’ РСЃРїРѕР»СЊР·СѓРµРј getRuntimeData() РґР»СЏ РєРѕРЅСЃРёСЃС‚РµРЅС‚РЅРѕСЃС‚Рё
+        // Р В¤Р С•РЎР‚Р СР С‘РЎР‚РЎС“Р ВµР С РЎвЂљР ВµР С”РЎРѓРЎвЂљ РЎРѓРЎвЂЎР ВµРЎвЂљРЎвЂЎР С‘Р С”Р В°
+        // СЂСџвЂќвЂ™ Р ВРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С getRuntimeData() Р Т‘Р В»РЎРЏ Р С”Р С•Р Р…РЎРѓР С‘РЎРѓРЎвЂљР ВµР Р…РЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘
         const runtimeData = getRuntimeData();
         const totalCount = runtimeData.length;
         const isFiltered = questions.length !== totalCount;
         const countText = isFiltered
-            ? `РќР°Р№РґРµРЅРѕ: ${questions.length} РёР· ${totalCount}`
-            : `Р’СЃРµРіРѕ РєР°СЂС‚РѕС‡РµРє: ${questions.length}`;
+            ? `Р СњР В°Р в„–Р Т‘Р ВµР Р…Р С•: ${questions.length} Р С‘Р В· ${totalCount}`
+            : `Р вЂ™РЎРѓР ВµР С–Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”: ${questions.length}`;
 
         countContainer.innerHTML = `
         <p class="results-count" style="margin:0">${countText}</p>
@@ -3753,7 +3753,7 @@ export function displayQuestions(questions, title) {
         </button>
     `;
 
-        // РћР±СЂР°Р±РѕС‚С‡РёРє РєРЅРѕРїРєРё СЃРѕСЂС‚РёСЂРѕРІРєРё
+        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С”Р Р…Р С•Р С—Р С”Р С‘ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р С‘
         const sortBtn = countContainer.querySelector('#sort-toggle-btn');
         if (sortBtn) {
             sortBtn.addEventListener('click', () => {
@@ -3764,7 +3764,7 @@ export function displayQuestions(questions, title) {
             });
         }
 
-        // РҐРµР»РїРµСЂ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё СЃРµСЂРґРµС‡РµРє (РЅРѕРІР°СЏ Р»РѕРіРёРєР° СЃ РґСЂРѕР±РЅС‹РјРё)
+        // Р ТђР ВµР В»Р С—Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р С•РЎвЂљРЎР‚Р С‘РЎРѓР С•Р Р†Р С”Р С‘ РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С” (Р Р…Р С•Р Р†Р В°РЎРЏ Р В»Р С•Р С–Р С‘Р С”Р В° РЎРѓ Р Т‘РЎР‚Р С•Р В±Р Р…РЎвЂ№Р СР С‘)
         const renderHearts = (ef) => {
             try {
                 if (typeof getDifficultyLevel !== 'function' || typeof getLevelProgress !== 'function') {
@@ -3774,10 +3774,10 @@ export function displayQuestions(questions, title) {
 
                 // Check for NEW card (ef is null or undefined)
                 if (ef === null || ef === undefined) {
-                    return '<div class="hearts-container" title="РљР°СЂС‚РѕС‡РєР° РµС‰Рµ РЅРµ РёР·СѓС‡Р°Р»Р°СЃСЊ" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">РќРћР’РђРЇ</span></div>';
+                    return '<div class="hearts-container" title="Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°Р Вµ Р Р…Р Вµ Р С‘Р В·РЎС“РЎвЂЎР В°Р В»Р В°РЎРѓРЎРЉ" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">Р СњР С›Р вЂ™Р С’Р Р‡</span></div>';
                 }
 
-                // Р Р°СЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° СЃРµСЂРґРµС‡РµРє (1.0 - 5.0)
+                // Р В Р В°РЎРѓРЎвЂЎР ВµРЎвЂљ Р С”Р С•Р В»Р С‘РЎвЂЎР ВµРЎРѓРЎвЂљР Р†Р В° РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С” (1.0 - 5.0)
                 let heartsCount = 0;
                 if (ef < 1.7) {
                     // 1.3 -> 1.0, 1.7 -> 2.0
@@ -3798,16 +3798,16 @@ export function displayQuestions(questions, title) {
 
                 const level = getDifficultyLevel(ef);
                 const levelNames = {
-                    'VERY_HARD': 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ',
-                    'HARD': 'РўСЂСѓРґРЅС‹Рµ',
-                    'STANDARD': 'РЎС‚Р°РЅРґР°СЂС‚',
-                    'EASY': 'Р›РµРіРєРёРµ'
+                    'VERY_HARD': 'Р С›РЎвЂЎР ВµР Р…РЎРЉ РЎвЂљРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
+                    'HARD': 'Р СћРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
+                    'STANDARD': 'Р РЋРЎвЂљР В°Р Р…Р Т‘Р В°РЎР‚РЎвЂљ',
+                    'EASY': 'Р вЂєР ВµР С–Р С”Р С‘Р Вµ'
                 };
                 const levelName = levelNames[level] || level;
 
-                let html = '<div class="hearts-container" title="РЈСЂРѕРІРµРЅСЊ: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nРЎРµСЂРґРµС‡РµРє: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
+                let html = '<div class="hearts-container" title="Р Р€РЎР‚Р С•Р Р†Р ВµР Р…РЎРЉ: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nР РЋР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
 
-                // Р РёСЃСѓРµРј 5 СЃРµСЂРґРµС‡РµРє
+                // Р В Р С‘РЎРѓРЎС“Р ВµР С 5 РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”
                 for (let i = 0; i < 5; i++) {
                     let fill = 0;
                     if (heartsCount >= i + 1) {
@@ -3839,7 +3839,7 @@ export function displayQuestions(questions, title) {
             }
         };
 
-        // Р”РѕР±Р°РІР»СЏРµРј РІРѕРїСЂРѕСЃС‹
+        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№
         currentQuestions.forEach((item, index) => {
             try {
                 const resultItem = document.createElement('div');
@@ -3876,20 +3876,20 @@ export function displayQuestions(questions, title) {
                             currentQuestions.splice(toIdx, 0, moved);
                             setOrderForContext(currentContextKey, currentQuestions.map(q => q.question));
                             (async () => {
-                                setSaveStatus('saving', 'РЎРѕС…СЂР°РЅРµРЅРёРµ РїРѕСЂСЏРґРєР° РєР°СЂС‚РѕС‡РµРє...');
+                                setSaveStatus('saving', 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”...');
                                 const meta = await getServerMetadata();
                                 meta.orderOverrides = meta.orderOverrides || {};
                                 meta.orderOverrides[currentContextKey] = currentQuestions.map(q => q.question);
                                 const ok = await updateServerMetadata(meta);
-                                setSaveStatus(ok ? 'success' : 'error', ok ? 'РџРѕСЂСЏРґРѕРє РёР·РјРµРЅРµРЅ' : 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ');
+                                setSaveStatus(ok ? 'success' : 'error', ok ? 'Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С‘Р В·Р СР ВµР Р…Р ВµР Р…' : 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
                             })();
-                            // РџРµСЂРµСЂРёСЃРѕРІР°С‚СЊ С‚РµРєСѓС‰РёР№ СЃРїРёСЃРѕРє
+                            // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†Р В°РЎвЂљРЎРЉ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР С—Р С‘РЎРѓР С•Р С”
                             displayQuestions(currentQuestions, title);
                         }
                     });
                 }
 
-                // РР·Р±СЂР°РЅРЅРѕРµ
+                // Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ
                 let isFav = false;
                 let favClass = '';
                 try {
@@ -3900,7 +3900,7 @@ export function displayQuestions(questions, title) {
                     console.warn('Favorites error:', e);
                 }
 
-                // РћС‚РѕР±СЂР°Р¶Р°РµРј Р±РµР№РґР¶Рё СЃ СѓС‡С‘С‚РѕРј РїР»РµР№СЃС…РѕР»РґРµСЂРѕРІ
+                // Р С›РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµР С Р В±Р ВµР в„–Р Т‘Р В¶Р С‘ РЎРѓ РЎС“РЎвЂЎРЎвЂРЎвЂљР С•Р С Р С—Р В»Р ВµР в„–РЎРѓРЎвЂ¦Р С•Р В»Р Т‘Р ВµРЎР‚Р С•Р Р†
                 let dispCat = item.category || '';
                 let dispSub = item.subcategory || '';
                 try {
@@ -3920,12 +3920,12 @@ export function displayQuestions(questions, title) {
             </svg>
         `;
 
-                // Р Р°СЃС‡РµС‚ СЃРµСЂРґРµС‡РµРє
+                // Р В Р В°РЎРѓРЎвЂЎР ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”
                 const cardProgress = progressMap[item.question];
                 // If no progress or no easeFactor, treat as NEW (pass null)
                 const ef = (cardProgress && cardProgress.easeFactor !== undefined) ? cardProgress.easeFactor : null;
 
-                // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ Рё РѕС‚РІРµС‚Сѓ
+                // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“ Р С‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљРЎС“
                 const questionFormatting = item.formatting?.question || [];
                 const answerFormatting = item.formatting?.answer || [];
                 const questionHTML = applyFormatting(item.question, questionFormatting);
@@ -3937,12 +3937,12 @@ export function displayQuestions(questions, title) {
                 <span class="subcategory-badge">${dispSub}</span>
             </div>
             ${renderHearts(ef)}
-            <button class="fav-btn ${favClass}" title="Р’ РёР·Р±СЂР°РЅРЅРѕРµ" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
+            <button class="fav-btn ${favClass}" title="Р вЂ™ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
             <div class="question">${questionHTML}</div>
             <div class="answer">${answerHTML}</div>
         `;
 
-                // РћР±СЂР°Р±РѕС‚С‡РёРє РёР·Р±СЂР°РЅРЅРѕРіРѕ
+                // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р С–Р С•
                 const favBtn = resultItem.querySelector('.fav-btn');
                 favBtn.addEventListener('click', () => {
                     const current = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
@@ -3960,14 +3960,14 @@ export function displayQuestions(questions, title) {
                     localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
                 });
 
-                // РњРµРЅСЋ РєР°СЂС‚РѕС‡РєРё (в‹®) РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+                // Р СљР ВµР Р…РЎР‹ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ (РІвЂ№В®) Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
                 if (editMode) {
                     const qRow = resultItem.querySelector('.question-row');
                     const kebabBtn = document.createElement('button');
                     kebabBtn.className = 'kebab-btn';
-                    kebabBtn.title = 'РњРµРЅСЋ РєР°СЂС‚РѕС‡РєРё';
-                    kebabBtn.textContent = 'в‹®';
-                    // РўС‘РјРЅРѕ-СЃРµСЂС‹Р№ СЃС‚РёР»СЊ РєРЅРѕРїРєРё в‹® РЅР° РєР°СЂС‚РѕС‡РєРµ
+                    kebabBtn.title = 'Р СљР ВµР Р…РЎР‹ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘';
+                    kebabBtn.textContent = 'РІвЂ№В®';
+                    // Р СћРЎвЂР СР Р…Р С•-РЎРѓР ВµРЎР‚РЎвЂ№Р в„– РЎРѓРЎвЂљР С‘Р В»РЎРЉ Р С”Р Р…Р С•Р С—Р С”Р С‘ РІвЂ№В® Р Р…Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
                     kebabBtn.style.background = '#444';
                     kebabBtn.style.color = '#eee';
                     kebabBtn.style.border = '1px solid #333';
@@ -3975,7 +3975,7 @@ export function displayQuestions(questions, title) {
                     kebabBtn.style.padding = '2px 6px';
                     qRow.appendChild(kebabBtn);
 
-                    // рџ”Ґ Р“Р»РѕР±Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+                    // СЂСџвЂќТђ Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…Р С•Р Вµ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
                     let editModalState = {
                         originalCard: null,
                         formatting: null,
@@ -3988,60 +3988,60 @@ export function displayQuestions(questions, title) {
                         const selectedCategory = categoriesData.find(cat => cat.name === item.category);
                         const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
 
-                        // РџРѕР»СѓС‡Р°РµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РёР· РєР°СЂС‚РѕС‡РєРё РёР»Рё СЃРѕР·РґР°С‘Рј РїСѓСЃС‚РѕРµ
+                        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С‘Р В· Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р С‘Р В»Р С‘ РЎРѓР С•Р В·Р Т‘Р В°РЎвЂР С Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ
                         const formatting = item.formatting || createEmptyFormatting();
 
-                        // РЎРѕС…СЂР°РЅСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
+                        // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ
                         editModalState = {
                             originalCard: { ...item },
                             formatting: { ...formatting },
                             oldQuestion: item.question
                         };
 
-                        // РЎРѕР·РґР°С‘Рј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃ РїР°РЅРµР»СЊСЋ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
+                        // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• РЎРѓ Р С—Р В°Р Р…Р ВµР В»РЎРЉРЎР‹ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
                         const modalHTML = `
                             <div class="edit-modal-overlay" id="edit-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 10px;">
                                 <div class="edit-modal" style="background: #1e1e1e; border-radius: 12px; padding: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); box-sizing: border-box;">
                                     
-                                    <!-- РљР°С‚РµРіРѕСЂРёСЏ Рё РїРѕРґРєР°С‚РµРіРѕСЂРёСЏ РІ 2 СЂСЏРґР° -->
+                                    <!-- Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С‘ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Р† 2 РЎР‚РЎРЏР Т‘Р В° -->
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                                         <div>
-                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">РљР°С‚РµРіРѕСЂРёСЏ</label>
+                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ</label>
                                             <select class="edit-category" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${categoryOptions}</select>
                                         </div>
                                         <div>
-                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">РџРѕРґРєР°С‚РµРіРѕСЂРёСЏ</label>
+                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ</label>
                                             <select class="edit-subcategory" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${subcategoryOptions}</select>
                                         </div>
                                     </div>
                                     
-                                    <!-- РџР°РЅРµР»СЊ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ -->
+                                    <!-- Р СџР В°Р Р…Р ВµР В»РЎРЉ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ -->
                                     <div style="margin-bottom: 12px;">
                                         <div class="format-toolbar" id="main-format-toolbar" style="width: 100%; box-sizing: border-box;"></div>
                                     </div>
                                     
-                                    <!-- Р’РѕРїСЂРѕСЃ -->
+                                    <!-- Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ -->
                                     <div style="margin-bottom: 12px;">
-                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р’РѕРїСЂРѕСЃ</label>
+                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ</label>
                                         <div class="edit-field-editor" id="edit-question-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
                                     </div>
                                     
-                                    <!-- РћС‚РІРµС‚ -->
+                                    <!-- Р С›РЎвЂљР Р†Р ВµРЎвЂљ -->
                                     <div style="margin-bottom: 16px;">
-                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">РћС‚РІРµС‚</label>
+                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р С›РЎвЂљР Р†Р ВµРЎвЂљ</label>
                                         <div class="edit-field-editor" id="edit-answer-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
                                     </div>
                                     
-                                    <!-- РљРЅРѕРїРєРё -->
+                                    <!-- Р С™Р Р…Р С•Р С—Р С”Р С‘ -->
                                     <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
-                                        <button class="edit-modal-btn cancel" id="edit-cancel-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #444; border-radius: 6px; color: #aaa; cursor: pointer; font-size: 14px; flex-shrink: 0;">РћС‚РјРµРЅР°</button>
-                                        <button class="edit-modal-btn save" id="edit-save-btn" style="padding: 10px 20px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; flex-shrink: 0;">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
+                                        <button class="edit-modal-btn cancel" id="edit-cancel-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #444; border-radius: 6px; color: #aaa; cursor: pointer; font-size: 14px; flex-shrink: 0;">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
+                                        <button class="edit-modal-btn save" id="edit-save-btn" style="padding: 10px 20px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; flex-shrink: 0;">Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ</button>
                                     </div>
                                 </div>
                             </div>
                             
                             <style>
-                                /* Р’СЃРµ СЌР»РµРјРµРЅС‚С‹ РЅР° 100% С€РёСЂРёРЅС‹ */
+                                /* Р вЂ™РЎРѓР Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ Р Р…Р В° 100% РЎв‚¬Р С‘РЎР‚Р С‘Р Р…РЎвЂ№ */
                                 #main-format-toolbar,
                                 #edit-question-editor,
                                 #edit-answer-editor,
@@ -4052,7 +4052,7 @@ export function displayQuestions(questions, title) {
                                     box-sizing: border-box !important;
                                 }
                                 
-                                /* РђРґР°РїС‚РёРІРЅС‹Рµ СЃС‚РёР»Рё РґР»СЏ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° */
+                                /* Р С’Р Т‘Р В°Р С—РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ РЎРѓРЎвЂљР С‘Р В»Р С‘ Р Т‘Р В»РЎРЏ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° */
                                 @media (max-width: 768px) {
                                     .edit-modal {
                                         padding: 16px !important;
@@ -4106,7 +4106,7 @@ export function displayQuestions(questions, title) {
                                     .format-btn {
                                         font-size: 11px !important;
                                     }
-                                    /* РљРЅРѕРїРєРё РІ СЂСЏРґ РЅР° РјРѕР±РёР»СЊРЅРѕРј */
+                                    /* Р С™Р Р…Р С•Р С—Р С”Р С‘ Р Р† РЎР‚РЎРЏР Т‘ Р Р…Р В° Р СР С•Р В±Р С‘Р В»РЎРЉР Р…Р С•Р С */
                                     .edit-modal > div:last-child {
                                         display: flex !important;
                                         flex-direction: row !important;
@@ -4158,14 +4158,14 @@ export function displayQuestions(questions, title) {
 
                         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-                        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂРµРґР°РєС‚РѕСЂРѕРІ
+                        // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
                         const toolbarContainer = document.getElementById('main-format-toolbar');
                         const questionEditor = document.getElementById('edit-question-editor');
                         const answerEditor = document.getElementById('edit-answer-editor');
                         const categorySelect = document.querySelector('.edit-category');
                         const subcategorySelect = document.querySelector('.edit-subcategory');
 
-                        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє СЂРµРґР°РєС‚РѕСЂР°Рј
+                        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В°Р С
                         if (questionEditor) {
                             renderFormattingInEditor(questionEditor, item.question, formatting.question || []);
                         }
@@ -4173,36 +4173,36 @@ export function displayQuestions(questions, title) {
                             renderFormattingInEditor(answerEditor, item.answer, formatting.answer || []);
                         }
 
-                        // РЎРѕР·РґР°С‘Рј Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј toolbar
+                        // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С Р С‘ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С toolbar
                         if (toolbarContainer) {
                             const mainToolbar = createFormatToolbar('both');
                             toolbarContainer.appendChild(mainToolbar);
 
-                            // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј toolbar СЃ РѕР±РѕРёРјРё СЂРµРґР°РєС‚РѕСЂР°РјРё
+                            // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С toolbar РЎРѓ Р С•Р В±Р С•Р С‘Р СР С‘ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В°Р СР С‘
                             initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
                                 editModalState.formatting = newFormatting;
                             });
                         }
 
-                        // РћР±СЂР°Р±РѕС‚С‡РёРє СЃРјРµРЅС‹ РєР°С‚РµРіРѕСЂРёРё
+                        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” РЎРѓР СР ВµР Р…РЎвЂ№ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
                         categorySelect.addEventListener('change', () => {
                             const newCategory = categorySelect.value;
                             const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
                             subcategorySelect.innerHTML = newSubs;
                         });
 
-                        // РћР±СЂР°Р±РѕС‚С‡РёРє РѕС‚РјРµРЅС‹
+                        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С•РЎвЂљР СР ВµР Р…РЎвЂ№
                         document.getElementById('edit-cancel-btn').addEventListener('click', () => {
                             document.getElementById('edit-modal-overlay').remove();
                         });
 
-                        // РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕС…СЂР°РЅРµРЅРёСЏ
+                        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ
                         document.getElementById('edit-save-btn').addEventListener('click', async () => {
-                            // РџРѕР»СѓС‡Р°РµРј HTML РёР· СЂРµРґР°РєС‚РѕСЂРѕРІ
+                            // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С HTML Р С‘Р В· РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
                             const questionHTML = questionEditor.innerHTML.trim();
                             const answerHTML = answerEditor.innerHTML.trim();
 
-                            // РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј HTML РІ С‚РµРєСЃС‚ + С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+                            // Р С™Р С•Р Р…Р Р†Р ВµРЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С HTML Р Р† РЎвЂљР ВµР С”РЎРѓРЎвЂљ + РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
                             const questionData = convertHtmlToTextAndFormatting(questionHTML);
                             const answerData = convertHtmlToTextAndFormatting(answerHTML);
 
@@ -4212,20 +4212,20 @@ export function displayQuestions(questions, title) {
                             const newAnswer = answerData.text.trim();
 
                             if (!newQuestion || !newAnswer) {
-                                alert('Р’РѕРїСЂРѕСЃ Рё РѕС‚РІРµС‚ РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹РјРё');
+                                alert('Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ Р С‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљ Р Р…Р Вµ Р СР С•Р С–РЎС“РЎвЂљ Р В±РЎвЂ№РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљРЎвЂ№Р СР С‘');
                                 return;
                             }
 
                             const oldQuestion = editModalState.oldQuestion;
 
-                            // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РµРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ
+                            // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР Вµ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
                             const currentFormatting = editModalState.formatting || createEmptyFormatting();
 
-                            // РћР±РЅРѕРІР»СЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РЅРѕРІС‹РјРё РґР°РЅРЅС‹РјРё
+                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р Р…Р С•Р Р†РЎвЂ№Р СР С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р СР С‘
                             currentFormatting.question = questionData.formatting || [];
                             currentFormatting.answer = answerData.formatting || [];
 
-                            // РЎРѕС…СЂР°РЅСЏРµРј РІ override СЃ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµРј
+                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р† override РЎРѓ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р ВµР С
                             const overrides = getOverrides();
 
                             const overrideData = {
@@ -4244,7 +4244,7 @@ export function displayQuestions(questions, title) {
                             }
                             setOverrides(overrides);
 
-                            // РћР±РЅРѕРІР»СЏРµРј РёР·Р±СЂР°РЅРЅРѕРµ РµСЃР»Рё РЅСѓР¶РЅРѕ
+                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ Р ВµРЎРѓР В»Р С‘ Р Р…РЎС“Р В¶Р Р…Р С•
                             const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
                             if (favorites.has(oldQuestion)) {
                                 favorites.delete(oldQuestion);
@@ -4256,20 +4256,20 @@ export function displayQuestions(questions, title) {
                                 }).catch(() => { });
                             }
 
-                            // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ
+                            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
                             document.getElementById('edit-modal-overlay').remove();
 
-                            // РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РІРѕРїСЂРѕСЃС‹
+                            // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№
                             displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer, formatting: currentFormatting } : q), title);
 
-                            // РЎРѕС…СЂР°РЅСЏРµРј РЅР° СЃРµСЂРІРµСЂ
+                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
                             const rowEl = resultItem.querySelector('.question-row');
                             setInlineSaveStatus(rowEl, 'saving');
                             const ok = await saveMergedToServer();
                             setInlineSaveStatus(rowEl, ok ? 'success' : 'error');
                         });
 
-                        // Р—Р°РєСЂС‹С‚РёРµ РїРѕ РєР»РёРєСѓ РЅР° overlay
+                        // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р С—Р С• Р С”Р В»Р С‘Р С”РЎС“ Р Р…Р В° overlay
                         document.getElementById('edit-modal-overlay').addEventListener('click', (e) => {
                             if (e.target === e.currentTarget) {
                                 document.getElementById('edit-modal-overlay').remove();
@@ -4277,9 +4277,9 @@ export function displayQuestions(questions, title) {
                         });
                     };
 
-                    // РљРЅРѕРїРєР° РєР°СЂР°РЅРґР°С€Р° СѓРґР°Р»РµРЅР°: СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РґРѕСЃС‚СѓРїРЅРѕ С‡РµСЂРµР· РјРµРЅСЋ в‹®
+                    // Р С™Р Р…Р С•Р С—Р С”Р В° Р С”Р В°РЎР‚Р В°Р Р…Р Т‘Р В°РЎв‚¬Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В°: РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р Р…Р С• РЎвЂЎР ВµРЎР‚Р ВµР В· Р СР ВµР Р…РЎР‹ РІвЂ№В®
 
-                    // рџ”Ґ РСЃРїРѕР»СЊР·СѓРµРј РіР»РѕР±Р°Р»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ СЃ РїСЂРѕРІРµСЂРєРѕР№ qaUserCards
+                    // СЂСџвЂќТђ Р ВРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С Р С–Р В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂћРЎС“Р Р…Р С”РЎвЂ Р С‘РЎР‹ РЎРѓ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С•Р в„– qaUserCards
                     const genUniqueQuestion = (baseQ) => genUniqueQuestionGlobal(baseQ);
 
                     kebabBtn.addEventListener('click', (ev) => {
@@ -4295,9 +4295,9 @@ export function displayQuestions(questions, title) {
                         menu.style.padding = '6px';
                         menu.style.zIndex = '1000';
                         menu.innerHTML = `
-                    <button data-act="edit">РР·РјРµРЅРёС‚СЊ</button>
-                    <button data-act="duplicate">Р”СѓР±Р»РёСЂРѕРІР°С‚СЊ</button>
-                    <button data-act="delete">РЈРґР°Р»РёС‚СЊ</button>
+                    <button data-act="edit">Р ВР В·Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ</button>
+                    <button data-act="duplicate">Р вЂќРЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ</button>
+                    <button data-act="delete">Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ</button>
                 `;
                         document.body.appendChild(menu);
                         const rect = kebabBtn.getBoundingClientRect();
@@ -4310,16 +4310,16 @@ export function displayQuestions(questions, title) {
                             const act = e.target?.dataset?.act; if (!act) return;
                             e.stopPropagation();
                             if (act === 'delete') {
-                                // РџРѕРєР°Р·Р°С‚СЊ РёРЅРґРёРєР°С‚РѕСЂ РїСЂРѕРіСЂРµСЃСЃР°
+                                // Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓР В°
                                 const rowEl = resultItem.querySelector('.question-row');
                                 setInlineSaveStatus(rowEl, 'saving');
 
-                                // РџРµСЂРµРјРµС‰Р°РµРј РЅР° СЃРµСЂРІРµСЂ РІ РєРѕСЂР·РёРЅСѓ
+                                // Р СџР ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р В°Р ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“
                                 moveToServerTrash([item]).then(async (trashOk) => {
                                     if (trashOk) {
-                                        // РћРїС‚РёРјРёСЃС‚РёС‡РЅРѕ РґРѕР±Р°РІР»СЏРµРј РІ Р»РѕРєР°Р»СЊРЅС‹Рµ РєСЌС€Рё РєРѕСЂР·РёРЅС‹
+                                        // Р С›Р С—РЎвЂљР С‘Р СР С‘РЎРѓРЎвЂљР С‘РЎвЂЎР Р…Р С• Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р† Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”РЎРЊРЎв‚¬Р С‘ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№
                                         serverTrashSet.add(item.question);
-                                        // РћР±РЅРѕРІР»СЏРµРј Р»РѕРєР°Р»СЊРЅС‹Р№ СЃРїРёСЃРѕРє РєРѕСЂР·РёРЅС‹, С‡С‚РѕР±С‹ СЃСЂР°Р·Сѓ РїРѕРєР°Р·Р°С‚СЊ РєР°СЂС‚РѕС‡РєСѓ
+                                        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—Р С‘РЎРѓР С•Р С” Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“ Р С—Р С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
                                         try {
                                             serverTrashItems = [
                                                 { item: { ...item } },
@@ -4327,26 +4327,26 @@ export function displayQuestions(questions, title) {
                                             ];
                                         } catch (_) { }
 
-                                        // РЈР±РµРґРёРјСЃСЏ, С‡С‚Рѕ РїР°РЅРµР»СЊ РєРѕСЂР·РёРЅС‹ РІРёРґРЅР° РІ СЂРµР¶РёРјРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
+                                        // Р Р€Р В±Р ВµР Т‘Р С‘Р СРЎРѓРЎРЏ, РЎвЂЎРЎвЂљР С• Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р Р†Р С‘Р Т‘Р Р…Р В° Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
                                         const tp = document.querySelector('.trash-panel');
                                         if (tp && editMode) { tp.style.display = 'block'; }
 
-                                        // РџРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РїР°РЅРµР»СЊ РєРѕСЂР·РёРЅС‹ Рё С‚РµРєСѓС‰РёР№ РєРѕРЅС‚РµРєСЃС‚
+                                        // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ
                                         renderTrashPanel();
                                         refreshCurrentContext();
 
-                                        // РџС‹С‚Р°РµРјСЃСЏ СЃРёРЅС…СЂРѕРЅРёР·РёСЂРѕРІР°С‚СЊ СЃ СЃРµСЂРІРµСЂРЅРѕР№ РєРѕСЂР·РёРЅРѕР№ (РЅРµ Р±Р»РѕРєРёСЂСѓРµС‚ UI)
+                                        // Р СџРЎвЂ№РЎвЂљР В°Р ВµР СРЎРѓРЎРЏ РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…Р С•Р в„– Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р С•Р в„– (Р Р…Р Вµ Р В±Р В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµРЎвЂљ UI)
                                         try { await refreshServerTrash(); } catch (_) { }
 
                                         setInlineSaveStatus(rowEl, 'success');
-                                        setSaveStatus('success', 'РљР°СЂС‚РѕС‡РєР° РїРµСЂРµРјРµС‰РµРЅР° РІ РєРѕСЂР·РёРЅСѓ');
+                                        setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р С—Р ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р ВµР Р…Р В° Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“');
 
-                                        // рџ”Ґ РЎРѕС…СЂР°РЅСЏРµРј РЅР° СЃРµСЂРІРµСЂ Р‘Р•Р— forceReloadData
+                                        // СЂСџвЂќТђ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р вЂР вЂўР вЂ” forceReloadData
                                         saveMergedToServer(true).then(saveOk => {
-                                            if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ');
+                                            if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
                                         });
                                     } else {
-                                        setInlineSaveStatus(rowEl, 'error', 'РћС€РёР±РєР° СѓРґР°Р»РµРЅРёСЏ');
+                                        setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ');
                                     }
                                 });
                             } else if (act === 'duplicate') {
@@ -4357,47 +4357,47 @@ export function displayQuestions(questions, title) {
                                 const copyQ = genUniqueQuestion(item.question);
                                 const duplicatedItem = { ...item, question: copyQ };
 
-                                console.log('[DUPLICATE] РЎРѕР·РґР°РЅ РґСѓР±Р»РёРєР°С‚:', {
+                                console.log('[DUPLICATE] Р РЋР С•Р В·Р Т‘Р В°Р Р… Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ:', {
                                     original: item.question?.substring(0, 50),
                                     copy: copyQ,
                                     timestamp: Date.now()
                                 });
 
-                                // рџ”Ґ Р’СЃС‚Р°РІР»СЏРµРј РґСѓР±Р»РёРєР°С‚ РЎР РђР—РЈ РџРћРЎР›Р• РѕСЂРёРіРёРЅР°Р»Р° РІ qaUserCards
+                                // СЂСџвЂќТђ Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р РЋР В Р С’Р вЂ”Р Р€ Р СџР С›Р РЋР вЂєР вЂў Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В»Р В° Р Р† qaUserCards
                                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                                 if (sessionUserRaw) {
                                     const userCards = getQaUserCards();
                                     if (userCards) {
-                                        // РС‰РµРј РѕСЂРёРіРёРЅР°Р» РїРѕ РІРѕРїСЂРѕСЃСѓ (РјРѕР¶РµС‚ РѕС‚Р»РёС‡Р°С‚СЊСЃСЏ РѕС‚ item.question РµСЃР»Рё Р±С‹Р»Рё РёР·РјРµРЅРµРЅРёСЏ)
+                                        // Р ВРЎвЂ°Р ВµР С Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В» Р С—Р С• Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“ (Р СР С•Р В¶Р ВµРЎвЂљ Р С•РЎвЂљР В»Р С‘РЎвЂЎР В°РЎвЂљРЎРЉРЎРѓРЎРЏ Р С•РЎвЂљ item.question Р ВµРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В»Р С‘ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ)
                                         const originalIndex = userCards.findIndex(c =>
                                             c.question === item.question ||
                                             (c.category === item.category && c.subcategory === item.subcategory && c.answer === item.answer)
                                         );
                                         if (originalIndex >= 0) {
-                                            // Р’СЃС‚Р°РІР»СЏРµРј РґСѓР±Р»РёРєР°С‚ РїРѕСЃР»Рµ РѕСЂРёРіРёРЅР°Р»Р°
+                                            // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р С—Р С•РЎРѓР В»Р Вµ Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В»Р В°
                                             userCards.splice(originalIndex + 1, 0, duplicatedItem);
                                             setQaUserCards(userCards);
                                         } else {
-                                            // Р•СЃР»Рё РЅРµ РЅР°С€Р»Рё, РґРѕР±Р°РІР»СЏРµРј РІ РєРѕРЅРµС†
+                                            // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р Р…Р В°РЎв‚¬Р В»Р С‘, Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р† Р С”Р С•Р Р…Р ВµРЎвЂ 
                                             userCards.push(duplicatedItem);
                                             setQaUserCards(userCards);
                                         }
                                     }
 
-                                    // рџ”Ґ Р”РћР‘РђР’Р›РЇР•Рњ РІ qaNewItems С‡С‚РѕР±С‹ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РІРёРґРµР»Р° РЅРѕРІСѓСЋ РєР°СЂС‚РѕС‡РєСѓ
+                                    // СЂСџвЂќТђ Р вЂќР С›Р вЂР С’Р вЂ™Р вЂєР Р‡Р вЂўР Сљ Р Р† qaNewItems РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ Р Р†Р С‘Р Т‘Р ВµР В»Р В° Р Р…Р С•Р Р†РЎС“РЎР‹ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
                                     const newItems = getNewItems();
                                     if (!newItems.some(n => n.question === copyQ)) {
                                         newItems.push(duplicatedItem);
                                         localStorage.setItem('qaNewItems', JSON.stringify(newItems));
 
-                                        console.log('[DUPLICATE] Р”РѕР±Р°РІР»РµРЅРѕ РІ qaNewItems, РІСЃРµРіРѕ:', newItems.length);
+                                        console.log('[DUPLICATE] Р вЂќР С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С• Р Р† qaNewItems, Р Р†РЎРѓР ВµР С–Р С•:', newItems.length);
                                     }
                                 }
 
                                 // Track duplication on server
                                 trackServerDuplication(item.question, copyQ).then(trackOk => {
                                     if (trackOk) {
-                                        // рџ”Ґ РћР±РЅРѕРІР»СЏРµРј UI СЃСЂР°Р·Сѓ, Р±РµР· forceReloadData, С‡С‚РѕР±С‹ СЃРѕС…СЂР°РЅРёС‚СЊ РїРѕСЂСЏРґРѕРє РєР°СЂС‚РѕС‡РµРє
+                                        // СЂСџвЂќТђ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С UI РЎРѓРЎР‚Р В°Р В·РЎС“, Р В±Р ВµР В· forceReloadData, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ Р С—Р С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”
                                         const activeTab = document.querySelector('.tabs-container .tab.active');
                                         if (activeTab) {
                                             if (activeTab.dataset.category === 'all') {
@@ -4417,15 +4417,15 @@ export function displayQuestions(questions, title) {
                                         }
                                         setInlineSaveStatus(rowEl, 'success');
 
-                                        // рџ”Ґ РЎРѕС…СЂР°РЅСЏРµРј РЅР° СЃРµСЂРІРµСЂ Р‘Р•Р— forceReloadData
-                                        console.log('[DUPLICATE] Р’С‹Р·С‹РІР°РµРј saveMergedToServer(true)');
+                                        // СЂСџвЂќТђ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р вЂР вЂўР вЂ” forceReloadData
+                                        console.log('[DUPLICATE] Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С saveMergedToServer(true)');
                                         saveMergedToServer(true).then(saveOk => {
                                             if (!saveOk) {
-                                                setInlineSaveStatus(rowEl, 'error', 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ');
+                                                setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
                                             }
                                         });
                                     } else {
-                                        setInlineSaveStatus(rowEl, 'error', 'РћС€РёР±РєР° РґСѓР±Р»РёСЂРѕРІР°РЅРёСЏ');
+                                        setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р Т‘РЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ');
                                     }
                                 });
                             } else if (act === 'edit') {
@@ -4439,13 +4439,13 @@ export function displayQuestions(questions, title) {
                 resultsList.appendChild(resultItem);
             } catch (err) {
                 console.error('Error rendering item:', item, err);
-                // Р’РёР·СѓР°Р»СЊРЅРѕ РїРѕРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ СЃР»РѕРјР°Р»СЃСЏ (РґР»СЏ РѕС‚Р»Р°РґРєРё)
+                // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С• Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С, РЎвЂЎРЎвЂљР С• РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ РЎРѓР В»Р С•Р СР В°Р В»РЎРѓРЎРЏ (Р Т‘Р В»РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р С‘)
                 try {
                     const errDiv = document.createElement('div');
                     errDiv.style.border = '1px solid red';
                     errDiv.style.color = 'red';
                     errDiv.style.padding = '10px';
-                    errDiv.textContent = `РћС€РёР±РєР° РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РІРѕРїСЂРѕСЃР°: ${err.message}`;
+                    errDiv.textContent = `Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В°: ${err.message}`;
                     resultsList.appendChild(errDiv);
                 } catch (_) { }
             }
