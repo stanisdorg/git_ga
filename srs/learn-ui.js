@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.20.8';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.20.8';
-import { getProgressMap } from './stats-utils.js?v=6.20.8';
-import { checkAchievements } from './stats-utils.js?v=6.20.8';
-import { Scheduler } from './scheduler.js?v=6.20.8';
-import { getTodaysSession } from './category-scheduler.js?v=6.20.8';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.20.8';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.20.8';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.20.8';
+import { LearningSession } from './session.js?v=6.09.5';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.09.5';
+import { getProgressMap } from './stats-utils.js?v=6.09.5';
+import { checkAchievements } from './stats-utils.js?v=6.09.5';
+import { Scheduler } from './scheduler.js?v=6.09.5';
+import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.09.5';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.09.5';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.09.5';
 
 // DOM Elements
 let container = null;
@@ -15,9 +15,9 @@ let session = null;
 let currentScheduler = null;
 let timerInterval = null;
 let sessionTimerStart = 0;
-let userScrolled = false; // Р В¤Р В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В° Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ-Р В±Р В°РЎР‚Р В°
-let timerPaused = false; // Р В¤Р В»Р В°Р С– Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°
-let pausedTimeRemaining = 0; // Р СњР В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ Р С—РЎР‚Р С‘ Р С—Р В°РЎС“Р В·Р Вµ
+let userScrolled = false; // Флаг ручного скролла прогресс-бара
+let timerPaused = false; // Флаг паузы таймера
+let pausedTimeRemaining = 0; // Накопленное время при паузе
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -159,7 +159,7 @@ export function initLearnUI() {
                     display: none;
                 }
 
-                /* Timer controls - Р С”Р Р…Р С•Р С—Р С”Р В° Р С—Р В°РЎС“Р В·РЎвЂ№ Р С‘ РЎвЂљР В°Р в„–Р СР ВµРЎР‚ */
+                /* Timer controls - кнопка паузы и таймер */
                 .timer-controls {
                     display: flex !important;
                     align-items: center !important;
@@ -172,7 +172,7 @@ export function initLearnUI() {
                     flex-direction: row !important;
                 }
 
-                /* Р вЂ™Р В°РЎР‚Р С‘Р В°Р Р…РЎвЂљ 3: Р СњР ВµР С•Р Р…Р С•Р Р†Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ */
+                /* Вариант 3: Неоновое свечение */
                 .timer-pause-btn {
                     width: 30px;
                     height: 30px;
@@ -199,7 +199,7 @@ export function initLearnUI() {
                     background: rgba(0, 255, 136, 0.1);
                 }
 
-                /* Р РЋР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ Р Т‘Р В»РЎРЏ Р С”Р Р…Р С•Р С—Р С”Р С‘ */
+                /* Свечение для кнопки */
                 .timer-pause-btn.running {
                     color: #00ff88;
                     filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
@@ -242,9 +242,9 @@ export function initLearnUI() {
                 }
             </style>
             <div class="learn-header">
-                <button id="learn-exit-btn">РІСљвЂў Р вЂ™РЎвЂ№РЎвЂ¦Р С•Р Т‘</button>
-                <div class="timer-controls" id="timer-controls" title="Р СџР В°РЎС“Р В·Р В°/Р РЋРЎвЂљР В°РЎР‚РЎвЂљ (Р С”Р В»Р С‘Р С” Р С—Р С• РЎвЂљР В°Р в„–Р СР ВµРЎР‚РЎС“)">
-                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Р СџР В°РЎС“Р В·Р В°/Р РЋРЎвЂљР В°РЎР‚РЎвЂљ">
+                <button id="learn-exit-btn">✕ Выход</button>
+                <div class="timer-controls" id="timer-controls" title="Пауза/Старт (клик по таймеру)">
+                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Пауза/Старт">
                         <svg class="pause-icon" viewBox="0 0 24 24" style="display:none">
                             <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
                             <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
@@ -265,55 +265,55 @@ export function initLearnUI() {
 
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="Р СњР В°Р В·Р В°Р Т‘ (Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р В»Р ВµР Р†Р С•)" aria-label="Р СњР В°Р В·Р В°Р Т‘">
+                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
                     <div class="flashcard-front">
-                        <button class="edit-btn learn-edit-btn" title="Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ" style="top:10px;left:10px;z-index:10">
+                        <button class="edit-btn learn-edit-btn" title="Редактировать" style="top:10px;left:10px;z-index:10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
-                        <button class="favorite-btn learn-fav-btn" title="Р вЂ™ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ" style="top:10px;right:10px;z-index:10"></button>
+                        <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-content" id="learn-question"></div>
-                        <div class="flashcard-hint">Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р СџРЎР‚Р С•Р В±Р ВµР В», РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎС“Р Р†Р С‘Р Т‘Р ВµРЎвЂљРЎРЉ Р С•РЎвЂљР Р†Р ВµРЎвЂљ</div>
+                        <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
                     </div>
                     <div class="flashcard-back">
-                        <button class="edit-btn learn-edit-btn" title="Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ" style="top:10px;left:10px;z-index:10">
+                        <button class="edit-btn learn-edit-btn" title="Редактировать" style="top:10px;left:10px;z-index:10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
-                        <button class="favorite-btn learn-fav-btn" title="Р вЂ™ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ" style="top:10px;right:10px;z-index:10"></button>
+                        <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-back-question" id="learn-back-question"></div>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
-                            <button class="rate-btn rate-again" data-grade="0">Р РЋР Р…Р С•Р Р†Р В° (1)</button>
-                            <button class="rate-btn rate-hard" data-grade="1">Р СћРЎР‚РЎС“Р Т‘Р Р…Р С• (2)</button>
-                            <button class="rate-btn rate-good" data-grade="2">Р ТђР С•РЎР‚Р С•РЎв‚¬Р С• (3)</button>
-                            <button class="rate-btn rate-easy" data-grade="3">Р вЂєР ВµР С–Р С”Р С• (4)</button>
+                            <button class="rate-btn rate-again" data-grade="0">Снова (1)</button>
+                            <button class="rate-btn rate-hard" data-grade="1">Трудно (2)</button>
+                            <button class="rate-btn rate-good" data-grade="2">Хорошо (3)</button>
+                            <button class="rate-btn rate-easy" data-grade="3">Легко (4)</button>
                         </div>
                     </div>
-                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Р вЂ™Р С—Р ВµРЎР‚Р ВµР Т‘ (Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р С—РЎР‚Р В°Р Р†Р С•)" aria-label="Р вЂ™Р С—Р ВµРЎР‚Р ВµР Т‘">
+                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Вперед (Стрелка вправо)" aria-label="Вперед">
                         <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </button>
                 </div>
             </div>
 
             <div id="learn-stats" style="display:none">
-                <h2>Р РЋР ВµРЎРѓРЎРѓР С‘РЎРЏ Р В·Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р ВµР Р…Р В°!</h2>
+                <h2>Сессия завершена!</h2>
                 <div class="stats-grid">
-                    <div class="stat-item"><span>Р вЂ™РЎРѓР ВµР С–Р С•:</span> <span id="stat-total">0</span></div>
-                    <div class="stat-item"><span>Р РЋР Р…Р С•Р Р†Р В°:</span> <span id="stat-again">0</span></div>
-                    <div class="stat-item"><span>Р СћРЎР‚РЎС“Р Т‘Р Р…Р С•:</span> <span id="stat-hard">0</span></div>
-                    <div class="stat-item"><span>Р ТђР С•РЎР‚Р С•РЎв‚¬Р С•:</span> <span id="stat-good">0</span></div>
-                    <div class="stat-item"><span>Р вЂєР ВµР С–Р С”Р С•:</span> <span id="stat-easy">0</span></div>
+                    <div class="stat-item"><span>Всего:</span> <span id="stat-total">0</span></div>
+                    <div class="stat-item"><span>Снова:</span> <span id="stat-again">0</span></div>
+                    <div class="stat-item"><span>Трудно:</span> <span id="stat-hard">0</span></div>
+                    <div class="stat-item"><span>Хорошо:</span> <span id="stat-good">0</span></div>
+                    <div class="stat-item"><span>Легко:</span> <span id="stat-easy">0</span></div>
                 </div>
-                <button id="learn-finish-btn" class="primary-btn">Р вЂ™Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉРЎРѓРЎРЏ Р С” РЎРѓР С—Р С‘РЎРѓР С”РЎС“</button>
+                <button id="learn-finish-btn" class="primary-btn">Вернуться к списку</button>
             </div>
         `;
         appWrapper.appendChild(container);
@@ -363,29 +363,29 @@ export function initLearnUI() {
 
         // Rating buttons
         const rates = container.querySelectorAll('.rate-btn');
-        console.log('[LEARN-UI] Р СњР В°Р в„–Р Т‘Р ВµР Р…Р С• Р С”Р Р…Р С•Р С—Р С•Р С” Р С•РЎвЂ Р ВµР Р…Р С”Р С‘:', rates.length);
+        console.log('[LEARN-UI] Найдено кнопок оценки:', rates.length);
         rates.forEach((btn, index) => {
-            console.log(`[LEARN-UI] Р С™Р Р…Р С•Р С—Р С”Р В° ${index}:`, btn.className, btn.dataset.grade);
+            console.log(`[LEARN-UI] Кнопка ${index}:`, btn.className, btn.dataset.grade);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const grade = parseInt(btn.dataset.grade);
                 console.log('========================================');
-                console.log('[RATE BUTTON CLICK] Р С™Р В»Р С‘Р С” Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ!');
+                console.log('[RATE BUTTON CLICK] Клик по кнопке!');
                 console.log('[RATE BUTTON CLICK] Grade:', grade);
 
-                // Р вЂ™РЎР‚Р ВµР СР ВµР Р…Р Р…Р С• Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С pointer-events РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР Р…РЎРЏРЎвЂљРЎРЉ hover
+                // Временно отключаем pointer-events чтобы снять hover
                 btn.style.pointerEvents = 'none';
                 console.log('[RATE BUTTON CLICK] pointerEvents: none');
 
-                // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В° Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљР С•Р С
+                // Сбрасываем флаг ручного скролла перед ответом
                 userScrolled = false;
 
                 if (session) session.rate(grade);
-                // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР С•Р С”РЎС“РЎРѓ РЎРѓ Р С”Р Р…Р С•Р С—Р С”Р С‘ РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р В±РЎвЂ№Р В»Р С• Р С•Р В±Р Р†Р С•Р Т‘Р С”Р С‘
+                // Сбрасываем фокус с кнопки чтобы не было обводки
                 btn.blur();
                 console.log('[RATE BUTTON CLICK] Focus blurred from button');
 
-                // Р вЂ™Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµР С pointer-events РЎвЂЎР ВµРЎР‚Р ВµР В· Р Р…Р ВµР В±Р С•Р В»РЎРЉРЎв‚¬РЎС“РЎР‹ Р В·Р В°Р Т‘Р ВµРЎР‚Р В¶Р С”РЎС“
+                // Возвращаем pointer-events через небольшую задержку
                 setTimeout(() => {
                     btn.style.pointerEvents = '';
                     console.log('[RATE BUTTON CLICK] pointerEvents: restored');
@@ -395,15 +395,15 @@ export function initLearnUI() {
             });
         });
 
-        // Edit buttons - Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+        // Edit buttons - открытие модального окна редактирования
         container.querySelectorAll('.learn-edit-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!session || !session.currentCard) {
-                    console.log('[EDIT] Р СњР ВµРЎвЂљ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ');
+                    console.log('[EDIT] Нет активной карточки для редактирования');
                     return;
                 }
-                console.log('[EDIT] Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В° Р Т‘Р В»РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:', session.currentCard.question?.substring(0, 50));
+                console.log('[EDIT] Открытие редактора для карточки:', session.currentCard.question?.substring(0, 50));
                 openEditModal(session.currentCard);
             });
         });
@@ -416,7 +416,7 @@ export function initLearnUI() {
 }
 
 // ==========================================
-// Р В Р вЂўР вЂќР С’Р С™Р СћР ВР В Р С›Р вЂ™Р С’Р СњР ВР вЂў Р С™Р С’Р В Р СћР С›Р В§Р вЂўР С™
+// РЕДАКТИРОВАНИЕ КАРТОЧЕК
 // ==========================================
 
 let editModalState = {
@@ -424,14 +424,14 @@ let editModalState = {
     originalCard: null,
     editedQuestion: '',
     editedAnswer: '',
-    formatting: null  // formatting Р С•Р В±РЎР‰Р ВµР С”РЎвЂљ { question: [], answer: [] }
+    formatting: null  // formatting объект { question: [], answer: [] }
 };
 
-// Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+// Открытие модального окна редактирования
 function openEditModal(card) {
-    console.log('[EDIT MODAL] Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В°');
+    console.log('[EDIT MODAL] Открытие модального окна');
 
-    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С‘Р В· session.currentCard (Р Р…Р Вµ Р С‘Р В· card!)
+    // Получаем актуальные данные из session.currentCard (не из card!)
     const currentCard = session?.currentCard;
     const question = currentCard?.question || card.question || '';
     const answer = currentCard?.answer || currentCard?.item?.answer || card.answer || card.item?.answer || '';
@@ -439,10 +439,10 @@ function openEditModal(card) {
     console.log('[EDIT MODAL] card.question:', question);
     console.log('[EDIT MODAL] answer:', answer?.substring(0, 50));
 
-    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С formatting Р С‘Р В· Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р С‘Р В»Р С‘ РЎРѓР С•Р В·Р Т‘Р В°РЎвЂР С Р С—РЎС“РЎРѓРЎвЂљР С•Р в„–
+    // Получаем formatting из карточки или создаём пустой
     const formatting = card.formatting || createEmptyFormatting();
 
-    // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р С‘РЎРѓРЎвЂ¦Р С•Р Т‘Р Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ - Р Р†РЎРѓР ВµР С–Р Т‘Р В° Р В±Р ВµРЎР‚Р ВµР С Р С‘Р В· session.currentCard
+    // Сохраняем исходные данные - всегда берем из session.currentCard
     editModalState = {
         isOpen: true,
         originalCard: {
@@ -453,37 +453,37 @@ function openEditModal(card) {
         },
         editedQuestion: question,
         editedAnswer: answer,
-        formatting: { ...formatting },  // Р С™Р С•Р С—Р С‘РЎР‚РЎС“Р ВµР С formatting
-        // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С oldQuestion Р Т‘Р В»РЎРЏ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘
+        formatting: { ...formatting },  // Копируем formatting
+        // Сохраняем oldQuestion для использования при сохранении
         oldQuestion: question
     };
 
     console.log('[EDIT MODAL] editModalState.originalCard.question:', editModalState.originalCard.question);
     console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion);
 
-    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ Р С—Р ВµРЎР‚Р ВµР Р†Р С•РЎР‚Р С•РЎвЂљ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘
+    // Блокируем навигацию и переворот карточки
     if (session) {
         session.pauseNavigation = true;
         session.blockFlip = true;
     }
 
-    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ Р С—Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
+    // Блокируем клики по карточке
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = 'none';
         console.log('[EDIT MODAL] Card clicks blocked');
     }
 
-    // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• РЎРѓ Р С›Р вЂќР СњР С›Р в„ў Р С—Р В°Р Р…Р ВµР В»РЎРЉРЎР‹ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+    // Создаем модальное окно с ОДНОЙ панелью форматирования
     const modalHTML = `
         <div class="edit-modal-overlay" id="edit-modal-overlay">
             <div class="edit-modal">
                 <div class="edit-modal-content">
-                    <!-- Р С›Р вЂќР СњР С’ Р С›Р вЂР В©Р С’Р Р‡ Р СџР С’Р СњР вЂўР вЂєР В¬ Р В¤Р С›Р В Р СљР С’Р СћР ВР В Р С›Р вЂ™Р С’Р СњР ВР Р‡ -->
+                    <!-- ОДНА ОБЩАЯ ПАНЕЛЬ ФОРМАТИРОВАНИЯ -->
                     <div class="format-toolbar" id="main-format-toolbar"></div>
 
                     <div class="edit-field-group">
-                        <label class="edit-field-label">Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ</label>
+                        <label class="edit-field-label">Вопрос</label>
                         <div
                             class="edit-field-editor"
                             id="edit-question-editor"
@@ -492,7 +492,7 @@ function openEditModal(card) {
                         ></div>
                     </div>
                     <div class="edit-field-group">
-                        <label class="edit-field-label">Р С›РЎвЂљР Р†Р ВµРЎвЂљ</label>
+                        <label class="edit-field-label">Ответ</label>
                         <div
                             class="edit-field-editor"
                             id="edit-answer-editor"
@@ -502,8 +502,8 @@ function openEditModal(card) {
                     </div>
                 </div>
                 <div class="edit-modal-footer">
-                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
-                    <button class="edit-modal-btn save" id="edit-save-btn">Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ</button>
+                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">Отмена</button>
+                    <button class="edit-modal-btn save" id="edit-save-btn">Сохранить</button>
                 </div>
             </div>
         </div>
@@ -513,13 +513,13 @@ function openEditModal(card) {
 
     console.log('[EDIT MODAL] Modal HTML inserted, checking element:', document.getElementById('edit-modal-overlay'));
 
-    // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С toolbar
+    // Создаём toolbar
     const toolbarContainer = document.getElementById('main-format-toolbar');
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
     if (toolbarContainer) {
-        const mainToolbar = createFormatToolbar('both');  // 'both' Р С•Р В·Р Р…Р В°РЎвЂЎР В°Р ВµРЎвЂљ Р С•Р В±РЎвЂ°Р С‘Р в„– Р Т‘Р В»РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦
+        const mainToolbar = createFormatToolbar('both');  // 'both' означает общий для всех
         toolbarContainer.appendChild(mainToolbar);
 
         console.log('[EDIT MODAL] Toolbar created:', mainToolbar);
@@ -528,17 +528,17 @@ function openEditModal(card) {
     console.log('[EDIT MODAL] Editors found:', { questionEditor, answerEditor });
 
     if (questionEditor) {
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“
+        // Применяем форматирование к вопросу
         renderFormattingInEditor(questionEditor, question, formatting.question || []);
         console.log('[EDIT MODAL] Question set:', question?.substring(0, 50));
     }
     if (answerEditor) {
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р С•РЎвЂљР Р†Р ВµРЎвЂљРЎС“
+        // Применяем форматирование к ответу
         renderFormattingInEditor(answerEditor, answer, formatting.answer || []);
         console.log('[EDIT MODAL] Answer set:', answer?.substring(0, 50));
     }
 
-    // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С toolbar РЎРѓ Р С›Р вЂР С›Р ВР СљР В РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В°Р СР С‘
+    // Инициализируем toolbar с ОБОИМИ редакторами
     const mainToolbar = toolbarContainer?.querySelector('.format-toolbar');
     if (mainToolbar && questionEditor && answerEditor) {
         initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
@@ -546,14 +546,14 @@ function openEditModal(card) {
         });
     }
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С”Р Р…Р С•Р С—Р С•Р С”
+    // Обработчики кнопок
     const cancelBtn = document.getElementById('edit-cancel-btn');
     const saveBtn = document.getElementById('edit-save-btn');
     const overlay = document.getElementById('edit-modal-overlay');
 
     console.log('[EDIT MODAL] Buttons found:', { cancelBtn, saveBtn, overlay });
 
-    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С•РЎвЂљР В»Р В°Р Т‘Р С•РЎвЂЎР Р…РЎвЂ№Р Вµ Р В»Р С•Р С–Р С‘ Р Т‘Р В»РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С”
+    // Добавляем отладочные логи для кнопок
     cancelBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         console.log('[EDIT MODAL] Cancel button clicked');
@@ -574,9 +574,9 @@ function openEditModal(card) {
         }
     });
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Enter (Ctrl+Enter Р Т‘Р В»РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ)
+    // Обработчик Enter (Ctrl+Enter для сохранения)
     const handleKeyDown = (e) => {
-        // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р Р†РЎРѓР Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ Р С”Р В»Р В°Р Р†Р С‘Р В°РЎвЂљРЎС“РЎР‚РЎвЂ№ Р С•РЎвЂљ Р С—Р ВµРЎР‚Р ВµР Т‘Р В°РЎвЂЎР С‘ Р Р…Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
+        // Блокируем все события клавиатуры от передачи на карточку
         e.stopPropagation();
         e.preventDefault();
 
@@ -585,13 +585,13 @@ function openEditModal(card) {
         } else if (e.key === 'Escape') {
             closeEditModal(true);
         }
-        // Р С›РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р В»Р В°Р Р†Р С‘РЎв‚¬Р С‘ РЎР‚Р В°Р В±Р С•РЎвЂљР В°РЎР‹РЎвЂљ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
+        // Остальные клавиши работают для редактирования текста
     };
 
-    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С РЎРѓРЎвЂљР В°Р Р…Р Т‘Р В°РЎР‚РЎвЂљР Р…РЎвЂ№Р Вµ РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘РЎРЏ Р С”Р В»Р В°Р Р†Р С‘Р В°РЎвЂљРЎС“РЎР‚РЎвЂ№ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
+    // Блокируем стандартные события клавиатуры для редакторов
     questionEditor?.addEventListener('keydown', (e) => {
         e.stopPropagation();
-        // Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+        // Разрешаем только редактирование
         if (e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             saveEditChanges();
@@ -611,7 +611,7 @@ function openEditModal(card) {
         }
     });
 
-    // Р В¤Р С•Р С”РЎС“РЎРѓ Р Р…Р В° Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р в„– РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚
+    // Фокус на первый редактор
     setTimeout(() => {
         const overlay = document.getElementById('edit-modal-overlay');
         const modal = document.querySelector('.edit-modal');
@@ -626,12 +626,12 @@ function openEditModal(card) {
         questionEditor?.focus();
     }, 100);
 
-    console.log('[EDIT MODAL] Р СљР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С•');
+    console.log('[EDIT MODAL] Модальное окно открыто');
 }
 
-// Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В°
+// Закрытие модального окна
 function closeEditModal(discardChanges = true) {
-    console.log('[EDIT MODAL] Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В°, discardChanges:', discardChanges);
+    console.log('[EDIT MODAL] Закрытие модального окна, discardChanges:', discardChanges);
 
     const modal = document.getElementById('edit-modal-overlay');
     if (modal) {
@@ -643,49 +643,49 @@ function closeEditModal(discardChanges = true) {
 
     editModalState.isOpen = false;
 
-    // Р В Р В°Р В·Р В±Р В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
+    // Разблокируем навигацию и карточку
     if (session) {
         session.pauseNavigation = false;
         session.blockFlip = false;
     }
 
-    // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ Р С—Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
+    // Восстанавливаем клики по карточке
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = '';
         console.log('[EDIT MODAL] Card clicks restored');
     }
 
-    console.log('[EDIT MODAL] Р СљР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С•');
+    console.log('[EDIT MODAL] Модальное окно закрыто');
 }
 
-// Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„–
+// Сохранение изменений
 async function saveEditChanges() {
-    console.log('[EDIT MODAL] Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„–');
+    console.log('[EDIT MODAL] Сохранение изменений');
 
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
     if (!questionEditor || !answerEditor) {
-        console.error('[EDIT MODAL] Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚РЎвЂ№ Р Р…Р Вµ Р Р…Р В°Р в„–Р Т‘Р ВµР Р…РЎвЂ№');
+        console.error('[EDIT MODAL] Редакторы не найдены');
         return;
     }
 
-    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С HTML Р С‘Р В· РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
+    // Получаем HTML из редакторов
     const questionHTML = questionEditor.innerHTML.trim();
     const answerHTML = answerEditor.innerHTML.trim();
 
-    // Р С™Р С•Р Р…Р Р†Р ВµРЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С HTML Р Р† РЎвЂЎР С‘РЎРѓРЎвЂљРЎвЂ№Р в„– РЎвЂљР ВµР С”РЎРѓРЎвЂљ + formatting
+    // Конвертируем HTML в чистый текст + formatting
     const questionData = convertHtmlToTextAndFormatting(questionHTML);
     const answerData = convertHtmlToTextAndFormatting(answerHTML);
 
     const newQuestion = questionData.text.trim();
     const newAnswer = answerData.text.trim();
 
-    // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С formatting Р С‘Р В· editModalState Р С‘ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р ВµР С–Р С• РЎРѓ Р Р…Р С•Р Р†РЎвЂ№Р СР С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р СР С‘
+    // Получаем formatting из editModalState и обновляем его с новыми данными
     const currentFormatting = editModalState.formatting || createEmptyFormatting();
 
-    console.log('[EDIT MODAL] Р СњР С•Р Р†РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ:', {
+    console.log('[EDIT MODAL] Новые данные:', {
         newQuestion: newQuestion.substring(0, 50),
         newAnswer: newAnswer.substring(0, 50),
         hasFormatting: !!(currentFormatting.question?.length || currentFormatting.answer?.length)
@@ -695,38 +695,38 @@ async function saveEditChanges() {
     console.log('[EDIT MODAL] New question length:', newQuestion.length);
     console.log('[EDIT MODAL] New answer length:', newAnswer.length);
 
-    // Р вЂ™Р В°Р В»Р С‘Р Т‘Р В°РЎвЂ Р С‘РЎРЏ
+    // Валидация
     if (!newQuestion) {
-        showEditNotification('Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ Р Р…Р Вµ Р СР С•Р В¶Р ВµРЎвЂљ Р В±РЎвЂ№РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљРЎвЂ№Р С', 'error');
+        showEditNotification('Вопрос не может быть пустым', 'error');
         questionEditor.focus();
         return;
     }
 
     if (!newAnswer) {
-        showEditNotification('Р С›РЎвЂљР Р†Р ВµРЎвЂљ Р Р…Р Вµ Р СР С•Р В¶Р ВµРЎвЂљ Р В±РЎвЂ№РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљРЎвЂ№Р С', 'error');
+        showEditNotification('Ответ не может быть пустым', 'error');
         answerEditor.focus();
         return;
     }
 
-    // Р вЂР В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ
+    // Блокируем кнопку сохранения
     const saveBtn = document.getElementById('edit-save-btn');
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.textContent = 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ...';
+        saveBtn.textContent = 'Сохранение...';
     }
 
     try {
-        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ (Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р С•Р В±Р В° Р С”Р В»РЎР‹РЎвЂЎР В°)
+        // Получаем текущего пользователя (проверяем оба ключа)
         let username = null;
 
-        // Р СџРЎР‚Р С•Р В±РЎС“Р ВµР С Р С—Р С•Р В»РЎС“РЎвЂЎР С‘РЎвЂљРЎРЉ Р С‘Р В· UserSystem (currentUser)
+        // Пробуем получить из UserSystem (currentUser)
         const currentUser = window.UserSystem?.getCurrentUser?.();
         if (currentUser?.username) {
             username = currentUser.username;
-            console.log('[EDIT MODAL] Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р С‘Р В· UserSystem:', username);
+            console.log('[EDIT MODAL] Пользователь из UserSystem:', username);
         }
 
-        // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р Р…Р В°РЎв‚¬Р В»Р С‘, Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С qaSessionUser
+        // Если не нашли, пробуем qaSessionUser
         if (!username) {
             try {
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -734,25 +734,25 @@ async function saveEditChanges() {
                     const sessionUser = JSON.parse(sessionUserRaw);
                     if (sessionUser?.username) {
                         username = sessionUser.username;
-                        console.log('[EDIT MODAL] Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р С‘Р В· qaSessionUser:', username);
+                        console.log('[EDIT MODAL] Пользователь из qaSessionUser:', username);
                     }
                 }
             } catch (e) {
-                console.warn('[EDIT MODAL] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р С—Р С•Р В»РЎС“РЎвЂЎР С‘РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ Р С‘Р В· qaSessionUser:', e);
+                console.warn('[EDIT MODAL] Не удалось получить пользователя из qaSessionUser:', e);
             }
         }
 
         if (!username) {
-            throw new Error('Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р Р…Р Вµ Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р С•Р Р†Р В°Р Р…');
+            throw new Error('Пользователь не авторизован');
         }
 
-        // Р вЂР вЂўР В Р вЂўР Сљ oldQuestion Р ВР вЂ” SESSION.CURRENTCARD Р СџР вЂўР В Р вЂўР вЂќ Р С›Р СћР СџР В Р С’Р вЂ™Р С™Р С›Р в„ў
-        // Р В­РЎвЂљР С• Р С–Р В°РЎР‚Р В°Р Р…РЎвЂљР С‘РЎР‚РЎС“Р ВµРЎвЂљ, РЎвЂЎРЎвЂљР С• Р СРЎвЂ№ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘
+        // БЕРЕМ oldQuestion ИЗ SESSION.CURRENTCARD ПЕРЕД ОТПРАВКОЙ
+        // Это гарантирует, что мы используем актуальные данные карточки
         const currentCard = session?.currentCard;
         const oldQuestion = currentCard?.question;
         const oldAnswer = currentCard?.answer || currentCard?.item?.answer;
 
-        console.log('[EDIT MODAL] Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р В° Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚', {
+        console.log('[EDIT MODAL] Отправка данных на сервер', {
             username,
             oldQuestion: oldQuestion?.substring(0, 50),
             newQuestion: newQuestion.substring(0, 50),
@@ -766,7 +766,7 @@ async function saveEditChanges() {
         const requestUrl = `/api/card/update?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
         console.log('[EDIT MODAL] Request URL:', requestUrl);
 
-        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+        // Отправляем на сервер
         const response = await fetch(requestUrl, {
             method: 'POST',
             headers: {
@@ -785,9 +785,9 @@ async function saveEditChanges() {
 
         const result = await response.json();
 
-        console.log('[EDIT MODAL] Р С›РЎвЂљР Р†Р ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', result);
+        console.log('[EDIT MODAL] Ответ сервера:', result);
 
-        // Р вЂ™РЎвЂ№Р Р†Р С•Р Т‘Р С‘Р С debug Р С‘Р Р…РЎвЂћР С•РЎР‚Р СР В°РЎвЂ Р С‘РЎР‹ Р С•РЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°
+        // Выводим debug информацию от сервера
         if (result.debug) {
             console.log('[EDIT MODAL] SERVER DEBUG:', result.debug);
             if (result.debug.questionsInFile) {
@@ -796,12 +796,12 @@ async function saveEditChanges() {
         }
 
         if (response.ok && result.ok) {
-            // Р Р€РЎРѓР С—Р ВµРЎвЂ¦
-            console.log('[EDIT MODAL] Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С• Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°');
+            // Успех
+            console.log('[EDIT MODAL] Карточка успешно обновлена');
 
             const currentIndex = session.currentIndex || 0;
 
-            // 1. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С session.queue
+            // 1. Обновляем session.queue
             if (session.queue && session.queue[currentIndex]) {
                 session.queue[currentIndex].question = newQuestion;
                 session.queue[currentIndex].answer = newAnswer;
@@ -813,7 +813,7 @@ async function saveEditChanges() {
                 }
             }
 
-            // 2. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С session.currentCard Р СџР С›Р РЋР вЂєР вЂў goTo()
+            // 2. Обновляем session.currentCard ПОСЛЕ goTo()
             session.goTo(currentIndex);
 
             if (session && session.currentCard) {
@@ -827,7 +827,7 @@ async function saveEditChanges() {
                 console.log('[EDIT MODAL] Updated session.currentCard:', session.currentCard.question?.substring(0, 50));
             }
 
-            // 3. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С localStorage (Р вЂ™Р С’Р вЂ“Р СњР С› Р Т‘Р В»РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р С—Р С•РЎРѓР В»Р Вµ Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘!)
+            // 3. Обновляем localStorage (ВАЖНО для сохранения после перезагрузки!)
             try {
                 const allCardsRaw = localStorage.getItem('qaUserCards');
                 if (allCardsRaw) {
@@ -838,58 +838,58 @@ async function saveEditChanges() {
                         allCards[cardIndex].answer = newAnswer;
                         allCards[cardIndex].formatting = currentFormatting;
                         localStorage.setItem('qaUserCards', JSON.stringify(allCards));
-                        console.log('[EDIT MODAL] localStorage Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…');
+                        console.log('[EDIT MODAL] localStorage обновлён');
                     } else {
-                        console.warn('[EDIT MODAL] Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р…Р Вµ Р Р…Р В°Р в„–Р Т‘Р ВµР Р…Р В° Р Р† localStorage Р Т‘Р В»РЎРЏ Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ');
+                        console.warn('[EDIT MODAL] Карточка не найдена в localStorage для обновления');
                     }
                 }
             } catch (e) {
-                console.error('[EDIT MODAL] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ localStorage:', e);
+                console.error('[EDIT MODAL] Ошибка обновления localStorage:', e);
             }
 
-            // 4. Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С originalCard Р Р† state
+            // 4. Обновляем originalCard в state
             editModalState.originalCard.question = newQuestion;
             editModalState.originalCard.answer = newAnswer;
             editModalState.originalCard.formatting = currentFormatting;
 
-            console.log('[EDIT MODAL] editModalState.originalCard Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…:', {
+            console.log('[EDIT MODAL] editModalState.originalCard обновлён:', {
                 question: editModalState.originalCard.question?.substring(0, 50)
             });
 
-            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
+            // Закрываем модальное окно
             closeEditModal(false);
 
-            // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ
-            showEditNotification('Р ВР В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№', 'success');
+            // Показываем уведомление
+            showEditNotification('Изменения сохранены', 'success');
 
-            // Р РЋР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р С•Р С
+            // Синхронизируем с сервером
             syncWithServer();
         } else {
-            // Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°
-            console.error('[EDIT MODAL] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', result);
-            throw new Error(result.error || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°');
+            // Ошибка сервера
+            console.error('[EDIT MODAL] Ошибка сервера:', result);
+            throw new Error(result.error || 'Ошибка сервера');
         }
     } catch (error) {
-        console.error('[EDIT MODAL] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ:', error);
-        showEditNotification(`Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ: ${error.message}`, 'error');
+        console.error('[EDIT MODAL] Ошибка сохранения:', error);
+        showEditNotification(`Ошибка сохранения: ${error.message}`, 'error');
     } finally {
-        // Р В Р В°Р В·Р В±Р В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“
+        // Разблокируем кнопку
         const saveBtn = document.getElementById('edit-save-btn');
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ';
+            saveBtn.textContent = 'Сохранить';
         }
     }
 }
 
-// Р СџР С•Р С”Р В°Р В· РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘РЎРЏ
+// Показ уведомления
 function showEditNotification(message, type = 'success') {
-    console.log('[EDIT NOTIFICATION] Р СџР С•Р С”Р В°Р В· РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘РЎРЏ:', message, type);
+    console.log('[EDIT NOTIFICATION] Показ уведомления:', message, type);
 
-    // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р ВµР Вµ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ Р ВµРЎРѓР В»Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ
+    // Удаляем предыдущее уведомление если есть
     const existingNotification = document.querySelector('.edit-notification');
     if (existingNotification) {
-        console.log('[EDIT NOTIFICATION] Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР В°РЎР‚Р С•Р Вµ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ');
+        console.log('[EDIT NOTIFICATION] Удаляем старое уведомление');
         existingNotification.remove();
     }
 
@@ -906,7 +906,7 @@ function showEditNotification(message, type = 'success') {
 
     document.body.insertAdjacentHTML('beforeend', notificationHTML);
 
-    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘Р Вµ
+    // Показываем уведомление
     const notification = document.getElementById('edit-notification');
     console.log('[EDIT NOTIFICATION] Notification element:', notification);
     console.log('[EDIT NOTIFICATION] Computed styles:', notification ? getComputedStyle(notification) : 'N/A');
@@ -919,7 +919,7 @@ function showEditNotification(message, type = 'success') {
         }
     }, 10);
 
-    // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂЎР ВµРЎР‚Р ВµР В· 3 РЎРѓР ВµР С”РЎС“Р Р…Р Т‘РЎвЂ№
+    // Скрываем через 3 секунды
     setTimeout(() => {
         notification?.classList.remove('show');
         setTimeout(() => {
@@ -976,16 +976,16 @@ export function startLearnSession(candidateQuestions, options = {}) {
     console.log('[startLearnSession] __navigatingToHome:', window.__navigatingToHome);
     console.log('[startLearnSession] Stack trace:', new Error().stack);
 
-    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р Р…Р Вµ Р С—Р ВµРЎР‚Р ВµРЎв‚¬Р В»Р С‘ Р В»Р С‘ Р СРЎвЂ№ Р Р…Р В° Р С–Р В»Р В°Р Р†Р Р…РЎС“РЎР‹ Р Р†Р С• Р Р†РЎР‚Р ВµР СРЎРЏ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°
+    // Проверяем, не перешли ли мы на главную во время запуска
     if (window.__navigatingToHome) {
         console.log('[startLearnSession] ABORTED - navigating to home!');
-        window.__navigatingToHome = false;  // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С–
+        window.__navigatingToHome = false;  // Сбрасываем флаг
         return;
     }
 
     initLearnUI(); // Ensure UI exists
 
-    // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ Р Р…Р В° body
+    // Скрываем навигацию и добавляем класс на body
     document.body.classList.add('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'none';
@@ -1006,7 +1006,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const status = currentScheduler.getScheduleStatus();
 
     // Inject/Update Header Info safely
-    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С learn-schedule-info РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Т‘Р В»РЎРЏ Р С•Р В±РЎвЂ№РЎвЂЎР Р…Р С•Р С–Р С• РЎР‚Р ВµР В¶Р С‘Р СР В° Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ (Р Р…Р Вµ cram)
+    // Показываем learn-schedule-info только для обычного режима обучения (не cram)
     let infoEl = document.getElementById('learn-schedule-info');
     if (!infoEl) {
         // If not exists, create it and insert it after the exit button
@@ -1024,30 +1024,30 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     if (infoEl) {
         if (options.mode === 'cram') {
-            // Р вЂ™ РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎС“Р С–Р В»РЎС“Р В±Р В»Р ВµР Р…Р Р…Р С•Р С–Р С• Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎРЊРЎвЂљР С•РЎвЂљ Р В±Р В»Р С•Р С”
+            // В режиме углубленного обучения скрываем этот блок
             infoEl.style.display = 'none';
         } else {
-            // Р Р€Р В±Р С‘РЎР‚Р В°Р ВµР С Р вЂќР ВµР Р…РЎРЉ X/Y Р С‘ Р СџРЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ - Р Р…Р Вµ Р Р…РЎС“Р В¶Р Р…Р С• Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
+            // Убираем День X/Y и Прогресс - не нужно в режиме обучения
             infoEl.textContent = '';
             infoEl.style.display = '';
         }
     }
 
-    // СЂСџвЂќВ§ Р СџР вЂўР В Р вЂўР СљР вЂўР В©Р С’Р вЂўР Сљ Р СћР С’Р в„ўР СљР вЂўР В  Р В Р РЋР В§Р РѓР СћР В§Р ВР С™ Р вЂ™ .learn-header
+    // 🔧 ПЕРЕМЕЩАЕМ ТАЙМЕР И СЧЁТЧИК В .learn-header
     const timerEl2 = document.getElementById('mode-timer');
     const counterEl = document.getElementById('learn-counter');
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
-    // Р СњР вЂў Р С—Р ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚! Р С›Р Р… Р С•РЎРѓРЎвЂљР В°РЎвЂРЎвЂљРЎРѓРЎРЏ Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ .timer-controls Р Р†Р Р…РЎС“РЎвЂљРЎР‚Р С‘ .flashcard
-    // Р СџРЎР‚Р С•РЎРѓРЎвЂљР С• Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р Т‘Р В»РЎРЏ Р СџР С™ Р Р†Р ВµРЎР‚РЎРѓР С‘Р С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· CSS Р С”Р В»Р В°РЎРѓРЎРѓРЎвЂ№
+    // НЕ перемещаем таймер! Он остаётся внутри .timer-controls внутри .flashcard
+    // Просто обновляем стили для ПК версии через CSS классы
 
-    // Р СџР ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р В°Р ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• learn-counter Р Р† learn-header
+    // Перемещаем только learn-counter в learn-header
     if (counterEl && learnHeader2) {
         learnHeader2.appendChild(counterEl);
     }
 
-    // СЂСџвЂќВ§ Р вЂ™Р В«Р СњР С›Р РЋР ВР Сљ .learn-progress Р ВР вЂ” .learn-header - Р В±РЎС“Р Т‘Р ВµРЎвЂљ Р С•РЎвЂљР Т‘Р ВµР В»РЎРЉР Р…РЎвЂ№Р С Р В±Р В»Р С•Р С”Р С•Р С РЎРѓР Р…Р С‘Р В·РЎС“
+    // 🔧 ВЫНОСИМ .learn-progress ИЗ .learn-header - будет отдельным блоком снизу
     const learnProgressEl = document.querySelector('.learn-progress');
     if (learnProgressEl && learnHeader2) {
         learnHeader2.parentNode.insertBefore(learnProgressEl, learnHeader2.nextSibling);
@@ -1098,7 +1098,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
             startLearnSession(candidateQuestions, { mode: 'cram' });
             return;
         }
-        alert('Р СњР ВµРЎвЂљ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” Р Т‘Р В»РЎРЏ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ.');
+        alert('Нет карточек для обучения.');
         return;
     }
 
@@ -1172,7 +1172,7 @@ function stopLearnSession() {
         console.log('[stopLearnSession] sidebar display reset');
     }
 
-    // Р вЂ™Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р С‘ РЎС“Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ РЎРѓ body
+    // Возвращаем навигацию и убираем класс с body
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) {
@@ -1180,7 +1180,7 @@ function stopLearnSession() {
         console.log('[stopLearnSession] bottom-nav display set to flex');
     }
 
-    // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С search-container Р С‘ top-actions-bar
+    // Восстанавливаем search-container и top-actions-bar
     const searchContainer = document.querySelector('.search-container');
     if (searchContainer) {
         searchContainer.style.display = '';
@@ -1227,13 +1227,13 @@ function renderCardState(state) {
     const progressFill = container.querySelector('.learn-progress-fill');
 
     // Update segments
-    // Р ВРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С session.currentIndex Р Р†Р СР ВµРЎРѓРЎвЂљР С• state.currentIndex
+    // Используем session.currentIndex вместо state.currentIndex
     const currentIndex = session ? (session.currentIndex || 0) : 0;
-    console.log('[SEGMENTS DEBUG] Р СџР ВµРЎР‚Р ВµР Т‘ updateSegments: currentIndex=', currentIndex, 'total=', state.total);
+    console.log('[SEGMENTS DEBUG] Перед updateSegments: currentIndex=', currentIndex, 'total=', state.total);
     console.log('[SEGMENTS DEBUG] results=', state.results, 'length=', state.results.length);
     console.log('[SEGMENTS DEBUG] session.results=', session ? session.results : 'no session', 'session.currentIndex=', session ? session.currentIndex : 'no session');
     updateSegments(state.results, state.total, currentIndex, true);
-    console.log('[SEGMENTS DEBUG] Р СџР С•РЎРѓР В»Р Вµ updateSegments');
+    console.log('[SEGMENTS DEBUG] После updateSegments');
     // Update nav buttons availability
     try {
         const prevBtn = document.getElementById('learn-prev-btn');
@@ -1253,15 +1253,15 @@ function renderCardState(state) {
     } catch { }
 
     if (qEl && state.card) {
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“
-        // Р вЂР ВµРЎР‚РЎвЂР С formatting Р С‘Р В· session.currentCard (РЎвЂљР В°Р С Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ)
+        // Применяем форматирование к вопросу
+        // Берём formatting из session.currentCard (там актуальные данные)
         const sessionCard = session?.currentCard;
         const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
-        const questionText = sessionCard?.question || state.card.question || '(Р СџРЎС“РЎРѓРЎвЂљР С•Р в„– Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ)';
+        const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         qEl.innerHTML = questionHTML;
 
-        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, РЎвЂЎРЎвЂљР С• Р Р†РЎРѓРЎвЂљР В°Р Р†Р С‘Р В»Р С•РЎРѓРЎРЉ
+        // DEBUG: Проверяем, что вставилось
         console.log('[RENDER CARD] Question rendered:', {
             text: questionText,
             formatting: questionFormatting,
@@ -1271,12 +1271,12 @@ function renderCardState(state) {
             spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
 
-        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• span
+        // DEBUG: Проверяем стили первого span
         setTimeout(() => {
             const firstSpan = qEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] РІСњвЂ” First QUESTION span STYLES:', {
+                console.log('[RENDER CARD] ❗ First QUESTION span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1288,14 +1288,14 @@ function renderCardState(state) {
         }, 100);
     }
     if (aEl && state.card) {
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р С•РЎвЂљР Р†Р ВµРЎвЂљРЎС“
+        // Применяем форматирование к ответу
         const sessionCard = session?.currentCard;
         const answerFormatting = sessionCard?.formatting?.answer || state.card.formatting?.answer || [];
-        const answerText = sessionCard?.answer || state.card.answer || '(Р СџРЎС“РЎРѓРЎвЂљР С•Р в„– Р С•РЎвЂљР Р†Р ВµРЎвЂљ)';
+        const answerText = sessionCard?.answer || state.card.answer || '(Пустой ответ)';
         const answerHTML = applyFormatting(answerText, answerFormatting);
         aEl.innerHTML = answerHTML;
 
-        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, РЎвЂЎРЎвЂљР С• Р Р†РЎРѓРЎвЂљР В°Р Р†Р С‘Р В»Р С•РЎРѓРЎРЉ
+        // DEBUG: Проверяем, что вставилось
         console.log('[RENDER CARD] Answer rendered:', {
             text: answerText,
             formatting: answerFormatting,
@@ -1305,12 +1305,12 @@ function renderCardState(state) {
             spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
 
-        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• span
+        // DEBUG: Проверяем стили первого span
         setTimeout(() => {
             const firstSpan = aEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] РІСњвЂ” First ANSWER span STYLES:', {
+                console.log('[RENDER CARD] ❗ First ANSWER span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1322,9 +1322,9 @@ function renderCardState(state) {
         }, 100);
     }
 
-    // DEBUG: Р вЂєР С•Р С–Р С‘РЎР‚РЎС“Р ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљР В°
-    console.log('\nСЂСџвЂњВ¦ FLASHCARD ANSWER DEBUG:');
-    console.log('   #learn-answer РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ:', aEl);
+    // DEBUG: Логируем стили ответа
+    console.log('\n📦 FLASHCARD ANSWER DEBUG:');
+    console.log('   #learn-answer элемент:', aEl);
     if (aEl) {
         const styles = window.getComputedStyle(aEl);
         console.log('   padding-top:', styles.paddingTop);
@@ -1338,8 +1338,8 @@ function renderCardState(state) {
         console.log('      display:', backStyles.display);
     }
 
-    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° Р С—Р ВµРЎР‚Р ВµР С”РЎР‚РЎвЂ№РЎвЂљР С‘РЎРЏ front/back
-    console.log('\nСЂСџвЂќвЂћ FRONT/BACK OVERLAP CHECK:');
+    // Проверка перекрытия front/back
+    console.log('\n🔄 FRONT/BACK OVERLAP CHECK:');
     if (front && back) {
         const frontStyles = window.getComputedStyle(front);
         const backStyles = window.getComputedStyle(back);
@@ -1370,16 +1370,16 @@ function renderCardState(state) {
         console.log('      transform-style:', cardStyles.transformStyle);
     }
 
-    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° custom-styles.css
-    console.log('\nСЂСџвЂњСљ CUSTOM-styles.css CHECK:');
+    // Проверка custom-styles.css
+    console.log('\n📜 CUSTOM-styles.css CHECK:');
     const allStyles = Array.from(document.styleSheets);
-    console.log('   Р вЂ™РЎРѓР ВµР С–Р С• style sheets:', allStyles.length);
+    console.log('   Всего style sheets:', allStyles.length);
     allStyles.forEach((sheet, i) => {
         try {
             const rules = Array.from(sheet.cssRules || []);
             const hasFlashcardBack = rules.some(r => r.selectorText && r.selectorText.includes('.flashcard-back'));
             if (hasFlashcardBack) {
-                console.log(`   Sheet ${i}: РЎРѓР С•Р Т‘Р ВµРЎР‚Р В¶Р С‘РЎвЂљ .flashcard-back Р С—РЎР‚Р В°Р Р†Р С‘Р В»Р В°`);
+                console.log(`   Sheet ${i}: содержит .flashcard-back правила`);
                 rules.forEach(r => {
                     if (r.selectorText && r.selectorText.includes('.flashcard-back .flashcard-content')) {
                         console.log(`      Rule: ${r.selectorText} -> padding-top: ${r.style.paddingTop}, margin-top: ${r.style.marginTop}`);
@@ -1391,12 +1391,12 @@ function renderCardState(state) {
         }
     });
 
-    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ Р Р…Р В° back-РЎРѓРЎвЂљР С•РЎР‚Р С•Р Р…Р Вµ Р РЋ Р В¤Р С›Р В Р СљР С’Р СћР ВР В Р С›Р вЂ™Р С’Р СњР ВР вЂўР Сљ
+    // Обновляем вопрос на back-стороне С ФОРМАТИРОВАНИЕМ
     const backQuestionEl = document.getElementById('learn-back-question');
     if (backQuestionEl && state.card) {
         const sessionCard = session?.currentCard;
         const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
-        const questionText = sessionCard?.question || state.card.question || '(Р СџРЎС“РЎРѓРЎвЂљР С•Р в„– Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ)';
+        const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         backQuestionEl.innerHTML = questionHTML;
 
@@ -1407,12 +1407,12 @@ function renderCardState(state) {
             innerHTML: backQuestionEl.innerHTML
         });
 
-        // DEBUG: Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• span
+        // DEBUG: Проверяем стили первого span
         setTimeout(() => {
             const firstSpan = backQuestionEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] РІСњвЂ” First BACK QUESTION span STYLES:', {
+                console.log('[RENDER CARD] ❗ First BACK QUESTION span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1497,8 +1497,8 @@ function renderCardState(state) {
         if (ef === null) {
             // Render "NEW" state
             container.querySelectorAll('.learn-hearts').forEach(el => {
-                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">Р СњР С›Р вЂ™Р С’Р Р‡</span>`;
-                el.title = 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°Р Вµ Р Р…Р Вµ Р С‘Р В·РЎС“РЎвЂЎР В°Р В»Р В°РЎРѓРЎРЉ';
+                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span>`;
+                el.title = 'Карточка еще не изучалась';
 
                 // Remove old label if exists
                 const oldLabel = el.nextElementSibling;
@@ -1510,10 +1510,10 @@ function renderCardState(state) {
 
             // Map level to Russian text
             const levelNames = {
-                'VERY_HARD': 'Р С›РЎвЂЎР ВµР Р…РЎРЉ РЎвЂљРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
-                'HARD': 'Р СћРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
-                'STANDARD': 'Р РЋРЎвЂљР В°Р Р…Р Т‘Р В°РЎР‚РЎвЂљ',
-                'EASY': 'Р вЂєР ВµР С–Р С”Р С‘Р Вµ'
+                'VERY_HARD': 'Очень трудные',
+                'HARD': 'Трудные',
+                'STANDARD': 'Стандарт',
+                'EASY': 'Легкие'
             };
 
             // Recalculate hearts count for title
@@ -1529,7 +1529,7 @@ function renderCardState(state) {
                 const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
 
                 el.innerHTML = labelHtml + renderHearts(ef);
-                el.title = `Р Р€РЎР‚Р С•Р Р†Р ВµР Р…РЎРЉ: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nР РЋР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”: ${heartsCount.toFixed(2)}`;
+                el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
 
                 // Cleanup old sibling label if it exists (from previous version)
                 const oldLabel = el.nextElementSibling;
@@ -1546,15 +1546,15 @@ function renderCardState(state) {
             if (!canEasy) {
                 easyBtn.style.opacity = '0.5';
                 easyBtn.style.cursor = 'not-allowed';
-                easyBtn.title = 'Р вЂќР С•РЎРѓРЎвЂљРЎС“Р С—Р Р…Р С• РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Т‘Р В»РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ "Р вЂєР ВµР С–Р С”Р С‘Р Вµ" РЎРѓ Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓР С•Р С > 70%';
+                easyBtn.title = 'Доступно только для карточек уровня "Легкие" с прогрессом > 70%';
                 easyBtn.setAttribute('data-locked', 'true');
-                easyBtn.innerHTML = 'Р вЂєР ВµР С–Р С”Р С• СЂСџвЂќвЂ™ (4)';
+                easyBtn.innerHTML = 'Легко 🔒 (4)';
             } else {
                 easyBtn.style.opacity = '1';
                 easyBtn.style.cursor = 'pointer';
                 easyBtn.title = '';
                 easyBtn.removeAttribute('data-locked');
-                easyBtn.innerHTML = 'Р вЂєР ВµР С–Р С”Р С• (4)';
+                easyBtn.innerHTML = 'Легко (4)';
             }
         }
     }
@@ -1598,10 +1598,10 @@ function renderCardState(state) {
                 timerEl.style.transform = 'translateX(-50%) scale(1)';
             }
         } else if (state.mode === 'time_attack') {
-            // Р вЂ™ РЎР‚Р ВµР В¶Р С‘Р СР Вµ time_attack РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚, Р ВµРЎРѓР В»Р С‘ Р Р†РЎР‚Р ВµР СРЎРЏ Р Р…Р Вµ Р С—Р С•Р С”Р В°Р В·Р В°Р Р…Р С•
+            // В режиме time_attack скрываем таймер, если время не показано
             timerEl.style.display = 'none';
         }
-        // Р вЂќР В»РЎРЏ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎР‚Р ВµР В¶Р С‘Р СР С•Р Р† (cram, ordinary) Р СњР вЂў РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚ - Р С•Р Р… РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ РЎвЂЎР ВµРЎР‚Р ВµР В· updateTimerDisplay
+        // Для остальных режимов (cram, ordinary) НЕ скрываем таймер - он управляется через updateTimerDisplay
     }
 }
 
@@ -1609,24 +1609,24 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // Р вЂ™РЎРѓР ВµР С–Р Т‘Р В° Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С 6 РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р†: 3 Р С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р Р…РЎвЂ№РЎвЂ¦ + 1 РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– + 2 РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘РЎвЂ¦
+    // Всегда показываем 6 сегментов: 3 пройденных + 1 текущий + 2 следующих
     const visibleCount = 6;
-    let startIdx = currentIndex - 3; // 3 Р Т‘Р С• РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•
-    let endIdx = currentIndex + 2;   // 2 Р С—Р С•РЎРѓР В»Р Вµ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•
+    let startIdx = currentIndex - 3; // 3 до текущего
+    let endIdx = currentIndex + 2;   // 2 после текущего
 
-    // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ РЎвЂ¦Р Р†Р В°РЎвЂљР В°Р ВµРЎвЂљ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р† Р С—Р С•РЎРѓР В»Р Вµ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•, РЎРѓР Т‘Р Р†Р С‘Р С–Р В°Р ВµР С Р Т‘Р С‘Р В°Р С—Р В°Р В·Р С•Р Р… Р Р†Р С—РЎР‚Р В°Р Р†Р С•
+    // Если не хватает сегментов после текущего, сдвигаем диапазон вправо
     if (endIdx >= total) {
         endIdx = total - 1;
         startIdx = Math.max(0, endIdx - visibleCount + 1);
     }
 
-    // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ РЎвЂ¦Р Р†Р В°РЎвЂљР В°Р ВµРЎвЂљ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р† Р Т‘Р С• РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С•, РЎРѓР Т‘Р Р†Р С‘Р С–Р В°Р ВµР С Р Т‘Р С‘Р В°Р С—Р В°Р В·Р С•Р Р… Р Р†Р В»Р ВµР Р†Р С•
+    // Если не хватает сегментов до текущего, сдвигаем диапазон влево
     if (startIdx < 0) {
         startIdx = 0;
         endIdx = Math.min(total - 1, visibleCount - 1);
     }
 
-    // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С Р Р†РЎРѓР Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№ Р С•Р Т‘Р С‘Р Р… РЎР‚Р В°Р В·
+    // Создаём все сегменты один раз
     if (segs.childElementCount !== total) {
         segs.innerHTML = '';
         for (let i = 0; i < total; i++) {
@@ -1637,34 +1637,34 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         }
     }
 
-    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р вЂ™Р РЋР вЂў РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№
-    // Р вЂ”Р В°Р С”РЎР‚Р В°РЎв‚¬Р ВµР Р…Р Р…РЎвЂ№Р Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№ - РЎРЏРЎР‚Р С”Р С‘Р Вµ, Р Р…Р ВµР С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р Р…РЎвЂ№Р Вµ - РЎРѓР ВµРЎР‚РЎвЂ№Р Вµ
+    // Показываем ВСЕ сегменты
+    // Закрашенные сегменты - яркие, непройденные - серые
     Array.from(segs.children).forEach((el, i) => {
-        // isColored: РЎР‚Р ВµР В·РЎС“Р В»РЎРЉРЎвЂљР В°РЎвЂљ Р Т‘Р В»РЎРЏ РЎРЊРЎвЂљР С•Р С–Р С• РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР В° РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ Р С‘ Р Р…Р Вµ null
+        // isColored: результат для этого сегмента существует и не null
         const isColored = results && i < results.length && results[i] !== null && results[i] !== undefined;
 
         if (isColored) {
-            // Р вЂ”Р В°Р С”РЎР‚Р В°РЎв‚¬Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ - Р С—Р С•Р В»Р Р…Р С•РЎРѓРЎвЂљРЎРЉРЎР‹ Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№Р в„–
+            // Закрашенный сегмент - полностью видимый
             el.style.opacity = '1';
         } else {
-            // Р СњР ВµР С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р Р…РЎвЂ№Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ - Р С—Р С•Р В»РЎС“Р С—РЎР‚Р С•Р В·РЎР‚Р В°РЎвЂЎР Р…РЎвЂ№Р в„– РЎРѓР ВµРЎР‚РЎвЂ№Р в„–
+            // Непройденный сегмент - полупрозрачный серый
             el.style.opacity = '0.5';
         }
     });
 
-    // Р В¦Р ВµР Р…РЎвЂљРЎР‚Р С‘РЎР‚РЎС“Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ
+    // Центрируем текущий сегмент
     const currentEl = segs.children[currentIndex];
     console.log('[SEGMENTS] currentEl=', currentEl, 'autoScroll=', autoScroll, 'userScrolled=', userScrolled);
 
-    // Р вЂўРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В» РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– РЎРѓР С”РЎР‚Р С•Р В»Р В» Р С‘ autoScroll Р Р…Р Вµ Р Р†Р С”Р В»РЎР‹РЎвЂЎРЎвЂР Р… Р С—РЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• - Р Р…Р Вµ РЎРѓР С”РЎР‚Р С•Р В»Р В»Р С‘Р С
+    // Если был ручной скролл и autoScroll не включён принудительно - не скроллим
     const shouldScroll = autoScroll && !userScrolled;
 
     if (currentEl && shouldScroll) {
-        // Р СџРЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”Р С‘
+        // Принудительно показываем текущий сегмент для прокрутки
         currentEl.style.opacity = '1';
 
-        // Р СџР С•Р В·Р С‘РЎвЂ Р С‘Р С•Р Р…Р С‘РЎР‚РЎС“Р ВµР С РЎвЂљР В°Р С”, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р В±РЎвЂ№Р В» 4-Р С РЎРѓР В»Р ВµР Р†Р В° (3-1-2)
-        // Р вЂќР В»РЎРЏ РЎРЊРЎвЂљР С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р С‘Р С РЎвЂљР В°Р С”, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ startIdx Р В±РЎвЂ№Р В» Р Р†Р С‘Р Т‘Р ВµР Р… РЎРѓР В»Р ВµР Р†Р В°
+        // Позиционируем так, чтобы текущий был 4-м слева (3-1-2)
+        // Для этого скроллим так, чтобы startIdx был виден слева
         const segWidth = currentEl.offsetWidth + 2; // width + gap
         const targetPosition = startIdx * segWidth;
 
@@ -1678,12 +1678,12 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         currentEl.classList.add('current');
         console.log('[SEGMENTS] Added class current to segment', currentIndex);
     } else if (currentEl) {
-        // Р СџРЎР‚Р С•РЎРѓРЎвЂљР С• Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ current Р В±Р ВµР В· РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В°
+        // Просто добавляем класс current без скролла
         currentEl.classList.add('current');
         console.log('[SEGMENTS] Added class current (no scroll) to segment', currentIndex);
     }
 
-    // Р Р€Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ current РЎС“ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦
+    // Убираем класс current у остальных
     Array.from(segs.children).forEach((el, i) => {
         if (i !== currentIndex) {
             el.classList.remove('current');
@@ -1696,13 +1696,13 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
 
     if (results && results.length) {
-        // results[i] РЎРѓР С•Р Т‘Р ВµРЎР‚Р В¶Р С‘РЎвЂљ Р С•РЎвЂ Р ВµР Р…Р С”РЎС“ Р Т‘Р В»РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ РЎРѓ Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓР С•Р С i
-        // null Р С•Р В·Р Р…Р В°РЎвЂЎР В°Р ВµРЎвЂљ, РЎвЂЎРЎвЂљР С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°РЎвЂ Р Р…Р Вµ Р С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р В°
+        // results[i] содержит оценку для карточки с индексом i
+        // null означает, что карточка ещё не пройдена
         let coloredCount = 0;
         for (let idx = 0; idx < results.length && idx < total; idx++) {
             const g = results[idx];
             if (g === null || g === undefined) {
-                // Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°РЎвЂ Р Р…Р Вµ Р С—РЎР‚Р С•Р в„–Р Т‘Р ВµР Р…Р В°, Р С—РЎР‚Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С
+                // Карточка ещё не пройдена, пропускаем
                 continue;
             }
             const el = segs.children[idx];
@@ -1711,19 +1711,19 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
                 continue;
             }
 
-            // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, РЎРЏР Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ Р В»Р С‘ РЎРЊРЎвЂљР С•РЎвЂљ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р С
+            // Проверяем, является ли этот сегмент текущим
             const isCurrent = (idx === currentIndex);
             console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'isCurrent=', isCurrent, 'currentIndex=', currentIndex);
             console.log('[SEGMENTS COLOR] el.className BEFORE=', el.className);
 
-            // Р Р€РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р В±Р В°Р В·Р С•Р Р†РЎвЂ№Р в„– Р С”Р В»Р В°РЎРѓРЎРѓ + РЎвЂ Р Р†Р ВµРЎвЂљ
+            // Устанавливаем базовый класс + цвет
             el.className = 'learn-progress-segment';
             if (g === 0) el.classList.add('seg-again');
             else if (g === 1) el.classList.add('seg-hard');
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
 
-            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ current, Р ВµРЎРѓР В»Р С‘ РЎРЊРЎвЂљР С• РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљ
+            // Добавляем класс current, если это текущий сегмент
             if (isCurrent) {
                 el.classList.add('current');
                 console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
@@ -1739,10 +1739,10 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     }
     console.log('[SEGMENTS COLOR] === END ===');
 
-    // Р В¤Р С‘Р Р…Р В°Р В»РЎРЉР Р…Р В°РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р В°
+    // Финальная отладка
     console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
 
-    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р†РЎРѓР Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№ Р С—Р С•РЎРѓР В»Р Вµ Р С—Р С•Р С”РЎР‚Р В°РЎРѓР С”Р С‘
+    // Проверяем все сегменты после покраски
     console.log('[SEGMENTS FINAL] === ALL SEGMENTS STATE ===');
     Array.from(segs.children).forEach((el, i) => {
         console.log('[SEGMENTS FINAL] idx=', i, 'className=', el.className, 'classList=', Array.from(el.classList));
@@ -1753,13 +1753,13 @@ function wireSegmentsInteractions(sess) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // Р С›РЎвЂљРЎРѓР В»Р ВµР В¶Р С‘Р Р†Р В°Р ВµР С РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– РЎРѓР С”РЎР‚Р С•Р В»Р В» Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
+    // Отслеживаем ручной скролл пользователя
     segs.addEventListener('scroll', () => {
         console.log('[SEGMENTS] user scrolled');
         userScrolled = true;
     }, { passive: true });
 
-    // Р СџРЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”Р В° Р С”Р С•Р В»Р ВµРЎРѓР С‘Р С”Р С•Р С
+    // Прокрутка колесиком
     segs.addEventListener('wheel', (e) => {
         if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
             e.preventDefault();
@@ -1767,7 +1767,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: false });
 
-    // === Р ВР Р…Р ВµРЎР‚РЎвЂ Р С‘Р С•Р Р…Р Р…Р В°РЎРЏ Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”Р В° Р Т‘Р В»РЎРЏ touch РЎС“РЎРѓРЎвЂљРЎР‚Р С•Р в„–РЎРѓРЎвЂљР Р† ===
+    // === Инерционная прокрутка для touch устройств ===
     let isDragging = false;
     let startX = 0;
     let scrollLeft = 0;
@@ -1777,7 +1777,7 @@ function wireSegmentsInteractions(sess) {
     let velocity = 0;
     let animationFrame = null;
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р Р…Р В°РЎвЂЎР В°Р В»Р В° Р С”Р В°РЎРѓР В°Р Р…Р С‘РЎРЏ
+    // Обработка начала касания
     segs.addEventListener('touchstart', (e) => {
         isDragging = true;
         startX = e.touches[0].clientX;
@@ -1787,49 +1787,49 @@ function wireSegmentsInteractions(sess) {
         lastTime = startTime;
         velocity = 0;
 
-        // Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°РЎС“РЎР‹ Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹
+        // Останавливаем предыдущую анимацию
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
             animationFrame = null;
         }
     }, { passive: true });
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р Т‘Р Р†Р С‘Р В¶Р ВµР Р…Р С‘РЎРЏ Р С—Р В°Р В»РЎРЉРЎвЂ Р В°
+    // Обработка движения пальца
     segs.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
 
         const currentX = e.touches[0].clientX;
         const currentTime = Date.now();
 
-        // Р вЂ™РЎвЂ№РЎвЂЎР С‘РЎРѓР В»РЎРЏР ВµР С РЎРѓР СР ВµРЎвЂ°Р ВµР Р…Р С‘Р Вµ
-        const walk = (currentX - startX) * 1.5; // Р Р€Р Р†Р ВµР В»Р С‘РЎвЂЎР ВµР Р…Р Р…РЎвЂ№Р в„– Р С”Р С•РЎРЊРЎвЂћРЎвЂћР С‘РЎвЂ Р С‘Р ВµР Р…РЎвЂљ Р Т‘Р В»РЎРЏ РЎвЂЎРЎС“Р Р†РЎРѓРЎвЂљР Р†Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С•РЎРѓРЎвЂљР С‘
+        // Вычисляем смещение
+        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительности
         segs.scrollLeft = scrollLeft - walk;
 
-        // Р вЂ™РЎвЂ№РЎвЂЎР С‘РЎРѓР В»РЎРЏР ВµР С РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ Р Т‘Р В»РЎРЏ Р С‘Р Р…Р ВµРЎР‚РЎвЂ Р С‘Р С‘
+        // Вычисляем скорость для инерции
         const deltaX = currentX - lastX;
         const deltaTime = currentTime - lastTime;
 
         if (deltaTime > 0) {
-            velocity = deltaX / deltaTime; // Р С—Р С‘Р С”РЎРѓР ВµР В»Р ВµР в„– Р Р† Р СР С‘Р В»Р В»Р С‘РЎРѓР ВµР С”РЎС“Р Р…Р Т‘РЎС“
+            velocity = deltaX / deltaTime; // пикселей в миллисекунду
         }
 
         lastX = currentX;
         lastTime = currentTime;
     }, { passive: true });
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р С•Р С”Р С•Р Р…РЎвЂЎР В°Р Р…Р С‘РЎРЏ Р С”Р В°РЎРѓР В°Р Р…Р С‘РЎРЏ - Р В·Р В°Р С—РЎС“РЎРѓР С” Р С‘Р Р…Р ВµРЎР‚РЎвЂ Р С‘Р С‘
+    // Обработка окончания касания - запуск инерции
     segs.addEventListener('touchend', (e) => {
         isDragging = false;
 
-        // Р вЂўРЎРѓР В»Р С‘ РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ Р Т‘Р С•РЎРѓРЎвЂљР В°РЎвЂљР С•РЎвЂЎР Р…Р В°РЎРЏ, Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р С‘Р Р…Р ВµРЎР‚РЎвЂ Р С‘Р С•Р Р…Р Р…РЎС“РЎР‹ Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”РЎС“
+        // Если скорость достаточная, запускаем инерционную прокрутку
         if (Math.abs(velocity) > 0.3) {
             const inertialScroll = () => {
-                velocity *= 0.92; // Р С™Р С•РЎРЊРЎвЂћРЎвЂћР С‘РЎвЂ Р С‘Р ВµР Р…РЎвЂљ Р В·Р В°РЎвЂљРЎС“РЎвЂ¦Р В°Р Р…Р С‘РЎРЏ (0.92 = Р С—Р В»Р В°Р Р†Р Р…Р С•Р Вµ Р В·Р В°Р СР ВµР Т‘Р В»Р ВµР Р…Р С‘Р Вµ)
+                velocity *= 0.92; // Коэффициент затухания (0.92 = плавное замедление)
 
-                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms РІвЂ°в‚¬ 60fps
+                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms ≈ 60fps
                 segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
 
-                // Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹, Р С—Р С•Р С”Р В° РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ Р В·Р Р…Р В°РЎвЂЎР С‘Р СР В°РЎРЏ
+                // Продолжаем анимацию, пока скорость значимая
                 if (Math.abs(velocity) > 0.1) {
                     animationFrame = requestAnimationFrame(inertialScroll);
                 } else {
@@ -1841,7 +1841,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: true });
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р С•РЎвЂљР СР ВµР Р…РЎвЂ№ Р С”Р В°РЎРѓР В°Р Р…Р С‘РЎРЏ
+    // Обработка отмены касания
     segs.addEventListener('touchcancel', (e) => {
         isDragging = false;
         if (animationFrame) {
@@ -1850,7 +1850,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: true });
 
-    // Drag Р С—Р ВµРЎР‚Р ВµРЎвЂљР В°РЎРѓР С”Р С‘Р Р†Р В°Р Р…Р С‘Р Вµ Р Т‘Р В»РЎРЏ Р СРЎвЂ№РЎв‚¬Р С‘
+    // Drag перетаскивание для мыши
     let isMouseDragging = false;
     let mouseStartX = 0;
     let mouseScrollLeft = 0;
@@ -1883,7 +1883,7 @@ function wireSegmentsInteractions(sess) {
         isMouseDragging = false;
         segs.style.cursor = 'grab';
 
-        // Р ВР Р…Р ВµРЎР‚РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р СРЎвЂ№РЎв‚¬Р С‘ РЎвЂљР С•Р В¶Р Вµ
+        // Инерция для мыши тоже
         if (Math.abs(mouseVelocity) > 0.3) {
             const inertialScroll = () => {
                 mouseVelocity *= 0.92;
@@ -1912,7 +1912,7 @@ function wireSegmentsInteractions(sess) {
         const walk = (currentX - mouseStartX) * 2;
         segs.scrollLeft = mouseScrollLeft - walk;
 
-        // Р вЂ™РЎвЂ№РЎвЂЎР С‘РЎРѓР В»РЎРЏР ВµР С РЎРѓР С”Р С•РЎР‚Р С•РЎРѓРЎвЂљРЎРЉ
+        // Вычисляем скорость
         const deltaX = currentX - mouseLastX;
         const deltaTime = currentTime - mouseLastTime;
 
@@ -1941,15 +1941,15 @@ function wireSegmentsInteractions(sess) {
             el.style.fontSize = '13px';
             el.style.color = 'var(--color-text, #E6EDF3)';
             el.style.display = 'none';
-            el.style.pointerEvents = 'auto'; /* Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ */
+            el.style.pointerEvents = 'auto'; /* Разрешаем клики */
             el.style.cursor = 'pointer';
             el.onclick = (e) => {
-                e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ */
+                e.stopPropagation(); /* Останавливаем всплытие */
                 e.preventDefault();
                 hidePreview();
             };
             el.ontouchend = (e) => {
-                e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ */
+                e.stopPropagation(); /* Останавливаем всплытие */
                 e.preventDefault();
                 hidePreview();
             };
@@ -1961,11 +1961,11 @@ function wireSegmentsInteractions(sess) {
         const el = ensurePreviewEl();
         const q = sess.queue[index]?.item?.question || '';
         const a = sess.queue[index]?.item?.answer || '';
-        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ</div>`;
+        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">Нажмите, чтобы закрыть</div>`;
         const r = anchor.getBoundingClientRect();
         const isMobile = window.innerWidth < 768;
         el.style.display = 'block';
-        el.style.pointerEvents = 'auto'; /* Р В Р В°Р В·РЎР‚Р ВµРЎв‚¬Р В°Р ВµР С Р С”Р В»Р С‘Р С”Р С‘ */
+        el.style.pointerEvents = 'auto'; /* Разрешаем клики */
         const pw = el.offsetWidth || 260;
         const ph = el.offsetHeight || 140;
         if (isMobile) {
@@ -1999,7 +1999,7 @@ function wireSegmentsInteractions(sess) {
         const i = Number(seg.dataset.index || '0');
         seg.style.cursor = 'pointer';
         seg.addEventListener('click', (e) => {
-            e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ */
+            e.stopPropagation(); /* Останавливаем всплытие к карточке */
             e.preventDefault();
 
             console.log('[SEGMENT CLICK] === CLICK START ===');
@@ -2007,18 +2007,18 @@ function wireSegmentsInteractions(sess) {
             console.log('[SEGMENT CLICK] sess.currentIndex BEFORE goTo=', sess.currentIndex);
             console.log('[SEGMENT CLICK] sess.results BEFORE goTo=', sess.results);
 
-            // Р СџР ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘Р С‘Р С Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
+            // Переходим к карточке
             sess.goTo(i);
             hidePreview();
 
             console.log('[SEGMENT CLICK] sess.currentIndex AFTER goTo=', sess.currentIndex);
             console.log('[SEGMENT CLICK] sess.results AFTER goTo=', sess.results);
 
-            // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В°
+            // Сбрасываем флаг ручного скролла
             userScrolled = false;
 
-            // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С updateSegments РЎРѓ autoScroll=true Р Т‘Р В»РЎРЏ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂљР В° Р С” 3-1-2
-            // sess.results - РЎРЊРЎвЂљР С• РЎС“Р В¶Р Вµ Р СР В°РЎРѓРЎРѓР С‘Р Р† РЎвЂЎР С‘РЎРѓР ВµР В» (Р С•РЎвЂ Р ВµР Р…Р С•Р С”)
+            // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
+            // sess.results - это уже массив чисел (оценок)
             console.log('[SEGMENT CLICK] Calling updateSegments with results=', sess.results);
             updateSegments(sess.results, sess.queue.length, i, true);
 
@@ -2033,18 +2033,18 @@ function wireSegmentsInteractions(sess) {
             touchTimer = setTimeout(() => { showPreview(i, target); touchTimer = null; }, 300);
         }, { passive: true });
         seg.addEventListener('touchend', (e) => {
-            e.stopPropagation(); /* Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р Р†РЎРѓР С—Р В»РЎвЂ№РЎвЂљР С‘Р Вµ Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ */
+            e.stopPropagation(); /* Останавливаем всплытие к карточке */
             if (touchTimer) {
                 clearTimeout(touchTimer);
                 touchTimer = null;
 
-                // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎР‚РЎС“РЎвЂЎР Р…Р С•Р С–Р С• РЎРѓР С”РЎР‚Р С•Р В»Р В»Р В°
+                // Сбрасываем флаг ручного скролла
                 userScrolled = false;
 
                 sess.goTo(i);
 
-                // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С updateSegments РЎРѓ autoScroll=true Р Т‘Р В»РЎРЏ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂљР В° Р С” 3-1-2
-                // sess.results - РЎРЊРЎвЂљР С• РЎС“Р В¶Р Вµ Р СР В°РЎРѓРЎРѓР С‘Р Р† РЎвЂЎР С‘РЎРѓР ВµР В» (Р С•РЎвЂ Р ВµР Р…Р С•Р С”)
+                // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
+                // sess.results - это уже массив чисел (оценок)
                 console.log('[SEGMENT TOUCHEND] sess.results=', sess.results);
                 updateSegments(sess.results, sess.queue.length, i, true);
             }
@@ -2083,28 +2083,28 @@ function showStats(stats, results, total) {
                 <div class="stats-grid">
                     <div class="stat-item" id="stat-total">
                         <div class="stat-value" id="sum-total">0</div>
-                        <div class="stat-label">Р СџР С•Р Р†РЎвЂљР С•РЎР‚Р ВµР Р…Р С•</div>
+                        <div class="stat-label">Повторено</div>
                     </div>
                     <div class="stat-item" id="stat-accuracy">
                         <div class="stat-value" id="sum-accuracy">0%</div>
-                        <div class="stat-label">Р СћР С•РЎвЂЎР Р…Р С•РЎРѓРЎвЂљРЎРЉ</div>
+                        <div class="stat-label">Точность</div>
                     </div>
                     <div class="stat-item" id="stat-streak">
                         <div class="stat-value" id="sum-streak">0</div>
-                        <div class="stat-label">Р вЂќР Р…Р ВµР в„– Р С—Р С•Р Т‘РЎР‚РЎРЏР Т‘</div>
+                        <div class="stat-label">Дней подряд</div>
                     </div>
                 </div>
                 <div class="motivation" id="sum-motivation"></div>
                 <div id="sum-xp" class="xp-line"></div>
                 <div class="summary-actions">
-                    <button id="sum-continue" class="btn btn-primary" title="Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ" aria-label="Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ">
-                        <span>РІвЂ“В¶</span> Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ
+                    <button id="sum-continue" class="btn btn-primary" title="Продолжить обучение" aria-label="Продолжить">
+                        <span>▶</span> Продолжить
                     </button>
-                    <button id="sum-exit" class="btn btn-secondary" title="Р СџР ВµРЎР‚Р ВµР в„–РЎвЂљР С‘ Р С” РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р Вµ" aria-label="Р СџР ВµРЎР‚Р ВµР в„–РЎвЂљР С‘ Р С” РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р Вµ">
+                    <button id="sum-exit" class="btn btn-secondary" title="Перейти к статистике" aria-label="Перейти к статистике">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"/>
                         </svg>
-                        Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°
+                        Статистика
                     </button>
                 </div>
             </div>
@@ -2112,7 +2112,7 @@ function showStats(stats, results, total) {
         console.log('[MODAL.TEMPLATE] New template created with .stats-grid and .stat-item');
         container.appendChild(overlay);
 
-        // Р С™Р Р…Р С•Р С—Р С”Р В° "Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°" - Р С—Р ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘ Р Р…Р В° РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎС“ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘
+        // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
             console.log('========================================');
             console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
@@ -2120,39 +2120,39 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
             console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
 
-            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› Р В·Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р В°Р ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
+            // ПРИНУДИТЕЛЬНО завершаем сессию обучения
             if (currentScheduler) {
                 currentScheduler = null;
                 console.log('[STATS BUTTON] Cleared currentScheduler');
             }
 
-            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› РЎС“Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ learning-mode
+            // ПРИНУДИТЕЛЬНО убираем класс learning-mode
             document.body.classList.remove('learning-mode');
             console.log('[STATS BUTTON] Removed learning-mode');
 
-            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹
+            // ПРИНУДИТЕЛЬНО показываем навигацию
             const bottomNav = document.getElementById('bottom-nav');
             if (bottomNav) {
                 bottomNav.style.display = 'flex';
                 console.log('[STATS BUTTON] Showed bottomNav');
             }
 
-            // Р СџР В Р ВР СњР Р€Р вЂќР ВР СћР вЂўР вЂєР В¬Р СњР С› РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
+            // ПРИНУДИТЕЛЬНО скрываем контейнер обучения
             const learnContainer = document.getElementById('learn-container');
             if (learnContainer) {
                 learnContainer.style.display = 'none';
                 console.log('[STATS BUTTON] Hid learn-container');
             }
 
-            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»Р С”РЎС“
+            // Закрываем модалку
             overlay.remove();
             console.log('[STATS BUTTON] Removed overlay');
 
-            // Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С initStatsPage() Р Р…Р В°Р С—РЎР‚РЎРЏР СРЎС“РЎР‹, Р В° Р Р…Р Вµ РЎвЂЎР ВµРЎР‚Р ВµР В· hashchange
-            // Р СџР С•РЎвЂљР С•Р СРЎС“ РЎвЂЎРЎвЂљР С• Р ВµРЎРѓР В»Р С‘ hash РЎС“Р В¶Р Вµ #/stats, РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ hashchange Р Р…Р Вµ РЎРѓРЎР‚Р В°Р В±Р С•РЎвЂљР В°Р ВµРЎвЂљ
+            // ИСПРАВЛЕНИЕ: Вызываем initStatsPage() напрямую, а не через hashchange
+            // Потому что если hash уже #/stats, событие hashchange не сработает
             console.log('[STATS BUTTON] Calling initStatsPage() directly...');
 
-            // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С placeholder Р вЂќР С› Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р СР С•Р Т‘РЎС“Р В»РЎРЏ
+            // Показываем placeholder ДО загрузки модуля
             console.log('[STATS BUTTON] Creating loading placeholder...');
             const skeletonPlaceholder = document.createElement('div');
             skeletonPlaceholder.id = 'stats-skeleton-placeholder';
@@ -2169,13 +2169,13 @@ function showStats(stats, results, total) {
                 justify-content: center;
             `;
             skeletonPlaceholder.innerHTML = `
-                <div style="color: #8B949E; font-size: 14px;">Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘...</div>
+                <div style="color: #8B949E; font-size: 14px;">Загрузка статистики...</div>
             `;
             document.body.appendChild(skeletonPlaceholder);
             console.log('[STATS BUTTON] Loading placeholder shown');
 
-            // Р ВР СР С—Р С•РЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С Р С‘ Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С initStatsPage
-            import('./stats-ui.js?v=6.20.8).then(({ initStatsPage }) => {
+            // Импортируем и вызываем initStatsPage
+            import('./stats-ui.js?v=6.09').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
@@ -2187,7 +2187,7 @@ function showStats(stats, results, total) {
             console.log('========================================');
         });
 
-        // Р С™Р Р…Р С•Р С—Р С”Р В° "Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ" - РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘Р в„– Р С”РЎР‚РЎС“Р С– Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
+        // Кнопка "Продолжить" - следующий круг обучения
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
             console.log('[CONTINUE BTN] Clicked!');
             console.log('[CONTINUE BTN] __lastCandidates:', window.__lastCandidates ? 'EXISTS' : 'null');
@@ -2228,14 +2228,14 @@ function showStats(stats, results, total) {
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
-    // Р вЂ”Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р В°Р ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ
+    // Завершаем сессию обучения
     console.log('[showStats] Ending learning session...');
     if (currentScheduler) {
         currentScheduler = null;
         console.log('[showStats] Cleared currentScheduler');
     }
 
-    // Р Р€Р В±Р С‘РЎР‚Р В°Р ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ learning-mode
+    // Убираем класс learning-mode
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'flex';
@@ -2243,26 +2243,26 @@ function showStats(stats, results, total) {
     console.log('[showStats] Removed learning-mode, showed bottomNav');
 
     // Motivational Message Logic (Expert Psychology)
-    let motivation = 'Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р в„–РЎвЂљР Вµ Р Р† РЎвЂљР С•Р С Р В¶Р Вµ Р Т‘РЎС“РЎвЂ¦Р Вµ!';
+    let motivation = 'Продолжайте в том же духе!';
     if (currentScheduler) {
         const sched = currentScheduler.getScheduleStatus();
         const daysLeft = sched.daysRemaining;
 
         if (accuracy >= 90) {
-            motivation = `Р СџР С•РЎвЂљРЎР‚РЎРЏРЎРѓР В°РЎР‹РЎвЂ°Р В°РЎРЏ РЎвЂљР С•РЎвЂЎР Р…Р С•РЎРѓРЎвЂљРЎРЉ! Р вЂ™РЎвЂ№ РЎС“Р Р†Р ВµРЎР‚Р ВµР Р…Р Р…Р С• Р С‘Р Т‘Р ВµРЎвЂљР Вµ Р С” РЎвЂ Р ВµР В»Р С‘ Р В·Р В° ${daysLeft} Р Т‘Р Р….`;
+            motivation = `Потрясающая точность! Вы уверенно идете к цели за ${daysLeft} дн.`;
         } else if (accuracy >= 75) {
-            motivation = `Р С›РЎвЂљР В»Р С‘РЎвЂЎР Р…РЎвЂ№Р в„– РЎР‚Р ВµР В·РЎС“Р В»РЎРЉРЎвЂљР В°РЎвЂљ! Р С›РЎРѓРЎвЂљР В°Р В»Р С•РЎРѓРЎРЉ ${daysLeft} Р Т‘Р Р…Р ВµР в„– Р Т‘Р С• РЎвЂћР С‘Р Р…Р С‘РЎв‚¬Р В°.`;
+            motivation = `Отличный результат! Осталось ${daysLeft} дней до финиша.`;
         } else if (accuracy < 50) {
-            motivation = `Р СћРЎРЏР В¶Р ВµР В»Р С• Р Р† РЎС“РЎвЂЎР ВµР Р…Р С‘Р С‘ РІР‚вЂќ Р В»Р ВµР С–Р С”Р С• Р Р† Р В±Р С•РЎР‹. Р вЂ”Р В°Р Р†РЎвЂљРЎР‚Р В° Р В±РЎС“Р Т‘Р ВµРЎвЂљ Р В»РЎС“РЎвЂЎРЎв‚¬Р Вµ!`;
+            motivation = `Тяжело в учении — легко в бою. Завтра будет лучше!`;
         } else {
-            motivation = `Р ТђР С•РЎР‚Р С•РЎв‚¬Р С‘Р в„– РЎвЂљР ВµР СР С—. Р вЂ™РЎвЂ№РЎС“РЎвЂЎР ВµР Р…Р С• ${sched.learnedCount} Р С‘Р В· ${sched.learnedCount + sched.unseenCount}.`;
+            motivation = `Хороший темп. Выучено ${sched.learnedCount} из ${sched.learnedCount + sched.unseenCount}.`;
         }
 
         if (sched.dayNumber > 40) {
-            motivation += " Р В¤Р С‘Р Р…Р С‘РЎв‚¬ РЎС“Р В¶Р Вµ Р В±Р В»Р С‘Р В·Р С”Р С•!";
+            motivation += " Финиш уже близко!";
         }
     } else {
-        motivation = accuracy > 80 ? 'Р С›РЎвЂљР В»Р С‘РЎвЂЎР Р…Р С•! СЂСџвЂ™Р„' : 'Р СџРЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р в„–РЎвЂљР Вµ! СЂСџС™Р‚';
+        motivation = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
     }
 
     overlay.querySelector('#sum-motivation').textContent = motivation;
@@ -2270,7 +2270,7 @@ function showStats(stats, results, total) {
     const bonus = Math.min(100, (st.current || 0) * 5);
     const dayBonus = bonus > 0 ? Math.min(5, bonus) : 0;
     const streakBonus = Math.max(0, bonus - dayBonus);
-    overlay.querySelector('#sum-xp').textContent = `+${earned} XP РІР‚Сћ Р В±Р С•Р Р…РЎС“РЎРѓРЎвЂ№: Р Т‘Р ВµР Р…РЎРЉ +${dayBonus} XP, РЎРѓРЎвЂљРЎР‚Р С‘Р С” +${streakBonus} XP`;
+    overlay.querySelector('#sum-xp').textContent = `+${earned} XP • бонусы: день +${dayBonus} XP, стрик +${streakBonus} XP`;
     // Apply bonus split to stats and daily points
     const todayKey = (() => {
         try {
@@ -2307,7 +2307,7 @@ function showStats(stats, results, total) {
         const lvl = getCurrentLevel();
         console.log('[MODAL.ANIM] Current level:', lvl.level, 'XP:', lvl.xp);
 
-        overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} РІР‚Сћ ${lvl.xp} XP`;
+        overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
         const earned = session.stats.pointsEarned || 0;
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
@@ -2316,7 +2316,7 @@ function showStats(stats, results, total) {
 
         console.log('[MODAL.ANIM] startXP:', startXP, 'earned:', earned, 'bonus:', bonus);
 
-        // Р С›Р С—РЎР‚Р ВµР Т‘Р ВµР В»РЎРЏР ВµР С, Р В±РЎвЂ№Р В»Р С• Р В»Р С‘ Р С—Р С•Р Р†РЎвЂ№РЎв‚¬Р ВµР Р…Р С‘Р Вµ РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ
+        // Определяем, было ли повышение уровня
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
@@ -2333,7 +2333,7 @@ function showStats(stats, results, total) {
         if (leveledUp) {
             console.log('[MODAL.ANIM] === LEVEL UP ANIMATION ===');
 
-            // 1. Р С›РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р Т‘Р В»РЎРЏ Р СР С–Р Р…Р С•Р Р†Р ВµР Р…Р Р…Р С•Р в„– РЎС“РЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С”Р С‘
+            // 1. Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
@@ -2345,12 +2345,12 @@ function showStats(stats, results, total) {
 
             console.log('[MODAL.ANIM] Step 1: Set to 100% (transition: none)');
 
-            // 2. Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р С‘ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹
+            // 2. Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
 
-                // 3. Р вЂ™РЎРѓР С—РЎвЂ№РЎв‚¬Р С”Р В° РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ
+                // 3. Вспышка уровня
                 const levelEl = overlay.querySelector('#sum-level');
                 levelEl.classList.add('flash');
                 levelEl.textContent = `LV:${endLevel}!`;
@@ -2358,17 +2358,17 @@ function showStats(stats, results, total) {
 
                 setTimeout(() => {
                     levelEl.classList.remove('flash');
-                    levelEl.textContent = `LV:${endLevel} РІР‚Сћ ${lvl.xp} XP`;
+                    levelEl.textContent = `LV:${endLevel} • ${lvl.xp} XP`;
                     console.log('[MODAL.ANIM] Step 4: Remove flash');
 
-                    // 4. Р вЂРЎвЂ№РЎРѓРЎвЂљРЎР‚Р С•Р Вµ РЎРѓР В¶Р В°РЎвЂљР С‘Р Вµ (200ms)
+                    // 4. Быстрое сжатие (200ms)
                     oldEl.style.transition = 'width 0.2s ease';
                     oldEl.style.width = '0%';
                     console.log('[MODAL.ANIM] Step 5: Shrink old (200ms)');
 
                     setTimeout(() => {
                         console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
-                        // 5. Р вЂ”Р В°Р С—Р С•Р В»Р Р…Р ВµР Р…Р С‘Р Вµ Р Р…Р С•Р Р†Р С•Р С–Р С• РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ (1.5s)
+                        // 5. Заполнение нового уровня (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
                         earnEl.style.left = '0%';
@@ -2390,7 +2390,7 @@ function showStats(stats, results, total) {
         } else {
             console.log('[MODAL.ANIM] === NORMAL ANIMATION (no level up) ===');
 
-            // Р С›РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р Т‘Р В»РЎРЏ Р СР С–Р Р…Р С•Р Р†Р ВµР Р…Р Р…Р С•Р в„– РЎС“РЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С”Р С‘
+            // Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
@@ -2408,7 +2408,7 @@ function showStats(stats, results, total) {
 
             console.log('[MODAL.ANIM] Step 1: Set startPct:', startPct * 100);
 
-            // Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С transition Р С‘ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹
+            // Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
@@ -2524,11 +2524,11 @@ function getLevelFromXP(xp) {
 }
 
 function updateTimerDisplay() {
-    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С .mode-timer Р Р†Р СР ВµРЎРѓРЎвЂљР С• #learn-timer
+    // Обновляем .mode-timer вместо #learn-timer
     const el = document.querySelector('.mode-timer');
     if (!el) return;
 
-    // Р вЂўРЎРѓР В»Р С‘ РЎвЂљР В°Р в„–Р СР ВµРЎР‚ Р Р…Р В° Р С—Р В°РЎС“Р В·Р Вµ - Р Р…Р Вµ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†РЎР‚Р ВµР СРЎРЏ
+    // Если таймер на паузе - не обновляем время
     if (timerPaused) {
         return;
     }
@@ -2553,36 +2553,36 @@ function toggleTimerPause() {
     if (!pauseBtn) return;
 
     if (timerPaused) {
-        // RESUME: Р С—РЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р ВµР С Р С•РЎвЂљРЎРѓРЎвЂЎРЎвЂРЎвЂљ
+        // RESUME: продолжаем отсчёт
         sessionTimerStart = Date.now();
 
-        // Р вЂ”Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
+        // Запускаем интервал
         timerInterval = setInterval(updateTimerDisplay, 1000);
         updateTimerDisplay();
 
-        // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° play, Р В±Р ВµР В»Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
+        // Визуально: иконка play, белое свечение
         pauseBtn.classList.remove('paused');
         pauseBtn.classList.add('running');
 
-        if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
+        if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
     } else {
-        // PAUSE: РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ
+        // PAUSE: сохраняем накопленное время
         const now = Date.now();
         const startTime = sessionTimerStart;
         const elapsed = Math.floor((now - startTime) / 1000);
         pausedTimeRemaining += elapsed;
 
-        // Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
+        // Останавливаем интервал
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
 
-        // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° Р С—Р В°РЎС“Р В·РЎвЂ№, Р СРЎРЏРЎвЂљР Р…Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
+        // Визуально: иконка паузы, мятное свечение
         pauseBtn.classList.remove('running');
         pauseBtn.classList.add('paused');
 
-        if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В° РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
+        if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
     }
 
     timerPaused = !timerPaused;
@@ -2596,31 +2596,31 @@ function setupTimerControls() {
     const timerControls = document.getElementById('timer-controls');
     const timerEl = document.getElementById('mode-timer');
 
-    // Р В¤Р В»Р В°Р С–: Р В±РЎвЂ№Р В»Р В° Р В»Р С‘ РЎР‚РЎС“РЎвЂЎР Р…Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В° Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР С
+    // Флаг: была ли ручная пауза пользователем
     let wasManuallyPausedByUser = false;
 
-    // Р С™Р В»Р С‘Р С” Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ Р С—Р В°РЎС“Р В·РЎвЂ№
+    // Клик по кнопке паузы
     if (pauseBtn) {
         pauseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Р вЂ”Р В°Р С—Р С•Р СР С‘Р Р…Р В°Р ВµР С Р Р…Р В°Р СР ВµРЎР‚Р ВµР Р…Р С‘Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
+            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
             toggleTimerPause();
         });
     }
 
-    // Р С™Р В»Р С‘Р С” Р С—Р С• РЎвЂљР В°Р в„–Р СР ВµРЎР‚РЎС“ (РЎвЂљР С•Р В¶Р Вµ Р С—Р В°РЎС“Р В·Р В°/РЎРѓРЎвЂљР В°РЎР‚РЎвЂљ)
+    // Клик по таймеру (тоже пауза/старт)
     if (timerEl) {
         timerEl.addEventListener('click', (e) => {
             e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Р вЂ”Р В°Р С—Р С•Р СР С‘Р Р…Р В°Р ВµР С Р Р…Р В°Р СР ВµРЎР‚Р ВµР Р…Р С‘Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
+            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
             toggleTimerPause();
         });
     }
 
-    // Р С™Р В»Р С‘Р С” Р С—Р С• Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚РЎС“ timer-controls
+    // Клик по контейнеру timer-controls
     if (timerControls) {
         timerControls.addEventListener('click', (e) => {
-            // Р вЂўРЎРѓР В»Р С‘ Р С”Р В»Р С‘Р С” Р Р…Р Вµ Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ Р С‘ Р Р…Р Вµ Р С—Р С• РЎвЂљР В°Р в„–Р СР ВµРЎР‚РЎС“ - РЎвЂљР С•Р В¶Р Вµ Р С—Р В°РЎС“Р В·Р В°
+            // Если клик не по кнопке и не по таймеру - тоже пауза
             if (e.target !== pauseBtn && e.target !== timerEl) {
                 wasManuallyPausedByUser = !timerPaused;
                 toggleTimerPause();
@@ -2628,16 +2628,16 @@ function setupTimerControls() {
         });
     }
 
-    // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ: РЎС“РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С‘Р С”Р С•Р Р…Р С”РЎС“ play (РЎР‚Р ВµР В¶Р С‘Р С Р Р†Р С•РЎРѓР С—РЎР‚Р С•Р С‘Р В·Р Р†Р ВµР Т‘Р ВµР Р…Р С‘РЎРЏ)
+    // Инициализация: устанавливаем иконку play (режим воспроизведения)
     if (pauseBtn) {
         pauseBtn.classList.add('running');
         pauseBtn.classList.remove('paused');
     }
     if (timerControls) {
-        timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
+        timerControls.title = 'Нажмите для паузы таймера';
     }
 
-    // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В° Р С—РЎР‚Р С‘ РЎС“РЎвЂ¦Р С•Р Т‘Р Вµ РЎРѓР С• РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ (visibilitychange)
+    // Автоматическая пауза при уходе со страницы (visibilitychange)
     let autoPaused = false;
 
     document.addEventListener('visibilitychange', () => {
@@ -2646,15 +2646,15 @@ function setupTimerControls() {
         const timerControls = document.getElementById('timer-controls');
 
         if (isHidden) {
-            // Р РЋРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљР В° (РЎС“РЎв‚¬Р В»Р С‘ Р Р…Р В° Р Т‘РЎР‚РЎС“Р С–РЎС“РЎР‹ Р Р†Р С”Р В»Р В°Р Т‘Р С”РЎС“, РЎРѓР Р†Р ВµРЎР‚Р Р…РЎС“Р В»Р С‘ Р В±РЎР‚Р В°РЎС“Р В·Р ВµРЎР‚, Р В·Р В°Р В±Р В»Р С•Р С”Р С‘РЎР‚Р С•Р Р†Р В°Р В»Р С‘ РЎвЂљР ВµР В»Р ВµРЎвЂћР С•Р Р…)
-            // Р вЂ™РЎРѓР ВµР С–Р Т‘Р В° РЎРѓРЎвЂљР В°Р Р†Р С‘Р С Р Р…Р В° Р С—Р В°РЎС“Р В·РЎС“ Р С—РЎР‚Р С‘ РЎС“РЎвЂ¦Р С•Р Т‘Р Вµ
+            // Страница скрыта (ушли на другую вкладку, свернули браузер, заблокировали телефон)
+            // Всегда ставим на паузу при уходе
             if (!timerPaused) {
-                // PAUSE: РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В°Р С”Р С•Р С—Р В»Р ВµР Р…Р Р…Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ
+                // PAUSE: сохраняем накопленное время
                 const now = Date.now();
                 const elapsed = Math.floor((now - sessionTimerStart) / 1000);
                 pausedTimeRemaining += elapsed;
 
-                // Р С›РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
+                // Останавливаем интервал
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -2663,41 +2663,41 @@ function setupTimerControls() {
                 timerPaused = true;
                 autoPaused = true;
 
-                // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° Р С—Р В°РЎС“Р В·РЎвЂ№, Р СРЎРЏРЎвЂљР Р…Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
+                // Визуально: иконка паузы, мятное свечение
                 if (pauseBtn) {
                     pauseBtn.classList.remove('running');
                     pauseBtn.classList.add('paused');
                 }
-                if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В° РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
+                if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
             }
         } else {
-            // Р РЋРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓР Р…Р С•Р Р†Р В° Р Р†Р С‘Р Т‘Р С‘Р СР В°
-            // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р В±РЎвЂ№Р В»Р С• РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– Р С—Р В°РЎС“Р В·РЎвЂ№ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР С - Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ Р В·Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С РЎвЂљР В°Р в„–Р СР ВµРЎР‚
+            // Страница снова видима
+            // Если не было ручной паузы пользователем - автоматически запускаем таймер
             if (!wasManuallyPausedByUser && timerPaused && autoPaused) {
-                // RESUME: Р С—РЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р В°Р ВµР С Р С•РЎвЂљРЎРѓРЎвЂЎРЎвЂРЎвЂљ
+                // RESUME: продолжаем отсчёт
                 sessionTimerStart = Date.now();
 
-                // Р вЂ”Р В°Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р С‘Р Р…РЎвЂљР ВµРЎР‚Р Р†Р В°Р В»
+                // Запускаем интервал
                 timerInterval = setInterval(updateTimerDisplay, 1000);
                 updateTimerDisplay();
 
                 timerPaused = false;
                 autoPaused = false;
 
-                // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•: Р С‘Р С”Р С•Р Р…Р С”Р В° play, Р В±Р ВµР В»Р С•Р Вµ РЎРѓР Р†Р ВµРЎвЂЎР ВµР Р…Р С‘Р Вµ
+                // Визуально: иконка play, белое свечение
                 if (pauseBtn) {
                     pauseBtn.classList.remove('paused');
                     pauseBtn.classList.add('running');
                 }
-                if (timerControls) timerControls.title = 'Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р Т‘Р В»РЎРЏ Р С—Р В°РЎС“Р В·РЎвЂ№ РЎвЂљР В°Р в„–Р СР ВµРЎР‚Р В°';
+                if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
             }
         }
     });
 
-    // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С—Р ВµРЎР‚Р Р†Р С•Р С–Р С• Р Р†Р В·Р В°Р С‘Р СР С•Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎРѓР Р…РЎРЏРЎвЂљР С‘РЎРЏ РЎР‚РЎС“РЎвЂЎР Р…Р С•Р в„– Р С—Р В°РЎС“Р В·РЎвЂ№
+    // Обработчики первого взаимодействия для снятия ручной паузы
     const handleFirstInteraction = () => {
-        // Р вЂўРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В»Р В° РЎР‚РЎС“РЎвЂЎР Р…Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В° - Р Р…Р Вµ Р Т‘Р ВµР В»Р В°Р ВµР С Р Р…Р С‘РЎвЂЎР ВµР С–Р С•, Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ РЎРѓР В°Р С Р Р…Р В°Р В¶Р СРЎвЂРЎвЂљ
-        // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р В±РЎвЂ№Р В»Р С• - РЎвЂљР В°Р в„–Р СР ВµРЎР‚ РЎС“Р В¶Р Вµ Р В·Р В°Р С—РЎС“РЎвЂ°Р ВµР Р… Р С—РЎР‚Р С‘ visibilitychange
+        // Если была ручная пауза - не делаем ничего, пользователь сам нажмёт
+        // Если не было - таймер уже запущен при visibilitychange
         document.removeEventListener('click', handleFirstInteraction);
         document.removeEventListener('mousemove', handleFirstInteraction);
         document.removeEventListener('touchstart', handleFirstInteraction);
@@ -2720,26 +2720,26 @@ function showSmartPause(rec) {
 
     overlay.innerHTML = `
         <div class="summary-box" style="max-width: 400px;">
-            <div style="font-size: 48px; margin-bottom: 16px;">РІВвЂў</div>
-            <h2 style="margin:0 0 8px 0;">Р Р€Р СР Р…Р В°РЎРЏ Р С—Р В°РЎС“Р В·Р В°</h2>
+            <div style="font-size: 48px; margin-bottom: 16px;">☕</div>
+            <h2 style="margin:0 0 8px 0;">Умная пауза</h2>
             <div style="color: var(--color-text-secondary); margin-bottom: 24px; font-size: 16px;">
                 ${rec.reason}
             </div>
             
             <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
                 <div class="stat-item">
-                    <span>Р вЂ™РЎР‚Р ВµР СРЎРЏ</span>
-                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} Р СР С‘Р Р…</span>
+                    <span>Время</span>
+                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} мин</span>
                 </div>
                 <div class="stat-item">
-                    <span>Р СћР С•РЎвЂЎР Р…Р С•РЎРѓРЎвЂљРЎРЉ</span>
+                    <span>Точность</span>
                     <span style="font-size: 20px; font-weight: 600; color: ${rec.accuracy >= 80 ? '#4ade80' : rec.accuracy >= 50 ? '#fbbf24' : '#ef4444'}">${rec.accuracy}%</span>
                 </div>
             </div>
             
             <div style="display: flex; gap: 12px; flex-direction: column;">
-                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">Р РЋР Т‘Р ВµР В»Р В°РЎвЂљРЎРЉ Р С—Р ВµРЎР‚Р ВµРЎР‚РЎвЂ№Р Р† (5 Р СР С‘Р Р…)</button>
-                <button id="pause-skip-btn" class="secondary-btn">Р СџРЎР‚Р С•Р С—РЎС“РЎРѓРЎвЂљР С‘РЎвЂљРЎРЉ Р С‘ Р С—РЎР‚Р С•Р Т‘Р С•Р В»Р В¶Р С‘РЎвЂљРЎРЉ</button>
+                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">Сделать перерыв (5 мин)</button>
+                <button id="pause-skip-btn" class="secondary-btn">Пропустить и продолжить</button>
             </div>
         </div>
     `;
@@ -2761,15 +2761,15 @@ function showSmartPause(rec) {
 function startBreakCountdown(overlay, seconds) {
     const box = overlay.querySelector('.summary-box');
     box.innerHTML = `
-        <div style="font-size: 48px; margin-bottom: 16px;">СЂСџВ§В</div>
-        <h2 style="margin:0 0 8px 0;">Р С›РЎвЂљР Т‘РЎвЂ№РЎвЂ¦Р В°Р ВµР С...</h2>
+        <div style="font-size: 48px; margin-bottom: 16px;">🧘</div>
+        <h2 style="margin:0 0 8px 0;">Отдыхаем...</h2>
         <div id="break-timer" style="font-size: 48px; font-weight: 700; font-family: monospace; margin: 24px 0;">
             05:00
         </div>
         <div style="color: var(--color-text-secondary); margin-bottom: 24px;">
-            Р вЂњР В»РЎС“Р В±Р С•Р С”Р С• Р Р†Р Т‘Р С•РЎвЂ¦Р Р…Р С‘РЎвЂљР Вµ Р С‘ РЎР‚Р В°РЎРѓРЎРѓР В»Р В°Р В±РЎРЉРЎвЂљР ВµРЎРѓРЎРЉ.
+            Глубоко вдохните и расслабьтесь.
         </div>
-        <button id="break-skip-btn" class="secondary-btn">Р вЂ™Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉРЎРѓРЎРЏ Р С” Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎР‹</button>
+        <button id="break-skip-btn" class="secondary-btn">Вернуться к обучению</button>
     `;
 
     let left = seconds;
@@ -2794,27 +2794,27 @@ function startBreakCountdown(overlay, seconds) {
     });
 }
 
-// Р СџРЎР‚Р С•РЎРѓРЎвЂљР В°РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р В° РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р†
+// Простая отладка сегментов
 window.debugSegments = () => {
     const segs = document.getElementById('learn-segments');
     if (!segs) {
-        console.log('РІСњРЉ learn-segments Р Р…Р Вµ Р Р…Р В°Р в„–Р Т‘Р ВµР Р…');
+        console.log('❌ learn-segments не найден');
         return;
     }
-    console.log('РІСљвЂ¦ learn-segments Р Р…Р В°Р в„–Р Т‘Р ВµР Р…');
-    console.log('   Р вЂ™РЎРѓР ВµР С–Р С• РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљР С•Р Р†:', segs.children.length);
-    console.log('   Р РЃР С‘РЎР‚Р С‘Р Р…Р В° Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р В°:', segs.offsetWidth, 'px');
+    console.log('✅ learn-segments найден');
+    console.log('   Всего сегментов:', segs.children.length);
+    console.log('   Ширина контейнера:', segs.offsetWidth, 'px');
     console.log('   scrollLeft:', segs.scrollLeft);
 
     const visible = Array.from(segs.children).filter(el => el.style.display !== 'none').length;
-    console.log('   Р вЂ™Р С‘Р Т‘Р С‘Р СРЎвЂ№Р Вµ РЎРѓР ВµР С–Р СР ВµР Р…РЎвЂљРЎвЂ№:', visible);
+    console.log('   Видимые сегменты:', visible);
 
-    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓРЎвЂ№ Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№РЎвЂ¦
+    // Показываем индексы видимых
     const visibleIndices = [];
     segs.children.forEach((el, i) => {
         if (el.style.display !== 'none') visibleIndices.push(i);
     });
-    console.log('   Р ВР Р…Р Т‘Р ВµР С”РЎРѓРЎвЂ№ Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№РЎвЂ¦:', visibleIndices);
+    console.log('   Индексы видимых:', visibleIndices);
 };
 
 console.log('[LEARN-UI] debugSegments loaded. Run window.debugSegments() in console');

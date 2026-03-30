@@ -1,7 +1,7 @@
-// Р вЂ™Р В°РЎР‚Р С‘Р В°Р Р…РЎвЂљ 3: Р СћР В°Р В±РЎвЂ№ Р Т‘Р В»РЎРЏ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Т‘Р В»РЎРЏ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+// Вариант 3: Табы для категорий и карточки для подкатегорий
 console.log('[TABS-NAVIGATION] Module loaded');
 
-// Р ВР СР С—Р С•РЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С‘ Р С–Р ВµР Р…Р ВµРЎР‚Р В°РЎвЂљР С•РЎР‚ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+// Импортируем данные и генератор категорий
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
@@ -12,20 +12,20 @@ import { createFormatToolbar, initFormatToolbar } from '../srs/format-toolbar.js
 
 console.log('[TABS-NAVIGATION] Imports completed');
 
-// Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ РЎвЂћР В»Р В°Р С–Р С‘/РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎР‚Р ВµР В¶Р С‘Р СР В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С‘ Р В»Р С•Р С–Р С‘Р Р…Р В°
+// Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
 let currentContextKey = 'all';
 let currentQuestions = [];
 let sortMode = 'default'; // Global sort state
 let resultsListRef = null;
-// Р С™РЎРЊРЎв‚¬ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р Р…Р В° РЎРѓРЎвЂљР С•РЎР‚Р С•Р Р…Р Вµ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (Р Р…Р Вµ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С localStorage Р Т‘Р В»РЎРЏ РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№РЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”)
+// Кэш корзины на стороне сервера (не используем localStorage для удалённых карточек)
 let serverTrashSet = new Set();
 let serverTrashItems = [];
-// Р С™Р С•Р Р…РЎвЂћР С‘Р С–РЎС“РЎР‚Р С‘РЎР‚РЎС“Р ВµР СРЎвЂ№Р в„– URL Р В±РЎРЊР С”Р ВµР Р…Р Т‘Р В° (Р СР С•Р В¶Р Р…Р С• Р В·Р В°Р Т‘Р В°РЎвЂљРЎРЉ РЎвЂЎР ВµРЎР‚Р ВµР В· localStorage Р С”Р В»РЎР‹РЎвЂЎ 'qaBackendUrl')
-// Р СџР С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С Р С—Р С•РЎР‚РЎвЂљ 8765, РЎвЂљР В°Р С” Р С”Р В°Р С” Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р В·Р В°Р С—РЎС“РЎвЂ°Р ВµР Р… РЎвЂљР В°Р С
+// Конфигурируемый URL бэкенда (можно задать через localStorage ключ 'qaBackendUrl')
+// По умолчанию используем порт 8765, так как локальный сервер запущен там
 const BACKEND_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('qaBackendUrl')) || window.location.origin;
 
-// СЂСџвЂќвЂ™ HELPER: User-specific localStorage keys (Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: РЎС“ Р С”Р В°Р В¶Р Т‘Р С•Р С–Р С• Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ РЎРѓР Р†Р С•Р в„– Р С”Р В»РЎР‹РЎвЂЎ)
+// 🔒 HELPER: User-specific localStorage keys (ИСПРАВЛЕНИЕ: у каждого пользователя свой ключ)
 function getQaUserCardsKey() {
     try {
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -68,7 +68,7 @@ function clearQaUserCards() {
     }
 }
 
-// Р вЂєР С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ РЎвЂ¦Р ВµР В»Р С—Р ВµРЎР‚РЎвЂ№ Р Т‘Р В»РЎРЏ storage
+// Локальные хелперы для storage
 function getLS(key, fallback) {
     try { return JSON.parse(localStorage.getItem(key) || fallback); } catch { return JSON.parse(fallback); }
 }
@@ -76,15 +76,15 @@ function setLS(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 function getOrderForContext(ctx) { const o = getLS('qaOrderOverrides', '{}'); return o[ctx] || null; }
 function setOrderForContext(ctx, orderArr) { const o = getLS('qaOrderOverrides', '{}'); o[ctx] = orderArr; setLS('qaOrderOverrides', o); }
 function getOverrides() { return getLS('qaAdminOverrides', '{}'); }
-// Р Р€РЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С overrides Р Р† localStorage (Р Т‘Р В»РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”)
+// Устанавливаем overrides в localStorage (для сохранения изменений карточек)
 function setOverrides(map) { setLS('qaAdminOverrides', map); }
 function getNewItems() { return getLS('qaNewItems', '[]'); }
 function getDeletedItems() { return getLS('qaDeletedItems', '{}'); }
 function setDeletedItems(map) { setLS('qaDeletedItems', map); }
 
-// Р СџР С•Р В»РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓ РЎС“РЎвЂЎР ВµРЎвЂљР С•Р С РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р Р…РЎвЂ№РЎвЂ¦
+// Получение актуальных данных с учетом удаленных
 function getRuntimeData() {
-    // Р РЋР Р…Р В°РЎвЂЎР В°Р В»Р В° Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С‘РЎвЂљРЎРЉ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ Р С‘Р В· localStorage
+    // Сначала пробуем загрузить данные пользователя из localStorage
     let baseData = uniqueQaData;
     try {
         const userCards = getQaUserCards();
@@ -92,14 +92,14 @@ function getRuntimeData() {
             baseData = userCards;
         }
     } catch (e) {
-        console.warn('[getRuntimeData] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ userCards:', e);
+        console.warn('[getRuntimeData] Ошибка загрузки userCards:', e);
     }
 
     const base = baseData.map(item => ({ ...item }));
     const overrides = getOverrides();
     const newItems = getNewItems();
     const deleted = getDeletedItems();
-    // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С overrides (Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ/Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ/Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ/Р С•РЎвЂљР Р†Р ВµРЎвЂљ/РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ)
+    // Применяем overrides (категория/подкатегория/вопрос/ответ/форматирование)
     const byQuestion = new Map(base.map(i => [i.question, i]));
     Object.keys(overrides).forEach(origQ => {
         const ov = overrides[origQ];
@@ -111,8 +111,8 @@ function getRuntimeData() {
             if (ov.subcategory) updated.subcategory = ov.subcategory;
             if (ov.question) updated.question = ov.question;
             if (ov.answer) updated.answer = ov.answer;
-            if (ov.formatting) updated.formatting = ov.formatting;  // СЂСџвЂќТђ Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
-            // Р вЂўРЎРѓР В»Р С‘ Р С‘Р В·Р СР ВµР Р…Р С‘Р В»Р С•РЎРѓРЎРЉ Р С”Р В»РЎР‹РЎвЂЎР ВµР Р†Р С•Р Вµ Р С—Р С•Р В»Р Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В° РІР‚вЂќ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С”Р В»РЎР‹РЎвЂЎ Р Р† Map
+            if (ov.formatting) updated.formatting = ov.formatting;  // 🔥 Применяем форматирование
+            // Если изменилось ключевое поле вопроса — обновляем ключ в Map
             if (ov.question && ov.question !== origQ) {
                 byQuestion.delete(origQ);
                 byQuestion.set(updated.question, updated);
@@ -120,26 +120,26 @@ function getRuntimeData() {
                 byQuestion.set(origQ, updated);
             }
         } else {
-            // Р вЂўРЎРѓР В»Р С‘ Р С‘РЎРѓРЎвЂ¦Р С•Р Т‘Р Р…Р С•Р С–Р С• Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В° Р Р…Р ВµРЎвЂљ Р Р† Р В±Р В°Р В·Р Вµ, РЎР‚Р В°РЎРѓРЎРѓР СР В°РЎвЂљРЎР‚Р С‘Р Р†Р В°Р ВµР С Р С”Р В°Р С” Р Р…Р С•Р Р†РЎвЂ№Р в„– РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ
+            // Если исходного вопроса нет в базе, рассматриваем как новый элемент
             byQuestion.set(ov.question || origQ, {
                 question: ov.question || origQ,
                 answer: ov.answer || '',
-                category: ov.category || 'Р вЂР ВµР В· Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘',
-                subcategory: ov.subcategory || 'Р С›Р В±РЎвЂ°Р ВµР Вµ',
-                formatting: ov.formatting || createEmptyFormatting()  // СЂСџвЂќТђ Р В¤Р С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р Т‘Р В»РЎРЏ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”
+                category: ov.category || 'Без категории',
+                subcategory: ov.subcategory || 'Общее',
+                formatting: ov.formatting || createEmptyFormatting()  // 🔥 Форматирование для новых карточек
             });
         }
     });
-    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№
+    // Добавляем новые элементы
     newItems.forEach(ni => {
         if (!byQuestion.has(ni.question)) byQuestion.set(ni.question, { ...ni });
     });
-    // Р ВРЎРѓР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р Вµ
+    // Исключаем удалённые
     const merged = Array.from(byQuestion.values()).filter(i => !deleted[i.question] && !serverTrashSet.has(i.question));
     return merged;
 }
 
-// СЂСџвЂќТђ Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”Р С‘ Р Р† Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°РЎвЂ¦
+// 🔥 Функция исправления кодировки в карточках
 function fixEncodingIssues(data) {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) return;
@@ -159,15 +159,15 @@ function fixEncodingIssues(data) {
         const originalCategory = card.category;
         const originalSubcategory = card.subcategory;
 
-        // СЂСџвЂќВ§ Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р С‘РЎРѓР С”Р В°Р В¶РЎвЂР Р…Р Р…РЎС“РЎР‹ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”РЎС“ Р Р† category
-        if (card.category === 'Р вЂќР С•Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ' || card.category === 'Р вЂќР С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ' || card.category === 'Р вЂќР С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ') {
-            card.category = 'Р вЂќР С•Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ';
+        // 🔧 Исправляем искажённую кодировку в category
+        if (card.category === 'Документация' || card.category === 'Дкументация' || card.category === 'Дкументация') {
+            card.category = 'Документация';
             changed = true;
         }
 
-        // СЂСџвЂќВ§ Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р С‘РЎРѓР С”Р В°Р В¶РЎвЂР Р…Р Р…РЎС“РЎР‹ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”РЎС“ Р Р† subcategory
-        if (card.subcategory === 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР В±Р С•Р Р†Р В°Р Р…Р С‘Р в„–' || card.subcategory === 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР С•Р Р†Р В°Р Р…Р С‘Р в„–' || card.subcategory === 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР С•Р Р†Р В°Р Р…Р С‘Р в„–') {
-            card.subcategory = 'Р СћР С‘Р С—РЎвЂ№ РЎвЂљРЎР‚Р ВµР В±Р С•Р Р†Р В°Р Р…Р С‘Р в„–';
+        // 🔧 Исправляем искажённую кодировку в subcategory
+        if (card.subcategory === 'Типы требований' || card.subcategory === 'Типы треований' || card.subcategory === 'Типы треований') {
+            card.subcategory = 'Типы требований';
             changed = true;
         }
 
@@ -175,29 +175,29 @@ function fixEncodingIssues(data) {
     });
 
     if (changed) {
-        // Р СџР С•Р Т‘РЎРѓРЎвЂЎР С‘РЎвЂљРЎвЂ№Р Р†Р В°Р ВµР С РЎРѓР С”Р С•Р В»РЎРЉР С”Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” Р В±РЎвЂ№Р В»Р С• Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С•
+        // Подсчитываем сколько карточек было исправлено
         const fixedCount = userCards.filter((c, i) =>
             c.category !== fixedCards[i].category || c.subcategory !== fixedCards[i].subcategory
         ).length;
 
         setQaUserCards(fixedCards);
-        // СЂСџвЂќТђ Р СњР вЂў Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ РІР‚вЂќ Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂљРЎРѓРЎРЏ Р С—РЎР‚Р С‘ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С РЎРЏР Р†Р Р…Р С•Р С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘
-        console.log('[fixEncodingIssues] Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”:', fixedCount, '(РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏРЎвЂљРЎРѓРЎРЏ Р С—РЎР‚Р С‘ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘)');
+        // 🔥 НЕ отправляем на сервер автоматически — исправления сохранятся при следующем явном сохранении
+        console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount, '(сохранятся при следующем сохранении)');
     }
 }
 
 function getCategoryPlaceholders() { return getLS('qaCategoryPlaceholders', '{}'); }
 function setCategoryPlaceholders(obj) { setLS('qaCategoryPlaceholders', obj); }
-// Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–: РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРѓРЎРЏ Р С”Р В°Р С” Р СР В°РЎРѓРЎРѓР С‘Р Р† Р С‘Р СРЎвЂР Р… Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+// Порядок категорий: хранится как массив имён категорий
 function getCategoryOrder() { return getLS('qaCategoryOrder', '[]'); }
 function setCategoryOrder(arr) { setLS('qaCategoryOrder', Array.isArray(arr) ? arr : []); }
-// Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏР С
+// Порядок подкатегорий по категориям
 function getSubcategoryOrderMap() { return getLS('qaSubcategoryOrder', '{}'); }
 function setSubcategoryOrderMap(map) { setLS('qaSubcategoryOrder', map); }
 function getSubcategoryOrderFor(categoryName) { const m = getSubcategoryOrderMap(); return m[categoryName] || []; }
 function setSubcategoryOrderFor(categoryName, arr) { const m = getSubcategoryOrderMap(); m[categoryName] = Array.isArray(arr) ? arr : []; setSubcategoryOrderMap(m); }
 
-// Р ВР Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р С‘Р Р…Р В»Р В°Р в„–Р Р…-РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Р…Р В° РЎРѓРЎвЂљРЎР‚Р С•Р С”Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘
+// Индикатор инлайн-сохранения на строке карточки
 function setInlineSaveStatus(rowEl, status, message = '') {
     if (!rowEl) return;
     let badge = rowEl.querySelector('.inline-save-status');
@@ -211,7 +211,7 @@ function setInlineSaveStatus(rowEl, status, message = '') {
         rowEl.appendChild(badge);
     }
     const colors = { saving: '#444', success: '#2e7d32', error: '#c62828' };
-    const texts = { saving: 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р ВµРІР‚В¦', success: 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С•', error: 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°' };
+    const texts = { saving: 'Сохранение…', success: 'Сохранено', error: 'Ошибка' };
     badge.textContent = message || texts[status] || '';
     badge.style.background = colors[status] || '#444';
     badge.style.color = '#eee';
@@ -221,17 +221,17 @@ function setInlineSaveStatus(rowEl, status, message = '') {
     }
 }
 
-// Р вЂњР ВµР Р…Р ВµРЎР‚Р В°РЎвЂљР С•РЎР‚ РЎС“Р Р…Р С‘Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• РЎвЂљР ВµР С”РЎРѓРЎвЂљР В° Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В° Р Т‘Р В»РЎРЏ Р С”Р С•Р С—Р С‘Р в„–
+// Генератор уникального текста вопроса для копий
 function genUniqueQuestionGlobal(baseQ) {
-    // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р В±Р В°Р В·Р С•Р Р†РЎвЂ№Р в„– Р Р†Р С•Р С—РЎР‚Р С•РЎРѓ Р С•РЎвЂљ РЎРѓРЎС“РЎвЂћРЎвЂћР С‘Р С”РЎРѓР С•Р Р† Р С”Р С•Р С—Р С‘Р в„–
-    const cleanBase = baseQ.replace(/ \(Р С”Р С•Р С—Р С‘РЎРЏ( \d+)?\)$/, '');
+    // Очищаем базовый вопрос от суффиксов копий
+    const cleanBase = baseQ.replace(/ \(копия( \d+)?\)$/, '');
 
     const exists = (q) => {
-        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р† uniqueQaData
+        // Проверяем в uniqueQaData
         if (uniqueQaData.some(i => i.question === q)) return true;
-        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р† newItems
+        // Проверяем в newItems
         if (getNewItems().some(i => i.question === q)) return true;
-        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р Р† qaUserCards
+        // Проверяем в qaUserCards
         try {
             const userCardsRaw = localStorage.getItem('qaUserCards');
             if (userCardsRaw) {
@@ -242,16 +242,16 @@ function genUniqueQuestionGlobal(baseQ) {
         return false;
     };
 
-    // Р ВРЎвЂ°Р ВµР С Р Р†РЎРѓР Вµ РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“РЎР‹РЎвЂ°Р С‘Р Вµ Р С”Р С•Р С—Р С‘Р С‘
+    // Ищем все существующие копии
     let i = 1;
-    let candidate = `${cleanBase} (Р С”Р С•Р С—Р С‘РЎРЏ)`;
+    let candidate = `${cleanBase} (копия)`;
     while (exists(candidate)) {
         i++;
-        candidate = `${cleanBase} (Р С”Р С•Р С—Р С‘РЎРЏ ${i})`;
+        candidate = `${cleanBase} (копия ${i})`;
     }
     return candidate;
 }
-// Р СџР В»Р ВµР в„–РЎРѓРЎвЂ¦Р С•Р В»Р Т‘Р ВµРЎР‚РЎвЂ№ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµР СРЎвЂ№РЎвЂ¦ Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р в„– Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– (Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏР С)
+// Плейсхолдеры для отображаемых названий подкатегорий (по категориям)
 function getSubcategoryPlaceholders() { return getLS('qaSubcategoryPlaceholders', '{}'); }
 function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', obj); }
 
@@ -259,7 +259,7 @@ function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', ob
 async function fetchWithAuth(url, options = {}) {
     const user = loggedInUser;
 
-    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С username Р Р† query Р С—Р В°РЎР‚Р В°Р СР ВµРЎвЂљРЎР‚РЎвЂ№
+    // Добавляем username в query параметры
     const urlObj = new URL(url, BACKEND_URL);
     if (user && user.username) {
         urlObj.searchParams.set('user', user.username);
@@ -279,7 +279,7 @@ async function fetchWithAuth(url, options = {}) {
 
 // Auto-load user data on page load if user is logged in (qaSessionUser exists)
 async function autoLoadUserData() {
-    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р ВµРЎРѓРЎвЂљРЎРЉ Р В»Р С‘ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р В°РЎРЏ РЎРѓР ВµРЎРѓРЎРѓР С‘РЎРЏ
+    // Проверяем, есть ли активная сессия
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (!sessionUserRaw) {
         return;
@@ -290,7 +290,7 @@ async function autoLoadUserData() {
         const u = JSON.parse(sessionUserRaw);
         if (u && u.username) username = u.username;
     } catch (e) {
-        console.error('[AutoLoad] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С—Р В°РЎР‚РЎРѓР С‘Р Р…Р С–Р В° qaSessionUser:', e);
+        console.error('[AutoLoad] Ошибка парсинга qaSessionUser:', e);
         return;
     }
 
@@ -298,29 +298,29 @@ async function autoLoadUserData() {
         return;
     }
 
-    // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎвЂЎР ВµРЎР‚Р ВµР В· srs/storage.js
-    // СЂСџвЂќТђ forceReload=true Р Т‘Р В»РЎРЏ Р С–Р В°РЎР‚Р В°Р Р…РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р СР ВµР В¶Р Т‘РЎС“ РЎС“РЎРѓРЎвЂљРЎР‚Р С•Р в„–РЎРѓРЎвЂљР Р†Р В°Р СР С‘
+    // Загружаем данные через srs/storage.js
+    // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
         const { loadFromServer } = await import('../srs/storage.js?v=6.20.8');
         await loadFromServer(true);
     } catch (e) {
-        console.error('[AutoLoad] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘:', e);
+        console.error('[AutoLoad] Ошибка автозагрузки:', e);
     }
 }
 
-// Р СџРЎР‚Р С•РЎРѓРЎвЂљР ВµР в„–РЎв‚¬Р В°РЎРЏ Р В·Р В°Р С–Р В»РЎС“РЎв‚¬Р С”Р В° Р В»Р С•Р С–Р С‘Р Р…Р В° РІР‚вЂќ Р В·Р В°Р СР ВµР Р…Р С‘РЎвЂљР Вµ verifyCredentialsWithSupabase Р Р…Р В° РЎР‚Р ВµР В°Р В»РЎРЉР Р…РЎС“РЎР‹ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”РЎС“
+// Простейшая заглушка логина — замените verifyCredentialsWithSupabase на реальную проверку
 let loggedInUser = null;
 function verifyCredentialsWithSupabase(email, password) {
-    // TODO: Р В·Р Т‘Р ВµРЎРѓРЎРЉ Р С—Р С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р Вµ Р С” Supabase (REST/JS SDK) Р С‘ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° РЎвЂ¦Р ВµРЎв‚¬Р В° Р С—Р В°РЎР‚Р С•Р В»РЎРЏ
-    // Р СџР С•Р С”Р В° Р Т‘Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С Р В»РЎР‹Р В±Р С•Р в„– Р Р…Р ВµР С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р В»Р С•Р С–Р С‘Р Р…
+    // TODO: здесь подключение к Supabase (REST/JS SDK) и проверка хеша пароля
+    // Пока допускаем любой непустой логин
     return true;
 }
 
-// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘ РЎРѓ РЎвЂљР В°Р В±Р В°Р СР С‘
-// Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ (РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ Р Р†Р ВµРЎР‚РЎвЂ¦Р Р…Р ВµР в„– Р С—Р В°Р Р…Р ВµР В»Р С‘)
+// Функция для инициализации навигации с табами
+// Глобальный индикатор сохранения (элемент верхней панели)
 let globalSaveStatusEl = null;
 
-// ========== Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘Р С‘ РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘Р ВµР в„– Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ ==========
+// ========== Функции управления анимацией загрузки ==========
 function showLoading() {
     const loadingContainer = document.getElementById('loading-container');
     const resultsList = document.getElementById('results-list');
@@ -337,17 +337,17 @@ function hideLoading() {
 // ===========================================================
 
 export function initTabsNavigation(appVersion) {
-    // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р Р…Р Вµ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В° Р В»Р С‘ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘
+    // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
     console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
 
-    // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р С—РЎР‚Р С‘ РЎРѓРЎвЂљР В°РЎР‚РЎвЂљР Вµ
+    // Показываем анимацию загрузки при старте
     showLoading();
 
     try {
         const container = document.querySelector('.container');
-        // Р вЂњР В°РЎР‚Р В°Р Р…РЎвЂљР С‘РЎР‚РЎС“Р ВµР С Р Р†Р С‘Р Т‘Р С‘Р СР С•РЎРѓРЎвЂљРЎРЉ Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р С•Р Р† (Р Р…Р В° РЎРѓР В»РЎС“РЎвЂЎР В°Р в„– Р ВµРЎРѓР В»Р С‘ Р С•Р Р…Р С‘ Р В±РЎвЂ№Р В»Р С‘ РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎвЂ№ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р ВµР в„– РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘)
-        // Р СњР С› Р СњР вЂў Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
+        // Гарантируем видимость контейнеров (на случай если они были скрыты страницей статистики)
+        // НО НЕ для страницы статистики!
         if (container && !isStatsPage) {
             container.style.display = '';
             console.log('[initTabsNavigation] container display reset');
@@ -359,9 +359,9 @@ export function initTabsNavigation(appVersion) {
         }
 
         const searchContainer = document.querySelector('.search-container');
-        // Р РЋР С™Р В Р В«Р вЂ™Р С’Р вЂўР Сљ РЎРѓРЎвЂљРЎР‚Р С•Р С”РЎС“ Р С—Р С•Р С‘РЎРѓР С”Р В° Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
+        // СКРЫВАЕМ строку поиска для страницы статистики!
         if (searchContainer) {
-            // Р вЂќР В»РЎРЏ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘ Р С•РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С display:none, Р Т‘Р В»РЎРЏ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ  Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С
+            // Для статистики оставляем display:none, для остальных страниц показываем
             if (!isStatsPage) {
                 searchContainer.style.display = '';
                 console.log('[initTabsNavigation] search-container display reset');
@@ -370,24 +370,24 @@ export function initTabsNavigation(appVersion) {
                 console.log('[initTabsNavigation] search-container hidden (stats page)');
             }
         }
-        // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР В°РЎР‚РЎС“РЎР‹ Р В°Р Т‘Р СР С‘Р Р…-Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С‘Р В· DOM (Р Р…Р С•Р Р†Р В°РЎРЏ Р В»Р С•Р С–Р С‘Р С”Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ РЎРѓР Р†Р ВµРЎР‚РЎвЂ¦РЎС“)
+        // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
         const legacyAdminPanel = document.querySelector('.admin-panel');
         if (legacyAdminPanel) legacyAdminPanel.remove();
 
-        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘
+        // Создаем контейнер для навигации
         const navigationContainer = document.createElement('div');
         navigationContainer.className = 'tabs-navigation';
 
-        // Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р Р†Р ВµРЎР‚РЎвЂ¦Р Р…Р С‘РЎвЂ¦ Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘Р в„– (РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°, Р В°Р Т‘Р СР С‘Р Р…Р С”Р В°)
+        // Контейнер для верхних действий (статистика, админка)
         const topActions = document.createElement('div');
         topActions.className = 'top-actions-bar';
-        // Р РЋР С™Р В Р В«Р вЂ™Р С’Р вЂўР Сљ top-actions-bar Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎвЂ№ РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
+        // СКРЫВАЕМ top-actions-bar для страницы статистики!
         topActions.style.display = isStatsPage ? 'none' : 'flex';
         topActions.style.alignItems = 'center';
         topActions.style.justifyContent = 'flex-start';
         topActions.style.padding = '4px 0';
 
-        // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С MutationObserver Р Т‘Р В»РЎРЏ Р С•РЎвЂљРЎРѓР В»Р ВµР В¶Р С‘Р Р†Р В°Р Р…Р С‘РЎРЏ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘Р в„– display
+        // Создаём MutationObserver для отслеживания изменений display
         if (isStatsPage) {
             window.__statsTopActionsObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
@@ -402,7 +402,7 @@ export function initTabsNavigation(appVersion) {
             window.__statsTopActionsObserver.observe(topActions, { attributes: true });
         }
 
-        // Р вЂ™Р ВµРЎР‚РЎРѓР С‘РЎРЏ Р С—РЎР‚Р С‘Р В»Р С•Р В¶Р ВµР Р…Р С‘РЎРЏ
+        // Версия приложения
         const verEl = document.createElement('div');
         verEl.textContent = `v${appVersion}`;
         verEl.className = 'app-version-display';
@@ -411,22 +411,22 @@ export function initTabsNavigation(appVersion) {
         verEl.style.fontWeight = 'bold';
         verEl.style.marginLeft = '10px';
 
-        // Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р В°Р Р†Р С•Р в„– РЎвЂЎР В°РЎРѓРЎвЂљР С‘ (Р Р€РЎР‚Р С•Р Р†Р ВµР Р…РЎРЉ + Р РЋРЎвЂљРЎР‚Р С‘Р С”)
+        // Контейнер для правой части (Уровень + Стрик)
         const levelContainer = document.createElement('div');
         levelContainer.className = 'level-container-right';
         levelContainer.style.marginLeft = 'auto';
         levelContainer.style.display = 'flex';
         levelContainer.style.alignItems = 'center';
 
-        // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р Р†РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р С—РЎР‚Р С‘ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+        // Показываем все вопросы при инициализации
         showAllQuestions();
 
-        // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р В°РЎРЏ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В° РЎРѓ РЎС“РЎвЂЎРЎвЂРЎвЂљР С•Р С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
-        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ РЎвЂЎР ВµРЎР‚Р ВµР В· 100Р СРЎРѓ (Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р С‘Р В· all-data.js)
+        // Автоматическая загрузка с учётом текущего контекста
+        // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
         setTimeout(() => {
             refreshCurrentContext();
 
-            // Р вЂєР С•Р С–Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ РЎР‚Р В°Р В·Р СР ВµРЎР‚Р С•Р Р† Р Т‘Р В»РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р С‘
+            // Логирование размеров для отладки
             /* DEBUG
             const topBar = document.querySelector('.top-actions-bar');
             const container = document.querySelector('.container');
@@ -454,54 +454,54 @@ export function initTabsNavigation(appVersion) {
             */
         }, 100);
 
-        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р С–Р С• Р С‘Р В· Р С•Р В±Р В»Р В°Р С”Р В°
+        // Слушаем обновление избранного из облака
         window.addEventListener('favoritesUpdated', () => {
             refreshCurrentContext();
         });
 
-        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С dataLoaded Р С•РЎвЂљ all-data.js Р Т‘Р В»РЎРЏ Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
+        // Слушаем dataLoaded от all-data.js для обновления после загрузки данных
         document.addEventListener('dataLoaded', (e) => {
             const data = e.detail?.data;
 
-            // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р В°Р Р…Р С‘Р СР В°РЎвЂ Р С‘РЎР‹ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘
+            // Скрываем анимацию загрузки
             hideLoading();
 
             if (data && data.length > 0) {
-                // Р СџР ВµРЎР‚Р ВµРЎРѓРЎвЂљРЎР‚Р В°Р С‘Р Р†Р В°Р ВµР С РЎвЂљР В°Р В±РЎвЂ№ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– РЎРѓ Р Р…Р С•Р Р†РЎвЂ№Р СР С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р СР С‘
+                // Перестраиваем табы категорий с новыми данными
                 refreshCategoriesTabs();
-                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ
+                // Обновляем текущий контекст
                 refreshCurrentContext();
             }
         });
 
-        // СЂСџвЂќТђ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў Р С™Р С›Р вЂќР ВР В Р С›Р вЂ™Р С™Р В: Р СџР С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°
-        // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С—Р С•РЎРѓР В»Р Вµ loadFromServer, Р С”Р С•Р С–Р Т‘Р В° Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ Р Р† localStorage
+        // 🔥 ИСПРАВЛЕНИЕ КОДИРОВКИ: После загрузки данных с сервера
+        // Вызываем после loadFromServer, когда данные уже в localStorage
         window.addEventListener('qaDataLoadedFromServer', () => {
             fixEncodingIssues();
             refreshCategoriesTabs();
             refreshCurrentContext();
         });
 
-        // Р РЋРЎвЂљРЎР‚Р С•Р С‘Р С Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р С—Р С• Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р С (РЎРѓ РЎС“РЎвЂЎРЎвЂРЎвЂљР С•Р С Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р С—РЎР‚Р В°Р Р†Р С•Р С”/Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р†/РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„–)
+        // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
         let categories = buildCategoriesFromData(getRuntimeData());
 
-        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ РЎвЂљР В°Р В±Р С•Р Р†
+        // Создаем контейнер для табов
         const tabsContainer = document.createElement('div');
         tabsContainer.className = 'tabs-container';
         console.log('[TABS-NAVIGATION] tabsContainer created:', tabsContainer);
         console.log('[TABS-NAVIGATION] tabs-container parent will be:', document.querySelector('.tabs-header'));
 
-        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С РЎвЂљР В°Р В± "Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№"
+        // Создаем таб "Все вопросы"
         const allTab = document.createElement('div');
         allTab.className = 'tab';
         allTab.dataset.category = 'all';
-        allTab.textContent = 'Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№';
+        allTab.textContent = 'Все вопросы';
         tabsContainer.appendChild(allTab);
-        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С РЎвЂљР В°Р В± "Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ"
+        // Создаем таб "Избранное"
         const favTab = document.createElement('div');
         favTab.className = 'tab';
         favTab.dataset.category = 'favorites';
-        // Р ВР С”Р С•Р Р…Р С”Р В° Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р С–Р С•: Р В·Р Р†Р ВµР В·Р Т‘Р В° (SVG)
+        // Иконка избранного: звезда (SVG)
         favTab.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align: middle;">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
@@ -511,7 +511,7 @@ export function initTabsNavigation(appVersion) {
     `;
         tabsContainer.appendChild(favTab);
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎвЂљР В°Р В±РЎвЂ№ Р Т‘Р В»РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+        // Добавляем табы для всех категорий
         categories.forEach((category, index) => {
             const tab = document.createElement('div');
             tab.className = 'tab';
@@ -525,12 +525,12 @@ export function initTabsNavigation(appVersion) {
 
         console.log('[TABS-NAVIGATION] All tabs created, total:', tabsContainer.querySelectorAll('.tab').length);
 
-        // Р РЋР С•Р В·Р Т‘Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+        // Создаем контейнер для подкатегорий
         const subcategoriesContainer = document.createElement('div');
         subcategoriesContainer.className = 'subcategories-container';
         subcategoriesContainer.style.display = 'none';
 
-        // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р С—Р С•Р Т‘РЎРѓР Р†Р ВµРЎвЂљР С”РЎС“ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•Р С–Р С• РЎвЂљР В°Р В±Р В° Р С‘Р В· РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
+        // Восстанавливаем подсветку активного таба из текущего контекста
         try {
             const key = currentContextKey || 'all';
             tabsContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -547,7 +547,7 @@ export function initTabsNavigation(appVersion) {
                     const tabEl = tabsContainer.querySelector(`.tab[data-category="${selectedCategory.id}"]`);
                     if (tabEl) tabEl.classList.add('active');
                     subcategoriesContainer.style.display = 'flex';
-                    // Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р В±РЎС“Р Т‘РЎС“РЎвЂљ Р С—Р ВµРЎР‚Р ВµРЎРѓРЎвЂљРЎР‚Р С•Р ВµР Р…РЎвЂ№ Р С—РЎР‚Р С‘ render/refresh; Р В·Р Т‘Р ВµРЎРѓРЎРЉ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С• Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р В±Р В»Р С•Р С”
+                    // Подкатегории будут перестроены при render/refresh; здесь только визуально показываем блок
                 } else {
                     allTab.classList.add('active');
                     subcategoriesContainer.style.display = 'none';
@@ -561,7 +561,7 @@ export function initTabsNavigation(appVersion) {
             subcategoriesContainer.style.display = 'none';
         }
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С”Р В»Р С‘Р С”Р В° Р С—Р С• РЎвЂљР В°Р В±Р В°Р С
+        // Добавляем обработчики клика по табам
         tabsContainer.addEventListener('click', function (e) {
             console.log('[TABS-NAVIGATION] Click on tabsContainer, target:', e.target);
             if (e.target.classList.contains('tab')) {
@@ -572,11 +572,11 @@ export function initTabsNavigation(appVersion) {
                     position: window.getComputedStyle(e.target).position
                 });
 
-                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active РЎС“ Р Р†РЎРѓР ВµРЎвЂ¦ РЎвЂљР В°Р В±Р С•Р Р†
+                // Удаляем класс active у всех табов
                 const tabs = tabsContainer.querySelectorAll('.tab');
                 tabs.forEach(tab => tab.classList.remove('active'));
 
-                // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р СРЎС“ РЎвЂљР В°Р В±РЎС“
+                // Добавляем класс active выбранному табу
                 e.target.classList.add('active');
 
                 console.log('[TABS-NAVIGATION] Tab after active:', {
@@ -588,11 +588,11 @@ export function initTabsNavigation(appVersion) {
                 const categoryId = e.target.dataset.category;
 
                 if (categoryId === 'all') {
-                    // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…РЎвЂ№ Р Р†РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№, РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+                    // Если выбраны все вопросы, скрываем контейнер подкатегорий
                     subcategoriesContainer.style.display = 'none';
                     showAllQuestions();
                 } else if (categoryId === 'favorites') {
-                    // Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ Р В±Р ВµР В· Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+                    // Избранное без подкатегорий
                     subcategoriesContainer.style.display = 'none';
                     showFavorites();
                 } else {
@@ -605,25 +605,25 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С”Р В»Р С‘Р С”Р В° Р С—Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°Р С Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+        // Добавляем обработчики клика по карточкам подкатегорий
         subcategoriesContainer.addEventListener('click', function (e) {
             if (e.target.classList.contains('subcategory-card')) {
-                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active РЎС“ Р Р†РЎРѓР ВµРЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”
+                // Удаляем класс active у всех карточек
                 const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
                 cards.forEach(card => card.classList.remove('active'));
 
-                // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ active Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
+                // Добавляем класс active выбранной карточке
                 e.target.classList.add('active');
 
                 const subcategoryId = e.target.dataset.subcategory;
                 const categoryId = e.target.dataset.category || tabsContainer.querySelector('.tab.active').dataset.category;
 
                 if (subcategoryId === 'all') {
-                    // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…РЎвЂ№ Р Р†РЎРѓР Вµ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘, РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚РЎС“Р ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
+                    // Если выбраны все подкатегории, фильтруем только по категории
                     const selectedCategory = categories.find(cat => cat.id == categoryId);
                     filterQuestionsByCategory(selectedCategory.name);
                 } else {
-                    // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р В° Р С”Р С•Р Р…Р С”РЎР‚Р ВµРЎвЂљР Р…Р В°РЎРЏ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ, РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚РЎС“Р ВµР С Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р С‘ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
+                    // Если выбрана конкретная подкатегория, фильтруем по категории и подкатегории
                     const selectedCategory = categories.find(cat => cat.id == categoryId);
                     const selectedSubcategory = selectedCategory.subcategories.find(
                         subcat => subcat.id == subcategoryId
@@ -634,10 +634,10 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // Р ВР Р…РЎвЂљР ВµР С–РЎР‚Р С‘РЎР‚РЎС“Р ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р† Р Р†Р Р…РЎС“РЎвЂљРЎР‚РЎРЉ РЎРѓР С—Р С‘РЎРѓР С”Р В° РЎвЂљР В°Р В±Р С•Р Р† Р С”Р В°Р С” Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р в„– РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ (sticky left)
+        // Интегрируем кнопку фильтров внутрь списка табов как первый элемент (sticky left)
         const filtersBtn = document.createElement('button');
         filtersBtn.className = 'tab';
-        filtersBtn.title = 'Р В¤Р С‘Р В»РЎРЉРЎвЂљРЎР‚РЎвЂ№';
+        filtersBtn.title = 'Фильтры';
         filtersBtn.style.padding = '0 10px';
         filtersBtn.style.minWidth = 'auto';
         filtersBtn.style.position = 'sticky';
@@ -654,12 +654,12 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р С”Р Р…Р С•Р С—Р С”РЎС“ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р† Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎРѓРЎвЂљР В°Р В»РЎРЉР Р…РЎвЂ№Р СР С‘ РЎвЂљР В°Р В±Р В°Р СР С‘
+        // Вставляем кнопку фильтров перед остальными табами
         tabsContainer.insertBefore(filtersBtn, tabsContainer.firstChild);
 
-        // Р С™Р Р…Р С•Р С—Р С”Р В° РЎР‚Р ВµР В¶Р С‘Р СР В° Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ (РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљР В° Р Р…Р В° Р СР С•Р В±Р С‘Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎвЂЎР ВµРЎР‚Р ВµР В· CSS .learn-main-btn)
+        // Кнопка режима обучения (скрыта на мобильных через CSS .learn-main-btn)
         const learnBtn = document.createElement('button');
-        learnBtn.title = 'Р СњР В°РЎвЂЎР В°РЎвЂљРЎРЉ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ';
+        learnBtn.title = 'Начать обучение';
         learnBtn.className = 'nav-icon-btn tab';
         learnBtn.style.padding = '0 10px';
         learnBtn.style.minWidth = 'auto';
@@ -675,13 +675,13 @@ export function initTabsNavigation(appVersion) {
 
                 if (!currentQuestions || currentQuestions.length === 0) {
                     console.warn('[Learn] No questions in current context');
-                    alert('Р вЂ™ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С РЎРѓР С—Р С‘РЎРѓР С”Р Вµ Р Р…Р ВµРЎвЂљ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р Т‘Р В»РЎРЏ Р С‘Р В·РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ. Р вЂ™РЎвЂ№Р В±Р ВµРЎР‚Р С‘РЎвЂљР Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ Р С‘Р В»Р С‘ "Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№".');
+                    alert('В текущем списке нет вопросов для изучения. Выберите категорию или "Все вопросы".');
                     return;
                 }
 
                 let module;
                 try {
-                    module = await import('../srs/learn-ui.js?v=6.20.8);
+                    module = await import('../srs/learn-ui.js?v=6.20.8');
                 } catch (e1) {
                     console.warn('[Learn] Import v2.42 failed, trying plain import', e1);
                     try {
@@ -699,46 +699,46 @@ export function initTabsNavigation(appVersion) {
                 startLearnSession(currentQuestions);
             } catch (err) {
                 console.error('[Learn] Error:', err);
-                alert('Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р В·Р В°Р С—РЎС“РЎРѓРЎвЂљР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ: ' + err.message);
+                alert('Не удалось запустить режим обучения: ' + err.message);
             }
         });
 
-        // Р С™Р Р…Р С•Р С—Р С”Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘
+        // Кнопка статистики
         const statsBtn = document.createElement('button');
         statsBtn.className = 'nav-icon-btn tab';
-        statsBtn.title = 'Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В°';
+        statsBtn.title = 'Статистика';
         statsBtn.style.minWidth = 'auto';
         statsBtn.style.padding = '0 10px';
         statsBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="13" width="4" height="8" rx="1"/></svg>`;
         statsBtn.addEventListener('click', async () => {
-            // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ Р СџР вЂўР В Р вЂўР вЂќ Р С—Р ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘Р С•Р С Р Р…Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”РЎС“
+            // Очищаем состояние обучения ПЕРЕД переходом на статистику
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8);
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
 
-        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ hash (Р Т‘Р В»РЎРЏ Р С—Р ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘Р В° Р С‘Р В· Р СР С•Р Т‘Р В°Р В»Р С”Р С‘)
+        // Обработчик изменения hash (для перехода из модалки)
         window.addEventListener('hashchange', async () => {
-            // Р РЋР СњР С’Р В§Р С’Р вЂєР С’ Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С MutationObserver!
+            // СНАЧАЛА отключаем MutationObserver!
             if (window.__statsTopActionsObserver) {
                 window.__statsTopActionsObserver.disconnect();
                 window.__statsTopActionsObserver = null;
             }
 
             if (location.hash === '#/stats') {
-                // Р СџР В Р С›Р вЂ™Р вЂўР В Р Р‡Р вЂўР Сљ: РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ Р В»Р С‘ stats-container
+                // ПРОВЕРЯЕМ: существует ли stats-container
                 const statsContainerExists = document.getElementById('stats-container');
 
-                // Р вЂўРЎРѓР В»Р С‘ stats-container Р СњР вЂў РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ, РЎРѓР С•Р В·Р Т‘Р В°Р ВµР С Р ВµР С–Р С•
+                // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8);
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8');
                     initStatsPage(appVersion);
                 }
 
-                // Р РЋР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С–Р В»Р В°Р Р†Р Р…РЎвЂ№Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р С‘ sidebar
+                // Скрываем главный контейнер и sidebar
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'none';
@@ -748,30 +748,30 @@ export function initTabsNavigation(appVersion) {
                     sidebar.style.display = 'none';
                 }
             } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
-                // Р СџР ВµРЎР‚Р ВµРЎвЂ¦Р С•Р Т‘ Р Р…Р В° Р С–Р В»Р В°Р Р†Р Р…РЎС“РЎР‹ - Р В·Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”РЎС“ Р ВµРЎРѓР В»Р С‘ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В°
+                // Переход на главную - закрываем статистику если открыта
                 console.log('[HASHCHANGE #/] Navigating to home page...');
 
-                // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р С•Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘РЎРЏ Р ВµРЎРѓР В»Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ
+                // Очищаем состояние обучения если есть
                 if (window.__lastCandidates) {
                     window.__lastCandidates = null;
                     console.log('[HASHCHANGE #/] Cleared __lastCandidates');
                 }
 
-                // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”РЎС“ Р ВµРЎРѓР В»Р С‘ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В°
+                // Закрываем статистику если открыта
                 const statsContainer = document.getElementById('stats-container');
                 if (statsContainer) {
                     statsContainer.remove();
                     console.log('[HASHCHANGE #/] Removed stats-container');
                 }
 
-                // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С–Р В»Р В°Р Р†Р Р…РЎвЂ№Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚
+                // Показываем главный контейнер
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'block';
                     console.log('[HASHCHANGE #/] mainContainer display set to block');
                 }
 
-                // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С sidebar
+                // Восстанавливаем sidebar
                 const sidebar = document.querySelector('.sidebar');
                 if (sidebar) {
                     sidebar.style.display = '';
@@ -780,7 +780,7 @@ export function initTabsNavigation(appVersion) {
                     console.warn('[HASHCHANGE #/] sidebar NOT FOUND!');
                 }
 
-                // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С top-actions-bar
+                // Восстанавливаем top-actions-bar
                 const topActionsBar = document.querySelector('.top-actions-bar');
                 if (topActionsBar) {
                     topActionsBar.style.display = 'flex';
@@ -789,7 +789,7 @@ export function initTabsNavigation(appVersion) {
                     console.warn('[HASHCHANGE #/] top-actions-bar NOT FOUND!');
                 }
 
-                // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С search-container
+                // Восстанавливаем search-container
                 const searchContainer = document.querySelector('.search-container');
                 if (searchContainer) {
                     searchContainer.style.display = '';
@@ -798,20 +798,20 @@ export function initTabsNavigation(appVersion) {
                     console.warn('[HASHCHANGE #/] search-container NOT FOUND!');
                 }
 
-                // Р С›РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С MutationObserver Р Т‘Р В»РЎРЏ top-actions-bar
+                // Отключаем MutationObserver для top-actions-bar
                 if (window.__statsTopActionsObserver) {
                     window.__statsTopActionsObserver.disconnect();
                     window.__statsTopActionsObserver = null;
                     console.log('[HASHCHANGE #/] Disconnected __statsTopActionsObserver');
                 }
 
-                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ
+                // Обновляем текущий контекст
                 refreshCurrentContext();
                 console.log('[HASHCHANGE #] Home page setup complete');
             }
         });
 
-        // Р С™Р Р…Р С•Р С—Р С”Р В° Р С—РЎР‚Р С•РЎвЂћР С‘Р В»РЎРЏ / Р вЂ™Р С•Р в„–РЎвЂљР С‘
+        // Кнопка профиля / Войти
         const loginMainBtn = document.createElement('button');
         loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
         loginMainBtn.style.minWidth = 'auto';
@@ -820,12 +820,12 @@ export function initTabsNavigation(appVersion) {
 
         const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
         loginMainBtn.innerHTML = userIconSvg;
-        loginMainBtn.title = 'Р вЂ™Р С•Р в„–РЎвЂљР С‘';
+        loginMainBtn.title = 'Войти';
         ensureDefaultUsers();
         loginMainBtn.addEventListener('click', () => {
             if (loggedInUser) {
-                const username = loggedInUser.username || loggedInUser.email || 'Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ';
-                if (confirm(`Р вЂ™РЎвЂ№Р в„–РЎвЂљР С‘ Р С‘Р В· Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљР В° ${username}?`)) {
+                const username = loggedInUser.username || loggedInUser.email || 'пользователь';
+                if (confirm(`Выйти из аккаунта ${username}?`)) {
                     window.qaAuth.logout();
                 }
             } else {
@@ -834,15 +834,15 @@ export function initTabsNavigation(appVersion) {
         });
 
         const editToggleBtn = document.createElement('button');
-        editToggleBtn.title = 'Р В Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
+        editToggleBtn.title = 'Режим редактирования';
         editToggleBtn.className = 'nav-icon-btn edit-mode-btn';
         editToggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
         editToggleBtn.style.display = 'none';
 
-        // Р С™Р Р…Р С•Р С—Р С”Р В° Р В°Р Т‘Р СР С‘Р Р…Р С‘РЎРѓРЎвЂљРЎР‚Р В°РЎвЂљР С•РЎР‚Р В° Р Т‘Р В»РЎРЏ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР в„– (Р С—Р С•РЎРЏР Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ Р С—Р С•РЎРѓР В»Р Вµ Р Р†РЎвЂ¦Р С•Р Т‘Р В° Р В°Р Т‘Р СР С‘Р Р…Р В°)
+        // Кнопка администратора для добавления пользователей (появляется после входа админа)
         const adminUsersBtn = document.createElement('button');
         adminUsersBtn.className = 'nav-icon-btn tab';
-        adminUsersBtn.title = 'Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ';
+        adminUsersBtn.title = 'Добавить пользователя';
         adminUsersBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
         adminUsersBtn.style.display = 'none';
         adminUsersBtn.style.minWidth = 'auto';
@@ -850,67 +850,67 @@ export function initTabsNavigation(appVersion) {
         adminUsersBtn.addEventListener('click', openAdminUsersPanel);
 
         const cloudBtn = document.createElement('button');
-        cloudBtn.title = 'Р С›Р В±Р В»Р В°Р С”Р С•';
-        cloudBtn.textContent = 'Р С›Р В±Р В»Р В°Р С”Р С•';
+        cloudBtn.title = 'Облако';
+        cloudBtn.textContent = 'Облако';
         cloudBtn.className = 'tab';
         cloudBtn.style.display = 'none';
         cloudBtn.style.width = 'auto';
         // Removed manual styles to match app style
         cloudBtn.addEventListener('click', openCloudOverview);
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р Р…Р С•Р С—Р С”Р С‘: Р Р…Р В° Р СР С•Р В±Р С‘Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р Р† topActions, Р Р…Р В° desktop РЎвЂљР С•Р В¶Р Вµ Р Р† topActions
+        // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
         const isMobile = window.matchMedia('(max-width: 768px)').matches;
         const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
 
-        // СЂСџвЂќТђ Р вЂ™Р РЋР вЂўР вЂњР вЂќР С’ Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† topActions (Р С‘ mobile, Р С‘ desktop)
-        topActions.appendChild(loginMainBtn); /* Р вЂ™РЎвЂ¦Р С•Р Т‘/Р вЂ™РЎвЂ№РЎвЂ¦Р С•Р Т‘ - Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р в„– */
-        topActions.appendChild(statsBtn); /* Р РЋРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р В° - Р Р†РЎвЂљР С•РЎР‚Р С•Р в„– */
-        topActions.appendChild(learnBtn); /* Р С›Р В±РЎС“РЎвЂЎР ВµР Р…Р С‘Р Вµ - РЎвЂљРЎР‚Р ВµРЎвЂљР С‘Р в„– */
+        // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
+        topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
+        topActions.appendChild(statsBtn); /* Статистика - второй */
+        topActions.appendChild(learnBtn); /* Обучение - третий */
         topActions.appendChild(levelContainer);
 
         if (isMobile) {
-            // Mobile: Р Т‘Р С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† topActions
+            // Mobile: дополнительные кнопки в topActions
             loginMainBtn.style.position = 'sticky';
             loginMainBtn.style.right = '0';
             loginMainBtn.style.zIndex = '10';
             loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
 
-            // Р вЂ™Р ВµРЎР‚РЎРѓР С‘РЎРЏ Р С—РЎР‚Р С‘Р В»Р С•Р В¶Р ВµР Р…Р С‘РЎРЏ (Р С”Р С•Р СР С—Р В°Р С”РЎвЂљР Р…Р В°РЎРЏ)
+            // Версия приложения (компактная)
             topActions.appendChild(verEl);
 
-            // Р С™Р Р…Р С•Р С—Р С”Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ (Р Т‘Р В»РЎРЏ admin Р С‘ editor)
+            // Кнопка редактирования (для admin и editor)
             topActions.appendChild(editToggleBtn);
 
-            // Р С™Р Р…Р С•Р С—Р С”Р В° Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ (РЎвЂљР С•Р В»РЎРЉР С”Р С• admin)
+            // Кнопка добавления пользователя (только admin)
             topActions.appendChild(adminUsersBtn);
 
-            // СЂСџвЂќТђ Р РЋР В Р С’Р вЂ”Р Р€ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р С—РЎР‚Р В°Р Р†Р В° Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р В° Р С—Р С•РЎРѓР В»Р Вµ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С” Р Р† DOM
+            // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM
             setTimeout(() => {
                 try {
                     const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
 
-                    // Р С™Р Р…Р С•Р С—Р С”Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ: admin Р С‘ editor
+                    // Кнопка редактирования: admin и editor
                     if (user && ['admin', 'editor'].includes(user.role)) {
                         editToggleBtn.style.setProperty('display', 'inline-block', 'important');
                     } else {
                         editToggleBtn.style.setProperty('display', 'none', 'important');
                     }
 
-                    // Р С™Р Р…Р С•Р С—Р С”Р В° Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ: РЎвЂљР С•Р В»РЎРЉР С”Р С• admin
+                    // Кнопка добавления пользователя: только admin
                     if (user && user.role === 'admin') {
                         adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
                     } else {
                         adminUsersBtn.style.setProperty('display', 'none', 'important');
                     }
                 } catch (e) {
-                    console.error('[MOBILE ACCESS] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С‘ Р С—РЎР‚Р В°Р Р†:', e);
-                    // Р СџР С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹ РЎРѓР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р С”Р Р…Р С•Р С—Р С”Р С‘
+                    console.error('[MOBILE ACCESS] Ошибка проверки прав:', e);
+                    // По умолчанию скрываем кнопки
                     editToggleBtn.style.setProperty('display', 'none', 'important');
                     adminUsersBtn.style.setProperty('display', 'none', 'important');
                 }
             }, 50);
         } else {
-            // Desktop: Р Т‘Р С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† topActions
+            // Desktop: дополнительные кнопки в topActions
             // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
             topActions.appendChild(verEl);
             topActions.appendChild(editToggleBtn);
@@ -918,17 +918,17 @@ export function initTabsNavigation(appVersion) {
             topActions.appendChild(adminUsersBtn);
         }
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ РЎвЂљР В°Р В±Р С•Р Р† Р Р† Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎР‹ Р Р…Р В°Р С—РЎР‚РЎРЏР СРЎС“РЎР‹
+        // Добавляем контейнер табов в навигацию напрямую
         navigationContainer.appendChild(tabsContainer);
 
-        // Bottom sheet РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р†
+        // Bottom sheet фильтров
         let activeFilters = { status: null, ef: null };
         const sheet = document.getElementById('filters-sheet');
 
         if (sheet) {
             const overlay = document.getElementById('sheet-overlay');
 
-            // Р СџРЎР‚Р С‘Р Р†РЎРЏР В·РЎвЂ№Р Р†Р В°Р ВµР С Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С” РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“РЎР‹РЎвЂ°Р С‘Р С РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР В°Р С Р С‘Р В· index.html
+            // Привязываем обработчики к существующим элементам из index.html
             const closeBtn = document.getElementById('close-filters');
             const resetBtn = document.getElementById('reset-filters');
             const applyBtn = document.getElementById('apply-filters');
@@ -950,7 +950,7 @@ export function initTabsNavigation(appVersion) {
                 activeFilters = { status: null, ef: null };
                 refreshCurrentContext();
                 closeSheet();
-                // Р РЋР В±РЎР‚Р С•РЎРѓ Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘РЎРЏ РЎвЂЎР С‘Р С—Р С•Р Р†
+                // Сброс визуального состояния чипов
                 sheet.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
             });
 
@@ -959,10 +959,10 @@ export function initTabsNavigation(appVersion) {
                 closeSheet();
             });
 
-            // Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р С—Р С• Р С”Р Р…Р С•Р С—Р С”Р Вµ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р С•Р Р†
+            // Открытие по кнопке фильтров
             filtersBtn.addEventListener('click', openSheet);
 
-            // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° Р С”Р В»Р С‘Р С”Р С•Р Р† Р С—Р С• РЎвЂЎР С‘Р С—Р В°Р С
+            // Обработка кликов по чипам
             sheet.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
                     const filterData = chip.dataset.filter; // "status:new" or "difficulty:easy"
@@ -977,7 +977,7 @@ export function initTabsNavigation(appVersion) {
                         activeFilters.ef = activeFilters.ef === value ? null : value;
                     }
 
-                    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С•Р Вµ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ
+                    // Обновляем визуальное состояние
                     updateChipsVisuals();
                 });
             });
@@ -1035,11 +1035,11 @@ export function initTabsNavigation(appVersion) {
             displayQuestions(filtered, '');
         }
 
-        // Р Р€Р Т‘Р В°Р В»РЎвЂР Р… Р С—РЎР‚Р ВµР В¶Р Р…Р С‘Р в„– Р С•Р С–Р С•Р Р…РЎвЂР С” Р Т‘Р С• Р Р†Р С‘Р Т‘Р В¶Р ВµРЎвЂљР В° РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ РІР‚вЂќ Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓРЎвЂР Р… Р В±Р В»Р С‘Р В¶Р Вµ Р С” РЎв‚¬Р С”Р В°Р В»Р Вµ
+        // Удалён прежний огонёк до виджета уровня — перенесён ближе к шкале
 
         // Logic to update icon/tooltip on login change
         function updateLoginBtnState() {
-            loginMainBtn.title = loggedInUser ? 'Р вЂ™РЎвЂ№Р в„–РЎвЂљР С‘' : 'Р вЂ™Р С•Р в„–РЎвЂљР С‘';
+            loginMainBtn.title = loggedInUser ? 'Выйти' : 'Войти';
             const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
             loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
             // loginMainBtn.style.color = '#d0d0d0';
@@ -1049,15 +1049,15 @@ export function initTabsNavigation(appVersion) {
         window.qaAuth.getUser = () => loggedInUser;
         window.qaAuth.openLogin = () => openLoginModal();
         window.qaAuth.logout = async () => {
-            // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Telegram OAuth Р С—Р ВµРЎР‚Р ВµР Т‘ Р Р†РЎвЂ№РЎвЂ¦Р С•Р Т‘Р С•Р С
+            // 🔥 Очищаем данные Telegram OAuth перед выходом
             sessionStorage.removeItem('tgAuthUser');
 
             await setLoggedUser(null);
             window.location.reload();
         };
-        // Р СџР В»Р В°РЎв‚¬Р С”Р В° РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ Р С‘ XP
+        // Плашка уровня и XP
         import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
-            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С‘Р СРЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
+            // Добавляем имя пользователя
             const usernameSpan = document.createElement('span');
             usernameSpan.className = 'username-display';
             usernameSpan.style.marginRight = '8px';
@@ -1065,7 +1065,7 @@ export function initTabsNavigation(appVersion) {
             usernameSpan.style.color = '#4ec9b0';
             usernameSpan.style.fontWeight = '600';
 
-            // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С Р С‘Р СРЎРЏ Р С‘Р В· РЎРѓР ВµРЎРѓРЎРѓР С‘Р С‘
+            // Получаем имя из сессии
             try {
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 if (sessionUserRaw) {
@@ -1073,15 +1073,15 @@ export function initTabsNavigation(appVersion) {
                     if (user && user.username) {
                         usernameSpan.textContent = user.username;
                     } else {
-                        usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
+                        usernameSpan.textContent = 'Гость';
                         usernameSpan.style.color = '#808080';
                     }
                 } else {
-                    usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
+                    usernameSpan.textContent = 'Гость';
                     usernameSpan.style.color = '#808080';
                 }
             } catch (e) {
-                usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
+                usernameSpan.textContent = 'Гость';
                 usernameSpan.style.color = '#808080';
             }
 
@@ -1093,14 +1093,14 @@ export function initTabsNavigation(appVersion) {
             box.style.transition = 'all 0.2s ease';
             box.style.padding = '4px 8px';
             box.style.borderRadius = '8px';
-            box.title = 'Р Р€РЎР‚Р С•Р Р†Р Р…Р С‘ Р С‘ XP';
+            box.title = 'Уровни и XP';
             box.onclick = () => {
-                // Р РЋР Р…Р В°РЎвЂЎР В°Р В»Р В° Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С РЎвЂЎР ВµРЎР‚Р ВµР В· window (Р ВµРЎРѓР В»Р С‘ stats-ui Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…)
+                // Сначала пробуем через window (если stats-ui загружен)
                 if (window.openLevelInfoModal) {
                     window.openLevelInfoModal();
                 } else {
-                    // Р ВР Р…Р В°РЎвЂЎР Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С stats-ui
-                    import('../srs/stats-ui.js?v=6.20.8).then(() => {
+                    // Иначе загружаем stats-ui
+                    import('../srs/stats-ui.js?v=6.20.8').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {
@@ -1149,13 +1149,13 @@ export function initTabsNavigation(appVersion) {
             bar.appendChild(fill); bar.appendChild(txt);
             box.appendChild(label); box.appendChild(bar);
             levelContainer.appendChild(box);
-            // Р С›Р С–Р С•Р Р…РЎвЂР С” РЎРѓРЎвЂљРЎР‚Р С‘Р С”Р В° РЎР‚РЎРЏР Т‘Р С•Р С РЎРѓР С• РЎв‚¬Р С”Р В°Р В»Р С•Р в„– РЎС“РЎР‚Р С•Р Р†Р Р…РЎРЏ
+            // Огонёк стрика рядом со шкалой уровня
             const streakRaw = localStorage.getItem('studyStreak') || '{}';
             let streakVal = 0;
             try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch { }
             if (streakVal > 0) {
                 const flame = document.createElement('span');
-                flame.textContent = `СЂСџвЂќТђ ${streakVal}`;
+                flame.textContent = `🔥 ${streakVal}`;
                 flame.className = 'streak-flame';
                 flame.style.fontSize = '12px';
                 flame.style.marginLeft = '4px';
@@ -1176,7 +1176,7 @@ export function initTabsNavigation(appVersion) {
                     const tot = d.nextThreshold === Infinity ? cur : Math.round(d.nextThreshold - d.prevThreshold);
                     if (tx) tx.textContent = `${cur}/${tot}`;
 
-                    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р СРЎРЏ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
+                    // Обновляем имя пользователя
                     const usernameSpan = levelContainer.querySelector('.username-display');
                     if (usernameSpan) {
                         try {
@@ -1187,7 +1187,7 @@ export function initTabsNavigation(appVersion) {
                                     usernameSpan.textContent = user.username;
                                     usernameSpan.style.color = '#4ec9b0';
                                 } else {
-                                    usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
+                                    usernameSpan.textContent = 'Гость';
                                     usernameSpan.style.color = '#808080';
                                 }
                             }
@@ -1199,10 +1199,10 @@ export function initTabsNavigation(appVersion) {
             window.addEventListener('statsClosed', updateLevelInline);
         }).catch(() => { });
 
-        // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С” Р С—Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…Р С•Р СРЎС“ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎР‹
+        // Инициализация состояния кнопок по сохранённому пользователю
         try { setLoggedUser(loggedInUser); } catch { }
 
-        // Р СџР В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ (Р Р†Р С‘Р Т‘Р Р…Р В° РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ)
+        // Панель корзины (видна только в режиме редактирования)
         const trashPanel = document.createElement('div');
         trashPanel.className = 'trash-panel';
         trashPanel.style.display = 'none';
@@ -1210,19 +1210,19 @@ export function initTabsNavigation(appVersion) {
         trashPanel.style.borderRadius = '6px';
         trashPanel.style.padding = '8px';
         trashPanel.style.marginBottom = '8px';
-        // Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р С—РЎР‚Р С•Р С”РЎР‚РЎС“РЎвЂљР С”РЎС“ Р Р…Р ВµР В·Р В°Р Р†Р С‘РЎРѓР С‘Р СР С• Р С•РЎвЂљ РЎР‚Р ВµР В¶Р С‘Р СР В°
+        // Включаем прокрутку независимо от режима
         trashPanel.style.overflowY = 'auto';
-        // trashPanel.style.maxHeight РЎС“Р Т‘Р В°Р В»Р ВµР Р…, РЎС“Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ CSS
+        // trashPanel.style.maxHeight удален, управляется CSS
         trashPanel.innerHTML = '<div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ Р Р† Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘
+        // Добавляем элементы в контейнер навигации
         navigationContainer.appendChild(topActions);
         navigationContainer.appendChild(tabsContainer);
         navigationContainer.appendChild(subcategoriesContainer);
 
-        // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘ Р С—Р ВµРЎР‚Р ВµР Т‘ Р С”Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚Р С•Р С Р С—Р С•Р С‘РЎРѓР С”Р В°
-        // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Р†Р ВµРЎР‚РЎвЂ¦Р Р…РЎР‹РЎР‹ Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С‘ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“ Р С—Р ВµРЎР‚Р ВµР Т‘ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р ВµР в„–
-        // container.insertBefore(topControls, searchContainer); // Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р С•
+        // Вставляем контейнер навигации перед контейнером поиска
+        // Вставляем верхнюю панель и корзину перед навигацией
+        // container.insertBefore(topControls, searchContainer); // Удалено
 
         if (container) {
             if (searchContainer && searchContainer.parentNode === container) {
@@ -1235,15 +1235,15 @@ export function initTabsNavigation(appVersion) {
             console.error('Main container not found, cannot insert navigation');
         }
 
-        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С dataLoaded Р Т‘Р В»РЎРЏ Р С•Р В±Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
+        // Слушаем dataLoaded для обновления корзины после загрузки данных
         document.addEventListener('dataLoaded', () => {
             refreshServerTrash();
         });
 
-        // Р вЂќР ВµР В»Р В°Р ВµР С refreshServerTrash Р С–Р В»Р С•Р В±Р В°Р В»РЎРЉР Р…Р С• Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р Р…Р С•Р в„–
+        // Делаем refreshServerTrash глобально доступной
         window.refreshServerTrash = refreshServerTrash;
 
-        // Р СџРЎР‚Р С‘Р Р†РЎРЏР В·РЎвЂ№Р Р†Р В°Р ВµР С Р С–Р В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎС“РЎР‹ РЎРѓРЎРѓРЎвЂ№Р В»Р С”РЎС“ Р Р…Р В° Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ
+        // Привязываем глобальную ссылку на индикатор сохранения
         // globalSaveStatusEl = saveStatus; // Removed in favor of global toast
 
         (async () => {
@@ -1252,28 +1252,28 @@ export function initTabsNavigation(appVersion) {
                 if (Array.isArray(meta.categoryOrder)) setCategoryOrder(meta.categoryOrder);
                 if (meta.subcategoryOrder && typeof meta.subcategoryOrder === 'object') setSubcategoryOrderMap(meta.subcategoryOrder);
                 if (meta.orderOverrides && typeof meta.orderOverrides === 'object') setLS('qaOrderOverrides', meta.orderOverrides);
-                // refreshServerTrash() Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµРЎвЂљРЎРѓРЎРЏ Р СџР С›Р РЋР вЂєР вЂў Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (Р Р† loadFromServer)
+                // refreshServerTrash() вызывается ПОСЛЕ загрузки данных с сервера (в loadFromServer)
                 refreshCategoriesTabs();
             } catch { }
         })();
 
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р в„– РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С—РЎР‚Р С‘ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+        // Применяем сохранённый режим редактирования при инициализации
         if (editMode) {
-            // СЂСџвЂќТђ Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С”Р В»Р В°РЎРѓРЎРѓ on Р С”Р Р…Р С•Р С—Р С”Р Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+            // 🔥 Добавляем класс on кнопке редактирования
             editToggleBtn.classList.add('on');
-            editToggleBtn.title = 'Р вЂ™РЎвЂ№Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
+            editToggleBtn.title = 'Выключить режим редактирования';
 
             try {
                 const sidebar = document.querySelector('.sidebar');
-                if (sidebar) sidebar.classList.remove('collapsed'); // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ РЎР‚Р В°Р В·Р Р†Р С•РЎР‚Р В°РЎвЂЎР С‘Р Р†Р В°Р ВµР С Р С—РЎР‚Р С‘ РЎРѓРЎвЂљР В°РЎР‚РЎвЂљР Вµ Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+                if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при старте в режиме редактирования
                 const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
                 const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (!existingTrashBtn && sidebarButtons) {
                     const trashBtn = document.createElement('button');
                     trashBtn.id = 'trash-mode-button';
-                    trashBtn.title = 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°';
-                    trashBtn.setAttribute('aria-label', 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°');
+                    trashBtn.title = 'Корзина';
+                    trashBtn.setAttribute('aria-label', 'Корзина');
                     trashBtn.className = 'nav-icon-btn';
                     trashBtn.style.padding = '6px';
                     trashBtn.style.minWidth = 'auto';
@@ -1294,7 +1294,7 @@ export function initTabsNavigation(appVersion) {
             } catch { }
         }
 
-        // ===== Р вЂєР С•Р С”Р В°Р В»РЎРЉР Р…Р В°РЎРЏ Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ =====
+        // ===== Локальная авторизация =====
         function ensureDefaultUsers() {
             const raw = localStorage.getItem('usersDB') || '[]';
             let users;
@@ -1328,94 +1328,94 @@ export function initTabsNavigation(appVersion) {
         ];
 
         async function setLoggedUser(user, token = null) {
-            // Р СџР ВµРЎР‚Р ВµР С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р Вµ Guest -> User (Login)
+            // Переключение Guest -> User (Login)
             if (!loggedInUser && user) {
-                // Р вЂРЎРЊР С”Р В°Р С— Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р С–Р С•РЎРѓРЎвЂљРЎРЏ
+                // Бэкап данных гостя
                 const backup = {};
                 DATA_KEYS.forEach(k => backup[k] = localStorage.getItem(k));
                 localStorage.setItem('guest_backup', JSON.stringify(backup));
 
-                // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С‘РЎвЂљРЎРЉ Р С—РЎР‚Р С•РЎвЂћР С‘Р В»РЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ Р Р…Р В°РЎвЂЎР С‘РЎРѓРЎвЂљР С•
+                // Очищаем данные, чтобы загрузить профиль пользователя начисто
                 DATA_KEYS.forEach(k => localStorage.removeItem(k));
                 localStorage.removeItem('localDataTimestamp');
 
-                // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С РЎвЂљР С•Р С”Р ВµР Р… Р ВµРЎРѓР В»Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ
+                // Сохраняем токен если есть
                 if (token) {
                     localStorage.setItem('sessionToken', token);
                 }
             }
 
-            // Р СџР ВµРЎР‚Р ВµР С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р Вµ User -> Guest (Logout)
+            // Переключение User -> Guest (Logout)
             if (loggedInUser && !user) {
-                console.log('[LOGOUT] === Р СњР С’Р В§Р С’Р вЂєР С› Р вЂ™Р В«Р ТђР С›Р вЂќР С’ ===');
+                console.log('[LOGOUT] === НАЧАЛО ВЫХОДА ===');
 
-                // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р С”Р В»РЎР‹РЎвЂЎР С‘ Telegram Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р Р† localStorage
+                // 🔥 Очищаем ключи Telegram авторизации в localStorage
                 localStorage.removeItem('qaUsername');
                 localStorage.removeItem('qaAuthType');
 
-                // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Telegram OAuth Р Р† sessionStorage
+                // 🔥 Очищаем данные Telegram OAuth в sessionStorage
                 sessionStorage.removeItem('tgAuthUser');
 
-                // СЂСџвЂќТђ Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Telegram (Р ВµРЎРѓР В»Р С‘ Р Р†Р Т‘РЎР‚РЎС“Р С– Р С•РЎРѓРЎвЂљР В°Р В»Р В°РЎРѓРЎРЉ)
+                // 🔥 Очищаем сессию Telegram (если вдруг осталась)
                 sessionStorage.removeItem('telegramUser');
 
-                // РІС™В РїС‘РЏ Р вЂ™Р С’Р вЂ“Р СњР С›: Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р вЂ™Р РЋР вЂў Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р СџР вЂўР В Р вЂўР вЂќ Р Р†РЎвЂ№РЎвЂ¦Р С•Р Т‘Р С•Р С
-                // СЂСџвЂќТђ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: Р СњР Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р ВµРЎРѓР В»Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№ (qaNewItems Р С—РЎС“РЎРѓРЎвЂљ)
+                // ⚠️ ВАЖНО: Сохраняем ВСЕ данные на сервер ПЕРЕД выходом
+                // 🔥 ИСПРАВЛЕНИЕ: Не сохраняем если данные уже сохранены (qaNewItems пуст)
                 const newItems = getNewItems();
                 const deletedItems = getDeletedItems();
                 const hasUnsavedChanges = (newItems && newItems.length > 0) ||
                     (deletedItems && Object.keys(deletedItems).length > 0);
 
-                console.log('[LOGOUT] Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р ВµРЎРѓРЎвЂљРЎРЉ Р В»Р С‘ Р Р…Р ВµРЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ:', {
+                console.log('[LOGOUT] Проверяем есть ли несохранённые данные:', {
                     hasUnsavedChanges,
                     newItemsCount: newItems?.length || 0,
                     deletedCount: Object.keys(deletedItems || {}).length
                 });
 
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ Р С—Р ВµРЎР‚Р ВµР Т‘ Р Р†РЎвЂ№РЎвЂ¦Р С•Р Т‘Р С•Р С...');
+                    console.log('[LOGOUT] Сохраняем данные на сервере перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
                         console.error('[Logout] Failed to save data before logout:', e);
                     }
                 } else {
-                    console.log('[LOGOUT] Р вЂ™РЎРѓР Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№, Р С—РЎР‚Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С saveMergedToServer');
+                    console.log('[LOGOUT] Все данные уже сохранены, пропускаем saveMergedToServer');
                 }
 
-                // РІС™В РїС‘РЏ Р вЂ™Р С’Р вЂ“Р СњР С›: Р СџР С•Р В»Р Р…Р С•РЎРѓРЎвЂљРЎРЉРЎР‹ Р С•РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С localStorage Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ
-                // Р вЂќР В°Р Р…Р Р…РЎвЂ№Р Вµ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ, Р С—РЎР‚Р С‘ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С Р Р†РЎвЂ¦Р С•Р Т‘Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С‘Р С Р С•РЎвЂљРЎвЂљРЎС“Р Т‘Р В°
+                // ⚠️ ВАЖНО: Полностью очищаем localStorage пользователя
+                // Данные уже сохранены на сервере, при следующем входе загрузим оттуда
                 const DATA_KEYS_TO_CLEAR = [
-                    // Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘, Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ, Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р В°
+                    // Карточки, избранное, корзина
                     'qaUserCards_admin', 'qaUserCards_jeff', 'qaUserCards_stas',
                     'qaFavorites_admin', 'qaFavorites_jeff', 'qaFavorites_stas',
                     'qaUserTrash_admin', 'qaUserTrash_jeff', 'qaUserTrash_stas',
                     'qaUserCards_guest', 'qaFavorites_guest', 'qaUserTrash_guest',
-                    // Р С’Р Т‘Р СР С‘Р Р…Р С”Р В° Р С‘ overrides
+                    // Админка и overrides
                     'qaAdminOverrides', 'qaNewItems', 'qaDeletedItems',
                     'qaCategoryPlaceholders', 'qaCategoryOrder', 'qaOrderOverrides',
-                    // Р РЋР ВµРЎРѓРЎРѓР С‘РЎРЏ
+                    // Сессия
                     'localDataTimestamp', 'qaSessionUser', 'sessionToken', 'currentUser',
-                    // СЂСџвЂќТђ Р СџР В Р С›Р вЂњР В Р вЂўР РЋР РЋ Р В Р вЂќР С›Р РЋР СћР ВР вЂ“Р вЂўР СњР ВР Р‡ (РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С–Р С•РЎРѓРЎвЂљРЎРЉ Р Р…Р Вµ Р Р†Р С‘Р Т‘Р ВµР В» Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р В°Р Т‘Р СР С‘Р Р…Р В°)
+                    // 🔥 ПРОГРЕСС И ДОСТИЖЕНИЯ (чтобы гость не видел данные админа)
                     'srsProgress', 'studyAchievements', 'studyStreak',
                     'dailyPoints', 'dailyBonusPoints', 'dailyDayBonusPoints',
                     'studyStats'
                 ];
                 DATA_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
 
-                console.log('[LOGOUT] localStorage Р С•РЎвЂЎР С‘РЎвЂ°Р ВµР Р…, Р С”Р В»РЎР‹РЎвЂЎР С‘:', DATA_KEYS_TO_CLEAR);
+                console.log('[LOGOUT] localStorage очищен, ключи:', DATA_KEYS_TO_CLEAR);
 
-                // Р СћР В°Р С”Р В¶Р Вµ Р С•РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С РЎРѓРЎвЂљР В°РЎР‚РЎвЂ№Р Вµ Р С”Р В»РЎР‹РЎвЂЎР С‘ Р В±Р ВµР В· РЎРѓРЎС“РЎвЂћРЎвЂћР С‘Р С”РЎРѓР С•Р Р†
+                // Также очищаем старые ключи без суффиксов
                 ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
 
-                // СЂСџвЂќТђ Р вЂќР С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• Р С•РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ Р В±Р ВµР В· РЎРѓРЎС“РЎвЂћРЎвЂћР С‘Р С”РЎРѓР С•Р Р†
+                // 🔥 Дополнительно очищаем прогресс без суффиксов
                 ['srsProgress', 'studyAchievements', 'studyStreak', 'dailyPoints', 'dailyBonusPoints', 'dailyDayBonusPoints', 'studyStats']
                     .forEach(key => localStorage.removeItem(key));
 
-                // РІС™В РїС‘РЏ Р вЂ™Р С’Р вЂ“Р СњР С›: Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓР ВµРЎРѓРЎРѓР С‘РЎР‹ Р С—Р С•Р В»Р Р…Р С•РЎРѓРЎвЂљРЎРЉРЎР‹
+                // ⚠️ ВАЖНО: Удаляем сессию полностью
                 clearQaUserCards();
 
-                console.log('[LOGOUT] === Р вЂ™Р В«Р ТђР С›Р вЂќ Р вЂ”Р С’Р вЂ™Р вЂўР В Р РЃР вЂўР Сњ ===');
+                console.log('[LOGOUT] === ВЫХОД ЗАВЕРШЕН ===');
             }
 
             loggedInUser = user;
@@ -1430,12 +1430,12 @@ export function initTabsNavigation(appVersion) {
                 }
             } catch { }
             updateLoginBtnState();
-            // Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ/РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р В°Р Т‘Р СР С‘Р Р…РЎРѓР С”Р С‘Р Вµ Р С”Р Р…Р С•Р С—Р С”Р С‘ Р Р† Р В·Р В°Р Р†Р С‘РЎРѓР С‘Р СР С•РЎРѓРЎвЂљР С‘ Р С•РЎвЂљ РЎР‚Р С•Р В»Р С‘
+            // Показать/скрыть админские кнопки в зависимости от роли
             try {
-                adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Р СћР С•Р В»РЎРЉР С”Р С• admin Р СР С•Р В¶Р ВµРЎвЂљ РЎРѓР С•Р В·Р Т‘Р В°Р Р†Р В°РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР в„–
-                // editToggleBtn Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р… admin Р С‘ editor
+                adminUsersBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';  // Только admin может создавать пользователей
+                // editToggleBtn доступен admin и editor
                 editToggleBtn.style.display = (user && ['admin', 'editor'].includes(user.role)) ? 'inline-block' : 'none';
-                // genStatsBtn Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р… РЎвЂљР С•Р В»РЎРЉР С”Р С• admin
+                // genStatsBtn доступен только admin
                 genStatsBtn.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
             } catch { }
             try { migrateDeviceRecordsToUser(); } catch { }
@@ -1444,21 +1444,21 @@ export function initTabsNavigation(appVersion) {
                     if (mod && typeof mod.hydrateLocalFromSupabase === 'function') {
                         mod.hydrateLocalFromSupabase().then(() => {
                             const evt = new Event('xpUpdated'); window.dispatchEvent(evt);
-                            // Р СћР В°Р С”Р В¶Р Вµ Р С•Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ
+                            // Также обновляем избранное
                             window.dispatchEvent(new Event('favoritesUpdated'));
-                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С UI РЎвЂљР В°Р В±Р С•Р Р† Р С—Р С•РЎРѓР В»Р Вµ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
+                            // Обновляем UI табов после загрузки данных
                             window.dispatchEvent(new Event('dataLoaded'));
                         }).catch(() => { });
                     }
                 }).catch(() => { });
             } else {
-                // Р вЂўРЎРѓР В»Р С‘ Р Р†РЎвЂ№РЎв‚¬Р В»Р С‘ (Guest), РЎвЂљР С•Р В¶Р Вµ Р С•Р В±Р Р…Р С•Р Р†Р С‘Р С UI
+                // Если вышли (Guest), тоже обновим UI
                 window.dispatchEvent(new Event('xpUpdated'));
                 window.dispatchEvent(new Event('favoritesUpdated'));
-                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р СРЎРЏ Р Р…Р В° "Р вЂњР С•РЎРѓРЎвЂљРЎРЉ"
+                // Обновляем имя на "Гость"
                 const usernameSpan = document.querySelector('.username-display');
                 if (usernameSpan) {
-                    usernameSpan.textContent = 'Р вЂњР С•РЎРѓРЎвЂљРЎРЉ';
+                    usernameSpan.textContent = 'Гость';
                     usernameSpan.style.color = '#808080';
                 }
             }
@@ -1468,7 +1468,7 @@ export function initTabsNavigation(appVersion) {
         window.setLoggedUser = setLoggedUser;
 
         // Auto-load user data on page load if credentials are saved
-        // Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С РЎРѓ Р В·Р В°Р Т‘Р ВµРЎР‚Р В¶Р С”Р С•Р в„– РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р†РЎРѓР Вµ РЎвЂћРЎС“Р Р…Р С”РЎвЂ Р С‘Р С‘ Р В±РЎвЂ№Р В»Р С‘ Р С•Р С—РЎР‚Р ВµР Т‘Р ВµР В»Р ВµР Р…РЎвЂ№
+        // Вызываем с задержкой чтобы все функции были определены
         setTimeout(() => autoLoadUserData(), 1000);
 
         function openLoginModal() {
@@ -1506,7 +1506,7 @@ export function initTabsNavigation(appVersion) {
                     border-left: 1px solid rgba(255, 255, 255, 0.2);
                     overflow: hidden;
                 ">
-                    <!-- Р вЂР В»Р С‘Р С” РЎРѓР Р†Р ВµРЎР‚РЎвЂ¦РЎС“ -->
+                    <!-- Блик сверху -->
                     <div style="
                         position: absolute;
                         top: 0; left: 0; right: 0;
@@ -1517,36 +1517,36 @@ export function initTabsNavigation(appVersion) {
                             transparent);
                     "></div>
                     
-                    <div style="font-weight:600;margin-bottom:16px;color:#fff;font-size:18px;letter-spacing:-0.3px;text-align:center">Р вЂ™РЎвЂ¦Р С•Р Т‘</div>
+                    <div style="font-weight:600;margin-bottom:16px;color:#fff;font-size:18px;letter-spacing:-0.3px;text-align:center">Вход</div>
                     <form id="login-form" autocomplete="on" style="display:flex;flex-direction:column;gap:10px">
-                        <input id="login-username" name="username" autocomplete="username" placeholder="Р вЂєР С•Р С–Р С‘Р Р…" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
+                        <input id="login-username" name="username" autocomplete="username" placeholder="Логин" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
                         <div style="position:relative;display:block">
-                            <input id="login-password" name="password" autocomplete="current-password" placeholder="Р СџР В°РЎР‚Р С•Р В»РЎРЉ" type="password" style="width:100%;box-sizing:border-box;padding:10px 36px 10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
-                            <button type="button" id="login-pass-eye" title="Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ" aria-label="Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:rgba(255,255,255,0.6);width:22px;height:22px;cursor:pointer;transition:color 0.2s">
+                            <input id="login-password" name="password" autocomplete="current-password" placeholder="Пароль" type="password" style="width:100%;box-sizing:border-box;padding:10px 36px 10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;transition:all 0.2s"/>
+                            <button type="button" id="login-pass-eye" title="Показать пароль" aria-label="Показать пароль" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:0;border:none;background:transparent;color:rgba(255,255,255,0.6);width:22px;height:22px;cursor:pointer;transition:color 0.2s">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                         <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:rgba(255,255,255,0.6)">
                             <input type="checkbox" id="login-remember" checked style="accent-color:rgba(255,255,255,0.3)"/>
-                            Р С›РЎРѓРЎвЂљР В°Р Р†Р В°РЎвЂљРЎРЉРЎРѓРЎРЏ Р Р† РЎРѓР С‘РЎРѓРЎвЂљР ВµР СР Вµ
+                            Оставаться в системе
                         </label>
                         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-                            <button id="login-cancel" type="button" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;transition:all 0.2s">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
-                            <button id="login-submit" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s">Р вЂ™Р С•Р в„–РЎвЂљР С‘</button>
+                            <button id="login-cancel" type="button" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);font-size:14px;cursor:pointer;transition:all 0.2s">Отмена</button>
+                            <button id="login-submit" type="submit" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.3);background:linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s">Войти</button>
                         </div>
                         <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.15);padding-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px">
-                            <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">Р ВР В»Р С‘ Р Р†Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В·</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">Или войти через</div>
                             <div style="display:flex;gap:12px;justify-content:center;align-items:center">
                                 <!-- Google -->
-                                <button id="google-login-btn" type="button" title="Р вЂ™Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· Google" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                <button id="google-login-btn" type="button" title="Войти через Google" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                                 </button>
                                 <!-- GitHub -->
-                                <button id="github-login-btn" type="button" title="Р вЂ™Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· GitHub" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
+                                <button id="github-login-btn" type="button" title="Войти через GitHub" style="width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center">
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                                 </button>
                             </div>
-                            <!-- Telegram Login Widget - Р Р†Р С‘Р Т‘Р С‘Р СРЎвЂ№Р в„– -->
+                            <!-- Telegram Login Widget - видимый -->
                             <div id="tg-widget-container" style="margin-top:12px;display:flex;justify-content:center;"></div>
                         </div>
                     </form>
@@ -1554,7 +1554,7 @@ export function initTabsNavigation(appVersion) {
             `;
                 document.body.appendChild(ov);
 
-                // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓРЎвЂљР С‘Р В»Р С‘ Р Т‘Р В»РЎРЏ hover-РЎРЊРЎвЂћРЎвЂћР ВµР С”РЎвЂљР С•Р Р†
+                // Добавляем стили для hover-эффектов
                 const loginStyles = document.createElement('style');
                 loginStyles.textContent = `
                     #login-username:hover,
@@ -1584,7 +1584,7 @@ export function initTabsNavigation(appVersion) {
                     #login-submit:active {
                         transform: scale(0.98);
                     }
-                    /* Р С™Р Р…Р С•Р С—Р С”Р С‘ РЎРѓР С•РЎвЂ РЎРѓР ВµРЎвЂљР ВµР в„– */
+                    /* Кнопки соцсетей */
                     #google-login-btn:hover,
                     #github-login-btn:hover,
                     #telegram-login-btn:hover {
@@ -1601,27 +1601,27 @@ export function initTabsNavigation(appVersion) {
                 `;
                 document.head.appendChild(loginStyles);
 
-                // === Р С›Р вЂР В Р С’Р вЂР С›Р СћР В§Р ВР С™Р В Р вЂќР вЂєР Р‡ Р С™Р СњР С›Р СџР С›Р С™ Р РЋР С›Р В¦Р РЋР вЂўР СћР вЂўР в„ў ===
+                // === ОБРАБОТЧИКИ ДЛЯ КНОПОК СОЦСЕТЕЙ ===
 
-                // Google Р С”Р Р…Р С•Р С—Р С”Р В°
+                // Google кнопка
                 const googleBtn = ov.querySelector('#google-login-btn');
                 if (googleBtn) {
                     googleBtn.addEventListener('click', function () {
                         console.log('[Google Auth] Button clicked');
-                        // Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Google OAuth РЎРѓР С”РЎР‚Р С‘Р С—РЎвЂљ
+                        // Загружаем Google OAuth скрипт
                         const script = document.createElement('script');
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
                             console.log('[Google Auth] Script loaded, initializing...');
-                            // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С Google OAuth РЎРѓ redirect mode (Р Р…Р В°Р Т‘РЎвЂР В¶Р Р…Р ВµР Вµ Р В±Р ВµР В· FedCM)
+                            // Инициализируем Google OAuth с redirect mode (надёжнее без FedCM)
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
                                 callback: handleGoogleSignIn,
                                 auto_select: false,
-                                ux_mode: 'redirect'  // Redirect Р Р†Р СР ВµРЎРѓРЎвЂљР С• popup (Р Р…Р В°Р Т‘РЎвЂР В¶Р Р…Р ВµР Вµ)
+                                ux_mode: 'redirect'  // Redirect вместо popup (надёжнее)
                             });
                             console.log('[Google Auth] Initialized, redirecting to Google...');
-                            // Р СџР ВµРЎР‚Р ВµР Р…Р В°Р С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° Google
+                            // Перенаправляем на Google
                             google.accounts.id.prompt();
                         };
                         script.onerror = function () {
@@ -1631,39 +1631,39 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // GitHub Р С”Р Р…Р С•Р С—Р С”Р В° - OAuth РЎвЂЎР ВµРЎР‚Р ВµР В· popup
+                // GitHub кнопка - OAuth через popup
                 const githubBtn = ov.querySelector('#github-login-btn');
                 if (githubBtn) {
                     githubBtn.addEventListener('click', function () {
                         console.log('[GitHub Auth] Button clicked');
-                        // Р С›РЎвЂљР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С GitHub OAuth Р Р† popup Р С•Р С”Р Р…Р Вµ
+                        // Открываем GitHub OAuth в popup окне
                         const popup = window.open(
                             `${BACKEND_URL}/api/auth/github`,
                             'GitHub Auth',
                             'width=600,height=400,left=' + (screen.width / 2 - 300) + ',top=' + (screen.height / 2 - 200)
                         );
 
-                        // Р РЋР В»РЎС“РЎв‚¬Р В°Р ВµР С РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р Вµ Р С•РЎвЂљ popup
+                        // Слушаем сообщение от popup
                         const handleMessage = (event) => {
                             if (event.data && event.data.type === 'github-auth') {
                                 console.log('[GitHub Auth] Success:', event.data);
-                                // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ
+                                // Сохраняем данные
                                 localStorage.setItem('qaUsername', event.data.username);
                                 localStorage.setItem('qaAuthType', 'github');
                                 setLoggedUser({ username: event.data.username, role: event.data.role });
-                                // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
+                                // Закрываем модальное окно
                                 const ov = document.getElementById('login-overlay');
                                 if (ov) ov.remove();
-                                // Р СџР ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎС“
+                                // Перезагружаем страницу
                                 window.location.reload();
-                                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С РЎРѓР В»РЎС“РЎв‚¬Р В°РЎвЂљР ВµР В»РЎРЉ
+                                // Удаляем слушатель
                                 window.removeEventListener('message', handleMessage);
                             }
                         };
 
                         window.addEventListener('message', handleMessage);
 
-                        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ popup
+                        // Проверяем закрытие popup
                         const checkClosed = setInterval(() => {
                             if (popup.closed) {
                                 clearInterval(checkClosed);
@@ -1673,9 +1673,9 @@ export function initTabsNavigation(appVersion) {
                     });
                 }
 
-                // Telegram Login Widget - Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С РЎРѓРЎР‚Р В°Р В·РЎС“
+                // Telegram Login Widget - загружаем сразу
                 const widgetContainer = ov.querySelector('#tg-widget-container');
-                console.log('[TG DEBUG] Р С™Р С•Р Р…РЎвЂљР ВµР в„–Р Р…Р ВµРЎР‚ Р Р†Р С‘Р Т‘Р В¶Р ВµРЎвЂљР В° Р Р…Р В°Р в„–Р Т‘Р ВµР Р…:', !!widgetContainer);
+                console.log('[TG DEBUG] Контейнер виджета найден:', !!widgetContainer);
 
                 if (widgetContainer) {
                     const script = document.createElement('script');
@@ -1688,37 +1688,37 @@ export function initTabsNavigation(appVersion) {
                     script.setAttribute('data-request-access', 'write');
 
                     script.onload = () => {
-                        console.log('[TG Auth] РІСљвЂ¦ Р вЂ™Р С‘Р Т‘Р В¶Р ВµРЎвЂљ Telegram Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р ВµР Р…');
+                        console.log('[TG Auth] ✅ Виджет Telegram загружен');
                     };
 
                     widgetContainer.appendChild(script);
                 }
 
-                // Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– Р С”Р С•Р В»Р В»Р В±РЎРЊР С” Р Т‘Р В»РЎРЏ Google OAuth
+                // Глобальный коллбэк для Google OAuth
                 window.handleGoogleSignIn = async function (response) {
                     console.log('[Google Auth] === RESPONSE RECEIVED ===');
                     console.log('[Google Auth] Full response:', JSON.stringify(response, null, 2));
 
                     try {
-                        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎвЂЎРЎвЂљР С• credential РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ
+                        // Проверяем что credential существует
                         if (!response || !response.credential) {
                             console.error('[Google Auth] No credential in response');
-                            alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: Google Р Р…Р Вµ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» РЎвЂљР С•Р С”Р ВµР Р…. Р СџР С•Р С—РЎР‚Р С•Р В±РЎС“Р в„–РЎвЂљР Вµ Р ВµРЎвЂ°РЎвЂ РЎР‚Р В°Р В·.');
+                            alert('Ошибка: Google не вернул токен. Попробуйте ещё раз.');
                             return;
                         }
 
                         console.log('[Google Auth] Credential received');
 
-                        // Р В Р В°Р В·Р Т‘Р ВµР В»РЎРЏР ВµР С JWT Р Р…Р В° РЎвЂЎР В°РЎРѓРЎвЂљР С‘
+                        // Разделяем JWT на части
                         const parts = response.credential.split('.');
 
-                        // Google Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµРЎвЂљ URL-safe base64, Р Р…РЎС“Р В¶Р Р…Р С• Р В·Р В°Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ - Р Р…Р В° + Р С‘ _ Р Р…Р В° /
+                        // Google использует URL-safe base64, нужно заменить - на + и _ на /
                         let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
                         const userInfo = JSON.parse(atob(base64));
 
                         console.log('[Google Auth] User info:', userInfo);
 
-                        // Р С›Р СћР СџР В Р С’Р вЂ™Р вЂєР Р‡Р вЂўР Сљ Р вЂєР С›Р вЂњР В Р СњР С’ Р РЋР вЂўР В Р вЂ™Р вЂўР В 
+                        // ОТПРАВЛЯЕМ ЛОГИ НА СЕРВЕР
                         console.log('[Google Auth] Sending logs to server...');
                         await fetch('/api/iphone-logs', {
                             method: 'POST',
@@ -1736,7 +1736,7 @@ export function initTabsNavigation(appVersion) {
                             })
                         }).catch(err => console.error('[Google Auth] Failed to send logs:', err));
 
-                        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+                        // Отправляем на сервер для авторизации
                         const authUrl = `${BACKEND_URL}/api/auth/google`;
                         console.log('[Google Auth] Sending to:', authUrl);
                         const res = await fetch(authUrl, {
@@ -1756,33 +1756,33 @@ export function initTabsNavigation(appVersion) {
 
                         if (res.ok && data.ok) {
                             console.log('[Google Auth] SUCCESS! Username:', data.username);
-                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘
+                            // Сохраняем данные для автозагрузки
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'google');
                             setLoggedUser({ username: data.username, role: data.role });
 
-                            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
+                            // Закрываем модальное окно
                             const ov = document.getElementById('login-overlay');
                             if (ov) ov.remove();
 
-                            // Р СџР ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ РЎС“
+                            // Перезагружаем страницу
                             window.location.reload();
                         } else {
                             console.error('[Google Auth] Server error:', data.error);
-                            alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + (data.error || 'Р СњР ВµР С‘Р В·Р Р†Р ВµРЎРѓРЎвЂљР Р…Р В°РЎРЏ Р С•РЎв‚¬Р С‘Р В±Р С”Р В°'));
+                            alert('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'));
                         }
                     } catch (e) {
                         console.error('[Google Auth] === ERROR ===');
                         console.error('[Google Auth] Error type:', e.name);
                         console.error('[Google Auth] Error message:', e.message);
                         console.error('[Google Auth] Stack:', e.stack);
-                        alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + e.message);
+                        alert('Ошибка авторизации: ' + e.message);
                     }
                 };
 
-                // Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– Р С”Р С•Р В»Р В»Р В±РЎРЊР С” Р Т‘Р В»РЎРЏ Р Р†Р С‘Р Т‘Р В¶Р ВµРЎвЂљР В° Telegram
+                // Глобальный коллбэк для виджета Telegram
                 window.onTelegramAuth = async function (user) {
-                    console.log('[TG Auth] Р вЂќР В°Р Р…Р Р…РЎвЂ№Р Вµ Р С•РЎвЂљ Telegram:', user);
+                    console.log('[TG Auth] Данные от Telegram:', user);
 
                     const authUrl = `${BACKEND_URL}/api/auth/telegram`;
 
@@ -1794,24 +1794,24 @@ export function initTabsNavigation(appVersion) {
                         });
 
                         const data = await res.json();
-                        console.log('[TG Auth] Р С›РЎвЂљР Р†Р ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', data);
+                        console.log('[TG Auth] Ответ сервера:', data);
 
                         if (res.ok && data.ok) {
-                            // СЂСџвЂќТђ Р СњР вЂў РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ - Р С—РЎР‚Р С•РЎРѓРЎвЂљР С• Р Р†РЎвЂ¦Р С•Р Т‘Р С‘Р С
+                            // 🔥 НЕ сохраняем данные для автозагрузки - просто входим
                             setLoggedUser({ username: data.username, role: data.role });
                             ov.remove();
                             window.location.reload();
                         } else {
-                            // Р СџР С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“
+                            // Показываем ошибку
                             if (data.error === 'not_subscribed') {
-                                alert('РІСњвЂ” Р вЂќР В»РЎРЏ Р Р†РЎвЂ¦Р С•Р Т‘Р В° Р Р…Р ВµР С•Р В±РЎвЂ¦Р С•Р Т‘Р С‘Р СР С• Р С—Р С•Р Т‘Р С—Р С‘РЎРѓР В°РЎвЂљРЎРЉРЎРѓРЎРЏ Р Р…Р В° Р С”Р В°Р Р…Р В°Р В»:\n' + TELEGRAM_CHANNEL_ID);
+                                alert('❗ Для входа необходимо подписаться на канал:\n' + TELEGRAM_CHANNEL_ID);
                             } else {
-                                alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + (data.error || 'Р СњР ВµР С‘Р В·Р Р†Р ВµРЎРѓРЎвЂљР Р…Р В°РЎРЏ Р С•РЎв‚¬Р С‘Р В±Р С”Р В°'));
+                                alert('Ошибка авторизации: ' + (data.error || 'Неизвестная ошибка'));
                             }
                         }
                     } catch (e) {
                         console.error('[TG Auth] Error:', e);
-                        alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В°Р Р†РЎвЂљР С•РЎР‚Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘: ' + e.message);
+                        alert('Ошибка авторизации: ' + e.message);
                     }
                 };
 
@@ -1829,9 +1829,9 @@ export function initTabsNavigation(appVersion) {
                         const p = ov.querySelector('#login-password').value;
                         const remember = ov.querySelector('#login-remember')?.checked;
 
-                        // Local auth only (Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚)
+                        // Local auth only (локальный сервер)
                         try {
-                            // Р СџРЎР‚Р С•Р В±РЎС“Р ВµР С Р Р†Р С•Р в„–РЎвЂљР С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– API
+                            // Пробуем войти через локальный API
                             const loginRes = await fetch(`${BACKEND_URL} /api/login`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -1841,7 +1841,7 @@ export function initTabsNavigation(appVersion) {
                             if (loginRes.ok) {
                                 const loginData = await loginRes.json();
                                 if (loginData.ok) {
-                                    // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С username/password Р Т‘Р В»РЎРЏ Р С—Р С•РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР в„– Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
+                                    // Сохраняем username/password для последующей загрузки данных
                                     if (remember) {
                                         localStorage.setItem('qaUsername', u);
                                         localStorage.setItem('qaPassword', p);
@@ -1860,17 +1860,17 @@ export function initTabsNavigation(appVersion) {
                         const match = users.find(x => x.username === u && x.password === p);
                         if (match) {
                             setLoggedUser({ username: match.username, role: match.role });
-                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С credentials Р Т‘Р В»РЎРЏ Р В°Р Р†РЎвЂљР С•Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р С‘
+                            // Сохраняем credentials для автозагрузки
                             if (remember) {
                                 localStorage.setItem('qaUsername', u);
                                 localStorage.setItem('qaPassword', p);
                             }
                             ov.remove();
                         } else {
-                            alert('Р СњР ВµР Р†Р ВµРЎР‚Р Р…РЎвЂ№Р в„– Р В»Р С•Р С–Р С‘Р Р… Р С‘Р В»Р С‘ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ');
+                            alert('Неверный логин или пароль');
                         }
                     } catch {
-                        alert('Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р Р†РЎвЂ¦Р С•Р Т‘Р В°');
+                        alert('Ошибка входа');
                     }
                 });
                 // Enter to submit
@@ -1899,18 +1899,18 @@ export function initTabsNavigation(appVersion) {
                 ov.style.zIndex = '5000';
                 ov.innerHTML = `
             < div style = "background:#2a2a2a;color:#fff;padding:16px 20px;border-radius:10px;width:360px;box-shadow:0 8px 24px rgba(0,0,0,0.35)" >
-                    <div style="font-weight:600;margin-bottom:10px">Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЏ</div>
+                    <div style="font-weight:600;margin-bottom:10px">Добавить пользователя</div>
                     <div style="display:flex;flex-direction:column;gap:8px">
-                        <input id="new-username" placeholder="Р вЂєР С•Р С–Р С‘Р Р…" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
-                        <input id="new-password" placeholder="Р СџР В°РЎР‚Р С•Р В»РЎРЉ" type="password" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <input id="new-username" placeholder="Логин" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
+                        <input id="new-password" placeholder="Пароль" type="password" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff"/>
                         <select id="new-role" style="padding:8px;border-radius:6px;border:1px solid #444;background:#1f1f1f;color:#fff">
-                            <option value="user">Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ</option>
-                            <option value="editor">Р В Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚</option>
-                            <option value="admin">Р С’Р Т‘Р СР С‘Р Р…Р С‘РЎРѓРЎвЂљРЎР‚Р В°РЎвЂљР С•РЎР‚</option>
+                            <option value="user">Пользователь</option>
+                            <option value="editor">Редактор</option>
+                            <option value="admin">Администратор</option>
                         </select>
                         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
-                            <button id="admin-cancel" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
-                            <button id="admin-add" style="padding:8px 12px;border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:#fff">Р вЂќР С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ</button>
+                            <button id="admin-cancel" style="padding:8px 12px;border-radius:6px;border:1px solid #555;background:#1f1f1f;color:#fff">Отмена</button>
+                            <button id="admin-add" style="padding:8px 12px;border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:#fff">Добавить</button>
                         </div>
                     </div>
                 </div >
@@ -1922,7 +1922,7 @@ export function initTabsNavigation(appVersion) {
                     const u = ov.querySelector('#new-username').value.trim();
                     const p = ov.querySelector('#new-password').value;
                     const r = ov.querySelector('#new-role').value;
-                    if (!u || !p) { alert('Р вЂєР С•Р С–Р С‘Р Р… Р С‘ Р С—Р В°РЎР‚Р С•Р В»РЎРЉ Р С•Р В±РЎРЏР В·Р В°РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№'); return; }
+                    if (!u || !p) { alert('Логин и пароль обязательны'); return; }
                     const client = window.__supabaseClient;
                     (async () => {
                         if (client) {
@@ -1930,18 +1930,18 @@ export function initTabsNavigation(appVersion) {
                                 const { error } = await client.from('users').upsert({ username: u, password: p, role: r }, { onConflict: 'username' });
                                 if (error) throw error;
                                 ov.remove();
-                                alert('Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…');
+                                alert('Пользователь добавлен');
                                 return;
                             } catch { }
                         }
                         const raw = localStorage.getItem('usersDB') || '[]';
                         let users = [];
                         try { users = JSON.parse(raw); } catch { }
-                        if (users.find(x => x.username === u)) { alert('Р СћР В°Р С”Р С•Р в„– Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ РЎС“Р В¶Р Вµ РЎРѓРЎС“РЎвЂ°Р ВµРЎРѓРЎвЂљР Р†РЎС“Р ВµРЎвЂљ'); return; }
+                        if (users.find(x => x.username === u)) { alert('Такой пользователь уже существует'); return; }
                         users.push({ username: u, password: p, role: r });
                         localStorage.setItem('usersDB', JSON.stringify(users));
                         ov.remove();
-                        alert('Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…');
+                        alert('Пользователь добавлен');
                     })();
                 });
             }
@@ -1949,7 +1949,7 @@ export function initTabsNavigation(appVersion) {
 
         function openCloudOverview() {
             const client = window.__supabaseClient;
-            if (!client) { alert('Supabase Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…'); return; }
+            if (!client) { alert('Supabase недоступен'); return; }
             let ov = document.getElementById('cloud-overview-overlay');
             if (!ov) {
                 ov = document.createElement('div');
@@ -1964,16 +1964,16 @@ export function initTabsNavigation(appVersion) {
                 ov.innerHTML = `
             < div style = "background:#1f1f1f;color:#fff;padding:16px 20px;border-radius:10px;width:560px;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,0.35)" >
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                        <div style="font-weight:600">Supabase Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ</div>
-                        <button id="cloud-close" style="padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px">Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ</button>
+                        <div style="font-weight:600">Supabase данные</div>
+                        <button id="cloud-close" style="padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px">Закрыть</button>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                         <div>
-                            <div style="font-weight:600;margin-bottom:6px">Р СџР С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р С‘</div>
+                            <div style="font-weight:600;margin-bottom:6px">Пользователи</div>
                             <div id="cloud-users" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
                         </div>
                         <div>
-                            <div style="font-weight:600;margin-bottom:6px">Р вЂќР С•РЎРѓРЎвЂљР С‘Р В¶Р ВµР Р…Р С‘РЎРЏ (daily_stats)</div>
+                            <div style="font-weight:600;margin-bottom:6px">Достижения (daily_stats)</div>
                             <div id="cloud-stats" style="max-height:260px;overflow:auto;border:1px solid #333;border-radius:6px;padding:8px"></div>
                         </div>
                     </div>
@@ -1985,48 +1985,48 @@ export function initTabsNavigation(appVersion) {
             }
             const usersEl = ov.querySelector('#cloud-users');
             const statsEl = ov.querySelector('#cloud-stats');
-            usersEl.textContent = 'Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В°...';
-            statsEl.textContent = 'Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В°...';
+            usersEl.textContent = 'Загрузка...';
+            statsEl.textContent = 'Загрузка...';
             client.from('users').select('*').then(({ data, error }) => {
-                if (error) { usersEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; return; }
-                usersEl.innerHTML = (data || []).map(u => `< div > ${u.username} РІР‚Сћ РЎР‚Р С•Р В»РЎРЉ: ${u.role || 'user'}</div > `).join('') || '<div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
-            }).catch(() => { usersEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; });
+                if (error) { usersEl.textContent = 'Ошибка'; return; }
+                usersEl.innerHTML = (data || []).map(u => `< div > ${u.username} • роль: ${u.role || 'user'}</div > `).join('') || '<div>Пусто</div>';
+            }).catch(() => { usersEl.textContent = 'Ошибка'; });
             const loadStats = () => {
                 client.from('daily_stats').select('*').order('date', { ascending: false }).limit(50).then(({ data, error }) => {
-                    if (error) { statsEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; return; }
+                    if (error) { statsEl.textContent = 'Ошибка'; return; }
                     const list = data || [];
                     const hasDevices = list.some(s => String(s.user_id || '').startsWith('device_'));
                     const btn = document.createElement('button');
-                    btn.textContent = 'Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ device_* Р С” РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР СРЎС“ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎР‹';
+                    btn.textContent = 'Привязать device_* к текущему пользователю';
                     btn.style.cssText = 'margin-bottom:8px;padding:6px 10px;border:1px solid #444;background:#111;color:#ddd;border-radius:6px';
                     statsEl.innerHTML = '';
                     if (hasDevices) {
                         statsEl.appendChild(btn);
                         btn.addEventListener('click', async () => {
                             btn.disabled = true;
-                            btn.textContent = 'Р СљР С‘Р С–РЎР‚Р В°РЎвЂ Р С‘РЎРЏ...';
+                            btn.textContent = 'Миграция...';
                             let result = null;
                             try { result = await migrateDeviceRecordsToUser(); } catch { }
                             btn.disabled = false;
                             const d = (result && typeof result.daily === 'number') ? result.daily : 0;
                             const c = (result && typeof result.cards === 'number') ? result.cards : 0;
                             window.__cloudLastMigration = { daily: d, cards: c, at: Date.now() };
-                            btn.textContent = `Р вЂњР С•РЎвЂљР С•Р Р†Р С•: Р Т‘Р С•РЎРѓРЎвЂљР С‘Р В¶Р ВµР Р…Р С‘РЎРЏ ${d}, Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ ${c} `;
-                            setTimeout(() => { btn.textContent = 'Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ device_* Р С” РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР СРЎС“ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎР‹'; }, 1800);
+                            btn.textContent = `Готово: достижения ${d}, карточки ${c} `;
+                            setTimeout(() => { btn.textContent = 'Привязать device_* к текущему пользователю'; }, 1800);
                             loadStats();
                         });
                     }
                     if (window.__cloudLastMigration && typeof window.__cloudLastMigration.daily === 'number') {
                         const info = document.createElement('div');
                         info.style.cssText = 'margin:6px 0;padding:6px 10px;border:1px solid #444;background:#222;color:#ddd;border-radius:6px';
-                        info.textContent = `Р СџР С•РЎРѓР В»Р ВµР Т‘Р Р…РЎРЏРЎРЏ Р СР С‘Р С–РЎР‚Р В°РЎвЂ Р С‘РЎРЏ: Р Т‘Р С•РЎРѓРЎвЂљР С‘Р В¶Р ВµР Р…Р С‘РЎРЏ ${window.__cloudLastMigration.daily}, Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ ${window.__cloudLastMigration.cards} `;
+                        info.textContent = `Последняя миграция: достижения ${window.__cloudLastMigration.daily}, карточки ${window.__cloudLastMigration.cards} `;
                         statsEl.appendChild(info);
-                        // Р С•РЎвЂЎР С‘РЎРѓРЎвЂљР С‘РЎвЂљРЎРЉ РЎвЂЎР ВµРЎР‚Р ВµР В· Р С”Р С•РЎР‚Р С•РЎвЂљР С”Р С•Р Вµ Р Р†РЎР‚Р ВµР СРЎРЏ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р СР ВµРЎв‚¬Р В°Р В»Р С•
+                        // очистить через короткое время, чтобы не мешало
                         setTimeout(() => { try { delete window.__cloudLastMigration; } catch { } }, 2500);
                     }
-                    const rows = list.map(s => `< div > ${s.user_id} РІР‚Сћ ${s.date} РІР‚Сћ xp:${s.xp} РІР‚Сћ Р В±Р С•Р Р…РЎС“РЎРѓ:${s.bonus} РІР‚Сћ Р Т‘Р ВµР Р…РЎРЉ:${s.day_bonus} РІР‚Сћ РЎРѓРЎвЂљРЎР‚Р С‘Р С”:${s.streak}</div > `).join('');
-                    statsEl.innerHTML += rows || '<div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
-                }).catch(() => { statsEl.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°'; });
+                    const rows = list.map(s => `< div > ${s.user_id} • ${s.date} • xp:${s.xp} • бонус:${s.bonus} • день:${s.day_bonus} • стрик:${s.streak}</div > `).join('');
+                    statsEl.innerHTML += rows || '<div>Пусто</div>';
+                }).catch(() => { statsEl.textContent = 'Ошибка'; });
             };
             loadStats();
         }
@@ -2076,7 +2076,7 @@ export function initTabsNavigation(appVersion) {
             } catch { }
             return { daily: 0, cards: 0 };
         }
-        // Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘Р С‘ Р СР ВµР Р…РЎР‹ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+        // Функции меню категорий в режиме редактирования
         function refreshCategoryEditMenus() {
             const tabs = tabsContainer.querySelectorAll('.tab');
             tabs.forEach(tab => {
@@ -2087,9 +2087,9 @@ export function initTabsNavigation(appVersion) {
                 if (!editMode) return;
                 const btn = document.createElement('button');
                 btn.className = 'cat-menu-btn';
-                btn.title = 'Р СљР ВµР Р…РЎР‹ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘';
-                btn.textContent = 'РІвЂ№В®';
-                // Р РЋРЎвЂљР С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓР ВµР Р…РЎвЂ№ Р Р† CSS
+                btn.title = 'Меню категории';
+                btn.textContent = '⋮';
+                // Стили перенесены в CSS
                 tab.appendChild(btn);
                 btn.addEventListener('click', (ev) => {
                     ev.stopPropagation();
@@ -2098,9 +2098,9 @@ export function initTabsNavigation(appVersion) {
             });
         }
 
-        // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†Р С”Р В° РЎвЂљР В°Р В±Р С•Р Р† Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–
+        // Перерисовка табов категорий
         function refreshCategoriesTabs(oldName = null, newName = null) {
-            // СЂСџвЂќТђ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С categories Р С‘Р В· Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦
+            // 🔥 Обновляем categories из актуальных данных
             categories = buildCategoriesFromData(getRuntimeData());
 
             const active = tabsContainer.querySelector('.tab.active');
@@ -2109,15 +2109,15 @@ export function initTabsNavigation(appVersion) {
             const allTab = document.createElement('div');
             allTab.className = 'tab';
             allTab.dataset.category = 'all';
-            allTab.textContent = 'Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№';
+            allTab.textContent = 'Все вопросы';
             tabsContainer.appendChild(allTab);
             const favTab = document.createElement('div');
             favTab.className = 'tab';
             favTab.dataset.category = 'favorites';
-            favTab.textContent = 'РІВвЂ¦';
+            favTab.textContent = '★';
             tabsContainer.appendChild(favTab);
             const cats = buildCategoriesFromData(getRuntimeData());
-            // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…Р Р…РЎвЂ№Р в„– Р С—Р С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–, Р ВµРЎРѓР В»Р С‘ Р С•Р Р… Р ВµРЎРѓРЎвЂљРЎРЉ
+            // Применяем сохранённый порядок категорий, если он есть
             try {
                 const order = getCategoryOrder();
                 if (order && order.length) {
@@ -2132,12 +2132,12 @@ export function initTabsNavigation(appVersion) {
                 tab.textContent = category.displayName || category.name;
                 tabsContainer.appendChild(tab);
             });
-            // Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р В°Р Р†Р В»Р С‘Р Р†Р В°Р ВµР С Р В°Р С”РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р в„– РЎвЂљР В°Р В±, Р ВµРЎРѓР В»Р С‘ Р Р†Р С•Р В·Р СР С•Р В¶Р Р…Р С•
+            // Восстанавливаем активный таб, если возможно
             const toActivate = tabsContainer.querySelector(`.tab[data-category="${activeId}"]`) || allTab;
             toActivate.classList.add('active');
-            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р СР ВµР Р…РЎР‹ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+            // Обновляем меню редактирования
             refreshCategoryEditMenus();
-            // Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р С—Р ВµРЎР‚Р ВµРЎвЂљР В°РЎРѓР С”Р С‘Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+            // Включаем перетаскивание категорий в режиме редактирования
             if (editMode) {
                 const catsNow = Array.from(tabsContainer.querySelectorAll('.tab'))
                     .filter(el => el.dataset.category !== 'all' && el.dataset.category !== 'favorites');
@@ -2166,11 +2166,11 @@ export function initTabsNavigation(appVersion) {
                         names.splice(toIdx, 0, moved);
                         setCategoryOrder(names);
                         (async () => {
-                            setSaveStatus('saving', 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”Р В° Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–...');
+                            setSaveStatus('saving', 'Сохранение порядка категорий...');
                             const meta = await getServerMetadata();
                             meta.categoryOrder = names;
                             const ok = await updateServerMetadata(meta);
-                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…' : 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
+                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок сохранён' : 'Ошибка сохранения');
                             refreshCategoriesTabs();
                         })();
                     });
@@ -2193,9 +2193,9 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            < button data - act="rename" > Р СџР ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°РЎвЂљРЎРЉ</button >
-            <button data-act="duplicate">Р вЂќРЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ</button>
-            <button data-act="delete">Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ</button>
+            < button data - act="rename" > Переименовать</button >
+            <button data-act="duplicate">Дублировать</button>
+            <button data-act="delete">Удалить</button>
         `;
             document.body.appendChild(menu);
             const rect = tabEl.getBoundingClientRect();
@@ -2208,19 +2208,19 @@ export function initTabsNavigation(appVersion) {
                 if (!act) return;
                 e.stopPropagation();
                 if (act === 'rename') {
-                    const newName = prompt('Р СњР С•Р Р†Р С•Р Вµ Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', catObj.name);
+                    const newName = prompt('Новое название категории:', catObj.name);
                     if (newName && newName !== catObj.name) {
                         const ov = getOverrides();
                         uniqueQaData.forEach(it => { if (it.category === catObj.name) { ov[it.question] = { ...ov[it.question], category: newName }; } });
                         setLS('qaAdminOverrides', ov);
-                        // Р С’Р Р†РЎвЂљР С•РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ
+                        // Автосохранение
                         saveMergedToServer();
-                        // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р В±РЎвЂ№, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“ РЎС“Р Р†Р С‘Р Т‘Р ВµРЎвЂљРЎРЉ Р Р…Р С•Р Р†Р С•Р Вµ Р С‘Р СРЎРЏ
+                        // Перерисовываем табы, чтобы сразу увидеть новое имя
                         refreshCategoriesTabs(catObj.name, newName);
-                        setSaveStatus('success', 'Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С—Р ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°Р Р…Р В°');
+                        setSaveStatus('success', 'Категория переименована');
                     }
                 } else if (act === 'duplicate') {
-                    const dupName = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р С•Р С—Р С‘Р С‘ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', `${catObj.name} (Р С”Р С•Р С—Р С‘РЎРЏ)`);
+                    const dupName = prompt('Название копии категории:', `${catObj.name} (копия)`);
                     if (!dupName) return;
                     const placeholders = getCategoryPlaceholders();
                     if (!placeholders[dupName]) placeholders[dupName] = { _cid: Date.now(), sub: [] };
@@ -2232,11 +2232,11 @@ export function initTabsNavigation(appVersion) {
                     setLS('qaNewItems', newItemsArr);
                     setCategoryPlaceholders(placeholders);
                     saveMergedToServer();
-                    // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР В°Р В±РЎвЂ№, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“ Р С—Р С•РЎРЏР Р†Р С‘Р В»Р В°РЎРѓРЎРЉ Р Р…Р С•Р Р†Р В°РЎРЏ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ
+                    // Перерисовываем табы, чтобы сразу появилась новая категория
                     refreshCategoriesTabs();
-                    setSaveStatus('success', 'Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘РЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р В°');
+                    setSaveStatus('success', 'Категория дублирована');
                 } else if (act === 'delete') {
-                    if (!confirm('Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“?')) return;
+                    if (!confirm('Удалить категорию в корзину?')) return;
                     const trashCats = getLS('qaTrashCategories', '{}');
                     trashCats[catObj.name] = true;
                     setLS('qaTrashCategories', trashCats);
@@ -2254,13 +2254,13 @@ export function initTabsNavigation(appVersion) {
                     renderTrashPanel();
                     saveMergedToServer();
                     refreshCategoriesTabs();
-                    setSaveStatus('success', 'Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“');
+                    setSaveStatus('success', 'Категория удалена в корзину');
                 }
                 menu.remove();
             });
         }
 
-        // Р СљР ВµР Р…РЎР‹ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+        // Меню подкатегорий в режиме редактирования
         function refreshSubcategoryEditMenus(categoryName) {
             const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
             cards.forEach(card => {
@@ -2271,10 +2271,10 @@ export function initTabsNavigation(appVersion) {
                 if (!editMode) return;
                 const btn = document.createElement('button');
                 btn.className = 'subcat-menu-btn';
-                btn.title = 'Р СљР ВµР Р…РЎР‹ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘';
-                btn.textContent = 'РІвЂ№В®';
+                btn.title = 'Меню подкатегории';
+                btn.textContent = '⋮';
                 btn.style.marginLeft = '8px';
-                // Р СћРЎвЂР СР Р…Р С•-РЎРѓР ВµРЎР‚РЎвЂ№Р в„– РЎРѓРЎвЂљР С‘Р В»РЎРЉ
+                // Тёмно-серый стиль
                 btn.style.background = '#444';
                 btn.style.color = '#eee';
                 btn.style.border = '1px solid #333';
@@ -2301,9 +2301,9 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            < button data - act="rename" > Р СџР ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°РЎвЂљРЎРЉ</button >
-            <button data-act="duplicate">Р вЂќРЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ</button>
-            <button data-act="delete">Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ</button>
+            < button data - act="rename" > Переименовать</button >
+            <button data-act="duplicate">Дублировать</button>
+            <button data-act="delete">Удалить</button>
         `;
             document.body.appendChild(menu);
             const rect = cardEl.getBoundingClientRect();
@@ -2315,13 +2315,13 @@ export function initTabsNavigation(appVersion) {
                 const act = e.target?.dataset?.act; if (!act) return;
                 e.stopPropagation();
                 if (act === 'rename') {
-                    const newName = prompt('Р СњР С•Р Р†Р С•Р Вµ Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', subcatName);
+                    const newName = prompt('Новое название подкатегории:', subcatName);
                     if (newName && newName !== subcatName) {
                         const scPlaceholders = getSubcategoryPlaceholders();
                         if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
                         scPlaceholders[categoryName][subcatName] = { displayName: newName };
                         setSubcategoryPlaceholders(scPlaceholders);
-                        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†РЎРѓР Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ РЎРЊРЎвЂљР С•Р в„– Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ РЎвЂЎР ВµРЎР‚Р ВµР В· overrides
+                        // Обновляем все карточки этой подкатегории через overrides
                         const ov = getOverrides();
                         getRuntimeData().forEach(it => {
                             if (it.category === categoryName && it.subcategory === subcatName) {
@@ -2331,10 +2331,10 @@ export function initTabsNavigation(appVersion) {
                         setLS('qaAdminOverrides', ov);
                         rebuildSubcategoriesForCategory(categoryName);
                         saveMergedToServer();
-                        setSaveStatus('success', 'Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С—Р ВµРЎР‚Р ВµР С‘Р СР ВµР Р…Р С•Р Р†Р В°Р Р…Р В°');
+                        setSaveStatus('success', 'Подкатегория переименована');
                     }
                 } else if (act === 'duplicate') {
-                    const dupName = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р С•Р С—Р С‘Р С‘ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:', `${subcatName} (Р С”Р С•Р С—Р С‘РЎРЏ)`);
+                    const dupName = prompt('Название копии подкатегории:', `${subcatName} (копия)`);
                     if (!dupName) return;
                     const newItemsArr = getNewItems();
                     getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName)
@@ -2343,7 +2343,7 @@ export function initTabsNavigation(appVersion) {
                             newItemsArr.push({ ...it, subcategory: dupName, question: newQuestion });
                         });
                     setLS('qaNewItems', newItemsArr);
-                    // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р С—Р В»Р ВµР в„–РЎРѓРЎвЂ¦Р С•Р В»Р Т‘Р ВµРЎР‚ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ
+                    // Добавляем плейсхолдер отображения
                     const scPlaceholders = getSubcategoryPlaceholders();
                     if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
                     scPlaceholders[categoryName][dupName] = { displayName: dupName };
@@ -2354,9 +2354,9 @@ export function initTabsNavigation(appVersion) {
                     rebuildSubcategoriesForCategory(categoryName);
 
                     saveMergedToServer();
-                    setSaveStatus('success', 'Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘РЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р В°');
+                    setSaveStatus('success', 'Подкатегория дублирована');
                 } else if (act === 'delete') {
-                    if (!confirm('Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“?')) { menu.remove(); return; }
+                    if (!confirm('Удалить подкатегорию в корзину?')) { menu.remove(); return; }
                     const delMap = getDeletedItems();
                     const itemsToTrash = getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName);
                     itemsToTrash.forEach(it => { delMap[it.question] = true; });
@@ -2371,13 +2371,13 @@ export function initTabsNavigation(appVersion) {
                     renderTrashPanel();
                     saveMergedToServer();
                     rebuildSubcategoriesForCategory(categoryName);
-                    setSaveStatus('success', 'Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“');
+                    setSaveStatus('success', 'Подкатегория удалена в корзину');
                 }
                 menu.remove();
             });
         }
 
-        // Р СџР ВµРЎР‚Р ВµРЎРѓРЎвЂљРЎР‚Р С•Р С‘РЎвЂљРЎРЉ РЎРѓР С—Р С‘РЎРѓР С•Р С” Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р Т‘Р В»РЎРЏ Р Р†РЎвЂ№Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р в„– Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
+        // Перестроить список подкатегорий для выбранной категории
         function rebuildSubcategoriesForCategory(categoryName) {
             const allCats = buildCategoriesFromData(getRuntimeData());
             const catObj = allCats.find(c => c.name === categoryName);
@@ -2387,7 +2387,7 @@ export function initTabsNavigation(appVersion) {
             const allCard = document.createElement('div');
             allCard.className = 'subcategory-card active';
             allCard.dataset.subcategory = 'all';
-            allCard.textContent = 'Р вЂ™РЎРѓР Вµ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘';
+            allCard.textContent = 'Все подкатегории';
             subcategoriesContainer.appendChild(allCard);
             const scPlaceholders = getSubcategoryPlaceholders();
             try {
@@ -2431,12 +2431,12 @@ export function initTabsNavigation(appVersion) {
                         names.splice(toIdx, 0, moved);
                         setSubcategoryOrderFor(categoryName, names);
                         (async () => {
-                            setSaveStatus('saving', 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”Р В° Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–...');
+                            setSaveStatus('saving', 'Сохранение порядка подкатегорий...');
                             const meta = await getServerMetadata();
                             meta.subcategoryOrder = meta.subcategoryOrder || {};
                             meta.subcategoryOrder[categoryName] = names;
                             const ok = await updateServerMetadata(meta);
-                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎвЂР Р…' : 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
+                            setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок сохранён' : 'Ошибка сохранения');
                             rebuildSubcategoriesForCategory(categoryName);
                         })();
                     });
@@ -2448,8 +2448,8 @@ export function initTabsNavigation(appVersion) {
             if (!editMode) return;
             const catDiv = trashPanel.querySelector('#trash-categories');
             const cardDiv = trashPanel.querySelector('#trash-cards');
-            catDiv.innerHTML = '<div><strong>Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:</strong></div><div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
-            // Р РЋР С—Р С‘РЎРѓР С•Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№РЎвЂ¦ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† + РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В»РЎРЉР Р…Р С•Р СРЎС“ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”РЎС“ ("Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№")
+            catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
+            // Список удалённых вопросов + сортировка по оригинальному порядку ("Все вопросы")
             const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
             const baseOrder = getOrderForContext('all') || getRuntimeData().map(i => i.question);
             const idxMap = new Map(baseOrder.map((q, i) => [q, i]));
@@ -2459,7 +2459,7 @@ export function initTabsNavigation(appVersion) {
             // Header + grid container
             cardDiv.innerHTML = '';
             const header = document.createElement('div');
-            header.innerHTML = '<strong>Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:</strong>' + (deletedCards.length ? '' : ' <span>Р СџРЎС“РЎРѓРЎвЂљР С•</span>');
+            header.innerHTML = '<strong>Карточки:</strong>' + (deletedCards.length ? '' : ' <span>Пусто</span>');
             cardDiv.appendChild(header);
             const grid = document.createElement('div');
             grid.className = 'trash-cards-grid';
@@ -2471,7 +2471,7 @@ export function initTabsNavigation(appVersion) {
                 const mini = document.createElement('div');
                 mini.className = 'result-item trash-mini';
 
-                // Р вЂ™Р ВµРЎР‚РЎвЂ¦Р Р…РЎРЏРЎРЏ Р В·Р С•Р Р…Р В°: РЎвЂљР ВµР С–Р С‘ (Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ, Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ)
+                // Верхняя зона: теги (категория, подкатегория)
                 const meta = document.createElement('div');
                 meta.className = 'trash-meta';
                 meta.style.display = 'flex';
@@ -2481,28 +2481,28 @@ export function initTabsNavigation(appVersion) {
                 const subBadge = document.createElement('span'); subBadge.className = 'subcategory-badge'; subBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
                 meta.appendChild(catBadge); meta.appendChild(subBadge);
 
-                // Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+                // Вопрос - применяем форматирование
                 const qText = document.createElement('div');
                 qText.className = 'question';
                 const questionFormatting = it?.formatting?.question || [];
                 qText.innerHTML = applyFormatting(it?.question || q, questionFormatting);
                 qText.style.marginTop = '6px';
 
-                // Р С›РЎвЂљР Р†Р ВµРЎвЂљ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+                // Ответ - применяем форматирование
                 const aEl = document.createElement('div');
                 aEl.className = 'answer';
                 const answerFormatting = it?.formatting?.answer || [];
                 aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
                 aEl.style.marginTop = '6px';
 
-                // Р вЂќР ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ (Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ / РЎС“Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°) Р Р†Р Р…Р С‘Р В·РЎС“
+                // Действия (восстановить / удалить навсегда) внизу
                 const actions = document.createElement('div');
                 actions.className = 'trash-actions';
                 actions.style.display = 'flex';
                 actions.style.gap = '8px';
                 actions.style.marginTop = '8px';
-                const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ';
-                const purgeBtn = document.createElement('button'); purgeBtn.className = 'purge-btn'; purgeBtn.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°';
+                const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Восстановить';
+                const purgeBtn = document.createElement('button'); purgeBtn.className = 'purge-btn'; purgeBtn.textContent = 'Удалить навсегда';
                 actions.appendChild(restoreBtn);
                 actions.appendChild(purgeBtn);
 
@@ -2511,67 +2511,67 @@ export function initTabsNavigation(appVersion) {
                 mini.appendChild(aEl);
                 mini.appendChild(actions);
 
-                // Р С›Р С—РЎвЂљР С‘Р СР С‘РЎРѓРЎвЂљР С‘РЎвЂЎР Р…Р С•Р Вµ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ РЎРѓ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+                // Оптимистичное восстановление с сохранением на сервер
                 restoreBtn.addEventListener('click', async () => {
-                    restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ...'; restoreBtn.disabled = true;
+                    restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
 
-                    // Р СњР В°РЎвЂ¦Р С•Р Т‘Р С‘Р С Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р Р† serverTrashItems, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—Р С•Р В»РЎС“РЎвЂЎР С‘РЎвЂљРЎРЉ Р ВµРЎвЂ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ
+                    // Находим карточку в serverTrashItems, чтобы получить её данные
                     const trashItem = serverTrashItems.find(t => t.item?.question === q);
                     const itemData = trashItem?.item;
 
-                    // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С‘Р В· Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С”РЎРЊРЎв‚¬Р В° Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“
+                    // Удаляем из локального кэша корзины сразу
                     serverTrashSet.delete(q);
                     serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                    // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎС“РЎР‹ Р С”Р В°РЎР‚РЎвЂљРЎС“ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„– Р Т‘Р В»РЎРЏ РЎРЊРЎвЂљР С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘, Р ВµРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В»Р В° Р С—Р С•Р СР ВµРЎвЂЎР ВµР Р…Р В°
+                    // Очищаем локальную карту удалений для этой карточки, если была помечена
                     const delMap = getDeletedItems();
                     if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
 
-                    // СЂСџвЂќТђ Р вЂ™Р С’Р вЂ“Р СњР С›: Р вЂўРЎРѓР В»Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Р…Р ВµРЎвЂљ Р Р† uniqueQaData (Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ), Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р ВµРЎвЂ Р Р† qaNewItems
+                    // 🔥 ВАЖНО: Если карточки нет в uniqueQaData (дубликат), добавляем её в qaNewItems
                     const isInUnique = !!uniqueQaData.find(i => i.question === q);
                     if (!isInUnique && itemData) {
                         const newItems = getNewItems();
-                        // Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С, Р Р…Р ВµРЎвЂљ Р В»Р С‘ РЎС“Р В¶Р Вµ РЎвЂљР В°Р С”Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Р† newItems
+                        // Проверяем, нет ли уже такой карточки в newItems
                         if (!newItems.some(n => n.question === q)) {
                             newItems.push(itemData);
                             localStorage.setItem('qaNewItems', JSON.stringify(newItems));
                         }
                     }
 
-                    // СЂСџвЂќТђ Р вЂ™Р С›Р вЂ”Р вЂ™Р В Р С’Р В©Р С’Р вЂўР Сљ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р Р† qaUserCards Р ВµРЎРѓР В»Р С‘ Р С•Р Р…Р В° Р В±РЎвЂ№Р В»Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В°
+                    // 🔥 ВОЗВРАЩАЕМ карточку в qaUserCards если она была удалена
                     const userCards = getQaUserCards();
                     if (userCards && !userCards.some(c => c.question === q) && itemData) {
-                        // Р ВРЎвЂ°Р ВµР С Р С—Р С•Р В·Р С‘РЎвЂ Р С‘РЎР‹ Р С–Р Т‘Р Вµ Р В±РЎвЂ№Р В»Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° (Р С—Р С• Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓРЎС“ Р Р† serverTrashItems)
+                        // Ищем позицию где была карточка (по индексу в serverTrashItems)
                         const trashIndex = serverTrashItems.findIndex(t => t.item?.question === q);
                         if (trashIndex >= 0) {
-                            // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° Р С—РЎР‚Р С‘Р СР ВµРЎР‚Р Р…РЎС“РЎР‹ Р С—Р С•Р В·Р С‘РЎвЂ Р С‘РЎР‹
+                            // Вставляем на примерную позицию
                             userCards.push(itemData);
                             setQaUserCards(userCards);
                         }
                     }
 
                     renderTrashPanel();
-                    // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р В±Р ВµР В· РЎРѓР В±РЎР‚Р С•РЎРѓР В° Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
+                    // Обновляем без сброса контекста
                     refreshCurrentContext();
-                    // Р СџРЎвЂ№РЎвЂљР В°Р ВµР СРЎРѓРЎРЏ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ
+                    // Пытаемся восстановить на сервере
                     let restoreOk = false;
                     try { restoreOk = await restoreFromServerTrash([q]); } catch (_) { restoreOk = false; }
                     if (!restoreOk) {
-                        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° Р Р…Р В° РЎРѓР В»РЎС“РЎвЂЎР В°Р в„– РЎР‚Р В°РЎРѓРЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+                        // Обновляем корзину с сервера на случай рассинхронизации
                         try { await refreshServerTrash(); } catch (_) { }
-                        setSaveStatus('error', 'Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…');
-                        restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false;
+                        setSaveStatus('error', 'Сервер восстановления недоступен');
+                        restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                     } else {
-                        // Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“Р В¶Р Вµ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°
-                        setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°');
-                        restoreBtn.textContent = 'Р вЂњР С•РЎвЂљР С•Р Р†Р С•'; setTimeout(() => { restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false; }, 1500);
+                        // Карточка уже восстановлена
+                        setSaveStatus('success', 'Карточка восстановлена');
+                        restoreBtn.textContent = 'Готово'; setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
                     }
                 });
 
-                // Р С›Р С”Р С•Р Р…РЎвЂЎР В°РЎвЂљР ВµР В»РЎРЉР Р…Р С•Р Вµ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ
+                // Окончательное удаление
                 purgeBtn.addEventListener('click', async () => {
-                    purgeBtn.textContent = 'Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ...'; purgeBtn.disabled = true;
+                    purgeBtn.textContent = 'Удаление...'; purgeBtn.disabled = true;
 
-                    // СЂСџвЂќвЂ™ Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username
+                    // 🔒 Получаем username
                     const sessionUserRaw = localStorage.getItem('qaSessionUser');
                     let username = 'guest';
                     try {
@@ -2586,15 +2586,15 @@ export function initTabsNavigation(appVersion) {
                             body: JSON.stringify({ questions: [q] })
                         });
                         if (resp.ok) {
-                            // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С‘Р В· РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…Р С•Р в„– Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘ Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ Р С”РЎРЊРЎв‚¬Р ВµР в„–
+                            // Удаляем из серверной корзины и локальных кэшей
                             serverTrashSet.delete(q);
                             serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                            // Р СџР С•Р СР ВµРЎвЂЎР В°Р ВµР С Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р в„– Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•
+                            // Помечаем как удалённый локально
                             const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
-                            // Р вЂўРЎРѓР В»Р С‘ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р В±РЎвЂ№Р В»Р В° РЎРѓРЎР‚Р ВµР Т‘Р С‘ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦, РЎС“Р Т‘Р В°Р В»Р С‘Р С Р ВµРЎвЂ
+                            // Если карточка была среди новых, удалим её
                             const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
 
-                            // СЂСџвЂќвЂ™ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С localStorage РЎРѓ Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р С•Р в„–
+                            // 🔒 Обновляем localStorage с корзиной
                             const localTrash = localStorage.getItem('qaUserTrash');
                             if (localTrash) {
                                 const trash = JSON.parse(localTrash);
@@ -2602,57 +2602,57 @@ export function initTabsNavigation(appVersion) {
                                 localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
                             }
 
-                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С UI
+                            // Обновляем UI
                             renderTrashPanel();
                             refreshCurrentContext();
                             try { await saveMergedToServer(); } catch { }
-                            setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°');
+                            setSaveStatus('success', 'Карточка удалена навсегда');
                         } else {
                             const error = await resp.text();
-                            console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', resp.status, error);
-                            setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + error);
+                            console.error('[delete-permanent] Ошибка:', resp.status, error);
+                            setSaveStatus('error', 'Ошибка: ' + error);
                         }
                     } catch (e) {
-                        console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', e);
-                        setSaveStatus('error', 'Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…');
+                        console.error('[delete-permanent] Ошибка:', e);
+                        setSaveStatus('error', 'Сервер удаления недоступен');
                     }
-                    purgeBtn.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°'; purgeBtn.disabled = false;
+                    purgeBtn.textContent = 'Удалить навсегда'; purgeBtn.disabled = false;
                 });
 
                 grid.appendChild(mini);
             });
         }
 
-        // Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р В° РЎРѓРЎвЂљР В°РЎР‚Р В°РЎРЏ Р В»Р С•Р С–Р С‘Р С”Р В° Р Р†РЎвЂљР С•РЎР‚Р С•Р С–Р С• Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° Р Р†РЎвЂ¦Р С•Р Т‘Р В°
+        // Удалена старая логика второго модального окна входа
 
         editToggleBtn.addEventListener('click', () => {
             editMode = !editMode;
 
-            // СЂСџвЂќТђ Р СџР ВµРЎР‚Р ВµР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р Р†Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓРЎвЂљР С‘Р В»РЎРЉ Р С”Р Р…Р С•Р С—Р С”Р С‘
+            // 🔥 Переключаем визуальный стиль кнопки
             if (editMode) {
                 editToggleBtn.classList.add('on');
-                editToggleBtn.title = 'Р вЂ™РЎвЂ№Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
+                editToggleBtn.title = 'Выключить режим редактирования';
             } else {
                 editToggleBtn.classList.remove('on');
-                editToggleBtn.title = 'Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ РЎР‚Р ВµР В¶Р С‘Р С РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ';
+                editToggleBtn.title = 'Включить режим редактирования';
             }
 
-            // Р вЂ™ РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С Р В°Р Р†РЎвЂљР С•-Р Р…Р С•РЎР‚Р СР В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎР‹ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„– Р С—РЎР‚Р С‘ Р В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р Вµ
+            // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
             try { setNormalizationDisabled(editMode); } catch { }
-            // Р СџР С•Р В·Р С‘РЎвЂ Р С‘РЎРЏ Р С”Р Р…Р С•Р С—Р С•Р С” РІСљР‹ Р С‘ Р вЂ™РЎвЂ¦Р С•Р Т‘ Р СњР вЂў Р СР ВµР Р…РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ РІР‚вЂќ Р С•РЎРѓРЎвЂљР В°РЎР‹РЎвЂљРЎРѓРЎРЏ Р Р…Р В°Р Т‘ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏР СР С‘
-            // Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ/РЎРѓР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘ Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓРЎвЂљР С‘ Р ВµРЎвЂ Р Р† Р В»Р ВµР Р†РЎС“РЎР‹ Р В±Р С•Р С”Р С•Р Р†РЎС“РЎР‹ Р С—Р В°Р Р…Р ВµР В»РЎРЉ
+            // Позиция кнопок ✎ и Вход НЕ меняется — остаются над категориями
+            // Показать/скрыть панель корзины и перенести её в левую боковую панель
             const sidebar = document.querySelector('.sidebar');
             const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
             const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
             if (editMode) {
-                if (sidebar) sidebar.classList.remove('collapsed'); // Р С’Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘РЎвЂЎР ВµРЎРѓР С”Р С‘ РЎР‚Р В°Р В·Р Р†Р С•РЎР‚Р В°РЎвЂЎР С‘Р Р†Р В°Р ВµР С Р С—РЎР‚Р С‘ Р Р†Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р С‘Р С‘ РЎР‚Р ВµР В¶Р С‘Р СР В°
+                if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при включении режима
                 trashPanel.style.display = 'block';
-                // Р Т‘Р С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р С”Р Р†Р В°Р Т‘РЎР‚Р В°РЎвЂљ РЎРѓ Р С‘Р С”Р С•Р Р…Р С”Р С•Р в„– Р СРЎС“РЎРѓР С•РЎР‚Р Р…Р С•Р С–Р С• Р Р†Р ВµР Т‘РЎР‚Р В° Р Р† Р В·Р В°Р С–Р С•Р В»Р С•Р Р†Р С•Р С” Р В±Р С•Р С”Р С•Р Р†Р С•Р в„– Р С—Р В°Р Р…Р ВµР В»Р С‘
+                // добавить квадрат с иконкой мусорного ведра в заголовок боковой панели
                 if (sidebarButtons && !sidebarButtons.querySelector('#trash-mode-button')) {
                     const trashBtn = document.createElement('button');
                     trashBtn.id = 'trash-mode-button';
-                    trashBtn.title = 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°';
-                    trashBtn.setAttribute('aria-label', 'Р С™Р С•РЎР‚Р В·Р С‘Р Р…Р В°');
+                    trashBtn.title = 'Корзина';
+                    trashBtn.setAttribute('aria-label', 'Корзина');
                     trashBtn.className = 'nav-icon-btn';
                     trashBtn.style.padding = '6px';
                     trashBtn.style.minWidth = 'auto';
@@ -2663,27 +2663,27 @@ export function initTabsNavigation(appVersion) {
                     </svg>`;
                     sidebarButtons.appendChild(trashBtn);
                 }
-                // Р С—Р ВµРЎР‚Р ВµР Р…Р ВµРЎРѓРЎвЂљР С‘ РЎРѓР В°Р СРЎС“ Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р Р† Р В»Р ВµР Р†РЎС“РЎР‹ Р С—Р В°Р Р…Р ВµР В»РЎРЉ, РЎРѓРЎР‚Р В°Р В·РЎС“ Р С—Р С•Р Т‘ Р В·Р В°Р С–Р С•Р В»Р С•Р Р†Р С”Р С•Р С
+                // перенести саму панель корзины в левую панель, сразу под заголовком
                 if (sidebar && searchHistory) {
                     try { sidebar.insertBefore(trashPanel, searchHistory); } catch { }
                 }
                 container.classList.add('edit-mode');
             } else {
                 trashPanel.style.display = 'none';
-                // РЎС“Р В±РЎР‚Р В°РЎвЂљРЎРЉ Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘Р В· Р В·Р В°Р С–Р С•Р В»Р С•Р Р†Р С”Р В° Р В±Р С•Р С”Р С•Р Р†Р С•Р в„– Р С—Р В°Р Р…Р ВµР В»Р С‘
+                // убрать индикатор корзины из заголовка боковой панели
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (existingTrashBtn) existingTrashBtn.remove();
                 container.classList.remove('edit-mode');
             }
             try { localStorage.setItem('qaEditMode', editMode ? 'true' : 'false'); } catch { }
             refreshCategoryEditMenus();
-            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р Р†Р С”Р В»Р В°Р Т‘Р С”Р С‘ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р в„–, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р†Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ/Р С•РЎвЂљР С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ Р С—Р ВµРЎР‚Р ВµРЎвЂљР В°РЎРѓР С”Р С‘Р Р†Р В°Р Р…Р С‘Р Вµ
+            // Обновляем вкладки категорий, чтобы включить/отключить перетаскивание
             refreshCategoriesTabs();
             renderTrashPanel();
             refreshCurrentContext();
         });
 
-        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С”Р С‘ Р С—Р В°Р Р…Р ВµР В»Р С‘ РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ - РЎС“Р Т‘Р В°Р В»Р ВµР Р…РЎвЂ№ (legacy)
+        // Обработчики панели управления - удалены (legacy)
 
 
         function setSaveStatus(state, msg) {
@@ -2710,20 +2710,20 @@ export function initTabsNavigation(appVersion) {
                 statusEl.style.background = '#333';
                 statusEl.style.color = '#eee';
                 statusEl.style.border = '1px solid #444';
-                statusEl.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ...';
+                statusEl.textContent = msg || 'Сохранение...';
             } else if (state === 'success') {
                 statusEl.style.display = 'block';
-                statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Р вЂ”Р ВµР В»Р ВµР Р…РЎвЂ№Р в„– РЎвЂћР С•Р Р…
+                statusEl.style.background = 'rgba(29, 95, 42, 0.9)'; // Зеленый фон
                 statusEl.style.color = '#ffffff';
                 statusEl.style.border = '1px solid #2a6b2a';
-                statusEl.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С•';
+                statusEl.textContent = msg || 'Сохранено';
                 setTimeout(() => { statusEl.style.display = 'none'; }, 1500);
             } else if (state === 'error') {
                 statusEl.style.display = 'block';
-                statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // Р С™РЎР‚Р В°РЎРѓР Р…РЎвЂ№Р в„– РЎвЂћР С•Р Р…
+                statusEl.style.background = 'rgba(122, 26, 26, 0.9)'; // Красный фон
                 statusEl.style.color = '#ffffff';
                 statusEl.style.border = '1px solid #8b2a2a';
-                statusEl.textContent = msg || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ';
+                statusEl.textContent = msg || 'Ошибка сохранения';
                 setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
             }
         }
@@ -2736,7 +2736,7 @@ export function initTabsNavigation(appVersion) {
                 const deletedMap = getDeletedItems();
                 const merged = [];
                 const seen = new Set();
-                // Р вЂР В°Р В·Р С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ + overrides
+                // Базовые элементы + overrides
                 uniqueQaData.forEach(item => {
                     if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
                     const ov = overrides[item.question];
@@ -2744,7 +2744,7 @@ export function initTabsNavigation(appVersion) {
                     merged.push(mergedItem);
                     seen.add(item.question);
                 });
-                // Р СњР С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ + Р С‘РЎвЂ¦ Р Р†Р С•Р В·Р СР С•Р В¶Р Р…РЎвЂ№Р Вµ overrides
+                // Новые элементы + их возможные overrides
                 newItems.forEach(n => {
                     if (!seen.has(n.question) && !deletedMap[n.question] && !serverTrashSet.has(n.question)) {
                         const ov = overrides[n.question];
@@ -2752,7 +2752,7 @@ export function initTabsNavigation(appVersion) {
                         seen.add(n.question);
                     }
                 });
-                // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р В° Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+                // Отправка на сервер
                 const resp = await fetchWithAuth('/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2764,20 +2764,20 @@ export function initTabsNavigation(appVersion) {
                     responseJson = await resp.json();
                     if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
                 } catch (_) {
-                    // Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р СР С•Р С– Р Р†Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљР С•Р в„– Р С•РЎвЂљР Р†Р ВµРЎвЂљ РІР‚вЂќ Р С•РЎР‚Р С‘Р ВµР Р…РЎвЂљР С‘РЎР‚РЎС“Р ВµР СРЎРѓРЎРЏ РЎвЂљР С•Р В»РЎРЉР С”Р С• Р Р…Р В° РЎРѓРЎвЂљР В°РЎвЂљРЎС“РЎРѓ
+                    // Сервер мог вернуть пустой ответ — ориентируемся только на статус
                 }
-                if (!ok) throw new Error('Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘');
+                if (!ok) throw new Error('Сервер вернул ошибку при сохранении');
 
-                // Р Р€РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘Р В»Р С‘ РІР‚вЂќ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»РЎРЏР ВµР С Р С‘ Р С—РЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р С• Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С‘Р В· JSON
+                // Успешно сохранили — уведомляем и принудительно перезагружаем данные из JSON
                 setSaveStatus('success');
-                // Р вЂќР В°Р Т‘Р С‘Р С UI РЎвЂЎРЎС“РЎвЂљРЎРЉ Р С•Р В±Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ, Р В·Р В°РЎвЂљР ВµР С Р С‘Р Р…Р С‘РЎвЂ Р С‘Р С‘РЎР‚РЎС“Р ВµР С Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В·Р С”РЎС“
+                // Дадим UI чуть обновить состояние, затем инициируем перезагрузку
                 setTimeout(() => {
                     window.dispatchEvent(new Event('forceReloadData'));
                 }, 50);
                 return true;
             } catch (e) {
                 console.error('Save failed:', e);
-                setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + e.message);
+                setSaveStatus('error', 'Ошибка: ' + e.message);
                 return false;
             }
         }
@@ -2816,7 +2816,7 @@ export function initTabsNavigation(appVersion) {
 
         async function trackServerDuplication(originalQuestion, newQuestion) {
             try {
-                // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р С‘Р В· РЎРѓР ВµРЎРѓРЎРѓР С‘Р С‘
+                // Получаем username из сессии
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 let username = 'anonymous';
                 if (sessionUserRaw) {
@@ -2846,18 +2846,18 @@ export function initTabsNavigation(appVersion) {
 
 
         function addCategoryPlaceholderFlow() {
-            const name = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р Р…Р С•Р Р†Р С•Р в„– Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:');
+            const name = prompt('Название новой категории:');
             if (!name) return;
             const placeholders = getCategoryPlaceholders();
             const id = Math.max(0, ...Object.values(placeholders).map(v => v._cid || 0)) + 1;
             if (!placeholders[name]) placeholders[name] = { _cid: id, sub: [] };
             setCategoryPlaceholders(placeholders);
-            alert('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р В°. Р СџР С•РЎРЏР Р†Р С‘РЎвЂљРЎРѓРЎРЏ Р Р† Р СР ВµР Р…РЎР‹.');
+            alert('Категория добавлена. Появится в меню.');
         }
         function deleteCategoryFlow() {
-            const name = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ Р Т‘Р В»РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ:');
+            const name = prompt('Название категории для удаления:');
             if (!name) return;
-            if (!confirm(`Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎР‹ "${name}" Р С‘ Р Р†РЎРѓР Вµ Р ВµРЎвЂ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘?`)) return;
+            if (!confirm(`Удалить категорию "${name}" и все её карточки?`)) return;
             const placeholders = getCategoryPlaceholders();
             delete placeholders[name];
             setCategoryPlaceholders(placeholders);
@@ -2866,24 +2866,24 @@ export function initTabsNavigation(appVersion) {
                 if (item.category === name) del[item.question] = true;
             });
             setDeletedItems(del);
-            alert('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С•РЎвЂљР СР ВµРЎвЂЎР ВµР Р…Р В° Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…Р В°РЎРЏ. Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљР Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—РЎР‚Р С‘Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ.');
+            alert('Категория отмечена как удалённая. Сохраните, чтобы применить.');
         }
         function addSubcategoryFlow() {
-            const cat = prompt('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ:');
+            const cat = prompt('Категория:');
             if (!cat) return;
-            const sub = prompt('Р СњР В°Р В·Р Р†Р В°Р Р…Р С‘Р Вµ Р Р…Р С•Р Р†Р С•Р в„– Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:');
+            const sub = prompt('Название новой подкатегории:');
             if (!sub) return;
             const placeholders = getCategoryPlaceholders();
             if (!placeholders[cat]) placeholders[cat] = { _cid: Date.now(), sub: [] };
             const id = Math.max(0, ...placeholders[cat].sub.map(s => s._sid || 0)) + 1;
             placeholders[cat].sub.push({ name: sub, _sid: id });
             setCategoryPlaceholders(placeholders);
-            alert('Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р В°. Р СџР С•РЎРЏР Р†Р С‘РЎвЂљРЎРѓРЎРЏ Р Р† Р СР ВµР Р…РЎР‹.');
+            alert('Подкатегория добавлена. Появится в меню.');
         }
         function deleteSubcategoryFlow() {
-            const cat = prompt('Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ:');
+            const cat = prompt('Категория:');
             if (!cat) return;
-            const sub = prompt('Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ:');
+            const sub = prompt('Подкатегория для удаления:');
             if (!sub) return;
             const placeholders = getCategoryPlaceholders();
             if (placeholders[cat]) {
@@ -2895,7 +2895,7 @@ export function initTabsNavigation(appVersion) {
                 if (item.category === cat && item.subcategory === sub) del[item.question] = true;
             });
             setDeletedItems(del);
-            alert('Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С•РЎвЂљР СР ВµРЎвЂЎР ВµР Р…Р В° Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…Р В°РЎРЏ. Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљР Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—РЎР‚Р С‘Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ.');
+            alert('Подкатегория отмечена как удалённая. Сохраните, чтобы применить.');
         }
 
     } catch (e) {
@@ -2907,16 +2907,16 @@ export function initTabsNavigation(appVersion) {
         errDiv.style.border = '1px solid red';
         errDiv.style.margin = '20px';
         errDiv.style.background = '#330000';
-        errDiv.textContent = 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘Р С‘: ' + e.message;
+        errDiv.textContent = 'Ошибка инициализации навигации: ' + e.message;
         const c = document.querySelector('.container');
         if (c) c.prepend(errDiv);
         else document.body.prepend(errDiv);
     }
 }
 
-// Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…Р В°РЎРЏ Р Р†Р ВµРЎР‚РЎРѓР С‘РЎРЏ Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р Р†РЎвЂ№Р В·Р С•Р Р†Р С•Р Р† Р Р†Р Р…Р Вµ initTabsNavigation
+// Глобальная версия индикатора сохранения для вызовов вне initTabsNavigation
 function setSaveStatus(state, msg) {
-    // Р СџР С•Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С Р Р…Р В°Р в„–РЎвЂљР С‘ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ, Р ВµРЎРѓР В»Р С‘ Р ВµРЎвЂ°РЎвЂ Р Р…Р Вµ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р В°Р Р…
+    // Попробуем найти элемент, если ещё не привязан
     if (!globalSaveStatusEl) {
         const el = document.querySelector('.save-status-indicator');
         if (el) globalSaveStatusEl = el; else return;
@@ -2927,20 +2927,20 @@ function setSaveStatus(state, msg) {
         saveStatus.style.background = '#444';
         saveStatus.style.color = '#eee';
         saveStatus.style.border = '1px solid #333';
-        saveStatus.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ...';
+        saveStatus.textContent = msg || 'Сохранение...';
     } else if (state === 'success') {
         saveStatus.style.display = 'inline-block';
         saveStatus.style.background = 'rgba(0, 128, 0, 0.3)';
         saveStatus.style.color = '#cfe9cf';
         saveStatus.style.border = '1px solid #2a6b2a';
-        saveStatus.textContent = msg || 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С•';
+        saveStatus.textContent = msg || 'Сохранено';
         setTimeout(() => { saveStatus.style.display = 'none'; }, 1500);
     } else if (state === 'error') {
         saveStatus.style.display = 'inline-block';
         saveStatus.style.background = 'rgba(128, 0, 0, 0.3)';
         saveStatus.style.color = '#f1c7c7';
         saveStatus.style.border = '1px solid #6b2a2a';
-        saveStatus.textContent = msg || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ';
+        saveStatus.textContent = msg || 'Ошибка сохранения';
         setTimeout(() => { saveStatus.style.display = 'none'; }, 4000);
     }
 }
@@ -2948,34 +2948,34 @@ function setSaveStatus(state, msg) {
 // --- Global helpers (accessible from outside initTabsNavigation) ---
 // These mirror the inner helpers so that actions in displayQuestions can call them.
 
-// Р В¤Р В»Р В°Р С– Р Т‘Р В»РЎРЏ Р С—РЎР‚Р ВµР Т‘Р С•РЎвЂљР Р†РЎР‚Р В°РЎвЂ°Р ВµР Р…Р С‘РЎРЏ РЎвЂ Р С‘Р С”Р В»Р С‘РЎвЂЎР ВµРЎРѓР С”Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+// Флаг для предотвращения циклической синхронизации
 let isSyncing = false;
 
 async function saveMergedToServer(skipReload = false) {
-    // Р вЂ”Р В°РЎвЂ°Р С‘РЎвЂљР В° Р С•РЎвЂљ РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘Р Р†Р Р…РЎвЂ№РЎвЂ¦ Р Р†РЎвЂ№Р В·Р С•Р Р†Р С•Р Р†
+    // Защита от рекурсивных вызовов
     if (isSyncing) {
         return false;
     }
 
     try {
         isSyncing = true;
-        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ Р Р…Р В°РЎвЂЎР В°Р В»Р В° РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+        // Отправляем событие начала синхронизации
         window.dispatchEvent(new Event('sync-start'));
 
-        console.log('[saveMergedToServer] === Р СњР С’Р В§Р С’Р вЂєР С› Р РЋР ВР СњР ТђР В Р С›Р СњР ВР вЂ”Р С’Р В¦Р ВР В === skipReload:', skipReload);
+        console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ === skipReload:', skipReload);
 
-        // СЂСџвЂќРЊ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў Р С™Р С›Р вЂќР ВР В Р С›Р вЂ™Р С™Р В Р СџР вЂўР В Р вЂўР вЂќ Р С›Р СћР СџР В Р С’Р вЂ™Р С™Р С›Р в„ў
+        // 🔍 ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
         const fixEncoding = (text) => {
             if (!text || typeof text !== 'string') return text;
             return text
-                .replace(/\uFFFD/g, '?')  // U+FFFD РІвЂ вЂ™ ?
-                .replace(/Р вЂќ\?{1,10}Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ/g, 'Р вЂќР С•Р С”РЎС“Р СР ВµР Р…РЎвЂљР В°РЎвЂ Р С‘РЎРЏ')
-                .replace(/Р С‘Р Р…РЎвЂћРЎС“ Р С•\? РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°/g, 'Р С‘Р Р…РЎвЂћРЎС“ Р С•РЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°')
-                .replace(/Р С—Р С•Р В»РЎС“РЎвЂЎР В°\?Р С/g, 'Р С—Р С•Р В»РЎС“РЎвЂЎР В°Р ВµР С')
-                .replace(/РЎРѓР Вµ\?{1,5}Р Р†Р С‘РЎРѓРЎвЂ№/g, 'РЎРѓР ВµРЎР‚Р Р†Р С‘РЎРѓРЎвЂ№');
+                .replace(/\uFFFD/g, '?')  // U+FFFD → ?
+                .replace(/Д\?{1,10}кументация/g, 'Документация')
+                .replace(/инфу о\? сервера/g, 'инфу от сервера')
+                .replace(/получа\?м/g, 'получаем')
+                .replace(/се\?{1,5}висы/g, 'сервисы');
         };
 
-        // Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С overrides Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С•Р в„–
+        // Исправляем overrides перед отправкой
         const overrides = getOverrides();
         const fixedOverrides = {};
         let hasFixes = false;
@@ -2992,7 +2992,7 @@ async function saveMergedToServer(skipReload = false) {
         }
 
         if (hasFixes) {
-            console.warn('[saveMergedToServer] РІС™В РїС‘РЏ Р вЂќР В°Р Р…Р Р…РЎвЂ№Р Вµ Р В±РЎвЂ№Р В»Р С‘ Р С‘РЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…РЎвЂ№ Р С—Р ВµРЎР‚Р ВµР Т‘ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С•Р в„– (Р С—Р С•Р Р†РЎР‚Р ВµР В¶Р Т‘Р ВµР Р…Р Р…Р В°РЎРЏ Р С”Р С•Р Т‘Р С‘РЎР‚Р С•Р Р†Р С”Р В°)');
+            console.warn('[saveMergedToServer] ⚠️ Данные были исправлены перед отправкой (поврежденная кодировка)');
             setOverrides(fixedOverrides);
         }
 
@@ -3001,7 +3001,7 @@ async function saveMergedToServer(skipReload = false) {
         const merged = [];
         const seen = new Set();
 
-        // Р РЋР Р…Р В°РЎвЂЎР В°Р В»Р В° Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р В±Р В°Р В·Р С•Р Р†РЎвЂ№Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р С‘Р В· global.json
+        // Сначала добавляем базовые карточки из global.json
         uniqueQaData.forEach(item => {
             if (deletedMap[item.question] || serverTrashSet.has(item.question)) return;
             const ov = overrides[item.question];
@@ -3010,23 +3010,23 @@ async function saveMergedToServer(skipReload = false) {
             seen.add(item.question);
         });
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р С•Р Р†РЎвЂ№Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ (Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№, РЎРѓР С•Р В·Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»Р ВµР С)
-        // Р вЂ™Р В°Р В¶Р Р…Р С•: Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С Р С—Р С• РЎвЂљР С•РЎвЂЎР Р…Р С•Р СРЎС“ РЎРѓР С•Р Р†Р С—Р В°Р Т‘Р ВµР Р…Р С‘РЎР‹ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В°, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р С—Р С•РЎвЂљР ВµРЎР‚РЎРЏРЎвЂљРЎРЉ Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№
+        // Добавляем новые элементы (дубликаты, созданные пользователем)
+        // Важно: проверяем по точному совпадению вопроса, чтобы не потерять дубликаты
         newItems.forEach(n => {
             const isDeleted = deletedMap[n.question] || serverTrashSet.has(n.question);
             const isAlreadyAdded = seen.has(n.question);
 
-            // Р СџРЎР‚Р С•Р С—РЎС“РЎРѓР С”Р В°Р ВµР С РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р Вµ Р С‘ РЎС“Р В¶Р Вµ Р Т‘Р С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р Р…РЎвЂ№Р Вµ
+            // Пропускаем удалённые и уже добавленные
             if (isDeleted || isAlreadyAdded) return;
 
-            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р С•Р Р†РЎвЂ№Р в„– РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ РЎРѓ Р С—РЎР‚Р С‘Р СР ВµР Р…РЎвЂР Р…Р Р…РЎвЂ№Р СР С‘ overrides
+            // Добавляем новый элемент с применёнными overrides
             const ov = overrides[n.question];
             merged.push(ov ? { ...n, ...ov } : n);
             seen.add(n.question);
         });
 
-        // Р СћР В°Р С”Р В¶Р Вµ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С qaUserCards Р Р…Р В° Р Р…Р В°Р В»Р С‘РЎвЂЎР С‘Р Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р†, Р С”Р С•РЎвЂљР С•РЎР‚РЎвЂ№РЎвЂ¦ Р Р…Р ВµРЎвЂљ Р Р…Р С‘ Р Р† base, Р Р…Р С‘ Р Р† newItems
-        // Р В­РЎвЂљР С• Р Р…РЎС“Р В¶Р Р…Р С• Р Т‘Р В»РЎРЏ РЎРѓР В»РЎС“РЎвЂЎР В°Р ВµР Р†, Р С”Р С•Р С–Р Т‘Р В° Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ РЎС“Р В¶Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…РЎвЂ№ Р Р† localStorage
+        // Также проверяем qaUserCards на наличие элементов, которых нет ни в base, ни в newItems
+        // Это нужно для случаев, когда дубликаты уже сохранены в localStorage
         try {
             const sessionUserRaw = localStorage.getItem('qaSessionUser');
             if (sessionUserRaw) {
@@ -3046,20 +3046,20 @@ async function saveMergedToServer(skipReload = false) {
 
                         userCards.forEach(uc => {
                             checkedCount++;
-                            // СЂСџвЂќТђ Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў: Р вЂќРЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ (РЎРѓ "Р С”Р С•Р С—Р С‘РЎРЏ" Р Р† Р Р…Р В°Р В·Р Р†Р В°Р Р…Р С‘Р С‘) Р Р…Р Вµ Р Т‘Р С•Р В»Р В¶Р Р…РЎвЂ№ РЎРѓРЎвЂЎР С‘РЎвЂљР В°РЎвЂљРЎРЉРЎРѓРЎРЏ РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎвЂ№Р СР С‘
-                            // Р ВµРЎРѓР В»Р С‘ Р С•Р Р…Р С‘ РЎвЂљР С•Р В»РЎРЉР С”Р С• РЎвЂЎРЎвЂљР С• РЎРѓР С•Р В·Р Т‘Р В°Р Р…РЎвЂ№ Р С‘ Р С‘РЎвЂ¦ Р Р…Р ВµРЎвЂљ Р Р† deletedMap
+                            // 🔥 ИСПРАВЛЕНИЕ: Дубликаты (с "копия" в названии) не должны считаться удалёнными
+                            // если они только что созданы и их нет в deletedMap
                             const isInServerTrash = serverTrashSet.has(uc.question);
                             const isInLocalDeleted = deletedMap[uc.question];
-                            const isDeleted = isInLocalDeleted || (isInServerTrash && !uc.question.includes('Р С”Р С•Р С—Р С‘РЎРЏ'));
+                            const isDeleted = isInLocalDeleted || (isInServerTrash && !uc.question.includes('копия'));
 
                             const isAlreadyAdded = seen.has(uc.question);
                             const isInBase = uniqueQaData.some(b => b.question === uc.question);
                             const isNewItem = newItems.some(n => n.question === uc.question);
 
-                            // Р РЋРЎвЂЎР С‘РЎвЂљР В°Р ВµР С Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№
-                            if (uc.question.includes('Р С”Р С•Р С—Р С‘РЎРЏ')) {
+                            // Считаем дубликаты
+                            if (uc.question.includes('копия')) {
                                 duplicatesFound++;
-                                console.log('[saveMergedToServer] Р СњР В°Р в„–Р Т‘Р ВµР Р… Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р Р† qaUserCards:', {
+                                console.log('[saveMergedToServer] Найден дубликат в qaUserCards:', {
                                     question: uc.question.substring(0, 50),
                                     isAlreadyAdded,
                                     isInBase,
@@ -3068,7 +3068,7 @@ async function saveMergedToServer(skipReload = false) {
                                 });
                             }
 
-                            // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С РЎвЂљР С•Р В»РЎРЉР С”Р С• Р ВµРЎРѓР В»Р С‘ РЎРЊРЎвЂљР С• Р С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°РЎвЂљР ВµР В»РЎРЉРЎРѓР С”Р В°РЎРЏ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°, Р С”Р С•РЎвЂљР С•РЎР‚Р С•Р в„– Р Р…Р ВµРЎвЂљ Р Р† Р В±Р В°Р В·Р Вµ Р С‘ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР В°РЎвЂ¦
+                            // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
                             if (!isDeleted && !isAlreadyAdded && !isInBase && !isNewItem) {
                                 const ov = overrides[uc.question];
                                 merged.push(ov ? { ...uc, ...ov } : uc);
@@ -3077,7 +3077,7 @@ async function saveMergedToServer(skipReload = false) {
                             }
                         });
 
-                        console.log('[saveMergedToServer] Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР В°Р Р…Р С• qaUserCards:', {
+                        console.log('[saveMergedToServer] Обработано qaUserCards:', {
                             checkedCount,
                             duplicatesFound,
                             addedCount,
@@ -3087,11 +3087,11 @@ async function saveMergedToServer(skipReload = false) {
                 }
             }
         } catch (e) {
-            console.warn('[saveMergedToServer] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р Т‘Р С•Р В±Р В°Р Р†Р С‘РЎвЂљРЎРЉ Р Т‘Р С•Р С—Р С•Р В»Р Р…Р С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:', e);
+            console.warn('[saveMergedToServer] Не удалось добавить дополнительные карточки:', e);
         }
         const lastRestored = typeof window !== 'undefined' ? window.__lastRestoredQuestion : null;
 
-        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С‘ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+        // Получаем username для отправки на сервер
         let username = null;
         try {
             const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -3099,7 +3099,7 @@ async function saveMergedToServer(skipReload = false) {
             if (u && u.username) username = u.username;
         } catch { }
 
-        // СЂСџвЂќРЊ Р В¤Р ВР СњР С’Р вЂєР В¬Р СњР С›Р вЂў Р ВР РЋР СџР В Р С’Р вЂ™Р вЂєР вЂўР СњР ВР вЂў Р С™Р С›Р вЂќР ВР В Р С›Р вЂ™Р С™Р В Р СџР вЂўР В Р вЂўР вЂќ Р С›Р СћР СџР В Р С’Р вЂ™Р С™Р С›Р в„ў
+        // 🔍 ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
         const fixedMerged = merged.map(card => {
             const fixedCard = {};
             let hasFixes = false;
@@ -3114,14 +3114,14 @@ async function saveMergedToServer(skipReload = false) {
                 }
             }
             if (hasFixes) {
-                console.warn(`[saveMergedToServer] Р ВРЎРѓР С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В°: ${card.question?.substring(0, 30)}...`);
+                console.warn(`[saveMergedToServer] Исправлена карточка: ${card.question?.substring(0, 30)}...`);
             }
             return fixedCard;
         });
 
         const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
 
-        console.log('[saveMergedToServer] Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚:', {
+        console.log('[saveMergedToServer] Отправляем на сервер:', {
             mergedCount: merged.length,
             newItemsCount: newItems.length,
             deletedCount: Object.keys(deletedMap).length,
@@ -3129,20 +3129,20 @@ async function saveMergedToServer(skipReload = false) {
             bodyLength: JSON.stringify(fixedMerged).length
         });
 
-        // СЂСџвЂќРЊ Р вЂєР С›Р вЂњ: Р С—Р ВµРЎР‚Р Р†РЎвЂ№Р Вµ 3 Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Т‘Р В»РЎРЏ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С‘
+        // 🔍 ЛОГ: первые 3 карточки для проверки
         const first3 = merged.slice(0, 3).map(c => ({
             question: c.question?.substring(0, 50),
-            hasCopy: c.question?.includes('Р С”Р С•Р С—Р С‘РЎРЏ'),
+            hasCopy: c.question?.includes('копия'),
             category: c.category,
             subcategory: c.subcategory
         }));
-        console.log('[saveMergedToServer] Р СџР ВµРЎР‚Р Р†РЎвЂ№Р Вµ 3 Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:', first3);
+        console.log('[saveMergedToServer] Первые 3 карточки:', first3);
 
-        // СЂСџвЂќРЊ Р вЂєР С›Р вЂњ: Р С—Р С•Р С‘РЎРѓР С” Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљР В° Р Р†Р С• Р Р†РЎРѓРЎвЂР С Р СР В°РЎРѓРЎРѓР С‘Р Р†Р Вµ
-        const dupIndex = merged.findIndex(c => c.question?.includes('Р С”Р С•Р С—Р С‘РЎРЏ'));
-        console.log('[saveMergedToServer] Р вЂќРЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р Р…Р В°Р в„–Р Т‘Р ВµР Р… Р Р…Р В° Р С‘Р Р…Р Т‘Р ВµР С”РЎРѓР Вµ:', dupIndex);
+        // 🔍 ЛОГ: поиск дубликата во всём массиве
+        const dupIndex = merged.findIndex(c => c.question?.includes('копия'));
+        console.log('[saveMergedToServer] Дубликат найден на индексе:', dupIndex);
         if (dupIndex >= 0) {
-            console.log('[saveMergedToServer] Р вЂќРЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ:', {
+            console.log('[saveMergedToServer] Дубликат:', {
                 question: merged[dupIndex].question,
                 category: merged[dupIndex].category,
                 subcategory: merged[dupIndex].subcategory
@@ -3155,7 +3155,7 @@ async function saveMergedToServer(skipReload = false) {
             body: JSON.stringify(fixedMerged)
         });
 
-        console.log('[saveMergedToServer] Р С›РЎвЂљР Р†Р ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', {
+        console.log('[saveMergedToServer] Ответ сервера:', {
             status: resp.status,
             ok: resp.ok,
             statusText: resp.statusText
@@ -3164,73 +3164,73 @@ async function saveMergedToServer(skipReload = false) {
         let responseJson = null;
         try {
             responseJson = await resp.json();
-            console.log('[saveMergedToServer] Р СџР С›Р вЂєР Р€Р В§Р вЂўР СњР С› Р С›Р Сћ Р РЋР вЂўР В Р вЂ™Р вЂўР В Р С’:', responseJson);
+            console.log('[saveMergedToServer] ПОЛУЧЕНО ОТ СЕРВЕРА:', responseJson);
             if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
         } catch (parseErr) {
-            console.warn('[saveMergedToServer] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ РЎР‚Р В°РЎРѓР С—Р В°РЎР‚РЎРѓР С‘РЎвЂљРЎРЉ Р С•РЎвЂљР Р†Р ВµРЎвЂљ:', parseErr);
+            console.warn('[saveMergedToServer] Не удалось распарсить ответ:', parseErr);
         }
 
         if (!ok) {
-            console.error('[saveMergedToServer] Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“');
-            throw new Error('Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В» Р С•РЎв‚¬Р С‘Р В±Р С”РЎС“ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘');
+            console.error('[saveMergedToServer] Сервер вернул ошибку');
+            throw new Error('Сервер вернул ошибку при сохранении');
         }
 
-        // Р Р€РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р Вµ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ
+        // Успешное сохранение
         setSaveStatus('success');
 
-        console.log('[saveMergedToServer] Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ Р С•РЎвЂљР Р†Р ВµРЎвЂљР С‘Р В»:', { ok, responseJson });
+        console.log('[saveMergedToServer] Сервер ответил:', { ok, responseJson });
 
-        // СЂСџвЂќТђ Р С›Р вЂР СњР С›Р вЂ™Р вЂєР Р‡Р вЂўР Сљ localDataTimestamp Р С—Р С•РЎРѓР В»Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р С–Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
-        // Р В­РЎвЂљР С• Р Р…РЎС“Р В¶Р Р…Р С• Р Т‘Р В»РЎРЏ Р С”Р С•РЎР‚РЎР‚Р ВµР С”РЎвЂљР Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘ Р СР ВµР В¶Р Т‘РЎС“ РЎС“РЎРѓРЎвЂљРЎР‚Р С•Р в„–РЎРѓРЎвЂљР Р†Р В°Р СР С‘
+        // 🔥 ОБНОВЛЯЕМ localDataTimestamp после успешного сохранения на сервер
+        // Это нужно для корректной синхронизации между устройствами
         const serverTimestamp = responseJson?.updatedAt || Date.now();
         localStorage.setItem('localDataTimestamp', serverTimestamp.toString());
-        console.log('[saveMergedToServer] localDataTimestamp Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…:', serverTimestamp);
+        console.log('[saveMergedToServer] localDataTimestamp обновлён:', serverTimestamp);
 
-        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+        // Отправляем событие успешной синхронизации
         window.dispatchEvent(new Event('sync-success'));
 
-        // Р С›Р вЂР СњР С›Р вЂ™Р вЂєР Р‡Р вЂўР Сљ qaUserCards Р Р† localStorage
+        // ОБНОВЛЯЕМ qaUserCards в localStorage
         try {
             setQaUserCards(merged);
-            console.log('[saveMergedToServer] setQaUserCards Р Р†РЎвЂ№Р В·Р Р†Р В°Р Р…:', {
+            console.log('[saveMergedToServer] setQaUserCards вызван:', {
                 mergedLength: merged.length,
                 savedCards: merged.length
             });
 
-            // СЂСџвЂќРЊ Р СџР В Р С›Р вЂ™Р вЂўР В Р Р‡Р вЂўР Сљ РЎвЂЎРЎвЂљР С• Р В·Р В°Р С—Р С‘РЎРѓР В°Р В»Р С•РЎРѓРЎРЉ Р Р† localStorage
+            // 🔍 ПРОВЕРЯЕМ что записалось в localStorage
             const verifyCards = getQaUserCards();
-            console.log('[saveMergedToServer] Р СџРЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р В° localStorage:', {
+            console.log('[saveMergedToServer] Проверка localStorage:', {
                 cardsInLocalStorage: verifyCards?.length || 0
             });
 
-            // СЂСџвЂќТђ Р С›Р вЂР СњР С›Р вЂ™Р вЂєР Р‡Р вЂўР Сљ uniqueQaData Р Р† Р С—Р В°Р СРЎРЏРЎвЂљР С‘ Р С‘Р В· localStorage
-            // Р В­РЎвЂљР С• Р Р…РЎС“Р В¶Р Р…Р С• РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р С‘Р Вµ Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ Р С‘РЎРѓР С—Р С•Р В»РЎРЉР В·Р С•Р Р†Р В°Р В»Р С‘ Р В°Р С”РЎвЂљРЎС“Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р Вµ
-            // Р ВР СР С—Р С•РЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С setUniqueQaData Р С‘Р В· all-data.js
+            // 🔥 ОБНОВЛЯЕМ uniqueQaData в памяти из localStorage
+            // Это нужно чтобы следующие дубликаты использовали актуальные данные
+            // Импортируем setUniqueQaData из all-data.js
             const { setUniqueQaData } = await import('../all-data.js');
             if (typeof setUniqueQaData === 'function' && verifyCards && verifyCards.length > 0) {
                 setUniqueQaData(verifyCards);
-                console.log('[saveMergedToServer] uniqueQaData Р С•Р В±Р Р…Р С•Р Р†Р В»РЎвЂР Р…:', {
+                console.log('[saveMergedToServer] uniqueQaData обновлён:', {
                     newLength: verifyCards.length
                 });
             }
 
-            // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С qaNewItems Р С—Р С•РЎРѓР В»Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљРЎвЂ№ Р Р…Р Вµ Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР В»Р С‘РЎРѓРЎРЉ Р С—Р С•Р Р†РЎвЂљР С•РЎР‚Р Р…Р С•
+            // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
-            console.log('[saveMergedToServer] Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С qaNewItems:', newItems.length, 'РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р†');
+            console.log('[saveMergedToServer] Очищаем qaNewItems:', newItems.length, 'элементов');
             if (Array.isArray(newItems) && newItems.length > 0) {
                 localStorage.setItem('qaNewItems', JSON.stringify([]));
             }
 
-            // Р С›РЎвЂЎР С‘РЎвЂ°Р В°Р ВµР С qaDeletedItems Р С—Р С•РЎРѓР В»Р Вµ РЎС“РЎРѓР С—Р ВµРЎв‚¬Р Р…Р С•Р в„– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+            // Очищаем qaDeletedItems после успешной синхронизации
             const deletedItems = getDeletedItems();
             if (Object.keys(deletedItems).length > 0) {
                 localStorage.setItem('qaDeletedItems', JSON.stringify({}));
             }
         } catch (e) {
-            console.warn('[saveMergedToServer] Р СњР Вµ РЎС“Р Т‘Р В°Р В»Р С•РЎРѓРЎРЉ Р С•Р В±Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ localStorage:', e);
+            console.warn('[saveMergedToServer] Не удалось обновить localStorage:', e);
         }
 
-        // Р СџРЎР‚Р С‘Р Р…РЎС“Р Т‘Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р В°РЎРЏ Р С—Р ВµРЎР‚Р ВµР В·Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В° Р Т‘Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ РЎвЂЎР ВµРЎР‚Р ВµР В· 50Р СРЎРѓ
+        // Принудительная перезагрузка данных через 50мс
         console.log('[saveMergedToServer] Dispatch forceReloadData:', !skipReload);
         setTimeout(() => {
             if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
@@ -3238,20 +3238,20 @@ async function saveMergedToServer(skipReload = false) {
 
         return true;
     } catch (e) {
-        console.error('[saveMergedToServer] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ:', e);
-        setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + e.message);
-        // Р С›РЎвЂљР С—РЎР‚Р В°Р Р†Р В»РЎРЏР ВµР С РЎРѓР С•Р В±РЎвЂ№РЎвЂљР С‘Р Вµ Р С•РЎв‚¬Р С‘Р В±Р С”Р С‘ РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+        console.error('[saveMergedToServer] Ошибка сохранения:', e);
+        setSaveStatus('error', 'Ошибка: ' + e.message);
+        // Отправляем событие ошибки синхронизации
         window.dispatchEvent(new Event('sync-error'));
         return false;
     } finally {
-        // Р РЋР В±РЎР‚Р В°РЎРѓРЎвЂ№Р Р†Р В°Р ВµР С РЎвЂћР В»Р В°Р С– РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘Р С‘
+        // Сбрасываем флаг синхронизации
         isSyncing = false;
     }
 }
 
 async function moveToServerTrash(items) {
     try {
-        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С‘ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+        // Получаем username для отправки на сервер
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
         let username = 'guest';
         try {
@@ -3270,19 +3270,19 @@ async function moveToServerTrash(items) {
 
         if (!resp.ok) {
             const error = await resp.text();
-            console.error('[moveToServerTrash] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В°:', resp.status, error);
+            console.error('[moveToServerTrash] Ошибка сервера:', resp.status, error);
         }
 
         return resp.ok;
     } catch (e) {
-        console.error('[moveToServerTrash] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', e);
+        console.error('[moveToServerTrash] Ошибка:', e);
         return false;
     }
 }
 
 async function restoreFromServerTrash(questions) {
     try {
-        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С—РЎР‚Р В°Р Р†Р С”Р С‘ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+        // Получаем username для отправки на сервер
         const sessionUserRaw = localStorage.getItem('qaSessionUser');
         let username = null;
         try {
@@ -3332,7 +3332,7 @@ async function getServerMetadata() {
         if (resp.ok) {
             const data = await resp.json();
             const raw = data.metadata || {};
-            // Р СњР С•РЎР‚Р СР В°Р В»Р С‘Р В·РЎС“Р ВµР С Р С”Р В»РЎР‹РЎвЂЎР С‘ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (snake_case -> camelCase)
+            // Нормализуем ключи с сервера (snake_case -> camelCase)
             const normalized = {
                 categoryOrder: Array.isArray(raw.category_order) ? raw.category_order : (raw.categoryOrder || []),
                 subcategoryOrder: typeof raw.subcategory_order === 'object' && raw.subcategory_order !== null ? raw.subcategory_order : (raw.subcategoryOrder || {}),
@@ -3349,19 +3349,19 @@ async function getServerMetadata() {
 
 async function refreshServerTrash() {
     try {
-        // СЂСџвЂќвЂ™ Р вЂ”Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р В° (РЎвЂљР ВµР С—Р ВµРЎР‚РЎРЉ /metadata Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°Р ВµРЎвЂљ trash_bin)
+        // 🔒 Загружаем корзину с сервера (теперь /metadata возвращает trash_bin)
         const resp = await fetchWithAuth('/metadata');
         if (resp.ok) {
             const data = await resp.json();
             const bin = Array.isArray(data.trash_bin) ? data.trash_bin : [];
             serverTrashItems = bin;
             serverTrashSet = new Set(bin.map(t => t.item?.question).filter(Boolean));
-            // СЂСџвЂќвЂ™ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р† localStorage Р Т‘Р В»РЎРЏ Р С•РЎвЂћР В»Р В°Р в„–Р Р…-РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂ№
+            // 🔒 Сохраняем в localStorage для офлайн-работы
             localStorage.setItem('qaUserTrash', JSON.stringify(serverTrashItems));
             return;
         }
 
-        // Р В¤Р С•Р В»Р В±РЎРЊР С”: Р ВµРЎРѓР В»Р С‘ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…, Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р С‘Р В· localStorage
+        // Фолбэк: если сервер недоступен, загружаем из localStorage
         const localTrash = localStorage.getItem('qaUserTrash');
         if (localTrash) {
             const trash = JSON.parse(localTrash);
@@ -3370,7 +3370,7 @@ async function refreshServerTrash() {
         }
     } catch (e) {
         console.error('Failed to refresh server trash:', e);
-        // Р В¤Р С•Р В»Р В±РЎРЊР С”: Р В·Р В°Р С–РЎР‚РЎС“Р В¶Р В°Р ВµР С Р С‘Р В· localStorage Р С—РЎР‚Р С‘ Р С•РЎв‚¬Р С‘Р В±Р С”Р Вµ
+        // Фолбэк: загружаем из localStorage при ошибке
         const localTrash = localStorage.getItem('qaUserTrash');
         if (localTrash) {
             const trash = JSON.parse(localTrash);
@@ -3382,7 +3382,7 @@ async function refreshServerTrash() {
 
 async function updateServerMetadata(metadata) {
     try {
-        // Р СџРЎР‚Р ВµР С•Р В±РЎР‚Р В°Р В·РЎС“Р ВµР С Р С”Р В»РЎР‹РЎвЂЎР С‘ Р С”Р В»Р С‘Р ВµР Р…РЎвЂљР В° (camelCase) Р Р† РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…РЎвЂ№Р Вµ (snake_case)
+        // Преобразуем ключи клиента (camelCase) в серверные (snake_case)
         const payload = {};
         if (Array.isArray(metadata.categoryOrder)) payload.category_order = metadata.categoryOrder;
         if (metadata.subcategoryOrder && typeof metadata.subcategoryOrder === 'object') payload.subcategory_order = metadata.subcategoryOrder;
@@ -3405,12 +3405,12 @@ function renderTrashPanel() {
     if (!trashPanel) return;
     const catDiv = trashPanel.querySelector('#trash-categories');
     const cardDiv = trashPanel.querySelector('#trash-cards');
-    if (catDiv) catDiv.innerHTML = '<div><strong>Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘:</strong></div><div>Р СџРЎС“РЎРѓРЎвЂљР С•</div>';
+    if (catDiv) catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
     const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
     if (cardDiv) {
         cardDiv.innerHTML = '';
         const header = document.createElement('div');
-        header.innerHTML = '<strong>Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘:</strong>' + (deletedCards.length ? '' : ' <span>Р СџРЎС“РЎРѓРЎвЂљР С•</span>');
+        header.innerHTML = '<strong>Карточки:</strong>' + (deletedCards.length ? '' : ' <span>Пусто</span>');
         cardDiv.appendChild(header);
         const grid = document.createElement('div');
         grid.className = 'trash-cards-grid';
@@ -3422,7 +3422,7 @@ function renderTrashPanel() {
             const mini = document.createElement('div');
             mini.className = 'result-item trash-mini';
 
-            // Р вЂ™Р ВµРЎР‚РЎвЂ¦: РЎвЂљР ВµР С–Р С‘
+            // Верх: теги
             const meta = document.createElement('div');
             meta.className = 'trash-meta';
             meta.style.display = 'flex';
@@ -3432,26 +3432,26 @@ function renderTrashPanel() {
             const scBadge = document.createElement('span'); scBadge.className = 'subcategory-badge'; scBadge.textContent = (it && it.subcategory) ? it.subcategory : '';
             meta.appendChild(catBadge); meta.appendChild(scBadge);
 
-            // Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+            // Вопрос - применяем форматирование
             const qEl = document.createElement('div'); qEl.className = 'question';
             const questionFormatting = it?.formatting?.question || [];
             qEl.innerHTML = applyFormatting(it?.question || q || '', questionFormatting);
             qEl.style.marginTop = '6px';
 
-            // Р С›РЎвЂљР Р†Р ВµРЎвЂљ - Р С—РЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+            // Ответ - применяем форматирование
             const aEl = document.createElement('div'); aEl.className = 'answer';
             const answerFormatting = it?.formatting?.answer || [];
             aEl.innerHTML = applyFormatting(it?.answer || '', answerFormatting);
             aEl.style.marginTop = '6px';
 
-            // Р вЂќР ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ
+            // Действия
             const actions = document.createElement('div');
             actions.className = 'trash-actions';
             actions.style.display = 'flex';
             actions.style.gap = '8px';
             actions.style.marginTop = '8px';
-            const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ';
-            const purgeBtn2 = document.createElement('button'); purgeBtn2.className = 'purge-btn'; purgeBtn2.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°';
+            const restoreBtn = document.createElement('button'); restoreBtn.className = 'restore-btn'; restoreBtn.textContent = 'Восстановить';
+            const purgeBtn2 = document.createElement('button'); purgeBtn2.className = 'purge-btn'; purgeBtn2.textContent = 'Удалить навсегда';
             actions.appendChild(restoreBtn);
             actions.appendChild(purgeBtn2);
 
@@ -3461,25 +3461,25 @@ function renderTrashPanel() {
             mini.appendChild(actions);
             grid.appendChild(mini);
 
-            // Р С›Р С—РЎвЂљР С‘Р СР С‘РЎРѓРЎвЂљР С‘РЎвЂЎР Р…Р С•Р Вµ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ + Р С•РЎвЂЎР С‘РЎРѓРЎвЂљР С”Р В° Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљРЎвЂ№ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„–
+            // Оптимистичное восстановление + очистка локальной карты удалений
             restoreBtn.addEventListener('click', async () => {
-                restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘Р Вµ...'; restoreBtn.disabled = true;
-                // Р Р€Р Т‘Р В°Р В»РЎРЏР ВµР С Р С‘Р В· Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С”РЎРЊРЎв‚¬Р В° Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“
+                restoreBtn.textContent = 'Восстановление...'; restoreBtn.disabled = true;
+                // Удаляем из локального кэша корзины сразу
                 serverTrashSet.delete(q);
                 serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
-                // Р вЂўРЎРѓР В»Р С‘ Р С”Р В°РЎР‚РЎвЂљР В° Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№РЎвЂ¦ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р в„– Р С—Р С•Р СР ВµРЎвЂЎР В°Р В»Р В° РЎРЊРЎвЂљРЎС“ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р С”Р В°Р С” РЎС“Р Т‘Р В°Р В»РЎвЂР Р…Р Р…РЎС“РЎР‹ РІР‚вЂќ Р С•РЎвЂЎР С‘РЎРѓРЎвЂљР С‘Р С
+                // Если карта локальных удалений помечала эту карточку как удалённую — очистим
                 const delMap = getDeletedItems();
                 if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
                 renderTrashPanel();
-                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР С—Р С‘РЎРѓР С•Р С” Р Р† Р В·Р В°Р Р†Р С‘РЎРѓР С‘Р СР С•РЎРѓРЎвЂљР С‘ Р С•РЎвЂљ Р В°Р С”РЎвЂљР С‘Р Р†Р Р…Р С•Р С–Р С• РЎвЂљР В°Р В±Р В°
-                // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р В±Р ВµР В· РЎРѓР В±РЎР‚Р С•РЎРѓР В° Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В°
+                // Обновляем текущий список в зависимости от активного таба
+                // Обновляем без сброса контекста
                 refreshCurrentContext();
-                // Р СџРЎвЂ№РЎвЂљР В°Р ВµР СРЎРѓРЎРЏ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ
-                let ok = false; try { ok = await restoreFromServerTrash([q]); } catch (e) { console.error('[restore-click] Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р В·Р В°Р С—РЎР‚Р С•РЎРѓР В° Р С” РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚РЎС“ /restore', e); ok = false; }
+                // Пытаемся восстановить на сервере
+                let ok = false; try { ok = await restoreFromServerTrash([q]); } catch (e) { console.error('[restore-click] Ошибка запроса к серверу /restore', e); ok = false; }
                 if (ok) {
                     try { await refreshServerTrash(); } catch (_) { }
-                    // Р вЂўРЎРѓР В»Р С‘ Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р Р…Р С•Р в„– Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р Р…Р ВµРЎвЂљ Р Р† РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С Р В±Р В°Р В·Р С•Р Р†Р С•Р С Р Р…Р В°Р В±Р С•РЎР‚Р Вµ (uniqueQaData)
-                    // Р С‘ Р С•Р Р…Р В° Р Р…Р Вµ РЎвЂЎР С‘РЎРѓР В»Р С‘РЎвЂљРЎРѓРЎРЏ РЎРѓРЎР‚Р ВµР Т‘Р С‘ Р Р…Р С•Р Р†РЎвЂ№РЎвЂ¦ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљР С•Р Р† РІР‚вЂќ Р Т‘Р С•Р В±Р В°Р Р†Р С‘Р С Р ВµРЎвЂ Р Р† Р Р…Р С•Р Р†РЎвЂ№Р Вµ Р Т‘Р В»РЎРЏ Р С—Р С•РЎРѓР В»Р ВµР Т‘РЎС“РЎР‹РЎвЂ°Р ВµР С–Р С• РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ.
+                    // Если восстановленной карточки нет в текущем базовом наборе (uniqueQaData)
+                    // и она не числится среди новых элементов — добавим её в новые для последующего сохранения.
                     const baseHas = !!uniqueQaData.find(i => i.question === q);
                     const newItemsArr = getNewItems();
                     const newHas = !!newItemsArr.find(i => i.question === q);
@@ -3488,29 +3488,29 @@ function renderTrashPanel() {
                         setLS('qaNewItems', newItemsArr);
                     }
                     try { window.__lastRestoredQuestion = q; } catch (_) { }
-                    // СЂСџвЂќТђ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р вЂР вЂўР вЂ” forceReloadData
+                    // 🔥 Сохраняем на сервер БЕЗ forceReloadData
                     saveMergedToServer(true).then(saveOk => {
                         if (saveOk) {
-                            setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р В°');
-                            restoreBtn.textContent = 'Р вЂњР С•РЎвЂљР С•Р Р†Р С•';
-                            setTimeout(() => { restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false; }, 1500);
+                            setSaveStatus('success', 'Карточка восстановлена');
+                            restoreBtn.textContent = 'Готово';
+                            setTimeout(() => { restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false; }, 1500);
                         } else {
-                            setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
-                            restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false;
+                            setSaveStatus('error', 'Ошибка сохранения');
+                            restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                         }
                     });
                 } else {
                     try { await refreshServerTrash(); } catch (_) { }
-                    setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р Р†Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Вµ');
-                    restoreBtn.textContent = 'Р вЂ™Р С•РЎРѓРЎРѓРЎвЂљР В°Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ'; restoreBtn.disabled = false;
+                    setSaveStatus('error', 'Ошибка восстановления на сервере');
+                    restoreBtn.textContent = 'Восстановить'; restoreBtn.disabled = false;
                 }
             });
 
-            // Р С›Р С”Р С•Р Р…РЎвЂЎР В°РЎвЂљР ВµР В»РЎРЉР Р…Р С•Р Вµ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ (Р Р†РЎвЂљР С•РЎР‚Р В°РЎРЏ Р Р†Р ВµРЎвЂљР С”Р В°)
+            // Окончательное удаление (вторая ветка)
             purgeBtn2.addEventListener('click', async () => {
-                purgeBtn2.textContent = 'Р Р€Р Т‘Р В°Р В»Р ВµР Р…Р С‘Р Вµ...'; purgeBtn2.disabled = true;
+                purgeBtn2.textContent = 'Удаление...'; purgeBtn2.disabled = true;
 
-                // СЂСџвЂќвЂ™ Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С username
+                // 🔒 Получаем username
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                 let username = 'guest';
                 try {
@@ -3528,7 +3528,7 @@ function renderTrashPanel() {
                         serverTrashSet.delete(q);
                         serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
 
-                        // СЂСџвЂќТђ Р вЂ™Р С’Р вЂ“Р СњР С›: Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р† qaDeletedItems РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р Р…Р Вµ Р Р†Р ВµРЎР‚Р Р…РЎС“Р В»Р В°РЎРѓРЎРЉ Р С—РЎР‚Р С‘ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р С‘
+                        // 🔥 ВАЖНО: Добавляем в qaDeletedItems чтобы карточка не вернулась при сохранении
                         const delMap = getDeletedItems();
                         delMap[q] = { deleted_at: new Date().toISOString(), deleted_by: username, permanent: true };
                         setDeletedItems(delMap);
@@ -3536,7 +3536,7 @@ function renderTrashPanel() {
                         const newArr = getNewItems().filter(i => i.question !== q);
                         setLS('qaNewItems', newArr);
 
-                        // СЂСџвЂќвЂ™ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С localStorage РЎРѓ Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р С•Р в„–
+                        // 🔒 Обновляем localStorage с корзиной
                         const localTrash = localStorage.getItem('qaUserTrash');
                         if (localTrash) {
                             const trash = JSON.parse(localTrash);
@@ -3546,35 +3546,35 @@ function renderTrashPanel() {
 
                         renderTrashPanel();
                         refreshCurrentContext();
-                        // СЂСџвЂќТђ Р СњР вЂў Р Р†РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С saveMergedToServer() РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р Р…Р Вµ Р Р†Р ВµРЎР‚Р Р…РЎС“РЎвЂљРЎРЉ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“ Р С•Р В±РЎР‚Р В°РЎвЂљР Р…Р С•!
-                        setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В° Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°');
+                        // 🔥 НЕ вызываем saveMergedToServer() чтобы не вернуть карточку обратно!
+                        setSaveStatus('success', 'Карточка удалена навсегда');
                     } else {
                         const error = await resp.text();
-                        console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', resp.status, error);
-                        setSaveStatus('error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В°: ' + error);
+                        console.error('[delete-permanent] Ошибка:', resp.status, error);
+                        setSaveStatus('error', 'Ошибка: ' + error);
                     }
                 } catch (e) {
-                    console.error('[delete-permanent] Р С›РЎв‚¬Р С‘Р В±Р С”Р В°:', e);
-                    setSaveStatus('error', 'Р РЋР ВµРЎР‚Р Р†Р ВµРЎР‚ РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ Р Р…Р ВµР Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р ВµР Р…');
+                    console.error('[delete-permanent] Ошибка:', e);
+                    setSaveStatus('error', 'Сервер удаления недоступен');
                 }
-                purgeBtn2.textContent = 'Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ Р Р…Р В°Р Р†РЎРѓР ВµР С–Р Т‘Р В°'; purgeBtn2.disabled = false;
+                purgeBtn2.textContent = 'Удалить навсегда'; purgeBtn2.disabled = false;
             });
         });
     }
 }
 
-// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р В°РЎвЂ Р С‘Р С‘ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р С—Р С• Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
+// Функция для фильтрации вопросов по категории
 function filterQuestionsByCategory(categoryName) {
     currentContextKey = `category:${categoryName}`;
     const data = getRuntimeData();
-    // Р вЂўРЎРѓР В»Р С‘ Р С‘Р СРЎРЏ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘ РІР‚вЂќ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµР СР С•Р Вµ, Р Р…Р В°Р в„–Р Т‘Р ВµР С Р С‘РЎРѓРЎвЂ¦Р С•Р Т‘Р Р…Р С•Р Вµ Р С‘Р СРЎРЏ
+    // Если имя категории — отображаемое, найдем исходное имя
     const catPlaceholders = getCategoryPlaceholders();
     const canonicalCategory = Object.entries(catPlaceholders).find(([, v]) => v?.displayName === categoryName)?.[0] || categoryName;
     const filteredData = data.filter(item => item.category === canonicalCategory || item.category === categoryName);
-    displayQuestions(filteredData, `Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ: ${categoryName}`);
+    displayQuestions(filteredData, `Категория: ${categoryName}`);
 }
 
-// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ РЎвЂћР С‘Р В»РЎРЉРЎвЂљРЎР‚Р В°РЎвЂ Р С‘Р С‘ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р С—Р С• Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
+// Функция для фильтрации вопросов по подкатегории
 function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     currentContextKey = `subcategory:${categoryName}#${subcategoryName}`;
     const data = getRuntimeData();
@@ -3584,26 +3584,26 @@ function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     const scMap = scPlaceholders[canonicalCategory] || scPlaceholders[categoryName] || {};
     const canonicalSub = Object.entries(scMap).find(([, v]) => v?.displayName === subcategoryName)?.[0] || subcategoryName;
     const filteredData = data.filter(item => (item.category === canonicalCategory || item.category === categoryName) && (item.subcategory === canonicalSub || item.subcategory === subcategoryName));
-    displayQuestions(filteredData, `Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ: ${subcategoryName}`);
+    displayQuestions(filteredData, `Подкатегория: ${subcategoryName}`);
 }
 
-// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р†
+// Функция для отображения всех вопросов
 function showAllQuestions() {
     currentContextKey = 'all';
-    displayQuestions(getRuntimeData(), 'Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№');
+    displayQuestions(getRuntimeData(), 'Все вопросы');
 }
 
-// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…РЎвЂ№РЎвЂ¦ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р†
+// Функция для отображения избранных вопросов
 function showFavorites() {
     currentContextKey = 'favorites';
     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
     const favData = getRuntimeData().filter(item => favorites.has(item.question));
-    displayQuestions(favData, 'Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ');
+    displayQuestions(favData, 'Избранное');
 }
 
-// Р Р€Р Р…Р С‘Р Р†Р ВµРЎР‚РЎРѓР В°Р В»РЎРЉР Р…Р В°РЎРЏ Р С—Р ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†Р С”Р В° РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР С–Р С• Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљР В° Р В±Р ВµР В· РЎРѓР В±РЎР‚Р С•РЎРѓР В° Р Р…Р В° Р’В«Р вЂ™РЎРѓР Вµ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№Р’В»
+// Универсальная перерисовка текущего контекста без сброса на «Все вопросы»
 function refreshCurrentContext() {
-    // Р СњР вЂў Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№ Р ВµРЎРѓР В»Р С‘ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В° РЎРѓРЎвЂљРЎР‚Р В°Р Р…Р С‘РЎвЂ Р В° РЎРѓРЎвЂљР В°РЎвЂљР С‘РЎРѓРЎвЂљР С‘Р С”Р С‘!
+    // НЕ показываем вопросы если открыта страница статистики!
     if (location.hash === '#/stats') {
         return;
     }
@@ -3633,7 +3633,7 @@ function refreshCurrentContext() {
     }
 }
 
-// Р В¤РЎС“Р Р…Р С”РЎвЂ Р С‘РЎРЏ Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р†
+// Функция для отображения вопросов
 export function displayQuestions(questions, title) {
     // Safety check and logging
     if (!questions) {
@@ -3654,7 +3654,7 @@ export function displayQuestions(questions, title) {
             // DEBUG INFO
             const totalData = uniqueQaData ? uniqueQaData.length : 'N/A';
             resultsList.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-style: italic;">
-                Р РЋР С—Р С‘РЎРѓР С•Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР С•Р Р† Р С—РЎС“РЎРѓРЎвЂљ
+                Список вопросов пуст
              </div>`;
         } else {
             // Force display grid
@@ -3672,14 +3672,14 @@ export function displayQuestions(questions, title) {
 
         currentQuestions = [...questions];
 
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С Р С—Р С•РЎР‚РЎРЏР Т‘Р С•Р С”, Р ВµРЎРѓР В»Р С‘ Р В·Р В°Р Т‘Р В°Р Р…
+        // Применяем порядок, если задан
         const order = getOrderForContext(currentContextKey);
         if (order && sortMode === 'default') {
             const idx = new Map(order.map((q, i) => [q, i]));
             currentQuestions.sort((a, b) => (idx.get(a.question) ?? 1e9) - (idx.get(b.question) ?? 1e9));
         }
 
-        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓ Р Т‘Р В»РЎРЏ Р Р†РЎРѓР ВµРЎвЂ¦ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С” Р Т‘Р В»РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р С‘ Р С‘ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ
+        // Получаем прогресс для всех карточек для сортировки и отображения
         let progressMap = {};
         try {
             progressMap = getProgressMap();
@@ -3687,31 +3687,31 @@ export function displayQuestions(questions, title) {
             console.warn('getProgressMap failed:', e);
         }
 
-        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”РЎС“ Р С—Р С• EF (РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР С”Р В°Р С), Р ВµРЎРѓР В»Р С‘ Р Р†Р С”Р В»РЎР‹РЎвЂЎР ВµР Р…Р В°
+        // Применяем сортировку по EF (сердечкам), если включена
         if (sortMode !== 'default') {
             currentQuestions.sort((a, b) => {
                 const efA = progressMap[a.question]?.easeFactor ?? 2.3;
                 const efB = progressMap[b.question]?.easeFactor ?? 2.3;
 
-                // 1. Р СџР ВµРЎР‚Р Р†Р С‘РЎвЂЎР Р…Р В°РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• EF
+                // 1. Первичная сортировка по EF
                 if (Math.abs(efA - efB) >= 0.001) {
-                    // asc: Р С•РЎвЂљ Р СР ВµР Р…РЎРЉРЎв‚¬Р ВµР С–Р С• Р С” Р В±Р С•Р В»РЎРЉРЎв‚¬Р ВµР СРЎС“ (1.3 -> 2.9) - Р РЋР В°Р СРЎвЂ№Р Вµ РЎРѓР В»Р С•Р В¶Р Р…РЎвЂ№Р Вµ РЎРѓР Р…Р В°РЎвЂЎР В°Р В»Р В°
+                    // asc: от меньшего к большему (1.3 -> 2.9) - Самые сложные сначала
                     return sortMode === 'asc' ? efA - efB : efB - efA;
                 }
 
-                // 2. Р вЂ™РЎвЂљР С•РЎР‚Р С‘РЎвЂЎР Р…Р В°РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• ID (Р Р†РЎРѓР ВµР С–Р Т‘Р В° ASC Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљР В°Р В±Р С‘Р В»РЎРЉР Р…Р С•РЎРѓРЎвЂљР С‘)
+                // 2. Вторичная сортировка по ID (всегда ASC для стабильности)
                 const idA = parseInt(a.id, 10) || 0;
                 const idB = parseInt(b.id, 10) || 0;
                 if (idA !== idB) {
                     return idA - idB;
                 }
 
-                // 3. Р СћРЎР‚Р ВµРЎвЂљР С‘РЎвЂЎР Р…Р В°РЎРЏ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В° Р С—Р С• Р В°Р В»РЎвЂћР В°Р Р†Р С‘РЎвЂљРЎС“ (Р Р†РЎРѓР ВµР С–Р Т‘Р В° ASC Р Т‘Р В»РЎРЏ РЎРѓРЎвЂљР В°Р В±Р С‘Р В»РЎРЉР Р…Р С•РЎРѓРЎвЂљР С‘)
+                // 3. Третичная сортировка по алфавиту (всегда ASC для стабильности)
                 return a.question.localeCompare(b.question, undefined, { numeric: true, sensitivity: 'base' });
             });
         }
 
-        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎРѓРЎвЂЎР ВµРЎвЂљРЎвЂЎР С‘Р С” РЎР‚Р ВµР В·РЎС“Р В»РЎРЉРЎвЂљР В°РЎвЂљР С•Р Р† (Р Р†РЎвЂ№Р Р…Р ВµРЎРѓР ВµР Р… Р С‘Р В· grid)
+        // Обновляем счетчик результатов (вынесен из grid)
         let countContainer = document.getElementById('results-count-container');
         if (!countContainer) {
             countContainer = document.createElement('div');
@@ -3725,26 +3725,26 @@ export function displayQuestions(questions, title) {
             resultsList.parentNode.insertBefore(countContainer, resultsList);
         }
 
-        // Р ВР С”Р С•Р Р…Р С”Р С‘ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р С‘
+        // Иконки сортировки
         const sortIcons = {
             default: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5"/></svg>',
-            asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р Р…Р С‘Р В· (Р Р†Р С•Р В·РЎР‚Р В°РЎРѓРЎвЂљР В°Р Р…Р С‘Р Вµ)
-            desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // Р РЋРЎвЂљРЎР‚Р ВµР В»Р С”Р В° Р Р†Р Р†Р ВµРЎР‚РЎвЂ¦ (РЎС“Р В±РЎвЂ№Р Р†Р В°Р Р…Р С‘Р Вµ)
+            asc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5" opacity="0.3"/></svg>', // Стрелка вниз (возрастание)
+            desc: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l5-5 5 5"/><path d="M7 15l5 5 5-5" opacity="0.3"/></svg>'  // Стрелка вверх (убывание)
         };
         const sortTitle = {
-            default: 'Р РЋР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В°: Р СџР С• РЎС“Р СР С•Р В»РЎвЂЎР В°Р Р…Р С‘РЎР‹',
-            asc: 'Р РЋР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В°: Р С›РЎвЂљ РЎРѓР В»Р С•Р В¶Р Р…РЎвЂ№РЎвЂ¦ Р С” Р В»Р ВµР С–Р С”Р С‘Р С (EF РІвЂ вЂ)',
-            desc: 'Р РЋР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р В°: Р С›РЎвЂљ Р В»Р ВµР С–Р С”Р С‘РЎвЂ¦ Р С” РЎРѓР В»Р С•Р В¶Р Р…РЎвЂ№Р С (EF РІвЂ вЂњ)'
+            default: 'Сортировка: По умолчанию',
+            asc: 'Сортировка: От сложных к легким (EF ↑)',
+            desc: 'Сортировка: От легких к сложным (EF ↓)'
         };
 
-        // Р В¤Р С•РЎР‚Р СР С‘РЎР‚РЎС“Р ВµР С РЎвЂљР ВµР С”РЎРѓРЎвЂљ РЎРѓРЎвЂЎР ВµРЎвЂљРЎвЂЎР С‘Р С”Р В°
-        // СЂСџвЂќвЂ™ Р ВРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С getRuntimeData() Р Т‘Р В»РЎРЏ Р С”Р С•Р Р…РЎРѓР С‘РЎРѓРЎвЂљР ВµР Р…РЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘
+        // Формируем текст счетчика
+        // 🔒 Используем getRuntimeData() для консистентности
         const runtimeData = getRuntimeData();
         const totalCount = runtimeData.length;
         const isFiltered = questions.length !== totalCount;
         const countText = isFiltered
-            ? `Р СњР В°Р в„–Р Т‘Р ВµР Р…Р С•: ${questions.length} Р С‘Р В· ${totalCount}`
-            : `Р вЂ™РЎРѓР ВµР С–Р С• Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”: ${questions.length}`;
+            ? `Найдено: ${questions.length} из ${totalCount}`
+            : `Всего карточек: ${questions.length}`;
 
         countContainer.innerHTML = `
         <p class="results-count" style="margin:0">${countText}</p>
@@ -3753,7 +3753,7 @@ export function displayQuestions(questions, title) {
         </button>
     `;
 
-        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С”Р Р…Р С•Р С—Р С”Р С‘ РЎРѓР С•РЎР‚РЎвЂљР С‘РЎР‚Р С•Р Р†Р С”Р С‘
+        // Обработчик кнопки сортировки
         const sortBtn = countContainer.querySelector('#sort-toggle-btn');
         if (sortBtn) {
             sortBtn.addEventListener('click', () => {
@@ -3764,7 +3764,7 @@ export function displayQuestions(questions, title) {
             });
         }
 
-        // Р ТђР ВµР В»Р С—Р ВµРЎР‚ Р Т‘Р В»РЎРЏ Р С•РЎвЂљРЎР‚Р С‘РЎРѓР С•Р Р†Р С”Р С‘ РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С” (Р Р…Р С•Р Р†Р В°РЎРЏ Р В»Р С•Р С–Р С‘Р С”Р В° РЎРѓ Р Т‘РЎР‚Р С•Р В±Р Р…РЎвЂ№Р СР С‘)
+        // Хелпер для отрисовки сердечек (новая логика с дробными)
         const renderHearts = (ef) => {
             try {
                 if (typeof getDifficultyLevel !== 'function' || typeof getLevelProgress !== 'function') {
@@ -3774,10 +3774,10 @@ export function displayQuestions(questions, title) {
 
                 // Check for NEW card (ef is null or undefined)
                 if (ef === null || ef === undefined) {
-                    return '<div class="hearts-container" title="Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р ВµРЎвЂ°Р Вµ Р Р…Р Вµ Р С‘Р В·РЎС“РЎвЂЎР В°Р В»Р В°РЎРѓРЎРЉ" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">Р СњР С›Р вЂ™Р С’Р Р‡</span></div>';
+                    return '<div class="hearts-container" title="Карточка еще не изучалась" style="position:absolute; top:12px; right:40px; z-index:998;"><span class="level-label" style="font-size:10px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span></div>';
                 }
 
-                // Р В Р В°РЎРѓРЎвЂЎР ВµРЎвЂљ Р С”Р С•Р В»Р С‘РЎвЂЎР ВµРЎРѓРЎвЂљР Р†Р В° РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С” (1.0 - 5.0)
+                // Расчет количества сердечек (1.0 - 5.0)
                 let heartsCount = 0;
                 if (ef < 1.7) {
                     // 1.3 -> 1.0, 1.7 -> 2.0
@@ -3798,16 +3798,16 @@ export function displayQuestions(questions, title) {
 
                 const level = getDifficultyLevel(ef);
                 const levelNames = {
-                    'VERY_HARD': 'Р С›РЎвЂЎР ВµР Р…РЎРЉ РЎвЂљРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
-                    'HARD': 'Р СћРЎР‚РЎС“Р Т‘Р Р…РЎвЂ№Р Вµ',
-                    'STANDARD': 'Р РЋРЎвЂљР В°Р Р…Р Т‘Р В°РЎР‚РЎвЂљ',
-                    'EASY': 'Р вЂєР ВµР С–Р С”Р С‘Р Вµ'
+                    'VERY_HARD': 'Очень трудные',
+                    'HARD': 'Трудные',
+                    'STANDARD': 'Стандарт',
+                    'EASY': 'Легкие'
                 };
                 const levelName = levelNames[level] || level;
 
-                let html = '<div class="hearts-container" title="Р Р€РЎР‚Р С•Р Р†Р ВµР Р…РЎРЉ: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nР РЋР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
+                let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
 
-                // Р В Р С‘РЎРѓРЎС“Р ВµР С 5 РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”
+                // Рисуем 5 сердечек
                 for (let i = 0; i < 5; i++) {
                     let fill = 0;
                     if (heartsCount >= i + 1) {
@@ -3839,7 +3839,7 @@ export function displayQuestions(questions, title) {
             }
         };
 
-        // Р вЂќР С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№
+        // Добавляем вопросы
         currentQuestions.forEach((item, index) => {
             try {
                 const resultItem = document.createElement('div');
@@ -3876,20 +3876,20 @@ export function displayQuestions(questions, title) {
                             currentQuestions.splice(toIdx, 0, moved);
                             setOrderForContext(currentContextKey, currentQuestions.map(q => q.question));
                             (async () => {
-                                setSaveStatus('saving', 'Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘Р Вµ Р С—Р С•РЎР‚РЎРЏР Т‘Р С”Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”...');
+                                setSaveStatus('saving', 'Сохранение порядка карточек...');
                                 const meta = await getServerMetadata();
                                 meta.orderOverrides = meta.orderOverrides || {};
                                 meta.orderOverrides[currentContextKey] = currentQuestions.map(q => q.question);
                                 const ok = await updateServerMetadata(meta);
-                                setSaveStatus(ok ? 'success' : 'error', ok ? 'Р СџР С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С‘Р В·Р СР ВµР Р…Р ВµР Р…' : 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
+                                setSaveStatus(ok ? 'success' : 'error', ok ? 'Порядок изменен' : 'Ошибка сохранения');
                             })();
-                            // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†Р В°РЎвЂљРЎРЉ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– РЎРѓР С—Р С‘РЎРѓР С•Р С”
+                            // Перерисовать текущий список
                             displayQuestions(currentQuestions, title);
                         }
                     });
                 }
 
-                // Р ВР В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ
+                // Избранное
                 let isFav = false;
                 let favClass = '';
                 try {
@@ -3900,7 +3900,7 @@ export function displayQuestions(questions, title) {
                     console.warn('Favorites error:', e);
                 }
 
-                // Р С›РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р В°Р ВµР С Р В±Р ВµР в„–Р Т‘Р В¶Р С‘ РЎРѓ РЎС“РЎвЂЎРЎвЂРЎвЂљР С•Р С Р С—Р В»Р ВµР в„–РЎРѓРЎвЂ¦Р С•Р В»Р Т‘Р ВµРЎР‚Р С•Р Р†
+                // Отображаем бейджи с учётом плейсхолдеров
                 let dispCat = item.category || '';
                 let dispSub = item.subcategory || '';
                 try {
@@ -3920,12 +3920,12 @@ export function displayQuestions(questions, title) {
             </svg>
         `;
 
-                // Р В Р В°РЎРѓРЎвЂЎР ВµРЎвЂљ РЎРѓР ВµРЎР‚Р Т‘Р ВµРЎвЂЎР ВµР С”
+                // Расчет сердечек
                 const cardProgress = progressMap[item.question];
                 // If no progress or no easeFactor, treat as NEW (pass null)
                 const ef = (cardProgress && cardProgress.easeFactor !== undefined) ? cardProgress.easeFactor : null;
 
-                // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“ Р С‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљРЎС“
+                // Применяем форматирование к вопросу и ответу
                 const questionFormatting = item.formatting?.question || [];
                 const answerFormatting = item.formatting?.answer || [];
                 const questionHTML = applyFormatting(item.question, questionFormatting);
@@ -3937,12 +3937,12 @@ export function displayQuestions(questions, title) {
                 <span class="subcategory-badge">${dispSub}</span>
             </div>
             ${renderHearts(ef)}
-            <button class="fav-btn ${favClass}" title="Р вЂ™ Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
+            <button class="fav-btn ${favClass}" title="В избранное" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
             <div class="question">${questionHTML}</div>
             <div class="answer">${answerHTML}</div>
         `;
 
-                // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р С–Р С•
+                // Обработчик избранного
                 const favBtn = resultItem.querySelector('.fav-btn');
                 favBtn.addEventListener('click', () => {
                     const current = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
@@ -3960,14 +3960,14 @@ export function displayQuestions(questions, title) {
                     localStorage.setItem('qaFavorites', JSON.stringify(Array.from(current)));
                 });
 
-                // Р СљР ВµР Р…РЎР‹ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ (РІвЂ№В®) Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+                // Меню карточки (⋮) в режиме редактирования
                 if (editMode) {
                     const qRow = resultItem.querySelector('.question-row');
                     const kebabBtn = document.createElement('button');
                     kebabBtn.className = 'kebab-btn';
-                    kebabBtn.title = 'Р СљР ВµР Р…РЎР‹ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘';
-                    kebabBtn.textContent = 'РІвЂ№В®';
-                    // Р СћРЎвЂР СР Р…Р С•-РЎРѓР ВµРЎР‚РЎвЂ№Р в„– РЎРѓРЎвЂљР С‘Р В»РЎРЉ Р С”Р Р…Р С•Р С—Р С”Р С‘ РІвЂ№В® Р Р…Р В° Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р Вµ
+                    kebabBtn.title = 'Меню карточки';
+                    kebabBtn.textContent = '⋮';
+                    // Тёмно-серый стиль кнопки ⋮ на карточке
                     kebabBtn.style.background = '#444';
                     kebabBtn.style.color = '#eee';
                     kebabBtn.style.border = '1px solid #333';
@@ -3975,7 +3975,7 @@ export function displayQuestions(questions, title) {
                     kebabBtn.style.padding = '2px 6px';
                     qRow.appendChild(kebabBtn);
 
-                    // СЂСџвЂќТђ Р вЂњР В»Р С•Р В±Р В°Р В»РЎРЉР Р…Р С•Р Вµ РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+                    // 🔥 Глобальное состояние модального окна редактирования
                     let editModalState = {
                         originalCard: null,
                         formatting: null,
@@ -3988,60 +3988,60 @@ export function displayQuestions(questions, title) {
                         const selectedCategory = categoriesData.find(cat => cat.name === item.category);
                         const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
 
-                        // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С‘Р В· Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р С‘ Р С‘Р В»Р С‘ РЎРѓР С•Р В·Р Т‘Р В°РЎвЂР С Р С—РЎС“РЎРѓРЎвЂљР С•Р Вµ
+                        // Получаем форматирование из карточки или создаём пустое
                         const formatting = item.formatting || createEmptyFormatting();
 
-                        // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С РЎРѓР С•РЎРѓРЎвЂљР С•РЎРЏР Р…Р С‘Р Вµ
+                        // Сохраняем состояние
                         editModalState = {
                             originalCard: { ...item },
                             formatting: { ...formatting },
                             oldQuestion: item.question
                         };
 
-                        // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С• РЎРѓ Р С—Р В°Р Р…Р ВµР В»РЎРЉРЎР‹ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+                        // Создаём модальное окно с панелью форматирования
                         const modalHTML = `
                             <div class="edit-modal-overlay" id="edit-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 10px;">
                                 <div class="edit-modal" style="background: #1e1e1e; border-radius: 12px; padding: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); box-sizing: border-box;">
                                     
-                                    <!-- Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р С‘ Р С—Р С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ Р Р† 2 РЎР‚РЎРЏР Т‘Р В° -->
+                                    <!-- Категория и подкатегория в 2 ряда -->
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                                         <div>
-                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р С™Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ</label>
+                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Категория</label>
                                             <select class="edit-category" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${categoryOptions}</select>
                                         </div>
                                         <div>
-                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р СџР С•Р Т‘Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘РЎРЏ</label>
+                                            <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Подкатегория</label>
                                             <select class="edit-subcategory" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${subcategoryOptions}</select>
                                         </div>
                                     </div>
                                     
-                                    <!-- Р СџР В°Р Р…Р ВµР В»РЎРЉ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ -->
+                                    <!-- Панель форматирования -->
                                     <div style="margin-bottom: 12px;">
                                         <div class="format-toolbar" id="main-format-toolbar" style="width: 100%; box-sizing: border-box;"></div>
                                     </div>
                                     
-                                    <!-- Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ -->
+                                    <!-- Вопрос -->
                                     <div style="margin-bottom: 12px;">
-                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ</label>
+                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Вопрос</label>
                                         <div class="edit-field-editor" id="edit-question-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
                                     </div>
                                     
-                                    <!-- Р С›РЎвЂљР Р†Р ВµРЎвЂљ -->
+                                    <!-- Ответ -->
                                     <div style="margin-bottom: 16px;">
-                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Р С›РЎвЂљР Р†Р ВµРЎвЂљ</label>
+                                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Ответ</label>
                                         <div class="edit-field-editor" id="edit-answer-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
                                     </div>
                                     
-                                    <!-- Р С™Р Р…Р С•Р С—Р С”Р С‘ -->
+                                    <!-- Кнопки -->
                                     <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
-                                        <button class="edit-modal-btn cancel" id="edit-cancel-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #444; border-radius: 6px; color: #aaa; cursor: pointer; font-size: 14px; flex-shrink: 0;">Р С›РЎвЂљР СР ВµР Р…Р В°</button>
-                                        <button class="edit-modal-btn save" id="edit-save-btn" style="padding: 10px 20px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; flex-shrink: 0;">Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ</button>
+                                        <button class="edit-modal-btn cancel" id="edit-cancel-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #444; border-radius: 6px; color: #aaa; cursor: pointer; font-size: 14px; flex-shrink: 0;">Отмена</button>
+                                        <button class="edit-modal-btn save" id="edit-save-btn" style="padding: 10px 20px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; flex-shrink: 0;">Сохранить</button>
                                     </div>
                                 </div>
                             </div>
                             
                             <style>
-                                /* Р вЂ™РЎРѓР Вµ РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљРЎвЂ№ Р Р…Р В° 100% РЎв‚¬Р С‘РЎР‚Р С‘Р Р…РЎвЂ№ */
+                                /* Все элементы на 100% ширины */
                                 #main-format-toolbar,
                                 #edit-question-editor,
                                 #edit-answer-editor,
@@ -4052,7 +4052,7 @@ export function displayQuestions(questions, title) {
                                     box-sizing: border-box !important;
                                 }
                                 
-                                /* Р С’Р Т‘Р В°Р С—РЎвЂљР С‘Р Р†Р Р…РЎвЂ№Р Вµ РЎРѓРЎвЂљР С‘Р В»Р С‘ Р Т‘Р В»РЎРЏ Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р С–Р С• Р С•Р С”Р Р…Р В° */
+                                /* Адаптивные стили для модального окна */
                                 @media (max-width: 768px) {
                                     .edit-modal {
                                         padding: 16px !important;
@@ -4106,7 +4106,7 @@ export function displayQuestions(questions, title) {
                                     .format-btn {
                                         font-size: 11px !important;
                                     }
-                                    /* Р С™Р Р…Р С•Р С—Р С”Р С‘ Р Р† РЎР‚РЎРЏР Т‘ Р Р…Р В° Р СР С•Р В±Р С‘Р В»РЎРЉР Р…Р С•Р С */
+                                    /* Кнопки в ряд на мобильном */
                                     .edit-modal > div:last-child {
                                         display: flex !important;
                                         flex-direction: row !important;
@@ -4158,14 +4158,14 @@ export function displayQuestions(questions, title) {
 
                         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-                        // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
+                        // Инициализация редакторов
                         const toolbarContainer = document.getElementById('main-format-toolbar');
                         const questionEditor = document.getElementById('edit-question-editor');
                         const answerEditor = document.getElementById('edit-answer-editor');
                         const categorySelect = document.querySelector('.edit-category');
                         const subcategorySelect = document.querySelector('.edit-subcategory');
 
-                        // Р СџРЎР‚Р С‘Р СР ВµР Р…РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р С” РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В°Р С
+                        // Применяем форматирование к редакторам
                         if (questionEditor) {
                             renderFormattingInEditor(questionEditor, item.question, formatting.question || []);
                         }
@@ -4173,36 +4173,36 @@ export function displayQuestions(questions, title) {
                             renderFormattingInEditor(answerEditor, item.answer, formatting.answer || []);
                         }
 
-                        // Р РЋР С•Р В·Р Т‘Р В°РЎвЂР С Р С‘ Р С‘Р Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С toolbar
+                        // Создаём и инициализируем toolbar
                         if (toolbarContainer) {
                             const mainToolbar = createFormatToolbar('both');
                             toolbarContainer.appendChild(mainToolbar);
 
-                            // Р ВР Р…Р С‘РЎвЂ Р С‘Р В°Р В»Р С‘Р В·Р С‘РЎР‚РЎС“Р ВµР С toolbar РЎРѓ Р С•Р В±Р С•Р С‘Р СР С‘ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р В°Р СР С‘
+                            // Инициализируем toolbar с обоими редакторами
                             initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
                                 editModalState.formatting = newFormatting;
                             });
                         }
 
-                        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” РЎРѓР СР ВµР Р…РЎвЂ№ Р С”Р В°РЎвЂљР ВµР С–Р С•РЎР‚Р С‘Р С‘
+                        // Обработчик смены категории
                         categorySelect.addEventListener('change', () => {
                             const newCategory = categorySelect.value;
                             const newSubs = (categoriesData.find(cat => cat.name === newCategory)?.subcategories || []).map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('');
                             subcategorySelect.innerHTML = newSubs;
                         });
 
-                        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” Р С•РЎвЂљР СР ВµР Р…РЎвЂ№
+                        // Обработчик отмены
                         document.getElementById('edit-cancel-btn').addEventListener('click', () => {
                             document.getElementById('edit-modal-overlay').remove();
                         });
 
-                        // Р С›Р В±РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂЎР С‘Р С” РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ
+                        // Обработчик сохранения
                         document.getElementById('edit-save-btn').addEventListener('click', async () => {
-                            // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С HTML Р С‘Р В· РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С•РЎР‚Р С•Р Р†
+                            // Получаем HTML из редакторов
                             const questionHTML = questionEditor.innerHTML.trim();
                             const answerHTML = answerEditor.innerHTML.trim();
 
-                            // Р С™Р С•Р Р…Р Р†Р ВµРЎР‚РЎвЂљР С‘РЎР‚РЎС“Р ВµР С HTML Р Р† РЎвЂљР ВµР С”РЎРѓРЎвЂљ + РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+                            // Конвертируем HTML в текст + форматирование
                             const questionData = convertHtmlToTextAndFormatting(questionHTML);
                             const answerData = convertHtmlToTextAndFormatting(answerHTML);
 
@@ -4212,20 +4212,20 @@ export function displayQuestions(questions, title) {
                             const newAnswer = answerData.text.trim();
 
                             if (!newQuestion || !newAnswer) {
-                                alert('Р вЂ™Р С•Р С—РЎР‚Р С•РЎРѓ Р С‘ Р С•РЎвЂљР Р†Р ВµРЎвЂљ Р Р…Р Вµ Р СР С•Р С–РЎС“РЎвЂљ Р В±РЎвЂ№РЎвЂљРЎРЉ Р С—РЎС“РЎРѓРЎвЂљРЎвЂ№Р СР С‘');
+                                alert('Вопрос и ответ не могут быть пустыми');
                                 return;
                             }
 
                             const oldQuestion = editModalState.oldQuestion;
 
-                            // Р СџР С•Р В»РЎС“РЎвЂЎР В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР Вµ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ
+                            // Получаем текущее форматирование
                             const currentFormatting = editModalState.formatting || createEmptyFormatting();
 
-                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р Р…Р С•Р Р†РЎвЂ№Р СР С‘ Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р СР С‘
+                            // Обновляем форматирование новыми данными
                             currentFormatting.question = questionData.formatting || [];
                             currentFormatting.answer = answerData.formatting || [];
 
-                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р† override РЎРѓ РЎвЂћР С•РЎР‚Р СР В°РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р ВµР С
+                            // Сохраняем в override с форматированием
                             const overrides = getOverrides();
 
                             const overrideData = {
@@ -4244,7 +4244,7 @@ export function displayQuestions(questions, title) {
                             }
                             setOverrides(overrides);
 
-                            // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р С‘Р В·Р В±РЎР‚Р В°Р Р…Р Р…Р С•Р Вµ Р ВµРЎРѓР В»Р С‘ Р Р…РЎС“Р В¶Р Р…Р С•
+                            // Обновляем избранное если нужно
                             const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
                             if (favorites.has(oldQuestion)) {
                                 favorites.delete(oldQuestion);
@@ -4256,20 +4256,20 @@ export function displayQuestions(questions, title) {
                                 }).catch(() => { });
                             }
 
-                            // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С Р СР С•Р Т‘Р В°Р В»РЎРЉР Р…Р С•Р Вµ Р С•Р С”Р Р…Р С•
+                            // Закрываем модальное окно
                             document.getElementById('edit-modal-overlay').remove();
 
-                            // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎвЂ№
+                            // Перерисовываем вопросы
                             displayQuestions(currentQuestions.map(q => q.question === oldQuestion ? { ...q, category: newCategory, subcategory: newSubcategory, question: newQuestion, answer: newAnswer, formatting: currentFormatting } : q), title);
 
-                            // Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚
+                            // Сохраняем на сервер
                             const rowEl = resultItem.querySelector('.question-row');
                             setInlineSaveStatus(rowEl, 'saving');
                             const ok = await saveMergedToServer();
                             setInlineSaveStatus(rowEl, ok ? 'success' : 'error');
                         });
 
-                        // Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ Р С—Р С• Р С”Р В»Р С‘Р С”РЎС“ Р Р…Р В° overlay
+                        // Закрытие по клику на overlay
                         document.getElementById('edit-modal-overlay').addEventListener('click', (e) => {
                             if (e.target === e.currentTarget) {
                                 document.getElementById('edit-modal-overlay').remove();
@@ -4277,9 +4277,9 @@ export function displayQuestions(questions, title) {
                         });
                     };
 
-                    // Р С™Р Р…Р С•Р С—Р С”Р В° Р С”Р В°РЎР‚Р В°Р Р…Р Т‘Р В°РЎв‚¬Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р В°: РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘Р Вµ Р Т‘Р С•РЎРѓРЎвЂљРЎС“Р С—Р Р…Р С• РЎвЂЎР ВµРЎР‚Р ВµР В· Р СР ВµР Р…РЎР‹ РІвЂ№В®
+                    // Кнопка карандаша удалена: редактирование доступно через меню ⋮
 
-                    // СЂСџвЂќТђ Р ВРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµР С Р С–Р В»Р С•Р В±Р В°Р В»РЎРЉР Р…РЎС“РЎР‹ РЎвЂћРЎС“Р Р…Р С”РЎвЂ Р С‘РЎР‹ РЎРѓ Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚Р С”Р С•Р в„– qaUserCards
+                    // 🔥 Используем глобальную функцию с проверкой qaUserCards
                     const genUniqueQuestion = (baseQ) => genUniqueQuestionGlobal(baseQ);
 
                     kebabBtn.addEventListener('click', (ev) => {
@@ -4295,9 +4295,9 @@ export function displayQuestions(questions, title) {
                         menu.style.padding = '6px';
                         menu.style.zIndex = '1000';
                         menu.innerHTML = `
-                    <button data-act="edit">Р ВР В·Р СР ВµР Р…Р С‘РЎвЂљРЎРЉ</button>
-                    <button data-act="duplicate">Р вЂќРЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ</button>
-                    <button data-act="delete">Р Р€Р Т‘Р В°Р В»Р С‘РЎвЂљРЎРЉ</button>
+                    <button data-act="edit">Изменить</button>
+                    <button data-act="duplicate">Дублировать</button>
+                    <button data-act="delete">Удалить</button>
                 `;
                         document.body.appendChild(menu);
                         const rect = kebabBtn.getBoundingClientRect();
@@ -4310,16 +4310,16 @@ export function displayQuestions(questions, title) {
                             const act = e.target?.dataset?.act; if (!act) return;
                             e.stopPropagation();
                             if (act === 'delete') {
-                                // Р СџР С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С‘Р Р…Р Т‘Р С‘Р С”Р В°РЎвЂљР С•РЎР‚ Р С—РЎР‚Р С•Р С–РЎР‚Р ВµРЎРѓРЎРѓР В°
+                                // Показать индикатор прогресса
                                 const rowEl = resultItem.querySelector('.question-row');
                                 setInlineSaveStatus(rowEl, 'saving');
 
-                                // Р СџР ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р В°Р ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“
+                                // Перемещаем на сервер в корзину
                                 moveToServerTrash([item]).then(async (trashOk) => {
                                     if (trashOk) {
-                                        // Р С›Р С—РЎвЂљР С‘Р СР С‘РЎРѓРЎвЂљР С‘РЎвЂЎР Р…Р С• Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р† Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р Вµ Р С”РЎРЊРЎв‚¬Р С‘ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№
+                                        // Оптимистично добавляем в локальные кэши корзины
                                         serverTrashSet.add(item.question);
-                                        // Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С Р В»Р С•Р С”Р В°Р В»РЎРЉР Р…РЎвЂ№Р в„– РЎРѓР С—Р С‘РЎРѓР С•Р С” Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓРЎР‚Р В°Р В·РЎС“ Р С—Р С•Р С”Р В°Р В·Р В°РЎвЂљРЎРЉ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
+                                        // Обновляем локальный список корзины, чтобы сразу показать карточку
                                         try {
                                             serverTrashItems = [
                                                 { item: { ...item } },
@@ -4327,26 +4327,26 @@ export function displayQuestions(questions, title) {
                                             ];
                                         } catch (_) { }
 
-                                        // Р Р€Р В±Р ВµР Т‘Р С‘Р СРЎРѓРЎРЏ, РЎвЂЎРЎвЂљР С• Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р Р†Р С‘Р Т‘Р Р…Р В° Р Р† РЎР‚Р ВµР В¶Р С‘Р СР Вµ РЎР‚Р ВµР Т‘Р В°Р С”РЎвЂљР С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ
+                                        // Убедимся, что панель корзины видна в режиме редактирования
                                         const tp = document.querySelector('.trash-panel');
                                         if (tp && editMode) { tp.style.display = 'block'; }
 
-                                        // Р СџР ВµРЎР‚Р ВµРЎР‚Р С‘РЎРѓР С•Р Р†РЎвЂ№Р Р†Р В°Р ВµР С Р С—Р В°Р Р…Р ВµР В»РЎРЉ Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎвЂ№ Р С‘ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р С‘Р в„– Р С”Р С•Р Р…РЎвЂљР ВµР С”РЎРѓРЎвЂљ
+                                        // Перерисовываем панель корзины и текущий контекст
                                         renderTrashPanel();
                                         refreshCurrentContext();
 
-                                        // Р СџРЎвЂ№РЎвЂљР В°Р ВµР СРЎРѓРЎРЏ РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ РЎРѓ РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚Р Р…Р С•Р в„– Р С”Р С•РЎР‚Р В·Р С‘Р Р…Р С•Р в„– (Р Р…Р Вµ Р В±Р В»Р С•Р С”Р С‘РЎР‚РЎС“Р ВµРЎвЂљ UI)
+                                        // Пытаемся синхронизировать с серверной корзиной (не блокирует UI)
                                         try { await refreshServerTrash(); } catch (_) { }
 
                                         setInlineSaveStatus(rowEl, 'success');
-                                        setSaveStatus('success', 'Р С™Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”Р В° Р С—Р ВµРЎР‚Р ВµР СР ВµРЎвЂ°Р ВµР Р…Р В° Р Р† Р С”Р С•РЎР‚Р В·Р С‘Р Р…РЎС“');
+                                        setSaveStatus('success', 'Карточка перемещена в корзину');
 
-                                        // СЂСџвЂќТђ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р вЂР вЂўР вЂ” forceReloadData
+                                        // 🔥 Сохраняем на сервер БЕЗ forceReloadData
                                         saveMergedToServer(true).then(saveOk => {
-                                            if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
+                                            if (!saveOk) setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
                                         });
                                     } else {
-                                        setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎС“Р Т‘Р В°Р В»Р ВµР Р…Р С‘РЎРЏ');
+                                        setInlineSaveStatus(rowEl, 'error', 'Ошибка удаления');
                                     }
                                 });
                             } else if (act === 'duplicate') {
@@ -4357,47 +4357,47 @@ export function displayQuestions(questions, title) {
                                 const copyQ = genUniqueQuestion(item.question);
                                 const duplicatedItem = { ...item, question: copyQ };
 
-                                console.log('[DUPLICATE] Р РЋР С•Р В·Р Т‘Р В°Р Р… Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ:', {
+                                console.log('[DUPLICATE] Создан дубликат:', {
                                     original: item.question?.substring(0, 50),
                                     copy: copyQ,
                                     timestamp: Date.now()
                                 });
 
-                                // СЂСџвЂќТђ Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р РЋР В Р С’Р вЂ”Р Р€ Р СџР С›Р РЋР вЂєР вЂў Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В»Р В° Р Р† qaUserCards
+                                // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
                                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                                 if (sessionUserRaw) {
                                     const userCards = getQaUserCards();
                                     if (userCards) {
-                                        // Р ВРЎвЂ°Р ВµР С Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В» Р С—Р С• Р Р†Р С•Р С—РЎР‚Р С•РЎРѓРЎС“ (Р СР С•Р В¶Р ВµРЎвЂљ Р С•РЎвЂљР В»Р С‘РЎвЂЎР В°РЎвЂљРЎРЉРЎРѓРЎРЏ Р С•РЎвЂљ item.question Р ВµРЎРѓР В»Р С‘ Р В±РЎвЂ№Р В»Р С‘ Р С‘Р В·Р СР ВµР Р…Р ВµР Р…Р С‘РЎРЏ)
+                                        // Ищем оригинал по вопросу (может отличаться от item.question если были изменения)
                                         const originalIndex = userCards.findIndex(c =>
                                             c.question === item.question ||
                                             (c.category === item.category && c.subcategory === item.subcategory && c.answer === item.answer)
                                         );
                                         if (originalIndex >= 0) {
-                                            // Р вЂ™РЎРѓРЎвЂљР В°Р Р†Р В»РЎРЏР ВµР С Р Т‘РЎС“Р В±Р В»Р С‘Р С”Р В°РЎвЂљ Р С—Р С•РЎРѓР В»Р Вµ Р С•РЎР‚Р С‘Р С–Р С‘Р Р…Р В°Р В»Р В°
+                                            // Вставляем дубликат после оригинала
                                             userCards.splice(originalIndex + 1, 0, duplicatedItem);
                                             setQaUserCards(userCards);
                                         } else {
-                                            // Р вЂўРЎРѓР В»Р С‘ Р Р…Р Вµ Р Р…Р В°РЎв‚¬Р В»Р С‘, Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎРЏР ВµР С Р Р† Р С”Р С•Р Р…Р ВµРЎвЂ 
+                                            // Если не нашли, добавляем в конец
                                             userCards.push(duplicatedItem);
                                             setQaUserCards(userCards);
                                         }
                                     }
 
-                                    // СЂСџвЂќТђ Р вЂќР С›Р вЂР С’Р вЂ™Р вЂєР Р‡Р вЂўР Сљ Р Р† qaNewItems РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР С‘Р Р…РЎвЂ¦РЎР‚Р С•Р Р…Р С‘Р В·Р В°РЎвЂ Р С‘РЎРЏ Р Р†Р С‘Р Т‘Р ВµР В»Р В° Р Р…Р С•Р Р†РЎС“РЎР‹ Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР С”РЎС“
+                                    // 🔥 ДОБАВЛЯЕМ в qaNewItems чтобы синхронизация видела новую карточку
                                     const newItems = getNewItems();
                                     if (!newItems.some(n => n.question === copyQ)) {
                                         newItems.push(duplicatedItem);
                                         localStorage.setItem('qaNewItems', JSON.stringify(newItems));
 
-                                        console.log('[DUPLICATE] Р вЂќР С•Р В±Р В°Р Р†Р В»Р ВµР Р…Р С• Р Р† qaNewItems, Р Р†РЎРѓР ВµР С–Р С•:', newItems.length);
+                                        console.log('[DUPLICATE] Добавлено в qaNewItems, всего:', newItems.length);
                                     }
                                 }
 
                                 // Track duplication on server
                                 trackServerDuplication(item.question, copyQ).then(trackOk => {
                                     if (trackOk) {
-                                        // СЂСџвЂќТђ Р С›Р В±Р Р…Р С•Р Р†Р В»РЎРЏР ВµР С UI РЎРѓРЎР‚Р В°Р В·РЎС“, Р В±Р ВµР В· forceReloadData, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р С‘РЎвЂљРЎРЉ Р С—Р С•РЎР‚РЎРЏР Т‘Р С•Р С” Р С”Р В°РЎР‚РЎвЂљР С•РЎвЂЎР ВµР С”
+                                        // 🔥 Обновляем UI сразу, без forceReloadData, чтобы сохранить порядок карточек
                                         const activeTab = document.querySelector('.tabs-container .tab.active');
                                         if (activeTab) {
                                             if (activeTab.dataset.category === 'all') {
@@ -4417,15 +4417,15 @@ export function displayQuestions(questions, title) {
                                         }
                                         setInlineSaveStatus(rowEl, 'success');
 
-                                        // СЂСџвЂќТђ Р РЋР С•РЎвЂ¦РЎР‚Р В°Р Р…РЎРЏР ВµР С Р Р…Р В° РЎРѓР ВµРЎР‚Р Р†Р ВµРЎР‚ Р вЂР вЂўР вЂ” forceReloadData
-                                        console.log('[DUPLICATE] Р вЂ™РЎвЂ№Р В·РЎвЂ№Р Р†Р В°Р ВµР С saveMergedToServer(true)');
+                                        // 🔥 Сохраняем на сервер БЕЗ forceReloadData
+                                        console.log('[DUPLICATE] Вызываем saveMergedToServer(true)');
                                         saveMergedToServer(true).then(saveOk => {
                                             if (!saveOk) {
-                                                setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° РЎРѓР С•РЎвЂ¦РЎР‚Р В°Р Р…Р ВµР Р…Р С‘РЎРЏ');
+                                                setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
                                             }
                                         });
                                     } else {
-                                        setInlineSaveStatus(rowEl, 'error', 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р Т‘РЎС“Р В±Р В»Р С‘РЎР‚Р С•Р Р†Р В°Р Р…Р С‘РЎРЏ');
+                                        setInlineSaveStatus(rowEl, 'error', 'Ошибка дублирования');
                                     }
                                 });
                             } else if (act === 'edit') {
@@ -4439,13 +4439,13 @@ export function displayQuestions(questions, title) {
                 resultsList.appendChild(resultItem);
             } catch (err) {
                 console.error('Error rendering item:', item, err);
-                // Р вЂ™Р С‘Р В·РЎС“Р В°Р В»РЎРЉР Р…Р С• Р С—Р С•Р С”Р В°Р В·РЎвЂ№Р Р†Р В°Р ВµР С, РЎвЂЎРЎвЂљР С• РЎРЊР В»Р ВµР СР ВµР Р…РЎвЂљ РЎРѓР В»Р С•Р СР В°Р В»РЎРѓРЎРЏ (Р Т‘Р В»РЎРЏ Р С•РЎвЂљР В»Р В°Р Т‘Р С”Р С‘)
+                // Визуально показываем, что элемент сломался (для отладки)
                 try {
                     const errDiv = document.createElement('div');
                     errDiv.style.border = '1px solid red';
                     errDiv.style.color = 'red';
                     errDiv.style.padding = '10px';
-                    errDiv.textContent = `Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р Р†Р С•Р С—РЎР‚Р С•РЎРѓР В°: ${err.message}`;
+                    errDiv.textContent = `Ошибка отображения вопроса: ${err.message}`;
                     resultsList.appendChild(errDiv);
                 } catch (_) { }
             }
@@ -4454,3 +4454,4 @@ export function displayQuestions(questions, title) {
         console.error('Critical error in displayQuestions:', e);
     }
 }
+
