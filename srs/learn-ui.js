@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.09.5';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.09.5';
-import { getProgressMap } from './stats-utils.js?v=6.09.5';
-import { checkAchievements } from './stats-utils.js?v=6.09.5';
-import { Scheduler } from './scheduler.js?v=6.09.5';
-import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.09.5';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.09.5';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.09.5';
+import { LearningSession } from './session.js?v=6.20.8';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.20.8';
+import { getProgressMap } from './stats-utils.js?v=6.20.8';
+import { checkAchievements } from './stats-utils.js?v=6.20.8';
+import { Scheduler } from './scheduler.js?v=6.20.8';
+import { getTodaysSession } from './category-scheduler.js?v=6.20.8';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.20.8';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.20.8';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.20.8';
 
 // DOM Elements
 let container = null;
@@ -15,9 +15,9 @@ let session = null;
 let currentScheduler = null;
 let timerInterval = null;
 let sessionTimerStart = 0;
-let userScrolled = false; // Флаг ручного скролла прогресс-бара
-let timerPaused = false; // Флаг паузы таймера
-let pausedTimeRemaining = 0; // Накопленное время при паузе
+let userScrolled = false; // Р¤Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р° РїСЂРѕРіСЂРµСЃСЃ-Р±Р°СЂР°
+let timerPaused = false; // Р¤Р»Р°Рі РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°
+let pausedTimeRemaining = 0; // РќР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ РїСЂРё РїР°СѓР·Рµ
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -159,7 +159,7 @@ export function initLearnUI() {
                     display: none;
                 }
 
-                /* Timer controls - кнопка паузы и таймер */
+                /* Timer controls - РєРЅРѕРїРєР° РїР°СѓР·С‹ Рё С‚Р°Р№РјРµСЂ */
                 .timer-controls {
                     display: flex !important;
                     align-items: center !important;
@@ -172,7 +172,7 @@ export function initLearnUI() {
                     flex-direction: row !important;
                 }
 
-                /* Вариант 3: Неоновое свечение */
+                /* Р’Р°СЂРёР°РЅС‚ 3: РќРµРѕРЅРѕРІРѕРµ СЃРІРµС‡РµРЅРёРµ */
                 .timer-pause-btn {
                     width: 30px;
                     height: 30px;
@@ -199,7 +199,7 @@ export function initLearnUI() {
                     background: rgba(0, 255, 136, 0.1);
                 }
 
-                /* Свечение для кнопки */
+                /* РЎРІРµС‡РµРЅРёРµ РґР»СЏ РєРЅРѕРїРєРё */
                 .timer-pause-btn.running {
                     color: #00ff88;
                     filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
@@ -242,9 +242,9 @@ export function initLearnUI() {
                 }
             </style>
             <div class="learn-header">
-                <button id="learn-exit-btn">✕ Выход</button>
-                <div class="timer-controls" id="timer-controls" title="Пауза/Старт (клик по таймеру)">
-                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="Пауза/Старт">
+                <button id="learn-exit-btn">вњ• Р’С‹С…РѕРґ</button>
+                <div class="timer-controls" id="timer-controls" title="РџР°СѓР·Р°/РЎС‚Р°СЂС‚ (РєР»РёРє РїРѕ С‚Р°Р№РјРµСЂСѓ)">
+                    <button class="timer-pause-btn" id="timer-pause-btn" aria-label="РџР°СѓР·Р°/РЎС‚Р°СЂС‚">
                         <svg class="pause-icon" viewBox="0 0 24 24" style="display:none">
                             <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor"/>
                             <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor"/>
@@ -265,55 +265,55 @@ export function initLearnUI() {
 
             <div class="flashcard-container">
                 <div class="flashcard">
-                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="Назад (Стрелка влево)" aria-label="Назад">
+                    <button id="learn-prev-btn" class="nav-arrow-btn left" title="РќР°Р·Р°Рґ (РЎС‚СЂРµР»РєР° РІР»РµРІРѕ)" aria-label="РќР°Р·Р°Рґ">
                         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                     </button>
                     <div class="flashcard-front">
-                        <button class="edit-btn learn-edit-btn" title="Редактировать" style="top:10px;left:10px;z-index:10">
+                        <button class="edit-btn learn-edit-btn" title="Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ" style="top:10px;left:10px;z-index:10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
-                        <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
+                        <button class="favorite-btn learn-fav-btn" title="Р’ РёР·Р±СЂР°РЅРЅРѕРµ" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-content" id="learn-question"></div>
-                        <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
+                        <div class="flashcard-hint">РќР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР», С‡С‚РѕР±С‹ СѓРІРёРґРµС‚СЊ РѕС‚РІРµС‚</div>
                     </div>
                     <div class="flashcard-back">
-                        <button class="edit-btn learn-edit-btn" title="Редактировать" style="top:10px;left:10px;z-index:10">
+                        <button class="edit-btn learn-edit-btn" title="Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ" style="top:10px;left:10px;z-index:10">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
-                        <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
+                        <button class="favorite-btn learn-fav-btn" title="Р’ РёР·Р±СЂР°РЅРЅРѕРµ" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
                         <div class="flashcard-back-question" id="learn-back-question"></div>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
-                            <button class="rate-btn rate-again" data-grade="0">Снова (1)</button>
-                            <button class="rate-btn rate-hard" data-grade="1">Трудно (2)</button>
-                            <button class="rate-btn rate-good" data-grade="2">Хорошо (3)</button>
-                            <button class="rate-btn rate-easy" data-grade="3">Легко (4)</button>
+                            <button class="rate-btn rate-again" data-grade="0">РЎРЅРѕРІР° (1)</button>
+                            <button class="rate-btn rate-hard" data-grade="1">РўСЂСѓРґРЅРѕ (2)</button>
+                            <button class="rate-btn rate-good" data-grade="2">РҐРѕСЂРѕС€Рѕ (3)</button>
+                            <button class="rate-btn rate-easy" data-grade="3">Р›РµРіРєРѕ (4)</button>
                         </div>
                     </div>
-                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Вперед (Стрелка вправо)" aria-label="Вперед">
+                    <button id="learn-next-btn" class="nav-arrow-btn right" title="Р’РїРµСЂРµРґ (РЎС‚СЂРµР»РєР° РІРїСЂР°РІРѕ)" aria-label="Р’РїРµСЂРµРґ">
                         <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </button>
                 </div>
             </div>
 
             <div id="learn-stats" style="display:none">
-                <h2>Сессия завершена!</h2>
+                <h2>РЎРµСЃСЃРёСЏ Р·Р°РІРµСЂС€РµРЅР°!</h2>
                 <div class="stats-grid">
-                    <div class="stat-item"><span>Всего:</span> <span id="stat-total">0</span></div>
-                    <div class="stat-item"><span>Снова:</span> <span id="stat-again">0</span></div>
-                    <div class="stat-item"><span>Трудно:</span> <span id="stat-hard">0</span></div>
-                    <div class="stat-item"><span>Хорошо:</span> <span id="stat-good">0</span></div>
-                    <div class="stat-item"><span>Легко:</span> <span id="stat-easy">0</span></div>
+                    <div class="stat-item"><span>Р’СЃРµРіРѕ:</span> <span id="stat-total">0</span></div>
+                    <div class="stat-item"><span>РЎРЅРѕРІР°:</span> <span id="stat-again">0</span></div>
+                    <div class="stat-item"><span>РўСЂСѓРґРЅРѕ:</span> <span id="stat-hard">0</span></div>
+                    <div class="stat-item"><span>РҐРѕСЂРѕС€Рѕ:</span> <span id="stat-good">0</span></div>
+                    <div class="stat-item"><span>Р›РµРіРєРѕ:</span> <span id="stat-easy">0</span></div>
                 </div>
-                <button id="learn-finish-btn" class="primary-btn">Вернуться к списку</button>
+                <button id="learn-finish-btn" class="primary-btn">Р’РµСЂРЅСѓС‚СЊСЃСЏ Рє СЃРїРёСЃРєСѓ</button>
             </div>
         `;
         appWrapper.appendChild(container);
@@ -363,29 +363,29 @@ export function initLearnUI() {
 
         // Rating buttons
         const rates = container.querySelectorAll('.rate-btn');
-        console.log('[LEARN-UI] Найдено кнопок оценки:', rates.length);
+        console.log('[LEARN-UI] РќР°Р№РґРµРЅРѕ РєРЅРѕРїРѕРє РѕС†РµРЅРєРё:', rates.length);
         rates.forEach((btn, index) => {
-            console.log(`[LEARN-UI] Кнопка ${index}:`, btn.className, btn.dataset.grade);
+            console.log(`[LEARN-UI] РљРЅРѕРїРєР° ${index}:`, btn.className, btn.dataset.grade);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const grade = parseInt(btn.dataset.grade);
                 console.log('========================================');
-                console.log('[RATE BUTTON CLICK] Клик по кнопке!');
+                console.log('[RATE BUTTON CLICK] РљР»РёРє РїРѕ РєРЅРѕРїРєРµ!');
                 console.log('[RATE BUTTON CLICK] Grade:', grade);
 
-                // Временно отключаем pointer-events чтобы снять hover
+                // Р’СЂРµРјРµРЅРЅРѕ РѕС‚РєР»СЋС‡Р°РµРј pointer-events С‡С‚РѕР±С‹ СЃРЅСЏС‚СЊ hover
                 btn.style.pointerEvents = 'none';
                 console.log('[RATE BUTTON CLICK] pointerEvents: none');
 
-                // Сбрасываем флаг ручного скролла перед ответом
+                // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р° РїРµСЂРµРґ РѕС‚РІРµС‚РѕРј
                 userScrolled = false;
 
                 if (session) session.rate(grade);
-                // Сбрасываем фокус с кнопки чтобы не было обводки
+                // РЎР±СЂР°СЃС‹РІР°РµРј С„РѕРєСѓСЃ СЃ РєРЅРѕРїРєРё С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ РѕР±РІРѕРґРєРё
                 btn.blur();
                 console.log('[RATE BUTTON CLICK] Focus blurred from button');
 
-                // Возвращаем pointer-events через небольшую задержку
+                // Р’РѕР·РІСЂР°С‰Р°РµРј pointer-events С‡РµСЂРµР· РЅРµР±РѕР»СЊС€СѓСЋ Р·Р°РґРµСЂР¶РєСѓ
                 setTimeout(() => {
                     btn.style.pointerEvents = '';
                     console.log('[RATE BUTTON CLICK] pointerEvents: restored');
@@ -395,15 +395,15 @@ export function initLearnUI() {
             });
         });
 
-        // Edit buttons - открытие модального окна редактирования
+        // Edit buttons - РѕС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
         container.querySelectorAll('.learn-edit-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!session || !session.currentCard) {
-                    console.log('[EDIT] Нет активной карточки для редактирования');
+                    console.log('[EDIT] РќРµС‚ Р°РєС‚РёРІРЅРѕР№ РєР°СЂС‚РѕС‡РєРё РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ');
                     return;
                 }
-                console.log('[EDIT] Открытие редактора для карточки:', session.currentCard.question?.substring(0, 50));
+                console.log('[EDIT] РћС‚РєСЂС‹С‚РёРµ СЂРµРґР°РєС‚РѕСЂР° РґР»СЏ РєР°СЂС‚РѕС‡РєРё:', session.currentCard.question?.substring(0, 50));
                 openEditModal(session.currentCard);
             });
         });
@@ -416,7 +416,7 @@ export function initLearnUI() {
 }
 
 // ==========================================
-// РЕДАКТИРОВАНИЕ КАРТОЧЕК
+// Р Р•Р”РђРљРўРР РћР’РђРќРР• РљРђР РўРћР§Р•Рљ
 // ==========================================
 
 let editModalState = {
@@ -424,14 +424,14 @@ let editModalState = {
     originalCard: null,
     editedQuestion: '',
     editedAnswer: '',
-    formatting: null  // formatting объект { question: [], answer: [] }
+    formatting: null  // formatting РѕР±СЉРµРєС‚ { question: [], answer: [] }
 };
 
-// Открытие модального окна редактирования
+// РћС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
 function openEditModal(card) {
-    console.log('[EDIT MODAL] Открытие модального окна');
+    console.log('[EDIT MODAL] РћС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°');
 
-    // Получаем актуальные данные из session.currentCard (не из card!)
+    // РџРѕР»СѓС‡Р°РµРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ РёР· session.currentCard (РЅРµ РёР· card!)
     const currentCard = session?.currentCard;
     const question = currentCard?.question || card.question || '';
     const answer = currentCard?.answer || currentCard?.item?.answer || card.answer || card.item?.answer || '';
@@ -439,10 +439,10 @@ function openEditModal(card) {
     console.log('[EDIT MODAL] card.question:', question);
     console.log('[EDIT MODAL] answer:', answer?.substring(0, 50));
 
-    // Получаем formatting из карточки или создаём пустой
+    // РџРѕР»СѓС‡Р°РµРј formatting РёР· РєР°СЂС‚РѕС‡РєРё РёР»Рё СЃРѕР·РґР°С‘Рј РїСѓСЃС‚РѕР№
     const formatting = card.formatting || createEmptyFormatting();
 
-    // Сохраняем исходные данные - всегда берем из session.currentCard
+    // РЎРѕС…СЂР°РЅСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ - РІСЃРµРіРґР° Р±РµСЂРµРј РёР· session.currentCard
     editModalState = {
         isOpen: true,
         originalCard: {
@@ -453,37 +453,37 @@ function openEditModal(card) {
         },
         editedQuestion: question,
         editedAnswer: answer,
-        formatting: { ...formatting },  // Копируем formatting
-        // Сохраняем oldQuestion для использования при сохранении
+        formatting: { ...formatting },  // РљРѕРїРёСЂСѓРµРј formatting
+        // РЎРѕС…СЂР°РЅСЏРµРј oldQuestion РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё
         oldQuestion: question
     };
 
     console.log('[EDIT MODAL] editModalState.originalCard.question:', editModalState.originalCard.question);
     console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion);
 
-    // Блокируем навигацию и переворот карточки
+    // Р‘Р»РѕРєРёСЂСѓРµРј РЅР°РІРёРіР°С†РёСЋ Рё РїРµСЂРµРІРѕСЂРѕС‚ РєР°СЂС‚РѕС‡РєРё
     if (session) {
         session.pauseNavigation = true;
         session.blockFlip = true;
     }
 
-    // Блокируем клики по карточке
+    // Р‘Р»РѕРєРёСЂСѓРµРј РєР»РёРєРё РїРѕ РєР°СЂС‚РѕС‡РєРµ
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = 'none';
         console.log('[EDIT MODAL] Card clicks blocked');
     }
 
-    // Создаем модальное окно с ОДНОЙ панелью форматирования
+    // РЎРѕР·РґР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃ РћР”РќРћР™ РїР°РЅРµР»СЊСЋ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
     const modalHTML = `
         <div class="edit-modal-overlay" id="edit-modal-overlay">
             <div class="edit-modal">
                 <div class="edit-modal-content">
-                    <!-- ОДНА ОБЩАЯ ПАНЕЛЬ ФОРМАТИРОВАНИЯ -->
+                    <!-- РћР”РќРђ РћР‘Р©РђРЇ РџРђРќР•Р›Р¬ Р¤РћР РњРђРўРР РћР’РђРќРРЇ -->
                     <div class="format-toolbar" id="main-format-toolbar"></div>
 
                     <div class="edit-field-group">
-                        <label class="edit-field-label">Вопрос</label>
+                        <label class="edit-field-label">Р’РѕРїСЂРѕСЃ</label>
                         <div
                             class="edit-field-editor"
                             id="edit-question-editor"
@@ -492,7 +492,7 @@ function openEditModal(card) {
                         ></div>
                     </div>
                     <div class="edit-field-group">
-                        <label class="edit-field-label">Ответ</label>
+                        <label class="edit-field-label">РћС‚РІРµС‚</label>
                         <div
                             class="edit-field-editor"
                             id="edit-answer-editor"
@@ -502,8 +502,8 @@ function openEditModal(card) {
                     </div>
                 </div>
                 <div class="edit-modal-footer">
-                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">Отмена</button>
-                    <button class="edit-modal-btn save" id="edit-save-btn">Сохранить</button>
+                    <button class="edit-modal-btn cancel" id="edit-cancel-btn">РћС‚РјРµРЅР°</button>
+                    <button class="edit-modal-btn save" id="edit-save-btn">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
                 </div>
             </div>
         </div>
@@ -513,13 +513,13 @@ function openEditModal(card) {
 
     console.log('[EDIT MODAL] Modal HTML inserted, checking element:', document.getElementById('edit-modal-overlay'));
 
-    // Создаём toolbar
+    // РЎРѕР·РґР°С‘Рј toolbar
     const toolbarContainer = document.getElementById('main-format-toolbar');
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
     if (toolbarContainer) {
-        const mainToolbar = createFormatToolbar('both');  // 'both' означает общий для всех
+        const mainToolbar = createFormatToolbar('both');  // 'both' РѕР·РЅР°С‡Р°РµС‚ РѕР±С‰РёР№ РґР»СЏ РІСЃРµС…
         toolbarContainer.appendChild(mainToolbar);
 
         console.log('[EDIT MODAL] Toolbar created:', mainToolbar);
@@ -528,17 +528,17 @@ function openEditModal(card) {
     console.log('[EDIT MODAL] Editors found:', { questionEditor, answerEditor });
 
     if (questionEditor) {
-        // Применяем форматирование к вопросу
+        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ
         renderFormattingInEditor(questionEditor, question, formatting.question || []);
         console.log('[EDIT MODAL] Question set:', question?.substring(0, 50));
     }
     if (answerEditor) {
-        // Применяем форматирование к ответу
+        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РѕС‚РІРµС‚Сѓ
         renderFormattingInEditor(answerEditor, answer, formatting.answer || []);
         console.log('[EDIT MODAL] Answer set:', answer?.substring(0, 50));
     }
 
-    // Инициализируем toolbar с ОБОИМИ редакторами
+    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј toolbar СЃ РћР‘РћРРњР СЂРµРґР°РєС‚РѕСЂР°РјРё
     const mainToolbar = toolbarContainer?.querySelector('.format-toolbar');
     if (mainToolbar && questionEditor && answerEditor) {
         initFormatToolbar(mainToolbar, questionEditor, answerEditor, editModalState.formatting, (newFormatting) => {
@@ -546,14 +546,14 @@ function openEditModal(card) {
         });
     }
 
-    // Обработчики кнопок
+    // РћР±СЂР°Р±РѕС‚С‡РёРєРё РєРЅРѕРїРѕРє
     const cancelBtn = document.getElementById('edit-cancel-btn');
     const saveBtn = document.getElementById('edit-save-btn');
     const overlay = document.getElementById('edit-modal-overlay');
 
     console.log('[EDIT MODAL] Buttons found:', { cancelBtn, saveBtn, overlay });
 
-    // Добавляем отладочные логи для кнопок
+    // Р”РѕР±Р°РІР»СЏРµРј РѕС‚Р»Р°РґРѕС‡РЅС‹Рµ Р»РѕРіРё РґР»СЏ РєРЅРѕРїРѕРє
     cancelBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         console.log('[EDIT MODAL] Cancel button clicked');
@@ -574,9 +574,9 @@ function openEditModal(card) {
         }
     });
 
-    // Обработчик Enter (Ctrl+Enter для сохранения)
+    // РћР±СЂР°Р±РѕС‚С‡РёРє Enter (Ctrl+Enter РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ)
     const handleKeyDown = (e) => {
-        // Блокируем все события клавиатуры от передачи на карточку
+        // Р‘Р»РѕРєРёСЂСѓРµРј РІСЃРµ СЃРѕР±С‹С‚РёСЏ РєР»Р°РІРёР°С‚СѓСЂС‹ РѕС‚ РїРµСЂРµРґР°С‡Рё РЅР° РєР°СЂС‚РѕС‡РєСѓ
         e.stopPropagation();
         e.preventDefault();
 
@@ -585,13 +585,13 @@ function openEditModal(card) {
         } else if (e.key === 'Escape') {
             closeEditModal(true);
         }
-        // Остальные клавиши работают для редактирования текста
+        // РћСЃС‚Р°Р»СЊРЅС‹Рµ РєР»Р°РІРёС€Рё СЂР°Р±РѕС‚Р°СЋС‚ РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ С‚РµРєСЃС‚Р°
     };
 
-    // Блокируем стандартные события клавиатуры для редакторов
+    // Р‘Р»РѕРєРёСЂСѓРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЃРѕР±С‹С‚РёСЏ РєР»Р°РІРёР°С‚СѓСЂС‹ РґР»СЏ СЂРµРґР°РєС‚РѕСЂРѕРІ
     questionEditor?.addEventListener('keydown', (e) => {
         e.stopPropagation();
-        // Разрешаем только редактирование
+        // Р Р°Р·СЂРµС€Р°РµРј С‚РѕР»СЊРєРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ
         if (e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             saveEditChanges();
@@ -611,7 +611,7 @@ function openEditModal(card) {
         }
     });
 
-    // Фокус на первый редактор
+    // Р¤РѕРєСѓСЃ РЅР° РїРµСЂРІС‹Р№ СЂРµРґР°РєС‚РѕСЂ
     setTimeout(() => {
         const overlay = document.getElementById('edit-modal-overlay');
         const modal = document.querySelector('.edit-modal');
@@ -626,12 +626,12 @@ function openEditModal(card) {
         questionEditor?.focus();
     }, 100);
 
-    console.log('[EDIT MODAL] Модальное окно открыто');
+    console.log('[EDIT MODAL] РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РѕС‚РєСЂС‹С‚Рѕ');
 }
 
-// Закрытие модального окна
+// Р—Р°РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°
 function closeEditModal(discardChanges = true) {
-    console.log('[EDIT MODAL] Закрытие модального окна, discardChanges:', discardChanges);
+    console.log('[EDIT MODAL] Р—Р°РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°, discardChanges:', discardChanges);
 
     const modal = document.getElementById('edit-modal-overlay');
     if (modal) {
@@ -643,49 +643,49 @@ function closeEditModal(discardChanges = true) {
 
     editModalState.isOpen = false;
 
-    // Разблокируем навигацию и карточку
+    // Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј РЅР°РІРёРіР°С†РёСЋ Рё РєР°СЂС‚РѕС‡РєСѓ
     if (session) {
         session.pauseNavigation = false;
         session.blockFlip = false;
     }
 
-    // Восстанавливаем клики по карточке
+    // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєР»РёРєРё РїРѕ РєР°СЂС‚РѕС‡РєРµ
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = '';
         console.log('[EDIT MODAL] Card clicks restored');
     }
 
-    console.log('[EDIT MODAL] Модальное окно закрыто');
+    console.log('[EDIT MODAL] РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ Р·Р°РєСЂС‹С‚Рѕ');
 }
 
-// Сохранение изменений
+// РЎРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№
 async function saveEditChanges() {
-    console.log('[EDIT MODAL] Сохранение изменений');
+    console.log('[EDIT MODAL] РЎРѕС…СЂР°РЅРµРЅРёРµ РёР·РјРµРЅРµРЅРёР№');
 
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
     if (!questionEditor || !answerEditor) {
-        console.error('[EDIT MODAL] Редакторы не найдены');
+        console.error('[EDIT MODAL] Р РµРґР°РєС‚РѕСЂС‹ РЅРµ РЅР°Р№РґРµРЅС‹');
         return;
     }
 
-    // Получаем HTML из редакторов
+    // РџРѕР»СѓС‡Р°РµРј HTML РёР· СЂРµРґР°РєС‚РѕСЂРѕРІ
     const questionHTML = questionEditor.innerHTML.trim();
     const answerHTML = answerEditor.innerHTML.trim();
 
-    // Конвертируем HTML в чистый текст + formatting
+    // РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј HTML РІ С‡РёСЃС‚С‹Р№ С‚РµРєСЃС‚ + formatting
     const questionData = convertHtmlToTextAndFormatting(questionHTML);
     const answerData = convertHtmlToTextAndFormatting(answerHTML);
 
     const newQuestion = questionData.text.trim();
     const newAnswer = answerData.text.trim();
 
-    // Получаем formatting из editModalState и обновляем его с новыми данными
+    // РџРѕР»СѓС‡Р°РµРј formatting РёР· editModalState Рё РѕР±РЅРѕРІР»СЏРµРј РµРіРѕ СЃ РЅРѕРІС‹РјРё РґР°РЅРЅС‹РјРё
     const currentFormatting = editModalState.formatting || createEmptyFormatting();
 
-    console.log('[EDIT MODAL] Новые данные:', {
+    console.log('[EDIT MODAL] РќРѕРІС‹Рµ РґР°РЅРЅС‹Рµ:', {
         newQuestion: newQuestion.substring(0, 50),
         newAnswer: newAnswer.substring(0, 50),
         hasFormatting: !!(currentFormatting.question?.length || currentFormatting.answer?.length)
@@ -695,38 +695,38 @@ async function saveEditChanges() {
     console.log('[EDIT MODAL] New question length:', newQuestion.length);
     console.log('[EDIT MODAL] New answer length:', newAnswer.length);
 
-    // Валидация
+    // Р’Р°Р»РёРґР°С†РёСЏ
     if (!newQuestion) {
-        showEditNotification('Вопрос не может быть пустым', 'error');
+        showEditNotification('Р’РѕРїСЂРѕСЃ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј', 'error');
         questionEditor.focus();
         return;
     }
 
     if (!newAnswer) {
-        showEditNotification('Ответ не может быть пустым', 'error');
+        showEditNotification('РћС‚РІРµС‚ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј', 'error');
         answerEditor.focus();
         return;
     }
 
-    // Блокируем кнопку сохранения
+    // Р‘Р»РѕРєРёСЂСѓРµРј РєРЅРѕРїРєСѓ СЃРѕС…СЂР°РЅРµРЅРёСЏ
     const saveBtn = document.getElementById('edit-save-btn');
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.textContent = 'Сохранение...';
+        saveBtn.textContent = 'РЎРѕС…СЂР°РЅРµРЅРёРµ...';
     }
 
     try {
-        // Получаем текущего пользователя (проверяем оба ключа)
+        // РџРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (РїСЂРѕРІРµСЂСЏРµРј РѕР±Р° РєР»СЋС‡Р°)
         let username = null;
 
-        // Пробуем получить из UserSystem (currentUser)
+        // РџСЂРѕР±СѓРµРј РїРѕР»СѓС‡РёС‚СЊ РёР· UserSystem (currentUser)
         const currentUser = window.UserSystem?.getCurrentUser?.();
         if (currentUser?.username) {
             username = currentUser.username;
-            console.log('[EDIT MODAL] Пользователь из UserSystem:', username);
+            console.log('[EDIT MODAL] РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РёР· UserSystem:', username);
         }
 
-        // Если не нашли, пробуем qaSessionUser
+        // Р•СЃР»Рё РЅРµ РЅР°С€Р»Рё, РїСЂРѕР±СѓРµРј qaSessionUser
         if (!username) {
             try {
                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -734,25 +734,25 @@ async function saveEditChanges() {
                     const sessionUser = JSON.parse(sessionUserRaw);
                     if (sessionUser?.username) {
                         username = sessionUser.username;
-                        console.log('[EDIT MODAL] Пользователь из qaSessionUser:', username);
+                        console.log('[EDIT MODAL] РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РёР· qaSessionUser:', username);
                     }
                 }
             } catch (e) {
-                console.warn('[EDIT MODAL] Не удалось получить пользователя из qaSessionUser:', e);
+                console.warn('[EDIT MODAL] РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· qaSessionUser:', e);
             }
         }
 
         if (!username) {
-            throw new Error('Пользователь не авторизован');
+            throw new Error('РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ Р°РІС‚РѕСЂРёР·РѕРІР°РЅ');
         }
 
-        // БЕРЕМ oldQuestion ИЗ SESSION.CURRENTCARD ПЕРЕД ОТПРАВКОЙ
-        // Это гарантирует, что мы используем актуальные данные карточки
+        // Р‘Р•Р Р•Рњ oldQuestion РР— SESSION.CURRENTCARD РџР•Р Р•Р” РћРўРџР РђР’РљРћР™
+        // Р­С‚Рѕ РіР°СЂР°РЅС‚РёСЂСѓРµС‚, С‡С‚Рѕ РјС‹ РёСЃРїРѕР»СЊР·СѓРµРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ РєР°СЂС‚РѕС‡РєРё
         const currentCard = session?.currentCard;
         const oldQuestion = currentCard?.question;
         const oldAnswer = currentCard?.answer || currentCard?.item?.answer;
 
-        console.log('[EDIT MODAL] Отправка данных на сервер', {
+        console.log('[EDIT MODAL] РћС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С… РЅР° СЃРµСЂРІРµСЂ', {
             username,
             oldQuestion: oldQuestion?.substring(0, 50),
             newQuestion: newQuestion.substring(0, 50),
@@ -766,7 +766,7 @@ async function saveEditChanges() {
         const requestUrl = `/api/card/update?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
         console.log('[EDIT MODAL] Request URL:', requestUrl);
 
-        // Отправляем на сервер
+        // РћС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ
         const response = await fetch(requestUrl, {
             method: 'POST',
             headers: {
@@ -785,9 +785,9 @@ async function saveEditChanges() {
 
         const result = await response.json();
 
-        console.log('[EDIT MODAL] Ответ сервера:', result);
+        console.log('[EDIT MODAL] РћС‚РІРµС‚ СЃРµСЂРІРµСЂР°:', result);
 
-        // Выводим debug информацию от сервера
+        // Р’С‹РІРѕРґРёРј debug РёРЅС„РѕСЂРјР°С†РёСЋ РѕС‚ СЃРµСЂРІРµСЂР°
         if (result.debug) {
             console.log('[EDIT MODAL] SERVER DEBUG:', result.debug);
             if (result.debug.questionsInFile) {
@@ -796,12 +796,12 @@ async function saveEditChanges() {
         }
 
         if (response.ok && result.ok) {
-            // Успех
-            console.log('[EDIT MODAL] Карточка успешно обновлена');
+            // РЈСЃРїРµС…
+            console.log('[EDIT MODAL] РљР°СЂС‚РѕС‡РєР° СѓСЃРїРµС€РЅРѕ РѕР±РЅРѕРІР»РµРЅР°');
 
             const currentIndex = session.currentIndex || 0;
 
-            // 1. Обновляем session.queue
+            // 1. РћР±РЅРѕРІР»СЏРµРј session.queue
             if (session.queue && session.queue[currentIndex]) {
                 session.queue[currentIndex].question = newQuestion;
                 session.queue[currentIndex].answer = newAnswer;
@@ -813,7 +813,7 @@ async function saveEditChanges() {
                 }
             }
 
-            // 2. Обновляем session.currentCard ПОСЛЕ goTo()
+            // 2. РћР±РЅРѕРІР»СЏРµРј session.currentCard РџРћРЎР›Р• goTo()
             session.goTo(currentIndex);
 
             if (session && session.currentCard) {
@@ -827,7 +827,7 @@ async function saveEditChanges() {
                 console.log('[EDIT MODAL] Updated session.currentCard:', session.currentCard.question?.substring(0, 50));
             }
 
-            // 3. Обновляем localStorage (ВАЖНО для сохранения после перезагрузки!)
+            // 3. РћР±РЅРѕРІР»СЏРµРј localStorage (Р’РђР–РќРћ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РїРѕСЃР»Рµ РїРµСЂРµР·Р°РіСЂСѓР·РєРё!)
             try {
                 const allCardsRaw = localStorage.getItem('qaUserCards');
                 if (allCardsRaw) {
@@ -838,58 +838,58 @@ async function saveEditChanges() {
                         allCards[cardIndex].answer = newAnswer;
                         allCards[cardIndex].formatting = currentFormatting;
                         localStorage.setItem('qaUserCards', JSON.stringify(allCards));
-                        console.log('[EDIT MODAL] localStorage обновлён');
+                        console.log('[EDIT MODAL] localStorage РѕР±РЅРѕРІР»С‘РЅ');
                     } else {
-                        console.warn('[EDIT MODAL] Карточка не найдена в localStorage для обновления');
+                        console.warn('[EDIT MODAL] РљР°СЂС‚РѕС‡РєР° РЅРµ РЅР°Р№РґРµРЅР° РІ localStorage РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ');
                     }
                 }
             } catch (e) {
-                console.error('[EDIT MODAL] Ошибка обновления localStorage:', e);
+                console.error('[EDIT MODAL] РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ localStorage:', e);
             }
 
-            // 4. Обновляем originalCard в state
+            // 4. РћР±РЅРѕРІР»СЏРµРј originalCard РІ state
             editModalState.originalCard.question = newQuestion;
             editModalState.originalCard.answer = newAnswer;
             editModalState.originalCard.formatting = currentFormatting;
 
-            console.log('[EDIT MODAL] editModalState.originalCard обновлён:', {
+            console.log('[EDIT MODAL] editModalState.originalCard РѕР±РЅРѕРІР»С‘РЅ:', {
                 question: editModalState.originalCard.question?.substring(0, 50)
             });
 
-            // Закрываем модальное окно
+            // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ
             closeEditModal(false);
 
-            // Показываем уведомление
-            showEditNotification('Изменения сохранены', 'success');
+            // РџРѕРєР°Р·С‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ
+            showEditNotification('РР·РјРµРЅРµРЅРёСЏ СЃРѕС…СЂР°РЅРµРЅС‹', 'success');
 
-            // Синхронизируем с сервером
+            // РЎРёРЅС…СЂРѕРЅРёР·РёСЂСѓРµРј СЃ СЃРµСЂРІРµСЂРѕРј
             syncWithServer();
         } else {
-            // Ошибка сервера
-            console.error('[EDIT MODAL] Ошибка сервера:', result);
-            throw new Error(result.error || 'Ошибка сервера');
+            // РћС€РёР±РєР° СЃРµСЂРІРµСЂР°
+            console.error('[EDIT MODAL] РћС€РёР±РєР° СЃРµСЂРІРµСЂР°:', result);
+            throw new Error(result.error || 'РћС€РёР±РєР° СЃРµСЂРІРµСЂР°');
         }
     } catch (error) {
-        console.error('[EDIT MODAL] Ошибка сохранения:', error);
-        showEditNotification(`Ошибка сохранения: ${error.message}`, 'error');
+        console.error('[EDIT MODAL] РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ:', error);
+        showEditNotification(`РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ: ${error.message}`, 'error');
     } finally {
-        // Разблокируем кнопку
+        // Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј РєРЅРѕРїРєСѓ
         const saveBtn = document.getElementById('edit-save-btn');
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Сохранить';
+            saveBtn.textContent = 'РЎРѕС…СЂР°РЅРёС‚СЊ';
         }
     }
 }
 
-// Показ уведомления
+// РџРѕРєР°Р· СѓРІРµРґРѕРјР»РµРЅРёСЏ
 function showEditNotification(message, type = 'success') {
-    console.log('[EDIT NOTIFICATION] Показ уведомления:', message, type);
+    console.log('[EDIT NOTIFICATION] РџРѕРєР°Р· СѓРІРµРґРѕРјР»РµРЅРёСЏ:', message, type);
 
-    // Удаляем предыдущее уведомление если есть
+    // РЈРґР°Р»СЏРµРј РїСЂРµРґС‹РґСѓС‰РµРµ СѓРІРµРґРѕРјР»РµРЅРёРµ РµСЃР»Рё РµСЃС‚СЊ
     const existingNotification = document.querySelector('.edit-notification');
     if (existingNotification) {
-        console.log('[EDIT NOTIFICATION] Удаляем старое уведомление');
+        console.log('[EDIT NOTIFICATION] РЈРґР°Р»СЏРµРј СЃС‚Р°СЂРѕРµ СѓРІРµРґРѕРјР»РµРЅРёРµ');
         existingNotification.remove();
     }
 
@@ -906,7 +906,7 @@ function showEditNotification(message, type = 'success') {
 
     document.body.insertAdjacentHTML('beforeend', notificationHTML);
 
-    // Показываем уведомление
+    // РџРѕРєР°Р·С‹РІР°РµРј СѓРІРµРґРѕРјР»РµРЅРёРµ
     const notification = document.getElementById('edit-notification');
     console.log('[EDIT NOTIFICATION] Notification element:', notification);
     console.log('[EDIT NOTIFICATION] Computed styles:', notification ? getComputedStyle(notification) : 'N/A');
@@ -919,7 +919,7 @@ function showEditNotification(message, type = 'success') {
         }
     }, 10);
 
-    // Скрываем через 3 секунды
+    // РЎРєСЂС‹РІР°РµРј С‡РµСЂРµР· 3 СЃРµРєСѓРЅРґС‹
     setTimeout(() => {
         notification?.classList.remove('show');
         setTimeout(() => {
@@ -976,16 +976,16 @@ export function startLearnSession(candidateQuestions, options = {}) {
     console.log('[startLearnSession] __navigatingToHome:', window.__navigatingToHome);
     console.log('[startLearnSession] Stack trace:', new Error().stack);
 
-    // Проверяем, не перешли ли мы на главную во время запуска
+    // РџСЂРѕРІРµСЂСЏРµРј, РЅРµ РїРµСЂРµС€Р»Рё Р»Рё РјС‹ РЅР° РіР»Р°РІРЅСѓСЋ РІРѕ РІСЂРµРјСЏ Р·Р°РїСѓСЃРєР°
     if (window.__navigatingToHome) {
         console.log('[startLearnSession] ABORTED - navigating to home!');
-        window.__navigatingToHome = false;  // Сбрасываем флаг
+        window.__navigatingToHome = false;  // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі
         return;
     }
 
     initLearnUI(); // Ensure UI exists
 
-    // Скрываем навигацию и добавляем класс на body
+    // РЎРєСЂС‹РІР°РµРј РЅР°РІРёРіР°С†РёСЋ Рё РґРѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ РЅР° body
     document.body.classList.add('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'none';
@@ -1006,7 +1006,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const status = currentScheduler.getScheduleStatus();
 
     // Inject/Update Header Info safely
-    // Показываем learn-schedule-info только для обычного режима обучения (не cram)
+    // РџРѕРєР°Р·С‹РІР°РµРј learn-schedule-info С‚РѕР»СЊРєРѕ РґР»СЏ РѕР±С‹С‡РЅРѕРіРѕ СЂРµР¶РёРјР° РѕР±СѓС‡РµРЅРёСЏ (РЅРµ cram)
     let infoEl = document.getElementById('learn-schedule-info');
     if (!infoEl) {
         // If not exists, create it and insert it after the exit button
@@ -1024,30 +1024,30 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
     if (infoEl) {
         if (options.mode === 'cram') {
-            // В режиме углубленного обучения скрываем этот блок
+            // Р’ СЂРµР¶РёРјРµ СѓРіР»СѓР±Р»РµРЅРЅРѕРіРѕ РѕР±СѓС‡РµРЅРёСЏ СЃРєСЂС‹РІР°РµРј СЌС‚РѕС‚ Р±Р»РѕРє
             infoEl.style.display = 'none';
         } else {
-            // Убираем День X/Y и Прогресс - не нужно в режиме обучения
+            // РЈР±РёСЂР°РµРј Р”РµРЅСЊ X/Y Рё РџСЂРѕРіСЂРµСЃСЃ - РЅРµ РЅСѓР¶РЅРѕ РІ СЂРµР¶РёРјРµ РѕР±СѓС‡РµРЅРёСЏ
             infoEl.textContent = '';
             infoEl.style.display = '';
         }
     }
 
-    // 🔧 ПЕРЕМЕЩАЕМ ТАЙМЕР И СЧЁТЧИК В .learn-header
+    // рџ”§ РџР•Р Р•РњР•Р©РђР•Рњ РўРђР™РњР•Р  Р РЎР§РЃРўР§РРљ Р’ .learn-header
     const timerEl2 = document.getElementById('mode-timer');
     const counterEl = document.getElementById('learn-counter');
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
-    // НЕ перемещаем таймер! Он остаётся внутри .timer-controls внутри .flashcard
-    // Просто обновляем стили для ПК версии через CSS классы
+    // РќР• РїРµСЂРµРјРµС‰Р°РµРј С‚Р°Р№РјРµСЂ! РћРЅ РѕСЃС‚Р°С‘С‚СЃСЏ РІРЅСѓС‚СЂРё .timer-controls РІРЅСѓС‚СЂРё .flashcard
+    // РџСЂРѕСЃС‚Рѕ РѕР±РЅРѕРІР»СЏРµРј СЃС‚РёР»Рё РґР»СЏ РџРљ РІРµСЂСЃРёРё С‡РµСЂРµР· CSS РєР»Р°СЃСЃС‹
 
-    // Перемещаем только learn-counter в learn-header
+    // РџРµСЂРµРјРµС‰Р°РµРј С‚РѕР»СЊРєРѕ learn-counter РІ learn-header
     if (counterEl && learnHeader2) {
         learnHeader2.appendChild(counterEl);
     }
 
-    // 🔧 ВЫНОСИМ .learn-progress ИЗ .learn-header - будет отдельным блоком снизу
+    // рџ”§ Р’Р«РќРћРЎРРњ .learn-progress РР— .learn-header - Р±СѓРґРµС‚ РѕС‚РґРµР»СЊРЅС‹Рј Р±Р»РѕРєРѕРј СЃРЅРёР·Сѓ
     const learnProgressEl = document.querySelector('.learn-progress');
     if (learnProgressEl && learnHeader2) {
         learnHeader2.parentNode.insertBefore(learnProgressEl, learnHeader2.nextSibling);
@@ -1098,7 +1098,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
             startLearnSession(candidateQuestions, { mode: 'cram' });
             return;
         }
-        alert('Нет карточек для обучения.');
+        alert('РќРµС‚ РєР°СЂС‚РѕС‡РµРє РґР»СЏ РѕР±СѓС‡РµРЅРёСЏ.');
         return;
     }
 
@@ -1172,7 +1172,7 @@ function stopLearnSession() {
         console.log('[stopLearnSession] sidebar display reset');
     }
 
-    // Возвращаем навигацию и убираем класс с body
+    // Р’РѕР·РІСЂР°С‰Р°РµРј РЅР°РІРёРіР°С†РёСЋ Рё СѓР±РёСЂР°РµРј РєР»Р°СЃСЃ СЃ body
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) {
@@ -1180,7 +1180,7 @@ function stopLearnSession() {
         console.log('[stopLearnSession] bottom-nav display set to flex');
     }
 
-    // Восстанавливаем search-container и top-actions-bar
+    // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј search-container Рё top-actions-bar
     const searchContainer = document.querySelector('.search-container');
     if (searchContainer) {
         searchContainer.style.display = '';
@@ -1227,13 +1227,13 @@ function renderCardState(state) {
     const progressFill = container.querySelector('.learn-progress-fill');
 
     // Update segments
-    // Используем session.currentIndex вместо state.currentIndex
+    // РСЃРїРѕР»СЊР·СѓРµРј session.currentIndex РІРјРµСЃС‚Рѕ state.currentIndex
     const currentIndex = session ? (session.currentIndex || 0) : 0;
-    console.log('[SEGMENTS DEBUG] Перед updateSegments: currentIndex=', currentIndex, 'total=', state.total);
+    console.log('[SEGMENTS DEBUG] РџРµСЂРµРґ updateSegments: currentIndex=', currentIndex, 'total=', state.total);
     console.log('[SEGMENTS DEBUG] results=', state.results, 'length=', state.results.length);
     console.log('[SEGMENTS DEBUG] session.results=', session ? session.results : 'no session', 'session.currentIndex=', session ? session.currentIndex : 'no session');
     updateSegments(state.results, state.total, currentIndex, true);
-    console.log('[SEGMENTS DEBUG] После updateSegments');
+    console.log('[SEGMENTS DEBUG] РџРѕСЃР»Рµ updateSegments');
     // Update nav buttons availability
     try {
         const prevBtn = document.getElementById('learn-prev-btn');
@@ -1253,15 +1253,15 @@ function renderCardState(state) {
     } catch { }
 
     if (qEl && state.card) {
-        // Применяем форматирование к вопросу
-        // Берём formatting из session.currentCard (там актуальные данные)
+        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ
+        // Р‘РµСЂС‘Рј formatting РёР· session.currentCard (С‚Р°Рј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ)
         const sessionCard = session?.currentCard;
         const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
-        const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
+        const questionText = sessionCard?.question || state.card.question || '(РџСѓСЃС‚РѕР№ РІРѕРїСЂРѕСЃ)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         qEl.innerHTML = questionHTML;
 
-        // DEBUG: Проверяем, что вставилось
+        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РІСЃС‚Р°РІРёР»РѕСЃСЊ
         console.log('[RENDER CARD] Question rendered:', {
             text: questionText,
             formatting: questionFormatting,
@@ -1271,12 +1271,12 @@ function renderCardState(state) {
             spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
 
-        // DEBUG: Проверяем стили первого span
+        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј СЃС‚РёР»Рё РїРµСЂРІРѕРіРѕ span
         setTimeout(() => {
             const firstSpan = qEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] ❗ First QUESTION span STYLES:', {
+                console.log('[RENDER CARD] вќ— First QUESTION span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1288,14 +1288,14 @@ function renderCardState(state) {
         }, 100);
     }
     if (aEl && state.card) {
-        // Применяем форматирование к ответу
+        // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РѕС‚РІРµС‚Сѓ
         const sessionCard = session?.currentCard;
         const answerFormatting = sessionCard?.formatting?.answer || state.card.formatting?.answer || [];
-        const answerText = sessionCard?.answer || state.card.answer || '(Пустой ответ)';
+        const answerText = sessionCard?.answer || state.card.answer || '(РџСѓСЃС‚РѕР№ РѕС‚РІРµС‚)';
         const answerHTML = applyFormatting(answerText, answerFormatting);
         aEl.innerHTML = answerHTML;
 
-        // DEBUG: Проверяем, что вставилось
+        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РІСЃС‚Р°РІРёР»РѕСЃСЊ
         console.log('[RENDER CARD] Answer rendered:', {
             text: answerText,
             formatting: answerFormatting,
@@ -1305,12 +1305,12 @@ function renderCardState(state) {
             spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
         });
 
-        // DEBUG: Проверяем стили первого span
+        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј СЃС‚РёР»Рё РїРµСЂРІРѕРіРѕ span
         setTimeout(() => {
             const firstSpan = aEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] ❗ First ANSWER span STYLES:', {
+                console.log('[RENDER CARD] вќ— First ANSWER span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1322,9 +1322,9 @@ function renderCardState(state) {
         }, 100);
     }
 
-    // DEBUG: Логируем стили ответа
-    console.log('\n📦 FLASHCARD ANSWER DEBUG:');
-    console.log('   #learn-answer элемент:', aEl);
+    // DEBUG: Р›РѕРіРёСЂСѓРµРј СЃС‚РёР»Рё РѕС‚РІРµС‚Р°
+    console.log('\nрџ“¦ FLASHCARD ANSWER DEBUG:');
+    console.log('   #learn-answer СЌР»РµРјРµРЅС‚:', aEl);
     if (aEl) {
         const styles = window.getComputedStyle(aEl);
         console.log('   padding-top:', styles.paddingTop);
@@ -1338,8 +1338,8 @@ function renderCardState(state) {
         console.log('      display:', backStyles.display);
     }
 
-    // Проверка перекрытия front/back
-    console.log('\n🔄 FRONT/BACK OVERLAP CHECK:');
+    // РџСЂРѕРІРµСЂРєР° РїРµСЂРµРєСЂС‹С‚РёСЏ front/back
+    console.log('\nрџ”„ FRONT/BACK OVERLAP CHECK:');
     if (front && back) {
         const frontStyles = window.getComputedStyle(front);
         const backStyles = window.getComputedStyle(back);
@@ -1370,16 +1370,16 @@ function renderCardState(state) {
         console.log('      transform-style:', cardStyles.transformStyle);
     }
 
-    // Проверка custom-styles.css
-    console.log('\n📜 CUSTOM-styles.css CHECK:');
+    // РџСЂРѕРІРµСЂРєР° custom-styles.css
+    console.log('\nрџ“њ CUSTOM-styles.css CHECK:');
     const allStyles = Array.from(document.styleSheets);
-    console.log('   Всего style sheets:', allStyles.length);
+    console.log('   Р’СЃРµРіРѕ style sheets:', allStyles.length);
     allStyles.forEach((sheet, i) => {
         try {
             const rules = Array.from(sheet.cssRules || []);
             const hasFlashcardBack = rules.some(r => r.selectorText && r.selectorText.includes('.flashcard-back'));
             if (hasFlashcardBack) {
-                console.log(`   Sheet ${i}: содержит .flashcard-back правила`);
+                console.log(`   Sheet ${i}: СЃРѕРґРµСЂР¶РёС‚ .flashcard-back РїСЂР°РІРёР»Р°`);
                 rules.forEach(r => {
                     if (r.selectorText && r.selectorText.includes('.flashcard-back .flashcard-content')) {
                         console.log(`      Rule: ${r.selectorText} -> padding-top: ${r.style.paddingTop}, margin-top: ${r.style.marginTop}`);
@@ -1391,12 +1391,12 @@ function renderCardState(state) {
         }
     });
 
-    // Обновляем вопрос на back-стороне С ФОРМАТИРОВАНИЕМ
+    // РћР±РЅРѕРІР»СЏРµРј РІРѕРїСЂРѕСЃ РЅР° back-СЃС‚РѕСЂРѕРЅРµ РЎ Р¤РћР РњРђРўРР РћР’РђРќРР•Рњ
     const backQuestionEl = document.getElementById('learn-back-question');
     if (backQuestionEl && state.card) {
         const sessionCard = session?.currentCard;
         const questionFormatting = sessionCard?.formatting?.question || state.card.formatting?.question || [];
-        const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
+        const questionText = sessionCard?.question || state.card.question || '(РџСѓСЃС‚РѕР№ РІРѕРїСЂРѕСЃ)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         backQuestionEl.innerHTML = questionHTML;
 
@@ -1407,12 +1407,12 @@ function renderCardState(state) {
             innerHTML: backQuestionEl.innerHTML
         });
 
-        // DEBUG: Проверяем стили первого span
+        // DEBUG: РџСЂРѕРІРµСЂСЏРµРј СЃС‚РёР»Рё РїРµСЂРІРѕРіРѕ span
         setTimeout(() => {
             const firstSpan = backQuestionEl.querySelector('span');
             if (firstSpan) {
                 const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] ❗ First BACK QUESTION span STYLES:', {
+                console.log('[RENDER CARD] вќ— First BACK QUESTION span STYLES:', {
                     display: styles.display,
                     color: styles.color,
                     textDecoration: styles.textDecoration,
@@ -1497,8 +1497,8 @@ function renderCardState(state) {
         if (ef === null) {
             // Render "NEW" state
             container.querySelectorAll('.learn-hearts').forEach(el => {
-                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span>`;
-                el.title = 'Карточка еще не изучалась';
+                el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">РќРћР’РђРЇ</span>`;
+                el.title = 'РљР°СЂС‚РѕС‡РєР° РµС‰Рµ РЅРµ РёР·СѓС‡Р°Р»Р°СЃСЊ';
 
                 // Remove old label if exists
                 const oldLabel = el.nextElementSibling;
@@ -1510,10 +1510,10 @@ function renderCardState(state) {
 
             // Map level to Russian text
             const levelNames = {
-                'VERY_HARD': 'Очень трудные',
-                'HARD': 'Трудные',
-                'STANDARD': 'Стандарт',
-                'EASY': 'Легкие'
+                'VERY_HARD': 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ',
+                'HARD': 'РўСЂСѓРґРЅС‹Рµ',
+                'STANDARD': 'РЎС‚Р°РЅРґР°СЂС‚',
+                'EASY': 'Р›РµРіРєРёРµ'
             };
 
             // Recalculate hearts count for title
@@ -1529,7 +1529,7 @@ function renderCardState(state) {
                 const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
 
                 el.innerHTML = labelHtml + renderHearts(ef);
-                el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
+                el.title = `РЈСЂРѕРІРµРЅСЊ: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nРЎРµСЂРґРµС‡РµРє: ${heartsCount.toFixed(2)}`;
 
                 // Cleanup old sibling label if it exists (from previous version)
                 const oldLabel = el.nextElementSibling;
@@ -1546,15 +1546,15 @@ function renderCardState(state) {
             if (!canEasy) {
                 easyBtn.style.opacity = '0.5';
                 easyBtn.style.cursor = 'not-allowed';
-                easyBtn.title = 'Доступно только для карточек уровня "Легкие" с прогрессом > 70%';
+                easyBtn.title = 'Р”РѕСЃС‚СѓРїРЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ РєР°СЂС‚РѕС‡РµРє СѓСЂРѕРІРЅСЏ "Р›РµРіРєРёРµ" СЃ РїСЂРѕРіСЂРµСЃСЃРѕРј > 70%';
                 easyBtn.setAttribute('data-locked', 'true');
-                easyBtn.innerHTML = 'Легко 🔒 (4)';
+                easyBtn.innerHTML = 'Р›РµРіРєРѕ рџ”’ (4)';
             } else {
                 easyBtn.style.opacity = '1';
                 easyBtn.style.cursor = 'pointer';
                 easyBtn.title = '';
                 easyBtn.removeAttribute('data-locked');
-                easyBtn.innerHTML = 'Легко (4)';
+                easyBtn.innerHTML = 'Р›РµРіРєРѕ (4)';
             }
         }
     }
@@ -1598,10 +1598,10 @@ function renderCardState(state) {
                 timerEl.style.transform = 'translateX(-50%) scale(1)';
             }
         } else if (state.mode === 'time_attack') {
-            // В режиме time_attack скрываем таймер, если время не показано
+            // Р’ СЂРµР¶РёРјРµ time_attack СЃРєСЂС‹РІР°РµРј С‚Р°Р№РјРµСЂ, РµСЃР»Рё РІСЂРµРјСЏ РЅРµ РїРѕРєР°Р·Р°РЅРѕ
             timerEl.style.display = 'none';
         }
-        // Для остальных режимов (cram, ordinary) НЕ скрываем таймер - он управляется через updateTimerDisplay
+        // Р”Р»СЏ РѕСЃС‚Р°Р»СЊРЅС‹С… СЂРµР¶РёРјРѕРІ (cram, ordinary) РќР• СЃРєСЂС‹РІР°РµРј С‚Р°Р№РјРµСЂ - РѕРЅ СѓРїСЂР°РІР»СЏРµС‚СЃСЏ С‡РµСЂРµР· updateTimerDisplay
     }
 }
 
@@ -1609,24 +1609,24 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // Всегда показываем 6 сегментов: 3 пройденных + 1 текущий + 2 следующих
+    // Р’СЃРµРіРґР° РїРѕРєР°Р·С‹РІР°РµРј 6 СЃРµРіРјРµРЅС‚РѕРІ: 3 РїСЂРѕР№РґРµРЅРЅС‹С… + 1 С‚РµРєСѓС‰РёР№ + 2 СЃР»РµРґСѓСЋС‰РёС…
     const visibleCount = 6;
-    let startIdx = currentIndex - 3; // 3 до текущего
-    let endIdx = currentIndex + 2;   // 2 после текущего
+    let startIdx = currentIndex - 3; // 3 РґРѕ С‚РµРєСѓС‰РµРіРѕ
+    let endIdx = currentIndex + 2;   // 2 РїРѕСЃР»Рµ С‚РµРєСѓС‰РµРіРѕ
 
-    // Если не хватает сегментов после текущего, сдвигаем диапазон вправо
+    // Р•СЃР»Рё РЅРµ С…РІР°С‚Р°РµС‚ СЃРµРіРјРµРЅС‚РѕРІ РїРѕСЃР»Рµ С‚РµРєСѓС‰РµРіРѕ, СЃРґРІРёРіР°РµРј РґРёР°РїР°Р·РѕРЅ РІРїСЂР°РІРѕ
     if (endIdx >= total) {
         endIdx = total - 1;
         startIdx = Math.max(0, endIdx - visibleCount + 1);
     }
 
-    // Если не хватает сегментов до текущего, сдвигаем диапазон влево
+    // Р•СЃР»Рё РЅРµ С…РІР°С‚Р°РµС‚ СЃРµРіРјРµРЅС‚РѕРІ РґРѕ С‚РµРєСѓС‰РµРіРѕ, СЃРґРІРёРіР°РµРј РґРёР°РїР°Р·РѕРЅ РІР»РµРІРѕ
     if (startIdx < 0) {
         startIdx = 0;
         endIdx = Math.min(total - 1, visibleCount - 1);
     }
 
-    // Создаём все сегменты один раз
+    // РЎРѕР·РґР°С‘Рј РІСЃРµ СЃРµРіРјРµРЅС‚С‹ РѕРґРёРЅ СЂР°Р·
     if (segs.childElementCount !== total) {
         segs.innerHTML = '';
         for (let i = 0; i < total; i++) {
@@ -1637,34 +1637,34 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         }
     }
 
-    // Показываем ВСЕ сегменты
-    // Закрашенные сегменты - яркие, непройденные - серые
+    // РџРѕРєР°Р·С‹РІР°РµРј Р’РЎР• СЃРµРіРјРµРЅС‚С‹
+    // Р—Р°РєСЂР°С€РµРЅРЅС‹Рµ СЃРµРіРјРµРЅС‚С‹ - СЏСЂРєРёРµ, РЅРµРїСЂРѕР№РґРµРЅРЅС‹Рµ - СЃРµСЂС‹Рµ
     Array.from(segs.children).forEach((el, i) => {
-        // isColored: результат для этого сегмента существует и не null
+        // isColored: СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ СЌС‚РѕРіРѕ СЃРµРіРјРµРЅС‚Р° СЃСѓС‰РµСЃС‚РІСѓРµС‚ Рё РЅРµ null
         const isColored = results && i < results.length && results[i] !== null && results[i] !== undefined;
 
         if (isColored) {
-            // Закрашенный сегмент - полностью видимый
+            // Р—Р°РєСЂР°С€РµРЅРЅС‹Р№ СЃРµРіРјРµРЅС‚ - РїРѕР»РЅРѕСЃС‚СЊСЋ РІРёРґРёРјС‹Р№
             el.style.opacity = '1';
         } else {
-            // Непройденный сегмент - полупрозрачный серый
+            // РќРµРїСЂРѕР№РґРµРЅРЅС‹Р№ СЃРµРіРјРµРЅС‚ - РїРѕР»СѓРїСЂРѕР·СЂР°С‡РЅС‹Р№ СЃРµСЂС‹Р№
             el.style.opacity = '0.5';
         }
     });
 
-    // Центрируем текущий сегмент
+    // Р¦РµРЅС‚СЂРёСЂСѓРµРј С‚РµРєСѓС‰РёР№ СЃРµРіРјРµРЅС‚
     const currentEl = segs.children[currentIndex];
     console.log('[SEGMENTS] currentEl=', currentEl, 'autoScroll=', autoScroll, 'userScrolled=', userScrolled);
 
-    // Если был ручной скролл и autoScroll не включён принудительно - не скроллим
+    // Р•СЃР»Рё Р±С‹Р» СЂСѓС‡РЅРѕР№ СЃРєСЂРѕР»Р» Рё autoScroll РЅРµ РІРєР»СЋС‡С‘РЅ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ - РЅРµ СЃРєСЂРѕР»Р»РёРј
     const shouldScroll = autoScroll && !userScrolled;
 
     if (currentEl && shouldScroll) {
-        // Принудительно показываем текущий сегмент для прокрутки
+        // РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РїРѕРєР°Р·С‹РІР°РµРј С‚РµРєСѓС‰РёР№ СЃРµРіРјРµРЅС‚ РґР»СЏ РїСЂРѕРєСЂСѓС‚РєРё
         currentEl.style.opacity = '1';
 
-        // Позиционируем так, чтобы текущий был 4-м слева (3-1-2)
-        // Для этого скроллим так, чтобы startIdx был виден слева
+        // РџРѕР·РёС†РёРѕРЅРёСЂСѓРµРј С‚Р°Рє, С‡С‚РѕР±С‹ С‚РµРєСѓС‰РёР№ Р±С‹Р» 4-Рј СЃР»РµРІР° (3-1-2)
+        // Р”Р»СЏ СЌС‚РѕРіРѕ СЃРєСЂРѕР»Р»РёРј С‚Р°Рє, С‡С‚РѕР±С‹ startIdx Р±С‹Р» РІРёРґРµРЅ СЃР»РµРІР°
         const segWidth = currentEl.offsetWidth + 2; // width + gap
         const targetPosition = startIdx * segWidth;
 
@@ -1678,12 +1678,12 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         currentEl.classList.add('current');
         console.log('[SEGMENTS] Added class current to segment', currentIndex);
     } else if (currentEl) {
-        // Просто добавляем класс current без скролла
+        // РџСЂРѕСЃС‚Рѕ РґРѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ current Р±РµР· СЃРєСЂРѕР»Р»Р°
         currentEl.classList.add('current');
         console.log('[SEGMENTS] Added class current (no scroll) to segment', currentIndex);
     }
 
-    // Убираем класс current у остальных
+    // РЈР±РёСЂР°РµРј РєР»Р°СЃСЃ current Сѓ РѕСЃС‚Р°Р»СЊРЅС‹С…
     Array.from(segs.children).forEach((el, i) => {
         if (i !== currentIndex) {
             el.classList.remove('current');
@@ -1696,13 +1696,13 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
 
     if (results && results.length) {
-        // results[i] содержит оценку для карточки с индексом i
-        // null означает, что карточка ещё не пройдена
+        // results[i] СЃРѕРґРµСЂР¶РёС‚ РѕС†РµРЅРєСѓ РґР»СЏ РєР°СЂС‚РѕС‡РєРё СЃ РёРЅРґРµРєСЃРѕРј i
+        // null РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РєР°СЂС‚РѕС‡РєР° РµС‰С‘ РЅРµ РїСЂРѕР№РґРµРЅР°
         let coloredCount = 0;
         for (let idx = 0; idx < results.length && idx < total; idx++) {
             const g = results[idx];
             if (g === null || g === undefined) {
-                // Карточка ещё не пройдена, пропускаем
+                // РљР°СЂС‚РѕС‡РєР° РµС‰С‘ РЅРµ РїСЂРѕР№РґРµРЅР°, РїСЂРѕРїСѓСЃРєР°РµРј
                 continue;
             }
             const el = segs.children[idx];
@@ -1711,19 +1711,19 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
                 continue;
             }
 
-            // Проверяем, является ли этот сегмент текущим
+            // РџСЂРѕРІРµСЂСЏРµРј, СЏРІР»СЏРµС‚СЃСЏ Р»Рё СЌС‚РѕС‚ СЃРµРіРјРµРЅС‚ С‚РµРєСѓС‰РёРј
             const isCurrent = (idx === currentIndex);
             console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'isCurrent=', isCurrent, 'currentIndex=', currentIndex);
             console.log('[SEGMENTS COLOR] el.className BEFORE=', el.className);
 
-            // Устанавливаем базовый класс + цвет
+            // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р±Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ + С†РІРµС‚
             el.className = 'learn-progress-segment';
             if (g === 0) el.classList.add('seg-again');
             else if (g === 1) el.classList.add('seg-hard');
             else if (g === 2) el.classList.add('seg-good');
             else if (g === 3) el.classList.add('seg-easy');
 
-            // Добавляем класс current, если это текущий сегмент
+            // Р”РѕР±Р°РІР»СЏРµРј РєР»Р°СЃСЃ current, РµСЃР»Рё СЌС‚Рѕ С‚РµРєСѓС‰РёР№ СЃРµРіРјРµРЅС‚
             if (isCurrent) {
                 el.classList.add('current');
                 console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
@@ -1739,10 +1739,10 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     }
     console.log('[SEGMENTS COLOR] === END ===');
 
-    // Финальная отладка
+    // Р¤РёРЅР°Р»СЊРЅР°СЏ РѕС‚Р»Р°РґРєР°
     console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
 
-    // Проверяем все сегменты после покраски
+    // РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ СЃРµРіРјРµРЅС‚С‹ РїРѕСЃР»Рµ РїРѕРєСЂР°СЃРєРё
     console.log('[SEGMENTS FINAL] === ALL SEGMENTS STATE ===');
     Array.from(segs.children).forEach((el, i) => {
         console.log('[SEGMENTS FINAL] idx=', i, 'className=', el.className, 'classList=', Array.from(el.classList));
@@ -1753,13 +1753,13 @@ function wireSegmentsInteractions(sess) {
     const segs = document.getElementById('learn-segments');
     if (!segs) return;
 
-    // Отслеживаем ручной скролл пользователя
+    // РћС‚СЃР»РµР¶РёРІР°РµРј СЂСѓС‡РЅРѕР№ СЃРєСЂРѕР»Р» РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
     segs.addEventListener('scroll', () => {
         console.log('[SEGMENTS] user scrolled');
         userScrolled = true;
     }, { passive: true });
 
-    // Прокрутка колесиком
+    // РџСЂРѕРєСЂСѓС‚РєР° РєРѕР»РµСЃРёРєРѕРј
     segs.addEventListener('wheel', (e) => {
         if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
             e.preventDefault();
@@ -1767,7 +1767,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: false });
 
-    // === Инерционная прокрутка для touch устройств ===
+    // === РРЅРµСЂС†РёРѕРЅРЅР°СЏ РїСЂРѕРєСЂСѓС‚РєР° РґР»СЏ touch СѓСЃС‚СЂРѕР№СЃС‚РІ ===
     let isDragging = false;
     let startX = 0;
     let scrollLeft = 0;
@@ -1777,7 +1777,7 @@ function wireSegmentsInteractions(sess) {
     let velocity = 0;
     let animationFrame = null;
 
-    // Обработка начала касания
+    // РћР±СЂР°Р±РѕС‚РєР° РЅР°С‡Р°Р»Р° РєР°СЃР°РЅРёСЏ
     segs.addEventListener('touchstart', (e) => {
         isDragging = true;
         startX = e.touches[0].clientX;
@@ -1787,49 +1787,49 @@ function wireSegmentsInteractions(sess) {
         lastTime = startTime;
         velocity = 0;
 
-        // Останавливаем предыдущую анимацию
+        // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСЂРµРґС‹РґСѓС‰СѓСЋ Р°РЅРёРјР°С†РёСЋ
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
             animationFrame = null;
         }
     }, { passive: true });
 
-    // Обработка движения пальца
+    // РћР±СЂР°Р±РѕС‚РєР° РґРІРёР¶РµРЅРёСЏ РїР°Р»СЊС†Р°
     segs.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
 
         const currentX = e.touches[0].clientX;
         const currentTime = Date.now();
 
-        // Вычисляем смещение
-        const walk = (currentX - startX) * 1.5; // Увеличенный коэффициент для чувствительности
+        // Р’С‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ
+        const walk = (currentX - startX) * 1.5; // РЈРІРµР»РёС‡РµРЅРЅС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚ РґР»СЏ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚Рё
         segs.scrollLeft = scrollLeft - walk;
 
-        // Вычисляем скорость для инерции
+        // Р’С‹С‡РёСЃР»СЏРµРј СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ РёРЅРµСЂС†РёРё
         const deltaX = currentX - lastX;
         const deltaTime = currentTime - lastTime;
 
         if (deltaTime > 0) {
-            velocity = deltaX / deltaTime; // пикселей в миллисекунду
+            velocity = deltaX / deltaTime; // РїРёРєСЃРµР»РµР№ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґСѓ
         }
 
         lastX = currentX;
         lastTime = currentTime;
     }, { passive: true });
 
-    // Обработка окончания касания - запуск инерции
+    // РћР±СЂР°Р±РѕС‚РєР° РѕРєРѕРЅС‡Р°РЅРёСЏ РєР°СЃР°РЅРёСЏ - Р·Р°РїСѓСЃРє РёРЅРµСЂС†РёРё
     segs.addEventListener('touchend', (e) => {
         isDragging = false;
 
-        // Если скорость достаточная, запускаем инерционную прокрутку
+        // Р•СЃР»Рё СЃРєРѕСЂРѕСЃС‚СЊ РґРѕСЃС‚Р°С‚РѕС‡РЅР°СЏ, Р·Р°РїСѓСЃРєР°РµРј РёРЅРµСЂС†РёРѕРЅРЅСѓСЋ РїСЂРѕРєСЂСѓС‚РєСѓ
         if (Math.abs(velocity) > 0.3) {
             const inertialScroll = () => {
-                velocity *= 0.92; // Коэффициент затухания (0.92 = плавное замедление)
+                velocity *= 0.92; // РљРѕСЌС„С„РёС†РёРµРЅС‚ Р·Р°С‚СѓС…Р°РЅРёСЏ (0.92 = РїР»Р°РІРЅРѕРµ Р·Р°РјРµРґР»РµРЅРёРµ)
 
-                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms ≈ 60fps
+                const newScrollLeft = segs.scrollLeft - (velocity * 16); // 16ms в‰€ 60fps
                 segs.scrollLeft = Math.max(0, Math.min(newScrollLeft, segs.scrollWidth - segs.clientWidth));
 
-                // Продолжаем анимацию, пока скорость значимая
+                // РџСЂРѕРґРѕР»Р¶Р°РµРј Р°РЅРёРјР°С†РёСЋ, РїРѕРєР° СЃРєРѕСЂРѕСЃС‚СЊ Р·РЅР°С‡РёРјР°СЏ
                 if (Math.abs(velocity) > 0.1) {
                     animationFrame = requestAnimationFrame(inertialScroll);
                 } else {
@@ -1841,7 +1841,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: true });
 
-    // Обработка отмены касания
+    // РћР±СЂР°Р±РѕС‚РєР° РѕС‚РјРµРЅС‹ РєР°СЃР°РЅРёСЏ
     segs.addEventListener('touchcancel', (e) => {
         isDragging = false;
         if (animationFrame) {
@@ -1850,7 +1850,7 @@ function wireSegmentsInteractions(sess) {
         }
     }, { passive: true });
 
-    // Drag перетаскивание для мыши
+    // Drag РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ РґР»СЏ РјС‹С€Рё
     let isMouseDragging = false;
     let mouseStartX = 0;
     let mouseScrollLeft = 0;
@@ -1883,7 +1883,7 @@ function wireSegmentsInteractions(sess) {
         isMouseDragging = false;
         segs.style.cursor = 'grab';
 
-        // Инерция для мыши тоже
+        // РРЅРµСЂС†РёСЏ РґР»СЏ РјС‹С€Рё С‚РѕР¶Рµ
         if (Math.abs(mouseVelocity) > 0.3) {
             const inertialScroll = () => {
                 mouseVelocity *= 0.92;
@@ -1912,7 +1912,7 @@ function wireSegmentsInteractions(sess) {
         const walk = (currentX - mouseStartX) * 2;
         segs.scrollLeft = mouseScrollLeft - walk;
 
-        // Вычисляем скорость
+        // Р’С‹С‡РёСЃР»СЏРµРј СЃРєРѕСЂРѕСЃС‚СЊ
         const deltaX = currentX - mouseLastX;
         const deltaTime = currentTime - mouseLastTime;
 
@@ -1941,15 +1941,15 @@ function wireSegmentsInteractions(sess) {
             el.style.fontSize = '13px';
             el.style.color = 'var(--color-text, #E6EDF3)';
             el.style.display = 'none';
-            el.style.pointerEvents = 'auto'; /* Разрешаем клики */
+            el.style.pointerEvents = 'auto'; /* Р Р°Р·СЂРµС€Р°РµРј РєР»РёРєРё */
             el.style.cursor = 'pointer';
             el.onclick = (e) => {
-                e.stopPropagation(); /* Останавливаем всплытие */
+                e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ */
                 e.preventDefault();
                 hidePreview();
             };
             el.ontouchend = (e) => {
-                e.stopPropagation(); /* Останавливаем всплытие */
+                e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ */
                 e.preventDefault();
                 hidePreview();
             };
@@ -1961,11 +1961,11 @@ function wireSegmentsInteractions(sess) {
         const el = ensurePreviewEl();
         const q = sess.queue[index]?.item?.question || '';
         const a = sess.queue[index]?.item?.answer || '';
-        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">Нажмите, чтобы закрыть</div>`;
+        el.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">${q}</div><div style="opacity:0.8">${a}</div><div style="font-size:11px;opacity:0.5;margin-top:8px;">РќР°Р¶РјРёС‚Рµ, С‡С‚РѕР±С‹ Р·Р°РєСЂС‹С‚СЊ</div>`;
         const r = anchor.getBoundingClientRect();
         const isMobile = window.innerWidth < 768;
         el.style.display = 'block';
-        el.style.pointerEvents = 'auto'; /* Разрешаем клики */
+        el.style.pointerEvents = 'auto'; /* Р Р°Р·СЂРµС€Р°РµРј РєР»РёРєРё */
         const pw = el.offsetWidth || 260;
         const ph = el.offsetHeight || 140;
         if (isMobile) {
@@ -1999,7 +1999,7 @@ function wireSegmentsInteractions(sess) {
         const i = Number(seg.dataset.index || '0');
         seg.style.cursor = 'pointer';
         seg.addEventListener('click', (e) => {
-            e.stopPropagation(); /* Останавливаем всплытие к карточке */
+            e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ Рє РєР°СЂС‚РѕС‡РєРµ */
             e.preventDefault();
 
             console.log('[SEGMENT CLICK] === CLICK START ===');
@@ -2007,18 +2007,18 @@ function wireSegmentsInteractions(sess) {
             console.log('[SEGMENT CLICK] sess.currentIndex BEFORE goTo=', sess.currentIndex);
             console.log('[SEGMENT CLICK] sess.results BEFORE goTo=', sess.results);
 
-            // Переходим к карточке
+            // РџРµСЂРµС…РѕРґРёРј Рє РєР°СЂС‚РѕС‡РєРµ
             sess.goTo(i);
             hidePreview();
 
             console.log('[SEGMENT CLICK] sess.currentIndex AFTER goTo=', sess.currentIndex);
             console.log('[SEGMENT CLICK] sess.results AFTER goTo=', sess.results);
 
-            // Сбрасываем флаг ручного скролла
+            // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р°
             userScrolled = false;
 
-            // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
-            // sess.results - это уже массив чисел (оценок)
+            // Р’С‹Р·С‹РІР°РµРј updateSegments СЃ autoScroll=true РґР»СЏ РІРѕР·РІСЂР°С‚Р° Рє 3-1-2
+            // sess.results - СЌС‚Рѕ СѓР¶Рµ РјР°СЃСЃРёРІ С‡РёСЃРµР» (РѕС†РµРЅРѕРє)
             console.log('[SEGMENT CLICK] Calling updateSegments with results=', sess.results);
             updateSegments(sess.results, sess.queue.length, i, true);
 
@@ -2033,18 +2033,18 @@ function wireSegmentsInteractions(sess) {
             touchTimer = setTimeout(() => { showPreview(i, target); touchTimer = null; }, 300);
         }, { passive: true });
         seg.addEventListener('touchend', (e) => {
-            e.stopPropagation(); /* Останавливаем всплытие к карточке */
+            e.stopPropagation(); /* РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРїР»С‹С‚РёРµ Рє РєР°СЂС‚РѕС‡РєРµ */
             if (touchTimer) {
                 clearTimeout(touchTimer);
                 touchTimer = null;
 
-                // Сбрасываем флаг ручного скролла
+                // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі СЂСѓС‡РЅРѕРіРѕ СЃРєСЂРѕР»Р»Р°
                 userScrolled = false;
 
                 sess.goTo(i);
 
-                // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
-                // sess.results - это уже массив чисел (оценок)
+                // Р’С‹Р·С‹РІР°РµРј updateSegments СЃ autoScroll=true РґР»СЏ РІРѕР·РІСЂР°С‚Р° Рє 3-1-2
+                // sess.results - СЌС‚Рѕ СѓР¶Рµ РјР°СЃСЃРёРІ С‡РёСЃРµР» (РѕС†РµРЅРѕРє)
                 console.log('[SEGMENT TOUCHEND] sess.results=', sess.results);
                 updateSegments(sess.results, sess.queue.length, i, true);
             }
@@ -2083,28 +2083,28 @@ function showStats(stats, results, total) {
                 <div class="stats-grid">
                     <div class="stat-item" id="stat-total">
                         <div class="stat-value" id="sum-total">0</div>
-                        <div class="stat-label">Повторено</div>
+                        <div class="stat-label">РџРѕРІС‚РѕСЂРµРЅРѕ</div>
                     </div>
                     <div class="stat-item" id="stat-accuracy">
                         <div class="stat-value" id="sum-accuracy">0%</div>
-                        <div class="stat-label">Точность</div>
+                        <div class="stat-label">РўРѕС‡РЅРѕСЃС‚СЊ</div>
                     </div>
                     <div class="stat-item" id="stat-streak">
                         <div class="stat-value" id="sum-streak">0</div>
-                        <div class="stat-label">Дней подряд</div>
+                        <div class="stat-label">Р”РЅРµР№ РїРѕРґСЂСЏРґ</div>
                     </div>
                 </div>
                 <div class="motivation" id="sum-motivation"></div>
                 <div id="sum-xp" class="xp-line"></div>
                 <div class="summary-actions">
-                    <button id="sum-continue" class="btn btn-primary" title="Продолжить обучение" aria-label="Продолжить">
-                        <span>▶</span> Продолжить
+                    <button id="sum-continue" class="btn btn-primary" title="РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ" aria-label="РџСЂРѕРґРѕР»Р¶РёС‚СЊ">
+                        <span>в–¶</span> РџСЂРѕРґРѕР»Р¶РёС‚СЊ
                     </button>
-                    <button id="sum-exit" class="btn btn-secondary" title="Перейти к статистике" aria-label="Перейти к статистике">
+                    <button id="sum-exit" class="btn btn-secondary" title="РџРµСЂРµР№С‚Рё Рє СЃС‚Р°С‚РёСЃС‚РёРєРµ" aria-label="РџРµСЂРµР№С‚Рё Рє СЃС‚Р°С‚РёСЃС‚РёРєРµ">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"/>
                         </svg>
-                        Статистика
+                        РЎС‚Р°С‚РёСЃС‚РёРєР°
                     </button>
                 </div>
             </div>
@@ -2112,7 +2112,7 @@ function showStats(stats, results, total) {
         console.log('[MODAL.TEMPLATE] New template created with .stats-grid and .stat-item');
         container.appendChild(overlay);
 
-        // Кнопка "Статистика" - переход на страницу статистики
+        // РљРЅРѕРїРєР° "РЎС‚Р°С‚РёСЃС‚РёРєР°" - РїРµСЂРµС…РѕРґ РЅР° СЃС‚СЂР°РЅРёС†Сѓ СЃС‚Р°С‚РёСЃС‚РёРєРё
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
             console.log('========================================');
             console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
@@ -2120,39 +2120,39 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
             console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
 
-            // ПРИНУДИТЕЛЬНО завершаем сессию обучения
+            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ Р·Р°РІРµСЂС€Р°РµРј СЃРµСЃСЃРёСЋ РѕР±СѓС‡РµРЅРёСЏ
             if (currentScheduler) {
                 currentScheduler = null;
                 console.log('[STATS BUTTON] Cleared currentScheduler');
             }
 
-            // ПРИНУДИТЕЛЬНО убираем класс learning-mode
+            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ СѓР±РёСЂР°РµРј РєР»Р°СЃСЃ learning-mode
             document.body.classList.remove('learning-mode');
             console.log('[STATS BUTTON] Removed learning-mode');
 
-            // ПРИНУДИТЕЛЬНО показываем навигацию
+            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ РїРѕРєР°Р·С‹РІР°РµРј РЅР°РІРёРіР°С†РёСЋ
             const bottomNav = document.getElementById('bottom-nav');
             if (bottomNav) {
                 bottomNav.style.display = 'flex';
                 console.log('[STATS BUTTON] Showed bottomNav');
             }
 
-            // ПРИНУДИТЕЛЬНО скрываем контейнер обучения
+            // РџР РРќРЈР”РРўР•Р›Р¬РќРћ СЃРєСЂС‹РІР°РµРј РєРѕРЅС‚РµР№РЅРµСЂ РѕР±СѓС‡РµРЅРёСЏ
             const learnContainer = document.getElementById('learn-container');
             if (learnContainer) {
                 learnContainer.style.display = 'none';
                 console.log('[STATS BUTTON] Hid learn-container');
             }
 
-            // Закрываем модалку
+            // Р—Р°РєСЂС‹РІР°РµРј РјРѕРґР°Р»РєСѓ
             overlay.remove();
             console.log('[STATS BUTTON] Removed overlay');
 
-            // ИСПРАВЛЕНИЕ: Вызываем initStatsPage() напрямую, а не через hashchange
-            // Потому что если hash уже #/stats, событие hashchange не сработает
+            // РРЎРџР РђР’Р›Р•РќРР•: Р’С‹Р·С‹РІР°РµРј initStatsPage() РЅР°РїСЂСЏРјСѓСЋ, Р° РЅРµ С‡РµСЂРµР· hashchange
+            // РџРѕС‚РѕРјСѓ С‡С‚Рѕ РµСЃР»Рё hash СѓР¶Рµ #/stats, СЃРѕР±С‹С‚РёРµ hashchange РЅРµ СЃСЂР°Р±РѕС‚Р°РµС‚
             console.log('[STATS BUTTON] Calling initStatsPage() directly...');
 
-            // Показываем placeholder ДО загрузки модуля
+            // РџРѕРєР°Р·С‹РІР°РµРј placeholder Р”Рћ Р·Р°РіСЂСѓР·РєРё РјРѕРґСѓР»СЏ
             console.log('[STATS BUTTON] Creating loading placeholder...');
             const skeletonPlaceholder = document.createElement('div');
             skeletonPlaceholder.id = 'stats-skeleton-placeholder';
@@ -2169,12 +2169,12 @@ function showStats(stats, results, total) {
                 justify-content: center;
             `;
             skeletonPlaceholder.innerHTML = `
-                <div style="color: #8B949E; font-size: 14px;">Загрузка статистики...</div>
+                <div style="color: #8B949E; font-size: 14px;">Р—Р°РіСЂСѓР·РєР° СЃС‚Р°С‚РёСЃС‚РёРєРё...</div>
             `;
             document.body.appendChild(skeletonPlaceholder);
             console.log('[STATS BUTTON] Loading placeholder shown');
 
-            // Импортируем и вызываем initStatsPage
+            // РРјРїРѕСЂС‚РёСЂСѓРµРј Рё РІС‹Р·С‹РІР°РµРј initStatsPage
             import('./stats-ui.js?v=6.09').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '6.09');
@@ -2187,7 +2187,7 @@ function showStats(stats, results, total) {
             console.log('========================================');
         });
 
-        // Кнопка "Продолжить" - следующий круг обучения
+        // РљРЅРѕРїРєР° "РџСЂРѕРґРѕР»Р¶РёС‚СЊ" - СЃР»РµРґСѓСЋС‰РёР№ РєСЂСѓРі РѕР±СѓС‡РµРЅРёСЏ
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
             console.log('[CONTINUE BTN] Clicked!');
             console.log('[CONTINUE BTN] __lastCandidates:', window.__lastCandidates ? 'EXISTS' : 'null');
@@ -2228,14 +2228,14 @@ function showStats(stats, results, total) {
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
-    // Завершаем сессию обучения
+    // Р—Р°РІРµСЂС€Р°РµРј СЃРµСЃСЃРёСЋ РѕР±СѓС‡РµРЅРёСЏ
     console.log('[showStats] Ending learning session...');
     if (currentScheduler) {
         currentScheduler = null;
         console.log('[showStats] Cleared currentScheduler');
     }
 
-    // Убираем класс learning-mode
+    // РЈР±РёСЂР°РµРј РєР»Р°СЃСЃ learning-mode
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'flex';
@@ -2243,26 +2243,26 @@ function showStats(stats, results, total) {
     console.log('[showStats] Removed learning-mode, showed bottomNav');
 
     // Motivational Message Logic (Expert Psychology)
-    let motivation = 'Продолжайте в том же духе!';
+    let motivation = 'РџСЂРѕРґРѕР»Р¶Р°Р№С‚Рµ РІ С‚РѕРј Р¶Рµ РґСѓС…Рµ!';
     if (currentScheduler) {
         const sched = currentScheduler.getScheduleStatus();
         const daysLeft = sched.daysRemaining;
 
         if (accuracy >= 90) {
-            motivation = `Потрясающая точность! Вы уверенно идете к цели за ${daysLeft} дн.`;
+            motivation = `РџРѕС‚СЂСЏСЃР°СЋС‰Р°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ! Р’С‹ СѓРІРµСЂРµРЅРЅРѕ РёРґРµС‚Рµ Рє С†РµР»Рё Р·Р° ${daysLeft} РґРЅ.`;
         } else if (accuracy >= 75) {
-            motivation = `Отличный результат! Осталось ${daysLeft} дней до финиша.`;
+            motivation = `РћС‚Р»РёС‡РЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚! РћСЃС‚Р°Р»РѕСЃСЊ ${daysLeft} РґРЅРµР№ РґРѕ С„РёРЅРёС€Р°.`;
         } else if (accuracy < 50) {
-            motivation = `Тяжело в учении — легко в бою. Завтра будет лучше!`;
+            motivation = `РўСЏР¶РµР»Рѕ РІ СѓС‡РµРЅРёРё вЂ” Р»РµРіРєРѕ РІ Р±РѕСЋ. Р—Р°РІС‚СЂР° Р±СѓРґРµС‚ Р»СѓС‡С€Рµ!`;
         } else {
-            motivation = `Хороший темп. Выучено ${sched.learnedCount} из ${sched.learnedCount + sched.unseenCount}.`;
+            motivation = `РҐРѕСЂРѕС€РёР№ С‚РµРјРї. Р’С‹СѓС‡РµРЅРѕ ${sched.learnedCount} РёР· ${sched.learnedCount + sched.unseenCount}.`;
         }
 
         if (sched.dayNumber > 40) {
-            motivation += " Финиш уже близко!";
+            motivation += " Р¤РёРЅРёС€ СѓР¶Рµ Р±Р»РёР·РєРѕ!";
         }
     } else {
-        motivation = accuracy > 80 ? 'Отлично! 💪' : 'Продолжайте! 🚀';
+        motivation = accuracy > 80 ? 'РћС‚Р»РёС‡РЅРѕ! рџ’Є' : 'РџСЂРѕРґРѕР»Р¶Р°Р№С‚Рµ! рџљЂ';
     }
 
     overlay.querySelector('#sum-motivation').textContent = motivation;
@@ -2270,7 +2270,7 @@ function showStats(stats, results, total) {
     const bonus = Math.min(100, (st.current || 0) * 5);
     const dayBonus = bonus > 0 ? Math.min(5, bonus) : 0;
     const streakBonus = Math.max(0, bonus - dayBonus);
-    overlay.querySelector('#sum-xp').textContent = `+${earned} XP • бонусы: день +${dayBonus} XP, стрик +${streakBonus} XP`;
+    overlay.querySelector('#sum-xp').textContent = `+${earned} XP вЂў Р±РѕРЅСѓСЃС‹: РґРµРЅСЊ +${dayBonus} XP, СЃС‚СЂРёРє +${streakBonus} XP`;
     // Apply bonus split to stats and daily points
     const todayKey = (() => {
         try {
@@ -2307,7 +2307,7 @@ function showStats(stats, results, total) {
         const lvl = getCurrentLevel();
         console.log('[MODAL.ANIM] Current level:', lvl.level, 'XP:', lvl.xp);
 
-        overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
+        overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} вЂў ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
         const earned = session.stats.pointsEarned || 0;
         const streakRaw = localStorage.getItem('studyStreak') || '{}';
@@ -2316,7 +2316,7 @@ function showStats(stats, results, total) {
 
         console.log('[MODAL.ANIM] startXP:', startXP, 'earned:', earned, 'bonus:', bonus);
 
-        // Определяем, было ли повышение уровня
+        // РћРїСЂРµРґРµР»СЏРµРј, Р±С‹Р»Рѕ Р»Рё РїРѕРІС‹С€РµРЅРёРµ СѓСЂРѕРІРЅСЏ
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
@@ -2333,7 +2333,7 @@ function showStats(stats, results, total) {
         if (leveledUp) {
             console.log('[MODAL.ANIM] === LEVEL UP ANIMATION ===');
 
-            // 1. Отключаем transition для мгновенной установки
+            // 1. РћС‚РєР»СЋС‡Р°РµРј transition РґР»СЏ РјРіРЅРѕРІРµРЅРЅРѕР№ СѓСЃС‚Р°РЅРѕРІРєРё
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
@@ -2345,12 +2345,12 @@ function showStats(stats, results, total) {
 
             console.log('[MODAL.ANIM] Step 1: Set to 100% (transition: none)');
 
-            // 2. Включаем transition и запускаем анимацию
+            // 2. Р’РєР»СЋС‡Р°РµРј transition Рё Р·Р°РїСѓСЃРєР°РµРј Р°РЅРёРјР°С†РёСЋ
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
 
-                // 3. Вспышка уровня
+                // 3. Р’СЃРїС‹С€РєР° СѓСЂРѕРІРЅСЏ
                 const levelEl = overlay.querySelector('#sum-level');
                 levelEl.classList.add('flash');
                 levelEl.textContent = `LV:${endLevel}!`;
@@ -2358,17 +2358,17 @@ function showStats(stats, results, total) {
 
                 setTimeout(() => {
                     levelEl.classList.remove('flash');
-                    levelEl.textContent = `LV:${endLevel} • ${lvl.xp} XP`;
+                    levelEl.textContent = `LV:${endLevel} вЂў ${lvl.xp} XP`;
                     console.log('[MODAL.ANIM] Step 4: Remove flash');
 
-                    // 4. Быстрое сжатие (200ms)
+                    // 4. Р‘С‹СЃС‚СЂРѕРµ СЃР¶Р°С‚РёРµ (200ms)
                     oldEl.style.transition = 'width 0.2s ease';
                     oldEl.style.width = '0%';
                     console.log('[MODAL.ANIM] Step 5: Shrink old (200ms)');
 
                     setTimeout(() => {
                         console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
-                        // 5. Заполнение нового уровня (1.5s)
+                        // 5. Р—Р°РїРѕР»РЅРµРЅРёРµ РЅРѕРІРѕРіРѕ СѓСЂРѕРІРЅСЏ (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
                         earnEl.style.left = '0%';
@@ -2390,7 +2390,7 @@ function showStats(stats, results, total) {
         } else {
             console.log('[MODAL.ANIM] === NORMAL ANIMATION (no level up) ===');
 
-            // Отключаем transition для мгновенной установки
+            // РћС‚РєР»СЋС‡Р°РµРј transition РґР»СЏ РјРіРЅРѕРІРµРЅРЅРѕР№ СѓСЃС‚Р°РЅРѕРІРєРё
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
             bonusEl.style.transition = 'none';
@@ -2408,7 +2408,7 @@ function showStats(stats, results, total) {
 
             console.log('[MODAL.ANIM] Step 1: Set startPct:', startPct * 100);
 
-            // Включаем transition и запускаем анимацию
+            // Р’РєР»СЋС‡Р°РµРј transition Рё Р·Р°РїСѓСЃРєР°РµРј Р°РЅРёРјР°С†РёСЋ
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
                 console.log('[MODAL.ANIM] Step 2: Enable transition');
@@ -2524,11 +2524,11 @@ function getLevelFromXP(xp) {
 }
 
 function updateTimerDisplay() {
-    // Обновляем .mode-timer вместо #learn-timer
+    // РћР±РЅРѕРІР»СЏРµРј .mode-timer РІРјРµСЃС‚Рѕ #learn-timer
     const el = document.querySelector('.mode-timer');
     if (!el) return;
 
-    // Если таймер на паузе - не обновляем время
+    // Р•СЃР»Рё С‚Р°Р№РјРµСЂ РЅР° РїР°СѓР·Рµ - РЅРµ РѕР±РЅРѕРІР»СЏРµРј РІСЂРµРјСЏ
     if (timerPaused) {
         return;
     }
@@ -2553,36 +2553,36 @@ function toggleTimerPause() {
     if (!pauseBtn) return;
 
     if (timerPaused) {
-        // RESUME: продолжаем отсчёт
+        // RESUME: РїСЂРѕРґРѕР»Р¶Р°РµРј РѕС‚СЃС‡С‘С‚
         sessionTimerStart = Date.now();
 
-        // Запускаем интервал
+        // Р—Р°РїСѓСЃРєР°РµРј РёРЅС‚РµСЂРІР°Р»
         timerInterval = setInterval(updateTimerDisplay, 1000);
         updateTimerDisplay();
 
-        // Визуально: иконка play, белое свечение
+        // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° play, Р±РµР»РѕРµ СЃРІРµС‡РµРЅРёРµ
         pauseBtn.classList.remove('paused');
         pauseBtn.classList.add('running');
 
-        if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
+        if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°';
     } else {
-        // PAUSE: сохраняем накопленное время
+        // PAUSE: СЃРѕС…СЂР°РЅСЏРµРј РЅР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ
         const now = Date.now();
         const startTime = sessionTimerStart;
         const elapsed = Math.floor((now - startTime) / 1000);
         pausedTimeRemaining += elapsed;
 
-        // Останавливаем интервал
+        // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРЅС‚РµСЂРІР°Р»
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
 
-        // Визуально: иконка паузы, мятное свечение
+        // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° РїР°СѓР·С‹, РјСЏС‚РЅРѕРµ СЃРІРµС‡РµРЅРёРµ
         pauseBtn.classList.remove('running');
         pauseBtn.classList.add('paused');
 
-        if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
+        if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ Р·Р°РїСѓСЃРєР° С‚Р°Р№РјРµСЂР°';
     }
 
     timerPaused = !timerPaused;
@@ -2596,31 +2596,31 @@ function setupTimerControls() {
     const timerControls = document.getElementById('timer-controls');
     const timerEl = document.getElementById('mode-timer');
 
-    // Флаг: была ли ручная пауза пользователем
+    // Р¤Р»Р°Рі: Р±С‹Р»Р° Р»Рё СЂСѓС‡РЅР°СЏ РїР°СѓР·Р° РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј
     let wasManuallyPausedByUser = false;
 
-    // Клик по кнопке паузы
+    // РљР»РёРє РїРѕ РєРЅРѕРїРєРµ РїР°СѓР·С‹
     if (pauseBtn) {
         pauseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
+            wasManuallyPausedByUser = !timerPaused; // Р—Р°РїРѕРјРёРЅР°РµРј РЅР°РјРµСЂРµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
             toggleTimerPause();
         });
     }
 
-    // Клик по таймеру (тоже пауза/старт)
+    // РљР»РёРє РїРѕ С‚Р°Р№РјРµСЂСѓ (С‚РѕР¶Рµ РїР°СѓР·Р°/СЃС‚Р°СЂС‚)
     if (timerEl) {
         timerEl.addEventListener('click', (e) => {
             e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
+            wasManuallyPausedByUser = !timerPaused; // Р—Р°РїРѕРјРёРЅР°РµРј РЅР°РјРµСЂРµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
             toggleTimerPause();
         });
     }
 
-    // Клик по контейнеру timer-controls
+    // РљР»РёРє РїРѕ РєРѕРЅС‚РµР№РЅРµСЂСѓ timer-controls
     if (timerControls) {
         timerControls.addEventListener('click', (e) => {
-            // Если клик не по кнопке и не по таймеру - тоже пауза
+            // Р•СЃР»Рё РєР»РёРє РЅРµ РїРѕ РєРЅРѕРїРєРµ Рё РЅРµ РїРѕ С‚Р°Р№РјРµСЂСѓ - С‚РѕР¶Рµ РїР°СѓР·Р°
             if (e.target !== pauseBtn && e.target !== timerEl) {
                 wasManuallyPausedByUser = !timerPaused;
                 toggleTimerPause();
@@ -2628,16 +2628,16 @@ function setupTimerControls() {
         });
     }
 
-    // Инициализация: устанавливаем иконку play (режим воспроизведения)
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ: СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРєРѕРЅРєСѓ play (СЂРµР¶РёРј РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёСЏ)
     if (pauseBtn) {
         pauseBtn.classList.add('running');
         pauseBtn.classList.remove('paused');
     }
     if (timerControls) {
-        timerControls.title = 'Нажмите для паузы таймера';
+        timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°';
     }
 
-    // Автоматическая пауза при уходе со страницы (visibilitychange)
+    // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РїР°СѓР·Р° РїСЂРё СѓС…РѕРґРµ СЃРѕ СЃС‚СЂР°РЅРёС†С‹ (visibilitychange)
     let autoPaused = false;
 
     document.addEventListener('visibilitychange', () => {
@@ -2646,15 +2646,15 @@ function setupTimerControls() {
         const timerControls = document.getElementById('timer-controls');
 
         if (isHidden) {
-            // Страница скрыта (ушли на другую вкладку, свернули браузер, заблокировали телефон)
-            // Всегда ставим на паузу при уходе
+            // РЎС‚СЂР°РЅРёС†Р° СЃРєСЂС‹С‚Р° (СѓС€Р»Рё РЅР° РґСЂСѓРіСѓСЋ РІРєР»Р°РґРєСѓ, СЃРІРµСЂРЅСѓР»Рё Р±СЂР°СѓР·РµСЂ, Р·Р°Р±Р»РѕРєРёСЂРѕРІР°Р»Рё С‚РµР»РµС„РѕРЅ)
+            // Р’СЃРµРіРґР° СЃС‚Р°РІРёРј РЅР° РїР°СѓР·Сѓ РїСЂРё СѓС…РѕРґРµ
             if (!timerPaused) {
-                // PAUSE: сохраняем накопленное время
+                // PAUSE: СЃРѕС…СЂР°РЅСЏРµРј РЅР°РєРѕРїР»РµРЅРЅРѕРµ РІСЂРµРјСЏ
                 const now = Date.now();
                 const elapsed = Math.floor((now - sessionTimerStart) / 1000);
                 pausedTimeRemaining += elapsed;
 
-                // Останавливаем интервал
+                // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёРЅС‚РµСЂРІР°Р»
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -2663,41 +2663,41 @@ function setupTimerControls() {
                 timerPaused = true;
                 autoPaused = true;
 
-                // Визуально: иконка паузы, мятное свечение
+                // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° РїР°СѓР·С‹, РјСЏС‚РЅРѕРµ СЃРІРµС‡РµРЅРёРµ
                 if (pauseBtn) {
                     pauseBtn.classList.remove('running');
                     pauseBtn.classList.add('paused');
                 }
-                if (timerControls) timerControls.title = 'Нажмите для запуска таймера';
+                if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ Р·Р°РїСѓСЃРєР° С‚Р°Р№РјРµСЂР°';
             }
         } else {
-            // Страница снова видима
-            // Если не было ручной паузы пользователем - автоматически запускаем таймер
+            // РЎС‚СЂР°РЅРёС†Р° СЃРЅРѕРІР° РІРёРґРёРјР°
+            // Р•СЃР»Рё РЅРµ Р±С‹Р»Рѕ СЂСѓС‡РЅРѕР№ РїР°СѓР·С‹ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј - Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё Р·Р°РїСѓСЃРєР°РµРј С‚Р°Р№РјРµСЂ
             if (!wasManuallyPausedByUser && timerPaused && autoPaused) {
-                // RESUME: продолжаем отсчёт
+                // RESUME: РїСЂРѕРґРѕР»Р¶Р°РµРј РѕС‚СЃС‡С‘С‚
                 sessionTimerStart = Date.now();
 
-                // Запускаем интервал
+                // Р—Р°РїСѓСЃРєР°РµРј РёРЅС‚РµСЂРІР°Р»
                 timerInterval = setInterval(updateTimerDisplay, 1000);
                 updateTimerDisplay();
 
                 timerPaused = false;
                 autoPaused = false;
 
-                // Визуально: иконка play, белое свечение
+                // Р’РёР·СѓР°Р»СЊРЅРѕ: РёРєРѕРЅРєР° play, Р±РµР»РѕРµ СЃРІРµС‡РµРЅРёРµ
                 if (pauseBtn) {
                     pauseBtn.classList.remove('paused');
                     pauseBtn.classList.add('running');
                 }
-                if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
+                if (timerControls) timerControls.title = 'РќР°Р¶РјРёС‚Рµ РґР»СЏ РїР°СѓР·С‹ С‚Р°Р№РјРµСЂР°';
             }
         }
     });
 
-    // Обработчики первого взаимодействия для снятия ручной паузы
+    // РћР±СЂР°Р±РѕС‚С‡РёРєРё РїРµСЂРІРѕРіРѕ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ РґР»СЏ СЃРЅСЏС‚РёСЏ СЂСѓС‡РЅРѕР№ РїР°СѓР·С‹
     const handleFirstInteraction = () => {
-        // Если была ручная пауза - не делаем ничего, пользователь сам нажмёт
-        // Если не было - таймер уже запущен при visibilitychange
+        // Р•СЃР»Рё Р±С‹Р»Р° СЂСѓС‡РЅР°СЏ РїР°СѓР·Р° - РЅРµ РґРµР»Р°РµРј РЅРёС‡РµРіРѕ, РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃР°Рј РЅР°Р¶РјС‘С‚
+        // Р•СЃР»Рё РЅРµ Р±С‹Р»Рѕ - С‚Р°Р№РјРµСЂ СѓР¶Рµ Р·Р°РїСѓС‰РµРЅ РїСЂРё visibilitychange
         document.removeEventListener('click', handleFirstInteraction);
         document.removeEventListener('mousemove', handleFirstInteraction);
         document.removeEventListener('touchstart', handleFirstInteraction);
@@ -2720,26 +2720,26 @@ function showSmartPause(rec) {
 
     overlay.innerHTML = `
         <div class="summary-box" style="max-width: 400px;">
-            <div style="font-size: 48px; margin-bottom: 16px;">☕</div>
-            <h2 style="margin:0 0 8px 0;">Умная пауза</h2>
+            <div style="font-size: 48px; margin-bottom: 16px;">в•</div>
+            <h2 style="margin:0 0 8px 0;">РЈРјРЅР°СЏ РїР°СѓР·Р°</h2>
             <div style="color: var(--color-text-secondary); margin-bottom: 24px; font-size: 16px;">
                 ${rec.reason}
             </div>
             
             <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
                 <div class="stat-item">
-                    <span>Время</span>
-                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} мин</span>
+                    <span>Р’СЂРµРјСЏ</span>
+                    <span style="font-size: 20px; font-weight: 600;">${rec.duration} РјРёРЅ</span>
                 </div>
                 <div class="stat-item">
-                    <span>Точность</span>
+                    <span>РўРѕС‡РЅРѕСЃС‚СЊ</span>
                     <span style="font-size: 20px; font-weight: 600; color: ${rec.accuracy >= 80 ? '#4ade80' : rec.accuracy >= 50 ? '#fbbf24' : '#ef4444'}">${rec.accuracy}%</span>
                 </div>
             </div>
             
             <div style="display: flex; gap: 12px; flex-direction: column;">
-                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">Сделать перерыв (5 мин)</button>
-                <button id="pause-skip-btn" class="secondary-btn">Пропустить и продолжить</button>
+                <button id="pause-break-btn" class="primary-btn" style="background: #10b981;">РЎРґРµР»Р°С‚СЊ РїРµСЂРµСЂС‹РІ (5 РјРёРЅ)</button>
+                <button id="pause-skip-btn" class="secondary-btn">РџСЂРѕРїСѓСЃС‚РёС‚СЊ Рё РїСЂРѕРґРѕР»Р¶РёС‚СЊ</button>
             </div>
         </div>
     `;
@@ -2761,15 +2761,15 @@ function showSmartPause(rec) {
 function startBreakCountdown(overlay, seconds) {
     const box = overlay.querySelector('.summary-box');
     box.innerHTML = `
-        <div style="font-size: 48px; margin-bottom: 16px;">🧘</div>
-        <h2 style="margin:0 0 8px 0;">Отдыхаем...</h2>
+        <div style="font-size: 48px; margin-bottom: 16px;">рџ§</div>
+        <h2 style="margin:0 0 8px 0;">РћС‚РґС‹С…Р°РµРј...</h2>
         <div id="break-timer" style="font-size: 48px; font-weight: 700; font-family: monospace; margin: 24px 0;">
             05:00
         </div>
         <div style="color: var(--color-text-secondary); margin-bottom: 24px;">
-            Глубоко вдохните и расслабьтесь.
+            Р“Р»СѓР±РѕРєРѕ РІРґРѕС…РЅРёС‚Рµ Рё СЂР°СЃСЃР»Р°Р±СЊС‚РµСЃСЊ.
         </div>
-        <button id="break-skip-btn" class="secondary-btn">Вернуться к обучению</button>
+        <button id="break-skip-btn" class="secondary-btn">Р’РµСЂРЅСѓС‚СЊСЃСЏ Рє РѕР±СѓС‡РµРЅРёСЋ</button>
     `;
 
     let left = seconds;
@@ -2794,27 +2794,27 @@ function startBreakCountdown(overlay, seconds) {
     });
 }
 
-// Простая отладка сегментов
+// РџСЂРѕСЃС‚Р°СЏ РѕС‚Р»Р°РґРєР° СЃРµРіРјРµРЅС‚РѕРІ
 window.debugSegments = () => {
     const segs = document.getElementById('learn-segments');
     if (!segs) {
-        console.log('❌ learn-segments не найден');
+        console.log('вќЊ learn-segments РЅРµ РЅР°Р№РґРµРЅ');
         return;
     }
-    console.log('✅ learn-segments найден');
-    console.log('   Всего сегментов:', segs.children.length);
-    console.log('   Ширина контейнера:', segs.offsetWidth, 'px');
+    console.log('вњ… learn-segments РЅР°Р№РґРµРЅ');
+    console.log('   Р’СЃРµРіРѕ СЃРµРіРјРµРЅС‚РѕРІ:', segs.children.length);
+    console.log('   РЁРёСЂРёРЅР° РєРѕРЅС‚РµР№РЅРµСЂР°:', segs.offsetWidth, 'px');
     console.log('   scrollLeft:', segs.scrollLeft);
 
     const visible = Array.from(segs.children).filter(el => el.style.display !== 'none').length;
-    console.log('   Видимые сегменты:', visible);
+    console.log('   Р’РёРґРёРјС‹Рµ СЃРµРіРјРµРЅС‚С‹:', visible);
 
-    // Показываем индексы видимых
+    // РџРѕРєР°Р·С‹РІР°РµРј РёРЅРґРµРєСЃС‹ РІРёРґРёРјС‹С…
     const visibleIndices = [];
     segs.children.forEach((el, i) => {
         if (el.style.display !== 'none') visibleIndices.push(i);
     });
-    console.log('   Индексы видимых:', visibleIndices);
+    console.log('   РРЅРґРµРєСЃС‹ РІРёРґРёРјС‹С…:', visibleIndices);
 };
 
 console.log('[LEARN-UI] debugSegments loaded. Run window.debugSegments() in console');

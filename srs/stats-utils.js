@@ -1,27 +1,27 @@
-import { syncWithServer } from './storage.js?v=6.09.5';
+import { syncWithServer } from './storage.js?v=6.20.8';
 
-// Вспомогательные функции для работы с датой (MSK timezone UTC+3)
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґР°С‚РѕР№ (MSK timezone UTC+3)
 function getMSKDate() {
-  // Возвращает дату в формате YYYY-MM-DD для московского времени
-  const mskOffset = 3 * 60 * 60 * 1000; // 3 часа в миллисекундах
+  // Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР°С‚Сѓ РІ С„РѕСЂРјР°С‚Рµ YYYY-MM-DD РґР»СЏ РјРѕСЃРєРѕРІСЃРєРѕРіРѕ РІСЂРµРјРµРЅРё
+  const mskOffset = 3 * 60 * 60 * 1000; // 3 С‡Р°СЃР° РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
   return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
 }
 
 function getMSKHours() {
-  // Возвращает часы по московскому времени
+  // Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡Р°СЃС‹ РїРѕ РјРѕСЃРєРѕРІСЃРєРѕРјСѓ РІСЂРµРјРµРЅРё
   const mskOffset = 3 * 60 * 60 * 1000;
   return new Date(Date.now() + mskOffset).getHours();
 }
 
 function toMSKDate(date) {
-  // Конвертирует любую дату в московскую дату YYYY-MM-DD
+  // РљРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ Р»СЋР±СѓСЋ РґР°С‚Сѓ РІ РјРѕСЃРєРѕРІСЃРєСѓСЋ РґР°С‚Сѓ YYYY-MM-DD
   if (!date) return getMSKDate();
   const d = typeof date === 'string' ? new Date(date) : date;
   const mskOffset = 3 * 60 * 60 * 1000;
   return new Date(d.getTime() + mskOffset).toISOString().split('T')[0];
 }
 
-// Миграция старых данных из UTC в MSK
+// РњРёРіСЂР°С†РёСЏ СЃС‚Р°СЂС‹С… РґР°РЅРЅС‹С… РёР· UTC РІ MSK
 export function migrateToMSK() {
   const migratedKey = localStorage.getItem('mskMigrated');
   if (migratedKey === 'true') {
@@ -34,7 +34,7 @@ export function migrateToMSK() {
   console.log('[MSK.MIGRATE] Current MSK:', new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }));
 
   try {
-    // Миграция dailyPoints
+    // РњРёРіСЂР°С†РёСЏ dailyPoints
     const dailyPointsRaw = localStorage.getItem('dailyPoints') || '{}';
     const dailyPoints = JSON.parse(dailyPointsRaw);
     console.log('[MSK.MIGRATE] dailyPoints BEFORE:', dailyPoints);
@@ -47,7 +47,7 @@ export function migrateToMSK() {
     localStorage.setItem('dailyPoints', JSON.stringify(newDailyPoints));
     console.log('[MSK.MIGRATE] dailyPoints AFTER:', newDailyPoints);
 
-    // Миграция dailyBonusPoints
+    // РњРёРіСЂР°С†РёСЏ dailyBonusPoints
     const bonusRaw = localStorage.getItem('dailyBonusPoints') || '{}';
     const bonus = JSON.parse(bonusRaw);
     const newBonus = {};
@@ -57,7 +57,7 @@ export function migrateToMSK() {
     });
     localStorage.setItem('dailyBonusPoints', JSON.stringify(newBonus));
 
-    // Миграция dailyDayBonusPoints
+    // РњРёРіСЂР°С†РёСЏ dailyDayBonusPoints
     const dayBonusRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
     const dayBonus = JSON.parse(dayBonusRaw);
     const newDayBonus = {};
@@ -67,7 +67,7 @@ export function migrateToMSK() {
     });
     localStorage.setItem('dailyDayBonusPoints', JSON.stringify(newDayBonus));
 
-    // Миграция studyStreak
+    // РњРёРіСЂР°С†РёСЏ studyStreak
     const streakRaw = localStorage.getItem('studyStreak') || '{}';
     const streak = JSON.parse(streakRaw);
     if (streak.lastDate) {
@@ -75,7 +75,7 @@ export function migrateToMSK() {
       localStorage.setItem('studyStreak', JSON.stringify(streak));
     }
 
-    // Миграция srsProgress (lastReviewed)
+    // РњРёРіСЂР°С†РёСЏ srsProgress (lastReviewed)
     const progressRaw = localStorage.getItem('srsProgress') || '{}';
     const progress = JSON.parse(progressRaw);
     Object.values(progress).forEach(p => {
@@ -144,7 +144,7 @@ export function getCategoryProgress(allData) {
   const studiedQuestions = new Set(Object.keys(prog));
   const byCat = new Map();
   (allData || []).forEach(item => {
-    const cat = item.category || 'Без категории';
+    const cat = item.category || 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё';
     const rec = byCat.get(cat) || { total: 0, studied: 0 };
     rec.total += 1;
     if (studiedQuestions.has(item.question)) rec.studied += 1;
@@ -247,11 +247,11 @@ export function checkAchievements() {
     }
   });
 
-  // Ранняя пташка: 25+ карточек до 9:00
+  // Р Р°РЅРЅСЏСЏ РїС‚Р°С€РєР°: 25+ РєР°СЂС‚РѕС‡РµРє РґРѕ 9:00
   progress.earlyBird = Math.min(25, earlyBirdCount);
   if (!ach.earlyBird && earlyBirdCount >= 25) ach.earlyBird = true;
 
-  // Ночной рейдер: 50+ карточек после 23:00
+  // РќРѕС‡РЅРѕР№ СЂРµР№РґРµСЂ: 50+ РєР°СЂС‚РѕС‡РµРє РїРѕСЃР»Рµ 23:00
   progress.nightRaider = Math.min(50, nightRaiderCount);
   if (!ach.nightRaider && nightRaiderCount >= 50) ach.nightRaider = true;
 
@@ -393,7 +393,7 @@ export function getHeartsDistribution() {
   const prog = getProgressMap();
   const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-  // Получаем все карточки для расчёта общего количества
+  // РџРѕР»СѓС‡Р°РµРј РІСЃРµ РєР°СЂС‚РѕС‡РєРё РґР»СЏ СЂР°СЃС‡С‘С‚Р° РѕР±С‰РµРіРѕ РєРѕР»РёС‡РµСЃС‚РІР°
   let allCards = [];
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -410,7 +410,7 @@ export function getHeartsDistribution() {
     allCards = window.uniqueQaData || [];
   }
 
-  // Считаем распределение сердечек для пройденных карточек
+  // РЎС‡РёС‚Р°РµРј СЂР°СЃРїСЂРµРґРµР»РµРЅРёРµ СЃРµСЂРґРµС‡РµРє РґР»СЏ РїСЂРѕР№РґРµРЅРЅС‹С… РєР°СЂС‚РѕС‡РµРє
   const studiedQuestions = new Set();
   Object.values(prog).forEach(p => {
     if (!p.lastReviewed) return;
@@ -423,7 +423,7 @@ export function getHeartsDistribution() {
     else dist[5]++;
   });
 
-  // Непройденные карточки считаем как 0 сердечек (добавляем к dist[1] для правильного расчёта)
+  // РќРµРїСЂРѕР№РґРµРЅРЅС‹Рµ РєР°СЂС‚РѕС‡РєРё СЃС‡РёС‚Р°РµРј РєР°Рє 0 СЃРµСЂРґРµС‡РµРє (РґРѕР±Р°РІР»СЏРµРј Рє dist[1] РґР»СЏ РїСЂР°РІРёР»СЊРЅРѕРіРѕ СЂР°СЃС‡С‘С‚Р°)
   const totalCards = Array.isArray(allCards) ? allCards.length : 0;
   const unstudiedCount = Math.max(0, totalCards - studiedQuestions.size);
   dist[1] += unstudiedCount;
@@ -432,15 +432,15 @@ export function getHeartsDistribution() {
 }
 
 export function getLearningStage(dist, total) {
-  if (total < 20) return { stage: 'Onboarding', desc: 'Начните с изучения первых карточек' };
+  if (total < 20) return { stage: 'Onboarding', desc: 'РќР°С‡РЅРёС‚Рµ СЃ РёР·СѓС‡РµРЅРёСЏ РїРµСЂРІС‹С… РєР°СЂС‚РѕС‡РµРє' };
 
   const low = (dist[1] || 0) + (dist[2] || 0);
   const mid = (dist[3] || 0);
   const high = (dist[4] || 0) + (dist[5] || 0);
 
-  if (low > total * 0.5) return { stage: 'Active Learning', desc: 'Фокус на сложных темах' };
-  if (high > total * 0.6) return { stage: 'Retention', desc: 'Поддержание знаний' };
-  return { stage: 'Consolidation', desc: 'Закрепление материала' };
+  if (low > total * 0.5) return { stage: 'Active Learning', desc: 'Р¤РѕРєСѓСЃ РЅР° СЃР»РѕР¶РЅС‹С… С‚РµРјР°С…' };
+  if (high > total * 0.6) return { stage: 'Retention', desc: 'РџРѕРґРґРµСЂР¶Р°РЅРёРµ Р·РЅР°РЅРёР№' };
+  return { stage: 'Consolidation', desc: 'Р—Р°РєСЂРµРїР»РµРЅРёРµ РјР°С‚РµСЂРёР°Р»Р°' };
 }
 
 export function getUnderstandingIndex(dist, total) {
@@ -470,7 +470,7 @@ export function getRiskZones(allData) {
     .slice(0, 3);
 }
 
-// Авто-миграция старых данных из UTC в MSK при загрузке
+// РђРІС‚Рѕ-РјРёРіСЂР°С†РёСЏ СЃС‚Р°СЂС‹С… РґР°РЅРЅС‹С… РёР· UTC РІ MSK РїСЂРё Р·Р°РіСЂСѓР·РєРµ
 try {
   if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
     migrateToMSK();
