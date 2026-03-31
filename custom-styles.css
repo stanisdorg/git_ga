@@ -2658,6 +2658,7 @@ body.learning-mode #bottom-nav {
 
 .flashcard-front {
     transform: rotateY(0deg);
+    cursor: pointer;
 }
 
 .flashcard-back {
@@ -2665,6 +2666,7 @@ body.learning-mode #bottom-nav {
     justify-content: flex-start;
     padding-top: 120px;
     overflow-y: auto;
+    cursor: pointer;
 }
 
 /* Верхняя часть с вопросом на back стороне */
@@ -3127,6 +3129,7 @@ body.learning-mode #bottom-nav {
     color: var(--color-text-secondary);
     font-size: 14px;
     opacity: 0.6;
+    pointer-events: none;
 }
 
 .flashcard-actions {

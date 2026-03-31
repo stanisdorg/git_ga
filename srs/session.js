@@ -35,7 +35,7 @@ export class LearningSession {
         const sObj = (() => { try { return JSON.parse(sRaw); } catch { return {}; } })();
         this.startXP = sObj.points || 0;
         this.results = []; // per-card grades
-        
+
         // Smart Pause & Timer Logic
         this.sessionStartTime = Date.now();
         this.lastPauseTime = Date.now();
@@ -64,7 +64,7 @@ export class LearningSession {
         console.log('[SESSION.GO TO] index=', index, 'currentIndex=', this.currentIndex);
         console.log('[SESSION.GO TO] queue.length=', this.queue.length);
         console.log('[SESSION.GO TO] results BEFORE=', this.results);
-        
+
         const n = this.queue.length;
         if (n === 0) {
             this.onComplete(this.stats, this.results, this.queue.length);
@@ -82,7 +82,7 @@ export class LearningSession {
         console.log('[SESSION.LOAD CARD] === START ===');
         console.log('[SESSION.LOAD CARD] currentIndex=', this.currentIndex, 'queue.length=', this.queue.length);
         console.log('[SESSION.LOAD CARD] results=', this.results);
-        
+
         if (this.currentIndex >= this.queue.length) {
             console.log('[SESSION.LOAD CARD] COMPLETE! currentIndex >= queue.length');
             this.onComplete(this.stats, this.results, this.queue.length);
@@ -142,10 +142,18 @@ export class LearningSession {
     }
 
     flip() {
-        if (this.isFlipped) return;
-        if (this.modeTimer) clearInterval(this.modeTimer);
-        
+        console.log('[SESSION.FLIP] 🔄 flip() called, isFlipped=' + this.isFlipped + ', currentIndex=' + this.currentIndex);
+        if (this.isFlipped) {
+            console.log('[SESSION.FLIP] ⚠️ Already flipped, returning');
+            return;
+        }
+        if (this.modeTimer) {
+            console.log('[SESSION.FLIP] ⏹️ Clearing modeTimer');
+            clearInterval(this.modeTimer);
+        }
+
         this.isFlipped = true;
+        console.log('[SESSION.FLIP] ✅ isFlipped set to true, calling onUpdateUI');
         this.onUpdateUI({
             card: this.currentCard.item,
             cardProgress: this.currentCard.progress,
@@ -159,21 +167,27 @@ export class LearningSession {
 
     /**
      * Rate the current card
-     * @param {0|1|2|3} grade 
+     * @param {0|1|2|3} grade
      */
     rate(grade) {
-        if (!this.currentCard) return;
+        console.log('[SESSION.RATE] 🖱️ rate(' + grade + ') called, currentIndex=' + this.currentIndex);
+        if (!this.currentCard) {
+            console.warn('[SESSION.RATE] ❌ currentCard is null!');
+            return;
+        }
 
         // Check for Game Over conditions
         if ((this.mode === 'sudden_death' || this.mode === 'time_attack') && grade === 0) {
-             this.finishGame('wrong_answer');
-             return;
+            console.log('[SESSION.RATE] 🎮 Game Over due to wrong answer in ' + this.mode);
+            this.finishGame('wrong_answer');
+            return;
         }
 
         // Apply restriction if grade is Easy (3 in UI)
         if (grade === 3) {
             const progress = this.currentCard.progress || { easeFactor: 2.5 };
             if (!canUseEasy(progress)) {
+                console.log('[SESSION.RATE] ⚠️ Downgrading Easy to Good (can\'t use Easy yet)');
                 grade = 2; // Downgrade to Good (2 in UI)
             }
         }
@@ -183,14 +197,14 @@ export class LearningSession {
         else if (grade === 2) this.stats.good++;
         else if (grade === 3) this.stats.easy++;
         this.stats.reviewed++;
-        
+
         // Сохраняем результат с привязкой к индексу карточки в очереди
         // Если currentIndex >= results.length, расширяем массив
         while (this.results.length <= this.currentIndex) {
             this.results.push(null);
         }
         this.results[this.currentIndex] = grade;
-        
+
         console.log('[SESSION.RATE] grade=', grade, 'currentIndex=', this.currentIndex);
         console.log('[SESSION.RATE] results AFTER=', this.results, 'length=', this.results.length);
 
@@ -205,7 +219,7 @@ export class LearningSession {
         const mskTime = new Date(now.getTime() + mskOffset);
         const mskDate = mskTime.toISOString().split('T')[0];
         const mskHours = mskTime.getHours();
-        
+
         console.log('[SESSION.MSK]', {
             utc: now.toISOString(),
             msk: mskDate,
@@ -217,16 +231,16 @@ export class LearningSession {
             lastReviewed: mskDate,
             lastReviewedTime: mskHours
         });
-        
+
         newProgress.lastReviewed = mskDate;
         newProgress.lastReviewedTime = mskHours;
-        
+
         updateCardProgress(this.currentCard.item.question, newProgress);
 
         const statsRaw = localStorage.getItem('studyStats') || '{}';
         const stats = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
         stats.total = (stats.total || 0) + 1;
-        
+
         // Track time spent (cap at 5 mins per card to avoid idle time)
         const elapsed = Date.now() - (this.cardStartTime || Date.now());
         if (elapsed > 0 && elapsed < 300000) {
@@ -239,7 +253,7 @@ export class LearningSession {
         stats.points = (stats.points || 0) + points;
         this.stats.pointsEarned += points;
         localStorage.setItem('studyStats', JSON.stringify(stats));
-        try { window.dispatchEvent(new Event('xpUpdated')); } catch {}
+        try { window.dispatchEvent(new Event('xpUpdated')); } catch { }
         // Per-day points
         // Получаем дату по московскому времени (UTC+3)
         const mskOffset2 = 3 * 60 * 60 * 1000;
@@ -259,7 +273,7 @@ export class LearningSession {
         const streakRaw2 = localStorage.getItem('studyStreak') || '{}';
         const st2 = (() => { try { return JSON.parse(streakRaw2); } catch { return {}; } })();
         syncDailyStats(todayKey, daily[todayKey] || 0, dailyBonus[todayKey] || 0, 0, st2.current || 0);
-        
+
         // Re-queue if interval is 0 (Again/Hard on new cards)
         if (newProgress.interval === 0) {
             this.queue.push({
@@ -276,39 +290,39 @@ export class LearningSession {
     checkSmartPause() {
         const now = Date.now();
         const duration = (now - this.lastPauseTime) / 60000; // minutes
-        
+
         // Minimum 15 mins before any pause suggestion
         if (duration < 15) return null;
-        
+
         // Calculate recent accuracy (last 10-15 cards)
         const recentCorrect = this.recentGrades.filter(g => g >= 2).length;
         const recentTotal = this.recentGrades.length;
         const recentAccuracy = recentTotal > 0 ? (recentCorrect / recentTotal) : 1;
-        
+
         // Fatigue check: Low accuracy (<60%) after 20 mins -> Suggest break
         if (duration > 20 && recentAccuracy < 0.6) {
-            return { 
-                type: 'fatigue', 
-                reason: 'Снижение концентрации', 
-                duration: Math.round(duration), 
-                accuracy: Math.round(recentAccuracy * 100) 
+            return {
+                type: 'fatigue',
+                reason: 'Снижение концентрации',
+                duration: Math.round(duration),
+                accuracy: Math.round(recentAccuracy * 100)
             };
         }
-        
+
         // Standard flow: 25-40 mins
         // If performing well (>80%), extend up to 40 mins (Flow state)
         // Otherwise, suggest break at 30 mins
         const maxTime = recentAccuracy > 0.8 ? 40 : 30;
-        
+
         if (duration > maxTime) {
-            return { 
-                type: 'time', 
-                reason: 'Оптимальное время для перерыва', 
-                duration: Math.round(duration), 
-                accuracy: Math.round(recentAccuracy * 100) 
+            return {
+                type: 'time',
+                reason: 'Оптимальное время для перерыва',
+                duration: Math.round(duration),
+                accuracy: Math.round(recentAccuracy * 100)
             };
         }
-        
+
         return null;
     }
 
@@ -323,7 +337,7 @@ function updateStreak() {
     const mskOffset = 3 * 60 * 60 * 1000;
     const mskTime = new Date(Date.now() + mskOffset);
     const today = mskTime.toISOString().split('T')[0];
-    
+
     const raw = localStorage.getItem('studyStreak') || '{}';
     const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
     if (streak.lastDate === today) return;

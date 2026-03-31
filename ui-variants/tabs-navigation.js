@@ -301,7 +301,7 @@ async function autoLoadUserData() {
     // Загружаем данные через srs/storage.js
     // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.20.8');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.09.5');
         await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
@@ -667,6 +667,15 @@ export function initTabsNavigation(appVersion) {
         learnBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>';
         learnBtn.addEventListener('click', async () => {
             try {
+                // 🔧 Очищаем состояние обучения ПЕРЕД запуском
+                if (window.__lastCandidates) {
+                    window.__lastCandidates = null;
+                }
+                if (window._learnTimerStartTimeout) {
+                    clearTimeout(window._learnTimerStartTimeout);
+                    window._learnTimerStartTimeout = null;
+                }
+
                 // Fallback: if currentQuestions is empty, try to use all data
                 if ((!currentQuestions || currentQuestions.length === 0) && uniqueQaData && uniqueQaData.length > 0) {
                     console.warn('[Learn] currentQuestions empty, using uniqueQaData fallback');
@@ -681,11 +690,11 @@ export function initTabsNavigation(appVersion) {
 
                 let module;
                 try {
-                    module = await import('../srs/learn-ui.js?v=6.20.8');
+                    module = await import('../srs/learn-ui.js?v=6.09.5');
                 } catch (e1) {
-                    console.warn('[Learn] Import v2.42 failed, trying plain import', e1);
+                    console.warn('[Learn] Import v6.09.5 failed, trying plain import', e1);
                     try {
-                        module = await import('../srs/learn-ui.js');
+                        module = await import('../srs/learn-ui.js?v=6.09.5');
                     } catch (e2) {
                         throw new Error(`Failed to load learn-ui.js: ${e2.message}`);
                     }
@@ -715,7 +724,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.09');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -734,7 +743,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.20.8');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.09');
                     initStatsPage(appVersion);
                 }
 
@@ -1100,7 +1109,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=6.20.8').then(() => {
+                    import('../srs/stats-ui.js?v=6.09').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {
@@ -4454,4 +4463,3 @@ export function displayQuestions(questions, title) {
         console.error('Critical error in displayQuestions:', e);
     }
 }
-

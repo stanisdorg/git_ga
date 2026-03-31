@@ -1,11 +1,11 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.20.8';
-import { syncFavorite } from './storage.js?v=6.20.8';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.20.8';
-import { getTodaysSession } from './category-scheduler.js?v=6.20.8';
-import { startLearnSession } from './learn-ui.js?v=6.20.8';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.09.5';
+import { syncFavorite } from './storage.js?v=6.09.5';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09.5';
+import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
+import { startLearnSession } from './learn-ui.js?v=6.09.5';
 import { applyFormatting } from './text-formatter.js';
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ Р°РєС‚СѓР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С… (РІСЃРµРіРґР° РёР· localStorage РґР»СЏ Р°РІС‚РѕСЂРёР·РѕРІР°РЅРЅС‹С…)
+// Функция для получения актуальных данных (всегда из localStorage для авторизованных)
 function getCurrentCards() {
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -15,16 +15,16 @@ function getCurrentCards() {
         const userCards = JSON.parse(userCardsRaw);
         if (Array.isArray(userCards) && userCards.length > 0) {
           /* DEBUG
-          console.log('[getCurrentCards] РСЃРїРѕР»СЊР·СѓРµРј qaUserCards:', userCards.length, 'РєР°СЂС‚РѕС‡РµРє');
+          console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
           */
 
-          // рџ”§ РСЃРїСЂР°РІР»СЏРµРј РєРѕРґРёСЂРѕРІРєСѓ РЅР° Р»РµС‚Сѓ
+          // 🔧 Исправляем кодировку на лету
           userCards.forEach(card => {
-            if (card.category === 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ' || card.category === 'Р”РєСѓРјРµРЅС‚Р°С†РёСЏ') {
-              card.category = 'Р”РѕРєСѓРјРµРЅС‚Р°С†РёСЏ';
+            if (card.category === 'Документация' || card.category === 'Дкументация') {
+              card.category = 'Документация';
             }
-            if (card.subcategory === 'РўРёРїС‹ С‚СЂРµР±РѕРІР°РЅРёР№' || card.subcategory === 'РўРёРїС‹ С‚СЂРµРѕРІР°РЅРёР№') {
-              card.subcategory = 'РўРёРїС‹ С‚СЂРµР±РѕРІР°РЅРёР№';
+            if (card.subcategory === 'Типы требований' || card.subcategory === 'Типы треований') {
+              card.subcategory = 'Типы требований';
             }
           });
 
@@ -33,19 +33,19 @@ function getCurrentCards() {
       }
     }
   } catch (e) {
-    console.warn('[stats-ui] РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё userCards:', e);
+    console.warn('[stats-ui] Ошибка загрузки userCards:', e);
   }
 
-  // Fallback: С‡РёС‚Р°РµРј РёР· all-data.js С‡РµСЂРµР· window
+  // Fallback: читаем из all-data.js через window
   if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
     /* DEBUG
-    console.log('[getCurrentCards] РСЃРїРѕР»СЊР·СѓРµРј window.uniqueQaData:', window.uniqueQaData.length, 'РєР°СЂС‚РѕС‡РµРє');
+    console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
     */
     return window.uniqueQaData;
   }
 
   /* DEBUG
-  console.log('[getCurrentCards] РќРµС‚ РґР°РЅРЅС‹С…');
+  console.log('[getCurrentCards] Нет данных');
   */
   return [];
 }
@@ -65,7 +65,7 @@ const SKELETON_STYLES = `
   width: 100%;
   height: 100%;
   background: var(--st-bg);
-  z-index: 2001; /* Р’С‹С€Рµ С‡РµРј stats-container (2000) */
+  z-index: 2001; /* Выше чем stats-container (2000) */
   overflow-y: auto;
 }
 .st-skeleton-wrapper {
@@ -305,7 +305,7 @@ const STATS_STYLES = `
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-  padding-right: 40px; /* РњРµСЃС‚Рѕ РґР»СЏ РєРЅРѕРїРєРё СЂР°Р·РІС‘СЂС‚С‹РІР°РЅРёСЏ */
+  padding-right: 40px; /* Место для кнопки развёртывания */
 }
 .period-switch { display: flex; gap: 12px; font-size: 12px; color: var(--st-muted); }
 .period-switch .active { color: #fff; font-weight: 600; }
@@ -320,7 +320,7 @@ const STATS_STYLES = `
 .tooltip { position: absolute; width: 160px; padding: 8px 10px; font-size: 12px; border-radius: 8px; background: var(--st-surf-h); color: var(--st-text); border: 1px solid var(--st-border); display: none; pointer-events: none; z-index: 3000; }
 .tooltip .tip-arrow { position: absolute; bottom: -6px; left: calc(50% - 6px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid var(--st-surf-h); }
 
-/* РљРЅРѕРїРєР° СЂР°Р·РІС‘СЂС‚С‹РІР°РЅРёСЏ РіСЂР°С„РёРєР° */
+/* Кнопка развёртывания графика */
 .st-expand-btn {
   position: absolute;
   top: 12px;
@@ -349,7 +349,7 @@ const STATS_STYLES = `
   border-color: var(--st-prim);
 }
 
-/* РђРєС‚РёРІРЅС‹Рµ РєРЅРѕРїРєРё РІ РјРѕРґР°Р»СЊРЅРѕРј РѕРєРЅРµ */
+/* Активные кнопки в модальном окне */
 .week-btn.active, .month-btn.active, .year-btn.active {
   color: #fff;
   font-weight: 600;
@@ -446,7 +446,7 @@ const STATS_STYLES = `
   position: relative;
 }
 .st-cat-progress-list.collapsed {
-  max-height: 120px; /* РџРѕРєР°Р·С‹РІР°РµРј ~1-2 РєР°С‚РµРіРѕСЂРёРё */
+  max-height: 120px; /* Показываем ~1-2 категории */
   overflow: hidden;
 }
 .st-cat-progress-list.collapsed::after {
@@ -473,8 +473,8 @@ const STATS_STYLES = `
 .st-cat-progress-item {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 6px */
-  padding: 4px 12px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 2px 12px 5px */
+  gap: 4px; /* Уменьшено с 6px */
+  padding: 4px 12px !important; /* Уменьшено с 2px 12px 5px */
   background: linear-gradient(135deg, rgba(15,52,96,0.6) 0%, rgba(15,52,96,0.4) 100%);
   border-radius: 8px;
   border: 1px solid rgba(26,58,92,0.5);
@@ -494,7 +494,7 @@ const STATS_STYLES = `
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 4px */
+  margin-bottom: 2px; /* Уменьшено с 4px */
 }
 .st-cat-progress-name {
   font-size: 11px;
@@ -502,12 +502,12 @@ const STATS_STYLES = `
   font-weight: 500;
 }
 .st-cat-progress-value {
-  font-size: 11px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 12px */
+  font-size: 11px; /* Уменьшено с 12px */
   color: #fff;
   font-weight: 700;
 }
 .st-cat-progress-track {
-  height: 4px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 6px */
+  height: 4px; /* Уменьшено с 6px */
   background: #1a1a2e;
   border-radius: 2px;
   overflow: hidden;
@@ -585,19 +585,19 @@ const STATS_STYLES = `
   #st-continue-top-btn {
     display: none !important;
   }
-  /* РЎРєСЂС‹РІР°РµРј РєРЅРѕРїРєСѓ СЂР°Р·РІС‘СЂС‚С‹РІР°РЅРёСЏ РіСЂР°С„РёРєР° РЅР° РјРѕР±РёР»СЊРЅС‹С… */
+  /* Скрываем кнопку развёртывания графика на мобильных */
   .st-expand-btn {
     display: none !important;
   }
   /* Compact header on mobile */
   .st-top {
-    padding: 8px 0 !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 12px РґРѕ 8px */
+    padding: 8px 0 !important; /* Уменьшено с 12px до 8px */
   }
   .st-top-right {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    gap: 6px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 8px РґРѕ 6px */
+    gap: 6px !important; /* Уменьшено с 8px до 6px */
     overflow-x: auto !important;
     justify-content: flex-start !important;
     align-items: center !important;
@@ -606,11 +606,11 @@ const STATS_STYLES = `
     flex-shrink: 0 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 8px РґРѕ 6px */
+    gap: 6px !important; /* Уменьшено с 8px до 6px */
   }
   .st-auth-btn, .st-home-btn {
-    width: 32px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 36px */
-    height: 32px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 36px */
+    width: 32px !important; /* Уменьшено с 36px */
+    height: 32px !important; /* Уменьшено с 36px */
     padding: 0 !important;
     min-width: 32px !important;
   }
@@ -620,13 +620,13 @@ const STATS_STYLES = `
   .st-top-metrics {
     display: flex !important;
     flex-direction: row !important;
-    gap: 4px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 6px РґРѕ 4px */
+    gap: 4px !important; /* Уменьшено с 6px до 4px */
     flex-shrink: 0 !important;
   }
   .st-top-metrics .metric {
     display: flex !important;
     align-items: center !important;
-    gap: 2px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 4px РґРѕ 2px */
+    gap: 2px !important; /* Уменьшено с 4px до 2px */
     font-size: 11px !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
@@ -636,7 +636,7 @@ const STATS_STYLES = `
     height: 14px !important;
     flex-shrink: 0 !important;
   }
-  /* РЎРєСЂС‹РІР°РµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅР° РјРѕР±РёР»СЊРЅС‹С… */
+  /* Скрываем имя пользователя на мобильных */
   .st-username-display {
     display: none !important;
   }
@@ -644,19 +644,19 @@ const STATS_STYLES = `
     display: flex !important;
     align-items: center !important;
     gap: 6px !important;
-    flex: 1 !important; /* Р—Р°РЅРёРјР°РµС‚ РґРѕСЃС‚СѓРїРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ */
-    min-width: 0 !important; /* РџРѕР·РІРѕР»СЏРµС‚ СЃР¶РёРјР°С‚СЊСЃСЏ */
+    flex: 1 !important; /* Занимает доступное пространство */
+    min-width: 0 !important; /* Позволяет сжиматься */
     margin-left: 0 !important;
   }
   .level-inline {
     display: flex;
     align-items: center;
-    gap: 6px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 8px РґРѕ 6px */
-    padding: 4px 6px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 4px 8px */
+    gap: 6px; /* Уменьшено с 8px до 6px */
+    padding: 4px 6px; /* Уменьшено с 4px 8px */
     border-radius: 8px;
     transition: all 0.2s ease;
-    flex: 1; /* Р—Р°РЅРёРјР°РµС‚ РІСЃС‘ РґРѕСЃС‚СѓРїРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ */
-    min-width: 0; /* РџРѕР·РІРѕР»СЏРµС‚ СЃР¶РёРјР°С‚СЊСЃСЏ */
+    flex: 1; /* Занимает всё доступное пространство */
+    min-width: 0; /* Позволяет сжиматься */
   }
   .level-inline:hover {
     background: rgba(255,159,28,0.15);
@@ -666,12 +666,12 @@ const STATS_STYLES = `
   .lv-label {
     font-weight: 700;
     color: var(--st-prim);
-    font-size: 9px; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 13px РІ 1.5 СЂР°Р·Р° */
+    font-size: 9px; /* Уменьшено с 13px в 1.5 раза */
     white-space: nowrap;
   }
   .level-inline-bar {
     position: relative;
-    flex: 1; /* Р—Р°РЅРёРјР°РµС‚ РІСЃС‘ СЃРІРѕР±РѕРґРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ */
+    flex: 1; /* Занимает всё свободное пространство */
     height: 20px;
     background: rgba(0,0,0,0.3);
     border-radius: 10px;
@@ -693,10 +693,10 @@ const STATS_STYLES = `
   .level-inline-text {
     position: absolute;
     top: 50%;
-    left: 8px; /* РћС‚СЃС‚СѓРї РѕС‚ Р»РµРІРѕРіРѕ РєСЂР°СЏ Р±Р°СЂР° */
+    left: 8px; /* Отступ от левого края бара */
     transform: translateY(-50%);
     font-size: 11px;
-    font-weight: 400; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 700 РІ 1.5 СЂР°Р·Р° */
+    font-weight: 400; /* Уменьшено с 700 в 1.5 раза */
     color: #fff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     white-space: nowrap;
@@ -723,7 +723,7 @@ const STATS_STYLES = `
 }
 .st-mode-card:hover { border-color: var(--st-prim); background: var(--st-surf-h); transform: translateY(-2px); }
 
-/* Р‘РѕР»СЊС€РёРµ РєР°СЂС‚РѕС‡РєРё СЂРµР¶РёРјРѕРІ */
+/* Большие карточки режимов */
 .st-mode-card-large {
   padding: 20px;
   border-radius: 16px;
@@ -772,7 +772,7 @@ const STATS_STYLES = `
   background: var(--st-border); color: var(--st-muted);
   text-transform: uppercase; font-weight: 700;
 }
-/* Tooltip РґР»СЏ СЂРµР¶РёРјРѕРІ СЃ РѕРїРёСЃР°РЅРёРµРј */
+/* Tooltip для режимов с описанием */
 .st-mode-card[title]:hover::after {
   content: attr(title);
   position: absolute;
@@ -868,20 +868,20 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 0 16px 120px; /* РќРёР¶РЅРёР№ РѕС‚СЃС‚СѓРї РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёР№ (РІРѕР·РІСЂР°С‰РµРЅРѕ Рє 120px РґР»СЏ РїСЂРµРґРѕС‚РІСЂР°С‰РµРЅРёСЏ РѕР±СЂРµР·РєРё РєРѕРЅС‚РµРЅС‚Р°) */
+  padding: 0 16px 120px; /* Нижний отступ для достижений (возвращено к 120px для предотвращения обрезки контента) */
   display: flex;
   flex-direction: column;
-  gap: 24px; /* РЈРІРµР»РёС‡РµРЅРѕ СЃ 20px РґРѕ 24px РґР»СЏ РѕС‚СЃС‚СѓРїРѕРІ РјРµР¶РґСѓ Р±Р»РѕРєР°РјРё */
-  position: relative; /* Р”Р»СЏ Р°Р±СЃРѕР»СЋС‚РЅРѕРіРѕ РїРѕР·РёС†РёРѕРЅРёСЂРѕРІР°РЅРёСЏ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ */
+  gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
+  position: relative; /* Для абсолютного позиционирования имени пользователя */
 }
 
-/* Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РѕС‚СЃС‚СѓРїС‹ РґР»СЏ РјРѕР±РёР»СЊРЅС‹С… РјРµР¶РґСѓ РєРѕРЅРєСЂРµС‚РЅС‹РјРё Р±Р»РѕРєР°РјРё */
+/* Дополнительные отступы для мобильных между конкретными блоками */
 @media (max-width: 768px) {
   .st-wrapper {
-    gap: 5px !important; /* РЈРјРµРЅСЊС€РµРЅРѕ СЃ 24px РґРѕ 5px РґР»СЏ РєРѕРјРїР°РєС‚РЅРѕСЃС‚Рё */
+    gap: 5px !important; /* Уменьшено с 24px до 5px для компактности */
     padding-bottom: 120px !important;
   }
-  /* РќР° РјРѕР±РёР»СЊРЅС‹С… СЃРїРёСЃРѕРє РєР°С‚РµРіРѕСЂРёР№ СЃРІС‘СЂРЅСѓС‚ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ */
+  /* На мобильных список категорий свёрнут по умолчанию */
   .st-cat-progress-list.collapsed {
     max-height: 120px !important;
     overflow: hidden !important;
@@ -891,25 +891,25 @@ const STATS_STYLES = `
     overflow: auto !important;
   }
   .st-cat-progress-wrap {
-    margin-bottom: 24px; /* РћС‚СЃС‚СѓРї РїРѕСЃР»Рµ Р±Р»РѕРєР° РєР°С‚РµРіРѕСЂРёР№ */
+    margin-bottom: 24px; /* Отступ после блока категорий */
   }
   .activity-card {
-    margin-bottom: 24px; /* РћС‚СЃС‚СѓРї РїРѕСЃР»Рµ РіСЂР°С„РёРєР° Р°РєС‚РёРІРЅРѕСЃС‚Рё */
+    margin-bottom: 24px; /* Отступ после графика активности */
   }
   .st-modes-section {
-    margin-bottom: 24px; /* РћС‚СЃС‚СѓРї РјРµР¶РґСѓ СЂРµР¶РёРјР°РјРё Рё РґРѕСЃС‚РёР¶РµРЅРёСЏРјРё */
+    margin-bottom: 24px; /* Отступ между режимами и достижениями */
   }
   .st-ach-section {
-    margin-bottom: 24px; /* РћС‚СЃС‚СѓРї РїРѕСЃР»Рµ Р±Р»РѕРєР° РґРѕСЃС‚РёР¶РµРЅРёР№ */
+    margin-bottom: 24px; /* Отступ после блока достижений */
   }
   .st-diff-section {
-    margin-top: 24px !important; /* РћС‚СЃС‚СѓРї РїРµСЂРµРґ Р±Р»РѕРєРѕРј СЃР»РѕР¶РЅРѕСЃС‚Рё */
+    margin-top: 24px !important; /* Отступ перед блоком сложности */
   }
   .st-block-4 {
-    margin-bottom: 24px !important; /* РћС‚СЃС‚СѓРї РїРѕСЃР»Рµ Р±Р»РѕРєР° СЃР»РѕР¶РЅРѕСЃС‚Рё (РїРµСЂРµРґ РґРѕСЃС‚РёР¶РµРЅРёСЏРјРё) */
+    margin-bottom: 24px !important; /* Отступ после блока сложности (перед достижениями) */
   }
   .st-block-5 {
-    margin-top: 0px; /* Р”РѕСЃС‚РёР¶РµРЅРёСЏ РІ СЃР°РјРѕРј РЅРёР·Сѓ */
+    margin-top: 0px; /* Достижения в самом низу */
   }
 }
 
@@ -1016,7 +1016,7 @@ const STATS_STYLES = `
   max-width: none;
 }
 
-/* Mobile: СЃС‚РёР»Рё РґР»СЏ РєРЅРѕРїРєРё РїСЂРѕРґРѕР»Р¶РёС‚СЊ */
+/* Mobile: стили для кнопки продолжить */
 @media (max-width: 768px) {
   .st-main {
     display: flex !important;
@@ -1192,9 +1192,9 @@ const STATS_STYLES = `
   overflow-y: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--st-prim) var(--st-surf-h);
-  scroll-snap-type: x mandatory; /* РџСЂРёР»РёРїР°РЅРёРµ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё */
+  scroll-snap-type: x mandatory; /* Прилипание по горизонтали */
 }
-/* РЎС‚РёР»РёР·РѕРІР°РЅРЅС‹Р№ СЃРєСЂРѕР»Р»Р±Р°СЂ */
+/* Стилизованный скроллбар */
 .st-ach-scroll-wrap::-webkit-scrollbar {
   height: 8px;
 }
@@ -1213,7 +1213,7 @@ const STATS_STYLES = `
   width: 76px;
   height: 92px;
   flex-shrink: 0;
-  scroll-snap-align: start; /* РџСЂРёР»РёРїР°РЅРёРµ РєР°СЂС‚РѕС‡РµРє */
+  scroll-snap-align: start; /* Прилипание карточек */
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 12px;
@@ -1233,18 +1233,18 @@ const STATS_STYLES = `
 @media (max-width: 768px) {
   .st-ach-scroll-wrap {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 РєР°СЂС‚РѕС‡РєРё РІ СЂСЏРґСѓ */
+    grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряду */
     gap: 8px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding: 8px;
-    margin: -8px; /* РљРѕРјРїРµРЅСЃР°С†РёСЏ padding РґР»СЏ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ */
+    margin: -8px; /* Компенсация padding для выравнивания */
   }
   .st-ach-card {
     scroll-snap-align: start;
-    width: 100%; /* РђРґР°РїС‚РёРІРЅР°СЏ С€РёСЂРёРЅР° */
+    width: 100%; /* Адаптивная ширина */
   }
-  /* РЎРєСЂРѕР»Р»Р±Р°СЂ РґР»СЏ РјРѕР±РёР»СЊРЅС‹С… */
+  /* Скроллбар для мобильных */
   .st-ach-scroll-wrap::-webkit-scrollbar {
     height: 6px;
   }
@@ -1422,7 +1422,7 @@ const STATS_STYLES = `
   .st-wrapper {
     max-width: 1400px;
     min-height: 100vh;
-    padding: 24px 24px 80px; /* Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ РѕС‚СЃС‚СѓРї СЃРЅРёР·Сѓ */
+    padding: 24px 24px 80px; /* Дополнительный отступ снизу */
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: 24px;
@@ -1454,7 +1454,7 @@ const STATS_STYLES = `
   /* Progress - 50% width */
   .progress { grid-area: progress; }
   
-  /* Compact Card - РљСЂР°С‚РєР°СЏ СЃС‚Р°С‚РёСЃС‚РёРєР° */
+  /* Compact Card - Краткая статистика */
   .st-compact-card {
     width: 100%;
     height: 100%;
@@ -1681,7 +1681,7 @@ const STATS_STYLES = `
     min-width: 280px;
   }
 
-  /* Р¤РёРєСЃРёСЂРѕРІР°РЅРЅР°СЏ РІС‹СЃРѕС‚Р° Р±Р»РѕРєРѕРІ */
+  /* Фиксированная высота блоков */
   .st-block-1,
   .st-block-2 {
     height: 180px !important;
@@ -1699,8 +1699,8 @@ const STATS_STYLES = `
     justify-content: space-between !important;
   }
 
-  /* РњРѕР±РёР»СЊРЅР°СЏ РІРµСЂСЃРёСЏ Р±Р»РѕРєР° РїСЂРѕРіСЂРµСЃСЃР° - РєРѕРјРїР°РєС‚РЅР°СЏ СЃ С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµРј */
-  /* РџСЂРёРјРµРЅСЏРµС‚СЃСЏ РІСЃРµРіРґР°, РЅРѕ РїРµСЂРµРѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РґР»СЏ РґРµСЃРєС‚РѕРїР° РІС‹С€Рµ */
+  /* Мобильная версия блока прогресса - компактная с центрированием */
+  /* Применяется всегда, но переопределяется для десктопа выше */
   #stats-container .st-wrapper .st-compact-card {
     padding: 8px 12px !important;
     min-height: auto !important;
@@ -1769,7 +1769,7 @@ const STATS_STYLES = `
     font-weight: 600 !important;
   }
 
-  /* Desktop: РїРµСЂРµРѕРїСЂРµРґРµР»СЏРµРј СЃС‚РёР»Рё РѕР±СЂР°С‚РЅРѕ */
+  /* Desktop: переопределяем стили обратно */
   @media (min-width: 769px) {
     #stats-container .st-wrapper .st-compact-card {
       padding: 10px 20px !important;
@@ -1818,7 +1818,7 @@ const STATS_STYLES = `
     }
   }
 
-  /* .modes-grid СѓРґР°Р»РµРЅРѕ - С‚РµРїРµСЂСЊ С‚РѕР»СЊРєРѕ РІ @media (max-width: 768px) */
+  /* .modes-grid удалено - теперь только в @media (max-width: 768px) */
 
   .st-diff-section,
   .st-block-4 {
@@ -1826,7 +1826,7 @@ const STATS_STYLES = `
     overflow-y: auto !important;
   }
 
-  /* РЎС‚РёР»Рё РґР»СЏ РєР°СЂС‚РѕС‡РµРє РІ modes-grid */
+  /* Стили для карточек в modes-grid */
   .modes-grid .st-mode-card {
     height: 100% !important;
     display: flex !important;
@@ -1834,13 +1834,13 @@ const STATS_STYLES = `
     justify-content: center !important;
   }
   
-  /* Р¦РµРЅС‚СЂР°Р»СЊРЅС‹Р№ Р±Р»РѕРє вЂ” РљР РРўРР§РќРћ! */
+  /* Центральный блок — КРИТИЧНО! */
   .st-block-achievements,
   .st-cat-progress-wrap {
     overflow-y: auto !important;
   }
 
-  /* Tablet: 2 РєРѕР»РѕРЅРєРё */
+  /* Tablet: 2 колонки */
   @media (max-width: 1024px) {
     .st-main {
       grid-template-columns: repeat(2, 1fr);
@@ -1872,7 +1872,7 @@ const STATS_STYLES = `
     }
   }
 
-  /* Mobile: 1 РєРѕР»РѕРЅРєР° */
+  /* Mobile: 1 колонка */
   @media (max-width: 768px) {
     .st-main {
       grid-template-columns: 1fr;
@@ -1881,38 +1881,38 @@ const STATS_STYLES = `
     .st-block-1 {
       grid-column: 1;
       grid-row: auto;
-      order: 3; /* РџСЂРѕРіСЂРµСЃСЃ */
+      order: 3; /* Прогресс */
     }
     .st-block-achievements {
       grid-column: 1;
       grid-row: auto;
       max-height: none;
-      order: 6; /* РљР°С‚РµРіРѕСЂРёРё */
+      order: 6; /* Категории */
     }
     .st-block-2 {
       grid-column: 1;
       grid-row: auto;
-      display: flex !important; /* Р”РћР‘РђР’Р›Р•РќРћ: С‡С‚РѕР±С‹ .modes-grid РјРѕРі Р±С‹С‚СЊ grid */
+      display: flex !important; /* ДОБАВЛЕНО: чтобы .modes-grid мог быть grid */
       flex-direction: column !important;
-      order: 4; /* Р РµР¶РёРјС‹ (2 РєР°СЂС‚РѕС‡РєРё) */
+      order: 4; /* Режимы (2 карточки) */
     }
     .st-block-3 {
       grid-column: 1;
       grid-row: auto;
-      order: 7; /* Р“СЂР°С„РёРєРё */
+      order: 7; /* Графики */
     }
     .st-block-4 {
       grid-column: 1;
       grid-row: auto;
-      order: 5; /* РЎР»РѕР¶РЅРѕСЃС‚СЊ + РР·Р±СЂР°РЅРЅРѕРµ */
+      order: 5; /* Сложность + Избранное */
     }
     .st-block-5 {
       grid-column: 1;
       grid-row: auto;
-      order: 8; /* Р”РѕСЃС‚РёР¶РµРЅРёСЏ */
+      order: 8; /* Достижения */
     }
     
-    /* Mobile: СѓР±РёСЂР°РµРј С„РёРєСЃРёСЂРѕРІР°РЅРЅСѓСЋ РІС‹СЃРѕС‚Сѓ */
+    /* Mobile: убираем фиксированную высоту */
     .st-compact-card,
     .training-modes-block,
     .st-diff-section {
@@ -1932,7 +1932,7 @@ const STATS_STYLES = `
   }
   .st-activity-section { overflow: hidden; }
   
-  /* РђРґР°РїС‚РёРІРЅРѕСЃС‚СЊ РґР»СЏ activity-section */
+  /* Адаптивность для activity-section */
   @media (max-width: 1024px) {
     .st-activity-section {
       min-height: 280px;
@@ -1966,7 +1966,7 @@ const STATS_STYLES = `
   .st-primary { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
   .st-mode-desc { display: none; }
 
-  /* Mobile: РєРѕРјРїР°РєС‚РЅС‹Рµ РєР°СЂС‚РѕС‡РєРё СЂРµР¶РёРјРѕРІ - РІРµСЂС‚РёРєР°Р»СЊРЅС‹Рµ СЃ Р¶РёСЂРЅС‹Рј Р·Р°РіРѕР»РѕРІРєРѕРј */
+  /* Mobile: компактные карточки режимов - вертикальные с жирным заголовком */
   @media (max-width: 768px) {
     .modes-grid {
       display: grid !important;
@@ -2029,8 +2029,8 @@ const STATS_STYLES = `
     }
   }
 
-  /* Р”РћР‘РђР’Р›Р•РќРћ: РџСЂР°РІРёР»Рѕ РІРЅРµ media query РґР»СЏ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕРіРѕ РїСЂРёРјРµРЅРµРЅРёСЏ */
-  /* РњРѕР±РёР»СЊРЅС‹Рµ СЃС‚РёР»Рё РґР»СЏ СЂРµР¶РёРјРѕРІ - Р’Р°СЂРёР°РЅС‚ 5 СЃ РіСЂР°РґРёРµРЅС‚РѕРј */
+  /* ДОБАВЛЕНО: Правило вне media query для принудительного применения */
+  /* Мобильные стили для режимов - Вариант 5 с градиентом */
   #stats-container .st-block-2 .modes-grid .st-mode-card-large {
     padding: 8px 10px !important;
     border-radius: 8px !important;
@@ -2083,13 +2083,13 @@ const STATS_STYLES = `
     height: auto !important;
   }
   
-  /* Р”РћР‘РђР’Р›Р•РќРћ: .st-block-2 РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ flex РґР»СЏ СЂР°Р±РѕС‚С‹ .modes-grid */
+  /* ДОБАВЛЕНО: .st-block-2 должен быть flex для работы .modes-grid */
   .st-block-2 {
     display: flex !important;
     flex-direction: column !important;
   }
   
-  /* Р”РћР‘РђР’Р›Р•РќРћ: РљР°СЂС‚РѕС‡РєРё РѕРґРёРЅР°РєРѕРІРѕР№ РІС‹СЃРѕС‚С‹ */
+  /* ДОБАВЛЕНО: Карточки одинаковой высоты */
   .st-block-2 .modes-grid .st-mode-card-large {
     align-items: center !important;
     justify-content: center !important;
@@ -2268,13 +2268,13 @@ export function initStatsPage(appVersion) {
 
   if (appVersion) window.currentAppVersion = appVersion;
 
-  // РџР РРќРЈР”РРўР•Р›Р¬РќРћ СЃРєСЂС‹РІР°РµРј РІСЃС‘ РѕСЃС‚Р°Р»СЊРЅРѕРµ РџР•Р Р•Р” РїРѕРєР°Р·РѕРј СЃРєРµР»РµС‚РѕРЅР°
+  // ПРИНУДИТЕЛЬНО скрываем всё остальное ПЕРЕД показом скелетона
   const mainContainer = document.querySelector('.container');
   const learnContainer = document.getElementById('learn-container');
   const sidebar = document.querySelector('.sidebar');
   const topActionsBar = document.querySelector('.top-actions-bar');
 
-  // РћС‚РєР»СЋС‡Р°РµРј MutationObserver РїРµСЂРµРґ СЃРєСЂС‹С‚РёРµРј top-actions-bar
+  // Отключаем MutationObserver перед скрытием top-actions-bar
   if (window.__statsTopActionsObserver) {
     window.__statsTopActionsObserver.disconnect();
     window.__statsTopActionsObserver = null;
@@ -2293,9 +2293,9 @@ export function initStatsPage(appVersion) {
     topActionsBar.style.display = 'none';
   }
 
-  // РЎРєРµР»РµС‚РѕРЅ СѓР¶Рµ РІРёРґРёРј (display:block РІ HTML), РЅРµ РЅСѓР¶РЅРѕ РїРѕРєР°Р·С‹РІР°С‚СЊ
+  // Скелетон уже видим (display:block в HTML), не нужно показывать
 
-  // РЎРѕР·РґР°С‘Рј РєРѕРЅС‚РµР№РЅРµСЂ СЃС‚Р°С‚РёСЃС‚РёРєРё РµСЃР»Рё РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
+  // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
   if (!statsContainerEl) {
     /* DEBUG
@@ -2325,19 +2325,19 @@ export function initStatsPage(appVersion) {
     */
   }
 
-  // РџРѕРєР°Р·С‹РІР°РµРј СЃРєРµР»РµС‚РѕРЅ-Р»РѕР°РґРµСЂ
+  // Показываем скелетон-лоадер
   showSkeletonLoader();
 
-  // РџРѕРєР°Р·С‹РІР°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ
+  // Показываем статистику
   statsContainerEl.style.display = 'block';
   /* DEBUG
   console.log('[STATS INIT] stats-container display set to block');
   */
 
-  // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РіР»РѕР±Р°Р»СЊРЅСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ
+  // Инициализируем глобальную переменную
   statsContainer = statsContainerEl;
 
-  // РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РєРѕРЅС‚РµР№РЅРµСЂ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ РІРёРґРµРЅ
+  // Проверяем что контейнер действительно виден
   const computedStyle = window.getComputedStyle(statsContainerEl);
   /* DEBUG
   console.log('[STATS INIT] stats-container computed display:', computedStyle.display);
@@ -2347,7 +2347,7 @@ export function initStatsPage(appVersion) {
   */
   renderStats();
 
-  // Р”РѕР±Р°РІР»СЏРµРј Р·Р°РґРµСЂР¶РєСѓ РїРµСЂРµРґ СЃРєСЂС‹С‚РёРµРј СЃРєРµР»РµС‚РѕРЅР° (1000ms РґР»СЏ РјРѕР±РёР»СЊРЅС‹С…)
+  // Добавляем задержку перед скрытием скелетона (1000ms для мобильных)
   /* DEBUG
   console.log('[STATS INIT] Setting skeleton display time (1000ms)...');
   */
@@ -2383,7 +2383,7 @@ export function hideStatsPage() {
 
   if (statsContainer) {
     statsContainer.remove();
-    statsContainer = null; // РћС‡РёС‰Р°РµРј СЃСЃС‹Р»РєСѓ РЅР° СѓРґР°Р»РµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚
+    statsContainer = null; // Очищаем ссылку на удаленный элемент
     /* DEBUG
     console.log('[hideStatsPage] stats-container removed and reference cleared');
     */
@@ -2391,7 +2391,7 @@ export function hideStatsPage() {
 
   if (!mainContainer) mainContainer = document.querySelector('.container');
   if (mainContainer) {
-    mainContainer.style.display = 'block'; // РЇРІРЅРѕ РїРѕРєР°Р·С‹РІР°РµРј РіР»Р°РІРЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ
+    mainContainer.style.display = 'block'; // Явно показываем главный контейнер
     /* DEBUG
     console.log('[hideStatsPage] mainContainer display set to block');
     */
@@ -2399,13 +2399,13 @@ export function hideStatsPage() {
 
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) {
-    sidebar.style.display = ''; // Р’РѕР·РІСЂР°С‰Р°РµРј СЃС‚Р°РЅРґР°СЂС‚РЅРѕРµ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ
+    sidebar.style.display = ''; // Возвращаем стандартное отображение
     /* DEBUG
     console.log('[hideStatsPage] sidebar display reset');
     */
   }
 
-  // Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј search-container Рё top-actions-bar
+  // Восстанавливаем search-container и top-actions-bar
   const searchContainer = document.querySelector('.search-container');
   if (searchContainer) {
     searchContainer.style.display = '';
@@ -2426,7 +2426,7 @@ export function hideStatsPage() {
     console.warn('[hideStatsPage] top-actions-bar NOT FOUND!');
   }
 
-  // РќР• РјРµРЅСЏРµРј hash Р·РґРµСЃСЊ! Р­С‚Рѕ РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· startFilteredSession
+  // НЕ меняем hash здесь! Это вызывается из startFilteredSession
   // if (location.hash && location.hash.includes('stats')) {
   //     location.hash = '';
   // }
@@ -2446,7 +2446,7 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
   const desc = description || '';
 
   return `
-    <div class="st-ach-card ${lockedClass} ${rarityClass}" onclick="window.showAchievementDesc('${title}', '${desc}', ${isUnlocked}, '${current}/${target}')" style="cursor:pointer;" title="${title}: ${current}/${target}${desc ? ' вЂ” ' + desc : ''}">
+    <div class="st-ach-card ${lockedClass} ${rarityClass}" onclick="window.showAchievementDesc('${title}', '${desc}', ${isUnlocked}, '${current}/${target}')" style="cursor:pointer;" title="${title}: ${current}/${target}${desc ? ' — ' + desc : ''}">
       <div class="st-ach-icon">${icon}</div>
       <div class="st-ach-title">${title}</div>
       <div class="st-ach-progress-wrap">
@@ -2462,7 +2462,7 @@ function showSkeletonLoader() {
   console.log('[Skeleton] showSkeletonLoader called');
   */
 
-  // РџРѕРєР°Р·С‹РІР°РµРј HTML skeleton РёР· index.html
+  // Показываем HTML skeleton из index.html
   const skeleton = document.getElementById('stats-skeleton');
   /* DEBUG
   console.log('[Skeleton] skeleton element:', skeleton);
@@ -2475,7 +2475,7 @@ function showSkeletonLoader() {
     */
   } else {
     console.warn('[Skeleton] HTML skeleton not found, creating JS skeleton...');
-    // Fallback: СЃРѕР·РґР°С‘Рј JS skeleton РµСЃР»Рё HTML РЅРµ РЅР°Р№РґРµРЅ
+    // Fallback: создаём JS skeleton если HTML не найден
     const jsSkeleton = document.createElement('div');
     jsSkeleton.className = 'st-skeleton-overlay';
     jsSkeleton.innerHTML = `
@@ -2537,7 +2537,7 @@ function hideSkeletonLoader() {
   console.log('[Skeleton] hideSkeletonLoader called');
   */
 
-  // РЎРєСЂС‹РІР°РµРј СЃРєРµР»РµС‚РѕРЅ С‡РµСЂРµР· display:none
+  // Скрываем скелетон через display:none
   const skeleton = document.getElementById('stats-skeleton');
   if (skeleton) {
     skeleton.style.display = 'none';
@@ -2546,7 +2546,7 @@ function hideSkeletonLoader() {
     */
   }
 
-  // РџСЂРѕРІРµСЂСЏРµРј РІРёРґРёРјРѕСЃС‚СЊ stats-container
+  // Проверяем видимость stats-container
   const statsContainer = document.getElementById('stats-container');
   /* DEBUG
   console.log('[Skeleton] stats-container exists:', !!statsContainer);
@@ -2586,7 +2586,7 @@ function renderStats() {
   } catch { achievements = {}; progress = {}; }
   try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5 = []; rest = []; }
 
-  // РџРѕР»СѓС‡Р°РµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+  // Получаем имя пользователя
   let username = '';
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -2655,7 +2655,7 @@ function renderStats() {
 
   const currentCards = getCurrentCards();
   /* DEBUG
-  console.log('[STATS.UI] РўРµРєСѓС‰РёС… РєР°СЂС‚РѕС‡РµРє:', currentCards.length);
+  console.log('[STATS.UI] Текущих карточек:', currentCards.length);
   */
 
   currentCards.forEach(q => {
@@ -2669,10 +2669,10 @@ function renderStats() {
 
   // Calculate Difficulty Distribution (ordered: Easy, Standard, Hard, Very Hard) with single palette
   const segs = [
-    { label: 'Р›РµРіРєРёРµ', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: 4 },
-    { label: 'РЎС‚Р°РЅРґР°СЂС‚', min: 2.1, max: 2.4, count: 0, color: '#2f81f7', hearts: 3 },
-    { label: 'РўСЂСѓРґРЅС‹Рµ', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: 2 },
-    { label: 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: 1 }
+    { label: 'Легкие', min: 2.4, max: 999, count: 0, color: '#06D6A0', hearts: 4 },
+    { label: 'Стандарт', min: 2.1, max: 2.4, count: 0, color: '#2f81f7', hearts: 3 },
+    { label: 'Трудные', min: 1.7, max: 2.1, count: 0, color: '#FF9F1C', hearts: 2 },
+    { label: 'Очень трудные', min: 0, max: 1.7, count: 0, color: '#E5533D', hearts: 1 }
   ];
 
   let totalRated = 0;
@@ -2705,14 +2705,14 @@ function renderStats() {
 
   // Calculate Hearts Distribution (New)
   const heartsDist = getHeartsDistribution();
-  const totalCount = currentCards.length; // РћР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°СЂС‚РѕС‡РµРє РґР»СЏ СЂР°СЃС‡С‘С‚Р° РїСЂРѕРіСЂРµСЃСЃР°
+  const totalCount = currentCards.length; // Общее количество карточек для расчёта прогресса
   const learningStage = getLearningStage(heartsDist, totalCount);
   const understandingIndex = getUnderstandingIndex(heartsDist, totalCount);
   const riskZones = getRiskZones(uniqueQaData);
 
   // Check login status
   const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
-  const authTitle = user ? `Р’С‹Р№С‚Рё (${user.email})` : 'Р’С…РѕРґ';
+  const authTitle = user ? `Выйти (${user.email})` : 'Вход';
   const authIcon = user
     ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5z"/><path d="M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>'
     : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>';
@@ -2729,7 +2729,7 @@ function renderStats() {
         <div class="st-top-right" style="grid-column:1 / span 12;display:flex;align-items:center;gap:10px;justify-content:flex-start;width:100%">
           <div class="st-top-actions" style="display:flex;align-items:center;gap:10px;">
             <button class="nav-icon-btn login-main-btn tab st-auth-btn" title="${authTitle}" style="min-width:auto;background-color:var(--color-card);">${authIcon}</button>
-            <button class="nav-icon-btn st-home-btn tab" title="Р”РѕРјРѕР№" style="min-width:auto;background-color:var(--color-card);">
+            <button class="nav-icon-btn st-home-btn tab" title="Домой" style="min-width:auto;background-color:var(--color-card);">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 3l9 8-1.5 1.5L12 6 4.5 12.5 3 11z"/>
                 <path d="M5 13v8h6v-6h2v6h6v-8l-7-6z"/>
@@ -2738,61 +2738,61 @@ function renderStats() {
           </div>
           <div class="app-version-display" style="font-size:11px;color:#555;font-weight:bold;margin-left:10px;">v${window.currentAppVersion || ''}</div>
           <div class="st-top-metrics">
-            <div class="metric"><span>рџ”Ґ</span> ${metrics.streakCurrent}</div>
-            <div class="metric"><span>вљЎ</span> ${easyCount}</div>
-            <div class="metric"><span>вќ¤пёЏ</span> ${cardsDoneToday}</div>
+            <div class="metric"><span>🔥</span> ${metrics.streakCurrent}</div>
+            <div class="metric"><span>⚡</span> ${easyCount}</div>
+            <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
           </div>
-          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 12px;height:32px;font-size:12px;font-weight:600;">в–¶ РћР±СѓС‡РµРЅРёРµ</button>
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 12px;height:32px;font-size:12px;font-weight:600;">▶ Обучение</button>
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
 
-      <!-- РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Р±СѓРґРµС‚ РґРѕР±Р°РІР»РµРЅРѕ С‡РµСЂРµР· JS -->
+      <!-- Отображение имени пользователя будет добавлено через JS -->
 
 
       <div class="st-main">
-        <!-- Р‘Р»РѕРє 1: РџСЂРѕРіСЂРµСЃСЃ/СЃС‚Р°С‚РёСЃС‚РёРєР° (Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№, 33%) -->
+        <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
         <div class="st-block-1">
-          <div class="st-compact-card" role="group" aria-label="РљСЂР°С‚РєР°СЏ СЃС‚Р°С‚РёСЃС‚РёРєР°" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
+          <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
             <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:4px!important;align-items:center!important;overflow:hidden!important;">
-              <span class="stc-block-title" style="font-size:10px!important;font-weight:600!important;white-space:nowrap!important;">РџСЂРѕРіСЂРµСЃСЃ: <span class="index-value stc-red stc-strong" style="font-size:11px!important;">${understandingIndex}%</span></span>
-              <span class="stc-forecast-text" style="font-size:8px!important;color:var(--st-text-sec);white-space:nowrap!important;display:flex!important;align-items:center!important;gap:2px!important;margin-left:auto!important;">РџСЂРѕРіРЅРѕР·: <span class="date" style="font-size:9px!important;font-weight:600!important;">${finishDateStr}</span><button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="РљР°Рє СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚СЃСЏ СЃС‚Р°С‚РёСЃС‚РёРєР°?" style="flex-shrink:0;margin-left:0!important;">i</button></span>
+              <span class="stc-block-title" style="font-size:10px!important;font-weight:600!important;white-space:nowrap!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:11px!important;">${understandingIndex}%</span></span>
+              <span class="stc-forecast-text" style="font-size:8px!important;color:var(--st-text-sec);white-space:nowrap!important;display:flex!important;align-items:center!important;gap:2px!important;margin-left:auto!important;">Прогноз: <span class="date" style="font-size:9px!important;font-weight:600!important;">${finishDateStr}</span><button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:0!important;">i</button></span>
             </div>
           </div>
         </div>
 
-        <!-- РљРЅРѕРїРєР° РїСЂРѕРґРѕР»Р¶РёС‚СЊ РЅР° РІСЃСЋ С€РёСЂРёРЅСѓ (РјРѕР±РёР»СЊРЅР°СЏ РІРµСЂСЃРёСЏ) -->
-        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> РєР°СЂС‚РѕС‡РµРє вЂў ~${planMins} РјРёРЅ</div></div></button>
+        <!-- Кнопка продолжить на всю ширину (мобильная версия) -->
+        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> карточек • ~${planMins} мин</div></div></button>
 
-        <!-- Р‘Р»РѕРє 2: Р РµР¶РёРјС‹ С‚СЂРµРЅРёСЂРѕРІРєРё (РїСЂР°РІС‹Р№ РІРµСЂС…РЅРёР№, 33%) -->
+        <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;">
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="рџ“ќ Р Р°Р±РѕС‚Р° РЅР°Рґ РѕС€РёР±РєР°РјРё\n\nРќРёР·РєР°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ.\n\nРЎС„РѕРєСѓСЃРёСЂСѓР№С‚РµСЃСЊ РЅР° СЃР»Р°Р±С‹С… РјРµСЃС‚Р°С… вЂ” СЃРёСЃС‚РµРјР° РїРѕРєР°Р¶РµС‚ С‚РѕР»СЊРєРѕ С‚Рµ РєР°СЂС‚РѕС‡РєРё, РєРѕС‚РѕСЂС‹Рµ РІС‹Р·С‹РІР°СЋС‚ Сѓ РІР°СЃ С‚СЂСѓРґРЅРѕСЃС‚Рё.">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="📝 Работа над ошибками\n\nНизкая точность.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
               <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
-                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Р Р°Р±РѕС‚Р° РЅР°Рґ РѕС€РёР±РєР°РјРё</span>
-                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">РќРёР·РєР°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ</span>
+                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Работа над ошибками</span>
+                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Низкая точность</span>
               </div>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="рџЊ± РўРѕР»СЊРєРѕ РЅРѕРІС‹Рµ\n\nРР·СѓС‡РµРЅРёРµ СЃРІРµР¶РµРіРѕ РјР°С‚РµСЂРёР°Р»Р°.\n\nРџРѕРєР°Р·С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РєР°СЂС‚РѕС‡РєРё, РєРѕС‚РѕСЂС‹Рµ РІС‹ РµС‰С‘ РЅРµ РЅР°С‡РёРЅР°Р»Рё СѓС‡РёС‚СЊ.">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
               <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#2EC4B6 0%,#06D6A0 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
-                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">РўРѕР»СЊРєРѕ РЅРѕРІС‹Рµ</span>
-                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">РЎРІРµР¶РёР№ РјР°С‚РµСЂРёР°Р»</span>
+                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Только новые</span>
+                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Свежий материал</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 4: РЎР»РѕР¶РЅРѕСЃС‚СЊ РєР°СЂС‚РѕС‡РµРє (РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№, 33%) -->
+        <!-- Блок 4: Сложность карточек (правый нижний, 33%) -->
         <div class="st-block-4">
           <div class="st-diff-section">
             <div class="st-col-title"   style="margin-bottom: 5px;"
-              >РЎР»РѕР¶РЅРѕСЃС‚СЊ <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="РљР°Рє С„РѕСЂРјРёСЂСѓСЋС‚СЃСЏ СѓСЂРѕРІРЅРё СЃР»РѕР¶РЅРѕСЃС‚Рё?">i</button></div>
+              >Сложность <button class="st-info-btn" onclick="window.openDiffInfoModal(event)" title="Как формируются уровни сложности?">i</button></div>
             <div class="st-diff-list" style="margin-top:0">
               ${segs.map((s, i) => `
                 <div class="st-diff-item" onclick="window.openDiffModal('${i}')" title="${s.pct.toFixed(1)}%">
@@ -2804,10 +2804,10 @@ function renderStats() {
                   <div class="st-diff-barline" style="width:${s.pct}%; background:${s.color}"></div>
                 </div>
               `).join('')}
-              <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="РР·Р±СЂР°РЅРЅРѕРµ">
+              <div class="st-diff-item favorite" onclick="window.openDiffModal('favorites')" title="Избранное">
                 <div style="display:flex;align-items:center">
                   <div class="st-diff-dot" style="background:#ffd700"></div>
-                  <div class="st-diff-name">РР·Р±СЂР°РЅРЅРѕРµ</div>
+                  <div class="st-diff-name">Избранное</div>
                 </div>
                 <div class="st-diff-count">${favCount}</div>
               </div>
@@ -2815,38 +2815,38 @@ function renderStats() {
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє РґРѕСЃС‚РёР¶РµРЅРёР№ РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј (С†РµРЅС‚СЂР°Р»СЊРЅС‹Р№, span 2 СЂСЏРґР°, 33%) -->
+        <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
             <div class="st-cat-progress-header" onclick="window.toggleCategoryList()" style="cursor: pointer;">
-              <div class="st-cat-progress-title">РљР°С‚РµРіРѕСЂРёРё <span id="st-cat-count" style="font-size:12px;color:var(--st-muted);font-weight:400;"></span></div>
-              <button class="st-cat-toggle-btn" title="РЎРІРµСЂРЅСѓС‚СЊ/СЂР°Р·РІРµСЂРЅСѓС‚СЊ" style="pointer-events: none;">
+              <div class="st-cat-progress-title">Категории <span id="st-cat-count" style="font-size:12px;color:var(--st-muted);font-weight:400;"></span></div>
+              <button class="st-cat-toggle-btn" title="Свернуть/развернуть" style="pointer-events: none;">
                 <svg class="st-cat-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </button>
             </div>
             <div class="st-cat-progress-list" id="st-cat-progress-list">
-              <!-- Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ РґРёРЅР°РјРёС‡РµСЃРєРё -->
+              <!-- Заполняется динамически -->
             </div>
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 3: Р“СЂР°С„РёРє Р°РєС‚РёРІРЅРѕСЃС‚Рё (Р»РµРІС‹Р№ РЅРёР¶РЅРёР№, 33%) -->
+        <!-- Блок 3: График активности (левый нижний, 33%) -->
         <div class="st-block-3">
           <div class="activity-card activity">
             <div class="activity-header">
               <div class="period-switch">
-                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">РќРµРґРµР»СЏ</div>
-                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">РњРµСЃСЏС†</div>
-                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Р“РѕРґ</div>
+                <div class="${currentXpMode === 'week' ? 'active' : ''}" onclick="window.changeXpMode('week')">Неделя</div>
+                <div class="${currentXpMode === 'month' ? 'active' : ''}" onclick="window.changeXpMode('month')">Месяц</div>
+                <div class="${currentXpMode === 'year' ? 'active' : ''}" onclick="window.changeXpMode('year')">Год</div>
               </div>
               <div class="month-switch"><span id="st-month-label"></span></div>
             </div>
             <div class="chart-wrapper">
               <svg class="chart" id="st-activity-chart"></svg>
             </div>
-            <button class="st-expand-btn" onclick="window.openChartModal()" title="Р Р°Р·РІРµСЂРЅСѓС‚СЊ РіСЂР°С„РёРє">
+            <button class="st-expand-btn" onclick="window.openChartModal()" title="Развернуть график">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
               </svg>
@@ -2854,22 +2854,22 @@ function renderStats() {
           </div>
         </div>
 
-        <!-- Р‘Р»РѕРє 5: Р”РѕСЃС‚РёР¶РµРЅРёСЏ (РЅРёР¶РЅРёР№, 100% С€РёСЂРёРЅС‹) -->
+        <!-- Блок 5: Достижения (нижний, 100% ширины) -->
         <div class="st-block-5">
           <div class="st-ach-section">
             <div class="st-ach-scroll-wrap">
-              ${renderAchCard('firstSession', 'рџЏЃ', 'РџРµСЂРІС‹Р№ С€Р°Рі', progress.firstSession, 1, 'common', 'РџСЂРѕР№РґРёС‚Рµ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ СѓСЂРѕРє')}
-              ${renderAchCard('sevenDayStreak', 'рџ”Ґ', 'РќРµРґРµР»СЏ РІ РѕРіРЅРµ', progress.streak7, 7, 'rare', '7 РґРЅРµР№ РїРѕРґСЂСЏРґ Р·Р°С…РѕРґРёС‚Рµ РІ РїСЂРёР»РѕР¶РµРЅРёРµ Рё СѓС‡РёС‚РµСЃСЊ')}
-              ${renderAchCard('consistency', 'рџ§', 'РЎС‚Р°Р±РёР»СЊРЅРѕСЃС‚СЊ', progress.streak14, 14, 'rare', '14 РґРЅРµР№ РїРѕРґСЂСЏРґ Р±РµР· РїСЂРѕРїСѓСЃРєРѕРІ')}
-              ${renderAchCard('marathoner', 'рџЏѓ', 'РњР°СЂР°С„РѕРЅРµС†', progress.streak30, 30, 'epic', '30 РґРЅРµР№ РїРѕРґСЂСЏРґ вЂ” С†РµР»С‹Р№ РјРµСЃСЏС† Р±РµР· РїСЂРѕРїСѓСЃРєРѕРІ!')}
-              ${renderAchCard('hardToEasy', 'рџ“€', 'РџСЂРѕРіСЂРµСЃСЃ', progress.hardToEasy, 10, 'rare', '10 РєР°СЂС‚РѕС‡РµРє, РєРѕС‚РѕСЂС‹Рµ Р±С‹Р»Рё СЃР»РѕР¶РЅС‹РјРё, СЃС‚Р°Р»Рё Р»С‘РіРєРёРјРё (5 СЃРµСЂРґРµС‡РµРє)')}
-              ${renderAchCard('fiftyCards', 'рџ“љ', 'РќР°Р±СЂР°Р» С‚РµРјРї', progress.cards50, 50, 'common', '50 РєР°СЂС‚РѕС‡РµРє РёР·СѓС‡РµРЅРѕ (РїСЂРѕР№РґРµРЅРѕ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ СЂР°Р·)')}
-              ${renderAchCard('century', 'рџ’Ї', 'Р¦РµРЅС‚СѓСЂРёРѕРЅ', progress.cards100, 100, 'epic', '100 РєР°СЂС‚РѕС‡РµРє РёР·СѓС‡РµРЅРѕ вЂ” РІС‹ Р·РЅР°РµС‚Рµ Р±РѕР»СЊС€Рµ РїРѕР»РѕРІРёРЅС‹ Р±Р°Р·С‹!')}
-              ${renderAchCard('ninetyAccuracy', 'рџЋЇ', 'РЎРЅР°Р№РїРµСЂ', progress.accuracy90, 90, 'epic', '90%+ РїСЂР°РІРёР»СЊРЅС‹С… РѕС‚РІРµС‚РѕРІ Р·Р° РІСЃС‘ РІСЂРµРјСЏ вЂ” РїРѕС‡С‚Рё Р±РµР· РѕС€РёР±РѕРє!')}
-              ${renderAchCard('master', 'рџ‘‘', 'РњР°СЃС‚РµСЂ', progress.level10, 10, 'legendary', 'РЈСЂРѕРІРµРЅСЊ 10 вЂ” РЅР°РєРѕРїРёС‚Рµ 56250 XP')}
-              ${renderAchCard('earlyBird', 'рџЊ…', 'Р Р°РЅРЅСЏСЏ РїС‚Р°С€РєР°', progress.earlyBird, 25, 'rare', '25 РєР°СЂС‚РѕС‡РµРє, РїСЂРѕР№РґРµРЅРЅС‹С… РґРѕ 9:00 СѓС‚СЂР°')}
-              ${renderAchCard('nightRaider', 'рџЊ™', 'РќРѕС‡РЅРѕР№ СЂРµР№РґРµСЂ', progress.nightRaider, 50, 'epic', '50 РєР°СЂС‚РѕС‡РµРє, РїСЂРѕР№РґРµРЅРЅС‹С… РїРѕСЃР»Рµ 23:00 (РЅРѕС‡СЊСЋ)')}
-              ${renderAchCard('comeback', 'рџ”„', 'Р’РѕР·РІСЂР°С‰РµРЅРёРµ', progress.comebackCards, 10, 'legendary', 'РЎРґРµР»Р°Р№С‚Рµ РїРµСЂРµСЂС‹РІ 7+ РґРЅРµР№, Р·Р°С‚РµРј РІРµСЂРЅРёС‚РµСЃСЊ Рё РїСЂРѕР№РґРёС‚Рµ 10 РєР°СЂС‚РѕС‡РµРє')}
+              ${renderAchCard('firstSession', '🏁', 'Первый шаг', progress.firstSession, 1, 'common', 'Пройдите хотя бы один урок')}
+              ${renderAchCard('sevenDayStreak', '🔥', 'Неделя в огне', progress.streak7, 7, 'rare', '7 дней подряд заходите в приложение и учитесь')}
+              ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare', '14 дней подряд без пропусков')}
+              ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic', '30 дней подряд — целый месяц без пропусков!')}
+              ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare', '10 карточек, которые были сложными, стали лёгкими (5 сердечек)')}
+              ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common', '50 карточек изучено (пройдено хотя бы один раз)')}
+              ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic', '100 карточек изучено — вы знаете больше половины базы!')}
+              ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic', '90%+ правильных ответов за всё время — почти без ошибок!')}
+              ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary', 'Уровень 10 — накопите 56250 XP')}
+              ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare', '25 карточек, пройденных до 9:00 утра')}
+              ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic', '50 карточек, пройденных после 23:00 (ночью)')}
+              ${renderAchCard('comeback', '🔄', 'Возвращение', progress.comebackCards, 10, 'legendary', 'Сделайте перерыв 7+ дней, затем вернитесь и пройдите 10 карточек')}
             </div>
           </div>
         </div>
@@ -2879,7 +2879,7 @@ function renderStats() {
 
   const levelCont = container.querySelector('.st-level-inline');
   if (levelCont) {
-    // Р”РѕР±Р°РІР»СЏРµРј РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРµСЂРµРґ СѓСЂРѕРІРЅРµРј
+    // Добавляем имя пользователя перед уровнем
     const usernameSpan = document.createElement('span');
     usernameSpan.className = 'st-username-display';
     usernameSpan.style.marginRight = '8px';
@@ -2894,15 +2894,15 @@ function renderStats() {
         if (user && user.username) {
           usernameSpan.textContent = user.username;
         } else {
-          usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+          usernameSpan.textContent = 'Гость';
           usernameSpan.style.color = '#808080';
         }
       } else {
-        usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+        usernameSpan.textContent = 'Гость';
         usernameSpan.style.color = '#808080';
       }
     } catch (e) {
-      usernameSpan.textContent = 'Р“РѕСЃС‚СЊ';
+      usernameSpan.textContent = 'Гость';
       usernameSpan.style.color = '#808080';
     }
 
@@ -2916,22 +2916,22 @@ function renderStats() {
       box.style.transition = 'all 0.2s ease';
       box.style.padding = '4px 8px';
       box.style.borderRadius = '8px';
-      box.title = 'РЈСЂРѕРІРЅРё Рё XP';
+      box.title = 'Уровни и XP';
       box.onclick = () => {
         /* DEBUG
         console.log('========================================');
-        console.log('[LEVEL BOX CLICK] РљР»РёРє РїРѕ Р±Р»РѕРєСѓ СѓСЂРѕРІРЅСЏ!');
+        console.log('[LEVEL BOX CLICK] Клик по блоку уровня!');
         console.log('[LEVEL BOX CLICK] Timestamp:', new Date().toISOString());
         console.log('[LEVEL BOX CLICK] window.openLevelInfoModal:', typeof window.openLevelInfoModal);
-        console.log('[LEVEL BOX CLICK] Р’С‹Р·С‹РІР°РµРј openLevelInfoModal()...');
+        console.log('[LEVEL BOX CLICK] Вызываем openLevelInfoModal()...');
         */
         if (window.openLevelInfoModal) {
           window.openLevelInfoModal();
           /* DEBUG
-          console.log('[LEVEL BOX CLICK] РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РѕС‚РєСЂС‹С‚Рѕ!');
+          console.log('[LEVEL BOX CLICK] Модальное окно открыто!');
           */
         } else {
-          console.error('[LEVEL BOX CLICK] вќЊ window.openLevelInfoModal РќР• РќРђР™Р”Р•Рќ!');
+          console.error('[LEVEL BOX CLICK] ❌ window.openLevelInfoModal НЕ НАЙДЕН!');
         }
         /* DEBUG
         console.log('========================================');
@@ -2994,7 +2994,7 @@ function renderStats() {
     } catch { }
   }
 
-  // Ensure "39 РєР°СЂС‚РѕС‡РµРє в‰€ 59 РјРёРЅСѓС‚" stays on one line; reduce font-size by up to 2px if needed
+  // Ensure "39 карточек ≈ 59 минут" stays on one line; reduce font-size by up to 2px if needed
   try {
     const todayLine = container.querySelector('.stc-today-line');
     if (todayLine) {
@@ -3011,14 +3011,14 @@ function renderStats() {
   } catch { }
 
   // ============================================
-  // DEBUG: Р›РѕРіРёСЂРѕРІР°РЅРёРµ С€Р°РїРєРё СЃС‚Р°С‚РёСЃС‚РёРєРё
+  // DEBUG: Логирование шапки статистики
   // ============================================
   /* DEBUG
   console.log('========================================');
   console.log('========================================');
   */
 
-  // РћР±СЉСЏРІР»РµРЅРёРµ РєРЅРѕРїРѕРє (РІРЅРµ DEBUG-Р±Р»РѕРєР°)
+  // Объявление кнопок (вне DEBUG-блока)
   const authBtn = container.querySelector('.st-auth-btn');
   const homeBtn = container.querySelector('.st-home-btn');
   const continueBtn = container.querySelector('#st-continue-top-btn');
@@ -3039,15 +3039,15 @@ function renderStats() {
   }
 
   /* DEBUG
-  // РџСЂРѕРІРµСЂРєР° РєРЅРѕРїРѕРє (РґСѓР±Р»РёСЂСѓСЋС‰РµРµ РѕР±СЉСЏРІР»РµРЅРёРµ - Р·Р°РєРѕРјРјРµРЅС‚РёСЂРѕРІР°РЅРѕ)
+  // Проверка кнопок (дублирующее объявление - закомментировано)
   const authBtn = container.querySelector('.st-auth-btn');
   const homeBtn = container.querySelector('.st-home-btn');
   const continueBtn = container.querySelector('#st-continue-top-btn');
 
   /* DEBUG
-  console.log('   .st-auth-btn:', authBtn ? 'РќРђР™Р”Р•РќРђ' : 'РќР• РќРђР™Р”Р•РќРђ');
-  console.log('   .st-home-btn:', homeBtn ? 'РќРђР™Р”Р•РќРђ' : 'РќР• РќРђР™Р”Р•РќРђ');
-  console.log('   #st-continue-top-btn:', continueBtn ? 'РќРђР™Р”Р•РќРђ' : 'РќР• РќРђР™Р”Р•РќРђ');
+  console.log('   .st-auth-btn:', authBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
+  console.log('   .st-home-btn:', homeBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
+  console.log('   #st-continue-top-btn:', continueBtn ? 'НАЙДЕНА' : 'НЕ НАЙДЕНА');
 
   if (authBtn) {
     const authStyles = window.getComputedStyle(authBtn);
@@ -3064,7 +3064,7 @@ function renderStats() {
   */
 
   /* DEBUG
-  // РџСЂРѕРІРµСЂРєР° РІРёРґРёРјРѕСЃС‚Рё РєРЅРѕРїРѕРє
+  // Проверка видимости кнопок
   function isElementVisible(el) {
     if (!el) return false;
     const styles = window.getComputedStyle(el);
@@ -3076,11 +3076,11 @@ function renderStats() {
       rect.height > 0;
   }
 
-  console.log('   auth-btn РІРёРґРёРјР°:', isElementVisible(authBtn));
-  console.log('   home-btn РІРёРґРёРјР°:', isElementVisible(homeBtn));
-  console.log('   continue-btn РІРёРґРёРјР°:', isElementVisible(continueBtn));
+  console.log('   auth-btn видима:', isElementVisible(authBtn));
+  console.log('   home-btn видима:', isElementVisible(homeBtn));
+  console.log('   continue-btn видима:', isElementVisible(continueBtn));
 
-  // РџСЂРѕРІРµСЂРєР° z-index Рё position
+  // Проверка z-index и position
   if (authBtn) {
     const authStyles = window.getComputedStyle(authBtn);
     console.log('   auth-btn z-index:', authStyles.zIndex, ', position:', authStyles.position);
@@ -3094,25 +3094,25 @@ function renderStats() {
     console.log('   st-top-right z-index:', trStyles.zIndex, ', position:', trStyles.position);
   }
 
-  // РџСЂРѕРІРµСЂРєР° РЅР° РїРµСЂРµРєСЂС‹С‚РёРµ С‡РµСЂРµР· elementFromPoint
+  // Проверка на перекрытие через elementFromPoint
   if (authBtn) {
     const authRect = authBtn.getBoundingClientRect();
     const centerX = authRect.left + authRect.width / 2;
     const centerY = authRect.top + authRect.height / 2;
     const topElement = document.elementFromPoint(centerX, centerY);
-    console.log('   auth-btn: СЌР»РµРјРµРЅС‚ РІ С†РµРЅС‚СЂРµ РєРЅРѕРїРєРё:', topElement ? topElement.className : 'null');
-    console.log('   auth-btn: СЃРѕРІРїР°РґР°РµС‚ Р»Рё СЃ РєРЅРѕРїРєРѕР№:', topElement === authBtn || (topElement && topElement.closest('.st-auth-btn')));
+    console.log('   auth-btn: элемент в центре кнопки:', topElement ? topElement.className : 'null');
+    console.log('   auth-btn: совпадает ли с кнопкой:', topElement === authBtn || (topElement && topElement.closest('.st-auth-btn')));
   }
   if (homeBtn) {
     const homeRect = homeBtn.getBoundingClientRect();
     const centerX = homeRect.left + homeRect.width / 2;
     const centerY = homeRect.top + homeRect.height / 2;
     const topElement = document.elementFromPoint(centerX, centerY);
-    console.log('   home-btn: СЌР»РµРјРµРЅС‚ РІ С†РµРЅС‚СЂРµ РєРЅРѕРїРєРё:', topElement ? topElement.className : 'null');
-    console.log('   home-btn: СЃРѕРІРїР°РґР°РµС‚ Р»Рё СЃ РєРЅРѕРїРєРѕР№:', topElement === homeBtn || (topElement && topElement.closest('.st-home-btn')));
+    console.log('   home-btn: элемент в центре кнопки:', topElement ? topElement.className : 'null');
+    console.log('   home-btn: совпадает ли с кнопкой:', topElement === homeBtn || (topElement && topElement.closest('.st-home-btn')));
   }
 
-  // РџСЂРѕРІРµСЂРєР° .st-top-actions
+  // Проверка .st-top-actions
   const topActions = container.querySelector('.st-top-actions');
   if (topActions) {
     const actionsStyles = window.getComputedStyle(topActions);
@@ -3122,12 +3122,12 @@ function renderStats() {
 
   console.log('\n========================================');
   // ============================================
-  // РљРћРќР•Р¦ DEBUG С€Р°РїРєРё
+  // КОНЕЦ DEBUG шапки
   // ============================================
   */
 
   // ============================================
-  // DEBUG: Р‘Р»РѕРє РїСЂРѕРіСЂРµСЃСЃР° - СЃС‚РёР»Рё Рё СЂР°Р·РјРµСЂС‹
+  // DEBUG: Блок прогресса - стили и размеры
   // ============================================
   /* DEBUG
   console.log('\n========================================');
@@ -3150,7 +3150,7 @@ function renderStats() {
   } else {
   }
 
-  // РџСЂРѕРІРµСЂРєР° Р·Р°РіРѕР»РѕРІРєР°
+  // Проверка заголовка
   const header = container.querySelector('.stc-header-with-info');
   if (header) {
     const hStyles = window.getComputedStyle(header);
@@ -3161,7 +3161,7 @@ function renderStats() {
     console.log('   width: ' + hRect.width.toFixed(1) + 'px');
     console.log('   height: ' + hRect.height.toFixed(1) + 'px');
 
-    // РџСЂРѕРІРµСЂРєР° РґРѕС‡РµСЂРЅРёС… СЌР»РµРјРµРЅС‚РѕРІ
+    // Проверка дочерних элементов
     const children = header.children;
     console.log('   children count: ' + children.length);
     for (let i = 0; i < children.length; i++) {
@@ -3179,7 +3179,7 @@ function renderStats() {
     }
   }
 
-  // РџСЂРѕРІРµСЂРєР° Р·Р°РіРѕР»РѕРІРєР° С‚РµРєСЃС‚Р°
+  // Проверка заголовка текста
   const title = container.querySelector('.stc-block-title');
   if (title) {
     const tStyles = window.getComputedStyle(title);
@@ -3194,7 +3194,7 @@ function renderStats() {
     console.log('   innerText: "' + tStyles.innerText + '"');
   }
 
-  // РџСЂРѕРІРµСЂРєР° РєРЅРѕРїРєРё "i"
+  // Проверка кнопки "i"
   const infoBtn = container.querySelector('.st-info-btn');
   if (infoBtn) {
     const bStyles = window.getComputedStyle(infoBtn);
@@ -3206,7 +3206,7 @@ function renderStats() {
     console.log('   left: ' + bRect.left.toFixed(1) + 'px');
   }
 
-  // РџСЂРѕРІРµСЂРєР° РєРѕРЅС‚РµРЅС‚Р°
+  // Проверка контента
   const content = container.querySelector('.stc-content');
   if (content) {
     const cStyles = window.getComputedStyle(content);
@@ -3215,7 +3215,7 @@ function renderStats() {
     console.log('   gap: ' + cStyles.gap);
   }
 
-  // РџСЂРѕРІРµСЂРєР° СЃС‚СЂРѕРєРё СЃ РїСЂРѕРіРЅРѕР·РѕРј
+  // Проверка строки с прогнозом
   const forecastRow = container.querySelector('.stc-forecast-row');
   if (forecastRow) {
     const fStyles = window.getComputedStyle(forecastRow);
@@ -3225,14 +3225,14 @@ function renderStats() {
     console.log('   font-size: ' + fStyles.fontSize);
     console.log('   height: ' + fRect.height.toFixed(1) + 'px');
 
-    // РџСЂРѕРІРµСЂРєР° С‚РµРєСЃС‚Р° РїСЂРѕРіРЅРѕР·Р°
+    // Проверка текста прогноза
     const forecastText = forecastRow.querySelector('.stc-forecast-text');
     if (forecastText) {
       const ftStyles = window.getComputedStyle(forecastText);
       console.log('   font-size: ' + ftStyles.fontSize);
       console.log('   text-align: ' + ftStyles.textAlign);
 
-      // РџСЂРѕРІРµСЂРєР° РґР°С‚С‹
+      // Проверка даты
       const dateEl = forecastText.querySelector('.date');
       if (dateEl) {
         const dStyles = window.getComputedStyle(dateEl);
@@ -3246,23 +3246,23 @@ function renderStats() {
   */
 
   // ============================================
-  // DEBUG: РџРѕСЂСЏРґРѕРє Р±Р»РѕРєРѕРІ РІ РјРѕР±РёР»СЊРЅРѕР№ РІРµСЂСЃРёРё
+  // DEBUG: Порядок блоков в мобильной версии
   // ============================================
   /* DEBUG
   console.log('\n========================================');
   console.log('========================================');
   console.log('window.innerWidth:', window.innerWidth);
-  console.log('Is mobile (в‰¤768px):', window.innerWidth <= 768);
+  console.log('Is mobile (≤768px):', window.innerWidth <= 768);
 
   const blocks = {
-    '.st-top-right': 'РЁР°РїРєР°',
-    '#st-continue-btn': 'РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ',
-    '.st-block-1': 'РџСЂРѕРіСЂРµСЃСЃ',
-    '.st-block-2': 'Р РµР¶РёРјС‹ (2 РєР°СЂС‚РѕС‡РєРё)',
-    '.st-block-4': 'РЎР»РѕР¶РЅРѕСЃС‚СЊ + РР·Р±СЂР°РЅРЅРѕРµ',
-    '.st-block-achievements': 'РљР°С‚РµРіРѕСЂРёРё',
-    '.st-block-3': 'Р“СЂР°С„РёРєРё',
-    '.st-block-5': 'Р”РѕСЃС‚РёР¶РµРЅРёСЏ'
+    '.st-top-right': 'Шапка',
+    '#st-continue-btn': 'Продолжить обучение',
+    '.st-block-1': 'Прогресс',
+    '.st-block-2': 'Режимы (2 карточки)',
+    '.st-block-4': 'Сложность + Избранное',
+    '.st-block-achievements': 'Категории',
+    '.st-block-3': 'Графики',
+    '.st-block-5': 'Достижения'
   };
 
   Object.entries(blocks).forEach(([selector, name], index) => {
@@ -3276,11 +3276,11 @@ function renderStats() {
       console.log(`      display: ${styles.display}`);
       console.log(`      position: top=${rect.top.toFixed(1)}, height=${rect.height.toFixed(1)}`);
     } else {
-      console.log(`   ${index + 1}. ${selector} - РќР• РќРђР™Р”Р•Рќ`);
+      console.log(`   ${index + 1}. ${selector} - НЕ НАЙДЕН`);
     }
   });
 
-  // РџСЂРѕРІРµСЂРєР° CSS РїСЂР°РІРёР» РґР»СЏ order
+  // Проверка CSS правил для order
   const allStyles = Array.from(document.styleSheets);
   allStyles.forEach((sheet, i) => {
     try {
@@ -3297,54 +3297,54 @@ function renderStats() {
 
   console.log('\n========================================');
   // ============================================
-  // РљРћРќР•Р¦ DEBUG РїРѕСЂСЏРґРєР° Р±Р»РѕРєРѕРІ
+  // КОНЕЦ DEBUG порядка блоков
   // ============================================
   */
 
   // ============================================
-  // DEBUG: modes-grid (РєР°СЂС‚РѕС‡РєРё СЂРµР¶РёРјРѕРІ)
+  // DEBUG: modes-grid (карточки режимов)
   // ============================================
   /* DEBUG
   console.log('\n========================================');
   console.log('========================================');
 
-  console.log('   Media query (max-width: 768px):', window.innerWidth <= 768 ? 'Р”Рђ' : 'РќР•Рў');
+  console.log('   Media query (max-width: 768px):', window.innerWidth <= 768 ? 'ДА' : 'НЕТ');
 
-  // РџСЂРѕРІРµСЂРєР° STATS_STYLES
-  console.log('\nрџ“„ РџР РћР’Р•Р РљРђ STATS_STYLES:');
+  // Проверка STATS_STYLES
+  console.log('\n📄 ПРОВЕРКА STATS_STYLES:');
   if (typeof STATS_STYLES !== 'undefined') {
     const hasModesGrid = STATS_STYLES.includes('.modes-grid');
     const hasMedia768 = STATS_STYLES.includes('@media (max-width: 768px)');
-    console.log('   STATS_STYLES СЃСѓС‰РµСЃС‚РІСѓРµС‚:', true);
-    console.log('   РЎРѕРґРµСЂР¶РёС‚ .modes-grid:', hasModesGrid);
-    console.log('   РЎРѕРґРµСЂР¶РёС‚ @media (max-width: 768px):', hasMedia768);
+    console.log('   STATS_STYLES существует:', true);
+    console.log('   Содержит .modes-grid:', hasModesGrid);
+    console.log('   Содержит @media (max-width: 768px):', hasMedia768);
     if (hasModesGrid) {
       const startIdx = STATS_STYLES.indexOf('.modes-grid');
       const snippet = STATS_STYLES.substring(startIdx, startIdx + 200);
-      console.log('   Р¤СЂР°РіРјРµРЅС‚ CSS:', snippet.replace(/\n/g, '\\n'));
+      console.log('   Фрагмент CSS:', snippet.replace(/\n/g, '\\n'));
     }
   } else {
-    console.log('   STATS_STYLES РќР• РќРђР™Р”Р•Рќ!');
+    console.log('   STATS_STYLES НЕ НАЙДЕН!');
   }
 
-  // РџСЂРѕРІРµСЂРєР° style СЌР»РµРјРµРЅС‚Р°
+  // Проверка style элемента
   const styleEl = document.querySelector('style[data-stats-style]') || document.querySelector('style');
   if (styleEl) {
     const styleContent = styleEl.textContent;
     const hasModesGrid = styleContent.includes('.modes-grid');
-    console.log('   <style> СЌР»РµРјРµРЅС‚:', 'РќРђР™Р”Р•Рќ');
-    console.log('   Р”Р»РёРЅР° CSS:', styleContent.length, 'СЃРёРјРІРѕР»РѕРІ');
-    console.log('   РЎРѕРґРµСЂР¶РёС‚ .modes-grid:', hasModesGrid);
+    console.log('   <style> элемент:', 'НАЙДЕН');
+    console.log('   Длина CSS:', styleContent.length, 'символов');
+    console.log('   Содержит .modes-grid:', hasModesGrid);
     if (hasModesGrid) {
       const startIdx = styleContent.indexOf('.modes-grid');
       const snippet = styleContent.substring(startIdx, startIdx + 200);
-      console.log('   Р¤СЂР°РіРјРµРЅС‚:', snippet.replace(/\n/g, '\\n'));
+      console.log('   Фрагмент:', snippet.replace(/\n/g, '\\n'));
     }
   } else {
-    console.log('   <style> СЌР»РµРјРµРЅС‚:', 'РќР• РќРђР™Р”Р•Рќ!');
+    console.log('   <style> элемент:', 'НЕ НАЙДЕН!');
   }
 
-  // РџСЂРѕРІРµСЂРєР° РІСЃРµС… stylesheet
+  // Проверка всех stylesheet
   const allRules = [];
   for (let i = 0; i < document.styleSheets.length; i++) {
     try {
@@ -3373,7 +3373,7 @@ function renderStats() {
     console.log('   width:', mgStyles.width);
     console.log('   height:', mgStyles.height);
 
-    // РџСЂРѕРІРµСЂРєР° РґРѕС‡РµСЂРЅРёС… РєР°СЂС‚РѕС‡РµРє
+    // Проверка дочерних карточек
     const cards = modesGrid.querySelectorAll('.st-mode-card, .st-mode-card-large');
     cards.forEach((card, i) => {
       const cStyles = window.getComputedStyle(card);
@@ -3381,7 +3381,7 @@ function renderStats() {
       const title = card.querySelector('.st-mode-title');
       const desc = card.querySelector('.st-mode-desc');
 
-      console.log('\n   РљР°СЂС‚РѕС‡РєР° ' + (i + 1) + ':');
+      console.log('\n   Карточка ' + (i + 1) + ':');
       console.log('      display:', cStyles.display);
       console.log('      padding:', cStyles.padding);
       console.log('      background:', cStyles.background);
@@ -3428,7 +3428,7 @@ function renderStats() {
     console.log('   flex-direction:', b2Styles.flexDirection);
   }
 
-  // РџСЂРѕРІРµСЂРєР° РєР°Р¶РґРѕРіРѕ child
+  // Проверка каждого child
   if (modesGrid) {
     console.log('   children count:', modesGrid.children.length);
     Array.from(modesGrid.children).forEach((child, i) => {
@@ -3439,7 +3439,7 @@ function renderStats() {
     });
   }
 
-  // РџСЂРѕРІРµСЂРєР° .st-block-2
+  // Проверка .st-block-2
   const block2 = container.querySelector('.st-block-2');
   if (block2) {
     const b2Styles = window.getComputedStyle(block2);
@@ -3449,11 +3449,11 @@ function renderStats() {
 
   console.log('\n========================================');
   // ============================================
-  // РљРћРќР•Р¦ DEBUG modes-grid
+  // КОНЕЦ DEBUG modes-grid
   // ============================================
   */
 
-  // homeBtn СѓР¶Рµ РѕР±СЉСЏРІР»РµРЅ РІС‹С€Рµ РІ debug-СЃРµРєС†РёРё
+  // homeBtn уже объявлен выше в debug-секции
   /* DEBUG
   console.log('========================================');
   console.log('[HOME BTN SETUP] homeBtn found:', !!homeBtn);
@@ -3469,7 +3469,7 @@ function renderStats() {
       console.log('[HOME BTN CLICK] window.__lastCandidates:', window.__lastCandidates);
       */
 
-      // РћС‡РёС‰Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СѓС‡РµРЅРёСЏ
+      // Очищаем состояние обучения
       if (window.__lastCandidates) {
         window.__lastCandidates = null;
         /* DEBUG
@@ -3477,7 +3477,7 @@ function renderStats() {
         */
       }
 
-      // РџСЂРѕСЃС‚Рѕ РјРµРЅСЏРµРј hash РЅР° РіР»Р°РІРЅСѓСЋ
+      // Просто меняем hash на главную
       location.hash = '#/';
       /* DEBUG
       console.log('[HOME BTN CLICK] Hash changed to:', location.hash);
@@ -3494,7 +3494,7 @@ function renderStats() {
         : getCurrentCards();
 
       if (!questions || questions.length === 0) {
-        alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ');
+        alert('Нет вопросов для изучения');
         return;
       }
 
@@ -3509,14 +3509,14 @@ function renderStats() {
     });
   }
 
-  // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РєРЅРѕРїРєРё "РџСЂРѕРґРѕР»Р¶РёС‚СЊ РѕР±СѓС‡РµРЅРёРµ" РІ С€Р°РїРєРµ
+  // Функция для кнопки "Продолжить обучение" в шапке
   window.startDailySession = () => {
     const questions = (window.currentQuestions && window.currentQuestions.length > 0)
       ? window.currentQuestions
       : uniqueQaData;
 
     if (!questions || questions.length === 0) {
-      alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ');
+      alert('Нет вопросов для изучения');
       return;
     }
 
@@ -3538,7 +3538,7 @@ function renderStats() {
         : uniqueQaData;
 
       if (!questions || questions.length === 0) {
-        alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ');
+        alert('Нет вопросов для изучения');
         return;
       }
 
@@ -3558,8 +3558,8 @@ function renderStats() {
     authBtnSetup.addEventListener('click', () => {
       const user = window.qaAuth && window.qaAuth.getUser ? window.qaAuth.getUser() : null;
       if (user) {
-        const username = user.username || user.email || 'РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ';
-        if (confirm(`Р’С‹Р№С‚Рё РёР· Р°РєРєР°СѓРЅС‚Р° ${username}?`)) {
+        const username = user.username || user.email || 'пользователь';
+        if (confirm(`Выйти из аккаунта ${username}?`)) {
           if (window.qaAuth.logout) window.qaAuth.logout();
           renderStats();
         }
@@ -3567,7 +3567,7 @@ function renderStats() {
         if (window.qaAuth && typeof window.qaAuth.openLogin === 'function') {
           window.qaAuth.openLogin();
         } else {
-          alert('РћРєРЅРѕ РІС…РѕРґР° РЅРµРґРѕСЃС‚СѓРїРЅРѕ');
+          alert('Окно входа недоступно');
         }
       }
     });
@@ -3580,7 +3580,7 @@ function renderStats() {
   if (learnMainBtn) {
     learnMainBtn.addEventListener('click', () => {
       const qs = (window.currentQuestions && window.currentQuestions.length > 0) ? window.currentQuestions : uniqueQaData;
-      if (!qs || qs.length === 0) { alert('РќРµС‚ РІРѕРїСЂРѕСЃРѕРІ РґР»СЏ РёР·СѓС‡РµРЅРёСЏ'); return; }
+      if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
       hideStatsPage();
       startLearnSession(qs);
       const mainNav = document.getElementById('bottom-nav');
@@ -3593,7 +3593,7 @@ function renderStats() {
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
 
-  // Р РµРЅРґРµСЂРёРј РїСЂРѕРіСЂРµСЃСЃ РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј
+  // Рендерим прогресс по категориям
   renderCategoryProgress();
 
   if (chartEl) {
@@ -3616,7 +3616,7 @@ function renderStats() {
         : [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]);
 
     const now = new Date();
-    const monthNames = ['РЇРЅРІР°СЂСЊ', 'Р¤РµРІСЂР°Р»СЊ', 'РњР°СЂС‚', 'РђРїСЂРµР»СЊ', 'РњР°Р№', 'РСЋРЅСЊ', 'РСЋР»СЊ', 'РђРІРіСѓСЃС‚', 'РЎРµРЅС‚СЏР±СЂСЊ', 'РћРєС‚СЏР±СЂСЊ', 'РќРѕСЏР±СЂСЊ', 'Р”РµРєР°Р±СЂСЊ'];
+    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
     monthLabel.textContent = mName;
     const cfg = currentXpMode === 'week' ? { bar: 18, gap: 8, count: 14, labelStep: 2 }
@@ -3647,12 +3647,12 @@ function renderStats() {
     const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
     const redDark = '#8B0000'; const redBright = '#FF3B3B';
     const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
-    const baseBarHeight = 4; // РњРёРЅРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° Р±Р°СЂР° (РїРёРєСЃРµР»Рё) РґР»СЏ РїСѓСЃС‚С‹С… Р·РЅР°С‡РµРЅРёР№
+    const baseBarHeight = 4; // Минимальная высота бара (пиксели) для пустых значений
     data.forEach((d, idx) => {
       const labelOk = currentXpMode === 'year' ? true : (idx % cfg.labelStep === 0);
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
-      // РњРёРЅРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РґР»СЏ РІРёР·СѓР°Р»СЊРЅРѕРіРѕ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РїСѓСЃС‚С‹С… СЃР»РѕС‚РѕРІ
+      // Минимальная высота для визуального отображения пустых слотов
       const cardsH = cardsVal > 0
         ? Math.max(baseBarHeight, Math.min(innerH, (innerH / hcMax) * cardsVal))
         : baseBarHeight;
@@ -3660,7 +3660,7 @@ function renderStats() {
       const tCards = cardsVal > 0 ? Math.max(0, Math.min(1, cardsVal / hcMax)) : 0.15;
       const topOrange = lerpHex(orangeDark, orangeBright, tCards);
       defs.push(`<linearGradient id="go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`);
-      // РџСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃРѕ СЃРєСЂСѓРіР»РµРЅРёРµРј С‚РѕР»СЊРєРѕ СЃРІРµСЂС…Сѓ
+      // Прямоугольник со скруглением только сверху
       const rWide = Math.round(wideBarW / 2);
       const pathCards = `M ${x} ${topPad + innerH} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + wideBarW} ${yCards + rWide} L ${x + wideBarW} ${topPad + innerH} Z`;
       bars.push(`<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#go${idx})" opacity="${cardsVal > 0 ? '0.9' : '0.3'}"/>`);
@@ -3693,8 +3693,8 @@ function renderStats() {
       const hearts = tgt.getAttribute('data-hearts');
       const cards = tgt.getAttribute('data-cards');
       const type = tgt.getAttribute('data-type');
-      const typeLabel = type === 'hearts' ? 'РЎРµСЂРґРµС‡РєРё (РєСЂР°СЃРЅС‹Р№)' : 'РљР°СЂС‚РѕС‡РєРё (РѕСЂР°РЅР¶РµРІС‹Р№)';
-      tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>вќ¤пёЏ: ${hearts}</div><div>рџ“љ: ${cards}</div><div class="tip-arrow"></div>`;
+      const typeLabel = type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (оранжевый)';
+      tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
       tip.style.display = 'block';
       const bb = tgt.getBoundingClientRect();
       tip.style.left = Math.round(bb.left + window.scrollX + (bb.width / 2) + 12) + 'px';
@@ -3719,7 +3719,7 @@ function renderXpChart(data) {
     const xpH = Math.max(xpHRaw, d.xp > 0 ? 2 : 0);
     const heartsH = Math.min(Math.max(heartsHRaw, 0), Math.max(0, 100 - xpHRaw));
     return `
-      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, вќ¤ ${(d.hearts || 0)}">
+      <div class="st-xp-col ${d.isToday ? 'today' : ''}" title="${d.date}: ${d.xp} XP, ❤ ${(d.hearts || 0)}">
          <div class="st-bar-xp" style="height:${xpH}%"></div>
          <div class="st-bar-heart" style="height:${heartsH}%; bottom:${xpHRaw}%"></div>
          <div class="st-xp-label">${d.label}</div>
@@ -3747,14 +3747,14 @@ function renderImpChart(data) {
 }
 
 function renderHearts(dist, total) {
-  if (total === 0) return '<div class="st-hearts-bar" style="background:#333;justify-content:center;align-items:center;color:#666;font-size:12px">РќРµС‚ РґР°РЅРЅС‹С…</div>';
+  if (total === 0) return '<div class="st-hearts-bar" style="background:#333;justify-content:center;align-items:center;color:#666;font-size:12px">Нет данных</div>';
 
   const hearts = [
-    { val: 1, count: dist[1], icon: 'рџ’”' },
-    { val: 2, count: dist[2], icon: 'вќ¤пёЏ' },
-    { val: 3, count: dist[3], icon: 'рџ§Ў' },
-    { val: 4, count: dist[4], icon: 'рџ’›' },
-    { val: 5, count: dist[5], icon: 'рџ’љ' }
+    { val: 1, count: dist[1], icon: '💔' },
+    { val: 2, count: dist[2], icon: '❤️' },
+    { val: 3, count: dist[3], icon: '🧡' },
+    { val: 4, count: dist[4], icon: '💛' },
+    { val: 5, count: dist[5], icon: '💚' }
   ];
 
   return `
@@ -3762,7 +3762,7 @@ function renderHearts(dist, total) {
        ${hearts.map(h => {
     const pct = (h.count / total) * 100;
     if (pct < 1) return '';
-    return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} РєР°СЂС‚"><span class="st-hb-icon">${h.icon}</span></div>`;
+    return `<div class="st-hb-seg" data-val="${h.val}" style="width:${pct}%" title="${h.count} карт"><span class="st-hb-icon">${h.icon}</span></div>`;
   }).join('')}
     </div>
   `;
@@ -3780,29 +3780,29 @@ window.openDiffInfoModal = (event) => {
   overlay.innerHTML = `
      <div class="st-modal" style="max-width:600px;">
         <div class="st-modal-header">
-           <div class="st-modal-title">рџ’– РўСЂРµРЅР°Р¶С‘СЂ СЃРµСЂРґРµС‡РµРє</div>
-           <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+           <div class="st-modal-title">💖 Тренажёр сердечек</div>
+           <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
         </div>
         <div class="st-modal-body" style="padding:16px;">
            <div id="sim-hearts" style="display:flex;justify-content:center;gap:4px;margin-bottom:12px;"></div>
            <div style="text-align:center;margin-bottom:16px;">
-              <div style="font-size:20px;font-weight:700;color:#fff;"><span id="sim-value">3.00</span> / 5 вќ¤пёЏ</div>
-              <div style="font-size:13px;color:var(--st-text-sec);">РЈСЂРѕРІРµРЅСЊ: <span id="sim-level">РЎС‚Р°РЅРґР°СЂС‚</span></div>
+              <div style="font-size:20px;font-weight:700;color:#fff;"><span id="sim-value">3.00</span> / 5 ❤️</div>
+              <div style="font-size:13px;color:var(--st-text-sec);">Уровень: <span id="sim-level">Стандарт</span></div>
            </div>
            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
-              <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџ«</div><div style="font-size:11px;">РЎРЅРѕРІР°</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
-              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџ¤”</div><div style="font-size:11px;">РўСЂСѓРґРЅРѕ</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
-              <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџЉ</div><div style="font-size:11px;">РҐРѕСЂРѕС€Рѕ</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
-              <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">рџљЂ</div><div style="font-size:11px;">Р›РµРіРєРѕ</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
+              <button onclick="simClick(0)" style="background:#E5533D;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😫</div><div style="font-size:11px;">Снова</div><div style="font-size:10px;opacity:0.8;">-0.25</div></button>
+              <button onclick="simClick(1)" style="background:#FF9F1C;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">🤔</div><div style="font-size:11px;">Трудно</div><div style="font-size:10px;opacity:0.8;">-0.15</div></button>
+              <button onclick="simClick(2)" style="background:#2EC4B6;color:#000;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">😊</div><div style="font-size:11px;">Хорошо</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
+              <button onclick="simClick(3)" style="background:#4CAF50;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;"><div style="font-size:20px;">🚀</div><div style="font-size:11px;">Легко</div><div style="font-size:10px;opacity:0.8;">+0.05</div></button>
            </div>
-           <button onclick="simReset()" style="width:100%;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--st-border);padding:10px;border-radius:8px;cursor:pointer;">рџ”„ РЎР±СЂРѕСЃРёС‚СЊ</button>
+           <button onclick="simReset()" style="width:100%;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--st-border);padding:10px;border-radius:8px;cursor:pointer;">🔄 Сбросить</button>
            <div id="sim-msg" style="margin-top:12px;font-size:13px;color:var(--st-text-sec);text-align:center;min-height:18px;"></div>
         </div>
      </div>
    `;
   document.body.appendChild(overlay);
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ ESC
+  // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
 
@@ -3810,21 +3810,21 @@ window.openDiffInfoModal = (event) => {
   window.simClick = (action) => { const changes = [-0.25, -0.15, +0.05, +0.05]; window.simValue = Math.max(0, Math.min(5, window.simValue + changes[action])); updateSim(); };
   window.simReset = () => { window.simValue = 3.0; updateSim(); };
   function createHeart(id, fillPercent) { return '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" style="display:inline-block;"><defs><linearGradient id="' + id + '"><stop offset="' + fillPercent + '%" stop-color="#ff4d4d"/><stop offset="' + fillPercent + '%" stop-color="#444"/></linearGradient></defs><path fill="url(#' + id + ')" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'; }
-  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ', 'РўСЂСѓРґРЅС‹Рµ', 'РЎС‚Р°РЅРґР°СЂС‚', 'РЎС‚Р°РЅРґР°СЂС‚', 'Р›РµРіРєРёРµ']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = 'вљ пёЏ 0 СЃРµСЂРґРµС‡РµРє вЂ” РЅР°С‡РЅРёС‚Рµ Р·Р°РЅРѕРІРѕ!'; else if (v >= 5) msg.textContent = 'рџЋ‰ 5 СЃРµСЂРґРµС‡РµРє вЂ” РєР°СЂС‚РѕС‡РєР° РІ РїР°РјСЏС‚Рё!'; else msg.textContent = ''; }
+  function updateSim() { const v = window.simValue; document.getElementById('sim-value').textContent = v.toFixed(2); const full = Math.floor(v); const partial = v - full; const heartsContainer = document.getElementById('sim-hearts'); let html = ''; for (let i = 1; i <= 5; i++) { const fillPercent = i <= full ? 100 : (i === full + 1 ? Math.round(partial * 100) : 0); html += createHeart('sim-grad-' + i, fillPercent); } heartsContainer.innerHTML = html; const levels = ['Очень трудные', 'Трудные', 'Стандарт', 'Стандарт', 'Легкие']; const levelIdx = v < 1 ? 0 : v < 2 ? 1 : v < 3 ? 2 : v < 4 ? 3 : 4; document.getElementById('sim-level').textContent = levels[levelIdx]; const msg = document.getElementById('sim-msg'); if (v <= 0) msg.textContent = '⚠️ 0 сердечек — начните заново!'; else if (v >= 5) msg.textContent = '🎉 5 сердечек — карточка в памяти!'; else msg.textContent = ''; }
   updateSim();
 };
 
-// РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃ РѕР±СЉСЏСЃРЅРµРЅРёРµРј СЃС‚Р°С‚РёСЃС‚РёРєРё
+// Модальное окно с объяснением статистики
 
 // ============================================
-// DEBUG Р¤РЈРќРљР¦РРЇ Р”Р›РЇ РњРћР‘РР›Р¬РќРћР™ Р’РЃР РЎРўРљР
+// DEBUG ФУНКЦИЯ ДЛЯ МОБИЛЬНОЙ ВЁРСТКИ
 // ============================================
 
-// РџРѕРєР°Р·Р°С‚СЊ РѕРїРёСЃР°РЅРёРµ РґРѕСЃС‚РёР¶РµРЅРёСЏ (toast)
+// Показать описание достижения (toast)
 window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   if (!desc) return;
 
-  // РЈРґР°Р»СЏРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ toast РµСЃР»Рё РµСЃС‚СЊ
+  // Удаляем существующий toast если есть
   const existing = document.getElementById('ach-toast');
   if (existing) existing.remove();
 
@@ -3846,12 +3846,12 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     animation:toastFadeIn 0.3s ease;
   `;
   toast.innerHTML = `
-    <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? 'вњ… ' : 'рџ”’ '}${title}</div>
+    <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
     <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:6px;">${desc}</div>
-    <div style="font-size:10px;color:var(--st-muted);">РџСЂРѕРіСЂРµСЃСЃ: <strong style="color:#fff;">${progress}</strong></div>
+    <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
   `;
 
-  // Р”РѕР±Р°РІР»СЏРµРј СЃС‚РёР»Рё РґР»СЏ Р°РЅРёРјР°С†РёРё
+  // Добавляем стили для анимации
   if (!document.getElementById('toast-styles')) {
     const style = document.createElement('style');
     style.id = 'toast-styles';
@@ -3870,10 +3870,10 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
 
   document.body.appendChild(toast);
 
-  // РђРІС‚РѕР·Р°РєСЂС‹С‚РёРµ С‡РµСЂРµР· 4 СЃРµРєСѓРЅРґС‹
+  // Автозакрытие через 4 секунды
   let closeTimeout = setTimeout(() => closeToast(), 4000);
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ РєР»РёРєСѓ РІ Р»СЋР±РѕРј РјРµСЃС‚Рµ (РєСЂРѕРјРµ СЃР°РјРѕРіРѕ toast)
+  // Закрытие по клику в любом месте (кроме самого toast)
   const closeToast = () => {
     if (toast && toast.parentNode) {
       toast.style.animation = 'toastFadeOut 0.3s ease';
@@ -3887,14 +3887,14 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   };
 
   const handleClick = (e) => {
-    // РќРµ Р·Р°РєСЂС‹РІР°РµРј РµСЃР»Рё РєР»РёРє РїРѕ toast
+    // Не закрываем если клик по toast
     if (toast.contains(e.target)) {
       return;
     }
     closeToast();
   };
 
-  // Р”РѕР±Р°РІР»СЏРµРј РѕР±СЂР°Р±РѕС‚С‡РёРє СЃ Р·Р°РґРµСЂР¶РєРѕР№ 100РјСЃ С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ РѕС‚ РєР»РёРєР° РїРѕ РёРєРѕРЅРєРµ
+  // Добавляем обработчик с задержкой 100мс чтобы избежать срабатывания от клика по иконке
   setTimeout(() => {
     document.addEventListener('click', handleClick);
     document.addEventListener('touchstart', handleClick);
@@ -3908,20 +3908,20 @@ window.openStatsInfoModal = (event) => {
   overlay.innerHTML = `
     <div class="st-modal" style="max-width:700px;">
       <div class="st-modal-header">
-        <div class="st-modal-title">рџ“Љ РљР°Рє СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚СЃСЏ СЃС‚Р°С‚РёСЃС‚РёРєР°?</div>
-        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+        <div class="st-modal-title">📊 Как рассчитывается статистика?</div>
+        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
       </div>
       <div class="st-modal-body" style="padding:20px;">
 
-        <!-- РџСЂРѕРіСЂРµСЃСЃ -->
+        <!-- Прогресс -->
         <div style="margin-bottom:24px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">рџ“Љ</span>
-            <h3 style="margin:0;font-size:16px;color:#fff;">РџСЂРѕРіСЂРµСЃСЃ</h3>
+            <span style="font-size:24px;">📊</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">Прогресс</h3>
           </div>
           <div style="background:rgba(229,83,61,0.1);border-left:3px solid #E5533D;padding:12px;border-radius:8px;">
             <p style="margin:0 0 12px 0;font-size:14px;color:var(--st-text);">
-              РџРѕРєР°Р·С‹РІР°РµС‚, РЅР°СЃРєРѕР»СЊРєРѕ С…РѕСЂРѕС€Рѕ РјР°С‚РµСЂРёР°Р» СѓСЃРІРѕРµРЅ (РѕС‚ 0% РґРѕ 100%).
+              Показывает, насколько хорошо материал усвоен (от 0% до 100%).
             </p>
             <div style="background:linear-gradient(90deg,#E5533D 0%,#FF9F1C 50%,#4CAF50 100%);height:24px;border-radius:12px;position:relative;margin-bottom:10px;">
               <div style="position:absolute;left:0%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">0%</div>
@@ -3931,48 +3931,48 @@ window.openStatsInfoModal = (event) => {
               <div style="position:absolute;left:100%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">100%</div>
             </div>
             <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center;font-size:10px;color:var(--st-text-sec);">
-              <div>рџ’”<br>1вќ¤пёЏ</div>
-              <div>вќ¤пёЏ<br>2вќ¤пёЏ</div>
-              <div>рџ§Ў<br>3вќ¤пёЏ</div>
-              <div>рџ’›<br>4вќ¤пёЏ</div>
-              <div>рџ’љ<br>5вќ¤пёЏ</div>
+              <div>💔<br>1❤️</div>
+              <div>❤️<br>2❤️</div>
+              <div>🧡<br>3❤️</div>
+              <div>💛<br>4❤️</div>
+              <div>💚<br>5❤️</div>
             </div>
             <p style="margin:10px 0 0 0;font-size:12px;color:var(--st-text-sec);">
-              РљР°Р¶РґР°СЏ РєР°СЂС‚РѕС‡РєР° РёРјРµРµС‚ РѕС‚ 1 РґРѕ 5 СЃРµСЂРґРµС‡РµРє. РџСЂРѕРіСЂРµСЃСЃ СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚СЃСЏ РєР°Рє СЃСЂРµРґРЅРёР№ РїСЂРѕС†РµРЅС‚ Р·Р°РїРѕР»РЅРµРЅРЅРѕСЃС‚Рё РІСЃРµС… СЃРµСЂРґРµС‡РµРє.
+              Каждая карточка имеет от 1 до 5 сердечек. Прогресс рассчитывается как средний процент заполненности всех сердечек.
             </p>
           </div>
         </div>
         
-        <!-- РЎРµРіРѕРґРЅСЏ -->
+        <!-- Сегодня -->
         <div style="margin-bottom:24px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">вЏ±пёЏ</span>
-            <h3 style="margin:0;font-size:16px;color:#fff;">РџР»Р°РЅ РЅР° СЃРµРіРѕРґРЅСЏ</h3>
+            <span style="font-size:24px;">⏱️</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">План на сегодня</h3>
           </div>
           <div style="background:rgba(46,196,182,0.1);border-left:3px solid var(--st-sec);padding:12px;border-radius:8px;">
             <p style="margin:0 0 10px 0;font-size:14px;color:var(--st-text);">
-              РЎРёСЃС‚РµРјР° СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°СЂС‚РѕС‡РµРє РґР»СЏ РїРѕРІС‚РѕСЂРµРЅРёСЏ РЅР° РѕСЃРЅРѕРІРµ Р°Р»РіРѕСЂРёС‚РјР° РёРЅС‚РµСЂРІР°Р»СЊРЅС‹С… РїРѕРІС‚РѕСЂРµРЅРёР№:
+              Система рассчитывает количество карточек для повторения на основе алгоритма интервальных повторений:
             </p>
             <ul style="margin:0;padding-left:20px;font-size:13px;color:var(--st-text-sec);line-height:1.6;">
-              <li>РљР°СЂС‚РѕС‡РєРё, РєРѕС‚РѕСЂС‹Рµ РїРѕСЂР° РїРѕРІС‚РѕСЂРёС‚СЊ СЃРµРіРѕРґРЅСЏ</li>
-              <li>РќРѕРІС‹Рµ РєР°СЂС‚РѕС‡РєРё РґР»СЏ РёР·СѓС‡РµРЅРёСЏ</li>
-              <li>Р’СЂРµРјСЏ СЂР°СЃСЃС‡РёС‚С‹РІР°РµС‚СЃСЏ РєР°Рє <strong style="color:#fff;">~1.5 РјРёРЅСѓС‚С‹ РЅР° РєР°СЂС‚РѕС‡РєСѓ</strong></li>
+              <li>Карточки, которые пора повторить сегодня</li>
+              <li>Новые карточки для изучения</li>
+              <li>Время рассчитывается как <strong style="color:#fff;">~1.5 минуты на карточку</strong></li>
             </ul>
           </div>
         </div>
         
-        <!-- РџСЂРѕРіРЅРѕР· -->
+        <!-- Прогноз -->
         <div style="margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">рџ“…</span>
-            <h3 style="margin:0;font-size:16px;color:#fff;">РџСЂРѕРіРЅРѕР· Р·Р°РІРµСЂС€РµРЅРёСЏ</h3>
+            <span style="font-size:24px;">📅</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">Прогноз завершения</h3>
           </div>
           <div style="background:rgba(155,163,175,0.1);border-left:3px solid var(--st-muted);padding:12px;border-radius:8px;">
             <p style="margin:0;font-size:14px;color:var(--st-text);">
-              Р”Р°С‚Р°, РєРѕРіРґР° РІСЃРµ РєР°СЂС‚РѕС‡РєРё Р±СѓРґСѓС‚ РёР·СѓС‡РµРЅС‹ Рё РґРѕРІРµРґРµРЅС‹ РґРѕ СѓСЂРѕРІРЅСЏ "Р›РµРіРєРѕ".
+              Дата, когда все карточки будут изучены и доведены до уровня "Легко".
             </p>
             <p style="margin:8px 0 0 0;font-size:12px;color:var(--st-text-sec);">
-              Р Р°СЃСЃС‡РёС‚С‹РІР°РµС‚СЃСЏ РЅР° РѕСЃРЅРѕРІРµ РІР°С€РµР№ С‚РµРєСѓС‰РµР№ СЃРєРѕСЂРѕСЃС‚Рё РѕР±СѓС‡РµРЅРёСЏ (РІ СЃСЂРµРґРЅРµРј 12 РєР°СЂС‚РѕС‡РµРє РІ РґРµРЅСЊ).
+              Рассчитывается на основе вашей текущей скорости обучения (в среднем 12 карточек в день).
             </p>
           </div>
         </div>
@@ -3982,37 +3982,37 @@ window.openStatsInfoModal = (event) => {
   `;
   document.body.appendChild(overlay);
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ ESC
+  // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
 };
 
-// РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃ РёРЅС„РѕСЂРјР°С†РёРµР№ РѕР± СѓСЂРѕРІРЅСЏС… Рё XP
+// Модальное окно с информацией об уровнях и XP
 window.openLevelInfoModal = () => {
   console.log('========================================');
-  console.log('[OPENLEVELINFOMODAL] Р¤СѓРЅРєС†РёСЏ РІС‹Р·РІР°РЅР°!');
+  console.log('[OPENLEVELINFOMODAL] Функция вызвана!');
   console.log('[OPENLEVELINFOMODAL] Timestamp:', new Date().toISOString());
   console.log('[OPENLEVELINFOMODAL] location.hash:', location.hash);
   console.log('[OPENLEVELINFOMODAL] document.querySelector(".app-wrapper"):', document.querySelector('.app-wrapper'));
   console.log('[OPENLEVELINFOMODAL] document.querySelector(".sidebar"):', document.querySelector('.sidebar'));
   console.log('[OPENLEVELINFOMODAL] document.querySelector(".container"):', document.querySelector('.container'));
 
-  // РџСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё СЃС‚РёР»Рё STATS_STYLES РІ DOM
+  // Проверяем есть ли стили STATS_STYLES в DOM
   const stylesInDom = document.querySelector('style');
-  console.log('[OPENLEVELINFOMODAL] РџРµСЂРІС‹Р№ style СЌР»РµРјРµРЅС‚:', stylesInDom);
-  console.log('[OPENLEVELINFOMODAL] stylesInDom.textContent (РїРµСЂРІС‹Рµ 200 СЃРёРјРІРѕР»РѕРІ):', stylesInDom?.textContent?.substring(0, 200));
+  console.log('[OPENLEVELINFOMODAL] Первый style элемент:', stylesInDom);
+  console.log('[OPENLEVELINFOMODAL] stylesInDom.textContent (первые 200 символов):', stylesInDom?.textContent?.substring(0, 200));
 
-  // Р”РћР‘РђР’Р›РЇР•Рњ РЎРўРР›Р Р•РЎР›Р РРҐ РќР•Рў
+  // ДОБАВЛЯЕМ СТИЛИ ЕСЛИ ИХ НЕТ
   let styleEl = document.getElementById('stats-modal-styles');
   if (!styleEl) {
-    console.log('[OPENLEVELINFOMODAL] РЎС‚РёР»Рё РЅРµ РЅР°Р№РґРµРЅС‹, РґРѕР±Р°РІР»СЏРµРј STATS_STYLES...');
+    console.log('[OPENLEVELINFOMODAL] Стили не найдены, добавляем STATS_STYLES...');
     styleEl = document.createElement('style');
     styleEl.id = 'stats-modal-styles';
     styleEl.textContent = STATS_STYLES;
     document.head.appendChild(styleEl);
-    console.log('[OPENLEVELINFOMODAL] РЎС‚РёР»Рё РґРѕР±Р°РІР»РµРЅС‹!');
+    console.log('[OPENLEVELINFOMODAL] Стили добавлены!');
   } else {
-    console.log('[OPENLEVELINFOMODAL] РЎС‚РёР»Рё СѓР¶Рµ РµСЃС‚СЊ РІ DOM');
+    console.log('[OPENLEVELINFOMODAL] Стили уже есть в DOM');
   }
 
   const levelInfo = getCurrentLevel();
@@ -4022,7 +4022,7 @@ window.openLevelInfoModal = () => {
   const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
   const studiedCount = Object.values(getProgressMap()).filter(p => p.lastReviewed).length;
 
-  // Р“РµРЅРµСЂРёСЂСѓРµРј РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ СЃРєСЂРѕР»Р» СѓСЂРѕРІРЅРµР№ 1-20
+  // Генерируем горизонтальный скролл уровней 1-20
   let levelsHorizontal = '';
   for (let lvl = 1; lvl <= 20; lvl++) {
     const prevXP = lvl === 1 ? 0 : Math.ceil(625 * Math.pow(lvl - 1, 2));
@@ -4031,7 +4031,7 @@ window.openLevelInfoModal = () => {
     const isPassed = lvl < levelInfo.level;
     const needed = nextXP - levelInfo.xp;
     const progress = levelInfo.xp >= nextXP ? 100 : levelInfo.xp <= prevXP ? 0 : Math.round(((levelInfo.xp - prevXP) / (nextXP - prevXP)) * 100);
-    const icon = isPassed ? 'вњ…' : isCurrent ? 'рџ‘‘' : 'рџ”’';
+    const icon = isPassed ? '✅' : isCurrent ? '👑' : '🔒';
 
     levelsHorizontal += `
       <div class="level-card${isCurrent ? ' current' : ''}" data-level="${lvl}">
@@ -4039,8 +4039,8 @@ window.openLevelInfoModal = () => {
           <div class="level-num">${lvl}</div>
           <div class="level-icon">${icon}</div>
         </div>
-        <div class="level-range">${prevXP.toLocaleString()} в†’ ${nextXP.toLocaleString()} XP</div>
-        <div class="progress-label">${isPassed ? 'РџСЂРѕР№РґРµРЅРѕ' : isCurrent ? `${needed.toLocaleString()} XP РґРѕ ${lvl + 1}` : 'Р—Р°РєСЂС‹С‚Рѕ'}</div>
+        <div class="level-range">${prevXP.toLocaleString()} → ${nextXP.toLocaleString()} XP</div>
+        <div class="progress-label">${isPassed ? 'Пройдено' : isCurrent ? `${needed.toLocaleString()} XP до ${lvl + 1}` : 'Закрыто'}</div>
         <div class="progress-bar">
           <div class="progress-fill" style="width:${isPassed ? '100%' : progress}%;background:${isPassed ? '#4CAF50' : 'linear-gradient(90deg,#FF9F1C,#FFB142)'}"></div>
         </div>
@@ -4050,7 +4050,7 @@ window.openLevelInfoModal = () => {
 
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
-  // РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅС‹Рµ СЃС‚РёР»Рё РґР»СЏ overlay
+  // Принудительные стили для overlay
   overlay.style.position = 'fixed';
   overlay.style.top = '0';
   overlay.style.left = '0';
@@ -4064,26 +4064,26 @@ window.openLevelInfoModal = () => {
   overlay.innerHTML = `
     <div class="st-modal" style="max-width:900px;max-height:75vh;overflow:hidden;display:flex;flex-direction:column;">
       <div class="st-modal-header" style="flex-shrink:0;">
-        <div class="st-modal-title">рџЋЇ РЈСЂРѕРІРЅРё Рё РѕРїС‹С‚</div>
-        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+        <div class="st-modal-title">🎯 Уровни и опыт</div>
+        <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
       </div>
       <div class="st-modal-body" style="padding:20px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0;">
 
-        <!-- Р’Р•Р РҐРќРЇРЇ РЎР•РљР¦РРЇ: 3 Р±Р»РѕРєР° РІ СЂСЏРґ -->
+        <!-- ВЕРХНЯЯ СЕКЦИЯ: 3 блока в ряд -->
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;flex-shrink:0;">
           
-          <!-- Р‘Р»РѕРє 1: РўРµРєСѓС‰РёР№ СѓСЂРѕРІРµРЅСЊ -->
+          <!-- Блок 1: Текущий уровень -->
           <div class="card current-level-card" style="background:linear-gradient(135deg,rgba(255,159,28,0.2) 0%,rgba(255,159,28,0.05) 100%);border:2px solid var(--st-prim);border-radius:12px;padding:14px;">
             <div class="level-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-              <div class="level-badge" style="font-size:24px;font-weight:800;color:var(--st-prim);">РЈСЂРѕРІРµРЅСЊ ${levelInfo.level}</div>
+              <div class="level-badge" style="font-size:24px;font-weight:800;color:var(--st-prim);">Уровень ${levelInfo.level}</div>
               <div class="xp-display" style="text-align:right;">
-                <div class="xp-label" style="font-size:10px;color:var(--st-text-sec);">Р’СЃРµРіРѕ XP</div>
+                <div class="xp-label" style="font-size:10px;color:var(--st-text-sec);">Всего XP</div>
                 <div class="xp-value" style="font-size:20px;font-weight:700;">${levelInfo.xp.toLocaleString()}</div>
               </div>
             </div>
             <div class="progress-wrap" style="margin-bottom:12px;">
               <div class="progress-info" style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;color:var(--st-text-sec);">
-                <span>РџСЂРѕРіСЂРµСЃСЃ РґРѕ СѓСЂРѕРІРЅСЏ ${levelInfo.level + 1}</span>
+                <span>Прогресс до уровня ${levelInfo.level + 1}</span>
                 <span style="color:var(--st-prim);font-weight:700;">${Math.round(levelInfo.progress * 100)}%</span>
               </div>
               <div class="progress-bg" style="height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;">
@@ -4092,101 +4092,101 @@ window.openLevelInfoModal = () => {
             </div>
             <div class="level-stats" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);">
               <div class="stat-box" style="text-align:center;">
-                <div class="stat-box-label" style="font-size:9px;color:var(--st-text-sec);text-transform:uppercase;margin-bottom:4px;">РћСЃС‚Р°Р»РѕСЃСЊ XP</div>
+                <div class="stat-box-label" style="font-size:9px;color:var(--st-text-sec);text-transform:uppercase;margin-bottom:4px;">Осталось XP</div>
                 <div class="stat-box-value" style="font-size:14px;font-weight:700;color:var(--st-prim);">${levelInfo.remaining.toLocaleString()}</div>
               </div>
               <div class="stat-box" style="text-align:center;">
-                <div class="stat-box-label" style="font-size:9px;color:var(--st-text-sec);text-transform:uppercase;margin-bottom:4px;">РЎР»РµРґ. СѓСЂРѕРІРµРЅСЊ</div>
+                <div class="stat-box-label" style="font-size:9px;color:var(--st-text-sec);text-transform:uppercase;margin-bottom:4px;">След. уровень</div>
                 <div class="stat-box-value" style="font-size:14px;font-weight:700;color:var(--st-prim);">${levelInfo.nextThreshold.toLocaleString()}</div>
               </div>
             </div>
           </div>
 
-          <!-- Р‘Р»РѕРє 2: РСЃС‚РѕС‡РЅРёРєРё XP -->
+          <!-- Блок 2: Источники XP -->
           <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;">
             <div class="card-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-              <span>вљЎ</span> РљР°Рє РїРѕР»СѓС‡РёС‚СЊ XP
+              <span>⚡</span> Как получить XP
             </div>
             <div class="xp-sources-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid var(--st-sec);">
-                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">рџ“љ</div>
-                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">РР·СѓС‡РµРЅРёРµ</div>
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">📚</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Изучение</div>
                 <div class="xp-source-value" style="font-size:11px;font-weight:600;">+10 XP</div>
               </div>
               <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid var(--st-danger);">
-                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">вќ¤пёЏ</div>
-                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">РЎРµСЂРґРµС‡РєРё</div>
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">❤️</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Сердечки</div>
                 <div class="xp-source-value" style="font-size:11px;font-weight:600;">+1-5 XP</div>
               </div>
               <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid var(--st-prim);">
-                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">рџ”Ґ</div>
-                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">РЎРµСЂРёСЏ</div>
-                <div class="xp-source-value" style="font-size:11px;font-weight:600;">Р‘РѕРЅСѓСЃ</div>
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">🔥</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Серия</div>
+                <div class="xp-source-value" style="font-size:11px;font-weight:600;">Бонус</div>
               </div>
               <div class="xp-source" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;border-left:3px solid #A855F7;">
-                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">рџЋЇ</div>
-                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">РўРѕС‡РЅРѕСЃС‚СЊ</div>
-                <div class="xp-source-value" style="font-size:11px;font-weight:600;">% Р±РѕРЅСѓСЃ</div>
+                <div class="xp-source-icon" style="font-size:18px;margin-bottom:4px;">🎯</div>
+                <div class="xp-source-label" style="font-size:10px;color:var(--st-text-sec);margin-bottom:2px;">Точность</div>
+                <div class="xp-source-value" style="font-size:11px;font-weight:600;">% бонус</div>
               </div>
             </div>
           </div>
 
-          <!-- Р‘Р»РѕРє 3: РЎС‚Р°С‚РёСЃС‚РёРєР° -->
+          <!-- Блок 3: Статистика -->
           <div class="card" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;">
             <div class="card-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-              <span>рџ“Љ</span> РЎС‚Р°С‚РёСЃС‚РёРєР°
+              <span>📊</span> Статистика
             </div>
             <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
-                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">рџ“љ</div>
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">📚</div>
                 <div class="stat-value" style="font-size:16px;font-weight:700;">${studiedCount}</div>
-                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">РР·РІС‡РµРЅРѕ</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Извчено</div>
               </div>
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
-                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">рџЋЇ</div>
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🎯</div>
                 <div class="stat-value" style="font-size:16px;font-weight:700;">${accuracy}%</div>
-                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">РўРѕС‡РЅРѕСЃС‚СЊ</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Точность</div>
               </div>
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
-                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">рџ”Ґ</div>
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🔥</div>
                 <div class="stat-value" style="font-size:16px;font-weight:700;">${streak.current || 0}</div>
-                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">РЎРµСЂРёСЏ</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Серия</div>
               </div>
               <div class="stat-item" style="background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;text-align:center;">
-                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">рџЏ†</div>
+                <div class="stat-icon" style="font-size:18px;margin-bottom:4px;">🏆</div>
                 <div class="stat-value" style="font-size:16px;font-weight:700;color:var(--st-prim);">${streak.best || 0}</div>
-                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Р›СѓС‡С€Р°СЏ</div>
+                <div class="stat-label" style="font-size:9px;color:var(--st-text-sec);margin-top:2px;">Лучшая</div>
               </div>
             </div>
           </div>
 
         </div>
 
-        <!-- РќРР–РќРЇРЇ РЎР•РљР¦РРЇ: РЈСЂРѕРІРЅРё 1-20 -->
+        <!-- НИЖНЯЯ СЕКЦИЯ: Уровни 1-20 -->
         <div style="flex:1;min-height:0;display:flex;flex-direction:column;">
           <div class="levels-section" style="background:rgba(255,255,255,0.03);border:1px solid var(--st-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;flex:1;min-height:0;">
             <div class="levels-title" style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-              <span>рџЏ†</span> РЈСЂРѕРІРЅРё 1-20
+              <span>🏆</span> Уровни 1-20
             </div>
             <div class="levels-horizontal" id="levelsScroll" style="display:flex;gap:8px;overflow-x:auto;padding:8px 4px;scroll-behavior:smooth;flex:1;min-height:0;">
               ${levelsHorizontal}
             </div>
             <div class="levels-nav" style="display:flex;gap:8px;margin-top:8px;flex-shrink:0;">
-              <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:-200,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">в†ђ РќР°Р·Р°Рґ</button>
-              <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:200,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">Р’РїРµСЂРµРґ в†’</button>
+              <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:-200,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">← Назад</button>
+              <button class="levels-nav-btn" onclick="document.getElementById('levelsScroll').scrollBy({left:200,behavior:'smooth'})" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--st-border);color:var(--st-text);padding:8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">Вперед →</button>
             </div>
           </div>
         </div>
 
-        <!-- РљРЅРѕРїРєР° -->
-        <button onclick="document.querySelector('.st-modal-overlay')?.remove();window.startDailySession()" class="start-btn" style="background:var(--st-prim);color:#000;border:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:12px;flex-shrink:0;">в–¶ РќР°С‡Р°С‚СЊ СѓС‡РёС‚СЊСЃСЏ</button>
+        <!-- Кнопка -->
+        <button onclick="document.querySelector('.st-modal-overlay')?.remove();window.startDailySession()" class="start-btn" style="background:var(--st-prim);color:#000;border:none;padding:12px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:12px;flex-shrink:0;">▶ Начать учиться</button>
 
       </div>
     </div>
   `;
   document.body.appendChild(overlay);
 
-  console.log('[OPENLEVELINFOMODAL] РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃРѕР·РґР°РЅРѕ Рё РґРѕР±Р°РІР»РµРЅРѕ РІ DOM!');
+  console.log('[OPENLEVELINFOMODAL] Модальное окно создано и добавлено в DOM!');
   console.log('[OPENLEVELINFOMODAL] overlay element:', overlay);
   console.log('[OPENLEVELINFOMODAL] overlay.style:', overlay.style);
   console.log('[OPENLEVELINFOMODAL] overlay.className:', overlay.className);
@@ -4196,21 +4196,21 @@ window.openLevelInfoModal = () => {
   console.log('[OPENLEVELINFOMODAL] getComputedStyle(modal):', overlay.children[0] ? window.getComputedStyle(overlay.children[0]) : 'N/A');
   console.log('========================================');
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ ESC
+  // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
 };
 
 function getHeartsForEf(ef) {
-  if (ef === undefined || ef === null) return 'рџ†•'; // New cards
-  if (ef < 1.7) return 'вќ¤пёЏрџ¤Ќрџ¤Ќрџ¤Ќрџ¤Ќ';
-  if (ef < 2.1) return 'вќ¤пёЏвќ¤пёЏрџ¤Ќрџ¤Ќрџ¤Ќ';
-  if (ef < 2.4) return 'вќ¤пёЏвќ¤пёЏвќ¤пёЏрџ¤Ќрџ¤Ќ';
-  if (ef < 2.9) return 'вќ¤пёЏвќ¤пёЏвќ¤пёЏвќ¤пёЏрџ¤Ќ';
-  return 'вќ¤пёЏвќ¤пёЏвќ¤пёЏвќ¤пёЏвќ¤пёЏ';
+  if (ef === undefined || ef === null) return '🆕'; // New cards
+  if (ef < 1.7) return '❤️🤍🤍🤍🤍';
+  if (ef < 2.1) return '❤️❤️🤍🤍🤍';
+  if (ef < 2.4) return '❤️❤️❤️🤍🤍';
+  if (ef < 2.9) return '❤️❤️❤️❤️🤍';
+  return '❤️❤️❤️❤️❤️';
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° СЃРµСЂРґРµС‡РµРє РїРѕ EF (РґР»СЏ SVG)
+// Функция для получения количества сердечек по EF (для SVG)
 function getHeartsCountForEf(ef) {
   if (ef === undefined || ef === null) return 0;
   if (ef >= 2.4) return 5;      // EASY
@@ -4219,7 +4219,7 @@ function getHeartsCountForEf(ef) {
   return 1;                      // VERY HARD
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕС†РµРЅС‚Р° Р·Р°РїРѕР»РЅРµРЅРёСЏ РґР»СЏ РєР°Р¶РґРѕРіРѕ СЃРµСЂРґРµС‡РєР° (0-100%)
+// Функция для получения процента заполнения для каждого сердечка (0-100%)
 function getHeartFillPercentages(ef) {
   const fills = [];
   if (ef === undefined || ef === null) {
@@ -4252,10 +4252,10 @@ function getHeartFillPercentages(ef) {
   return fills;
 }
 
-// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РіРµРЅРµСЂР°С†РёРё SVG СЃРµСЂРґРµС‡РµРє СЃ РїР»Р°РІРЅС‹Рј РіСЂР°РґРёРµРЅС‚РѕРј
+// Функция для генерации SVG сердечек с плавным градиентом
 function renderHeartsSvg(fillPercentages, prefix) {
   let svg = '';
-  // Р•СЃР»Рё РїРµСЂРµРґР°РЅРѕ С‡РёСЃР»Рѕ (РґР»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё), РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ РјР°СЃСЃРёРІ
+  // Если передано число (для обратной совместимости), конвертируем в массив
   if (typeof fillPercentages === 'number') {
     const count = fillPercentages;
     fillPercentages = [];
@@ -4271,7 +4271,7 @@ function renderHeartsSvg(fillPercentages, prefix) {
   return svg;
 }
 
-// РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РґР»СЏ РіСЂР°С„РёРєР° Р°РєС‚РёРІРЅРѕСЃС‚Рё
+// Модальное окно для графика активности
 window.openChartModal = () => {
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
@@ -4280,16 +4280,16 @@ window.openChartModal = () => {
   overlay.innerHTML = `
     <div class="st-modal" style="max-width:80%;width:80%;height:80vh;transform:scale(0.95);transition:transform 0.3s ease;">
        <div class="st-modal-header">
-          <div class="st-modal-title">рџ“€ Р“СЂР°С„РёРє Р°РєС‚РёРІРЅРѕСЃС‚Рё</div>
-          <button class="st-modal-close" onclick="window.closeChartModal()">Г—</button>
+          <div class="st-modal-title">📈 График активности</div>
+          <button class="st-modal-close" onclick="window.closeChartModal()">×</button>
        </div>
        <div class="st-modal-body" style="padding:24px;height:calc(80vh - 80px);">
           <div class="activity-card" style="height:100%;width:100%;transform:none;box-shadow:none;">
             <div class="activity-header">
               <div class="period-switch">
-                <div class="week-btn" onclick="window.changeModalXpMode('week')">РќРµРґРµР»СЏ</div>
-                <div class="month-btn" onclick="window.changeModalXpMode('month')">РњРµСЃСЏС†</div>
-                <div class="year-btn" onclick="window.changeModalXpMode('year')">Р“РѕРґ</div>
+                <div class="week-btn" onclick="window.changeModalXpMode('week')">Неделя</div>
+                <div class="month-btn" onclick="window.changeModalXpMode('month')">Месяц</div>
+                <div class="year-btn" onclick="window.changeModalXpMode('year')">Год</div>
               </div>
               <div class="month-switch"><span id="st-modal-month-label"></span></div>
             </div>
@@ -4303,20 +4303,20 @@ window.openChartModal = () => {
   `;
   document.body.appendChild(overlay);
 
-  // РџР»Р°РІРЅРѕРµ РїРѕСЏРІР»РµРЅРёРµ
+  // Плавное появление
   setTimeout(() => {
     overlay.style.opacity = '1';
     overlay.querySelector('.st-modal').style.transform = 'scale(1)';
   }, 10);
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ РєР»РёРєСѓ РЅР° С„РѕРЅ
+  // Закрытие по клику на фон
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
       window.closeChartModal();
     }
   });
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ Escape
+  // Закрытие по Escape
   const escHandler = (e) => {
     if (e.key === 'Escape') {
       window.closeChartModal();
@@ -4325,16 +4325,16 @@ window.openChartModal = () => {
   };
   document.addEventListener('keydown', escHandler);
 
-  // РЎРѕС…СЂР°РЅСЏРµРј СЃСЃС‹Р»РєСѓ РЅР° overlay РґР»СЏ Р·Р°РєСЂС‹С‚РёСЏ
+  // Сохраняем ссылку на overlay для закрытия
   window.chartModalOverlay = overlay;
 
-  // РљР»РѕРЅРёСЂСѓРµРј Рё СѓРІРµР»РёС‡РёРІР°РµРј РіСЂР°С„РёРє
+  // Клонируем и увеличиваем график
   setTimeout(() => {
     window.renderModalChart();
   }, 100);
 };
 
-// Р—Р°РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР°
+// Закрытие модального окна
 window.closeChartModal = () => {
   const overlay = window.chartModalOverlay;
   if (overlay) {
@@ -4347,37 +4347,37 @@ window.closeChartModal = () => {
   }
 };
 
-// РџРµСЂРµРєР»СЋС‡РµРЅРёРµ СЂРµР¶РёРјР° РІ РјРѕРґР°Р»СЊРЅРѕРј РѕРєРЅРµ
+// Переключение режима в модальном окне
 window.modalXpMode = 'week';
 window.changeModalXpMode = (mode) => {
   window.modalXpMode = mode;
   window.renderModalChart();
 };
 
-// Р РµРЅРґРµСЂ РіСЂР°С„РёРєР° РІ РјРѕРґР°Р»СЊРЅРѕРј РѕРєРЅРµ (РєРѕРїРёСЏ renderActivityChart СЃ СѓРІРµР»РёС‡РµРЅРЅС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё)
+// Рендер графика в модальном окне (копия renderActivityChart с увеличенными параметрами)
 window.renderModalChart = () => {
   const mode = window.modalXpMode;
   const data = window.getXpSeriesForModal(mode);
 
-  console.log('[MODAL.CHART] Р РµРЅРґРµСЂРёРј РіСЂР°С„РёРє, СЂРµР¶РёРј:', mode, 'РґР°РЅРЅС‹С…:', data.length);
+  console.log('[MODAL.CHART] Рендерим график, режим:', mode, 'данных:', data.length);
 
-  // РћР±РЅРѕРІР»СЏРµРј Р°РєС‚РёРІРЅСѓСЋ РєРЅРѕРїРєСѓ
+  // Обновляем активную кнопку
   document.querySelectorAll('.week-btn, .month-btn, .year-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   document.querySelector(`.${mode}-btn`)?.classList.add('active');
 
-  // РћР±РЅРѕРІР»СЏРµРј Р»РµР№Р±Р» РјРµСЃСЏС†Р°
+  // Обновляем лейбл месяца
   const originalLabel = document.getElementById('st-month-label');
   const modalLabel = document.getElementById('st-modal-month-label');
   if (originalLabel && modalLabel) {
     modalLabel.textContent = originalLabel.textContent;
   }
 
-  // Р РёСЃСѓРµРј СѓРІРµР»РёС‡РµРЅРЅС‹Р№ РіСЂР°С„РёРє
+  // Рисуем увеличенный график
   const svg = document.getElementById('st-modal-activity-chart');
   if (!svg) {
-    console.error('[MODAL.CHART] SVG РЅРµ РЅР°Р№РґРµРЅ!');
+    console.error('[MODAL.CHART] SVG не найден!');
     return;
   }
 
@@ -4387,7 +4387,7 @@ window.renderModalChart = () => {
   const innerWidth = width - padding.left - padding.right;
   const innerHeight = height - padding.top - padding.bottom;
 
-  // РЈРІРµР»РёС‡РµРЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ (РєР°Рє РІ РѕСЂРёРіРёРЅР°Р»Рµ)
+  // Увеличенные параметры (как в оригинале)
   const cfg = mode === 'week' ? { bar: 28, gap: 8, count: 14, labelStep: 2 }
     : (mode === 'month' ? { bar: 20, gap: 6, count: data.length, labelStep: 2 }
       : { bar: 46, gap: 28, count: 12, labelStep: 1 });
@@ -4396,22 +4396,22 @@ window.renderModalChart = () => {
   const gap = mode === 'year' ? cfg.gap : (innerWidth - (cfg.bar * data.length)) / (data.length + 1);
   const fontSize = 14;
 
-  // РќР°С…РѕРґРёРј РјР°РєСЃРёРјСѓРј
+  // Находим максимум
   const maxValue = Math.max(...data.map(d => (d.cards || 0) + (d.hearts || 0)), 1);
 
-  // Р“СЂР°РґРёРµРЅС‚С‹
+  // Градиенты
   const toRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
   const lerp = (a, b, t) => Math.round(a + (b - a) * t);
   const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
   const redDark = '#8B0000'; const redBright = '#FF3B3B';
   const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
 
-  // Р“РµРЅРµСЂРёСЂСѓРµРј SVG
+  // Генерируем SVG
   let defs = '';
   let content = '';
   let bars = '';
 
-  // РЎРµС‚РєР°
+  // Сетка
   for (let i = 0; i <= 4; i++) {
     const y = padding.top + (innerHeight / 4) * i;
     content += `<line class="chart-grid-line" x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
@@ -4419,14 +4419,14 @@ window.renderModalChart = () => {
     content += `<text class="chart-label" x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="${fontSize}">${value}</text>`;
   }
 
-  // Р‘Р°СЂС‹
-  const baseBarHeight = 5; // РњРёРЅРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° Р±Р°СЂР° РґР»СЏ РїСѓСЃС‚С‹С… Р·РЅР°С‡РµРЅРёР№
+  // Бары
+  const baseBarHeight = 5; // Минимальная высота бара для пустых значений
   let x = padding.left + gap;
   data.forEach((d, idx) => {
     const cardsVal = d.cards || 0;
     const heartsVal = d.hearts || 0;
 
-    // Cards (РѕСЂР°РЅР¶РµРІС‹Р№, С€РёСЂРѕРєРёР№) - РІСЃРµРіРґР° СЂРёСЃСѓРµРј, РґР°Р¶Рµ РµСЃР»Рё 0
+    // Cards (оранжевый, широкий) - всегда рисуем, даже если 0
     const cardsH = cardsVal > 0
       ? Math.max(baseBarHeight, (innerHeight / maxValue) * cardsVal)
       : baseBarHeight;
@@ -4438,7 +4438,7 @@ window.renderModalChart = () => {
     const pathCards = `M ${x} ${padding.top + innerHeight} L ${x} ${yCards + rWide} A ${rWide} ${rWide} 0 0 1 ${x + barWidth} ${yCards + rWide} L ${x + barWidth} ${padding.top + innerHeight} Z`;
     bars += `<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="${cardsVal > 0 ? '0.9' : '0.3'}"/>`;
 
-    // Hearts (РєСЂР°СЃРЅС‹Р№, СѓР·РєРёР№, РїРѕ С†РµРЅС‚СЂСѓ) - РІСЃРµРіРґР° СЂРёСЃСѓРµРј, РґР°Р¶Рµ РµСЃР»Рё 0
+    // Hearts (красный, узкий, по центру) - всегда рисуем, даже если 0
     const heartsH = heartsVal > 0
       ? Math.max(baseBarHeight, (innerHeight / maxValue) * heartsVal)
       : baseBarHeight;
@@ -4452,7 +4452,7 @@ window.renderModalChart = () => {
     const pathHearts = `M ${heartsX} ${padding.top + innerHeight} L ${heartsX} ${yHearts + rNarrow} A ${rNarrow} ${rNarrow} 0 0 1 ${heartsX + narrowBarW} ${yHearts + rNarrow} L ${heartsX + narrowBarW} ${padding.top + innerHeight} Z`;
     bars += `<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-gh${idx})" style="cursor:pointer" opacity="${heartsVal > 0 ? '1' : '0.25'}"/>`;
 
-    // РџРѕРґРїРёСЃСЊ
+    // Подпись
     const labelOk = mode === 'year' ? true : (idx % cfg.labelStep === 0);
     if (labelOk) {
       bars += `<text class="chart-label" x="${x + barWidth / 2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
@@ -4471,12 +4471,12 @@ window.renderModalChart = () => {
       const hearts = bar.getAttribute('data-hearts');
       const cards = bar.getAttribute('data-cards');
       const type = bar.getAttribute('data-type');
-      const typeLabel = type === 'hearts' ? 'вќ¤пёЏ РЎРµСЂРґРµС‡РєРё' : 'рџ“љ РљР°СЂС‚РѕС‡РєРё';
+      const typeLabel = type === 'hearts' ? '❤️ Сердечки' : '📚 Карточки';
       tooltip.innerHTML = `
         <div style="font-weight:700">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</div>
         <div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div>
-        <div>вќ¤пёЏ: ${hearts}</div>
-        <div>рџ“љ: ${cards}</div>
+        <div>❤️: ${hearts}</div>
+        <div>📚: ${cards}</div>
         <div class="tip-arrow"></div>
       `;
       tooltip.style.display = 'block';
@@ -4495,7 +4495,7 @@ window.renderModalChart = () => {
   });
 };
 
-// РџРѕР»СѓС‡РµРЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° (РїРѕР»РЅР°СЏ РєРѕРїРёСЏ getActivitySeries)
+// Получение данных для модального окна (полная копия getActivitySeries)
 window.getXpSeriesForModal = (mode) => {
   const getMSKDate = (date) => {
     try {
@@ -4508,7 +4508,7 @@ window.getXpSeriesForModal = (mode) => {
     }
   };
 
-  // РСЃРїРѕР»СЊР·СѓРµРј С„СѓРЅРєС†РёРё РёР· stats-utils
+  // Используем функции из stats-utils
   const daily = typeof getDailyPointsAll === 'function' ? getDailyPointsAll() : [];
   const imp = typeof getDailyImprovements === 'function' ? getDailyImprovements(400) : [];
   const impMap = new Map(imp.map(d => [d.date, d]));
@@ -4517,7 +4517,7 @@ window.getXpSeriesForModal = (mode) => {
   console.log('[MODAL.DATA] daily:', daily.length, 'imp:', imp.length);
 
   if (mode === 'year') {
-    // 12 РјРµСЃСЏС†РµРІ
+    // 12 месяцев
     const res = [];
     for (let m = 0; m < 12; m++) {
       const y = today.getFullYear();
@@ -4544,7 +4544,7 @@ window.getXpSeriesForModal = (mode) => {
     return res;
   }
 
-  // РќРµРґРµР»СЏ (14 РґРЅРµР№) РёР»Рё РњРµСЃСЏС† (РІСЃРµ РґРЅРё)
+  // Неделя (14 дней) или Месяц (все дни)
   const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
   const res = [];
 
@@ -4575,7 +4575,7 @@ window.openDiffModal = (index) => {
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
   const currentCards = getCurrentCards();
 
-  console.log('[openDiffModal] РР·Р±СЂР°РЅРЅРѕРµ:', {
+  console.log('[openDiffModal] Избранное:', {
     favCount: favorites.size,
     favQuestions: Array.from(favorites),
     totalCards: currentCards.length
@@ -4583,15 +4583,15 @@ window.openDiffModal = (index) => {
 
   if (index === 'favorites') {
     list = currentCards.filter(q => favorites.has(q.question));
-    label = 'РР·Р±СЂР°РЅРЅРѕРµ';
-    console.log('[openDiffModal] РќР°Р№РґРµРЅРѕ РєР°СЂС‚РѕС‡РµРє РІ РёР·Р±СЂР°РЅРЅРѕРј:', list.length, list.map(q => q.question));
+    label = 'Избранное';
+    console.log('[openDiffModal] Найдено карточек в избранном:', list.length, list.map(q => q.question));
   } else {
     const i = parseInt(index);
     const ranges = [
-      { min: 2.4, max: 999, label: 'Р›РµРіРєРёРµ' },
-      { min: 2.1, max: 2.4, label: 'РЎС‚Р°РЅРґР°СЂС‚' },
-      { min: 1.7, max: 2.1, label: 'РўСЂСѓРґРЅС‹Рµ' },
-      { min: 0, max: 1.7, label: 'РћС‡РµРЅСЊ С‚СЂСѓРґРЅС‹Рµ' }
+      { min: 2.4, max: 999, label: 'Легкие' },
+      { min: 2.1, max: 2.4, label: 'Стандарт' },
+      { min: 1.7, max: 2.1, label: 'Трудные' },
+      { min: 0, max: 1.7, label: 'Очень трудные' }
     ];
     const r = ranges[i];
     label = r.label;
@@ -4602,7 +4602,7 @@ window.openDiffModal = (index) => {
     });
   }
 
-  console.log('[openDiffModal] РљР°СЂС‚РѕС‡РµРє:', list.length, 'РёР·', currentCards.length);
+  console.log('[openDiffModal] Карточек:', list.length, 'из', currentCards.length);
 
   // Show Modal
   const overlay = document.createElement('div');
@@ -4611,7 +4611,7 @@ window.openDiffModal = (index) => {
     <div class="st-modal">
        <div class="st-modal-header">
           <div class="st-modal-title">${label} (${list.length})</div>
-          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
        </div>
        <div class="st-modal-body">
           <ul class="st-modal-list">
@@ -4622,7 +4622,7 @@ window.openDiffModal = (index) => {
     const heartsSvg = renderHeartsSvg(heartFills, 'modal-' + idx);
     const isFav = favorites.has(q.question);
 
-    // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ Рё РѕС‚РІРµС‚Сѓ
+    // Применяем форматирование к вопросу и ответу
     const questionFormatting = q.formatting?.question || [];
     const answerFormatting = q.formatting?.answer || [];
     const questionHTML = applyFormatting(q.question, questionFormatting);
@@ -4635,7 +4635,7 @@ window.openDiffModal = (index) => {
                        <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${questionHTML}</span>
                        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
                           <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
-                          ${isFav ? '<span style="color:#ffd700; font-size:14px">в…</span>' : ''}
+                          ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
                        </div>
                    </div>
                    <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${answerHTML}</div>
@@ -4645,36 +4645,36 @@ window.openDiffModal = (index) => {
           </ul>
        </div>
        <div class="st-modal-footer">
-          <button class="st-modal-btn" onclick="window.startFilteredSession('${index}')">РўСЂРµРЅРёСЂРѕРІР°С‚СЊ СЌС‚Сѓ РіСЂСѓРїРїСѓ</button>
+          <button class="st-modal-btn" onclick="window.startFilteredSession('${index}')">Тренировать эту группу</button>
        </div>
     </div>
   `;
   document.body.appendChild(overlay);
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ ESC
+  // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
 };
 
-// РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РґР»СЏ РєР°С‚РµРіРѕСЂРёРё
+// Модальное окно для категории
 window.openCategoryModal = (categoryName) => {
   const currentCards = getCurrentCards();
   const progress = getProgressMap();
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
 
-  // Р¤РёР»СЊС‚СЂСѓРµРј РєР°СЂС‚РѕС‡РєРё РїРѕ РєР°С‚РµРіРѕСЂРёРё
+  // Фильтруем карточки по категории
   let list = currentCards.filter(q => q.category === categoryName);
 
-  // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ РїСЂРѕРіСЂРµСЃСЃСѓ (СЃРЅР°С‡Р°Р»Р° С‚СЂСѓРґРЅС‹Рµ/СЃРЅР°С‡Р°Р»Р° Р»С‘РіРєРёРµ) - РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ EF
+  // Сортируем по прогрессу (сначала трудные/сначала лёгкие) - по возрастанию EF
   list.sort((a, b) => {
     const pA = progress[a.question] || progress[a.question.trim()];
     const pB = progress[b.question] || progress[b.question.trim()];
     const efA = pA ? pA.easeFactor : 0;
     const efB = pB ? pB.easeFactor : 0;
-    return efA - efB; // РЎРЅР°С‡Р°Р»Р° С‚СЂСѓРґРЅС‹Рµ (РЅРёР·РєРёР№ EF)
+    return efA - efB; // Сначала трудные (низкий EF)
   });
 
-  // РЎС‡РёС‚Р°РµРј РїСЂРѕС†РµРЅС‚С‹
+  // Считаем проценты
   const total = list.length;
   let heartsFilled = 0;
   list.forEach(q => {
@@ -4686,7 +4686,7 @@ window.openCategoryModal = (categoryName) => {
   const maxHearts = total * 5;
   const percentage = maxHearts > 0 ? Math.round((heartsFilled / maxHearts) * 100) : 0;
 
-  console.log('[openCategoryModal] РљР°С‚РµРіРѕСЂРёСЏ:', categoryName, 'РљР°СЂС‚РѕС‡РµРє:', list.length);
+  console.log('[openCategoryModal] Категория:', categoryName, 'Карточек:', list.length);
 
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
@@ -4694,7 +4694,7 @@ window.openCategoryModal = (categoryName) => {
     <div class="st-modal">
        <div class="st-modal-header">
           <div class="st-modal-title">${categoryName} (${list.length}) - ${percentage}%</div>
-          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">Г—</button>
+          <button class="st-modal-close" onclick="this.closest('.st-modal-overlay').remove()">×</button>
        </div>
        <div class="st-modal-body">
           <ul class="st-modal-list">
@@ -4705,7 +4705,7 @@ window.openCategoryModal = (categoryName) => {
     const heartsSvg = renderHeartsSvg(heartFills, 'cat-' + idx);
     const isFav = favorites.has(q.question);
 
-    // РџСЂРёРјРµРЅСЏРµРј С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ Рє РІРѕРїСЂРѕСЃСѓ Рё РѕС‚РІРµС‚Сѓ
+    // Применяем форматирование к вопросу и ответу
     const questionFormatting = q.formatting?.question || [];
     const answerFormatting = q.formatting?.answer || [];
     const questionHTML = applyFormatting(q.question, questionFormatting);
@@ -4718,7 +4718,7 @@ window.openCategoryModal = (categoryName) => {
                        <span class="st-modal-q" style="flex:1; padding-right:8px; font-weight:600; color:#fff">${questionHTML}</span>
                        <div style="display:flex; gap:6px; align-items:center; flex-shrink:0; font-size:12px">
                           <span title="EF: ${ef ? ef.toFixed(2) : 'N/A'}">${heartsSvg}</span>
-                          ${isFav ? '<span style="color:#ffd700; font-size:14px">в…</span>' : ''}
+                          ${isFav ? '<span style="color:#ffd700; font-size:14px">★</span>' : ''}
                        </div>
                    </div>
                    <div class="st-modal-a" style="font-size:13px; color:var(--st-text-sec)">${answerHTML}</div>
@@ -4728,18 +4728,18 @@ window.openCategoryModal = (categoryName) => {
           </ul>
        </div>
        <div class="st-modal-footer">
-          <button class="st-modal-btn" onclick="window.startCategorySession('${categoryName.replace(/'/g, "\\'")}')">РўСЂРµРЅРёСЂРѕРІР°С‚СЊ СЌС‚Сѓ РєР°С‚РµРіРѕСЂРёСЋ</button>
+          <button class="st-modal-btn" onclick="window.startCategorySession('${categoryName.replace(/'/g, "\\'")}')">Тренировать эту категорию</button>
        </div>
     </div>
   `;
   document.body.appendChild(overlay);
 
-  // Р—Р°РєСЂС‹С‚РёРµ РїРѕ ESC
+  // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
 };
 
-// РЎРІРѕСЂР°С‡РёРІР°РЅРёРµ/СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ СЃРїРёСЃРєР° РєР°С‚РµРіРѕСЂРёР№
+// Сворачивание/разворачивание списка категорий
 window.toggleCategoryList = () => {
   const list = document.getElementById('st-cat-progress-list');
   const icon = document.querySelector('.st-cat-toggle-icon');
@@ -4748,14 +4748,14 @@ window.toggleCategoryList = () => {
 
   const isCollapsed = list.classList.contains('collapsed');
 
-  // РџРµСЂРµРєР»СЋС‡Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
+  // Переключаем состояние
   if (isCollapsed) {
-    // Р Р°Р·РІРѕСЂР°С‡РёРІР°РµРј
+    // Разворачиваем
     list.classList.remove('collapsed');
     list.classList.add('expanded');
     if (icon) icon.classList.remove('collapsed');
   } else {
-    // РЎРІРѕСЂР°С‡РёРІР°РµРј
+    // Сворачиваем
     list.classList.add('collapsed');
     list.classList.remove('expanded');
     if (icon) icon.classList.add('collapsed');
@@ -4768,10 +4768,10 @@ window.startCategorySession = (categoryName) => {
   const currentCards = getCurrentCards();
   const cards = currentCards.filter(q => q.category === categoryName);
 
-  console.log('[startCategorySession] РљР°С‚РµРіРѕСЂРёСЏ:', categoryName, 'РљР°СЂС‚РѕС‡РµРє:', cards.length);
+  console.log('[startCategorySession] Категория:', categoryName, 'Карточек:', cards.length);
 
   if (cards.length === 0) {
-    alert('РќРµС‚ РєР°СЂС‚ РІ СЌС‚РѕР№ РєР°С‚РµРіРѕСЂРёРё');
+    alert('Нет карт в этой категории');
     return;
   }
 
@@ -4805,20 +4805,20 @@ window.startFilteredSession = (index) => {
     });
   }
 
-  console.log('[startFilteredSession] РљР°СЂС‚РѕС‡РµРє:', cards.length);
+  console.log('[startFilteredSession] Карточек:', cards.length);
 
   if (cards.length === 0) {
-    alert('РќРµС‚ РєР°СЂС‚ РІ пїЅпїЅС‚РѕР№ РєР°С‚РµРіРѕСЂРёРё');
+    alert('Нет карт в ��той категории');
     return;
   }
 
-  // РћС‡РёС‰Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СѓС‡РµРЅРёСЏ РџР•Р Р•Р” Р·Р°РїСѓСЃРєРѕРј РЅРѕРІРѕРіРѕ
+  // Очищаем состояние обучения ПЕРЕД запуском нового
   if (window.__lastCandidates) {
     window.__lastCandidates = null;
     console.log('[startFilteredSession] Cleared __lastCandidates');
   }
 
-  // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі РЅР°РІРёРіР°С†пїЅпїЅРё
+  // Сбрасываем флаг навигац��и
   window.__navigatingToHome = false;
   console.log('[startFilteredSession] Set __navigatingToHome = false');
 
@@ -4832,13 +4832,13 @@ window.startRiskSession = (catName) => {
   const zone = riskZones.find(z => z.cat === catName);
   if (!zone || !zone.items || zone.items.length === 0) return;
 
-  // РћС‡РёС‰Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СѓС‡РµРЅРёСЏ РџР•Р Р•Р” Р·Р°РїСѓСЃРєРѕРј РЅРѕРІРѕРіРѕ
+  // Очищаем состояние обучения ПЕРЕД запуском нового
   if (window.__lastCandidates) {
     window.__lastCandidates = null;
     console.log('[startRiskSession] Cleared __lastCandidates');
   }
 
-  // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі РЅР°РІРёРіР°С†РёРё
+  // Сбрасываем флаг навигации
   window.__navigatingToHome = false;
   console.log('[startRiskSession] Set __navigatingToHome = false');
 
@@ -4851,7 +4851,7 @@ window.startMode = (modeId) => {
 
   const currentCards = getCurrentCards();
   if (!currentCards || currentCards.length === 0) {
-    alert('Р”Р°РЅРЅС‹Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹');
+    alert('Данные не загружены');
     return;
   }
 
@@ -4862,7 +4862,7 @@ window.startMode = (modeId) => {
   if (modeId === 'time_attack' || modeId === 'sudden_death') {
     const valid = uniqueQaData.filter(q => q && q.question && q.answer);
     if (valid.length === 0) {
-      alert('РќРµС‚ РґРѕСЃС‚СѓРїРЅС‹С… РєР°СЂС‚РѕС‡РµРє');
+      alert('Нет доступных карточек');
       return;
     }
     candidates = [...valid].sort(() => 0.5 - Math.random()).slice(0, 50);
@@ -4874,7 +4874,7 @@ window.startMode = (modeId) => {
     });
 
     if (candidates.length === 0) {
-      alert('РќРµС‚ РєР°СЂС‚РѕС‡РµРє СЃРѕ СЃР»РѕР¶РЅРѕСЃС‚СЊСЋ РЅРёР¶Рµ 2.2');
+      alert('Нет карточек со сложностью ниже 2.2');
       return;
     }
     options.mode = 'cram';
@@ -4886,19 +4886,19 @@ window.startMode = (modeId) => {
     });
 
     if (candidates.length === 0) {
-      alert('РќРµС‚ РЅРѕРІС‹С… РєР°СЂС‚РѕС‡РµРє');
+      alert('Нет новых карточек');
       return;
     }
     options.mode = 'cram';
   }
 
   if (candidates.length > 0) {
-    // РћС‡РёС‰Р°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СѓС‡РµРЅРёСЏ РџР•Р Р•Р” Р·Р°РїСѓСЃРєРѕРј РЅРѕРІРѕРіРѕ
+    // Очищаем состояние обучения ПЕРЕД запуском нового
     if (window.__lastCandidates) {
       window.__lastCandidates = null;
       console.log('[startMode] Cleared __lastCandidates');
     }
-    // РЎР±СЂР°СЃС‹РІР°РµРј С„Р»Р°Рі РЅР°РІРёРіР°С†РёРё
+    // Сбрасываем флаг навигации
     window.__navigatingToHome = false;
     console.log('[startMode] Set __navigatingToHome = false');
     hideStatsPage();
@@ -4906,14 +4906,14 @@ window.startMode = (modeId) => {
   }
 };
 
-// ========== Р¤СѓРЅРєС†РёСЏ РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР° РїСЂРѕРіСЂРµСЃСЃР° РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј ==========
+// ========== Функция для рендеринга прогресса по категориям ==========
 function renderCategoryProgress() {
   const currentCards = getCurrentCards();
   if (!currentCards || currentCards.length === 0) return;
 
   const progress = getProgressMap();
 
-  // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° СЃРµСЂРґРµС‡РµРє РїРѕ EF
+  // Функция для получения количества сердечек по EF
   const getHeartsCount = (ef) => {
     if (ef >= 2.4) return 5;      // EASY
     if (ef >= 2.1) return 4;      // STANDARD
@@ -4921,16 +4921,16 @@ function renderCategoryProgress() {
     return 1;                      // VERY HARD
   };
 
-  // Р“СЂСѓРїРїРёСЂСѓРµРј РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј
+  // Группируем по категориям
   const categoryStats = {};
   currentCards.forEach(card => {
-    const cat = card.category || 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё';
+    const cat = card.category || 'Без категории';
     if (!categoryStats[cat]) {
       categoryStats[cat] = { total: 0, heartsFilled: 0 };
     }
     categoryStats[cat].total++;
 
-    // РЎС‡РёС‚Р°РµРј Р·Р°РїРѕР»РЅРµРЅРЅС‹Рµ СЃРµСЂРґРµС‡РєРё (SRS РїСЂРѕРіСЂРµСЃСЃ)
+    // Считаем заполненные сердечки (SRS прогресс)
     const cardProgress = progress[card.question] || progress[card.question.trim()];
     if (cardProgress && cardProgress.easeFactor !== undefined) {
       const hearts = getHeartsCount(cardProgress.easeFactor);
@@ -4938,37 +4938,37 @@ function renderCategoryProgress() {
     }
   });
 
-  // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РїСЂРѕС†РµРЅС‚С‹ Рё СЃРѕСЂС‚РёСЂСѓРµРј
+  // Рассчитываем проценты и сортируем
   const categoryProgress = Object.entries(categoryStats)
     .map(([name, stats]) => {
-      const maxHearts = stats.total * 5; // РњР°РєСЃРёРјСѓРј 5 СЃРµСЂРґРµС‡РµРє РЅР° РєР°СЂС‚РѕС‡РєСѓ
+      const maxHearts = stats.total * 5; // Максимум 5 сердечек на карточку
       const percentage = maxHearts > 0 ? Math.round((stats.heartsFilled / maxHearts) * 100) : 0;
       return { name, percentage, total: stats.total };
     })
-    .sort((a, b) => b.percentage - a.percentage); // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ СѓР±С‹РІР°РЅРёСЋ РїСЂРѕРіСЂРµСЃСЃР°
+    .sort((a, b) => b.percentage - a.percentage); // Сортируем по убыванию прогресса
 
-  // Р РµРЅРґРµСЂРёРј
+  // Рендерим
   const container = document.getElementById('st-cat-progress-list');
   const countSpan = document.getElementById('st-cat-count');
   if (!container) return;
 
-  // РџРѕРєР°Р·С‹РІР°РµРј СЃС‡С‘С‚С‡РёРє РєР°С‚РµРіРѕСЂРёР№
+  // Показываем счётчик категорий
   if (countSpan) {
     countSpan.textContent = `(${categoryProgress.length})`;
   }
 
-  // РћРїСЂРµРґРµР»СЏРµРј РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+  // Определяем начальное состояние
   const isMobile = window.innerWidth <= 768;
   if (isMobile) {
-    container.classList.add('collapsed'); // РЎРІС‘СЂРЅСѓС‚Рѕ РЅР° РјРѕР±РёР»СЊРЅС‹С…
+    container.classList.add('collapsed'); // Свёрнуто на мобильных
     container.classList.remove('expanded');
   } else {
-    container.classList.remove('collapsed'); // Р Р°Р·РІС‘СЂРЅСѓС‚Рѕ РЅР° РґРµСЃРєС‚РѕРїРµ
+    container.classList.remove('collapsed'); // Развёрнуто на десктопе
     container.classList.add('expanded');
   }
 
   container.innerHTML = categoryProgress.map(cat => `
-        <div class="st-cat-progress-item" onclick="window.openCategoryModal('${cat.name.replace(/'/g, "\\'")}')" style="cursor:pointer" title="РќР°Р¶РјРёС‚Рµ РґР»СЏ РїСЂРѕСЃРјРѕС‚СЂР° РєР°СЂС‚РѕС‡РµРє">
+        <div class="st-cat-progress-item" onclick="window.openCategoryModal('${cat.name.replace(/'/g, "\\'")}')" style="cursor:pointer" title="Нажмите для просмотра карточек">
             <div class="st-cat-progress-header">
                 <span class="st-cat-progress-name">${cat.name}</span>
                 <span class="st-cat-progress-value">${cat.percentage}% (${cat.total})</span>
@@ -4982,7 +4982,7 @@ function renderCategoryProgress() {
 // ======================================================================
 
 function getXpSeries(mode) {
-  // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°С‚С‹ РїРѕ MSK (UTC+3)
+  // Вспомогательная функция для получения даты по MSK (UTC+3)
   const getMSKDate = (date) => {
     const mskOffset = 3 * 60 * 60 * 1000;
     return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
@@ -5031,7 +5031,7 @@ function getXpSeries(mode) {
 }
 
 function getActivitySeries(mode) {
-  // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°С‚С‹ РїРѕ MSK
+  // Вспомогательная функция для получения даты по MSK
   const getMSKDate = (date) => {
     try {
       const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });

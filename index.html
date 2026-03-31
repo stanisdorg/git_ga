@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>ByteCards вЂ” РРЅС‚РµСЂРІР°Р»СЊРЅРѕРµ РїРѕРІС‚РѕСЂРµРЅРёРµ</title>
+    <title>ByteCards — Интервальное повторение</title>
     <link rel="icon" type="image/png" href="icons/favicon.png">
-    <link rel="stylesheet" href="style.css?v=6.20.8">
-    <link rel="stylesheet" href="custom-styles.css?v=6.20.8">
+    <link rel="stylesheet" href="style.css?v=6.21.0">
+    <link rel="stylesheet" href="custom-styles.css?v=6.21.0">
     <link rel="stylesheet" href="update-modal.css?v=1.0.0">
     <link rel="stylesheet" href="push-notifications.css?v=1.0.0">
     <link rel="manifest" href="manifest.json">
@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <style>
-        /* Р’СЃС‚СЂРѕРµРЅРЅС‹Рµ СЃС‚РёР»Рё РґР»СЏ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РїСЂРёРјРµРЅРµРЅРёСЏ */
+        /* Встроенные стили для гарантированного применения */
         span.category-badge,
         span.subcategory-badge,
         span.result-category,
@@ -36,50 +36,50 @@
             border: 1px solid #333333 !important;
         }
 
-        /* РЎС‚РёР»Рё РєРЅРѕРїРєРё РјРёРєСЂРѕС„РѕРЅР° РїРµСЂРµРЅРµСЃРµРЅС‹ РІ custom-styles.css */
+        /* Стили кнопки микрофона перенесены в custom-styles.css */
     </style>
 </head>
 
 <body>
-    <!-- SPLASH SCREEN - Р­РєСЂР°РЅ Р·Р°РіСЂСѓР·РєРё РїСЂРёР»РѕР¶РµРЅРёСЏ -->
+    <!-- SPLASH SCREEN - Экран загрузки приложения -->
     <div id="splash-screen">
         <div class="splash-logo">
             <img src="icons/icon-192x192.png" alt="ByteCards Logo" width="80" height="80">
         </div>
         <h1 class="splash-title">ByteCards</h1>
-        <p class="splash-subtitle">РўРІРѕР№ СЂРµРїРѕР·РёС‚РѕСЂРёР№ Р·РЅР°РЅРёР№...</p>
+        <p class="splash-subtitle">Твой репозиторий знаний...</p>
 
-        <!-- РџСЂРѕРіСЂРµСЃСЃ Р±Р°СЂ -->
+        <!-- Прогресс бар -->
         <div class="splash-progress-container">
             <div class="splash-progress-bar" id="splash-progress"></div>
         </div>
-        <p class="splash-status" id="splash-status">РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ...</p>
+        <p class="splash-status" id="splash-status">Инициализация...</p>
 
-        <!-- РРЅРґРёРєР°С‚РѕСЂ СЃРµС‚Рё -->
+        <!-- Индикатор сети -->
         <div class="splash-network-indicator online" id="splash-network">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path
                     d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3c4.97-4.97 13.03-4.97 18 0l2-2C24.93 13.93 15.08 13.93 9 17zm-8-8l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z" />
             </svg>
-            <span id="splash-network-text">РћРЅР»Р°Р№РЅ</span>
+            <span id="splash-network-text">Онлайн</span>
         </div>
 
-        <!-- РЎРѕРІРµС‚С‹ (РјРµРЅСЏСЋС‚СЃСЏ РїСЂРё РєР°Р¶РґРѕР№ Р·Р°РіСЂСѓР·РєРµ) -->
-        <p class="splash-tip" id="splash-tip">РЎРѕРІРµС‚: РСЃРїРѕР»СЊР·СѓР№С‚Рµ РіРѕР»РѕСЃРѕРІРѕР№ РІРІРѕРґ РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РїРѕРёСЃРєР° РІРѕРїСЂРѕСЃРѕРІ</p>
+        <!-- Советы (меняются при каждой загрузке) -->
+        <p class="splash-tip" id="splash-tip">Совет: Используйте голосовой ввод для быстрого поиска вопросов</p>
     </div>
 
-    <!-- РЎРєСЂС‹РІР°РµРј СЃРєРµР»РµС‚РѕРЅ РґР»СЏ РќР• СЃС‚Р°С‚РёСЃС‚РёРєРё СЃС‚СЂР°РЅРёС† Рё РґР»СЏ РџРљ РІРµСЂСЃРёР№ -->
+    <!-- Скрываем скелетон для НЕ статистики страниц и для ПК версий -->
     <script>
         const isStats = location.hash && location.hash.includes('stats');
         const isMobile = window.innerWidth <= 768;
 
-        // РџРѕРєР°Р·С‹РІР°РµРј СЃРєРµР»РµС‚РѕРЅ С‚РѕР»СЊРєРѕ РґР»СЏ РјРѕР±РёР»СЊРЅРѕР№ РІРµСЂСЃРёРё СЃС‚Р°С‚РёСЃС‚РёРєРё
+        // Показываем скелетон только для мобильной версии статистики
         if (!isStats || !isMobile) {
             document.write('<style>#stats-skeleton{display:none!important}</style>');
         }
     </script>
     <div class="app-wrapper">
-        <!-- Skeleton Loader РґР»СЏ СЃС‚СЂР°РЅРёС†С‹ СЃС‚Р°С‚РёСЃС‚РёРєРё - РІРёРґРёРј РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґР»СЏ РјРѕР±. #/stats -->
+        <!-- Skeleton Loader для страницы статистики - видим по умолчанию для моб. #/stats -->
         <div id="stats-skeleton"
             style="display:var(--skeleton-display, block);position:fixed;top:0;left:0;width:100%;height:100%;background:#0E1117;z-index:2001;overflow-y:auto;">
             <div style="max-width:600px;margin:0 auto;padding:0 12px 40px;display:flex;flex-direction:column;gap:12px;">
@@ -176,8 +176,8 @@
         <div class="sidebar collapsed">
             <div class="sidebar-header">
                 <h2 class="sidebar-title"></h2>
-                <div class="sidebar-mode-buttons" aria-label="Р РµР¶РёРјС‹">
-                    <button id="history-button" class="nav-icon-btn" title="РСЃС‚РѕСЂРёСЏ" aria-label="РСЃС‚РѕСЂРёСЏ">
+                <div class="sidebar-mode-buttons" aria-label="Режимы">
+                    <button id="history-button" class="nav-icon-btn" title="История" aria-label="История">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
                             aria-hidden="true">
                             <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
@@ -195,8 +195,8 @@
                                 stroke-linecap="round" />
                         </svg>
                     </button>
-                    <a href="/logs.html" target="_blank" class="nav-icon-btn" title="Р›РѕРіРё СЃРµСЂРІРµСЂР°"
-                        aria-label="Р›РѕРіРё СЃРµСЂРІРµСЂР°" style="text-decoration:none;color:inherit;">
+                    <a href="/logs.html" target="_blank" class="nav-icon-btn" title="Логи сервера"
+                        aria-label="Логи сервера" style="text-decoration:none;color:inherit;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
                             aria-hidden="true">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none"
@@ -207,8 +207,8 @@
                     </a>
                 </div>
                 <button id="sidebar-toggle" class="sidebar-toggle nav-icon-btn" aria-expanded="true"
-                    aria-label="РЎРІРµСЂРЅСѓС‚СЊ РёСЃС‚РѕСЂРёСЋ" title="РЎРІРµСЂРЅСѓС‚СЊ/СЂР°Р·РІРµСЂРЅСѓС‚СЊ РёСЃС‚РѕСЂРёСЋ">
-                    <!-- РРєРѕРЅРєР° СЃРІРµСЂРЅСѓС‚СЊ (РїР°РЅРµР»СЊ РІР»РµРІРѕ) РґР»СЏ СЂР°СЃРєСЂС‹С‚РѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ -->
+                    aria-label="Свернуть историю" title="Свернуть/развернуть историю">
+                    <!-- Иконка свернуть (панель влево) для раскрытого состояния -->
                     <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20"
                         height="20" aria-hidden="true">
                         <rect x="3" y="4" width="18" height="16" rx="2" ry="2" fill="none" stroke="currentColor"
@@ -217,7 +217,7 @@
                         <path d="M14 12h-6l3-3m-3 3l3 3" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    <!-- РРєРѕРЅРєР° СЂР°Р·РІРµСЂРЅСѓС‚СЊ (РїР°РЅРµР»СЊ РІРїСЂР°РІРѕ) РґР»СЏ СЃРІРµСЂРЅСѓС‚РѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ -->
+                    <!-- Иконка развернуть (панель вправо) для свернутого состояния -->
                     <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20"
                         height="20" aria-hidden="true">
                         <rect x="3" y="4" width="18" height="16" rx="2" ry="2" fill="none" stroke="currentColor"
@@ -229,10 +229,10 @@
                 </button>
             </div>
             <div id="search-history">
-                <!-- РСЃС‚РѕСЂРёСЏ РїРѕРёСЃРєР° Р±СѓРґРµС‚ РґРѕР±Р°РІР»РµРЅР° Р·РґРµСЃСЊ РґРёРЅР°РјРёС‡РµСЃРєРё -->
+                <!-- История поиска будет добавлена здесь динамически -->
             </div>
             <div id="transcription-history" style="display:none">
-                <!-- РўСЂР°РЅСЃРєСЂРёРїС†РёСЏ Р±СѓРґРµС‚ РґРѕР±Р°РІР»СЏС‚СЊСЃСЏ СЃСЋРґР° РїРѕСЃС‚СЂРѕС‡РЅРѕ -->
+                <!-- Транскрипция будет добавляться сюда построчно -->
             </div>
         </div>
 
@@ -240,8 +240,8 @@
 
             <div class="search-container" id="search-container" style="display:none">
                 <div class="input-group">
-                    <button id="reset-search" class="reset-search-button" title="РЎР±СЂРѕСЃРёС‚СЊ РїРѕРёСЃРє (Ctrl+РЇ)"
-                        aria-label="РЎР±СЂРѕСЃРёС‚СЊ РїРѕРёСЃРє (Ctrl+РЇ)">
+                    <button id="reset-search" class="reset-search-button" title="Сбросить поиск (Ctrl+Я)"
+                        aria-label="Сбросить поиск (Ctrl+Я)">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"
                             aria-hidden="true">
                             <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2"
@@ -249,9 +249,9 @@
                         </svg>
                     </button>
                     <input type="text" id="search-input"
-                        placeholder="Р’РІРµРґРёС‚Рµ Р·Р°РїСЂРѕСЃ РёР»Рё РЅР°Р¶РјРёС‚Рµ РЅР° РјРёРєСЂРѕС„РѕРЅ (Alt+M)...">
+                        placeholder="Введите запрос или нажмите на микрофон (Alt+M)...">
 
-                    <button id="mic-button" class="mic-button" title="РђРєС‚РёРІРёСЂРѕРІР°С‚СЊ РјРёРєСЂРѕС„РѕРЅ" aria-pressed="false">
+                    <button id="mic-button" class="mic-button" title="Активировать микрофон" aria-pressed="false">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
                             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z">
                             </path>
@@ -262,11 +262,11 @@
                     </button>
                     <canvas id="mic-visualizer" class="audio-visualizer" aria-hidden="true"></canvas>
                 </div>
-                <!-- РЈР±СЂР°Р»Рё РёРЅРґРёРєР°С‚РѕСЂ СЃС‚Р°С‚СѓСЃР° РґР»СЏ СЃРѕРєСЂР°С‰РµРЅРёСЏ РјРµСЃС‚Р° -->
+                <!-- Убрали индикатор статуса для сокращения места -->
             </div>
 
             <div class="results-container">
-                <!-- РђРЅРёРјР°С†РёСЏ Р·Р°РіСЂСѓР·РєРё -->
+                <!-- Анимация загрузки -->
                 <div id="loading-container" class="loading-container" style="display: none;">
                     <div class="loading-dots">
                         <div class="dot"></div>
@@ -276,7 +276,7 @@
                 </div>
 
                 <div id="results-list">
-                    <!-- Р РµР·СѓР»СЊС‚Р°С‚С‹ РїРѕРёСЃРєР° Р±СѓРґСѓС‚ РґРѕР±Р°РІР»РµРЅС‹ Р·РґРµСЃСЊ РґРёРЅР°РјРёС‡РµСЃРєРё -->
+                    <!-- Результаты поиска будут добавлены здесь динамически -->
                 </div>
             </div>
         </div>
@@ -285,12 +285,12 @@
     <!-- Sentry Error Tracking -->
     <script src="https://browser.sentry-cdn.com/7.120.3/bundle.tracing.replay.min.js" crossorigin="anonymous"></script>
     <script>
-        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Sentry РґР»СЏ Р±СЂР°СѓР·РµСЂР°
+        // Инициализация Sentry для браузера
         if (typeof Sentry !== 'undefined') {
             Sentry.init({
                 dsn: 'https://d8c49f00037ecc68e3bcd53f94a54445@o4511124590297088.ingest.de.sentry.io/4511124610809936',
                 environment: 'production',
-                release: 'bytecards@6.17.1',
+                release: 'bytecards@6.21.0',
                 integrations: [
                     Sentry.browserTracingIntegration(),
                     Sentry.replayIntegration({
@@ -298,16 +298,16 @@
                         blockAllMedia: true,
                     }),
                 ],
-                tracesSampleRate: 0.1, // 10% С‚СЂР°РЅР·Р°РєС†РёР№
-                replaysSessionSampleRate: 0.1, // 10% СЃРµСЃСЃРёР№
-                replaysOnErrorSampleRate: 1.0, // 100% РѕС€РёР±РѕРє
+                tracesSampleRate: 0.1, // 10% транзакций
+                replaysSessionSampleRate: 0.1, // 10% сессий
+                replaysOnErrorSampleRate: 1.0, // 100% ошибок
             });
-            console.log('[Sentry] РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ');
+            console.log('[Sentry] Инициализирован');
         }
     </script>
 
     <script src="all-data.js" type="module"></script>
-    <script src="ui-manager.js?v=6.20.8" type="module"></script>
+    <script src="ui-manager.js?v=6.21.0" type="module"></script>
     <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
     <script src="script.js" type="module"></script>
 
@@ -315,7 +315,7 @@
     <div id="sheet-overlay" class="sheet-overlay"></div>
     <div id="filters-sheet" class="bottom-sheet">
         <div class="sheet-header">
-            <h3>Р¤РёР»СЊС‚СЂС‹</h3>
+            <h3>Фильтры</h3>
             <button id="close-filters" class="close-sheet-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -326,25 +326,25 @@
         </div>
         <div class="sheet-content">
             <div class="filter-group">
-                <label>РЎС‚Р°С‚СѓСЃ</label>
+                <label>Статус</label>
                 <div class="filter-chips">
-                    <button class="filter-chip" data-filter="status:new">РќРѕРІС‹Рµ</button>
-                    <button class="filter-chip" data-filter="status:learning">РР·СѓС‡Р°СЋС‚СЃСЏ</button>
-                    <button class="filter-chip" data-filter="status:review">РџРѕРІС‚РѕСЂРµРЅРёРµ</button>
+                    <button class="filter-chip" data-filter="status:new">Новые</button>
+                    <button class="filter-chip" data-filter="status:learning">Изучаются</button>
+                    <button class="filter-chip" data-filter="status:review">Повторение</button>
                 </div>
             </div>
             <div class="filter-group">
-                <label>РЎР»РѕР¶РЅРѕСЃС‚СЊ</label>
+                <label>Сложность</label>
                 <div class="filter-chips">
-                    <button class="filter-chip" data-filter="difficulty:easy">Р›РµРіРєРѕ</button>
-                    <button class="filter-chip" data-filter="difficulty:medium">РЎСЂРµРґРЅРµ</button>
-                    <button class="filter-chip" data-filter="difficulty:hard">РЎР»РѕР¶РЅРѕ</button>
+                    <button class="filter-chip" data-filter="difficulty:easy">Легко</button>
+                    <button class="filter-chip" data-filter="difficulty:medium">Средне</button>
+                    <button class="filter-chip" data-filter="difficulty:hard">Сложно</button>
                 </div>
             </div>
         </div>
         <div class="sheet-footer">
-            <button id="reset-filters" class="btn-reset">РЎР±СЂРѕСЃРёС‚СЊ</button>
-            <button id="apply-filters" class="btn-apply">РџСЂРёРјРµРЅРёС‚СЊ</button>
+            <button id="reset-filters" class="btn-reset">Сбросить</button>
+            <button id="apply-filters" class="btn-apply">Применить</button>
         </div>
     </div>
 
@@ -361,16 +361,16 @@
                         <path d="M16 21h5v-5" />
                     </svg>
                 </div>
-                <h4 class="update-modal-title">Р”РѕСЃС‚СѓРїРЅРѕ РѕР±РЅРѕРІР»РµРЅРёРµ</h4>
+                <h4 class="update-modal-title">Доступно обновление</h4>
             </div>
             <div class="update-modal-body">
-                <p class="update-modal-message">РќРѕРІР°СЏ РІРµСЂСЃРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ РіРѕС‚РѕРІР° Рє СѓСЃС‚Р°РЅРѕРІРєРµ. РћР±РЅРѕРІРёС‚Рµ СЃС‚СЂР°РЅРёС†Сѓ РґР»СЏ
-                    РїСЂРёРјРµРЅРµРЅРёСЏ РёР·РјРµРЅРµРЅРёР№.</p>
-                <div class="update-modal-version" id="update-modal-version">Р’РµСЂСЃРёСЏ: Р·Р°РіСЂСѓР·РєР°...</div>
+                <p class="update-modal-message">Новая версия приложения готова к установке. Обновите страницу для
+                    применения изменений.</p>
+                <div class="update-modal-version" id="update-modal-version">Версия: загрузка...</div>
             </div>
             <div class="update-modal-footer">
-                <button class="update-modal-btn cancel" id="update-modal-skip">РџРѕР·Р¶Рµ</button>
-                <button class="update-modal-btn update" id="update-modal-confirm">РћР±РЅРѕРІРёС‚СЊ</button>
+                <button class="update-modal-btn cancel" id="update-modal-skip">Позже</button>
+                <button class="update-modal-btn update" id="update-modal-confirm">Обновить</button>
             </div>
         </div>
     </div>
@@ -383,21 +383,21 @@
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            Р’РєР»СЋС‡РёС‚СЊ СѓРІРµРґРѕРјР»РµРЅРёСЏ?
+            Включить уведомления?
         </div>
-        <p class="push-prompt-message">РџРѕР»СѓС‡Р°Р№С‚Рµ СѓРІРµРґРѕРјР»РµРЅРёСЏ Рѕ РЅРѕРІС‹С… С„СѓРЅРєС†РёСЏС… Рё РѕР±РЅРѕРІР»РµРЅРёСЏС… РїСЂРёР»РѕР¶РµРЅРёСЏ.</p>
+        <p class="push-prompt-message">Получайте уведомления о новых функциях и обновлениях приложения.</p>
         <div class="push-prompt-actions">
-            <button class="push-prompt-btn cancel" id="push-prompt-skip">РџРѕР·Р¶Рµ</button>
-            <button class="push-prompt-btn allow" id="push-prompt-allow">Р Р°Р·СЂРµС€РёС‚СЊ</button>
+            <button class="push-prompt-btn cancel" id="push-prompt-skip">Позже</button>
+            <button class="push-prompt-btn allow" id="push-prompt-allow">Разрешить</button>
         </div>
     </div>
 
-    <!-- РЎРєСЂРёРїС‚ СѓРїСЂР°РІР»РµРЅРёСЏ Splash Screen -->
+    <!-- Скрипт управления Splash Screen -->
     <script>
-        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІРµСЂСЃРёСЋ РїСЂРёР»РѕР¶РµРЅРёСЏ РіР»РѕР±Р°Р»СЊРЅРѕ
-        window.currentAppVersion = '6.20.8';
+        // Устанавливаем версию приложения глобально
+        window.currentAppVersion = '6.21.0';
 
-        // Splash Screen - СѓРїСЂР°РІР»РµРЅРёРµ Р·Р°РіСЂСѓР·РєРѕР№ РїСЂРёР»РѕР¶РµРЅРёСЏ
+        // Splash Screen - управление загрузкой приложения
         (function () {
             const splashScreen = document.getElementById('splash-screen');
             const progressBar = document.getElementById('splash-progress');
@@ -406,45 +406,45 @@
             const networkText = document.getElementById('splash-network-text');
             const tipElement = document.getElementById('splash-tip');
 
-            // РЎРѕРІРµС‚С‹ РґР»СЏ РїРѕРєР°Р·Р° РїСЂРё Р·Р°РіСЂСѓР·РєРµ
+            // Советы для показа при загрузке
             const tips = [
-                'ByteCards вЂ” РўРІРѕР№ СЂРµРїРѕР·РёС‚РѕСЂРёР№ Р·РЅР°РЅРёР№',
-                'РЎРѕРІРµС‚: Р РµРіСѓР»СЏСЂРЅРѕРµ РїРѕРІС‚РѕСЂРµРЅРёРµ СѓР»СѓС‡С€Р°РµС‚ Р·Р°РїРѕРјРёРЅР°РЅРёРµ',
-                'Р—РЅР°РµС‚Рµ Р»Рё РІС‹? РРЅС‚РµСЂРІР°Р»СЊРЅС‹Рµ РїРѕРІС‚РѕСЂРµРЅРёСЏ СѓРІРµР»РёС‡РёРІР°СЋС‚ СЌС„С„РµРєС‚РёРІРЅРѕСЃС‚СЊ РѕР±СѓС‡РµРЅРёСЏ',
-                'РЎРѕРІРµС‚: РћС‚РјРµС‡Р°Р№ СЃР»РѕР¶РЅС‹Рµ РІРѕРїСЂРѕСЃС‹ РєР°Рє РёР·Р±СЂР°РЅРЅС‹Рµ',
-                'Р—РЅР°РµС‚Рµ Р»Рё РІС‹? РњРѕР¶РЅРѕ РёСЃРєР°С‚СЊ РІРѕРїСЂРѕСЃС‹ РїРѕ С‚РµРєСЃС‚Сѓ',
-                'РЎРѕРІРµС‚: РСЃРїРѕР»СЊР·СѓР№ СЂРµР¶РёРј РѕР±СѓС‡РµРЅРёСЏ РґР»СЏ Р·Р°РєСЂРµРїР»РµРЅРёСЏ Р·РЅР°РЅРёР№',
-                'ByteCards вЂ” РЎРёСЃС‚РµРјР° РёРЅС‚РµСЂРІР°Р»СЊРЅРѕРіРѕ РѕР±СѓС‡РµРЅРёСЏ РґР»СЏ IT'
+                'ByteCards — Твой репозиторий знаний',
+                'Совет: Регулярное повторение улучшает запоминание',
+                'Знаете ли вы? Интервальные повторения увеличивают эффективность обучения',
+                'Совет: Отмечай сложные вопросы как избранные',
+                'Знаете ли вы? Можно искать вопросы по тексту',
+                'Совет: Используй режим обучения для закрепления знаний',
+                'ByteCards — Система интервального обучения для IT'
             ];
 
-            // РЎР»СѓС‡Р°Р№РЅС‹Р№ СЃРѕРІРµС‚ РїСЂРё РєР°Р¶РґРѕР№ Р·Р°РіСЂСѓР·РєРµ
+            // Случайный совет при каждой загрузке
             function setRandomTip() {
                 const randomIndex = Math.floor(Math.random() * tips.length);
                 tipElement.textContent = tips[randomIndex];
             }
 
-            // РћР±РЅРѕРІР»РµРЅРёРµ РёРЅРґРёРєР°С‚РѕСЂР° СЃРµС‚Рё
+            // Обновление индикатора сети
             function updateNetworkStatus() {
                 if (navigator.onLine) {
                     networkIndicator.classList.remove('offline');
                     networkIndicator.classList.add('online');
-                    networkText.textContent = 'РћРЅР»Р°Р№РЅ';
+                    networkText.textContent = 'Онлайн';
                 } else {
                     networkIndicator.classList.remove('online');
                     networkIndicator.classList.add('offline');
-                    networkText.textContent = 'РћС„Р»Р°Р№РЅ';
+                    networkText.textContent = 'Офлайн';
                 }
             }
 
-            // РџСЂРѕРіСЂРµСЃСЃ Р±Р°СЂ СЃ Р°РЅРёРјР°С†РёРµР№
+            // Прогресс бар с анимацией
             let progress = 0;
             const stages = [
-                { percent: 10, text: 'Р—Р°РіСЂСѓР·РєР° СЂРµСЃСѓСЂСЃРѕРІ...' },
-                { percent: 25, text: 'РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР°...' },
-                { percent: 40, text: 'Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С…...' },
-                { percent: 60, text: 'РџРѕРґРіРѕС‚РѕРІРєР° Рє СЂР°Р±РѕС‚Рµ...' },
-                { percent: 80, text: 'РџРѕС‡С‚Рё РіРѕС‚РѕРІРѕ...' },
-                { percent: 100, text: 'Р“РѕС‚РѕРІРѕ!' }
+                { percent: 10, text: 'Загрузка ресурсов...' },
+                { percent: 25, text: 'Инициализация интерфейса...' },
+                { percent: 40, text: 'Загрузка данных...' },
+                { percent: 60, text: 'Подготовка к работе...' },
+                { percent: 80, text: 'Почти готово...' },
+                { percent: 100, text: 'Готово!' }
             ];
 
             let currentStage = 0;
@@ -457,16 +457,16 @@
                 statusText.textContent = stage.text;
             }
 
-            // Р—Р°РїСѓСЃРє РїСЂРѕРіСЂРµСЃСЃ Р±Р°СЂР°
+            // Запуск прогресс бара
             function startProgress() {
                 setRandomTip();
                 updateNetworkStatus();
 
-                // РЎР»СѓС€Р°С‚РµР»Рё РёР·РјРµРЅРµРЅРёСЏ СЃС‚Р°С‚СѓСЃР° СЃРµС‚Рё
+                // Слушатели изменения статуса сети
                 window.addEventListener('online', updateNetworkStatus);
                 window.addEventListener('offline', updateNetworkStatus);
 
-                // РРјРёС‚Р°С†РёСЏ РїСЂРѕРіСЂРµСЃСЃР° Р·Р°РіСЂСѓР·РєРё
+                // Имитация прогресса загрузки
                 const progressInterval = setInterval(() => {
                     if (currentStage < stages.length) {
                         updateProgress(currentStage);
@@ -474,21 +474,21 @@
                     } else {
                         clearInterval(progressInterval);
                     }
-                }, 300); // РљР°Р¶РґС‹Рµ 300РјСЃ РЅРѕРІС‹Р№ СЌС‚Р°Рї
+                }, 300); // Каждые 300мс новый этап
             }
 
-            // РЎРєСЂС‹С‚РёРµ splash screen
+            // Скрытие splash screen
             window.hideSplashScreen = function () {
                 if (splashScreen) {
                     splashScreen.classList.add('hidden');
-                    // РЈРґР°Р»СЏРµРј РёР· DOM С‡РµСЂРµР· 500РјСЃ (РїРѕСЃР»Рµ Р·Р°РІРµСЂС€РµРЅРёСЏ Р°РЅРёРјР°С†РёРё)
+                    // Удаляем из DOM через 500мс (после завершения анимации)
                     setTimeout(() => {
                         splashScreen.style.display = 'none';
                     }, 500);
                 }
             };
 
-            // РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ СЃРєСЂС‹С‚РёРµ С‡РµСЂРµР· 15 СЃРµРєСѓРЅРґ (РµСЃР»Рё РїСЂРёР»РѕР¶РµРЅРёРµ РЅРµ Р·Р°РіСЂСѓР·РёР»РѕСЃСЊ)
+            // Автоматическое скрытие через 15 секунд (если приложение не загрузилось)
             setTimeout(() => {
                 if (splashScreen && !splashScreen.classList.contains('hidden')) {
                     console.warn('[Splash Screen] Timeout 15s, forcing hide');
@@ -496,7 +496,7 @@
                 }
             }, 15000);
 
-            // Р—Р°РїСѓСЃРє РїСЂРё Р·Р°РіСЂСѓР·РєРµ
+            // Запуск при загрузке
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', startProgress);
             } else {
@@ -505,11 +505,11 @@
         })();
     </script>
 
-    <!-- Debug: Р»РѕРіРёСЂРѕРІР°РЅРёРµ СЃС‚РёР»РµР№ РєРЅРѕРїРѕРє -->
+    <!-- Debug: логирование стилей кнопок -->
     <script src="debug-buttons.js"></script>
 
     <script type="module">
-        import { initUI } from './ui-manager.js?v=6.20.8';
+        import { initUI } from './ui-manager.js?v=6.21.0';
         window.initUI = initUI;
 
         // ===================================================================
@@ -523,24 +523,24 @@
             skippedVersion: null,
 
             init() {
-                // Р—Р°РіСЂСѓР¶Р°РµРј РІРµСЂСЃРёСЋ РёР· localStorage
+                // Загружаем версию из localStorage
                 this.skippedVersion = localStorage.getItem('skippedUpdateVersion');
 
-                // РљРЅРѕРїРєРё
+                // Кнопки
                 this.skipBtn.addEventListener('click', () => this.skip());
                 this.confirmBtn.addEventListener('click', () => this.update());
 
-                // Р—Р°РєСЂС‹С‚РёРµ РїРѕ РєР»РёРєСѓ РЅР° overlay
+                // Закрытие по клику на overlay
                 this.overlay.addEventListener('click', (e) => {
                     if (e.target === this.overlay) this.skip();
                 });
             },
 
             show(newVersion) {
-                // РќРµ РїРѕРєР°Р·С‹РІР°РµРј, РµСЃР»Рё СЌС‚Р° РІРµСЂСЃРёСЏ СѓР¶Рµ Р±С‹Р»Р° РїСЂРѕРїСѓС‰РµРЅР°
+                // Не показываем, если эта версия уже была пропущена
                 if (this.skippedVersion === newVersion) return;
 
-                this.versionEl.textContent = `Р’РµСЂСЃРёСЏ: ${newVersion}`;
+                this.versionEl.textContent = `Версия: ${newVersion}`;
                 this.overlay.classList.add('active');
             },
 
@@ -549,8 +549,8 @@
             },
 
             skip() {
-                // РЎРѕС…СЂР°РЅСЏРµРј РІРµСЂСЃРёСЋ РєР°Рє РїСЂРѕРїСѓС‰РµРЅРЅСѓСЋ
-                const version = this.versionEl.textContent.replace('Р’РµСЂСЃРёСЏ: ', '');
+                // Сохраняем версию как пропущенную
+                const version = this.versionEl.textContent.replace('Версия: ', '');
                 localStorage.setItem('skippedUpdateVersion', version);
                 this.hide();
             },
@@ -561,20 +561,20 @@
             }
         };
 
-        // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ
+        // Инициализируем модальное окно
         UpdateModal.init();
 
-        // Р РµРіРёСЃС‚СЂРёСЂСѓРµРј Service Worker РґР»СЏ РєСЌС€РёСЂРѕРІР°РЅРёСЏ СЃС‚Р°С‚РёРєРё
+        // Регистрируем Service Worker для кэширования статики
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then(registration => {
                     console.log('[SW] Registered:', registration.scope);
 
-                    // РЎР»СѓС€Р°РµРј СЃРѕРѕР±С‰РµРЅРёСЏ РѕС‚ Service Worker
+                    // Слушаем сообщения от Service Worker
                     navigator.serviceWorker.addEventListener('message', event => {
                         if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
                             console.log('[SW] Update available');
-                            // РџРѕРєР°Р·С‹РІР°РµРј РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РІРјРµСЃС‚Рѕ Р°РІС‚Рѕ-РїРµСЂРµР·Р°РіСЂСѓР·РєРё
+                            // Показываем модальное окно вместо авто-перезагрузки
                             const newVersion = 'v' + window.currentAppVersion;
                             UpdateModal.show(newVersion);
                         }
@@ -589,12 +589,12 @@
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initUI);
         } else {
-            // DOM РіРѕС‚РѕРІ, РІС‹Р·С‹РІР°РµРј initUI
+            // DOM готов, вызываем initUI
             initUI();
         }
     </script>
 
-    <!-- Debug: Р»РѕРіРёСЂРѕРІР°РЅРёРµ СЃС‚РёР»РµР№ С‚Р°Р±РѕРІ -->
+    <!-- Debug: логирование стилей табов -->
     <script src="debug-tabs.js"></script>
 
     <!-- Push Notifications -->

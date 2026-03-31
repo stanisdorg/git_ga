@@ -2217,13 +2217,76 @@
       "lastReviewed": "2026-03-29",
       "lastReviewedTime": 5,
       "question": "Как локализуешь дефекты, бэк фронт?"
+    },
+    "502 Bad Gateway": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774914568286,
+      "nextReviewDate": 1775005200000,
+      "dueDate": "2026-04-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774914568286,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-31",
+      "lastReviewedTime": 5,
+      "question": "502 Bad Gateway"
+    },
+    "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774914568652,
+      "nextReviewDate": 1775005200000,
+      "dueDate": "2026-04-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774914568652,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-31",
+      "lastReviewedTime": 5,
+      "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
+    },
+    "сущности в докере?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1774914568940,
+      "nextReviewDate": 1775005200000,
+      "dueDate": "2026-04-01T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1774914568940,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-03-31",
+      "lastReviewedTime": 5,
+      "question": "сущности в докере?"
     }
   },
   "_stats": {
-    "total": 6,
-    "timeSpent": 21936,
+    "total": 9,
+    "timeSpent": 23570,
     "correct": 3,
-    "points": 45
+    "points": 60
   },
   "_meta": {
     "username": "doroganov_stanislav",

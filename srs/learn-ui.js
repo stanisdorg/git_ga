@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.20.8';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.20.8';
-import { getProgressMap } from './stats-utils.js?v=6.20.8';
-import { checkAchievements } from './stats-utils.js?v=6.20.8';
-import { Scheduler } from './scheduler.js?v=6.20.8';
-import { getTodaysSession } from './category-scheduler.js?v=6.20.8';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.20.8';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.20.8';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.20.8';
+import { LearningSession } from './session.js?v=6.09.5';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.09.5';
+import { getProgressMap } from './stats-utils.js?v=6.09.5';
+import { checkAchievements } from './stats-utils.js?v=6.09.5';
+import { Scheduler } from './scheduler.js?v=6.09.5';
+import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.09.5';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.09.5';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.09.5';
 
 // DOM Elements
 let container = null;
@@ -14,6 +14,8 @@ let mainContainer = null; // The app's main container to hide/show
 let session = null;
 let currentScheduler = null;
 let timerInterval = null;
+let isTimerRunning = false; // Глобальный флаг для блокировки updateTimerDisplay
+let currentIntervalId = null; // Хранит ID текущего активного интервала
 let sessionTimerStart = 0;
 let userScrolled = false; // Флаг ручного скролла прогресс-бара
 let timerPaused = false; // Флаг паузы таймера
@@ -28,6 +30,13 @@ const starSvg = (filled) => `
 `;
 
 export function initLearnUI() {
+    // 🔧 ЗАЩИТА ОТ ПОВТОРНОГО ВЫЗОВА
+    if (window.__learnUIInitialized) {
+        console.log('[initLearnUI] ✅ Already initialized, skipping');
+        return;
+    }
+    window.__learnUIInitialized = true;
+
     // Check if container already exists (from previous session or reload)
     container = document.getElementById('learn-container');
 
@@ -326,9 +335,21 @@ export function initLearnUI() {
         if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (session) session.goTo((session.currentIndex || 0) - 1); });
         if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (session) session.goTo((session.currentIndex || 0) + 1); });
 
-        container.querySelector('.flashcard').addEventListener('click', () => {
-            if (session && !session.isFlipped) session.flip();
-        });
+        // Обработчик клика для переворота карточки
+        const flashcard = container.querySelector('.flashcard');
+        const flashcardFront = container.querySelector('.flashcard-front');
+        const flashcardBack = container.querySelector('.flashcard-back');
+
+        function handleCardClick(e) {
+            e.stopPropagation();
+            if (session && !session.isFlipped) {
+                session.flip();
+            }
+        }
+
+        if (flashcard) flashcard.addEventListener('click', handleCardClick);
+        if (flashcardFront) flashcardFront.addEventListener('click', handleCardClick);
+        if (flashcardBack) flashcardBack.addEventListener('click', handleCardClick);
 
         // Favorite buttons
         container.querySelectorAll('.learn-fav-btn').forEach(btn => {
@@ -364,14 +385,31 @@ export function initLearnUI() {
         // Rating buttons
         const rates = container.querySelectorAll('.rate-btn');
         console.log('[LEARN-UI] Найдено кнопок оценки:', rates.length);
+
+        // Флаг блокировки повторных нажатий
+        let isRatingInProgress = false;
+
         rates.forEach((btn, index) => {
             console.log(`[LEARN-UI] Кнопка ${index}:`, btn.className, btn.dataset.grade);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
+
+                // Блокируем повторные нажатия
+                if (isRatingInProgress) {
+                    console.warn('[RATE BUTTON CLICK] ⚠️ Rating already in progress, ignoring click!');
+                    return;
+                }
+
                 const grade = parseInt(btn.dataset.grade);
                 console.log('========================================');
-                console.log('[RATE BUTTON CLICK] Клик по кнопке!');
+                console.log('[RATE BUTTON CLICK] 🖱️ Клик по кнопке!');
                 console.log('[RATE BUTTON CLICK] Grade:', grade);
+                console.log('[RATE BUTTON CLICK] session:', session ? 'exists' : 'null');
+                console.log('[RATE BUTTON CLICK] session.currentIndex:', session ? session.currentIndex : 'N/A');
+
+                // Блокируем повторные нажатия
+                isRatingInProgress = true;
+                console.log('[RATE BUTTON CLICK] 🔒 isRatingInProgress: true');
 
                 // Временно отключаем pointer-events чтобы снять hover
                 btn.style.pointerEvents = 'none';
@@ -380,15 +418,21 @@ export function initLearnUI() {
                 // Сбрасываем флаг ручного скролла перед ответом
                 userScrolled = false;
 
-                if (session) session.rate(grade);
+                if (session) {
+                    console.log('[RATE BUTTON CLICK] ✅ Calling session.rate(' + grade + ')');
+                    session.rate(grade);
+                } else {
+                    console.warn('[RATE BUTTON CLICK] ❌ session is null!');
+                }
                 // Сбрасываем фокус с кнопки чтобы не было обводки
                 btn.blur();
                 console.log('[RATE BUTTON CLICK] Focus blurred from button');
 
-                // Возвращаем pointer-events через небольшую задержку
+                // Возвращаем pointer-events и снимаем блокировку через небольшую задержку
                 setTimeout(() => {
                     btn.style.pointerEvents = '';
-                    console.log('[RATE BUTTON CLICK] pointerEvents: restored');
+                    isRatingInProgress = false;
+                    console.log('[RATE BUTTON CLICK] 🔓 pointerEvents: restored, isRatingInProgress: false');
                 }, 300);
 
                 console.log('========================================');
@@ -968,22 +1012,166 @@ function handleKeydown(e) {
 
 /**
  * Starts a learning session with the given list of candidate questions.
- * @param {Array} candidateQuestions 
+ * @param {Array} candidateQuestions
  */
 export function startLearnSession(candidateQuestions, options = {}) {
-    console.log('=== [startLearnSession] === CALLED ===');
-    console.log('[startLearnSession] candidateQuestions:', candidateQuestions ? candidateQuestions.length : 'null');
-    console.log('[startLearnSession] __navigatingToHome:', window.__navigatingToHome);
-    console.log('[startLearnSession] Stack trace:', new Error().stack);
+    // 🔧 Очищаем любой pending таймаут перед запуском новой сессии
+    if (window._learnTimerStartTimeout) {
+        clearTimeout(window._learnTimerStartTimeout);
+        window._learnTimerStartTimeout = null;
+    }
 
     // Проверяем, не перешли ли мы на главную во время запуска
     if (window.__navigatingToHome) {
-        console.log('[startLearnSession] ABORTED - navigating to home!');
-        window.__navigatingToHome = false;  // Сбрасываем флаг
+        window.__navigatingToHome = false;
         return;
     }
 
+    // ВАЖНО: Если сессия уже существует, принудительно завершаем её
+    if (session) {
+        // Принудительно очищаем таймер
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        // Сбрасываем сессию
+        session = null;
+    }
+
     initLearnUI(); // Ensure UI exists
+
+    // 🔧 ПЕРЕЗАПУСК ОБРАБОТЧИКОВ КАРТОЧКИ
+    // При повторном запуске сессии нужно перерегистрировать обработчики
+    const flashcard = container.querySelector('.flashcard');
+    const flashcardFront = container.querySelector('.flashcard-front');
+    const flashcardBack = container.querySelector('.flashcard-back');
+
+    // Удаляем старые обработчики клонированием карточки
+    if (flashcard && flashcard.parentNode) {
+        const newFlashcard = flashcard.cloneNode(true);
+        flashcard.parentNode.replaceChild(newFlashcard, flashcard);
+
+        // Добавляем новый обработчик
+        function handleCardClick(e) {
+            // ⚠️ ПРОВЕРЯЕМ: клик должен быть именно по карточке, а не по кнопкам
+            const target = e.target;
+            if (target.closest('.rate-btn') ||
+                target.closest('.learn-fav-btn') ||
+                target.closest('.learn-edit-btn') ||
+                target.closest('.nav-arrow-btn')) {
+                e.stopPropagation();
+                return;
+            }
+
+            if (session && !session.isFlipped) {
+                session.flip();
+            }
+        }
+
+        newFlashcard.addEventListener('click', handleCardClick);
+        newFlashcard.querySelector('.flashcard-front')?.addEventListener('click', handleCardClick);
+        newFlashcard.querySelector('.flashcard-back')?.addEventListener('click', handleCardClick);
+
+        // 🔧 ПЕРЕРЕГИСТРИРУЕМ обработчики кнопок на НОВЫХ элементах после клонирования
+
+        // Favorite buttons
+        newFlashcard.querySelectorAll('.learn-fav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!session || !session.currentCard) return;
+
+                const question = session.currentCard.question;
+                const favs = JSON.parse(localStorage.getItem('qaFavorites') || '[]');
+                const index = favs.indexOf(question);
+                let newIsFav = false;
+
+                if (index === -1) {
+                    favs.push(question);
+                    newIsFav = true;
+                } else {
+                    favs.splice(index, 1);
+                    newIsFav = false;
+                }
+
+                localStorage.setItem('qaFavorites', JSON.stringify(favs));
+                syncFavorite(question, newIsFav);
+                window.dispatchEvent(new Event('favoritesUpdated'));
+
+                // Update all buttons (both front and back)
+                newFlashcard.querySelectorAll('.learn-fav-btn').forEach(b => {
+                    b.innerHTML = starSvg(newIsFav);
+                    b.classList.toggle('active', newIsFav);
+                });
+            });
+        });
+
+        // Edit buttons
+        newFlashcard.querySelectorAll('.learn-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!session || !session.currentCard) {
+                    return;
+                }
+                openEditModal(session.currentCard);
+            });
+        });
+
+        // 🔧 Rate buttons (оценка) - перерегистрируем после клонирования
+        const rates = newFlashcard.querySelectorAll('.rate-btn');
+        console.log('[startLearnSession] 🔄 Re-registering rate buttons:', rates.length);
+
+        let isRatingInProgress = false;
+
+        rates.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                if (isRatingInProgress) {
+                    console.warn('[RATE BUTTON CLICK] ⚠️ Rating already in progress, ignoring click!');
+                    return;
+                }
+
+                const grade = parseInt(btn.dataset.grade);
+                console.log('[RATE BUTTON CLICK] 🖱️ Клик по кнопке! Grade:', grade);
+
+                isRatingInProgress = true;
+                btn.style.pointerEvents = 'none';
+                userScrolled = false;
+
+                if (session) {
+                    console.log('[RATE BUTTON CLICK] ✅ Calling session.rate(' + grade + ')');
+                    session.rate(grade);
+                } else {
+                    console.warn('[RATE BUTTON CLICK] ❌ session is null!');
+                }
+
+                btn.blur();
+
+                setTimeout(() => {
+                    btn.style.pointerEvents = '';
+                    isRatingInProgress = false;
+                }, 300);
+            });
+        });
+
+        // 🔧 Navigation buttons (вперед/назад) - перерегистрируем после клонирования
+        const navBtns = newFlashcard.querySelectorAll('.nav-arrow-btn');
+        console.log('[startLearnSession] 🔄 Re-registering nav buttons:', navBtns.length);
+
+        navBtns.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                if (!session) return;
+
+                const direction = btn.classList.contains('right') ? 1 : -1;
+                console.log('[NAV BUTTON CLICK] 🖱️ Nav clicked! Direction:', direction);
+
+                session.goTo(session.currentIndex + direction);
+                btn.blur();
+            });
+        });
+    }
 
     // Скрываем навигацию и добавляем класс на body
     document.body.classList.add('learning-mode');
@@ -1039,6 +1227,32 @@ export function startLearnSession(candidateQuestions, options = {}) {
     const learnHeader2 = document.querySelector('.learn-header');
     const exitBtn = document.getElementById('learn-exit-btn');
 
+    // 🔧 КЛОНИРОВАНИЕ ЭЛЕМЕНТОВ ТАЙМЕРА ДЛЯ СБРОСА ОБРАБОТЧИКОВ
+    // СНАЧАЛА очищаем старый таймер если есть
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    // Клонируем timer-controls чтобы сбросить все старые обработчики
+    const timerControls = document.getElementById('timer-controls');
+    if (timerControls) {
+        // Удаляем старые обработчики перед клонированием
+        if (timerPauseHandler) {
+            const pauseBtn = document.getElementById('timer-pause-btn');
+            if (pauseBtn) pauseBtn.removeEventListener('click', timerPauseHandler);
+        }
+        if (timerClickHandler) {
+            const timerEl = document.getElementById('mode-timer');
+            if (timerEl) timerEl.removeEventListener('click', timerClickHandler);
+        }
+        if (timerControlsHandler) {
+            timerControls.removeEventListener('click', timerControlsHandler);
+        }
+        const newTimerControls = timerControls.cloneNode(true);
+        timerControls.parentNode.replaceChild(newTimerControls, timerControls);
+    }
+
     // НЕ перемещаем таймер! Он остаётся внутри .timer-controls внутри .flashcard
     // Просто обновляем стили для ПК версии через CSS классы
 
@@ -1054,12 +1268,34 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
 
     // Start Timer
-    if (timerInterval) clearInterval(timerInterval);
+    // ⚠️ ВАЖНО: Сначала выключаем флаг и очищаем ВСЕ интервалы
+    isTimerRunning = false;
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    // 🛡️ Дополнительная защита: ждём 200мс перед запуском нового таймера
     sessionTimerStart = Date.now();
     timerPaused = false;
     pausedTimeRemaining = 0;
-    updateTimerDisplay();
-    timerInterval = setInterval(updateTimerDisplay, 1000);
+
+    // Сохраняем ссылку на текущий таймаут для возможной отмены
+    const startTimerTimeout = setTimeout(() => {
+        // ⚠️ ПРОВЕРЯЕМ: не была ли сессия закрыта во время задержки
+        if (!session) {
+            return;
+        }
+
+        isTimerRunning = true;
+        updateTimerDisplay();
+        timerInterval = setInterval(updateTimerDisplay, 1000);
+        currentIntervalId = timerInterval; // Сохраняем ID текущего интервала
+    }, 200);
+
+    // Сохраняем ссылку на таймаут для отмены при stopLearnSession
+    window._learnTimerStartTimeout = startTimerTimeout;
 
     // Setup timer pause/resume functionality
     setupTimerControls();
@@ -1150,26 +1386,66 @@ export function startLearnSession(candidateQuestions, options = {}) {
 }
 
 function stopLearnSession() {
-    console.log('[stopLearnSession] Called!');
-    console.log('[stopLearnSession] location.hash:', location.hash);
-
+    // 1. Очищаем таймер
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
     }
+
+    // 1.5. Отменяем отложенный запуск таймера если он есть
+    if (window._learnTimerStartTimeout) {
+        clearTimeout(window._learnTimerStartTimeout);
+        window._learnTimerStartTimeout = null;
+    }
+
+    // 2. Выключаем глобальный флаг - это заблокирует все orphaned setInterval
+    isTimerRunning = false;
+    currentIntervalId = null;
+
+    // 3. Сбрасываем флаги таймера
+    timerPaused = false;
+    pausedTimeRemaining = 0;
+    sessionTimerStart = 0;
+
+    // 3. Скрываем таймер
+    const timerEl = document.getElementById('mode-timer');
+    if (timerEl) {
+        timerEl.textContent = '00:00';
+    }
+
+    // 4. Сбрасываем иконку паузы
+    const pauseBtn = document.getElementById('timer-pause-btn');
+    if (pauseBtn) {
+        pauseBtn.classList.remove('paused');
+        pauseBtn.classList.add('running');
+    }
+
+    // 5. Очищаем обработчики таймера
+    const timerControls = document.getElementById('timer-controls');
+    // timerEl уже объявлен выше
+    if (timerPauseHandler && pauseBtn) {
+        pauseBtn.removeEventListener('click', timerPauseHandler);
+    }
+    if (timerClickHandler && timerEl) {
+        timerEl.removeEventListener('click', timerClickHandler);
+    }
+    if (timerControlsHandler && timerControls) {
+        timerControls.removeEventListener('click', timerControlsHandler);
+    }
+    timerPauseHandler = null;
+    timerClickHandler = null;
+    timerControlsHandler = null;
+
     if (container) {
         container.style.display = 'none';
-        console.log('[stopLearnSession] learn-container hidden');
     }
     if (mainContainer) {
         mainContainer.style.display = 'block';
-        console.log('[stopLearnSession] mainContainer display set to block');
     }
     // Restore sidebar
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
         sidebar.style.display = '';
-        console.log('[stopLearnSession] sidebar display reset');
     }
 
     // Возвращаем навигацию и убираем класс с body
@@ -1177,32 +1453,28 @@ function stopLearnSession() {
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) {
         bottomNav.style.display = 'flex';
-        console.log('[stopLearnSession] bottom-nav display set to flex');
     }
 
     // Восстанавливаем search-container и top-actions-bar
     const searchContainer = document.querySelector('.search-container');
     if (searchContainer) {
         searchContainer.style.display = '';
-        console.log('[stopLearnSession] search-container display reset');
-    } else {
-        console.warn('[stopLearnSession] search-container NOT FOUND!');
     }
 
     const topActionsBar = document.querySelector('.top-actions-bar');
     if (topActionsBar) {
         topActionsBar.style.display = 'flex';
-        console.log('[stopLearnSession] top-actions-bar display reset');
-    } else {
-        console.warn('[stopLearnSession] top-actions-bar NOT FOUND!');
     }
 
     window.dispatchEvent(new Event('favoritesUpdated'));
-    session = null;
 
-    console.log('[stopLearnSession] Done! Checking elements visibility:');
-    console.log('  - search-container:', document.querySelector('.search-container')?.style.display);
-    console.log('  - top-actions-bar:', document.querySelector('.top-actions-bar')?.style.display);
+    // 6. Очищаем сессию
+    if (session) {
+        session = null;
+    }
+
+    // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
+    window.__learnUIInitialized = false;
 }
 
 function renderCardState(state) {
@@ -2175,7 +2447,7 @@ function showStats(stats, results, total) {
             console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=6.20.8').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=6.09').then(({ initStatsPage }) => {
                 console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
@@ -2526,10 +2798,12 @@ function getLevelFromXP(xp) {
 function updateTimerDisplay() {
     // Обновляем .mode-timer вместо #learn-timer
     const el = document.querySelector('.mode-timer');
-    if (!el) return;
+    if (!el) {
+        return;
+    }
 
-    // Если таймер на паузе - не обновляем время
-    if (timerPaused) {
+    // Если таймер не запущен или на паузе - не обновляем время
+    if (!isTimerRunning || timerPaused) {
         return;
     }
 
@@ -2547,18 +2821,30 @@ function updateTimerDisplay() {
  * Toggle timer pause/resume
  */
 function toggleTimerPause() {
+    console.log('[TIMER] toggleTimerPause called, timerPaused BEFORE:', timerPaused);
     const pauseBtn = document.getElementById('timer-pause-btn');
     const timerControls = document.getElementById('timer-controls');
 
-    if (!pauseBtn) return;
+    if (!pauseBtn) {
+        console.warn('[TIMER] pauseBtn NOT FOUND in toggleTimerPause');
+        return;
+    }
 
     if (timerPaused) {
         // RESUME: продолжаем отсчёт
-        sessionTimerStart = Date.now();
+        console.log('[TIMER] ▶️ RESUMING timer');
 
-        // Запускаем интервал
-        timerInterval = setInterval(updateTimerDisplay, 1000);
-        updateTimerDisplay();
+        // Проверяем, нет ли уже активного интервала
+        if (timerInterval) {
+            console.log('[TIMER] ⚠️ timerInterval already exists (ID=' + timerInterval + '), skipping restart');
+        } else {
+            sessionTimerStart = Date.now();
+
+            // Запускаем интервал
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+            console.log('[TIMER] ✅ timerInterval restarted, ID=' + timerInterval);
+            updateTimerDisplay();
+        }
 
         // Визуально: иконка play, белое свечение
         pauseBtn.classList.remove('paused');
@@ -2567,15 +2853,19 @@ function toggleTimerPause() {
         if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
     } else {
         // PAUSE: сохраняем накопленное время
+        console.log('[TIMER] ⏸️ PAUSING timer');
         const now = Date.now();
         const startTime = sessionTimerStart;
         const elapsed = Math.floor((now - startTime) / 1000);
         pausedTimeRemaining += elapsed;
+        console.log('[TIMER] elapsed:', elapsed, 'seconds, pausedTimeRemaining:', pausedTimeRemaining);
 
         // Останавливаем интервал
         if (timerInterval) {
+            console.log('[TIMER] ⏹️ Clearing timerInterval (ID=' + timerInterval + ')');
             clearInterval(timerInterval);
             timerInterval = null;
+            console.log('[TIMER] ✅ timerInterval cleared');
         }
 
         // Визуально: иконка паузы, мятное свечение
@@ -2586,12 +2876,19 @@ function toggleTimerPause() {
     }
 
     timerPaused = !timerPaused;
+    console.log('[TIMER] timerPaused AFTER:', timerPaused);
 }
+
+// Глобальные переменные для обработчиков таймера
+let timerPauseHandler = null;
+let timerClickHandler = null;
+let timerControlsHandler = null;
 
 /**
  * Setup timer controls event listeners
  */
 function setupTimerControls() {
+    // Получаем элементы после клонирования
     const pauseBtn = document.getElementById('timer-pause-btn');
     const timerControls = document.getElementById('timer-controls');
     const timerEl = document.getElementById('mode-timer');
@@ -2599,33 +2896,46 @@ function setupTimerControls() {
     // Флаг: была ли ручная пауза пользователем
     let wasManuallyPausedByUser = false;
 
+    // Удаляем старые обработчики если они есть
+    if (timerPauseHandler || timerClickHandler || timerControlsHandler) {
+        if (pauseBtn && timerPauseHandler) pauseBtn.removeEventListener('click', timerPauseHandler);
+        if (timerEl && timerClickHandler) timerEl.removeEventListener('click', timerClickHandler);
+        if (timerControls && timerControlsHandler) timerControls.removeEventListener('click', timerControlsHandler);
+    }
+
+    // Создаём новые обработчики
+    timerPauseHandler = (e) => {
+        e.stopPropagation();
+        wasManuallyPausedByUser = !timerPaused;
+        toggleTimerPause();
+    };
+
+    timerClickHandler = (e) => {
+        e.stopPropagation();
+        wasManuallyPausedByUser = !timerPaused;
+        toggleTimerPause();
+    };
+
+    timerControlsHandler = (e) => {
+        if (e.target !== pauseBtn && e.target !== timerEl) {
+            wasManuallyPausedByUser = !timerPaused;
+            toggleTimerPause();
+        }
+    };
+
     // Клик по кнопке паузы
     if (pauseBtn) {
-        pauseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
-            toggleTimerPause();
-        });
+        pauseBtn.addEventListener('click', timerPauseHandler);
     }
 
     // Клик по таймеру (тоже пауза/старт)
     if (timerEl) {
-        timerEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            wasManuallyPausedByUser = !timerPaused; // Запоминаем намерение пользователя
-            toggleTimerPause();
-        });
+        timerEl.addEventListener('click', timerClickHandler);
     }
 
     // Клик по контейнеру timer-controls
     if (timerControls) {
-        timerControls.addEventListener('click', (e) => {
-            // Если клик не по кнопке и не по таймеру - тоже пауза
-            if (e.target !== pauseBtn && e.target !== timerEl) {
-                wasManuallyPausedByUser = !timerPaused;
-                toggleTimerPause();
-            }
-        });
+        timerControls.addEventListener('click', timerControlsHandler);
     }
 
     // Инициализация: устанавливаем иконку play (режим воспроизведения)
@@ -2674,22 +2984,28 @@ function setupTimerControls() {
             // Страница снова видима
             // Если не было ручной паузы пользователем - автоматически запускаем таймер
             if (!wasManuallyPausedByUser && timerPaused && autoPaused) {
-                // RESUME: продолжаем отсчёт
-                sessionTimerStart = Date.now();
+                // Проверяем, нет ли уже активного интервала
+                if (timerInterval) {
+                    console.log('[TIMER] visibilitychange: timerInterval already exists, skipping');
+                } else {
+                    // RESUME: продолжаем отсчёт
+                    console.log('[TIMER] visibilitychange: resuming timer');
+                    sessionTimerStart = Date.now();
 
-                // Запускаем интервал
-                timerInterval = setInterval(updateTimerDisplay, 1000);
-                updateTimerDisplay();
+                    // Запускаем интервал
+                    timerInterval = setInterval(updateTimerDisplay, 1000);
+                    updateTimerDisplay();
 
-                timerPaused = false;
-                autoPaused = false;
+                    timerPaused = false;
+                    autoPaused = false;
 
-                // Визуально: иконка play, белое свечение
-                if (pauseBtn) {
-                    pauseBtn.classList.remove('paused');
-                    pauseBtn.classList.add('running');
+                    // Визуально: иконка play, белое свечение
+                    if (pauseBtn) {
+                        pauseBtn.classList.remove('paused');
+                        pauseBtn.classList.add('running');
+                    }
+                    if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
                 }
-                if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
             }
         }
     });
