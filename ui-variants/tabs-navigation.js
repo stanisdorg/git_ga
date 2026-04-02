@@ -3644,16 +3644,24 @@ function refreshCurrentContext() {
 
 // Функция для увеличения карточки (PC версия)
 function openCardZoomModal(item, ef) {
+    console.log('[CARD ZOOM] openCardZoomModal called with:', { question: item.question?.substring(0, 20), category: item.category, ef });
+    
     // Проверяем, не открыто ли уже модальное окно
     if (document.querySelector('.card-zoom-overlay')) {
+        console.log('[CARD ZOOM] Modal already open');
         return;
     }
 
     // Получаем форматирование
     const questionFormatting = item.formatting?.question || [];
     const answerFormatting = item.formatting?.answer || [];
+    
+    console.log('[CARD ZOOM] Formatting:', { questionFormatting, answerFormatting });
+    
     const questionHTML = applyFormatting(item.question, questionFormatting);
     const answerHTML = applyFormatting(item.answer, answerFormatting);
+    
+    console.log('[CARD ZOOM] HTML generated:', { questionHTML: questionHTML?.substring(0, 50), answerHTML: answerHTML?.substring(0, 50) });
 
     // Создаем overlay
     const overlay = document.createElement('div');
@@ -3669,7 +3677,9 @@ function openCardZoomModal(item, ef) {
         </div>
     `;
 
+    console.log('[CARD ZOOM] Overlay created, appending to body');
     document.body.appendChild(overlay);
+    console.log('[CARD ZOOM] Overlay appended, check if visible:', document.querySelector('.card-zoom-overlay'));
 
     // Закрытие по клику на overlay
     overlay.addEventListener('click', () => closeCardZoomModal(overlay));
