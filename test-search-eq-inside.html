@@ -103,18 +103,19 @@
             color: #666;
         }
         
-        /* Визуализатор ВНУТРИ поля */
+        /* Визуализатор ВНУТРИ поля (без фона) */
         .equalizer-wrapper {
-            width: 120px;
-            height: 32px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 4px 8px;
-            flex-shrink: 0;
-            display: flex;
+            width: 100px;
+            height: 28px;
+            display: none; /* Скрыт по умолчанию */
             align-items: flex-end;
             gap: 2px;
-            overflow: hidden;
+            flex-shrink: 0;
+            padding: 0 4px;
+        }
+        
+        .equalizer-wrapper.visible {
+            display: flex; /* Показываем когда активен */
         }
         
         .equalizer-bar {
@@ -125,30 +126,29 @@
             transition: height 0.1s ease;
         }
         
-        /* Кнопка микрофона (без анимаций) */
+        /* Кнопка микрофона (простая, без анимаций) */
         .mic-button {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             border: none;
-            background: rgba(255, 45, 85, 0.15);
-            color: #ff2d55;
+            background: transparent;
+            color: #888;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
             font-size: 18px;
             flex-shrink: 0;
+            transition: color 0.2s ease;
         }
         
         .mic-button:hover {
-            background: rgba(255, 45, 85, 0.25);
+            color: #fff;
         }
         
         .mic-button.active {
-            background: #ff2d55;
-            color: #fff;
+            color: #ff2d55;
         }
         
         /* Статус бар */
@@ -366,6 +366,7 @@
                 
                 document.getElementById('micBtn').classList.add('active');
                 document.getElementById('statusBar').classList.add('visible');
+                document.getElementById('equalizer').classList.add('visible'); /* Показываем эквалайзер */
             } catch (err) {
                 console.error('Ошибка:', err);
                 alert('Не удалось получить доступ к микрофону');
@@ -389,6 +390,7 @@
             
             document.getElementById('micBtn').classList.remove('active');
             document.getElementById('statusBar').classList.remove('visible');
+            document.getElementById('equalizer').classList.remove('visible'); /* Скрываем эквалайзер */
         }
 
         function updateEqualizer() {
@@ -397,7 +399,6 @@
             analyser.getByteFrequencyData(frequencyData);
             const config = styles[selectedStyle];
             const step = Math.floor(frequencyData.length / equalizerBars.length);
-            const time = Date.now() * 0.002;
 
             for (let i = 0; i < equalizerBars.length; i++) {
                 let value = frequencyData[i * step];
@@ -406,14 +407,8 @@
                 const frequencyMultiplier = 1 + (i / equalizerBars.length) * 1.2;
                 value = Math.min(255, value * frequencyMultiplier);
                 
-                // Фоновая анимация в тишине
-                let height;
-                if (value < 30) {
-                    const wave = Math.sin(time + i * 0.5) * 0.5 + 0.5;
-                    height = 3 + wave * 8; // 3-11px в тишине
-                } else {
-                    height = 3 + (value / 255) * 22; // 3-25px при звуке
-                }
+                // Только реакция на звук (без фоновой волны)
+                const height = 3 + (value / 255) * 22; // 3-25px
                 
                 equalizerBars[i].style.height = `${height}px`;
                 

@@ -312,13 +312,13 @@
    ============================================ */
 .search-suggestions {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 2px);
     left: 0;
     right: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
+    gap: 4px;
+    padding: 2px 4px;
     background: rgba(255, 255, 255, 0.005);
     border: 1px solid rgba(255, 255, 255, 0.01);
     border-radius: 12px;
@@ -337,29 +337,31 @@
 .search-suggestion-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
+    gap: 6px;
+    padding: 3px 10px;
     background: rgba(255, 255, 255, 0.01);
     border: 1px solid rgba(255, 255, 255, 0.02);
-    border-radius: 20px;
+    border-radius: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
     position: relative;
+    line-height: 1;
 }
 
 .search-suggestion-item:hover {
     background: rgba(255, 255, 255, 0.02);
     border-color: rgba(255, 255, 255, 0.04);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .search-suggestion-query {
     color: #ffffff;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
+    line-height: 1;
 }
 
 /* Кнопка удаления (крестик) */
