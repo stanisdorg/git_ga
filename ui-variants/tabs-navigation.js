@@ -769,7 +769,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.39.0');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.40.0');
                     initStatsPage(appVersion);
                 }
 
@@ -4891,6 +4891,12 @@ window.addEventListener('qaDataUpdated', (event) => {
     if (location.hash === '#/stats') {
         console.log('[qaDataUpdated] ⚠️ Страница статистики - откладываем обновление');
         return;
+    }
+
+    // 🔥 Если мы на вкладке избранного - обновляем favorites
+    if (currentContextKey === 'favorites') {
+        console.log('[qaDataUpdated] 📌 Находимся на вкладке избранного - обновляем');
+        showFavorites();
     }
 
     // Обновляем текущий контекст
