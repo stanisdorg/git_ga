@@ -103,6 +103,39 @@ export function getProgressMap() {
   return readJSON('srsProgress', {});
 }
 
+/**
+ * Расчёт среднего времени прохождения карточки (в секундах)
+ * на основе последних 40 пройденных карточек
+ * @returns {number} среднее время в секундах (округлено до целого)
+ */
+export function getAverageCardTime(sampleSize = 40) {
+  const progressMap = getProgressMap();
+  const cards = Object.values(progressMap);
+  
+  // Фильтруем карточки у которых есть lastReviewedTime
+  const cardsWithTime = cards.filter(p => p && typeof p.lastReviewedTime === 'number');
+  
+  if (cardsWithTime.length === 0) {
+    return 90; // Значение по умолчанию (1.5 минуты) если нет данных
+  }
+  
+  // Сортируем по lastReviewed (дате) чтобы взять последние
+  cardsWithTime.sort((a, b) => {
+    const dateA = a.lastReviewed || '';
+    const dateB = b.lastReviewed || '';
+    return dateB.localeCompare(dateA); // По убыванию (сначала новые)
+  });
+  
+  // Берём последние sampleSize карточек
+  const recentCards = cardsWithTime.slice(0, sampleSize);
+  
+  // Считаем среднее время
+  const totalTime = recentCards.reduce((sum, card) => sum + (card.lastReviewedTime || 0), 0);
+  const avgTime = totalTime / recentCards.length;
+  
+  return Math.round(avgTime); // Возвращаем в секундах
+}
+
 export function getStudyStats() {
   return readJSON('studyStats', { total: 0, correct: 0, points: 0 });
 }

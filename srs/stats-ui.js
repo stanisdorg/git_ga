@@ -1,4 +1,4 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak } from './stats-utils.js?v=6.09.5';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime } from './stats-utils.js?v=6.09.5';
 import { syncFavorite } from './storage.js?v=6.09.5';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09.5';
 import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
@@ -2609,7 +2609,10 @@ function renderStats() {
   try {
     todaysSession = getTodaysSession(uniqueQaData || []);
     sessionCount = todaysSession.length;
-    planMins = Math.ceil(sessionCount * 1.5);
+    // Расчёт времени на основе среднего времени прохождения последних 40 карточек
+    const avgSecPerCard = getAverageCardTime(40); // секунды на карточку
+    const totalSec = sessionCount * avgSecPerCard;
+    planMins = Math.ceil(totalSec / 60); // конвертируем в минуты
   } catch { }
 
   const totalCards = uniqueQaData ? uniqueQaData.length : 0;
@@ -2742,7 +2745,10 @@ function renderStats() {
             <div class="metric"><span>⚡</span> ${easyCount}</div>
             <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
           </div>
-          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 12px;height:32px;font-size:12px;font-weight:600;">▶ Обучение</button>
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${sessionCount} карточек • ~${planMins} мин">
+            <span style="display:flex;align-items:center;line-height:1;"><svg viewBox="0 0 24 24" fill="#000" style="width:16px;height:16px;margin-right:6px;"><path d="M8 5v14l11-7z"/></svg>Обучение</span>
+            <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${sessionCount} карт • ~${planMins} мин</span>
+          </button>
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
