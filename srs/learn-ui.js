@@ -1378,107 +1378,116 @@ function stopLearnSession() {
     location.hash = '#/stats';
     console.log('[STOP LEARN SESSION] Hash after set:', location.hash);
 
-    // 1. Очищаем таймер
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        console.log('[STOP LEARN SESSION] Timer interval cleared');
-    }
+    // 🔥 ВАЖНО: Даем hashchange обработаться ПЕРЕД восстановлением UI
+    // Иначе главная страница успеет показаться раньше статистики
+    setTimeout(() => {
+        console.log('[STOP LEARN SESSION] === TIMEOUT START ===');
+        console.log('[STOP LEARN SESSION] Current hash:', location.hash);
+        
+        // 1. Очищаем таймер
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            console.log('[STOP LEARN SESSION] Timer interval cleared');
+        }
 
-    // 1.5. Отменяем отложенный запуск таймера если он есть
-    if (window._learnTimerStartTimeout) {
-        clearTimeout(window._learnTimerStartTimeout);
-        window._learnTimerStartTimeout = null;
-        console.log('[STOP LEARN SESSION] Deferred timer start cleared');
-    }
+        // 1.5. Отменяем отложенный запуск таймера если он есть
+        if (window._learnTimerStartTimeout) {
+            clearTimeout(window._learnTimerStartTimeout);
+            window._learnTimerStartTimeout = null;
+            console.log('[STOP LEARN SESSION] Deferred timer start cleared');
+        }
 
-    // 2. Выключаем глобальный флаг - это заблокирует все orphaned setInterval
-    isTimerRunning = false;
-    currentIntervalId = null;
-    console.log('[STOP LEARN SESSION] isTimerRunning=false, currentIntervalId=null');
+        // 2. Выключаем глобальный флаг - это заблокирует все orphaned setInterval
+        isTimerRunning = false;
+        currentIntervalId = null;
+        console.log('[STOP LEARN SESSION] isTimerRunning=false, currentIntervalId=null');
 
-    // 3. Сбрасываем флаги таймера
-    timerPaused = false;
-    pausedTimeRemaining = 0;
-    sessionTimerStart = 0;
+        // 3. Сбрасываем флаги таймера
+        timerPaused = false;
+        pausedTimeRemaining = 0;
+        sessionTimerStart = 0;
 
-    // 3. Скрываем таймер
-    const timerEl = document.getElementById('mode-timer');
-    if (timerEl) {
-        timerEl.textContent = '00:00';
-        console.log('[STOP LEARN SESSION] Timer element hidden');
-    }
+        // 3. Скрываем таймер
+        const timerEl = document.getElementById('mode-timer');
+        if (timerEl) {
+            timerEl.textContent = '00:00';
+            console.log('[STOP LEARN SESSION] Timer element hidden');
+        }
 
-    // 4. Сбрасываем иконку паузы
-    const pauseBtn = document.getElementById('timer-pause-btn');
-    if (pauseBtn) {
-        pauseBtn.classList.remove('paused');
-        pauseBtn.classList.add('running');
-        console.log('[STOP LEARN SESSION] Pause button reset');
-    }
+        // 4. Сбрасываем иконку паузы
+        const pauseBtn = document.getElementById('timer-pause-btn');
+        if (pauseBtn) {
+            pauseBtn.classList.remove('paused');
+            pauseBtn.classList.add('running');
+            console.log('[STOP LEARN SESSION] Pause button reset');
+        }
 
-    // 5. Очищаем обработчики таймера
-    const timerControls = document.getElementById('timer-controls');
-    // timerEl уже объявлен выше
-    if (timerPauseHandler && pauseBtn) {
-        pauseBtn.removeEventListener('click', timerPauseHandler);
-    }
-    if (timerClickHandler && timerEl) {
-        timerEl.removeEventListener('click', timerClickHandler);
-    }
-    if (timerControlsHandler && timerControls) {
-        timerControls.removeEventListener('click', timerControlsHandler);
-    }
-    timerPauseHandler = null;
-    timerClickHandler = null;
-    timerControlsHandler = null;
-    console.log('[STOP LEARN SESSION] Timer event handlers cleaned');
+        // 5. Очищаем обработчики таймера
+        const timerControls = document.getElementById('timer-controls');
+        // timerEl уже объявлен выше
+        if (timerPauseHandler && pauseBtn) {
+            pauseBtn.removeEventListener('click', timerPauseHandler);
+        }
+        if (timerClickHandler && timerEl) {
+            timerEl.removeEventListener('click', timerClickHandler);
+        }
+        if (timerControlsHandler && timerControls) {
+            timerControls.removeEventListener('click', timerControlsHandler);
+        }
+        timerPauseHandler = null;
+        timerClickHandler = null;
+        timerControlsHandler = null;
+        console.log('[STOP LEARN SESSION] Timer event handlers cleaned');
 
-    if (container) {
-        container.style.display = 'none';
-        console.log('[STOP LEARN SESSION] container.style.display = "none"');
-    }
-    if (mainContainer) {
-        mainContainer.style.display = 'block';
-        console.log('[STOP LEARN SESSION] mainContainer.style.display = "block"');
-    }
-    // Restore sidebar
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar) {
-        sidebar.style.display = '';
-        console.log('[STOP LEARN SESSION] sidebar display reset');
-    }
+        if (container) {
+            container.style.display = 'none';
+            console.log('[STOP LEARN SESSION] container.style.display = "none"');
+        }
+        if (mainContainer) {
+            mainContainer.style.display = 'block';
+            console.log('[STOP LEARN SESSION] mainContainer.style.display = "block"');
+        }
+        // Restore sidebar
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            sidebar.style.display = '';
+            console.log('[STOP LEARN SESSION] sidebar display reset');
+        }
 
-    // Возвращаем навигацию и убираем класс с body
-    document.body.classList.remove('learning-mode');
-    console.log('[STOP LEARN SESSION] learning-mode class removed from body');
-    const bottomNav = document.getElementById('bottom-nav');
-    if (bottomNav) {
-        bottomNav.style.display = 'flex';
-        console.log('[STOP LEARN SESSION] bottomNav displayed');
-    }
+        // Возвращаем навигацию и убираем класс с body
+        document.body.classList.remove('learning-mode');
+        console.log('[STOP LEARN SESSION] learning-mode class removed from body');
+        const bottomNav = document.getElementById('bottom-nav');
+        if (bottomNav) {
+            bottomNav.style.display = 'flex';
+            console.log('[STOP LEARN SESSION] bottomNav displayed');
+        }
 
-    // Восстанавливаем search-container и top-actions-bar
-    const searchContainer = document.querySelector('.search-container');
-    if (searchContainer) {
-        searchContainer.style.display = '';
-        console.log('[STOP LEARN SESSION] search-container display reset');
-    }
+        // Восстанавливаем search-container и top-actions-bar
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            searchContainer.style.display = '';
+            console.log('[STOP LEARN SESSION] search-container display reset');
+        }
 
-    const topActionsBar = document.querySelector('.top-actions-bar');
-    if (topActionsBar) {
-        topActionsBar.style.display = 'flex';
-    }
+        const topActionsBar = document.querySelector('.top-actions-bar');
+        if (topActionsBar) {
+            topActionsBar.style.display = 'flex';
+        }
 
-    window.dispatchEvent(new Event('favoritesUpdated'));
+        window.dispatchEvent(new Event('favoritesUpdated'));
 
-    // 6. Очищаем сессию
-    if (session) {
-        session = null;
-    }
+        // 6. Очищаем сессию
+        if (session) {
+            session = null;
+        }
 
-    // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
-    window.__learnUIInitialized = false;
+        // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
+        window.__learnUIInitialized = false;
+        
+        console.log('[STOP LEARN SESSION] === TIMEOUT END ===');
+    }, 50); // 🔥 Задержка 50мс для обработки hashchange
 }
 
 function renderCardState(state) {
