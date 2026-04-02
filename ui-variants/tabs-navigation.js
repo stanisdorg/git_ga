@@ -769,7 +769,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.24.0');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.37.0');
                     initStatsPage(appVersion);
                 }
 
@@ -838,6 +838,21 @@ export function initTabsNavigation(appVersion) {
                     window.__statsTopActionsObserver.disconnect();
                     window.__statsTopActionsObserver = null;
                     console.log('[HASHCHANGE #/] Disconnected __statsTopActionsObserver');
+                }
+
+                // 🔥 ПРОВЕРЯЕМ ФЛАГ изменений карточек (для отложенного обновления после редактирования)
+                try {
+                    const cardsUpdated = localStorage.getItem('qaCardsUpdated');
+                    if (cardsUpdated === 'true') {
+                        console.log('[HASHCHANGE #/] 🚨 Обнаружено изменение карточек (qaCardsUpdated=true)');
+                        console.log('[HASHCHANGE #/] 🔄 Вызываем refreshCurrentContext() для обновления UI');
+                        
+                        // Сбрасываем флаг
+                        localStorage.removeItem('qaCardsUpdated');
+                        localStorage.removeItem('qaCardsUpdatedTimestamp');
+                    }
+                } catch (e) {
+                    console.error('[HASHCHANGE #/] ❌ Ошибка проверки флага qaCardsUpdated:', e);
                 }
 
                 // Обновляем текущий контекст
