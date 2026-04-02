@@ -1,4 +1,4 @@
-import { syncWithServer } from './storage.js?v=6.23.0';
+import { syncWithServer } from './storage.js?v=6.24.0';
 
 // Вспомогательные функции для работы с датой (MSK timezone UTC+3)
 function getMSKDate() {
