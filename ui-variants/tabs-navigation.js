@@ -18,6 +18,7 @@ let currentContextKey = 'all';
 let currentQuestions = [];
 let sortMode = 'default'; // Global sort state
 let resultsListRef = null;
+let currentSearchQuery = ''; // 🔥 Сохраняем текущий поисковый запрос
 // Кэш корзины на стороне сервера (не используем localStorage для удалённых карточек)
 let serverTrashSet = new Set();
 let serverTrashItems = [];
@@ -3619,6 +3620,44 @@ function refreshCurrentContext() {
 
     try {
         const key = currentContextKey || 'all';
+        // 🔥 Получаем текущий поисковый запрос из search-highlight.js
+        const searchQuery = (typeof window.getSearchQuery === 'function') ? window.getSearchQuery() : '';
+        
+        // 🔥 Сохраняем запрос в глобальную переменную
+        currentSearchQuery = searchQuery;
+        
+        // 🔥 Если есть поисковый запрос, применяем его к результатам
+        if (searchQuery) {
+            console.log('[refreshCurrentContext] Search query detected:', searchQuery, 'context:', key);
+            // Применяем поиск к текущим данным
+            const lowerQuery = searchQuery.toLowerCase();
+            let filteredData = getRuntimeData().filter(item => {
+                const inQuestion = item.question && item.question.toLowerCase().includes(lowerQuery);
+                const inAnswer = item.answer && item.answer.toLowerCase().includes(lowerQuery);
+                const inCategory = item.category && item.category.toLowerCase().includes(lowerQuery);
+                const inSubcategory = item.subcategory && item.subcategory.toLowerCase().includes(lowerQuery);
+                return inQuestion || inAnswer || inCategory || inSubcategory;
+            });
+            
+            // 🔥 Затем применяем фильтр по категории если нужно
+            if (key === 'favorites') {
+                const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
+                filteredData = filteredData.filter(item => favorites.has(item.question));
+            } else if (key.startsWith('category:')) {
+                const name = key.slice('category:'.length);
+                filteredData = filteredData.filter(item => item.category === name);
+            } else if (key.startsWith('subcategory:')) {
+                const payload = key.slice('subcategory:'.length);
+                const [cat, sub] = payload.split('#');
+                filteredData = filteredData.filter(item => item.category === cat && item.subcategory === sub);
+            }
+            
+            // 🔥 Показываем отфильтрованные результаты
+            displayQuestions(filteredData, searchQuery ? `Результаты поиска: ${searchQuery}` : 'Все вопросы');
+            return;
+        }
+        
+        // 🔥 Если поиска нет, используем старую логику
         if (key === 'all') {
             return showAllQuestions();
         }
@@ -4719,3 +4758,4 @@ function escapeRegExp(string) {
 // Экспорт функции для использования в других модулях
 window.highlightSearchInText = highlightSearchInText;
 window.escapeRegExp = escapeRegExp;
+window.refreshCurrentContext = refreshCurrentContext; // 🔥 Для обновления после редактирования

@@ -80,9 +80,17 @@ export function initUI() {
         // createBottomNav() убран
         initSyncIndicator();
     };
+    // 🔥 Изменено: вместо полной перерисовки просто обновляем контекст с поиском
+    const refreshAfterEdit = () => {
+        console.log('refreshAfterEdit: обновление контекста после редактирования');
+        // 🔥 refreshCurrentContext теперь сам учитывает поисковый запрос
+        if (typeof window.refreshCurrentContext === 'function') {
+            window.refreshCurrentContext();
+        }
+    };
     // Убрали dataLoaded из списка, чтобы не было дублей
-    window.addEventListener('adminItemAdded', reinit);
-    window.addEventListener('adminOverridesChanged', reinit);
+    window.addEventListener('adminItemAdded', refreshAfterEdit);
+    window.addEventListener('adminOverridesChanged', refreshAfterEdit);
 
     // Убрана интеграция Netlify Identity/Auth0. Используется локальная авторизация.
 }
