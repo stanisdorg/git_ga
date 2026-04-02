@@ -1,6 +1,28 @@
 ﻿import { calculateNextReview, canUseEasy } from './algorithm.js';
 import { updateCardProgress, syncDailyStats } from './storage.js';
 
+// Вспомогательные функции для получения московского времени
+function getMSKDate(date) {
+  try {
+    const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+    const parts = fmt.formatToParts(date);
+    return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
+  } catch {
+    const mskOffset = 3 * 60 * 60 * 1000;
+    return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+  }
+}
+
+function getMSKHours(date) {
+  try {
+    const fmt = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', hour12: false });
+    return parseInt(fmt.format(date));
+  } catch {
+    const mskOffset = 3 * 60 * 60 * 1000;
+    return new Date(date.getTime() + mskOffset).getHours();
+  }
+}
+
 /**
  * Manages the learning session state.
  */
@@ -214,17 +236,15 @@ export class LearningSession {
 
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
         const now = new Date();
-        // Сохраняем дату и время по московскому времени (UTC+3)
-        const mskOffset = 3 * 60 * 60 * 1000; // 3 часа в миллисекундах
-        const mskTime = new Date(now.getTime() + mskOffset);
-        const mskDate = mskTime.toISOString().split('T')[0];
-        const mskHours = mskTime.getHours();
+        // Сохраняем дату и время по московскому времени (Europe/Moscow)
+        const mskDate = getMSKDate(now);
+        const mskHours = getMSKHours(now);
 
         console.log('[SESSION.MSK]', {
             utc: now.toISOString(),
             msk: mskDate,
             hours: mskHours,
-            offset: '+3h'
+            timezone: 'Europe/Moscow'
         });
         console.log('[SESSION.SAVE]', {
             question: this.currentCard.item.question?.substring(0, 50),
@@ -333,10 +353,9 @@ export class LearningSession {
 }
 
 function updateStreak() {
-    // Получаем текущую дату по московскому времени (UTC+3)
-    const mskOffset = 3 * 60 * 60 * 1000;
-    const mskTime = new Date(Date.now() + mskOffset);
-    const today = mskTime.toISOString().split('T')[0];
+    // Получаем текущую дату по московскому времени (Europe/Moscow)
+    const today = getMSKDate(new Date());
+    const yesterday = getMSKDate(new Date(Date.now() - 86400000));
 
     const raw = localStorage.getItem('studyStreak') || '{}';
     const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
@@ -344,9 +363,6 @@ function updateStreak() {
     if (!streak.lastDate) {
         streak.current = 1;
     } else {
-        // Вчера по MSK
-        const yesterdayTime = new Date(mskTime.getTime() - 86400000);
-        const yesterday = yesterdayTime.toISOString().split('T')[0];
         streak.current = (streak.lastDate === yesterday) ? (streak.current || 0) + 1 : 1;
     }
     streak.best = Math.max(streak.best || 0, streak.current || 0);
