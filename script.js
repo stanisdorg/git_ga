@@ -2,6 +2,7 @@
 import { uniqueQaData } from './all-data.js';
 import { displayQuestions } from './ui-variants/tabs-navigation.js';
 import { applyFormatting } from './srs/text-formatter.js';
+import { setSearchQuery } from './search-highlight.js';
 let transcriptionMode = false; // глобальное состояние режима транскрипции
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -523,6 +524,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Функция выполнения поиска
     function performSearch(query) {
+        // Сохраняем поисковый запрос для подсветки
+        setSearchQuery(query);
+
         if (!query) {
             displaySearchResults(uniqueQaData, '');
             return;

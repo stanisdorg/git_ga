@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bytecards-v45';  // Увеличиваем версию при изменениях статики
+const CACHE_NAME = 'bytecards-v46';  // Увеличиваем версию при изменениях статики
 
 // Ресурсы для кэширования (статика)
 const STATIC_ASSETS = [
@@ -15,7 +15,8 @@ const STATIC_ASSETS = [
     '/icons/icon-192x192.png',
     '/icons/icon-384x384.png',
     '/icons/icon-512x512.png',
-    '/icons/favicon.png'
+    '/icons/favicon.png',
+    '/search-highlight.js'
 ];
 
 // Установка Service Worker - кэшируем статику

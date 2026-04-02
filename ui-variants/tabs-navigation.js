@@ -4075,8 +4075,18 @@ export function displayQuestions(questions, title) {
                 // Применяем форматирование к вопросу и ответу
                 const questionFormatting = item.formatting?.question || [];
                 const answerFormatting = item.formatting?.answer || [];
-                const questionHTML = applyFormatting(item.question, questionFormatting);
-                const answerHTML = applyFormatting(item.answer, answerFormatting);
+                let questionHTML = applyFormatting(item.question, questionFormatting);
+                let answerHTML = applyFormatting(item.answer, answerFormatting);
+
+                // Применяем подсветку поискового запроса если есть
+                if (window.getSearchQuery) {
+                    const searchQuery = window.getSearchQuery();
+                    if (searchQuery) {
+                        // Подсветка только в тексте (не в HTML тегах)
+                        questionHTML = highlightSearchInText(item.question, searchQuery, questionHTML);
+                        answerHTML = highlightSearchInText(item.answer, searchQuery, answerHTML);
+                    }
+                }
 
                 resultItem.innerHTML = `
             <div class="question-row">
@@ -4620,3 +4630,80 @@ export function displayQuestions(questions, title) {
         console.error('Critical error in displayQuestions:', e);
     }
 }
+
+/**
+ * Подсветка поискового запроса в тексте с учётом HTML форматирования
+ * @param {string} originalText - Исходный текст
+ * @param {string} query - Поисковый запрос
+ * @param {string} html - HTML с применённым форматированием
+ * @returns {string} - HTML с подсветкой
+ */
+function highlightSearchInText(originalText, query, html) {
+    if (!query || !originalText) return html;
+
+    // Разбиваем запрос на слова
+    const words = query.trim().split(/\s+/).filter(w => w.length > 0);
+    if (words.length === 0) return html;
+
+    // Создаем карту замен для каждого слова в тексте
+    const replacements = new Map();
+    const lowerText = originalText.toLowerCase();
+
+    words.forEach(word => {
+        const lowerWord = word.toLowerCase();
+        let startIndex = 0;
+
+        while (true) {
+            const index = lowerText.indexOf(lowerWord, startIndex);
+            if (index === -1) break;
+
+            const originalWord = originalText.substring(index, index + word.length);
+            replacements.set(originalWord, `<mark class="search-highlight">${originalWord}</mark>`);
+            startIndex = index + 1;
+        }
+    });
+
+    // Применяем замены только к текстовым узлам (не к HTML тегам)
+    let result = '';
+    let i = 0;
+    while (i < html.length) {
+        if (html[i] === '<') {
+            // Это HTML тег - пропускаем его
+            const tagEnd = html.indexOf('>', i);
+            if (tagEnd === -1) {
+                result += html.substring(i);
+                break;
+            }
+            result += html.substring(i, tagEnd + 1);
+            i = tagEnd + 1;
+        } else {
+            // Это текст - ищем совпадения
+            let textEnd = html.indexOf('<', i);
+            if (textEnd === -1) textEnd = html.length;
+
+            let textNode = html.substring(i, textEnd);
+
+            // Применяем замены к текстовому узлу
+            replacements.forEach((replacement, original) => {
+                const regex = new RegExp(escapeRegExp(original), 'gi');
+                textNode = textNode.replace(regex, replacement);
+            });
+
+            result += textNode;
+            i = textEnd;
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Экранирование специальных символов для RegExp
+ */
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Экспорт функции для использования в других модулях
+window.highlightSearchInText = highlightSearchInText;
+window.escapeRegExp = escapeRegExp;
