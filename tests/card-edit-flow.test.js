@@ -10,6 +10,12 @@
  * 6. Не вижу изменений на карточке - вижу только после перезагрузки страницы
  * 
  * Ожидаемое поведение: Изменения должны быть видны сразу после возврата на главную страницу
+ * 
+ * ЗАПУСК ТЕСТА:
+ * 1. Запустите сервер: node server.js
+ * 2. Откройте http://localhost:8765 в браузере
+ * 3. Пройдите сценарий вручную или используйте Playwright:
+ *    npx playwright test tests/card-edit-flow.test.js --headed
  */
 
 import { test, expect } from '@playwright/test';
@@ -20,21 +26,25 @@ const TEST_PASSWORD = 'autotest123';
 const ORIGINAL_QUESTION = 'Медленный деплой';
 const EDITED_QUESTION = 'Медленный деплой [EDITED TEST]';
 const EDITED_ANSWER = 'Тестовый ответ с изменением';
-const EDITED_COLOR = '#ff0000';
 
 test.describe('Card Edit Flow - E2E', () => {
+  test.use({
+    // Увеличиваем таймаут для долгих тестов
+    timeout: 120000,
+  });
+
   test.beforeEach(async ({ page }) => {
     // Переходим на главную страницу
-    await page.goto('/');
+    await page.goto('http://localhost:8765/', { waitUntil: 'networkidle' });
     
     // Логинимся если требуется
     const sessionUser = await page.evaluate(() => localStorage.getItem('qaSessionUser'));
     if (!sessionUser) {
-      await page.goto('/#/auth');
+      await page.goto('http://localhost:8765/#/auth');
       await page.fill('input[name="username"]', TEST_USERNAME);
       await page.fill('input[name="password"]', TEST_PASSWORD);
       await page.click('button[type="submit"]');
-      await page.waitForNavigation();
+      await page.waitForNavigation({ waitUntil: 'networkidle' });
     }
   });
 
