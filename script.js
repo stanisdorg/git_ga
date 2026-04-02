@@ -367,16 +367,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 resetSearch();
             }
 
-            // 🔥 Двойное ESC - очистка поля
+            // 🔥 ESC - закрытие подсказок или очистка поля
             if (e.key === 'Escape') {
                 escapePressCount++;
 
                 if (escapePressCount === 1) {
-                    // Первое нажатие - запускаем таймер
-                    escapePressTimer = setTimeout(() => {
+                    // Первое нажатие - закрываем подсказки если открыты
+                    if (searchSuggestions && searchSuggestions.style.display !== 'none') {
+                        console.log('[SEARCH] ESC - закрытие подсказок');
+                        hideSearchSuggestions();
                         escapePressCount = 0;
                         escapePressTimer = null;
-                    }, 500); // 500мс между нажатиями
+                    } else {
+                        // Подсказки закрыты - запускаем таймер для двойного ESC
+                        escapePressTimer = setTimeout(() => {
+                            escapePressCount = 0;
+                            escapePressTimer = null;
+                        }, 500); // 500мс между нажатиями
+                    }
                 } else if (escapePressCount === 2) {
                     // Второе нажатие - очищаем поле
                     if (searchInput && searchInput.value) {

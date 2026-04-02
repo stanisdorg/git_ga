@@ -121,7 +121,7 @@
         }
         
         .equalizer-bar {
-            flex: 1;
+            width: 4px; /* Фиксированная ширина */
             background: linear-gradient(to top, #ff2d55, #ff6b7a);
             border-radius: 4px; /* Более скруглённые */
             transition: height 0.08s ease, opacity 0.08s ease;
@@ -395,6 +395,7 @@
                 const bar = document.createElement('div');
                 bar.className = 'equalizer-bar';
                 bar.style.height = '3px';
+                bar.style.width = '4px'; /* Фиксированная ширина */
                 equalizer.appendChild(bar);
                 equalizerBars.push(bar);
             }
@@ -465,8 +466,8 @@
                 const reversedIndex = equalizerBars.length - 1 - i;
                 let value = frequencyData[reversedIndex * step];
                 
-                // Первые 5 столбиков полностью убираем
-                if (i < 5) {
+                // Первые 5 столбиков полностью убираем (кроме неона)
+                if (i < 5 && !config.glow) {
                     equalizerBars[i].style.height = '3px';
                     equalizerBars[i].style.opacity = '0';
                     equalizerBars[i].style.boxShadow = 'none';
@@ -475,7 +476,10 @@
                 
                 // Разное усиление для разных частот
                 let frequencyMultiplier;
-                if (i < 8) {
+                if (config.glow && i < 4) {
+                    // Для неона первые 4 - видны, но слабые
+                    frequencyMultiplier = 0.3;
+                } else if (i < 8) {
                     // Столбики 5-8 (средние частоты) - обычная чувствительность
                     frequencyMultiplier = 1 + (i / equalizerBars.length) * 0.8;
                 } else if (i >= equalizerBars.length - 4 && i < equalizerBars.length - 2) {
