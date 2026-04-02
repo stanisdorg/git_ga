@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.37.0';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.37.0';
-import { getProgressMap } from './stats-utils.js?v=6.37.0';
-import { checkAchievements } from './stats-utils.js?v=6.37.0';
-import { Scheduler } from './scheduler.js?v=6.37.0';
-import { getTodaysSession } from './category-scheduler.js?v=6.37.0';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.37.0';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.37.0';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.37.0';
+import { LearningSession } from './session.js?v=6.38.0';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.38.0';
+import { getProgressMap } from './stats-utils.js?v=6.38.0';
+import { checkAchievements } from './stats-utils.js?v=6.38.0';
+import { Scheduler } from './scheduler.js?v=6.38.0';
+import { getTodaysSession } from './category-scheduler.js?v=6.38.0';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.38.0';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.38.0';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.38.0';
 
 // DOM Elements
 let container = null;
@@ -861,12 +861,19 @@ async function saveEditChanges() {
                         console.log('[EDIT MODAL] ✅ localStorage обновлён');
                         
                         // 🔥 УСТАНАВЛИВАЕМ ФЛАГ для отложенного обновления UI
-                        // Это нужно чтобы главная страница знала что данные изменились
                         localStorage.setItem('qaCardsUpdated', 'true');
                         localStorage.setItem('qaCardsUpdatedTimestamp', Date.now().toString());
                         console.log('[EDIT MODAL] ✅ Флаг qaCardsUpdated установлен');
+                        
+                        // 🔥 ОБНОВЛЯЕМ uniqueQaData через setUniqueQaData
+                        if (typeof window.setUniqueQaData === 'function') {
+                            window.setUniqueQaData(allCards);
+                            console.log('[EDIT MODAL] ✅ uniqueQaData обновлён через setUniqueQaData');
+                        } else {
+                            console.warn('[EDIT MODAL] ⚠️ window.setUniqueQaData не найден');
+                        }
 
-                        // 🔥 ДИСПАТЧИМ СОБЫТИЕ для обновления UI на главной странице
+                        // 🔥 ДИСПАТЧИМ СОБЫТИЕ для обновления UI
                         window.dispatchEvent(new CustomEvent('qaDataUpdated', {
                             detail: {
                                 updatedCard: allCards[cardIndex],
@@ -876,7 +883,7 @@ async function saveEditChanges() {
                         }));
                         console.log('[EDIT MODAL] ✅ Событие qaDataUpdated отправлено');
                     } else {
-                        console.warn('[EDIT MODAL] ❌ Карточка не найдена в localStorage для обновления');
+                        console.warn('[EDIT MODAL] ❌ Карточка не найдена в localStorage');
                     }
                 }
             } catch (e) {

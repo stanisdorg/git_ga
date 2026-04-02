@@ -769,7 +769,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.37.0');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.38.0');
                     initStatsPage(appVersion);
                 }
 
