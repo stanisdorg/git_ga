@@ -926,6 +926,32 @@ export function initTabsNavigation(appVersion) {
             topActions.appendChild(editToggleBtn);
             topActions.appendChild(cloudBtn);
             topActions.appendChild(adminUsersBtn);
+            
+            // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM (Desktop)
+            setTimeout(() => {
+                try {
+                    const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
+                    
+                    // Кнопка редактирования: admin и editor
+                    if (user && ['admin', 'editor'].includes(user.role)) {
+                        editToggleBtn.style.setProperty('display', 'inline-block', 'important');
+                    } else {
+                        editToggleBtn.style.setProperty('display', 'none', 'important');
+                    }
+                    
+                    // Кнопка добавления пользователя: только admin
+                    if (user && user.role === 'admin') {
+                        adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
+                    } else {
+                        adminUsersBtn.style.setProperty('display', 'none', 'important');
+                    }
+                } catch (e) {
+                    console.error('[DESKTOP ACCESS] Ошибка проверки прав:', e);
+                    // По умолчанию скрываем кнопки
+                    editToggleBtn.style.setProperty('display', 'none', 'important');
+                    adminUsersBtn.style.setProperty('display', 'none', 'important');
+                }
+            }, 50);
         }
 
         // Добавляем контейнер табов в навигацию напрямую
@@ -1896,6 +1922,15 @@ export function initTabsNavigation(appVersion) {
         }
 
         function openAdminUsersPanel() {
+            // 🔒 ПРОВЕРКА ПРАВ: только admin может добавлять пользователей
+            try {
+                const user = JSON.parse(localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser') || 'null');
+                if (!user || user.role !== 'admin') {
+                    alert('Только администратор может добавлять пользователей');
+                    return;
+                }
+            } catch { }
+            
             let ov = document.getElementById('admin-users-overlay');
             if (!ov) {
                 ov = document.createElement('div');
@@ -1933,25 +1968,41 @@ export function initTabsNavigation(appVersion) {
                     const p = ov.querySelector('#new-password').value;
                     const r = ov.querySelector('#new-role').value;
                     if (!u || !p) { alert('Логин и пароль обязательны'); return; }
-                    const client = window.__supabaseClient;
+                    
+                    // 🔒 Получаем токен администратора
+                    const user = JSON.parse(localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser') || 'null');
+                    if (!user || user.role !== 'admin') {
+                        alert('Только администратор может добавлять пользователей');
+                        return;
+                    }
+                    
+                    // 🔒 Используем API сервера с токеном для проверки прав
                     (async () => {
-                        if (client) {
-                            try {
-                                const { error } = await client.from('users').upsert({ username: u, password: p, role: r }, { onConflict: 'username' });
-                                if (error) throw error;
+                        try {
+                            const token = user.token || localStorage.getItem('qaAdminToken');
+                            const response = await fetch('/api/register', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    username: u,
+                                    password: p,
+                                    role: r,
+                                    adminToken: token
+                                })
+                            });
+                            const result = await response.json();
+                            if (result.ok) {
                                 ov.remove();
                                 alert('Пользователь добавлен');
-                                return;
-                            } catch { }
+                                // Обновляем список пользователей если есть
+                                window.dispatchEvent(new Event('usersListUpdated'));
+                            } else {
+                                alert('Ошибка: ' + (result.error || 'Не удалось добавить пользователя'));
+                            }
+                        } catch (e) {
+                            console.error('[Add User] Error:', e);
+                            alert('Ошибка соединения с сервером');
                         }
-                        const raw = localStorage.getItem('usersDB') || '[]';
-                        let users = [];
-                        try { users = JSON.parse(raw); } catch { }
-                        if (users.find(x => x.username === u)) { alert('Такой пользователь уже существует'); return; }
-                        users.push({ username: u, password: p, role: r });
-                        localStorage.setItem('usersDB', JSON.stringify(users));
-                        ov.remove();
-                        alert('Пользователь добавлен');
                     })();
                 });
             }
