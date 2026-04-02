@@ -3681,11 +3681,22 @@ function openCardZoomModal(item, ef) {
     // Ширина карточки - фиксированная, примерно треть экрана (максимум 450px)
     const cardWidth = Math.min(window.innerWidth / 3, 450);
 
+    // Добавляем стили для кастомного скроллбара
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+        .card-zoom-modal::-webkit-scrollbar { width: 8px; }
+        .card-zoom-modal::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .card-zoom-modal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .card-zoom-modal::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+    `;
+
     overlay.innerHTML = `
         <div class="card-zoom-modal" onclick="event.stopPropagation()" style="
             position: relative;
             width: ${cardWidth}px;
             max-width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
             background: linear-gradient(135deg,
                 rgba(255,255,255,0.1) 0%,
                 rgba(255,255,255,0.05) 50%,
@@ -3701,7 +3712,7 @@ function openCardZoomModal(item, ef) {
                 0 20px 60px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255,255,255,0.2),
                 inset 0 -1px 0 rgba(0,0,0,0.1);
-            overflow: hidden;
+            overflow-x: hidden;
             cursor: default;">
             <!-- Блик сверху -->
             <div style="
@@ -3714,13 +3725,14 @@ function openCardZoomModal(item, ef) {
                     transparent);
             "></div>
             ${renderHeartsForZoom(ef)}
-            <div class="zoom-question" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 12px 0 16px 0; line-height: 1.4; text-align: center; letter-spacing: -0.3px;">${questionHTML}</div>
-            <div class="zoom-answer" style="font-size: 16px; color: rgba(255, 255, 255, 0.75); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; text-align: center;">${answerHTML}</div>
-            <div class="zoom-close-hint" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255, 255, 255, 0.3); text-align: center; text-transform: uppercase; letter-spacing: 0.5px;">ESC или клик</div>
+            <div class="zoom-question" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 12px 0 16px 0; line-height: 1.4; letter-spacing: -0.3px; white-space: pre-wrap; word-break: break-word;">${questionHTML}</div>
+            <div class="zoom-answer" style="font-size: 16px; color: rgba(255, 255, 255, 0.75); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${answerHTML}</div>
+            <div class="zoom-close-hint" style="position: sticky; bottom: 0; left: 0; right: 0; background: transparent; font-size: 10px; color: rgba(255, 255, 255, 0.3); text-align: center; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 10px;">ESC или клик</div>
         </div>
     `;
 
     console.log('[CARD ZOOM] Overlay created, appending to body');
+    overlay.appendChild(styleEl);
     document.body.appendChild(overlay);
     console.log('[CARD ZOOM] Overlay appended, check if visible:', document.querySelector('.card-zoom-overlay'));
 

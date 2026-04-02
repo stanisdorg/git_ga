@@ -1839,6 +1839,30 @@ const STATS_STYLES = `
   .st-cat-progress-wrap {
     overflow-y: auto !important;
   }
+  /* Кастомный скроллбар для категорий */
+  .st-block-achievements::-webkit-scrollbar,
+  .st-cat-progress-wrap::-webkit-scrollbar {
+    width: 6px;
+  }
+  .st-block-achievements::-webkit-scrollbar-track,
+  .st-cat-progress-wrap::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.3);
+    border-radius: 3px;
+  }
+  .st-block-achievements::-webkit-scrollbar-thumb,
+  .st-cat-progress-wrap::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+  }
+  .st-block-achievements::-webkit-scrollbar-thumb:hover,
+  .st-cat-progress-wrap::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4);
+  }
+  .st-block-achievements,
+  .st-cat-progress-wrap {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) rgba(0,0,0,0.3);
+  }
 
   /* Tablet: 2 колонки */
   @media (max-width: 1024px) {
