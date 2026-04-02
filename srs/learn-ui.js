@@ -1364,9 +1364,17 @@ function stopLearnSession() {
     console.log('[STOP LEARN SESSION] container:', container ? 'exists' : 'null');
     console.log('[STOP LEARN SESSION] mainContainer:', mainContainer ? 'exists' : 'null');
 
-    // 🔥 СРАЗУ ПЕРЕНАПРАВЛЯЕМ НА СТРАНИЦУ СТАТИСТИКИ
-    // Делаем это в начале, чтобы hashchange сработал до восстановления UI
-    console.log('[STOP LEARN SESSION] Setting location.hash = "#/stats"');
+    // 🔥 ПЕРЕНАПРАВЛЯЕМ НА СТРАНИЦУ СТАТИСТИКИ
+    // Если hash уже #/stats, меняем его временно на другой, чтобы hashchange сработал
+    const wasOnStats = location.hash === '#/stats';
+    console.log('[STOP LEARN SESSION] Was on stats page:', wasOnStats);
+    
+    if (wasOnStats) {
+        console.log('[STOP LEARN SESSION] Already on stats, using intermediate hash');
+        location.hash = '#/learning-exit';
+    }
+    
+    // Устанавливаем финальный hash
     location.hash = '#/stats';
     console.log('[STOP LEARN SESSION] Hash after set:', location.hash);
 
