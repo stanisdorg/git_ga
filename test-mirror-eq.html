@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зеркальные эквалайзеры</title>
+    <style>
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin: 0 0 10px 0;
+        }
+        
+        p.subtitle {
+            text-align: center;
+            color: #86868b;
+            margin-bottom: 40px;
+        }
+        
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .demo-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-card h3 {
+            margin: 0 0 20px 0;
+            font-size: 1.1em;
+            color: #fff;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 12px 10px 16px;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            color: #888;
+            flex-shrink: 0;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            padding: 0;
+        }
+        
+        .search-input::placeholder {
+            color: #666;
+        }
+        
+        /* Вертикально зеркальный эквалайзер */
+        .equalizer-wrapper {
+            width: 100px;
+            height: 28px;
+            display: none;
+            align-items: center; /* Центрируем по вертикали */
+            gap: 1px;
+            flex-shrink: 0;
+            padding: 0 4px;
+        }
+        
+        .equalizer-wrapper.visible {
+            display: flex;
+        }
+        
+        .equalizer-bar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            height: 100%;
+        }
+        
+        .equalizer-bar {
+            width: 100%;
+            background: linear-gradient(to top, #ff2d55, #ff6b7a);
+            border-radius: 1px;
+            transition: height 0.08s ease;
+        }
+        
+        .equalizer-bar.top {
+            min-height: 3px;
+        }
+        
+        .equalizer-bar.bottom {
+            min-height: 3px;
+        }
+        
+        /* Полностью зеркальный (по всем осям) */
+        .equalizer-wrapper-mirror {
+            width: 100px;
+            height: 40px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            flex-shrink: 0;
+            padding: 0 4px;
+            position: relative;
+        }
+        
+        .equalizer-wrapper-mirror.visible {
+            display: flex;
+        }
+        
+        .equalizer-bar-mirror {
+            width: 100%;
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #ff2d55, #ff6b7a);
+            border-radius: 1px;
+            transition: height 0.08s ease;
+        }
+        
+        .equalizer-bar-mirror.top {
+            bottom: 50%;
+        }
+        
+        .equalizer-bar-mirror.bottom {
+            top: 50%;
+        }
+        
+        /* Кнопка микрофона */
+        .mic-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: color 0.2s ease;
+        }
+        
+        .mic-button:hover {
+            color: #fff;
+        }
+        
+        .mic-button.active {
+            color: #ff2d55;
+        }
+        
+        .status-bar {
+            padding: 10px 16px;
+            background: rgba(48, 209, 88, 0.1);
+            border: 1px solid rgba(48, 209, 88, 0.2);
+            border-radius: 8px;
+            color: #30d158;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+            margin-top: 12px;
+        }
+        
+        .status-bar.visible {
+            display: block;
+        }
+        
+        .style-selector {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .style-selector h4 {
+            margin: 0 0 16px 0;
+            font-size: 13px;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .style-btn {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .style-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .style-btn.selected {
+            background: rgba(255, 45, 85, 0.2);
+            border-color: #ff2d55;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Зеркальные эквалайзеры</h1>
+        <p class="subtitle">Два варианта зеркального отображения</p>
+        
+        <!-- Вариант 1: Вертикально зеркальный -->
+        <div class="demo-card">
+            <h3>📊 Вариант 1: Вертикально зеркальный (вверх-вниз)</h3>
+            <div class="search-bar">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="Введите запрос...">
+                
+                <!-- Вертикально зеркальный эквалайзер -->
+                <div class="equalizer-wrapper" id="equalizer1">
+                    <!-- Столбики генерируются JS -->
+                </div>
+                
+                <button class="mic-button" id="micBtn1" title="Включить микрофон">🎤</button>
+            </div>
+            <div class="status-bar" id="statusBar1">
+                ✅ Микрофон активен | Говорите...
+            </div>
+        </div>
+        
+        <!-- Вариант 2: Полностью зеркальный -->
+        <div class="demo-card">
+            <h3>🔄 Вариант 2: Полностью зеркальный (по всем осям)</h3>
+            <div class="search-bar">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="Введите запрос...">
+                
+                <!-- Полностью зеркальный эквалайзер -->
+                <div class="equalizer-wrapper-mirror" id="equalizer2">
+                    <!-- Столбики генерируются JS -->
+                </div>
+                
+                <button class="mic-button" id="micBtn2" title="Включить микрофон">🎤</button>
+            </div>
+            <div class="status-bar" id="statusBar2">
+                ✅ Микрофон активен | Говорите...
+            </div>
+        </div>
+        
+        <!-- Выбор стиля -->
+        <div class="style-selector">
+            <h4>Стиль эквалайзера</h4>
+            <div class="style-grid">
+                <button class="style-btn selected" data-style="apple">Apple</button>
+                <button class="style-btn" data-style="gradient">Градиент</button>
+                <button class="style-btn" data-style="neon">Неон</button>
+                <button class="style-btn" data-style="minimal">Минимал</button>
+                <button class="style-btn" data-style="bars">Столбики</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let audioContext1 = null, audioContext2 = null;
+        let analyser1 = null, analyser2 = null;
+        let microphone1 = null, microphone2 = null;
+        let frequencyData1 = null, frequencyData2 = null;
+        let isRecording1 = false, isRecording2 = false;
+        let animationId1 = null, animationId2 = null;
+        let equalizerBars1 = [], equalizerBars2 = [];
+        let selectedStyle = 'apple';
+
+        const styles = {
+            apple: { bars: 18, colors: ['#ff2d55', '#ff6b7a'] },
+            gradient: { bars: 18, colors: ['#ff2d55', '#ff9f0a', '#30d158', '#0a84ff'] },
+            neon: { bars: 18, colors: ['#0a84ff', '#64d2ff'], glow: true },
+            minimal: { bars: 18, colors: ['#ffffff'] },
+            bars: { bars: 18, colors: ['#30d158'] }
+        };
+
+        // Создаём столбики для варианта 1 (вертикально зеркальный)
+        function createEqualizer1() {
+            const equalizer = document.getElementById('equalizer1');
+            const config = styles[selectedStyle];
+            equalizer.innerHTML = '';
+            equalizerBars1 = [];
+            
+            for (let i = 0; i < config.bars; i++) {
+                const container = document.createElement('div');
+                container.className = 'equalizer-bar-container';
+                
+                const topBar = document.createElement('div');
+                topBar.className = 'equalizer-bar top';
+                topBar.style.height = '3px';
+                
+                const bottomBar = document.createElement('div');
+                bottomBar.className = 'equalizer-bar bottom';
+                bottomBar.style.height = '3px';
+                
+                container.appendChild(topBar);
+                container.appendChild(bottomBar);
+                equalizer.appendChild(container);
+                equalizerBars1.push({ top: topBar, bottom: bottomBar });
+            }
+        }
+
+        // Создаём столбики для варианта 2 (полностью зеркальный)
+        function createEqualizer2() {
+            const equalizer = document.getElementById('equalizer2');
+            const config = styles[selectedStyle];
+            equalizer.innerHTML = '';
+            equalizerBars2 = [];
+            
+            for (let i = 0; i < config.bars; i++) {
+                const topBar = document.createElement('div');
+                topBar.className = 'equalizer-bar-mirror top';
+                topBar.style.height = '3px';
+                topBar.style.left = `${(i / config.bars) * 100}%`;
+                topBar.style.width = `${100 / config.bars - 2}%`;
+                
+                const bottomBar = document.createElement('div');
+                bottomBar.className = 'equalizer-bar-mirror bottom';
+                bottomBar.style.height = '3px';
+                bottomBar.style.left = `${(i / config.bars) * 100}%`;
+                bottomBar.style.width = `${100 / config.bars - 2}%`;
+                
+                equalizer.appendChild(topBar);
+                equalizer.appendChild(bottomBar);
+                equalizerBars2.push({ top: topBar, bottom: bottomBar });
+            }
+        }
+
+        async function startRecording(equalizerNum) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { 
+                        echoCancellation: true,
+                        noiseSuppression: false,
+                        autoGainControl: true
+                    } 
+                });
+                
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.65;
+                
+                const microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                const frequencyData = new Uint8Array(bufferLength);
+                
+                if (equalizerNum === 1) {
+                    audioContext1 = audioContext;
+                    analyser1 = analyser;
+                    microphone1 = microphone;
+                    frequencyData1 = frequencyData;
+                    isRecording1 = true;
+                    updateEqualizer1();
+                    document.getElementById('micBtn1').classList.add('active');
+                    document.getElementById('statusBar1').classList.add('visible');
+                    document.getElementById('equalizer1').classList.add('visible');
+                } else {
+                    audioContext2 = audioContext;
+                    analyser2 = analyser;
+                    microphone2 = microphone;
+                    frequencyData2 = frequencyData;
+                    isRecording2 = true;
+                    updateEqualizer2();
+                    document.getElementById('micBtn2').classList.add('active');
+                    document.getElementById('statusBar2').classList.add('visible');
+                    document.getElementById('equalizer2').classList.add('visible');
+                }
+            } catch (err) {
+                console.error('Ошибка:', err);
+                alert('Не удалось получить доступ к микрофону');
+            }
+        }
+
+        function stopRecording(equalizerNum) {
+            if (equalizerNum === 1) {
+                isRecording1 = false;
+                if (animationId1) cancelAnimationFrame(animationId1);
+                if (microphone1) microphone1.disconnect();
+                if (audioContext1) audioContext1.close();
+                audioContext1 = null;
+                analyser1 = null;
+                microphone1 = null;
+                frequencyData1 = null;
+                
+                equalizerBars1.forEach(bar => {
+                    bar.top.style.height = '3px';
+                    bar.bottom.style.height = '3px';
+                });
+                
+                document.getElementById('micBtn1').classList.remove('active');
+                document.getElementById('statusBar1').classList.remove('visible');
+                document.getElementById('equalizer1').classList.remove('visible');
+            } else {
+                isRecording2 = false;
+                if (animationId2) cancelAnimationFrame(animationId2);
+                if (microphone2) microphone2.disconnect();
+                if (audioContext2) audioContext2.close();
+                audioContext2 = null;
+                analyser2 = null;
+                microphone2 = null;
+                frequencyData2 = null;
+                
+                equalizerBars2.forEach(bar => {
+                    bar.top.style.height = '3px';
+                    bar.bottom.style.height = '3px';
+                });
+                
+                document.getElementById('micBtn2').classList.remove('active');
+                document.getElementById('statusBar2').classList.remove('visible');
+                document.getElementById('equalizer2').classList.remove('visible');
+            }
+        }
+
+        function updateEqualizer1() {
+            if (!analyser1 || equalizerBars1.length === 0) return;
+            
+            analyser1.getByteFrequencyData(frequencyData1);
+            const config = styles[selectedStyle];
+            const step = Math.floor(frequencyData1.length / equalizerBars1.length);
+
+            for (let i = 0; i < equalizerBars1.length; i++) {
+                let value = frequencyData1[i * step];
+                
+                let frequencyMultiplier;
+                if (i < 3) {
+                    frequencyMultiplier = 1 + (i / equalizerBars1.length) * 0.8;
+                } else {
+                    frequencyMultiplier = 1 + (i / equalizerBars1.length) * 4.5;
+                }
+                value = Math.min(255, value * frequencyMultiplier);
+                
+                const height = 3 + (value / 255) * 10; // 3-13px для каждой половины
+                
+                equalizerBars1[i].top.style.height = `${height}px`;
+                equalizerBars1[i].bottom.style.height = `${height}px`;
+                
+                if (config.colors.length > 1) {
+                    const colorIndex = Math.floor((i / equalizerBars1.length) * config.colors.length);
+                    equalizerBars1[i].top.style.background = config.colors[colorIndex];
+                    equalizerBars1[i].bottom.style.background = config.colors[colorIndex];
+                }
+            }
+            
+            if (isRecording1) {
+                animationId1 = requestAnimationFrame(updateEqualizer1);
+            }
+        }
+
+        function updateEqualizer2() {
+            if (!analyser2 || equalizerBars2.length === 0) return;
+            
+            analyser2.getByteFrequencyData(frequencyData2);
+            const config = styles[selectedStyle];
+            const step = Math.floor(frequencyData2.length / equalizerBars2.length);
+
+            for (let i = 0; i < equalizerBars2.length; i++) {
+                let value = frequencyData2[i * step];
+                
+                let frequencyMultiplier;
+                if (i < 3) {
+                    frequencyMultiplier = 1 + (i / equalizerBars2.length) * 0.8;
+                } else {
+                    frequencyMultiplier = 1 + (i / equalizerBars2.length) * 4.5;
+                }
+                value = Math.min(255, value * frequencyMultiplier);
+                
+                const height = 3 + (value / 255) * 16; // 3-19px для каждой половины
+                
+                equalizerBars2[i].top.style.height = `${height}px`;
+                equalizerBars2[i].bottom.style.height = `${height}px`;
+                
+                if (config.colors.length > 1) {
+                    const colorIndex = Math.floor((i / equalizerBars2.length) * config.colors.length);
+                    equalizerBars2[i].top.style.background = config.colors[colorIndex];
+                    equalizerBars2[i].bottom.style.background = config.colors[colorIndex];
+                }
+            }
+            
+            if (isRecording2) {
+                animationId2 = requestAnimationFrame(updateEqualizer2);
+            }
+        }
+
+        // Обработчики микрофонов
+        document.getElementById('micBtn1').addEventListener('click', function() {
+            if (isRecording1) {
+                stopRecording(1);
+            } else {
+                startRecording(1);
+            }
+        });
+
+        document.getElementById('micBtn2').addEventListener('click', function() {
+            if (isRecording2) {
+                stopRecording(2);
+            } else {
+                startRecording(2);
+            }
+        });
+
+        // Обработчики стилей
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedStyle = this.dataset.style;
+                document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                createEqualizer1();
+                createEqualizer2();
+            });
+        });
+
+        window.addEventListener('load', () => {
+            createEqualizer1();
+            createEqualizer2();
+        });
+    </script>
+</body>
+</html>

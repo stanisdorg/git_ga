@@ -103,27 +103,44 @@
             color: #666;
         }
         
-        /* Визуализатор ВНУТРИ поля (без фона) */
+        /* Визуализатор ВНУТРИ поля (без фона, зеркальный) */
         .equalizer-wrapper {
             width: 100px;
             height: 28px;
-            display: none; /* Скрыт по умолчанию */
-            align-items: flex-end;
-            gap: 2px;
+            display: none;
+            align-items: center; /* Центрируем по вертикали */
+            gap: 1px;
             flex-shrink: 0;
             padding: 0 4px;
         }
         
         .equalizer-wrapper.visible {
-            display: flex; /* Показываем когда активен */
+            display: flex;
+        }
+        
+        .equalizer-bar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            height: 100%;
         }
         
         .equalizer-bar {
-            flex: 1;
+            width: 100%;
             background: linear-gradient(to top, #ff2d55, #ff6b7a);
-            border-radius: 2px;
+            border-radius: 1px;
+            transition: height 0.08s ease;
+        }
+        
+        .equalizer-bar.top {
             min-height: 3px;
-            transition: height 0.1s ease;
+        }
+        
+        .equalizer-bar.bottom {
+            min-height: 3px;
         }
         
         /* Кнопка микрофона (простая, без анимаций) */
@@ -317,14 +334,14 @@
         let equalizerBars = [];
 
         const styles = {
-            apple: { bars: 12, colors: ['#ff2d55', '#ff6b7a'] },
-            gradient: { bars: 16, colors: ['#ff2d55', '#ff9f0a', '#30d158', '#0a84ff'] },
-            neon: { bars: 14, colors: ['#0a84ff', '#64d2ff'], glow: true },
-            minimal: { bars: 10, colors: ['#ffffff'] },
+            apple: { bars: 18, colors: ['#ff2d55', '#ff6b7a'] },
+            gradient: { bars: 18, colors: ['#ff2d55', '#ff9f0a', '#30d158', '#0a84ff'] },
+            neon: { bars: 18, colors: ['#0a84ff', '#64d2ff'], glow: true },
+            minimal: { bars: 18, colors: ['#ffffff'] },
             bars: { bars: 18, colors: ['#30d158'] }
         };
 
-        // Создаём столбики эквалайзера
+        // Создаём столбики эквалайзера (зеркальные)
         function createEqualizer() {
             const equalizer = document.getElementById('equalizer');
             const config = styles[selectedStyle];
@@ -332,11 +349,21 @@
             equalizerBars = [];
             
             for (let i = 0; i < config.bars; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'equalizer-bar';
-                bar.style.height = '3px';
-                equalizer.appendChild(bar);
-                equalizerBars.push(bar);
+                const container = document.createElement('div');
+                container.className = 'equalizer-bar-container';
+                
+                const topBar = document.createElement('div');
+                topBar.className = 'equalizer-bar top';
+                topBar.style.height = '3px';
+                
+                const bottomBar = document.createElement('div');
+                bottomBar.className = 'equalizer-bar bottom';
+                bottomBar.style.height = '3px';
+                
+                container.appendChild(topBar);
+                container.appendChild(bottomBar);
+                equalizer.appendChild(container);
+                equalizerBars.push({ top: topBar, bottom: bottomBar });
             }
         }
 
@@ -382,12 +409,13 @@
             analyser = null;
             microphone = null;
             frequencyData = null;
-            
+
             // Сброс столбиков
             equalizerBars.forEach(bar => {
-                bar.style.height = '3px';
+                bar.top.style.height = '3px';
+                bar.bottom.style.height = '3px';
             });
-            
+
             document.getElementById('micBtn').classList.remove('active');
             document.getElementById('statusBar').classList.remove('visible');
             document.getElementById('equalizer').classList.remove('visible'); /* Скрываем эквалайзер */
@@ -403,19 +431,28 @@
             for (let i = 0; i < equalizerBars.length; i++) {
                 let value = frequencyData[i * step];
                 
-                // Усиливаем сигнал
-                const frequencyMultiplier = 1 + (i / equalizerBars.length) * 1.2;
+                // Разное усиление для разных частот
+                let frequencyMultiplier;
+                if (i < 3) {
+                    // Первые 3 столбика (низкие частоты) - обычная чувствительность
+                    frequencyMultiplier = 1 + (i / equalizerBars.length) * 0.8;
+                } else {
+                    // Остальные столбики (средние и высокие) - в 3 раза чувствительнее
+                    frequencyMultiplier = 1 + (i / equalizerBars.length) * 4.5;
+                }
                 value = Math.min(255, value * frequencyMultiplier);
                 
                 // Только реакция на звук (без фоновой волны)
-                const height = 3 + (value / 255) * 22; // 3-25px
+                const height = 3 + (value / 255) * 10; // 3-13px для каждой половины
                 
-                equalizerBars[i].style.height = `${height}px`;
+                equalizerBars[i].top.style.height = `${height}px`;
+                equalizerBars[i].bottom.style.height = `${height}px`;
                 
                 // Цвет для градиентных стилей
                 if (config.colors.length > 1) {
                     const colorIndex = Math.floor((i / equalizerBars.length) * config.colors.length);
-                    equalizerBars[i].style.background = config.colors[colorIndex];
+                    equalizerBars[i].top.style.background = config.colors[colorIndex];
+                    equalizerBars[i].bottom.style.background = config.colors[colorIndex];
                 }
             }
             
