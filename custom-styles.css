@@ -3716,6 +3716,19 @@ body.learning-mode #bottom-nav {
 
 /* ПК версия: контейнер и шапка должны иметь одинаковую ширину */
 @media (min-width: 769px) {
+    /* Увеличиваем шрифт заголовков и прогноза в 2 раза */
+    #stats-container .stc-block-title {
+        font-size: 20px !important; /* Было 10px */
+    }
+    
+    #stats-container .stc-forecast-text {
+        font-size: 16px !important; /* Было 8px */
+    }
+    
+    #stats-container .stc-forecast-text .date {
+        font-size: 18px !important; /* Было 9px */
+    }
+    
     /* Контейнер: margin-left от сайдбара, margin-right -5px для компенсации */
     .container {
         margin-left: var(--sidebar-width) !important;
