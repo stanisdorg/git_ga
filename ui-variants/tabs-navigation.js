@@ -3666,14 +3666,29 @@ function openCardZoomModal(item, ef) {
     // Создаем overlay
     const overlay = document.createElement('div');
     overlay.className = 'card-zoom-overlay';
+    // Inline-стили для гарантии видимости
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0, 0, 0, 0.7)';
+    overlay.style.backdropFilter = 'blur(8px)';
+    overlay.style.webkitBackdropFilter = 'blur(8px)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '10000';
+    overlay.style.cursor = 'zoom-out';
+    
     overlay.innerHTML = `
-        <div class="card-zoom-modal" onclick="event.stopPropagation()">
-            <span class="zoom-category-badge">${item.category || ''}</span>
-            ${item.subcategory ? `<span class="zoom-subcategory-badge">${item.subcategory}</span>` : ''}
+        <div class="card-zoom-modal" onclick="event.stopPropagation()" style="position: relative; max-width: 90%; max-height: 90%; background: rgba(30, 30, 36, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5); cursor: default;">
+            <span class="zoom-category-badge" style="display: inline-block; background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; margin-bottom: 8px;">${item.category || ''}</span>
+            ${item.subcategory ? `<span class="zoom-subcategory-badge" style="display: inline-block; background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.5); padding: 4px 10px; border-radius: 4px; font-size: 12px; margin-left: 8px; margin-bottom: 8px;">${item.subcategory}</span>` : ''}
             ${renderHeartsForZoom(ef)}
-            <div class="zoom-question">${questionHTML}</div>
-            <div class="zoom-answer">${answerHTML}</div>
-            <div class="zoom-close-hint">Нажмите вне карточки или ESC для закрытия</div>
+            <div class="zoom-question" style="font-size: 28px; font-weight: 700; color: #ffffff; margin: 20px 0; line-height: 1.4; text-align: center;">${questionHTML}</div>
+            <div class="zoom-answer" style="font-size: 22px; color: rgba(255, 255, 255, 0.8); margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); line-height: 1.5; text-align: center;">${answerHTML}</div>
+            <div class="zoom-close-hint" style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(255, 255, 255, 0.3); text-align: center;">Нажмите вне карточки или ESC для закрытия</div>
         </div>
     `;
 
