@@ -1301,7 +1301,9 @@ export function initTabsNavigation(appVersion) {
 
             try {
                 const sidebar = document.querySelector('.sidebar');
-                if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при старте в режиме редактирования
+                // 🔥 Автоматически разворачиваем сайдбар ТОЛЬКО на мобильных
+                const isMobile = window.matchMedia('(max-width: 768px)').matches;
+                if (isMobile && sidebar) sidebar.classList.remove('collapsed');
                 const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
                 const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
@@ -2706,7 +2708,9 @@ export function initTabsNavigation(appVersion) {
             const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
             const searchHistory = sidebar ? sidebar.querySelector('#search-history') : null;
             if (editMode) {
-                if (sidebar) sidebar.classList.remove('collapsed'); // Автоматически разворачиваем при включении режима
+                // 🔥 Автоматически разворачиваем сайдбар ТОЛЬКО на мобильных
+                const isMobile = window.matchMedia('(max-width: 768px)').matches;
+                if (isMobile && sidebar) sidebar.classList.remove('collapsed');
                 trashPanel.style.display = 'block';
                 // добавить квадрат с иконкой мусорного ведра в заголовок боковой панели
                 if (sidebarButtons && !sidebarButtons.querySelector('#trash-mode-button')) {
