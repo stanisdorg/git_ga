@@ -565,6 +565,7 @@
     scrollbar-color: var(--color-border) transparent;
     background: transparent;
     border: none !important;
+    z-index: 1001 !important; /* Выше чем top-actions-bar (1000) */
 }
 
 .tabs-actions {
@@ -688,6 +689,8 @@
 .tab:hover {
     background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
+    z-index: 1002 !important; /* Ещё выше при наведении */
+    position: relative;
 }
 
 .tab.active {
