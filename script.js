@@ -547,11 +547,29 @@ document.addEventListener('DOMContentLoaded', function () {
             recentHistory.forEach(item => {
                 const suggestionEl = document.createElement('div');
                 suggestionEl.className = 'search-suggestion-item';
-                suggestionEl.innerHTML = `
-                    <div class="search-suggestion-query">${escapeHtml(item.query)}</div>
-                    <div class="search-suggestion-time">${item.timestamp}</div>
-                `;
 
+                // Текст запроса
+                const querySpan = document.createElement('span');
+                querySpan.className = 'search-suggestion-query';
+                querySpan.textContent = item.query;
+                suggestionEl.appendChild(querySpan);
+
+                // Кнопка удаления (крестик)
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'search-suggestion-delete';
+                deleteBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                `;
+                deleteBtn.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Не триггерить клик по подсказке
+                    console.log('[SEARCH] Удаление подсказки:', item.query);
+                    deleteSearchSuggestion(item.id);
+                });
+                suggestionEl.appendChild(deleteBtn);
+
+                // Клик по подсказке
                 suggestionEl.addEventListener('click', function () {
                     console.log('[SEARCH] Клик на подсказку:', item.query);
                     searchInput.value = item.query;
@@ -562,8 +580,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchSuggestions.appendChild(suggestionEl);
             });
 
-            searchSuggestions.style.display = 'block';
+            searchSuggestions.style.display = 'flex';
             console.log('[SEARCH] ✅ Подсказки отображены, элементов:', recentHistory.length);
+        }
+
+        // Функция удаления подсказки
+        function deleteSearchSuggestion(id) {
+            const index = searchHistoryArray.findIndex(item => item.id === id);
+            if (index !== -1) {
+                searchHistoryArray.splice(index, 1);
+                console.log('[SEARCH] Удалено из массива, осталось:', searchHistoryArray.length);
+
+                // Сохраняем в localStorage
+                try {
+                    localStorage.setItem('qaSearchHistory', JSON.stringify(searchHistoryArray));
+                    console.log('[SEARCH] ✅ Сохранено в localStorage');
+                } catch (e) {
+                    console.error('[SEARCH] ❌ Ошибка сохранения:', e);
+                }
+
+                // Перерисовываем подсказки
+                renderSearchSuggestions();
+
+                // Если пусто - скрываем
+                if (searchHistoryArray.length === 0) {
+                    searchSuggestions.style.display = 'none';
+                }
+            }
         }
 
         // Функция скрытия подсказок
