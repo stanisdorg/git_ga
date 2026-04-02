@@ -3823,8 +3823,8 @@ function openCardZoomModal(item, ef) {
                     transparent);
             "></div>
             ${renderHeartsForZoom(ef)}
-            <div class="zoom-question" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 12px 0 16px 0; line-height: 1.4; letter-spacing: -0.3px; white-space: pre-wrap; word-break: break-word;">${questionHTML}</div>
-            <div class="zoom-answer" style="font-size: 16px; color: rgba(255, 255, 255, 0.75); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; white-space: pre-wrap; word-break: break-word;">${answerHTML}</div>
+            <div class="zoom-question" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 12px 0 16px 0; line-height: 1.4; letter-spacing: -0.3px; white-space: pre-wrap; word-break: break-word; cursor: text;">${questionHTML}</div>
+            <div class="zoom-answer" style="font-size: 16px; color: rgba(255, 255, 255, 0.75); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; white-space: pre-wrap; word-break: break-word; cursor: text;">${answerHTML}</div>
             <div class="zoom-close-hint" style="position: sticky; bottom: 0; left: 0; right: 0; background: transparent; font-size: 10px; color: rgba(255, 255, 255, 0.3); text-align: center; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 10px;">ESC или клик</div>
         </div>
     `;
