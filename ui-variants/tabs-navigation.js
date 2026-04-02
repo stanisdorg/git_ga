@@ -1841,7 +1841,7 @@ export function initTabsNavigation(appVersion) {
                         // Local auth only (локальный сервер)
                         try {
                             // Пробуем войти через локальный API
-                            const loginRes = await fetch(`${BACKEND_URL} /api/login`, {
+                            const loginRes = await fetch(`${BACKEND_URL}/api/login`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ username: u, password: p })
@@ -3645,7 +3645,7 @@ function refreshCurrentContext() {
 // Функция для увеличения карточки (PC версия)
 function openCardZoomModal(item, ef) {
     console.log('[CARD ZOOM] openCardZoomModal called with:', { question: item.question?.substring(0, 20), category: item.category, ef });
-    
+
     // Проверяем, не открыто ли уже модальное окно
     if (document.querySelector('.card-zoom-overlay')) {
         console.log('[CARD ZOOM] Modal already open');
@@ -3655,12 +3655,12 @@ function openCardZoomModal(item, ef) {
     // Получаем форматирование
     const questionFormatting = item.formatting?.question || [];
     const answerFormatting = item.formatting?.answer || [];
-    
+
     console.log('[CARD ZOOM] Formatting:', { questionFormatting, answerFormatting });
-    
+
     const questionHTML = applyFormatting(item.question, questionFormatting);
     const answerHTML = applyFormatting(item.answer, answerFormatting);
-    
+
     console.log('[CARD ZOOM] HTML generated:', { questionHTML: questionHTML?.substring(0, 50), answerHTML: answerHTML?.substring(0, 50) });
 
     // Создаем overlay
@@ -3677,10 +3677,10 @@ function openCardZoomModal(item, ef) {
     overlay.style.alignItems = 'center';
     overlay.style.zIndex = '10000';
     overlay.style.cursor = 'zoom-out';
-    
+
     // Ширина карточки - фиксированная, примерно треть экрана (максимум 450px)
     const cardWidth = Math.min(window.innerWidth / 3, 450);
-    
+
     overlay.innerHTML = `
         <div class="card-zoom-modal" onclick="event.stopPropagation()" style="
             position: relative;
@@ -3740,7 +3740,7 @@ function openCardZoomModal(item, ef) {
 function closeCardZoomModal(overlay) {
     overlay.classList.add('closing');
     overlay.querySelector('.card-zoom-modal')?.classList.add('closing');
-    
+
     setTimeout(() => {
         overlay.remove();
     }, 200);

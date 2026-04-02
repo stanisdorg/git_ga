@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.20';
+const VERSION = '6.23';
 const BACKEND_URL = process.env.BACKEND_URL || 'https://bytecards.ru';
 
 // ============================================

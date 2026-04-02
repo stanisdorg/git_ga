@@ -35,11 +35,11 @@
     if (!adminExists) {
         usersDB.push({
             username: 'admin',
-            password: 'admin',
+            password: 'ghettocoal', // 🔒 Пароль изменён с 'admin' на 'ghettocoal'
             role: 'admin'
         });
         localStorage.setItem('usersDB', JSON.stringify(usersDB));
-        console.log('[UserSystem] Created admin user: admin/admin');
+        console.log('[UserSystem] Created admin user: admin/ghettocoal');
     }
 
     const userExists = usersDB.find(u => u.username === 'stas');
@@ -80,7 +80,7 @@
     // 3. Экспортируем функции для использования в приложении
     window.UserSystem = {
         // Проверка аутентификации
-        login: function(username, password) {
+        login: function (username, password) {
             const user = usersDB.find(u => u.username === username && u.password === password);
             if (user) {
                 const session = {
@@ -90,23 +90,23 @@
                 };
                 localStorage.setItem('currentUser', JSON.stringify(session));
                 console.log('[UserSystem] Login successful:', user.username, 'Role:', user.role);
-                
+
                 // Миграция данных пользователя
                 this.migrateUserData();
-                
+
                 return { success: true, user: session };
             }
             console.log('[UserSystem] Login failed:', username);
             return { success: false, error: 'Invalid credentials' };
         },
 
-        logout: function() {
+        logout: function () {
             localStorage.removeItem('currentUser');
             console.log('[UserSystem] Logout');
         },
 
         // Получение текущего пользователя
-        getCurrentUser: function() {
+        getCurrentUser: function () {
             const sessionRaw = localStorage.getItem('currentUser');
             if (sessionRaw) {
                 try {
@@ -119,7 +119,7 @@
         },
 
         // Проверка роли
-        hasRole: function(requiredRole) {
+        hasRole: function (requiredRole) {
             const user = this.getCurrentUser();
             if (!user) return false;
             if (requiredRole === 'super_admin') {
@@ -132,7 +132,7 @@
         },
 
         // Добавление пользователя (только admin и super_admin)
-        addUser: function(username, password, role) {
+        addUser: function (username, password, role) {
             const currentUser = this.getCurrentUser();
             if (!currentUser) {
                 return { success: false, error: 'Not authenticated' };
@@ -163,7 +163,7 @@
         },
 
         // Получение карт для текущего пользователя
-        getUserCards: function() {
+        getUserCards: function () {
             const user = this.getCurrentUser();
             if (!user) return [];
 
@@ -187,7 +187,7 @@
         },
 
         // Сохранение карт (с учётом прав)
-        saveCards: function(cards) {
+        saveCards: function (cards) {
             const user = this.getCurrentUser();
             if (!user) {
                 return { success: false, error: 'Not authenticated' };
@@ -208,7 +208,7 @@
         },
 
         // Редактирование одной карты
-        updateCard: function(oldQuestion, newCard) {
+        updateCard: function (oldQuestion, newCard) {
             const cards = this.getUserCards();
             const index = cards.findIndex(c => c.question === oldQuestion);
             if (index === -1) {
@@ -219,7 +219,7 @@
         },
 
         // Удаление карты
-        deleteCard: function(question) {
+        deleteCard: function (question) {
             const cards = this.getUserCards();
             const filtered = cards.filter(c => c.question !== question);
             if (filtered.length === cards.length) {
@@ -229,14 +229,14 @@
         },
 
         // Добавление новой карты
-        addCard: function(card) {
+        addCard: function (card) {
             const cards = this.getUserCards();
             cards.push(card);
             return this.saveCards(cards);
         },
 
         // Миграция глобальных данных в пользовательские при первом входе
-        migrateUserData: function() {
+        migrateUserData: function () {
             const user = this.getCurrentUser();
             if (!user || !user.username) return;
 
@@ -273,7 +273,7 @@
         },
 
         // Получение всех пользователей (для админки)
-        getAllUsers: function() {
+        getAllUsers: function () {
             return JSON.parse(localStorage.getItem('usersDB') || '[]');
         }
     };
