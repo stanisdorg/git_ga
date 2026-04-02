@@ -3642,6 +3642,91 @@ function refreshCurrentContext() {
     }
 }
 
+// Функция для увеличения карточки (PC версия)
+function openCardZoomModal(item, ef) {
+    // Проверяем, не открыто ли уже модальное окно
+    if (document.querySelector('.card-zoom-overlay')) {
+        return;
+    }
+
+    // Получаем форматирование
+    const questionFormatting = item.formatting?.question || [];
+    const answerFormatting = item.formatting?.answer || [];
+    const questionHTML = applyFormatting(item.question, questionFormatting);
+    const answerHTML = applyFormatting(item.answer, answerFormatting);
+
+    // Создаем overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'card-zoom-overlay';
+    overlay.innerHTML = `
+        <div class="card-zoom-modal" onclick="event.stopPropagation()">
+            <span class="zoom-category-badge">${item.category || ''}</span>
+            ${item.subcategory ? `<span class="zoom-subcategory-badge">${item.subcategory}</span>` : ''}
+            ${renderHeartsForZoom(ef)}
+            <div class="zoom-question">${questionHTML}</div>
+            <div class="zoom-answer">${answerHTML}</div>
+            <div class="zoom-close-hint">Нажмите вне карточки или ESC для закрытия</div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Закрытие по клику на overlay
+    overlay.addEventListener('click', () => closeCardZoomModal(overlay));
+
+    // Закрытие по ESC
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeCardZoomModal(overlay);
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+function closeCardZoomModal(overlay) {
+    overlay.classList.add('closing');
+    overlay.querySelector('.card-zoom-modal')?.classList.add('closing');
+    
+    setTimeout(() => {
+        overlay.remove();
+    }, 200);
+}
+
+// Функция для рендеринга сердечек в модальном окне
+function renderHeartsForZoom(ef) {
+    if (ef === null || ef === undefined) {
+        return '<div class="zoom-hearts-container"><span style="font-size:12px;color:rgba(255,255,255,0.5)">НОВАЯ</span></div>';
+    }
+
+    let html = '<div class="zoom-hearts-container">';
+    for (let i = 0; i < 5; i++) {
+        let fill = 0;
+        if (ef >= 1.3 + (i + 1) * 0.32) {
+            fill = 1;
+        } else if (ef >= 1.3 + i * 0.32) {
+            fill = (ef - (1.3 + i * 0.32)) / 0.32;
+        }
+
+        const stopVal = Math.round(fill * 100);
+        const id = `zoom-heart-${Math.random().toString(36).substr(2, 9)}`;
+
+        html += `
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <defs>
+                    <linearGradient id="${id}">
+                        <stop offset="${stopVal}%" stop-color="#ff4d4d" />
+                        <stop offset="${stopVal}%" stop-color="#444" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        `;
+    }
+    html += '</div>';
+    return html;
+}
+
 // Функция для отображения вопросов
 export function displayQuestions(questions, title) {
     // Safety check and logging
@@ -3970,17 +4055,23 @@ export function displayQuestions(questions, title) {
                 });
 
                 // Обработчик клика для увеличения карточки (только для ПК версии)
-                const isDesktop = window.innerWidth > 768;
-                if (isDesktop) {
-                    resultItem.style.cursor = 'zoom-in';
-                    resultItem.addEventListener('click', (e) => {
-                        // Не увеличиваем если клик по кнопке избранного или меню
-                        if (e.target.closest('.fav-btn') || e.target.closest('.kebab-btn')) {
-                            return;
-                        }
+                resultItem.style.cursor = 'zoom-in';
+                resultItem.addEventListener('click', (e) => {
+                    // Не увеличиваем если клик по кнопке избранного или меню
+                    if (e.target.closest('.fav-btn') || e.target.closest('.kebab-btn')) {
+                        return;
+                    }
+                    // Проверка на ПК версию при клике
+                    if (window.innerWidth <= 768) {
+                        return;
+                    }
+                    console.log('[CARD ZOOM] Click detected, opening modal for:', item.question.substring(0, 30));
+                    if (typeof openCardZoomModal === 'function') {
                         openCardZoomModal(item, ef);
-                    });
-                }
+                    } else {
+                        console.error('[CARD ZOOM] openCardZoomModal is not defined');
+                    }
+                });
 
                 // Меню карточки (⋮) в режиме редактирования
                 if (editMode) {
@@ -4475,89 +4566,4 @@ export function displayQuestions(questions, title) {
     } catch (e) {
         console.error('Critical error in displayQuestions:', e);
     }
-}
-
-// Функция для увеличения карточки (PC версия)
-function openCardZoomModal(item, ef) {
-    // Проверяем, не открыто ли уже модальное окно
-    if (document.querySelector('.card-zoom-overlay')) {
-        return;
-    }
-
-    // Получаем форматирование
-    const questionFormatting = item.formatting?.question || [];
-    const answerFormatting = item.formatting?.answer || [];
-    const questionHTML = applyFormatting(item.question, questionFormatting);
-    const answerHTML = applyFormatting(item.answer, answerFormatting);
-
-    // Создаем overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'card-zoom-overlay';
-    overlay.innerHTML = `
-        <div class="card-zoom-modal" onclick="event.stopPropagation()">
-            <span class="zoom-category-badge">${item.category || ''}</span>
-            ${item.subcategory ? `<span class="zoom-subcategory-badge">${item.subcategory}</span>` : ''}
-            ${renderHeartsForZoom(ef)}
-            <div class="zoom-question">${questionHTML}</div>
-            <div class="zoom-answer">${answerHTML}</div>
-            <div class="zoom-close-hint">Нажмите вне карточки или ESC для закрытия</div>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
-
-    // Закрытие по клику на overlay
-    overlay.addEventListener('click', () => closeCardZoomModal(overlay));
-
-    // Закрытие по ESC
-    const escHandler = (e) => {
-        if (e.key === 'Escape') {
-            closeCardZoomModal(overlay);
-            document.removeEventListener('keydown', escHandler);
-        }
-    };
-    document.addEventListener('keydown', escHandler);
-}
-
-function closeCardZoomModal(overlay) {
-    overlay.classList.add('closing');
-    overlay.querySelector('.card-zoom-modal')?.classList.add('closing');
-    
-    setTimeout(() => {
-        overlay.remove();
-    }, 200);
-}
-
-// Функция для рендеринга сердечек в модальном окне
-function renderHeartsForZoom(ef) {
-    if (ef === null || ef === undefined) {
-        return '<div class="zoom-hearts-container"><span style="font-size:12px;color:rgba(255,255,255,0.5)">НОВАЯ</span></div>';
-    }
-
-    let html = '<div class="zoom-hearts-container">';
-    for (let i = 0; i < 5; i++) {
-        let fill = 0;
-        if (ef >= 1.3 + (i + 1) * 0.32) {
-            fill = 1;
-        } else if (ef >= 1.3 + i * 0.32) {
-            fill = (ef - (1.3 + i * 0.32)) / 0.32;
-        }
-
-        const stopVal = Math.round(fill * 100);
-        const id = `zoom-heart-${Math.random().toString(36).substr(2, 9)}`;
-
-        html += `
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                <defs>
-                    <linearGradient id="${id}">
-                        <stop offset="${stopVal}%" stop-color="#ff4d4d" />
-                        <stop offset="${stopVal}%" stop-color="#444" />
-                    </linearGradient>
-                </defs>
-                <path fill="url(#${id})" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-        `;
-    }
-    html += '</div>';
-    return html;
 }
