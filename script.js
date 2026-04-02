@@ -350,15 +350,47 @@ document.addEventListener('DOMContentLoaded', function () {
         if (resetSearchBtn) {
             resetSearchBtn.addEventListener('click', resetSearch);
         }
+
+        // 🔥 Двойное нажатие ESC - очистка поля поиска
+        let escapePressCount = 0;
+        let escapePressTimer = null;
+
         document.addEventListener('keydown', (e) => {
             const key = e.key ? e.key.toLowerCase() : '';
             const active = document.activeElement;
             const isEditable = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
             const isSearchFocused = active && active.id === 'search-input';
-            // Сброс по Ctrl+Я (русская раскладка) или Ctrl+Z (undo) — ограничиваем: либо фокус в поиске, либо нет редактируемого элемента
+
+            // Сброс по Ctrl+Я (русская раскладка) или Ctrl+Z (undo)
             if (e.ctrlKey && (key === 'я' || key === 'z') && (isSearchFocused || !isEditable)) {
                 e.preventDefault();
                 resetSearch();
+            }
+
+            // 🔥 Двойное ESC - очистка поля
+            if (e.key === 'Escape') {
+                escapePressCount++;
+
+                if (escapePressCount === 1) {
+                    // Первое нажатие - запускаем таймер
+                    escapePressTimer = setTimeout(() => {
+                        escapePressCount = 0;
+                        escapePressTimer = null;
+                    }, 500); // 500мс между нажатиями
+                } else if (escapePressCount === 2) {
+                    // Второе нажатие - очищаем поле
+                    if (searchInput && searchInput.value) {
+                        searchInput.value = '';
+                        console.log('[SEARCH] Double ESC - очистка поля');
+                        performSearch('');
+                        hideSearchSuggestions();
+                    }
+                    escapePressCount = 0;
+                    if (escapePressTimer) {
+                        clearTimeout(escapePressTimer);
+                        escapePressTimer = null;
+                    }
+                }
             }
         });
 
