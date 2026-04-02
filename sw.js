@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bytecards-v69';  // Увеличиваем версию при изменениях статики
+const CACHE_NAME = 'bytecards-v70';  // Увеличиваем версию при изменениях статики
 
 // Ресурсы для кэширования (статика)
 const STATIC_ASSETS = [
@@ -16,7 +16,8 @@ const STATIC_ASSETS = [
     '/icons/icon-384x384.png',
     '/icons/icon-512x512.png',
     '/icons/favicon.png',
-    '/search-highlight.js'
+    '/search-highlight.js',
+    '/apple-neon-equalizer.js'
 ];
 
 // Установка Service Worker - кэшируем статику

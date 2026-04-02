@@ -927,14 +927,33 @@
     right: 48px;
     top: 50%;
     transform: translateY(-50%);
-    width: 60px;
-    height: 30px;
+    width: 100px;
+    height: 100%;
     pointer-events: none;
     display: none;
 }
 
 body.listening .audio-visualizer {
     display: block;
+}
+
+/* Apple Neon Equalizer Styles */
+.apple-neon-equalizer {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    padding: 0 4px;
+    height: 100%;
+    width: 100px;
+}
+
+.apple-neon-equalizer .bar {
+    width: 4px;
+    background: linear-gradient(to top, #ff2d55, #ff6b7a);
+    border-radius: 4px;
+    transition: height 0.08s ease, opacity 0.08s ease;
+    min-height: 3px;
+    box-shadow: 0 0 8px #ff2d55;
 }
 
 /* Popup Menu */

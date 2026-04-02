@@ -165,10 +165,24 @@ document.addEventListener('DOMContentLoaded', function () {
             let micAnalyser = null;
             let micDataArray = null;
             let micVizRAF = null;
+            let equalizerContainer = null;
 
             async function startMicVisualizer() {
                 try {
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+                    
+                    // Используем Apple Neon Equalizer если доступен
+                    if (window.AppleNeonEqualizer) {
+                        equalizerContainer = document.getElementById('apple-neon-equalizer');
+                        if (equalizerContainer) {
+                            window.AppleNeonEqualizer.create(equalizerContainer);
+                            await window.AppleNeonEqualizer.start();
+                            console.log('[Apple Neon Equalizer] Запущен');
+                        }
+                        return;
+                    }
+                    
+                    // Fallback на старый canvas визуализатор
                     micVizStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
                     const source = micAudioContext.createMediaStreamSource(micVizStream);
@@ -185,6 +199,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             function stopMicVisualizer() {
+                // Останавливаем Apple Neon Equalizer
+                if (window.AppleNeonEqualizer && window.AppleNeonEqualizer.isRecording()) {
+                    window.AppleNeonEqualizer.stop();
+                    console.log('[Apple Neon Equalizer] Остановлен');
+                    return;
+                }
+                
+                // Fallback на старый canvas
                 try { if (micVizRAF) cancelAnimationFrame(micVizRAF); } catch (_) { }
                 try { if (micAudioContext) micAudioContext.close(); } catch (_) { }
                 if (micVizStream) {
@@ -194,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 micAudioContext = null;
                 micAnalyser = null;
                 micDataArray = null;
-                clearCanvas(micVisualizer);
+                if (micVisualizer) clearCanvas(micVisualizer);
             }
 
             // Живое обновление транскрипции: финальный и промежуточный хвост
