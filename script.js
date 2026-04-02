@@ -76,6 +76,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Массив для хранения истории поиска
         let searchHistoryArray = [];
+
+        // 🔥 Загружаем историю из localStorage
+        try {
+            const savedHistory = localStorage.getItem('qaSearchHistory');
+            if (savedHistory) {
+                searchHistoryArray = JSON.parse(savedHistory);
+                console.log('[SEARCH] Загружено элементов истории:', searchHistoryArray.length);
+            }
+        } catch (e) {
+            console.error('[SEARCH] Ошибка загрузки истории:', e);
+            searchHistoryArray = [];
+        }
+
         // Единый текст транскрипции вместо разбивки на блоки
         let transcriptionText = '';
         let pressHoldActive = false;
@@ -465,6 +478,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Добавляем в начало массива истории
             searchHistoryArray.unshift(historyItem);
+
+            // 🔥 Сохраняем в localStorage (храним последние 20 запросов)
+            try {
+                const limitedHistory = searchHistoryArray.slice(0, 20);
+                localStorage.setItem('qaSearchHistory', JSON.stringify(limitedHistory));
+            } catch (e) {
+                console.error('[SEARCH] Ошибка сохранения истории:', e);
+            }
 
             // Обновляем отображение истории
             renderSearchHistory();
