@@ -1357,25 +1357,37 @@ export function startLearnSession(candidateQuestions, options = {}) {
 }
 
 function stopLearnSession() {
+    console.log('========================================');
+    console.log('[STOP LEARN SESSION] ========== START ==========');
+    console.log('[STOP LEARN SESSION] Timestamp:', new Date().toISOString());
+    console.log('[STOP LEARN SESSION] Current hash:', location.hash);
+    console.log('[STOP LEARN SESSION] container:', container ? 'exists' : 'null');
+    console.log('[STOP LEARN SESSION] mainContainer:', mainContainer ? 'exists' : 'null');
+
     // 🔥 СРАЗУ ПЕРЕНАПРАВЛЯЕМ НА СТРАНИЦУ СТАТИСТИКИ
     // Делаем это в начале, чтобы hashchange сработал до восстановления UI
+    console.log('[STOP LEARN SESSION] Setting location.hash = "#/stats"');
     location.hash = '#/stats';
+    console.log('[STOP LEARN SESSION] Hash after set:', location.hash);
 
     // 1. Очищаем таймер
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
+        console.log('[STOP LEARN SESSION] Timer interval cleared');
     }
 
     // 1.5. Отменяем отложенный запуск таймера если он есть
     if (window._learnTimerStartTimeout) {
         clearTimeout(window._learnTimerStartTimeout);
         window._learnTimerStartTimeout = null;
+        console.log('[STOP LEARN SESSION] Deferred timer start cleared');
     }
 
     // 2. Выключаем глобальный флаг - это заблокирует все orphaned setInterval
     isTimerRunning = false;
     currentIntervalId = null;
+    console.log('[STOP LEARN SESSION] isTimerRunning=false, currentIntervalId=null');
 
     // 3. Сбрасываем флаги таймера
     timerPaused = false;
@@ -1386,6 +1398,7 @@ function stopLearnSession() {
     const timerEl = document.getElementById('mode-timer');
     if (timerEl) {
         timerEl.textContent = '00:00';
+        console.log('[STOP LEARN SESSION] Timer element hidden');
     }
 
     // 4. Сбрасываем иконку паузы
@@ -1393,6 +1406,7 @@ function stopLearnSession() {
     if (pauseBtn) {
         pauseBtn.classList.remove('paused');
         pauseBtn.classList.add('running');
+        console.log('[STOP LEARN SESSION] Pause button reset');
     }
 
     // 5. Очищаем обработчики таймера
@@ -1410,30 +1424,37 @@ function stopLearnSession() {
     timerPauseHandler = null;
     timerClickHandler = null;
     timerControlsHandler = null;
+    console.log('[STOP LEARN SESSION] Timer event handlers cleaned');
 
     if (container) {
         container.style.display = 'none';
+        console.log('[STOP LEARN SESSION] container.style.display = "none"');
     }
     if (mainContainer) {
         mainContainer.style.display = 'block';
+        console.log('[STOP LEARN SESSION] mainContainer.style.display = "block"');
     }
     // Restore sidebar
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
         sidebar.style.display = '';
+        console.log('[STOP LEARN SESSION] sidebar display reset');
     }
 
     // Возвращаем навигацию и убираем класс с body
     document.body.classList.remove('learning-mode');
+    console.log('[STOP LEARN SESSION] learning-mode class removed from body');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) {
         bottomNav.style.display = 'flex';
+        console.log('[STOP LEARN SESSION] bottomNav displayed');
     }
 
     // Восстанавливаем search-container и top-actions-bar
     const searchContainer = document.querySelector('.search-container');
     if (searchContainer) {
         searchContainer.style.display = '';
+        console.log('[STOP LEARN SESSION] search-container display reset');
     }
 
     const topActionsBar = document.querySelector('.top-actions-bar');
