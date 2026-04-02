@@ -524,6 +524,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // 🔥 Автоматически разворачиваем сайдбар если он свёрнут
+            if (sidebar && sidebar.classList.contains('collapsed')) {
+                console.log('[SEARCH] Сайдбар свёрнут, разворачиваем...');
+                sidebar.classList.remove('collapsed');
+                if (sidebarToggle) {
+                    sidebarToggle.setAttribute('aria-expanded', 'true');
+                    sidebarToggle.setAttribute('aria-label', 'Свернуть историю');
+                }
+            }
+
             // Очищаем текущую историю
             searchHistory.innerHTML = '';
             console.log('[SEARCH] Очищена история');
