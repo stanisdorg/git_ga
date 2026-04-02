@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bytecards-v48';  // Увеличиваем версию при изменениях статики
+const CACHE_NAME = 'bytecards-v49';  // Увеличиваем версию при изменениях статики
 
 // Ресурсы для кэширования (статика)
 const STATIC_ASSETS = [

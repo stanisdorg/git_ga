@@ -27,116 +27,14 @@
         }
 
         /* ===================================================================
-           BACKGROUND VARIANTS
+           BACKGROUND VARIANTS - STATIC DARK WITH LINES
            =================================================================== */
         
-        /* Default: Deep Space with Aurora */
-        body[data-bg="aurora"] {
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        /* Default: Dark with subtle grid lines */
+        body[data-bg="grid"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
         }
-        body[data-bg="aurora"]::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(0, 217, 255, 0.2) 0%, transparent 40%);
-            animation: aurora-move 20s ease-in-out infinite;
-            z-index: -1;
-        }
-        @keyframes aurora-move {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(2%, 2%) rotate(5deg); }
-            66% { transform: translate(-1%, 1%) rotate(-3deg); }
-        }
-
-        /* Ocean Waves */
-        body[data-bg="ocean"] {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        }
-        body[data-bg="ocean"]::before {
-            content: '';
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at 50% 100%, rgba(0, 150, 255, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 20% 80%, rgba(0, 100, 200, 0.1) 0%, transparent 50%);
-            z-index: -1;
-        }
-        body[data-bg="ocean"]::after {
-            content: '';
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40%;
-            background: 
-                repeating-linear-gradient(
-                    180deg,
-                    transparent 0%,
-                    transparent 2%,
-                    rgba(0, 150, 255, 0.03) 2%,
-                    rgba(0, 150, 255, 0.03) 4%
-                );
-            animation: wave-flow 15s linear infinite;
-            z-index: -1;
-        }
-        @keyframes wave-flow {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100%; }
-        }
-
-        /* Sunset Gradient */
-        body[data-bg="sunset"] {
-            background: linear-gradient(135deg, #2c003e 0%, #770052 50%, #e63946 100%);
-        }
-        body[data-bg="sunset"]::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 70% 30%, rgba(255, 100, 100, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 30% 70%, rgba(255, 150, 50, 0.15) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        /* Forest Mist */
-        body[data-bg="forest"] {
-            background: linear-gradient(135deg, #0d1b1e 0%, #1a3c34 50%, #2d6a4f 100%);
-        }
-        body[data-bg="forest"]::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 30% 40%, rgba(45, 206, 137, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 70% 60%, rgba(129, 236, 236, 0.1) 0%, transparent 50%);
-            animation: mist-float 25s ease-in-out infinite;
-            z-index: -1;
-        }
-        @keyframes mist-float {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-        }
-
-        /* Cyberpunk Neon */
-        body[data-bg="cyberpunk"] {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a1a2e 100%);
-        }
-        body[data-bg="cyberpunk"]::before {
+        body[data-bg="grid"]::before {
             content: '';
             position: fixed;
             top: 0;
@@ -144,35 +42,60 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(45deg, rgba(0, 217, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(0, 217, 255, 0.1) 75%, rgba(0, 217, 255, 0.1)),
-                linear-gradient(45deg, rgba(168, 85, 247, 0.1) 25%, transparent 25%, transparent 75%, rgba(168, 85, 247, 0.1) 75%, rgba(168, 85, 247, 0.1));
-            background-size: 60px 60px;
-            background-position: 0 0, 30px 30px;
-            opacity: 0.3;
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
             z-index: -1;
         }
-        body[data-bg="cyberpunk"]::after {
+
+        /* Dark with diagonal lines */
+        body[data-bg="diagonal"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="diagonal"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 40px,
+                rgba(255, 255, 255, 0.02) 40px,
+                rgba(255, 255, 255, 0.02) 41px
+            );
+            z-index: -1;
+        }
+
+        /* Dark with concentric circles */
+        body[data-bg="circles"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="circles"]::before {
             content: '';
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 60%;
-            height: 60%;
-            background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+            width: 150%;
+            height: 150%;
+            background: repeating-radial-gradient(
+                circle at center,
+                transparent 0%,
+                transparent 49px,
+                rgba(255, 255, 255, 0.02) 49px,
+                rgba(255, 255, 255, 0.02) 50px
+            );
             transform: translate(-50%, -50%);
-            animation: neon-pulse 8s ease-in-out infinite;
             z-index: -1;
         }
-        @keyframes neon-pulse {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
-        }
 
-        /* Midnight Blue */
-        body[data-bg="midnight"] {
-            background: linear-gradient(135deg, #000428 0%, #004e92 100%);
+        /* Dark with hexagon pattern */
+        body[data-bg="hexagon"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
         }
-        body[data-bg="midnight"]::before {
+        body[data-bg="hexagon"]::before {
             content: '';
             position: fixed;
             top: 0;
@@ -180,20 +103,76 @@
             width: 100%;
             height: 100%;
             background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
-            opacity: 0.6;
+                linear-gradient(30deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(150deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 35px;
             z-index: -1;
         }
 
-        /* Abstract Geometric */
-        body[data-bg="geometric"] {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+        /* Dark with vertical lines */
+        body[data-bg="vertical"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
         }
-        body[data-bg="geometric"]::before {
+        body[data-bg="vertical"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 80px,
+                rgba(0, 217, 255, 0.03) 80px,
+                rgba(0, 217, 255, 0.03) 81px
+            );
+            z-index: -1;
+        }
+
+        /* Dark with horizontal lines */
+        body[data-bg="horizontal"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="horizontal"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 80px,
+                rgba(0, 217, 255, 0.03) 80px,
+                rgba(0, 217, 255, 0.03) 81px
+            );
+            z-index: -1;
+        }
+
+        /* Dark with dots pattern */
+        body[data-bg="dots"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="dots"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+        }
+
+        /* Dark with waves */
+        body[data-bg="waves"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="waves"]::before {
             content: '';
             position: fixed;
             top: 0;
@@ -201,42 +180,22 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(30deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-                linear-gradient(150deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-                linear-gradient(30deg, rgba(255,255,255,0.05) 25%, transparent 25%),
-                linear-gradient(150deg, rgba(255,255,255,0.05) 25%, transparent 25%);
-            background-size: 100px 100px;
-            background-position: 0 0, 0 50px, 50px -50px, -50px 0px;
-            animation: geometric-rotate 30s linear infinite;
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(0, 217, 255, 0.04) 100px,
+                    rgba(0, 217, 255, 0.04) 101px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(0, 217, 255, 0.04) 100px,
+                    rgba(0, 217, 255, 0.04) 101px
+                );
+            background-position: 0 0, 0 0;
             z-index: -1;
-        }
-        @keyframes geometric-rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Dark Matter */
-        body[data-bg="darkmatter"] {
-            background: #000000;
-        }
-        body[data-bg="darkmatter"]::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(100, 50, 200, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(200, 50, 100, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(50, 100, 200, 0.2) 0%, transparent 60%);
-            filter: blur(40px);
-            animation: darkmatter-shift 20s ease-in-out infinite;
-            z-index: -1;
-        }
-        @keyframes darkmatter-shift {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.9; }
         }
 
         /* ===================================================================
@@ -548,30 +507,14 @@
     <div class="control-panel">
         <h3>🎨 Выбор фона</h3>
         <div class="bg-selector">
-            <button class="bg-btn active" data-bg="aurora">Aurora</button>
-            <button class="bg-btn" data-bg="ocean">Ocean</button>
-            <button class="bg-btn" data-bg="sunset">Sunset</button>
-            <button class="bg-btn" data-bg="forest">Forest</button>
-            <button class="bg-btn" data-bg="cyberpunk">Cyberpunk</button>
-            <button class="bg-btn" data-bg="midnight">Midnight</button>
-            <button class="bg-btn" data-bg="geometric">Geometric</button>
-            <button class="bg-btn" data-bg="darkmatter">Dark Matter</button>
-        </div>
-        
-        <div class="settings-row">
-            <div class="setting-item">
-                <label>Анимация фона</label>
-                <div class="toggle-switch active" id="animation-toggle"></div>
-            </div>
-        </div>
-
-        <div class="settings-row">
-            <div class="setting-item">
-                <label>Интенсивность бликов</label>
-            </div>
-            <div class="slider-control">
-                <input type="range" min="0" max="100" value="70" id="glare-slider">
-            </div>
+            <button class="bg-btn active" data-bg="grid">Grid</button>
+            <button class="bg-btn" data-bg="diagonal">Diagonal</button>
+            <button class="bg-btn" data-bg="circles">Circles</button>
+            <button class="bg-btn" data-bg="hexagon">Hexagon</button>
+            <button class="bg-btn" data-bg="vertical">Vertical</button>
+            <button class="bg-btn" data-bg="horizontal">Horizontal</button>
+            <button class="bg-btn" data-bg="dots">Dots</button>
+            <button class="bg-btn" data-bg="waves">Waves</button>
         </div>
     </div>
 
@@ -733,29 +676,6 @@
                 btn.classList.add('active');
                 body.setAttribute('data-bg', btn.dataset.bg);
             });
-        });
-
-        // Animation toggle
-        const animationToggle = document.getElementById('animation-toggle');
-        let animationsEnabled = true;
-
-        animationToggle.addEventListener('click', () => {
-            animationsEnabled = !animationsEnabled;
-            animationToggle.classList.toggle('active');
-            
-            if (animationsEnabled) {
-                document.documentElement.style.setProperty('--animation-state', 'running');
-            } else {
-                document.documentElement.style.setProperty('--animation-state', 'paused');
-            }
-        });
-
-        // Glare slider
-        const glareSlider = document.getElementById('glare-slider');
-        
-        glareSlider.addEventListener('input', (e) => {
-            const value = e.target.value / 100;
-            document.documentElement.style.setProperty('--glare-intensity', value);
         });
 
         // Category selection
