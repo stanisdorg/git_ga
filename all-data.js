@@ -454,7 +454,7 @@ async function initializeData() {
                 if (validData.length > 0) {
                     uniqueQaData = validData;
                     console.log(`Всего загружено ${uniqueQaData.length} вопросов из global.json`);
-                    
+
                     // Применяем локальные overrides и новые карточки (только для global.json)
                     applyAdminOverridesAndNewItems();
                 }
@@ -500,3 +500,6 @@ window.addEventListener('adminOverridesChanged', () => {
 
 // Экспортируем данные для использования в других файлах
 export { uniqueQaData, setUniqueQaData };
+
+// 🔥 Делаем setUniqueQaData доступным глобально для вызова из learn-ui.js
+window.setUniqueQaData = setUniqueQaData;

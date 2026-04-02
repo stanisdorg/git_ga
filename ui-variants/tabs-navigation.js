@@ -341,18 +341,18 @@ export function initTabsNavigation(appVersion) {
     // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
     console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
-    
+
     // 🔥 ПРОВЕРЯЕМ ФЛАГ изменений карточек (для отложенного обновления после редактирования)
     try {
         const cardsUpdated = localStorage.getItem('qaCardsUpdated');
         if (cardsUpdated === 'true' && !isStatsPage) {
             console.log('[initTabsNavigation] 🚨 Обнаружено изменение карточек (qaCardsUpdated=true)');
             console.log('[initTabsNavigation] 🔄 Вызываем refreshCurrentContext() для обновления UI');
-            
+
             // Сбрасываем флаг
             localStorage.removeItem('qaCardsUpdated');
             localStorage.removeItem('qaCardsUpdatedTimestamp');
-            
+
             // Обновляем UI с небольшой задержкой чтобы данные загрузились
             setTimeout(() => {
                 refreshCurrentContext();
@@ -769,7 +769,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.38.0');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.39.0');
                     initStatsPage(appVersion);
                 }
 
@@ -846,7 +846,7 @@ export function initTabsNavigation(appVersion) {
                     if (cardsUpdated === 'true') {
                         console.log('[HASHCHANGE #/] 🚨 Обнаружено изменение карточек (qaCardsUpdated=true)');
                         console.log('[HASHCHANGE #/] 🔄 Вызываем refreshCurrentContext() для обновления UI');
-                        
+
                         // Сбрасываем флаг
                         localStorage.removeItem('qaCardsUpdated');
                         localStorage.removeItem('qaCardsUpdatedTimestamp');
@@ -3714,7 +3714,7 @@ function refreshCurrentContext() {
     console.log('[refreshCurrentContext] Hash:', location.hash);
     console.log('[refreshCurrentContext] currentContextKey:', currentContextKey);
     console.log('[refreshCurrentContext] currentSearchQuery:', currentSearchQuery);
-    
+
     // НЕ показываем вопросы если открыта страница статистики!
     if (location.hash === '#/stats') {
         console.log('[refreshCurrentContext] ⚠️ Страница статистики - пропускаем рендер');
@@ -3731,7 +3731,7 @@ function refreshCurrentContext() {
 
         console.log('[refreshCurrentContext] Search query from window:', searchQuery);
         console.log('[refreshCurrentContext] Runtime data count:', getRuntimeData().length);
-        
+
         // 🔥 Если есть поисковый запрос, применяем его к результатам
         if (searchQuery) {
             console.log('[refreshCurrentContext] Search query detected:', searchQuery, 'context:', key);
@@ -4884,19 +4884,19 @@ window.addEventListener('qaDataUpdated', (event) => {
     console.log('[qaDataUpdated] 🔥 Получено событие об изменении карточки');
     console.log('[qaDataUpdated] Timestamp:', new Date().toISOString());
     console.log('[qaDataUpdated] Detail:', event.detail);
-    
+
     const { updatedCard, oldQuestion, newQuestion } = event.detail || {};
-    
+
     // Проверяем, что мы не на странице статистики
     if (location.hash === '#/stats') {
         console.log('[qaDataUpdated] ⚠️ Страница статистики - откладываем обновление');
         return;
     }
-    
+
     // Обновляем текущий контекст
     console.log('[qaDataUpdated] 🔄 Вызываем refreshCurrentContext()');
     refreshCurrentContext();
-    
+
     console.log('[qaDataUpdated] ✅ UI обновлён');
     console.log('========================================');
 });
