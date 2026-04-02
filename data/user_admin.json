@@ -3,9 +3,9 @@
     "username": "admin",
     "role": "admin",
     "createdAt": "2026-03-22T07:07:25.543Z",
-    "lastLoginAt": "2026-04-02T06:33:14.530Z",
+    "lastLoginAt": "2026-04-02T18:11:20.366Z",
     "cardsCount": 316,
-    "lastSavedAt": "2026-04-02T06:33:14.530Z"
+    "lastSavedAt": "2026-04-02T18:20:57.512Z"
   },
   "_cards": [
     {
@@ -471,7 +471,17 @@
       "subcategory": "General",
       "question": "Приемочное",
       "answer": "Выполняется для проверки соответствия программного обеспечения конечным требованиям заказчика или пользователя.",
-      "raw_category": "MindMap Node"
+      "raw_category": "MindMap Node",
+      "formatting": {
+        "question": [
+          {
+            "start": 0,
+            "end": 10,
+            "color": "#FF6B6B"
+          }
+        ],
+        "answer": []
+      }
     },
     {
       "category": "MindMap",
@@ -595,9 +605,13 @@
     {
       "category": "MindMap",
       "subcategory": "General",
-      "question": "ключ идемпотентности",
+      "question": "ключ идемпотентности тест",
       "answer": "Клиент генерирует уникальный идентификатор (UUID или случайную строку) для конкретного запроса.\n\nКлюч идемпотентности отправляется вместе с запросом (обычно в заголовке Idempotency-Key)\n\nСервер сохраняет ключ и результат запроса:\n\n • Если приходит новый запрос с этим ключом, сервер не выполняет действие снова, а возвращает тот же результат, что и при первом запросе.\n\n • Если ключа нет — выполняет действие и сохраняет результат.",
-      "raw_category": "MindMap Node"
+      "raw_category": "MindMap Node",
+      "formatting": {
+        "question": [],
+        "answer": []
+      }
     },
     {
       "category": "MindMap",
@@ -2100,9 +2114,9 @@
   "_rewards": {},
   "_streaks": {},
   "_stats": {
-    "total": 41,
-    "timeSpent": 46625,
-    "points": 210,
+    "total": 71,
+    "timeSpent": 65950,
+    "points": 360,
     "correct": 5
   },
   "_srsProgress": {
@@ -2154,23 +2168,27 @@
     },
     "Gitlab Ci/Jenkins": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
+      "easeFactor": 1.7999999999999998,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774291472613,
-      "nextReviewDate": 1774314000000,
-      "dueDate": "2026-03-24T01:00:00.000Z",
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775146746321,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
           "date": 1774291472613,
           "grade": 2
+        },
+        {
+          "date": 1775146746321,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-23",
-      "lastReviewedTime": 0,
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
       "question": "Gitlab Ci/Jenkins"
     },
     "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
@@ -2864,13 +2882,624 @@
       "lastReviewed": "2026-04-02",
       "lastReviewedTime": 18,
       "question": "postman, swagger"
+    },
+    "Масштабируемость": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775145724434,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775145724434,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Масштабируемость"
+    },
+    "Как происходит тестирование локально с помощью Docker?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775145724700,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775145724700,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Как происходит тестирование локально с помощью Docker?"
+    },
+    "Тонкий - логика не сервере\n(Частный пример это браузер)": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775145728749,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775145728749,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Тонкий - логика не сервере\n(Частный пример это браузер)"
+    },
+    "Сложность": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775145729046,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775145729046,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Сложность"
+    },
+    "Накладные расходы": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146744991,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146744991,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Накладные расходы"
+    },
+    "Конкурентное - между модулями": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146745264,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146745264,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Конкурентное - между модулями"
+    },
+    "Что такое gRPC?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146745632,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146745632,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Что такое gRPC?"
+    },
+    "Технологический долг": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146745963,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146745963,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Технологический долг"
+    },
+    "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146746701,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146746701,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается"
+    },
+    "Протокол обмена структурированными\nсообщениями в определенной вычислительной\nсреде. Обмен произвольных сообщений в\nформате xml, описываемый wsdl (Web Services Description Language)": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146825882,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146825882,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Протокол обмена структурированными\nсообщениями в определенной вычислительной\nсреде. Обмен произвольных сообщений в\nформате xml, описываемый wsdl (Web Services Description Language)"
+    },
+    "id, module, title, str, OP, attachment": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146826430,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146826430,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "id, module, title, str, OP, attachment"
+    },
+    "сопровождаемость": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146833733,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146833733,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "сопровождаемость"
+    },
+    "Проблемы масштабирования": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146834027,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146834027,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Проблемы масштабирования"
+    },
+    "Access Token": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146834281,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146834281,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Access Token"
+    },
+    "Транзакции": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146866255,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146866255,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Транзакции"
+    },
+    "БД правильно взаимодействует с другими\nсистемами и приложениями": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146866500,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146866500,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "БД правильно взаимодействует с другими\nсистемами и приложениями"
+    },
+    "Белый ящик": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146866693,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146866693,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Белый ящик"
+    },
+    "Как вы работали с Docker и TeamCity?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146870785,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146870785,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Как вы работали с Docker и TeamCity?"
+    },
+    "Клиент и сервер не зависимы друг от друга - к серверу может обращаться множество клиентов и\nему не важно кто это, так же как и клиенту не важно что за сервер": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146871036,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146871036,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Клиент и сервер не зависимы друг от друга - к серверу может обращаться множество клиентов и\nему не важно кто это, так же как и клиенту не важно что за сервер"
+    },
+    "Kubernetes": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146871250,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146871250,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Kubernetes"
+    },
+    "Производительность": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146889021,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146889021,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Производительность"
+    },
+    "Сервер не хранит состояние, это может делать только клиент - для сервера каждый запрос\nсамодостаточный, он не знает сколько раз клиент обращался и на каком этапе находится клиент": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146889318,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146889318,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Сервер не хранит состояние, это может делать только клиент - для сервера каждый запрос\nсамодостаточный, он не знает сколько раз клиент обращался и на каком этапе находится клиент"
+    },
+    "Foreign Key": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146889574,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146889574,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Foreign Key"
+    },
+    "по ресту какое?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146890006,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146890006,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "по ресту какое?"
+    },
+    "Как релизится бэк и фронт, вместе или раздельно?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146890182,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146890182,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Как релизится бэк и фронт, вместе или раздельно?"
+    },
+    "Назначен": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146893907,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146893907,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Назначен"
+    },
+    "Толстый - логика на клиента\n(онлайн игры)": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146894174,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146894174,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Толстый - логика на клиента\n(онлайн игры)"
+    },
+    "Отказоустойчивость": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775146894395,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775146894395,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 19,
+      "question": "Отказоустойчивость"
+    },
+    "Разработчик возвращает баг с пометкой 'не воспроизводится'. Что делать?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775154055122,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775154055122,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 21,
+      "question": "Разработчик возвращает баг с пометкой 'не воспроизводится'. Что делать?"
     }
   },
   "_favorites": [
     "2/3ех/многоуровневая",
     "Из чего состоит Kafka и как работает?",
     "как отправлял сообщения в кафке ручками?",
-    "брокеры, кафка, как взаимодействовали сервисы?"
+    "брокеры, кафка, как взаимодействовали сервисы?",
+    "Приемочное",
+    "ключ идемпотентности"
   ],
   "studyStreak": {
     "current": 1,
@@ -2878,7 +3507,7 @@
     "lastDate": "2026-04-02"
   },
   "dailyPoints": {
-    "2026-04-02": 115
+    "2026-04-02": 265
   },
   "dailyBonusPoints": {
     "2026-04-02": 0

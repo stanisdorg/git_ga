@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.24.0';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.24.0';
-import { getProgressMap } from './stats-utils.js?v=6.24.0';
-import { checkAchievements } from './stats-utils.js?v=6.24.0';
-import { Scheduler } from './scheduler.js?v=6.24.0';
-import { getTodaysSession } from './category-scheduler.js?v=6.24.0';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.24.0';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.24.0';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.24.0';
+import { LearningSession } from './session.js?v=6.35.0';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.35.0';
+import { getProgressMap } from './stats-utils.js?v=6.35.0';
+import { checkAchievements } from './stats-utils.js?v=6.35.0';
+import { Scheduler } from './scheduler.js?v=6.35.0';
+import { getTodaysSession } from './category-scheduler.js?v=6.35.0';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.35.0';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.35.0';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.35.0';
 
 // DOM Elements
 let container = null;
@@ -858,13 +858,23 @@ async function saveEditChanges() {
                         allCards[cardIndex].answer = newAnswer;
                         allCards[cardIndex].formatting = currentFormatting;
                         localStorage.setItem('qaUserCards', JSON.stringify(allCards));
-                        console.log('[EDIT MODAL] localStorage обновлён');
+                        console.log('[EDIT MODAL] ✅ localStorage обновлён');
+                        
+                        // 🔥 ДИСПАТЧИМ СОБЫТИЕ для обновления UI на главной странице
+                        window.dispatchEvent(new CustomEvent('qaDataUpdated', { 
+                            detail: { 
+                                updatedCard: allCards[cardIndex],
+                                oldQuestion: editModalState.originalCard.question,
+                                newQuestion: newQuestion
+                            }
+                        }));
+                        console.log('[EDIT MODAL] ✅ Событие qaDataUpdated отправлено');
                     } else {
-                        console.warn('[EDIT MODAL] Карточка не найдена в localStorage для обновления');
+                        console.warn('[EDIT MODAL] ❌ Карточка не найдена в localStorage для обновления');
                     }
                 }
             } catch (e) {
-                console.error('[EDIT MODAL] Ошибка обновления localStorage:', e);
+                console.error('[EDIT MODAL] ❌ Ошибка обновления localStorage:', e);
             }
 
             // 4. Обновляем originalCard в state
