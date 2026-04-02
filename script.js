@@ -80,12 +80,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // 🔥 Загружаем историю из localStorage
         try {
             const savedHistory = localStorage.getItem('qaSearchHistory');
+            console.log('[SEARCH] Saved history from localStorage:', savedHistory);
             if (savedHistory) {
                 searchHistoryArray = JSON.parse(savedHistory);
-                console.log('[SEARCH] Загружено элементов истории:', searchHistoryArray.length);
+                console.log('[SEARCH] ✅ Загружено элементов истории:', searchHistoryArray.length);
+                console.log('[SEARCH] История:', searchHistoryArray);
+            } else {
+                console.log('[SEARCH] ⚠️ История пуста в localStorage');
             }
         } catch (e) {
-            console.error('[SEARCH] Ошибка загрузки истории:', e);
+            console.error('[SEARCH] ❌ Ошибка загрузки истории:', e);
             searchHistoryArray = [];
         }
 
@@ -408,8 +412,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Обработчик ввода текста в поле поиска
         searchInput.addEventListener('input', function () {
+            console.log('[SEARCH] Input event, value:', this.value);
             // Показываем историю при вводе текста
             if (searchHistory && searchHistoryArray.length > 0) {
+                console.log('[SEARCH] Показываем историю при вводе');
                 searchHistory.style.display = 'block';
                 renderSearchHistory();
             }
@@ -418,9 +424,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Показ истории при фокусе на поле поиска
         searchInput.addEventListener('focus', function () {
+            console.log('[SEARCH] Focus event, searchHistoryArray.length:', searchHistoryArray.length);
             if (searchHistory && searchHistoryArray.length > 0) {
+                console.log('[SEARCH] Показываем историю при фокусе');
                 searchHistory.style.display = 'block';
                 renderSearchHistory();
+            } else {
+                console.log('[SEARCH] ⚠️ История пуста или searchHistory не найден');
             }
         });
 
@@ -455,19 +465,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Обработчик нажатия Enter в поле поиска — всегда выполняет поиск и пишет в историю
         searchInput.addEventListener('keydown', function (event) {
+            console.log('[SEARCH] Keydown event, key:', event.key);
             if (event.key === 'Enter') {
                 const query = this.value.trim();
+                console.log('[SEARCH] Enter pressed, query:', query);
                 if (query) {
                     performSearch(query);
                     addToSearchHistory(query);
+                } else {
+                    console.log('[SEARCH] ⚠️ Пустой query при Enter');
                 }
             }
         });
 
         // Функция добавления запроса в историю поиска
         function addToSearchHistory(query) {
+            console.log('[SEARCH] addToSearchHistory вызван с query:', query);
+
             // Проверяем, что запрос не пустой
-            if (!query.trim()) return;
+            if (!query.trim()) {
+                console.log('[SEARCH] ⚠️ Пустой запрос, пропускаем');
+                return;
+            }
 
             // Создаем объект с запросом и временем
             const historyItem = {
@@ -475,16 +494,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 timestamp: new Date().toLocaleTimeString(),
                 id: Date.now() // уникальный идентификатор для элемента истории
             };
+            console.log('[SEARCH] Создаём элемент истории:', historyItem);
 
             // Добавляем в начало массива истории
             searchHistoryArray.unshift(historyItem);
+            console.log('[SEARCH] Массив после добавления:', searchHistoryArray.length, 'элементов');
 
             // 🔥 Сохраняем в localStorage (храним последние 20 запросов)
             try {
                 const limitedHistory = searchHistoryArray.slice(0, 20);
                 localStorage.setItem('qaSearchHistory', JSON.stringify(limitedHistory));
+                console.log('[SEARCH] ✅ Сохранено в localStorage:', limitedHistory.length, 'элементов');
             } catch (e) {
-                console.error('[SEARCH] Ошибка сохранения истории:', e);
+                console.error('[SEARCH] ❌ Ошибка сохранения истории:', e);
             }
 
             // Обновляем отображение истории
@@ -493,8 +515,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Функция отображения истории поиска
         function renderSearchHistory() {
+            console.log('[SEARCH] renderSearchHistory вызван');
+            console.log('[SEARCH] searchHistoryArray:', searchHistoryArray);
+            console.log('[SEARCH] searchHistory element:', searchHistory);
+
+            if (!searchHistory) {
+                console.error('[SEARCH] ❌ searchHistory element не найден!');
+                return;
+            }
+
             // Очищаем текущую историю
             searchHistory.innerHTML = '';
+            console.log('[SEARCH] Очищена история');
+
+            if (searchHistoryArray.length === 0) {
+                console.log('[SEARCH] ⚠️ История пуста, ничего не рендерим');
+                searchHistory.style.display = 'none';
+                return;
+            }
 
             // Добавляем элементы истории
             searchHistoryArray.forEach(item => {
@@ -508,12 +546,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Добавляем обработчик клика по элементу истории
                 historyElement.addEventListener('click', function () {
+                    console.log('[SEARCH] Клик на историю:', item.query);
                     searchInput.value = item.query;
                     performSearch(item.query);
                 });
 
                 searchHistory.appendChild(historyElement);
             });
+
+            searchHistory.style.display = 'block';
+            console.log('[SEARCH] ✅ История отображена, элементов:', searchHistoryArray.length);
         }
 
         // ------------------------
