@@ -1446,6 +1446,9 @@ function stopLearnSession() {
 
     // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
     window.__learnUIInitialized = false;
+
+    // 🔥 ПЕРЕНАПРАВЛЕНИЕ НА СТРАНИЦУ СТАТИСТИКИ ПОСЛЕ ВЫХОДА ИЗ ОБУЧЕНИЯ
+    location.hash = '#/stats';
 }
 
 function renderCardState(state) {

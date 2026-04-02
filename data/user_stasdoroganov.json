@@ -2196,23 +2196,27 @@
   "_srsProgress": {
     "как с kibana работал?  уровни ошибок ?": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
-      "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774611488735,
-      "nextReviewDate": 1774659600000,
-      "dueDate": "2026-03-28T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.9999999999999998,
+      "streak": 1,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775142573815,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1774611488735,
           "grade": 2
+        },
+        {
+          "date": 1775142573815,
+          "grade": 3
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-27",
-      "lastReviewedTime": 17,
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 18,
       "question": "как с kibana работал?  уровни ошибок ?"
     },
     "Local Storage:": {
@@ -2283,24 +2287,28 @@
       "question": "502 Bad Gateway"
     },
     "UAT пользовательское": {
-      "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774622359962,
-      "nextReviewDate": 1774659600000,
-      "dueDate": "2026-03-28T01:00:00.000Z",
-      "repetitions": 1,
+      "interval": 3,
+      "easeFactor": 2.3999999999999995,
+      "streak": 2,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775142560855,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 2,
       "historyArray": [
         {
           "date": 1774622359962,
           "grade": 3
+        },
+        {
+          "date": 1775142560855,
+          "grade": 3
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-27",
-      "lastReviewedTime": 20,
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 18,
       "question": "UAT пользовательское"
     },
     "логи кафка": {
@@ -2472,32 +2480,78 @@
       "question": "docker команды?"
     },
     "Foreign Key": {
+      "interval": 3,
+      "easeFactor": 2.3999999999999995,
+      "streak": 2,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775142563918,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 2,
+      "historyArray": [
+        {
+          "date": 1774696841760,
+          "grade": 3
+        },
+        {
+          "date": 1775142563918,
+          "grade": 4
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 18,
+      "question": "Foreign Key"
+    },
+    "с кубером тоже работали?": {
       "interval": 1,
       "easeFactor": 2.3499999999999996,
       "streak": 1,
       "repetitionCount": 1,
       "history": 1,
-      "lastReviewDate": 1774696841760,
-      "nextReviewDate": 1774746000000,
-      "dueDate": "2026-03-29T01:00:00.000Z",
+      "lastReviewDate": 1775142555275,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
       "repetitions": 1,
       "historyArray": [
         {
-          "date": 1774696841760,
+          "date": 1775142555275,
           "grade": 3
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-28",
-      "lastReviewedTime": 17,
-      "question": "Foreign Key"
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 18,
+      "question": "с кубером тоже работали?"
+    },
+    "403 Forbidden": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775142558242,
+      "nextReviewDate": 1775178000000,
+      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775142558242,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-02",
+      "lastReviewedTime": 18,
+      "question": "403 Forbidden"
     }
   },
   "_stats": {
-    "total": 15,
-    "timeSpent": 855297,
-    "points": 125,
-    "correct": 11
+    "total": 20,
+    "timeSpent": 876760,
+    "points": 175,
+    "correct": 15
   },
   "_meta": {
     "username": "stasdoroganov",
@@ -2506,5 +2560,17 @@
     "lastLoginAt": "2026-03-29T03:55:48.510Z",
     "cardsCount": 317,
     "lastSavedAt": "2026-03-29T03:55:48.510Z"
-  }
+  },
+  "studyStreak": {
+    "current": 1,
+    "best": 1,
+    "lastDate": "2026-04-02"
+  },
+  "dailyPoints": {
+    "2026-04-02": 50
+  },
+  "dailyBonusPoints": {
+    "2026-04-02": 0
+  },
+  "dailyDayBonusPoints": {}
 }
