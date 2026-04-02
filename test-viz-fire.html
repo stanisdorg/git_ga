@@ -3,356 +3,406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Красивые визуализаторы 2026</title>
+    <title>🔥 ОХУЕННЫЕ визуализаторы 2026</title>
     <style>
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            padding: 40px;
+            padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000;
             min-height: 100vh;
             color: #fff;
+            overflow-x: hidden;
         }
-        h1 {
+        
+        .hero {
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            background: linear-gradient(135deg, #00ff88, #00d9ff, #a855f7);
+            padding: 60px 20px;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #000 100%);
+        }
+        
+        h1 {
+            font-size: 3.5em;
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #00ff88, #00d9ff, #a855f7, #ff0080);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradient-shift 5s ease infinite;
-            background-size: 200% 200%;
+            animation: gradient-rotate 3s linear infinite;
+            background-size: 300% 300%;
+            font-weight: 800;
+            letter-spacing: -2px;
         }
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
+        
+        @keyframes gradient-rotate {
+            0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
+        
         p.subtitle {
-            text-align: center;
             color: #666;
-            margin-bottom: 40px;
+            font-size: 1.2em;
+            margin: 0;
         }
+        
         .info {
             text-align: center;
             color: #00ff88;
-            margin-bottom: 50px;
             padding: 25px;
             background: rgba(0, 255, 136, 0.05);
-            border-radius: 16px;
             border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 16px;
+            max-width: 600px;
+            margin: 30px auto;
             font-size: 1.1em;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.1);
         }
-        .viz-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 30px;
-            max-width: 1800px;
+        
+        .test-mic-btn {
+            padding: 22px 70px;
+            border-radius: 50px;
+            border: 2px solid rgba(0, 255, 136, 0.4);
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05));
+            color: #00ff88;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: 800;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: 40px auto;
+            display: block;
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.2);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .test-mic-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 70px rgba(0, 255, 136, 0.3);
+        }
+        
+        .test-mic-btn.active {
+            background: linear-gradient(135deg, rgba(255, 0, 100, 0.3), rgba(255, 0, 100, 0.1));
+            border-color: rgba(255, 0, 100, 0.6);
+            color: #ff6688;
+            animation: pulse-record 1.5s ease-in-out infinite;
+            box-shadow: 0 0 60px rgba(255, 0, 100, 0.3);
+        }
+        
+        @keyframes pulse-record {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 100, 0.4); }
+            50% { box-shadow: 0 0 0 30px rgba(255, 0, 100, 0); }
+        }
+        
+        .viz-container {
+            max-width: 1600px;
             margin: 0 auto;
+            padding: 40px 20px;
         }
+        
+        .viz-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
         .viz-card {
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 30px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
+        
         .viz-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
+            left: -100%;
+            width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            animation: shimmer 3s infinite;
         }
-        .viz-card:hover::before {
-            transform: translateX(100%);
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
+        
         .viz-card:hover {
+            transform: translateY(-8px);
             background: rgba(255,255,255,0.04);
-            border-color: rgba(255,255,255,0.12);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
         }
+        
         .viz-card.current {
-            border-color: rgba(255, 77, 77, 0.4);
-            box-shadow: 0 0 40px rgba(255, 77, 77, 0.1);
+            border-color: rgba(255, 77, 77, 0.5);
+            box-shadow: 0 0 50px rgba(255, 77, 77, 0.15);
         }
+        
         .viz-card h3 {
             margin: 0 0 25px 0;
-            font-size: 1.2em;
+            font-size: 1.3em;
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
+        
         .badge {
-            padding: 4px 12px;
-            border-radius: 8px;
+            padding: 5px 14px;
+            border-radius: 10px;
             font-size: 0.65em;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
+        
         .badge-current {
-            background: linear-gradient(135deg, rgba(255, 77, 77, 0.3), rgba(255, 77, 77, 0.1));
+            background: linear-gradient(135deg, rgba(255, 77, 77, 0.4), rgba(255, 77, 77, 0.1));
             color: #ff6666;
-            border: 1px solid rgba(255, 77, 77, 0.4);
+            border: 1px solid rgba(255, 77, 77, 0.5);
         }
+        
         .badge-new {
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 255, 136, 0.1));
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.4), rgba(0, 255, 136, 0.1));
             color: #00ff88;
-            border: 1px solid rgba(0, 255, 136, 0.4);
+            border: 1px solid rgba(0, 255, 136, 0.5);
         }
-        .canvas-container {
-            background: linear-gradient(180deg, rgba(10,10,20,0.8), rgba(5,5,15,0.9));
-            border-radius: 16px;
+        
+        .canvas-wrapper {
+            background: linear-gradient(180deg, #0a0a14 0%, #050510 100%);
+            border-radius: 20px;
             overflow: hidden;
-            height: 150px;
+            height: 180px;
             position: relative;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
         }
+        
         .viz-canvas {
             width: 100%;
             height: 100%;
         }
+        
         .select-btn {
             width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            border-radius: 12px;
+            padding: 16px;
+            margin-top: 25px;
+            border-radius: 14px;
             border: 2px solid rgba(255,255,255,0.1);
-            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
             color: #fff;
             cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .select-btn:hover {
-            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
-            border-color: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-        .select-btn.selected {
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 255, 136, 0.1));
-            border-color: #00ff88;
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
-        }
-        .test-mic-btn {
-            padding: 20px 60px;
-            border-radius: 16px;
-            border: 2px solid rgba(0, 255, 136, 0.4);
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.03));
-            color: #00ff88;
-            cursor: pointer;
-            font-size: 1.2em;
+            font-size: 1em;
             font-weight: 700;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 50px auto;
-            display: block;
-            box-shadow: 0 0 40px rgba(0, 255, 136, 0.15);
-            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .test-mic-btn:hover {
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.08));
+        
+        .select-btn:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+            border-color: rgba(255,255,255,0.3);
             transform: translateY(-3px);
-            box-shadow: 0 10px 50px rgba(0, 255, 136, 0.25);
         }
-        .test-mic-btn.active {
-            background: linear-gradient(135deg, rgba(255, 0, 100, 0.25), rgba(255, 0, 100, 0.08));
-            border-color: rgba(255, 0, 100, 0.5);
-            color: #ff6688;
-            animation: pulse-record 2s ease-in-out infinite;
-            box-shadow: 0 0 50px rgba(255, 0, 100, 0.25);
+        
+        .select-btn.selected {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 255, 136, 0.15));
+            border-color: #00ff88;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
         }
-        @keyframes pulse-record {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 100, 0.3); }
-            50% { box-shadow: 0 0 0 25px rgba(255, 0, 100, 0); }
-        }
+        
         #selectedInfo {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            padding: 30px 40px;
+            padding: 35px 45px;
             background: rgba(0, 0, 0, 0.95);
             border: 2px solid rgba(0, 255, 136, 0.4);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0, 255, 136, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 0 60px rgba(0, 255, 136, 0.2);
             z-index: 1000;
             display: none;
-            max-width: 550px;
-            backdrop-filter: blur(20px);
+            max-width: 600px;
+            backdrop-filter: blur(30px);
         }
+        
         #selectedInfo.show {
             display: block;
-            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
+        
         @keyframes slideIn {
-            from { transform: translateY(30px); opacity: 0; }
+            from { transform: translateY(40px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        
         #selectedInfo h3 {
-            margin: 0 0 18px 0;
-            font-size: 1em;
+            margin: 0 0 20px 0;
+            font-size: 1.1em;
             color: #00ff88;
-            font-weight: 700;
+            font-weight: 800;
         }
+        
         #selectedInfo code {
             display: block;
-            padding: 18px;
+            padding: 20px;
             background: rgba(255,255,255,0.03);
-            border-radius: 12px;
+            border-radius: 16px;
             font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.72em;
+            font-size: 0.7em;
             color: #00ff88;
-            max-height: 450px;
+            max-height: 500px;
             overflow-y: auto;
             white-space: pre-wrap;
-            line-height: 1.6;
+            line-height: 1.7;
             border: 1px solid rgba(255,255,255,0.05);
         }
-        #selectedInfo code::-webkit-scrollbar {
-            width: 6px;
-        }
-        #selectedInfo code::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.02);
-            border-radius: 3px;
-        }
-        #selectedInfo code::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 136, 0.3);
-            border-radius: 3px;
-        }
+        
         #selectedInfo .copy-btn {
-            margin-top: 18px;
-            padding: 14px 28px;
+            margin-top: 20px;
+            padding: 16px 32px;
             background: linear-gradient(135deg, #00ff88, #00cc6a);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #000;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             width: 100%;
-            font-size: 0.95em;
+            font-size: 1em;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+        
         #selectedInfo .copy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.35);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.4);
         }
     </style>
 </head>
 <body>
-    <h1>🎨 Красивые визуализаторы</h1>
-    <p class="subtitle">Современный дизайн + максимальная производительность</p>
+    <div class="hero">
+        <h1>🔥 ОХУЕННЫЕ визуализаторы</h1>
+        <p class="subtitle">Максимальная красота + производительность</p>
+    </div>
+    
     <div class="info">
-        🎤 Нажмите «Включить микрофон» и произнесите что-нибудь<br>
-        <small style="color: #666; font-size: 0.9em">Web Audio API + Canvas 60 FPS</small>
+        🎤 Нажмите кнопку ниже и произнесите что-нибудь — визуализаторы взорвутся!<br>
+        <small style="color: #666; font-size: 0.85em">Web Audio API + Canvas 60 FPS + HDR</small>
     </div>
 
     <button class="test-mic-btn" id="testMicBtn">🎤 Включить микрофон</button>
 
-    <div class="viz-grid">
-        <!-- CURRENT -->
-        <div class="viz-card current">
-            <h3>
-                🔴 Текущий (с сайта)
-                <span class="badge badge-current">ТЕКУЩИЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-current"></canvas>
+    <div class="viz-container">
+        <div class="viz-row">
+            <!-- CURRENT -->
+            <div class="viz-card current">
+                <h3>
+                    🔴 Текущий (с сайта)
+                    <span class="badge badge-current">ТЕКУЩИЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-current"></canvas>
+                </div>
+                <button class="select-btn" data-variant="current">✅ Выбрать текущий</button>
             </div>
-            <button class="select-btn" data-variant="current">✅ Выбрать текущий</button>
+
+            <!-- BARS -->
+            <div class="viz-card">
+                <h3>
+                    🟦 Градиентные столбики
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-bars"></canvas>
+                </div>
+                <button class="select-btn" data-variant="bars">Выбрать</button>
+            </div>
         </div>
 
-        <!-- BARS -->
-        <div class="viz-card">
-            <h3>
-                🟦 Градиентные столбики
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-bars"></canvas>
+        <div class="viz-row">
+            <!-- SPECTRUM -->
+            <div class="viz-card">
+                <h3>
+                    🌈 RGB Спектр
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-spectrum"></canvas>
+                </div>
+                <button class="select-btn" data-variant="spectrum">Выбрать</button>
             </div>
-            <button class="select-btn" data-variant="bars">Выбрать</button>
+
+            <!-- CIRCULAR -->
+            <div class="viz-card">
+                <h3>
+                    🟢 Круги
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-circular"></canvas>
+                </div>
+                <button class="select-btn" data-variant="circular">Выбрать</button>
+            </div>
         </div>
 
-        <!-- SPECTRUM -->
-        <div class="viz-card">
-            <h3>
-                🌈 RGB Спектр
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-spectrum"></canvas>
+        <div class="viz-row">
+            <!-- NEON -->
+            <div class="viz-card">
+                <h3>
+                    🟣 Неоновая волна
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-neon"></canvas>
+                </div>
+                <button class="select-btn" data-variant="neon">Выбрать</button>
             </div>
-            <button class="select-btn" data-variant="spectrum">Выбрать</button>
+
+            <!-- PARTICLES -->
+            <div class="viz-card">
+                <h3>
+                    ⭐ Частицы
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-particles"></canvas>
+                </div>
+                <button class="select-btn" data-variant="particles">Выбрать</button>
+            </div>
         </div>
 
-        <!-- CIRCULAR -->
-        <div class="viz-card">
-            <h3>
-                🟢 Круги
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-circular"></canvas>
+        <div class="viz-row">
+            <!-- SCOPE -->
+            <div class="viz-card">
+                <h3>
+                    🔵 Осциллограф
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-scope"></canvas>
+                </div>
+                <button class="select-btn" data-variant="scope">Выбрать</button>
             </div>
-            <button class="select-btn" data-variant="circular">Выбрать</button>
-        </div>
 
-        <!-- NEON -->
-        <div class="viz-card">
-            <h3>
-                🟣 Неоновая волна
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-neon"></canvas>
+            <!-- ORB -->
+            <div class="viz-card">
+                <h3>
+                    🟠 Энергосфера
+                    <span class="badge badge-new">НОВЫЙ</span>
+                </h3>
+                <div class="canvas-wrapper">
+                    <canvas class="viz-canvas" id="viz-orb"></canvas>
+                </div>
+                <button class="select-btn" data-variant="orb">Выбрать</button>
             </div>
-            <button class="select-btn" data-variant="neon">Выбрать</button>
-        </div>
-
-        <!-- PARTICLES -->
-        <div class="viz-card">
-            <h3>
-                ⭐ Частицы
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-particles"></canvas>
-            </div>
-            <button class="select-btn" data-variant="particles">Выбрать</button>
-        </div>
-
-        <!-- SCOPE -->
-        <div class="viz-card">
-            <h3>
-                🔵 Осциллограф
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-scope"></canvas>
-            </div>
-            <button class="select-btn" data-variant="scope">Выбрать</button>
-        </div>
-
-        <!-- ORB -->
-        <div class="viz-card">
-            <h3>
-                🟠 Энергосфера
-                <span class="badge badge-new">НОВЫЙ</span>
-            </h3>
-            <div class="canvas-container">
-                <canvas class="viz-canvas" id="viz-orb"></canvas>
-            </div>
-            <button class="select-btn" data-variant="orb">Выбрать</button>
         </div>
     </div>
 
@@ -378,7 +428,7 @@
             spectrum: { type: 'spectrum', gradient: 'rgb', smooth: true },
             circular: { type: 'circular', color: '#00ff88', rings: 6, glow: true },
             neon: { type: 'wave', color: '#a855f7', lineWidth: 4, sensitivity: 4, glow: true },
-            particles: { type: 'particles', color: '#00d9ff', count: 120, glow: true },
+            particles: { type: 'particles', color: '#00d9ff', count: 150, glow: true },
             scope: { type: 'scope', color: '#00d9ff', lineWidth: 2, glow: true },
             orb: { type: 'orb', colors: ['#f97316', '#ef4444', '#fbbf24'], glow: true }
         };
@@ -408,8 +458,8 @@
                 
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
-                analyser.fftSize = 1024;
-                analyser.smoothingTimeConstant = 0.85;
+                analyser.fftSize = 2048;
+                analyser.smoothingTimeConstant = 0.88;
                 
                 microphone = audioContext.createMediaStreamSource(stream);
                 microphone.connect(analyser);
@@ -475,7 +525,7 @@
             const width = canvas.width / 2;
             const height = canvas.height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
             ctx.fillRect(0, 0, width, height);
 
             ctx.lineWidth = config.lineWidth;
@@ -484,7 +534,7 @@
             ctx.lineJoin = 'round';
             
             if (config.glow) {
-                ctx.shadowBlur = 25;
+                ctx.shadowBlur = 30;
                 ctx.shadowColor = config.color;
             }
 
@@ -513,29 +563,26 @@
             const width = canvas.width / 2;
             const height = canvas.height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
             ctx.fillRect(0, 0, width, height);
 
             const barCount = config.barCount;
-            const barWidth = (width / barCount) - 3;
+            const barWidth = (width / barCount) - 4;
             const step = Math.floor(frequencyData.length / barCount);
 
-            // Фоновая анимация в покое
             const time = Date.now() * 0.001;
 
             for (let i = 0; i < barCount; i++) {
                 let value = frequencyData[i * step];
 
-                // Если тишина (volume < 0.05), добавляем фоновую анимацию
                 if (volume < 0.05) {
-                    // Плавная волна снизу вверх
                     const wave = Math.sin(time * 2 + i * 0.3) * 0.5 + 0.5;
                     const noise = Math.sin(time * 3.7 + i * 0.7) * 0.3 + 0.3;
-                    value = Math.floor((wave + noise) * 255 * 0.25); // 25% от максимума
+                    value = Math.floor((wave + noise) * 255 * 0.25);
                 }
 
                 const barHeight = (value / 255) * height * 0.95;
-                const x = i * (barWidth + 3) + 1.5;
+                const x = i * (barWidth + 4) + 2;
                 const y = height - barHeight;
 
                 const gradient = ctx.createLinearGradient(x, y, x, height);
@@ -544,16 +591,16 @@
                 gradient.addColorStop(1, config.gradient[0]);
 
                 ctx.fillStyle = gradient;
-
+                
                 if (config.rounded) {
                     ctx.beginPath();
-                    ctx.roundRect(x, y, barWidth, barHeight, [6, 6, 0, 0]);
+                    ctx.roundRect(x, y, barWidth, barHeight, [8, 8, 0, 0]);
                     ctx.fill();
                 } else {
                     ctx.fillRect(x, y, barWidth, barHeight);
                 }
 
-                ctx.shadowBlur = 15;
+                ctx.shadowBlur = 20;
                 ctx.shadowColor = config.gradient[0];
             }
             ctx.shadowBlur = 0;
@@ -566,23 +613,21 @@
             const width = canvas.width / 2;
             const height = canvas.height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
             ctx.fillRect(0, 0, width, height);
 
             const barCount = frequencyData.length / 2;
             const barWidth = width / barCount;
 
-            // Фоновая анимация в покое
             const time = Date.now() * 0.001;
 
             for (let i = 0; i < barCount; i++) {
                 let value = frequencyData[i];
 
-                // Если тишина, добавляем плавную фоновую анимацию
                 if (volume < 0.05) {
                     const wave = Math.sin(time * 1.5 + i * 0.1) * 0.5 + 0.5;
                     const wave2 = Math.sin(time * 2.3 + i * 0.05) * 0.3 + 0.3;
-                    value = Math.floor((wave + wave2) * 255 * 0.3); // 30% от максимума
+                    value = Math.floor((wave + wave2) * 255 * 0.3);
                 }
 
                 const barHeight = (value / 255) * height;
@@ -604,13 +649,13 @@
             const centerX = width / 2;
             const centerY = height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
             ctx.fillRect(0, 0, width, height);
 
             const radius = Math.min(width, height) / 3.5;
 
             if (config.glow) {
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 25;
                 ctx.shadowColor = config.color;
             }
 
@@ -634,7 +679,7 @@
             const width = canvas.width / 2;
             const height = canvas.height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.1)';
             ctx.fillRect(0, 0, width, height);
 
             if (particles.length === 0) {
@@ -651,7 +696,7 @@
             }
 
             if (config.glow) {
-                ctx.shadowBlur = 15;
+                ctx.shadowBlur = 20;
                 ctx.shadowColor = config.color;
             }
 
@@ -682,7 +727,7 @@
             const width = canvas.width / 2;
             const height = canvas.height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
             ctx.fillRect(0, 0, width, height);
 
             ctx.lineWidth = config.lineWidth;
@@ -691,7 +736,7 @@
             ctx.lineJoin = 'round';
             
             if (config.glow) {
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 25;
                 ctx.shadowColor = config.color;
             }
 
@@ -722,14 +767,14 @@
             const centerX = width / 2;
             const centerY = height / 2;
 
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
             ctx.fillRect(0, 0, width, height);
 
             const baseRadius = Math.min(width, height) / 4;
             const radius = baseRadius + (volume * 50);
 
             if (config.glow) {
-                ctx.shadowBlur = 30;
+                ctx.shadowBlur = 35;
             }
 
             for (let i = 0; i < config.colors.length; i++) {
@@ -758,7 +803,7 @@
 
         let selectedVariant = null;
         const codeVariants = {
-            current: `// 🔴 Текущий (с сайта)
+            current: `// 🔴 Текущий
 function visualizeCanvas(analyser, dataArray, canvasEl) {
     const ctx = canvasEl.getContext('2d');
     const width = canvasEl.width = canvasEl.clientWidth;
@@ -766,7 +811,7 @@ function visualizeCanvas(analyser, dataArray, canvasEl) {
     
     function draw() {
         analyser.getByteTimeDomainData(dataArray);
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         ctx.lineWidth = 2;
@@ -798,11 +843,11 @@ function drawBars(analyser, canvasEl) {
     
     function draw() {
         analyser.getByteFrequencyData(frequencyData);
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         const barCount = 64;
-        const barWidth = (width / barCount) - 3;
+        const barWidth = (width / barCount) - 4;
         const step = Math.floor(frequencyData.length / barCount);
         
         for (let i = 0; i < barCount; i++) {
@@ -815,7 +860,7 @@ function drawBars(analyser, canvasEl) {
             
             ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.roundRect(i * (barWidth + 3), height - barHeight, barWidth, barHeight, [6, 6, 0, 0]);
+            ctx.roundRect(i * (barWidth + 4), height - barHeight, barWidth, barHeight, [8, 8, 0, 0]);
             ctx.fill();
         }
         requestAnimationFrame(draw);
@@ -831,7 +876,7 @@ function drawSpectrum(analyser, canvasEl) {
     
     function draw() {
         analyser.getByteFrequencyData(frequencyData);
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         const barCount = frequencyData.length / 2;
@@ -858,7 +903,7 @@ function drawCircular(analyser, canvasEl) {
     
     function draw() {
         analyser.getByteFrequencyData(frequencyData);
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         const average = frequencyData.reduce((a, b) => a + b, 0) / frequencyData.length;
@@ -889,13 +934,13 @@ function visualizeNeon(analyser, dataArray, canvasEl) {
     
     function draw() {
         analyser.getByteTimeDomainData(dataArray);
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         ctx.lineWidth = 4;
         ctx.strokeStyle = '#a855f7';
         ctx.lineCap = 'round';
-        ctx.shadowBlur = 25;
+        ctx.shadowBlur = 30;
         ctx.shadowColor = '#a855f7';
         ctx.beginPath();
         
@@ -924,7 +969,7 @@ function drawParticles(analyser, canvasEl) {
     const particles = [];
     
     function init() {
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < 150; i++) {
             particles.push({
                 x: Math.random() * width,
                 y: height + Math.random() * 100,
@@ -941,7 +986,7 @@ function drawParticles(analyser, canvasEl) {
         const average = frequencyData.reduce((a, b) => a + b, 0) / frequencyData.length;
         const volume = average / 255;
         
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.1)';
         ctx.fillRect(0, 0, width, height);
         
         particles.forEach(p => {
@@ -974,13 +1019,13 @@ function drawScope(analyser, dataArray, canvasEl) {
     
     function draw() {
         analyser.getByteTimeDomainData(dataArray);
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#00d9ff';
         ctx.lineCap = 'round';
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 25;
         ctx.shadowColor = '#00d9ff';
         ctx.beginPath();
         
@@ -1012,7 +1057,7 @@ function drawOrb(analyser, canvasEl) {
         const average = frequencyData.reduce((a, b) => a + b, 0) / frequencyData.length;
         const volume = average / 255;
         
-        ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
         ctx.fillRect(0, 0, width, height);
         
         const centerX = width / 2;
@@ -1031,7 +1076,7 @@ function drawOrb(analyser, canvasEl) {
             ctx.ellipse(0, 0, radius + i * 18, (radius + i * 18) * 0.65, 0, 0, Math.PI * 2);
             ctx.strokeStyle = colors[i];
             ctx.lineWidth = 5;
-            ctx.shadowBlur = 30;
+            ctx.shadowBlur = 35;
             ctx.shadowColor = colors[i];
             ctx.stroke();
             ctx.restore();
