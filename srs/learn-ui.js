@@ -1381,17 +1381,15 @@ function stopLearnSession() {
     // Это гарантирует мгновенный переход без задержек и мелькания главной страницы
     console.log('[STOP LEARN SESSION] Calling initStatsPage() directly...');
 
-    // Импортируем и вызываем initStatsPage
+    // 🔥 ВАЖНО: НЕ восстанавливаем UI пока статистика не загрузится
+    // Иначе главная страница успеет показаться раньше статистики
     import('./stats-ui.js?v=6.24.0').then(({ initStatsPage }) => {
         console.log('[STOP LEARN SESSION] Stats module loaded, calling initStatsPage...');
         initStatsPage(window.currentAppVersion || '6.09');
         console.log('[STOP LEARN SESSION] initStatsPage called');
-    }).catch(err => {
-        console.error('[STOP LEARN SESSION] Failed to load stats-ui:', err);
-    });
-
-    // Теперь восстанавливаем UI (статистика уже инициализируется)
-    // 1. Очищаем таймер
+        
+        // Теперь восстанавливаем UI ПОСЛЕ инициализации статистики
+        // 1. Очищаем таймер
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -1492,8 +1490,11 @@ function stopLearnSession() {
 
     // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
     window.__learnUIInitialized = false;
-    
+
     console.log('[STOP LEARN SESSION] ========== END ==========');
+    }).catch(err => {
+        console.error('[STOP LEARN SESSION] Failed to load stats-ui:', err);
+    });
 }
 
 function renderCardState(state) {
