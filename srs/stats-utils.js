@@ -1,8 +1,8 @@
-import { syncWithServer } from './storage.js?v=6.24.0';
+﻿import { syncWithServer } from './storage.js?v=6.24.0';
 
-// Вспомогательные функции для работы с датой (локальное время устройства)
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґР°С‚РѕР№ (Р»РѕРєР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°)
 function getLocalDate() {
-  // Возвращает дату в формате YYYY-MM-DD для локального времени устройства
+  // Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР°С‚Сѓ РІ С„РѕСЂРјР°С‚Рµ YYYY-MM-DD РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё СѓСЃС‚СЂРѕР№СЃС‚РІР°
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -11,12 +11,12 @@ function getLocalDate() {
 }
 
 function getLocalHours() {
-  // Возвращает часы локального времени устройства
+  // Р’РѕР·РІСЂР°С‰Р°РµС‚ С‡Р°СЃС‹ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё СѓСЃС‚СЂРѕР№СЃС‚РІР°
   return new Date().getHours();
 }
 
 function toLocalDate(date) {
-  // Конвертирует любую дату в локальную дату YYYY-MM-DD
+  // РљРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ Р»СЋР±СѓСЋ РґР°С‚Сѓ РІ Р»РѕРєР°Р»СЊРЅСѓСЋ РґР°С‚Сѓ YYYY-MM-DD
   if (!date) return getLocalDate();
   const d = typeof date === 'string' ? new Date(date) : date;
   const year = d.getFullYear();
@@ -25,10 +25,10 @@ function toLocalDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// Экспорт для использования в других модулях (сохраняем обратную совместимость)
+// Р­РєСЃРїРѕСЂС‚ РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РІ РґСЂСѓРіРёС… РјРѕРґСѓР»СЏС… (СЃРѕС…СЂР°РЅСЏРµРј РѕР±СЂР°С‚РЅСѓСЋ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚СЊ)
 export { getLocalDate as getMSKDate, getLocalHours as getMSKHours, toLocalDate as toMSKDate };
 
-// Миграция старых данных из UTC в MSK
+// РњРёРіСЂР°С†РёСЏ СЃС‚Р°СЂС‹С… РґР°РЅРЅС‹С… РёР· UTC РІ MSK
 export function migrateToMSK() {
   const migratedKey = localStorage.getItem('mskMigrated');
   if (migratedKey === 'true') {
@@ -41,53 +41,53 @@ export function migrateToMSK() {
   console.log('[MSK.MIGRATE] Current MSK:', new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }));
 
   try {
-    // Миграция dailyPoints
+    // РњРёРіСЂР°С†РёСЏ dailyPoints
     const dailyPointsRaw = localStorage.getItem('dailyPoints') || '{}';
     const dailyPoints = JSON.parse(dailyPointsRaw);
     console.log('[MSK.MIGRATE] dailyPoints BEFORE:', dailyPoints);
     const newDailyPoints = {};
     Object.entries(dailyPoints).forEach(([date, value]) => {
-      const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
+      const mskDate = toLocalDate(new Date(date + 'T00:00:00Z'));
       newDailyPoints[mskDate] = (newDailyPoints[mskDate] || 0) + value;
       console.log(`[MSK.MIGRATE] ${date} (UTC) -> ${mskDate} (MSK): ${value}`);
     });
     localStorage.setItem('dailyPoints', JSON.stringify(newDailyPoints));
     console.log('[MSK.MIGRATE] dailyPoints AFTER:', newDailyPoints);
 
-    // Миграция dailyBonusPoints
+    // РњРёРіСЂР°С†РёСЏ dailyBonusPoints
     const bonusRaw = localStorage.getItem('dailyBonusPoints') || '{}';
     const bonus = JSON.parse(bonusRaw);
     const newBonus = {};
     Object.entries(bonus).forEach(([date, value]) => {
-      const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
+      const mskDate = toLocalDate(new Date(date + 'T00:00:00Z'));
       newBonus[mskDate] = (newBonus[mskDate] || 0) + value;
     });
     localStorage.setItem('dailyBonusPoints', JSON.stringify(newBonus));
 
-    // Миграция dailyDayBonusPoints
+    // РњРёРіСЂР°С†РёСЏ dailyDayBonusPoints
     const dayBonusRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
     const dayBonus = JSON.parse(dayBonusRaw);
     const newDayBonus = {};
     Object.entries(dayBonus).forEach(([date, value]) => {
-      const mskDate = toMSKDate(new Date(date + 'T00:00:00Z'));
+      const mskDate = toLocalDate(new Date(date + 'T00:00:00Z'));
       newDayBonus[mskDate] = (newDayBonus[mskDate] || 0) + value;
     });
     localStorage.setItem('dailyDayBonusPoints', JSON.stringify(newDayBonus));
 
-    // Миграция studyStreak
+    // РњРёРіСЂР°С†РёСЏ studyStreak
     const streakRaw = localStorage.getItem('studyStreak') || '{}';
     const streak = JSON.parse(streakRaw);
     if (streak.lastDate) {
-      streak.lastDate = toMSKDate(new Date(streak.lastDate + 'T00:00:00Z'));
+      streak.lastDate = toLocalDate(new Date(streak.lastDate + 'T00:00:00Z'));
       localStorage.setItem('studyStreak', JSON.stringify(streak));
     }
 
-    // Миграция srsProgress (lastReviewed)
+    // РњРёРіСЂР°С†РёСЏ srsProgress (lastReviewed)
     const progressRaw = localStorage.getItem('srsProgress') || '{}';
     const progress = JSON.parse(progressRaw);
     Object.values(progress).forEach(p => {
       if (p.lastReviewed) {
-        p.lastReviewed = toMSKDate(new Date(p.lastReviewed + 'T00:00:00Z'));
+        p.lastReviewed = toLocalDate(new Date(p.lastReviewed + 'T00:00:00Z'));
       }
     });
     localStorage.setItem('srsProgress', JSON.stringify(progress));
@@ -111,36 +111,36 @@ export function getProgressMap() {
 }
 
 /**
- * Расчёт среднего времени прохождения карточки (в секундах)
- * на основе последних 40 пройденных карточек
- * @returns {number} среднее время в секундах (округлено до целого)
+ * Р Р°СЃС‡С‘С‚ СЃСЂРµРґРЅРµРіРѕ РІСЂРµРјРµРЅРё РїСЂРѕС…РѕР¶РґРµРЅРёСЏ РєР°СЂС‚РѕС‡РєРё (РІ СЃРµРєСѓРЅРґР°С…)
+ * РЅР° РѕСЃРЅРѕРІРµ РїРѕСЃР»РµРґРЅРёС… 40 РїСЂРѕР№РґРµРЅРЅС‹С… РєР°СЂС‚РѕС‡РµРє
+ * @returns {number} СЃСЂРµРґРЅРµРµ РІСЂРµРјСЏ РІ СЃРµРєСѓРЅРґР°С… (РѕРєСЂСѓРіР»РµРЅРѕ РґРѕ С†РµР»РѕРіРѕ)
  */
 export function getAverageCardTime(sampleSize = 40) {
   const progressMap = getProgressMap();
   const cards = Object.values(progressMap);
   
-  // Фильтруем карточки у которых есть lastReviewedTime
+  // Р¤РёР»СЊС‚СЂСѓРµРј РєР°СЂС‚РѕС‡РєРё Сѓ РєРѕС‚РѕСЂС‹С… РµСЃС‚СЊ lastReviewedTime
   const cardsWithTime = cards.filter(p => p && typeof p.lastReviewedTime === 'number');
   
   if (cardsWithTime.length === 0) {
-    return 90; // Значение по умолчанию (1.5 минуты) если нет данных
+    return 90; // Р—РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (1.5 РјРёРЅСѓС‚С‹) РµСЃР»Рё РЅРµС‚ РґР°РЅРЅС‹С…
   }
   
-  // Сортируем по lastReviewed (дате) чтобы взять последние
+  // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ lastReviewed (РґР°С‚Рµ) С‡С‚РѕР±С‹ РІР·СЏС‚СЊ РїРѕСЃР»РµРґРЅРёРµ
   cardsWithTime.sort((a, b) => {
     const dateA = a.lastReviewed || '';
     const dateB = b.lastReviewed || '';
-    return dateB.localeCompare(dateA); // По убыванию (сначала новые)
+    return dateB.localeCompare(dateA); // РџРѕ СѓР±С‹РІР°РЅРёСЋ (СЃРЅР°С‡Р°Р»Р° РЅРѕРІС‹Рµ)
   });
   
-  // Берём последние sampleSize карточек
+  // Р‘РµСЂС‘Рј РїРѕСЃР»РµРґРЅРёРµ sampleSize РєР°СЂС‚РѕС‡РµРє
   const recentCards = cardsWithTime.slice(0, sampleSize);
   
-  // Считаем среднее время
+  // РЎС‡РёС‚Р°РµРј СЃСЂРµРґРЅРµРµ РІСЂРµРјСЏ
   const totalTime = recentCards.reduce((sum, card) => sum + (card.lastReviewedTime || 0), 0);
   const avgTime = totalTime / recentCards.length;
   
-  return Math.round(avgTime); // Возвращаем в секундах
+  return Math.round(avgTime); // Р’РѕР·РІСЂР°С‰Р°РµРј РІ СЃРµРєСѓРЅРґР°С…
 }
 
 export function getStudyStats() {
@@ -148,8 +148,8 @@ export function getStudyStats() {
 }
 
 export function getStudyStreak() {
-  // 🔥 Считаем стрик по dailyPoints (XP > 0), а не из studyStreak
-  // Это обеспечивает консистентность с графиком активности
+  // рџ”Ґ РЎС‡РёС‚Р°РµРј СЃС‚СЂРёРє РїРѕ dailyPoints (XP > 0), Р° РЅРµ РёР· studyStreak
+  // Р­С‚Рѕ РѕР±РµСЃРїРµС‡РёРІР°РµС‚ РєРѕРЅСЃРёСЃС‚РµРЅС‚РЅРѕСЃС‚СЊ СЃ РіСЂР°С„РёРєРѕРј Р°РєС‚РёРІРЅРѕСЃС‚Рё
   const dpRaw = localStorage.getItem('dailyPoints') || '{}';
   const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
   
@@ -158,13 +158,13 @@ export function getStudyStreak() {
     return { current: 0, best: 0, lastDate: null };
   }
   
-  // Считаем текущий стрик (последовательные дни с XP > 0 до сегодня)
-  const today = toMSKDate(new Date());
+  // РЎС‡РёС‚Р°РµРј С‚РµРєСѓС‰РёР№ СЃС‚СЂРёРє (РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рµ РґРЅРё СЃ XP > 0 РґРѕ СЃРµРіРѕРґРЅСЏ)
+  const today = toLocalDate(new Date());
   let current = 0;
   let best = 0;
   let tempStreak = 0;
   
-  // Проходим по всем дням и считаем стрики
+  // РџСЂРѕС…РѕРґРёРј РїРѕ РІСЃРµРј РґРЅСЏРј Рё СЃС‡РёС‚Р°РµРј СЃС‚СЂРёРєРё
   for (let i = 0; i < dates.length; i++) {
     const date = dates[i];
     const xp = daily[date] || 0;
@@ -173,7 +173,7 @@ export function getStudyStreak() {
       tempStreak++;
       best = Math.max(best, tempStreak);
       
-      // Если это сегодня, то это текущий стрик
+      // Р•СЃР»Рё СЌС‚Рѕ СЃРµРіРѕРґРЅСЏ, С‚Рѕ СЌС‚Рѕ С‚РµРєСѓС‰РёР№ СЃС‚СЂРёРє
       if (date === today) {
         current = tempStreak;
       }
@@ -182,13 +182,13 @@ export function getStudyStreak() {
     }
   }
   
-  // Если сегодня ещё не было XP, но вчера был стрик, проверяем был ли вчера
+  // Р•СЃР»Рё СЃРµРіРѕРґРЅСЏ РµС‰С‘ РЅРµ Р±С‹Р»Рѕ XP, РЅРѕ РІС‡РµСЂР° Р±С‹Р» СЃС‚СЂРёРє, РїСЂРѕРІРµСЂСЏРµРј Р±С‹Р» Р»Рё РІС‡РµСЂР°
   if (current === 0) {
     const yesterdayTime = new Date();
     yesterdayTime.setDate(yesterdayTime.getDate() - 1);
-    const yesterday = toMSKDate(yesterdayTime);
+    const yesterday = toLocalDate(yesterdayTime);
     
-    // Если вчера был XP > 0, то текущий стрик = последний темп стрик (он был прерван сегодня)
+    // Р•СЃР»Рё РІС‡РµСЂР° Р±С‹Р» XP > 0, С‚Рѕ С‚РµРєСѓС‰РёР№ СЃС‚СЂРёРє = РїРѕСЃР»РµРґРЅРёР№ С‚РµРјРї СЃС‚СЂРёРє (РѕРЅ Р±С‹Р» РїСЂРµСЂРІР°РЅ СЃРµРіРѕРґРЅСЏ)
     if (daily[yesterday] > 0) {
       current = tempStreak;
     }
@@ -212,7 +212,7 @@ export function calculateActivity(days = 120) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = toMSKDate(d);
+    const s = toLocalDate(d);
     const c = counts.get(s) || 0;
     const xp = dailyPts[s] || 0;
     let color = '#ebedf0';
@@ -230,7 +230,7 @@ export function getCategoryProgress(allData) {
   const studiedQuestions = new Set(Object.keys(prog));
   const byCat = new Map();
   (allData || []).forEach(item => {
-    const cat = item.category || 'Без категории';
+    const cat = item.category || 'Р‘РµР· РєР°С‚РµРіРѕСЂРёРё';
     const rec = byCat.get(cat) || { total: 0, studied: 0 };
     rec.total += 1;
     if (studiedQuestions.has(item.question)) rec.studied += 1;
@@ -297,7 +297,7 @@ export function checkAchievements() {
   progress.streak30 = Math.min(30, streak.current || 0);
   progress.streak100 = Math.min(100, streak.current || 0);
 
-  // Cards progress - считаем только карточки с 5 сердечками (EF >= 2.4)
+  // Cards progress - СЃС‡РёС‚Р°РµРј С‚РѕР»СЊРєРѕ РєР°СЂС‚РѕС‡РєРё СЃ 5 СЃРµСЂРґРµС‡РєР°РјРё (EF >= 2.4)
   const fiveHeartsCount = Object.values(prog).filter(p => (p.easeFactor || 0) >= 2.4).length;
   progress.cards50 = Math.min(50, fiveHeartsCount);
   progress.cards100 = Math.min(100, fiveHeartsCount);
@@ -335,16 +335,16 @@ export function checkAchievements() {
     }
   });
 
-  // Ранняя пташка: 25+ карточек до 9:00
+  // Р Р°РЅРЅСЏСЏ РїС‚Р°С€РєР°: 25+ РєР°СЂС‚РѕС‡РµРє РґРѕ 9:00
   progress.earlyBird = Math.min(25, earlyBirdCount);
   if (!ach.earlyBird && earlyBirdCount >= 25) ach.earlyBird = true;
 
-  // Ночной рейдер: 50+ карточек после 23:00
+  // РќРѕС‡РЅРѕР№ СЂРµР№РґРµСЂ: 50+ РєР°СЂС‚РѕС‡РµРє РїРѕСЃР»Рµ 23:00
   progress.nightRaider = Math.min(50, nightRaiderCount);
   if (!ach.nightRaider && nightRaiderCount >= 50) ach.nightRaider = true;
 
   // --- Comeback achievement (7+ days break, then 10+ cards) ---
-  const todayStr = getMSKDate();
+  const todayStr = getLocalDate();
   const reviewedToday = Object.values(prog).filter(p => p.lastReviewed === todayStr);
   if (!ach.comeback && reviewedToday.length >= 10) {
     // Check if there was a gap of 7+ days before today
@@ -370,10 +370,10 @@ export function checkAchievements() {
   if (!ach.marathoner && (streak.current || 0) >= 30) ach.marathoner = true;
   if (!ach.unstoppable && (streak.current || 0) >= 100) ach.unstoppable = true;
 
-  // Снайпер: 90+ правильных ответов из всех вопросов
+  // РЎРЅР°Р№РїРµСЂ: 90+ РїСЂР°РІРёР»СЊРЅС‹С… РѕС‚РІРµС‚РѕРІ РёР· РІСЃРµС… РІРѕРїСЂРѕСЃРѕРІ
   if (!ach.ninetyAccuracy && (stats.correct || 0) >= totalQuestions) ach.ninetyAccuracy = true;
 
-  // Достижения за карточки с 5 сердечками
+  // Р”РѕСЃС‚РёР¶РµРЅРёСЏ Р·Р° РєР°СЂС‚РѕС‡РєРё СЃ 5 СЃРµСЂРґРµС‡РєР°РјРё
   if (!ach.fiftyCards && fiveHeartsCount >= 50) ach.fiftyCards = true;
   if (!ach.century && fiveHeartsCount >= 100) ach.century = true;
 
@@ -419,7 +419,7 @@ export function getDailyPoints(days = 30) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = toMSKDate(d);
+    const s = toLocalDate(d);
     res.push({ date: s, xp: daily[s] || 0, bonus: bonus[s] || 0, dayBonus: dayBonus[s] || 0 });
   }
   return res;
@@ -438,7 +438,7 @@ export function getDailyPointsAll() {
   const today = new Date();
   const res = [];
   for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-    const s = toMSKDate(d);
+    const s = toLocalDate(d);
     res.push({ date: s, xp: daily[s] || 0, bonus: bonus[s] || 0, dayBonus: dayBonus[s] || 0 });
   }
   return res;
@@ -454,7 +454,7 @@ export function getDailyStreakSeries() {
   const res = [];
   let streak = 0;
   for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-    const s = toMSKDate(d);
+    const s = toLocalDate(d);
     const didStudy = (daily[s] || 0) > 0;
     streak = didStudy ? streak + 1 : 0;
     res.push({ date: s, streak });
@@ -483,7 +483,7 @@ export function getHeartsDistribution() {
   const prog = getProgressMap();
   const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-  // Получаем все карточки для расчёта общего количества
+  // РџРѕР»СѓС‡Р°РµРј РІСЃРµ РєР°СЂС‚РѕС‡РєРё РґР»СЏ СЂР°СЃС‡С‘С‚Р° РѕР±С‰РµРіРѕ РєРѕР»РёС‡РµСЃС‚РІР°
   let allCards = [];
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
@@ -500,7 +500,7 @@ export function getHeartsDistribution() {
     allCards = window.uniqueQaData || [];
   }
 
-  // Считаем распределение сердечек для пройденных карточек
+  // РЎС‡РёС‚Р°РµРј СЂР°СЃРїСЂРµРґРµР»РµРЅРёРµ СЃРµСЂРґРµС‡РµРє РґР»СЏ РїСЂРѕР№РґРµРЅРЅС‹С… РєР°СЂС‚РѕС‡РµРє
   const studiedQuestions = new Set();
   Object.values(prog).forEach(p => {
     if (!p.lastReviewed) return;
@@ -513,7 +513,7 @@ export function getHeartsDistribution() {
     else dist[5]++;
   });
 
-  // Непройденные карточки считаем как 0 сердечек (добавляем к dist[1] для правильного расчёта)
+  // РќРµРїСЂРѕР№РґРµРЅРЅС‹Рµ РєР°СЂС‚РѕС‡РєРё СЃС‡РёС‚Р°РµРј РєР°Рє 0 СЃРµСЂРґРµС‡РµРє (РґРѕР±Р°РІР»СЏРµРј Рє dist[1] РґР»СЏ РїСЂР°РІРёР»СЊРЅРѕРіРѕ СЂР°СЃС‡С‘С‚Р°)
   const totalCards = Array.isArray(allCards) ? allCards.length : 0;
   const unstudiedCount = Math.max(0, totalCards - studiedQuestions.size);
   dist[1] += unstudiedCount;
@@ -522,15 +522,15 @@ export function getHeartsDistribution() {
 }
 
 export function getLearningStage(dist, total) {
-  if (total < 20) return { stage: 'Onboarding', desc: 'Начните с изучения первых карточек' };
+  if (total < 20) return { stage: 'Onboarding', desc: 'РќР°С‡РЅРёС‚Рµ СЃ РёР·СѓС‡РµРЅРёСЏ РїРµСЂРІС‹С… РєР°СЂС‚РѕС‡РµРє' };
 
   const low = (dist[1] || 0) + (dist[2] || 0);
   const mid = (dist[3] || 0);
   const high = (dist[4] || 0) + (dist[5] || 0);
 
-  if (low > total * 0.5) return { stage: 'Active Learning', desc: 'Фокус на сложных темах' };
-  if (high > total * 0.6) return { stage: 'Retention', desc: 'Поддержание знаний' };
-  return { stage: 'Consolidation', desc: 'Закрепление материала' };
+  if (low > total * 0.5) return { stage: 'Active Learning', desc: 'Р¤РѕРєСѓСЃ РЅР° СЃР»РѕР¶РЅС‹С… С‚РµРјР°С…' };
+  if (high > total * 0.6) return { stage: 'Retention', desc: 'РџРѕРґРґРµСЂР¶Р°РЅРёРµ Р·РЅР°РЅРёР№' };
+  return { stage: 'Consolidation', desc: 'Р—Р°РєСЂРµРїР»РµРЅРёРµ РјР°С‚РµСЂРёР°Р»Р°' };
 }
 
 export function getUnderstandingIndex(dist, total) {
@@ -560,7 +560,7 @@ export function getRiskZones(allData) {
     .slice(0, 3);
 }
 
-// Авто-миграция старых данных из UTC в MSK при загрузке
+// РђРІС‚Рѕ-РјРёРіСЂР°С†РёСЏ СЃС‚Р°СЂС‹С… РґР°РЅРЅС‹С… РёР· UTC РІ MSK РїСЂРё Р·Р°РіСЂСѓР·РєРµ
 try {
   if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
     migrateToMSK();
@@ -568,3 +568,4 @@ try {
 } catch (e) {
   console.error('[MSK Auto-Migrate] Error:', e);
 }
+
