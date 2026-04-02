@@ -47,6 +47,23 @@ document.addEventListener('DOMContentLoaded', function () {
     function initializeSearch() {
         console.log('[SCRIPT.JS] initializeSearch called, uniqueQaData.length:', uniqueQaData.length);
 
+        // 🔥 Принудительный сброс фона для search-input
+        function forceTransparentBackground() {
+            if (searchInput) {
+                searchInput.style.backgroundColor = 'transparent';
+                searchInput.style.background = 'transparent';
+                searchInput.style.backgroundImage = 'none';
+            }
+        }
+
+        // Применяем сразу
+        forceTransparentBackground();
+
+        // Применяем после любых изменений
+        searchInput.addEventListener('input', forceTransparentBackground);
+        searchInput.addEventListener('focus', forceTransparentBackground);
+        searchInput.addEventListener('blur', forceTransparentBackground);
+
         // По умолчанию открываем вкладку транскрипции
         if (searchHistory && transcriptionHistory && transcriptionButton) {
             searchHistory.style.display = 'none';
@@ -475,6 +492,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Добавляем обработчик клика по элементу истории
                 historyElement.addEventListener('click', function () {
                     searchInput.value = item.query;
+                    // Принудительный сброс браузерных стилей
+                    searchInput.style.backgroundColor = 'transparent';
+                    searchInput.style.background = 'transparent';
+                    searchInput.style.backgroundImage = 'none';
+                    // Фокус для активации наших стилей
+                    searchInput.focus();
                     performSearch(item.query);
                 });
 
