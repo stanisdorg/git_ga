@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель поиска с эквалайзером внутри</title>
+    <style>
+        * { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        /* Верхняя панель */
+        .top-actions-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: #1a1a2e;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+        }
+        
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+        
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Контейнер поиска */
+        .search-container {
+            position: fixed;
+            top: 52px;
+            left: 0;
+            right: 0;
+            padding: 12px 20px;
+            background: #1a1a2e;
+            z-index: 999;
+        }
+        
+        .search-bar {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 12px 10px 16px;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar:focus-within {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            color: #888;
+            flex-shrink: 0;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            padding: 0;
+            min-width: 0;
+        }
+        
+        .search-input::placeholder {
+            color: #666;
+        }
+        
+        /* Визуализатор ВНУТРИ поля */
+        .equalizer-wrapper {
+            width: 120px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 4px 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            overflow: hidden;
+        }
+        
+        .equalizer-bar {
+            flex: 1;
+            background: linear-gradient(to top, #ff2d55, #ff6b7a);
+            border-radius: 2px;
+            min-height: 3px;
+            transition: height 0.1s ease;
+        }
+        
+        /* Кнопка микрофона (без анимаций) */
+        .mic-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 45, 85, 0.15);
+            color: #ff2d55;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .mic-button:hover {
+            background: rgba(255, 45, 85, 0.25);
+        }
+        
+        .mic-button.active {
+            background: #ff2d55;
+            color: #fff;
+        }
+        
+        /* Статус бар */
+        .status-bar {
+            max-width: 800px;
+            margin: 12px auto 0;
+            padding: 10px 16px;
+            background: rgba(48, 209, 88, 0.1);
+            border: 1px solid rgba(48, 209, 88, 0.2);
+            border-radius: 8px;
+            color: #30d158;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-bar.visible {
+            display: block;
+        }
+        
+        /* Контент страницы */
+        .page-content {
+            margin-top: 200px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .placeholder-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .placeholder-line {
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        
+        .placeholder-line.short {
+            width: 60%;
+        }
+        
+        /* Selector стилей */
+        .style-selector {
+            max-width: 800px;
+            margin: 24px auto 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .style-selector h4 {
+            margin: 0 0 16px 0;
+            font-size: 13px;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .style-btn {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .style-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .style-btn.selected {
+            background: rgba(255, 45, 85, 0.2);
+            border-color: #ff2d55;
+        }
+    </style>
+</head>
+<body>
+    <!-- Верхняя панель -->
+    <div class="top-actions-bar">
+        <button class="nav-icon-btn" title="Войти">👤</button>
+        <button class="nav-icon-btn" title="Статистика">📊</button>
+        <button class="nav-icon-btn" title="Начать обучение">🎯</button>
+    </div>
+    
+    <!-- Панель поиска -->
+    <div class="search-container">
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            
+            <!-- Эквалайзер ВНУТРИ поля -->
+            <div class="equalizer-wrapper" id="equalizer">
+                <!-- Столбики генерируются JS -->
+            </div>
+            
+            <button class="mic-button" id="micBtn" title="Включить микрофон">🎤</button>
+        </div>
+        
+        <!-- Статус -->
+        <div class="status-bar" id="statusBar">
+            ✅ Микрофон активен | Говорите...
+        </div>
+        
+        <!-- Выбор стиля -->
+        <div class="style-selector">
+            <h4>Стиль эквалайзера</h4>
+            <div class="style-grid">
+                <button class="style-btn selected" data-style="apple">Apple</button>
+                <button class="style-btn" data-style="gradient">Градиент</button>
+                <button class="style-btn" data-style="neon">Неон</button>
+                <button class="style-btn" data-style="minimal">Минимал</button>
+                <button class="style-btn" data-style="bars">Столбики</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Контент страницы -->
+    <div class="page-content">
+        <div class="placeholder-card">
+            <div class="placeholder-line"></div>
+            <div class="placeholder-line"></div>
+            <div class="placeholder-line short"></div>
+        </div>
+        
+        <div class="placeholder-card">
+            <div class="placeholder-line"></div>
+            <div class="placeholder-line medium"></div>
+            <div class="placeholder-line"></div>
+            <div class="placeholder-line short"></div>
+        </div>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let frequencyData = null;
+        let isRecording = false;
+        let animationId = null;
+        let selectedStyle = 'apple';
+        let equalizerBars = [];
+
+        const styles = {
+            apple: { bars: 12, colors: ['#ff2d55', '#ff6b7a'] },
+            gradient: { bars: 16, colors: ['#ff2d55', '#ff9f0a', '#30d158', '#0a84ff'] },
+            neon: { bars: 14, colors: ['#0a84ff', '#64d2ff'], glow: true },
+            minimal: { bars: 10, colors: ['#ffffff'] },
+            bars: { bars: 18, colors: ['#30d158'] }
+        };
+
+        // Создаём столбики эквалайзера
+        function createEqualizer() {
+            const equalizer = document.getElementById('equalizer');
+            const config = styles[selectedStyle];
+            equalizer.innerHTML = '';
+            equalizerBars = [];
+            
+            for (let i = 0; i < config.bars; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'equalizer-bar';
+                bar.style.height = '3px';
+                equalizer.appendChild(bar);
+                equalizerBars.push(bar);
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { 
+                        echoCancellation: true,
+                        noiseSuppression: false,
+                        autoGainControl: true
+                    } 
+                });
+                
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.65;
+                
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                frequencyData = new Uint8Array(bufferLength);
+                
+                isRecording = true;
+                updateEqualizer();
+                
+                document.getElementById('micBtn').classList.add('active');
+                document.getElementById('statusBar').classList.add('visible');
+            } catch (err) {
+                console.error('Ошибка:', err);
+                alert('Не удалось получить доступ к микрофону');
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            if (animationId) cancelAnimationFrame(animationId);
+            if (microphone) microphone.disconnect();
+            if (audioContext) audioContext.close();
+            audioContext = null;
+            analyser = null;
+            microphone = null;
+            frequencyData = null;
+            
+            // Сброс столбиков
+            equalizerBars.forEach(bar => {
+                bar.style.height = '3px';
+            });
+            
+            document.getElementById('micBtn').classList.remove('active');
+            document.getElementById('statusBar').classList.remove('visible');
+        }
+
+        function updateEqualizer() {
+            if (!analyser || equalizerBars.length === 0) return;
+            
+            analyser.getByteFrequencyData(frequencyData);
+            const config = styles[selectedStyle];
+            const step = Math.floor(frequencyData.length / equalizerBars.length);
+            const time = Date.now() * 0.002;
+
+            for (let i = 0; i < equalizerBars.length; i++) {
+                let value = frequencyData[i * step];
+                
+                // Усиливаем сигнал
+                const frequencyMultiplier = 1 + (i / equalizerBars.length) * 1.2;
+                value = Math.min(255, value * frequencyMultiplier);
+                
+                // Фоновая анимация в тишине
+                let height;
+                if (value < 30) {
+                    const wave = Math.sin(time + i * 0.5) * 0.5 + 0.5;
+                    height = 3 + wave * 8; // 3-11px в тишине
+                } else {
+                    height = 3 + (value / 255) * 22; // 3-25px при звуке
+                }
+                
+                equalizerBars[i].style.height = `${height}px`;
+                
+                // Цвет для градиентных стилей
+                if (config.colors.length > 1) {
+                    const colorIndex = Math.floor((i / equalizerBars.length) * config.colors.length);
+                    equalizerBars[i].style.background = config.colors[colorIndex];
+                }
+            }
+            
+            if (isRecording) {
+                animationId = requestAnimationFrame(updateEqualizer);
+            }
+        }
+
+        // Обработчик микрофона
+        document.getElementById('micBtn').addEventListener('click', function() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+
+        // Обработчики стилей
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedStyle = this.dataset.style;
+                document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                createEqualizer();
+            });
+        });
+
+        window.addEventListener('load', createEqualizer);
+    </script>
+</body>
+</html>

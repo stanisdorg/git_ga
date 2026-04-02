@@ -319,14 +319,14 @@
     flex-wrap: wrap;
     gap: 8px;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.005);
+    border: 1px solid rgba(255, 255, 255, 0.01);
     border-radius: 12px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.01);
     z-index: 1001;
     min-height: auto;
     max-height: none;
@@ -339,8 +339,8 @@
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.02);
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -349,10 +349,10 @@
 }
 
 .search-suggestion-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .search-suggestion-query {
@@ -418,12 +418,12 @@
 }
 
 .search-suggestions::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.01);
+    background: rgba(255, 255, 255, 0.005);
     border-radius: 2px;
 }
 
 .search-suggestions::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 2px;
 }
 

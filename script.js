@@ -606,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (searchHistoryArray.length === 0) {
                     searchSuggestions.style.display = 'none';
                 }
+                // 🔥 Иначе оставляем панель открытой (не скрываем)
             }
         }
 
