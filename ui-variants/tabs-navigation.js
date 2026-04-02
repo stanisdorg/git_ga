@@ -3668,39 +3668,55 @@ function openCardZoomModal(item, ef) {
     overlay.className = 'card-zoom-overlay';
     // Inline-стили для гарантии видимости
     overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.background = 'rgba(0, 0, 0, 0.75)';
-    overlay.style.backdropFilter = 'blur(10px)';
-    overlay.style.webkitBackdropFilter = 'blur(10px)';
+    overlay.style.inset = '0';
+    overlay.style.background = 'rgba(0, 0, 0, 0.2)';
+    overlay.style.backdropFilter = 'blur(8px)';
+    overlay.style.webkitBackdropFilter = 'blur(8px)';
     overlay.style.display = 'flex';
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
     overlay.style.zIndex = '10000';
     overlay.style.cursor = 'zoom-out';
     
-    // Ширина карточки - фиксированная, примерно треть экрана (максимум 500px)
-    const cardWidth = Math.min(window.innerWidth / 3, 500);
+    // Ширина карточки - фиксированная, примерно треть экрана (максимум 450px)
+    const cardWidth = Math.min(window.innerWidth / 3, 450);
     
     overlay.innerHTML = `
         <div class="card-zoom-modal" onclick="event.stopPropagation()" style="
-            position: relative; 
-            width: ${cardWidth}px; 
+            position: relative;
+            width: ${cardWidth}px;
             max-width: 90%;
-            background: rgba(30, 30, 36, 0.65); 
-            backdrop-filter: blur(25px) saturate(200%); 
-            -webkit-backdrop-filter: blur(25px) saturate(200%); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            border-radius: 16px; 
-            padding: 20px 24px; 
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) inset; 
+            background: linear-gradient(135deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.05) 50%,
+                rgba(255,255,255,0.02) 100%);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            padding: 20px 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+            overflow: hidden;
             cursor: default;">
+            <!-- Блик сверху -->
+            <div style="
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 1px;
+                background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255,255,255,0.4),
+                    transparent);
+            "></div>
             ${renderHeartsForZoom(ef)}
-            <div class="zoom-question" style="font-size: 22px; font-weight: 700; color: #ffffff; margin: 16px 0; line-height: 1.4; text-align: center;">${questionHTML}</div>
-            <div class="zoom-answer" style="font-size: 18px; color: rgba(255, 255, 255, 0.75); margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; text-align: center;">${answerHTML}</div>
-            <div class="zoom-close-hint" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.25); text-align: center;">ESC или клик для закрытия</div>
+            <div class="zoom-question" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 12px 0 16px 0; line-height: 1.4; text-align: center; letter-spacing: -0.3px;">${questionHTML}</div>
+            <div class="zoom-answer" style="font-size: 16px; color: rgba(255, 255, 255, 0.75); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; text-align: center;">${answerHTML}</div>
+            <div class="zoom-close-hint" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255, 255, 255, 0.3); text-align: center; text-transform: uppercase; letter-spacing: 0.5px;">ESC или клик</div>
         </div>
     `;
 
