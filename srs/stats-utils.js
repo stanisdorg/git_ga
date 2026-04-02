@@ -141,7 +141,53 @@ export function getStudyStats() {
 }
 
 export function getStudyStreak() {
-  return readJSON('studyStreak', { current: 0, best: 0, lastDate: null });
+  // 🔥 Считаем стрик по dailyPoints (XP > 0), а не из studyStreak
+  // Это обеспечивает консистентность с графиком активности
+  const dpRaw = localStorage.getItem('dailyPoints') || '{}';
+  const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
+  
+  const dates = Object.keys(daily).sort();
+  if (dates.length === 0) {
+    return { current: 0, best: 0, lastDate: null };
+  }
+  
+  // Считаем текущий стрик (последовательные дни с XP > 0 до сегодня)
+  const today = toMSKDate(new Date());
+  let current = 0;
+  let best = 0;
+  let tempStreak = 0;
+  
+  // Проходим по всем дням и считаем стрики
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i];
+    const xp = daily[date] || 0;
+    
+    if (xp > 0) {
+      tempStreak++;
+      best = Math.max(best, tempStreak);
+      
+      // Если это сегодня, то это текущий стрик
+      if (date === today) {
+        current = tempStreak;
+      }
+    } else {
+      tempStreak = 0;
+    }
+  }
+  
+  // Если сегодня ещё не было XP, но вчера был стрик, проверяем был ли вчера
+  if (current === 0) {
+    const yesterdayTime = new Date();
+    yesterdayTime.setDate(yesterdayTime.getDate() - 1);
+    const yesterday = toMSKDate(yesterdayTime);
+    
+    // Если вчера был XP > 0, то текущий стрик = последний темп стрик (он был прерван сегодня)
+    if (daily[yesterday] > 0) {
+      current = tempStreak;
+    }
+  }
+  
+  return { current, best, lastDate: dates[dates.length - 1] || null };
 }
 
 export function calculateActivity(days = 120) {
