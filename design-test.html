@@ -184,6 +184,22 @@
             z-index: -1;
         }
 
+        /* Dark with small crosses */
+        body[data-bg="crosses"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="crosses"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M10 7v6M7 10h6' stroke='rgba(255,255,255,0.25)' stroke-width='1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
         /* Dark with large dots */
         body[data-bg="dots-large"] {
             background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
@@ -484,16 +500,16 @@
 
         /* Glassmorphism Card - Optimized version */
         .result-item {
-            background: rgba(37, 37, 43, 0.08) !important;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(37, 37, 43, 0.04) !important;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             border-radius: 16px;
             padding: 20px;
             position: relative;
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
             outline: none !important;
         }
 
@@ -503,7 +519,7 @@
             inset: 0;
             border-radius: 16px;
             padding: 1px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0, 217, 255, 0.15));
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0, 217, 255, 0.12));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -512,12 +528,12 @@
         }
 
         .result-item:hover {
-            background: rgba(42, 42, 50, 0.2) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(42, 42, 50, 0.15) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.15);
-            border-color: rgba(0, 217, 255, 0.3) !important;
+            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.12);
+            border-color: rgba(0, 217, 255, 0.25) !important;
         }
 
         .question {
@@ -593,14 +609,14 @@
     <div class="control-panel">
         <h3>🎨 Выбор фона</h3>
         <div class="bg-selector">
-            <button class="bg-btn active" data-bg="dots">Dots</button>
+            <button class="bg-btn active" data-bg="crosses">Crosses</button>
+            <button class="bg-btn" data-bg="dots">Dots</button>
             <button class="bg-btn" data-bg="dots-small">Dots Small</button>
             <button class="bg-btn" data-bg="dots-large">Dots Large</button>
             <button class="bg-btn" data-bg="dots-cyan">Dots Cyan</button>
             <button class="bg-btn" data-bg="dots-purple">Dots Purple</button>
             <button class="bg-btn" data-bg="dots-gradient">Dots Gradient</button>
             <button class="bg-btn" data-bg="grid">Grid</button>
-            <button class="bg-btn" data-bg="hexagon">Hexagon</button>
         </div>
     </div>
 

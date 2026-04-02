@@ -41,14 +41,15 @@ body {
 #search-input::-webkit-autofill,
 #search-input::-webkit-autofill:hover,
 #search-input::-webkit-autofill:focus,
-#search-input::-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px var(--color-bg) inset !important;
-    box-shadow: 0 0 0 30px var(--color-bg) inset !important;
+#search-input::-webkit-autofill:active,
+#search-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 100px var(--color-bg) inset !important;
+    box-shadow: 0 0 0 100px var(--color-bg) inset !important;
     -webkit-text-fill-color: var(--color-text) !important;
     background: transparent !important;
     background-color: transparent !important;
-    caret-color: var(--color-text);
-    transition: background-color 5000s ease-in-out 0s;
+    caret-color: var(--color-text) !important;
+    transition: background-color 5000s ease-in-out 0s !important;
 }
 
 #search-input::-webkit-search-decoration,
@@ -65,7 +66,14 @@ body {
 #search-input:-webkit-autofill {
     background: transparent !important;
     background-color: transparent !important;
-    -webkit-text-fill-color: var(--color-text);
+    -webkit-text-fill-color: var(--color-text) !important;
+    color: var(--color-text) !important;
+}
+
+/* Принудительный сброс для всех состояний */
+#search-input {
+    background: transparent !important;
+    background-color: transparent !important;
 }
 
 /* Фиксируем шапку на главной странице */
