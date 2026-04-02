@@ -341,6 +341,27 @@ export function initTabsNavigation(appVersion) {
     // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
     console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
+    
+    // 🔥 ПРОВЕРЯЕМ ФЛАГ изменений карточек (для отложенного обновления после редактирования)
+    try {
+        const cardsUpdated = localStorage.getItem('qaCardsUpdated');
+        if (cardsUpdated === 'true' && !isStatsPage) {
+            console.log('[initTabsNavigation] 🚨 Обнаружено изменение карточек (qaCardsUpdated=true)');
+            console.log('[initTabsNavigation] 🔄 Вызываем refreshCurrentContext() для обновления UI');
+            
+            // Сбрасываем флаг
+            localStorage.removeItem('qaCardsUpdated');
+            localStorage.removeItem('qaCardsUpdatedTimestamp');
+            
+            // Обновляем UI с небольшой задержкой чтобы данные загрузились
+            setTimeout(() => {
+                refreshCurrentContext();
+                console.log('[initTabsNavigation] ✅ UI обновлён после редактирования карточки');
+            }, 200);
+        }
+    } catch (e) {
+        console.error('[initTabsNavigation] ❌ Ошибка проверки флага qaCardsUpdated:', e);
+    }
 
     // 🔥 АВТОЗАГРУЗКА ДАННЫХ С СЕРВЕРА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
     // Вызывается из ui-manager.js, здесь не вызываем чтобы избежать дублирования
