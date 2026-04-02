@@ -5065,16 +5065,12 @@ function getXpSeries(mode) {
 }
 
 function getActivitySeries(mode) {
-  // Вспомогательная функция для получения даты по MSK
-  const getMSKDate = (date) => {
-    try {
-      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-      const parts = fmt.formatToParts(date);
-      return `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}`;
-    } catch {
-      const mskOffset = 3 * 60 * 60 * 1000;
-      return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
-    }
+  // Вспомогательная функция для получения даты локального времени устройства
+  const getLocalDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const daily = getDailyPointsAll();

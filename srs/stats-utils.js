@@ -25,7 +25,7 @@ function toLocalDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// Экспорт для использования в других модулях
+// Экспорт для использования в других модулях (сохраняем обратную совместимость)
 export { getLocalDate as getMSKDate, getLocalHours as getMSKHours, toLocalDate as toMSKDate };
 
 // Миграция старых данных из UTC в MSK
@@ -272,7 +272,7 @@ export function getDailyImprovements(days = 30) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = toMSKDate(d);
+    const s = toLocalDate(d);
     const data = res[s] || { improved: 0, regressed: 0, reviewed: 0 };
     arr.push({ date: s, ...data });
   }
