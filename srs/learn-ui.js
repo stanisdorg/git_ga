@@ -1380,39 +1380,14 @@ function stopLearnSession() {
     // 🔥 ВАЖНО: Вызываем initStatsPage() напрямую, а не ждем hashchange
     // Это гарантирует мгновенный переход без задержек и мелькания главной страницы
     console.log('[STOP LEARN SESSION] Calling initStatsPage() directly...');
-    
-    // Показываем placeholder ДО загрузки модуля
-    const skeletonPlaceholder = document.createElement('div');
-    skeletonPlaceholder.id = 'stats-skeleton-placeholder';
-    skeletonPlaceholder.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #0E1117;
-        z-index: 1998;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    `;
-    skeletonPlaceholder.innerHTML = `
-        <div style="color: #8B949E; font-size: 14px;">Загрузка статистики...</div>
-    `;
-    document.body.appendChild(skeletonPlaceholder);
-    console.log('[STOP LEARN SESSION] Loading placeholder shown');
 
     // Импортируем и вызываем initStatsPage
     import('./stats-ui.js?v=6.24.0').then(({ initStatsPage }) => {
         console.log('[STOP LEARN SESSION] Stats module loaded, calling initStatsPage...');
         initStatsPage(window.currentAppVersion || '6.09');
-        
-        // Удаляем placeholder
-        skeletonPlaceholder.remove();
-        console.log('[STOP LEARN SESSION] Placeholder removed');
+        console.log('[STOP LEARN SESSION] initStatsPage called');
     }).catch(err => {
         console.error('[STOP LEARN SESSION] Failed to load stats-ui:', err);
-        skeletonPlaceholder.remove();
     });
 
     // Теперь восстанавливаем UI (статистика уже инициализируется)
