@@ -251,6 +251,8 @@
                     <input type="text" id="search-input" placeholder="Введите запрос или нажмите на микрофон (Alt+M)..."
                         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore
                         data-lpignore="true" data-form-type="other">
+                    <!-- 🔥 Выпадающие подсказки -->
+                    <div id="search-suggestions" class="search-suggestions" style="display: none;"></div>
 
                     <button id="mic-button" class="mic-button" title="Активировать микрофон" aria-pressed="false">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
@@ -397,7 +399,7 @@
     <!-- Скрипт управления Splash Screen -->
     <script>
         // Устанавливаем версию приложения глобально
-        window.currentAppVersion = '6.25.4';
+        window.currentAppVersion = '6.26.0';
 
         // Splash Screen - управление загрузкой приложения
         (function () {

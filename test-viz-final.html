@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Визуализаторы: Текущий vs CSS Варианты</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .info {
+            text-align: center;
+            color: #00ff88;
+            margin-bottom: 40px;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .search-bar-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .search-bar-container h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 12px 16px;
+            gap: 12px;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            color: #888;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            padding: 0;
+        }
+
+        .search-input::placeholder {
+            color: #666;
+        }
+
+        .visualizer-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Canvas visualizer (current) */
+        .visualizer-canvas {
+            width: 80px;
+            height: 40px;
+        }
+
+        /* CSS visualizers */
+        .visualizer-css {
+            width: 80px;
+            height: 40px;
+            position: relative;
+        }
+
+        .select-btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            margin-top: 10px;
+        }
+
+        .select-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .select-btn.selected {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .test-mic-btn {
+            padding: 15px 40px;
+            border-radius: 12px;
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 30px auto;
+            display: block;
+        }
+
+        .test-mic-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .test-mic-btn.active {
+            background: rgba(255, 0, 100, 0.3);
+            border-color: rgba(255, 0, 100, 0.5);
+            color: #ff6688;
+            animation: pulse-record 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-record {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 100, 0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(255, 0, 100, 0); }
+        }
+
+        .current-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255, 100, 100, 0.2);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            border-radius: 4px;
+            font-size: 0.75em;
+            color: #ff6666;
+        }
+
+        #selectedInfo {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            z-index: 1000;
+            display: none;
+        }
+
+        #selectedInfo.show {
+            display: block;
+        }
+
+        #selectedInfo h3 {
+            margin: 0 0 10px 0;
+            font-size: 1em;
+            color: #00ff88;
+        }
+
+        #selectedInfo code {
+            display: block;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.8em;
+            color: #00ff88;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        #selectedInfo .copy-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* ============================================
+           CSS VISUALIZER VARIANTS
+           ============================================ */
+
+        /* Variant 1: Classic Bars */
+        .viz-classic-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            gap: 2px;
+        }
+
+        .viz-classic-bars .bar {
+            width: 6px;
+            background: linear-gradient(to top, #00d9ff, #00ff88);
+            border-radius: 3px;
+            transform-origin: bottom;
+            transform: scaleY(0.3);
+        }
+
+        /* Variant 4: Neon Glow */
+        .viz-neon-glow {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            gap: 3px;
+        }
+
+        .viz-neon-glow .bar {
+            width: 8px;
+            background: linear-gradient(to top, #ff00ff, #ff66ff);
+            border-radius: 4px;
+            box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+            transform-origin: bottom;
+            transform: scaleY(0.3);
+        }
+
+        /* Variant 9: Sound Wave */
+        .viz-sound-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .viz-sound-wave .wave {
+            width: 4px;
+            height: 15px;
+            background: linear-gradient(to right, #00d9ff, #a855f7);
+            border-radius: 2px;
+        }
+
+        /* Variant 1B: Blue Pulse */
+        .viz-blue-pulse {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            gap: 2px;
+        }
+
+        .viz-blue-pulse .bar {
+            width: 6px;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+            transform-origin: bottom;
+            transform: scaleY(0.3);
+        }
+
+        /* Variant 1C: Green Energy */
+        .viz-green-energy {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            gap: 3px;
+        }
+
+        .viz-green-energy .bar {
+            width: 7px;
+            background: linear-gradient(to top, #10b981, #34d399);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            transform-origin: bottom;
+            transform: scaleY(0.3);
+        }
+
+        /* Variant 4B: Purple Neon */
+        .viz-purple-neon {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            gap: 3px;
+        }
+
+        .viz-purple-neon .bar {
+            width: 8px;
+            background: linear-gradient(to top, #8b5cf6, #a78bfa);
+            border-radius: 4px;
+            box-shadow: 0 0 12px #8b5cf6, 0 0 24px #8b5cf6;
+            transform-origin: bottom;
+            transform: scaleY(0.3);
+        }
+
+        /* Variant 4C: Red Fire */
+        .viz-red-fire {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            gap: 3px;
+        }
+
+        .viz-red-fire .bar {
+            width: 8px;
+            background: linear-gradient(to top, #ef4444, #f87171, #fca5a5);
+            border-radius: 4px;
+            box-shadow: 0 0 10px #ef4444, 0 0 20px #ef4444;
+            transform-origin: bottom;
+            transform: scaleY(0.3);
+        }
+
+        /* Variant 9B: Orange Wave */
+        .viz-orange-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .viz-orange-wave .wave {
+            width: 5px;
+            height: 15px;
+            background: linear-gradient(to right, #f97316, #fb923c);
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Variant 9C: Pink Wave */
+        .viz-pink-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .viz-pink-wave .wave {
+            width: 5px;
+            height: 15px;
+            background: linear-gradient(to right, #ec4899, #f472b6);
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Визуализаторы: Сравнение</h1>
+    <p class="subtitle">Текущий (canvas) vs CSS варианты</p>
+    <div class="info">
+        👆 Нажмите <strong>"🎤 Говорить"</strong> и произнесите что-нибудь — визуализаторы zareagируют!
+    </div>
+
+    <button class="test-mic-btn" id="testMicBtn">🎤 Говорить</button>
+
+    <!-- CURRENT: Site Version (Canvas) -->
+    <div class="search-bar-container">
+        <h3>
+            🔴 Текущий (с сайта)
+            <span class="current-badge">ТЕКУЩИЙ</span>
+        </h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <canvas class="visualizer-canvas" id="viz-current"></canvas>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="current" data-name="Текущий (с сайта)">✅ Выбрать текущий</button>
+    </div>
+
+    <!-- VARIANT 1: Classic Bars -->
+    <div class="search-bar-container">
+        <h3>Вариант 1: Classic Bars (Классические столбики)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-classic-bars" id="viz-bars">
+                    <div class="bar" data-index="0"></div>
+                    <div class="bar" data-index="1"></div>
+                    <div class="bar" data-index="2"></div>
+                    <div class="bar" data-index="3"></div>
+                    <div class="bar" data-index="4"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="bars" data-name="Classic Bars">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 1B: Blue Pulse -->
+    <div class="search-bar-container">
+        <h3>Вариант 1B: Blue Pulse (Синяя пульсация)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-blue-pulse" id="viz-blue">
+                    <div class="bar" data-index="0"></div>
+                    <div class="bar" data-index="1"></div>
+                    <div class="bar" data-index="2"></div>
+                    <div class="bar" data-index="3"></div>
+                    <div class="bar" data-index="4"></div>
+                    <div class="bar" data-index="5"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="blue" data-name="Blue Pulse">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 1C: Green Energy -->
+    <div class="search-bar-container">
+        <h3>Вариант 1C: Green Energy (Зелёная энергия)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-green-energy" id="viz-green">
+                    <div class="bar" data-index="0"></div>
+                    <div class="bar" data-index="1"></div>
+                    <div class="bar" data-index="2"></div>
+                    <div class="bar" data-index="3"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="green" data-name="Green Energy">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 4: Neon Glow -->
+    <div class="search-bar-container">
+        <h3>Вариант 4: Neon Glow (Неоновое свечение)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-neon-glow" id="viz-neon">
+                    <div class="bar" data-index="0"></div>
+                    <div class="bar" data-index="1"></div>
+                    <div class="bar" data-index="2"></div>
+                    <div class="bar" data-index="3"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="neon" data-name="Neon Glow">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 4B: Purple Neon -->
+    <div class="search-bar-container">
+        <h3>Вариант 4B: Purple Neon (Фиолетовый неон)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-purple-neon" id="viz-purple">
+                    <div class="bar" data-index="0"></div>
+                    <div class="bar" data-index="1"></div>
+                    <div class="bar" data-index="2"></div>
+                    <div class="bar" data-index="3"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="purple" data-name="Purple Neon">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 4C: Red Fire -->
+    <div class="search-bar-container">
+        <h3>Вариант 4C: Red Fire (Красный огонь)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-red-fire" id="viz-red">
+                    <div class="bar" data-index="0"></div>
+                    <div class="bar" data-index="1"></div>
+                    <div class="bar" data-index="2"></div>
+                    <div class="bar" data-index="3"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="red" data-name="Red Fire">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 9: Sound Wave -->
+    <div class="search-bar-container">
+        <h3>Вариант 9: Sound Wave (Звуковая волна)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-sound-wave" id="viz-wave">
+                    <div class="wave" data-index="0"></div>
+                    <div class="wave" data-index="1"></div>
+                    <div class="wave" data-index="2"></div>
+                    <div class="wave" data-index="3"></div>
+                    <div class="wave" data-index="4"></div>
+                    <div class="wave" data-index="5"></div>
+                    <div class="wave" data-index="6"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="wave" data-name="Sound Wave">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 9B: Orange Wave -->
+    <div class="search-bar-container">
+        <h3>Вариант 9B: Orange Wave (Оранжевая волна)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-orange-wave" id="viz-orange">
+                    <div class="wave" data-index="0"></div>
+                    <div class="wave" data-index="1"></div>
+                    <div class="wave" data-index="2"></div>
+                    <div class="wave" data-index="3"></div>
+                    <div class="wave" data-index="4"></div>
+                    <div class="wave" data-index="5"></div>
+                    <div class="wave" data-index="6"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="orange" data-name="Orange Wave">Выбрать</button>
+    </div>
+
+    <!-- VARIANT 9C: Pink Wave -->
+    <div class="search-bar-container">
+        <h3>Вариант 9C: Pink Wave (Розовая волна)</h3>
+        <div class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input" placeholder="Введите запрос...">
+            <div class="visualizer-wrapper">
+                <div class="visualizer-css viz-pink-wave" id="viz-pink">
+                    <div class="wave" data-index="0"></div>
+                    <div class="wave" data-index="1"></div>
+                    <div class="wave" data-index="2"></div>
+                    <div class="wave" data-index="3"></div>
+                    <div class="wave" data-index="4"></div>
+                    <div class="wave" data-index="5"></div>
+                    <div class="wave" data-index="6"></div>
+                </div>
+            </div>
+        </div>
+        <button class="select-btn" data-variant="pink" data-name="Pink Wave">Выбрать</button>
+    </div>
+
+    <div id="selectedInfo">
+        <h3>✅ Выбран вариант:</h3>
+        <code id="selectedVariant"></code>
+        <button class="copy-btn" onclick="copySelectedCSS()">📋 Скопировать CSS</button>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let timeDomainData = null;
+        let frequencyData = null;
+        let isRecording = false;
+        let animationId = null;
+
+        const cssConfigs = {
+            bars: { type: 'bars', elements: 5, color: '#00d9ff' },
+            blue: { type: 'bars', elements: 6, color: '#3b82f6' },
+            green: { type: 'bars', elements: 4, color: '#10b981' },
+            neon: { type: 'bars', elements: 4, color: '#ff00ff' },
+            purple: { type: 'bars', elements: 4, color: '#8b5cf6' },
+            red: { type: 'bars', elements: 4, color: '#ef4444' },
+            wave: { type: 'wave', elements: 7, color: '#00d9ff' },
+            orange: { type: 'wave', elements: 7, color: '#f97316' },
+            pink: { type: 'wave', elements: 7, color: '#ec4899' }
+        };
+
+        function initCanvas() {
+            const canvas = document.getElementById('viz-current');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#ff4d4d';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
+
+        function drawAllVisualizers() {
+            if (!analyser) return;
+
+            analyser.getByteTimeDomainData(timeDomainData);
+            analyser.getByteFrequencyData(frequencyData);
+
+            // Draw CURRENT (Canvas Wave)
+            drawCanvasWave();
+
+            // Draw CSS variants
+            Object.keys(cssConfigs).forEach(variant => {
+                drawCSSVisualizer(variant, cssConfigs[variant]);
+            });
+
+            if (isRecording) {
+                animationId = requestAnimationFrame(drawAllVisualizers);
+            }
+        }
+
+        function drawCanvasWave() {
+            const canvas = document.getElementById('viz-current');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#ff4d4d';
+            ctx.beginPath();
+
+            const sliceWidth = width * 1.0 / timeDomainData.length;
+            let x = 0;
+
+            for (let i = 0; i < timeDomainData.length; i++) {
+                const v = (timeDomainData[i] - 128) / 128.0;
+                const y = (height / 2) + v * (height / 2) * 5.0;
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+
+                x += sliceWidth;
+            }
+
+            ctx.stroke();
+        }
+
+        function drawCSSVisualizer(variant, config) {
+            const container = document.getElementById(`viz-${variant}`);
+            if (!container) return;
+
+            const elements = container.querySelectorAll(`.${config.type === 'bars' ? 'bar' : 'wave'}`);
+            
+            if (config.type === 'bars') {
+                // Use frequency data for bars
+                const step = Math.floor(frequencyData.length / config.elements);
+                elements.forEach((el, i) => {
+                    const value = frequencyData[i * step] || 0;
+                    const scale = 0.3 + (value / 255) * 0.7;
+                    el.style.transform = `scaleY(${scale})`;
+                });
+            } else {
+                // Use time domain data for waves
+                const step = Math.floor(timeDomainData.length / config.elements);
+                elements.forEach((el, i) => {
+                    const v = (timeDomainData[i * step] - 128) / 128.0;
+                    const height = 15 + v * 10;
+                    el.style.height = `${height}px`;
+                });
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                timeDomainData = new Uint8Array(bufferLength);
+                frequencyData = new Uint8Array(bufferLength);
+
+                isRecording = true;
+                drawAllVisualizers();
+
+                document.getElementById('testMicBtn').textContent = '⏹ Стоп';
+                document.getElementById('testMicBtn').classList.add('active');
+            } catch (err) {
+                console.error('Ошибка:', err);
+                alert('Не удалось получить доступ к микрофону');
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            if (animationId) cancelAnimationFrame(animationId);
+            if (microphone) microphone.disconnect();
+            if (audioContext) audioContext.close();
+            audioContext = null;
+            analyser = null;
+            microphone = null;
+            timeDomainData = null;
+            frequencyData = null;
+            initCanvas();
+            document.getElementById('testMicBtn').textContent = '🎤 Говорить';
+            document.getElementById('testMicBtn').classList.remove('active');
+        }
+
+        document.getElementById('testMicBtn').addEventListener('click', () => {
+            isRecording ? stopRecording() : startRecording();
+        });
+
+        let selectedVariant = null;
+        const codeVariants = {
+            current: `// 🔴 Текущий (с сайта) - Красная волна
+function visualizeCanvas(analyser, dataArray, canvasEl) {
+    const ctx = canvasEl.getContext('2d');
+    const width = canvasEl.width = canvasEl.clientWidth;
+    const height = canvasEl.height = canvasEl.clientHeight;
+    
+    function draw() {
+        analyser.getByteTimeDomainData(dataArray);
+        ctx.clearRect(0, 0, width, height);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#ff4d4d'; // КРАСНАЯ ВОЛНА
+        ctx.beginPath();
+        
+        const sliceWidth = width * 1.0 / dataArray.length;
+        let x = 0;
+        
+        for (let i = 0; i < dataArray.length; i++) {
+            const v = (dataArray[i] - 128) / 128.0;
+            const y = (height / 2) + v * (height / 2) * 5.0;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+            x += sliceWidth;
+        }
+        ctx.stroke();
+        requestAnimationFrame(draw);
+    }
+    draw();
+}`,
+            bars: `/* Вариант 1: Classic Bars */
+.viz-classic-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 80px;
+    height: 40px;
+    gap: 2px;
+}
+
+.viz-classic-bars .bar {
+    width: 6px;
+    background: linear-gradient(to top, #00d9ff, #00ff88);
+    border-radius: 3px;
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+    transition: transform 0.1s ease;
+}`,
+            blue: `/* Вариант 1B: Blue Pulse */
+.viz-blue-pulse {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 80px;
+    height: 40px;
+    gap: 2px;
+}
+
+.viz-blue-pulse .bar {
+    width: 6px;
+    background: linear-gradient(to top, #3b82f6, #60a5fa);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+}`,
+            green: `/* Вариант 1C: Green Energy */
+.viz-green-energy {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 80px;
+    height: 40px;
+    gap: 3px;
+}
+
+.viz-green-energy .bar {
+    width: 7px;
+    background: linear-gradient(to top, #10b981, #34d399);
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+}`,
+            neon: `/* Вариант 4: Neon Glow */
+.viz-neon-glow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 80px;
+    height: 40px;
+    gap: 3px;
+}
+
+.viz-neon-glow .bar {
+    width: 8px;
+    background: linear-gradient(to top, #ff00ff, #ff66ff);
+    border-radius: 4px;
+    box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+}`,
+            purple: `/* Вариант 4B: Purple Neon */
+.viz-purple-neon {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 80px;
+    height: 40px;
+    gap: 3px;
+}
+
+.viz-purple-neon .bar {
+    width: 8px;
+    background: linear-gradient(to top, #8b5cf6, #a78bfa);
+    border-radius: 4px;
+    box-shadow: 0 0 12px #8b5cf6, 0 0 24px #8b5cf6;
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+}`,
+            red: `/* Вариант 4C: Red Fire */
+.viz-red-fire {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 80px;
+    height: 40px;
+    gap: 3px;
+}
+
+.viz-red-fire .bar {
+    width: 8px;
+    background: linear-gradient(to top, #ef4444, #f87171, #fca5a5);
+    border-radius: 4px;
+    box-shadow: 0 0 10px #ef4444, 0 0 20px #ef4444;
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+}`,
+            wave: `/* Вариант 9: Sound Wave */
+.viz-sound-wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 40px;
+    gap: 4px;
+}
+
+.viz-sound-wave .wave {
+    width: 4px;
+    height: 15px;
+    background: linear-gradient(to right, #00d9ff, #a855f7);
+    border-radius: 2px;
+}`,
+            orange: `/* Вариант 9B: Orange Wave */
+.viz-orange-wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 40px;
+    gap: 4px;
+}
+
+.viz-orange-wave .wave {
+    width: 5px;
+    height: 15px;
+    background: linear-gradient(to right, #f97316, #fb923c);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+}`,
+            pink: `/* Вариант 9C: Pink Wave */
+.viz-pink-wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 40px;
+    gap: 4px;
+}
+
+.viz-pink-wave .wave {
+    width: 5px;
+    height: 15px;
+    background: linear-gradient(to right, #ec4899, #f472b6);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
+}`
+        };
+
+        document.querySelectorAll('.select-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const variant = this.dataset.variant;
+                const name = this.dataset.name;
+                selectedVariant = variant;
+                document.querySelectorAll('.select-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('selectedInfo').classList.add('show');
+                document.getElementById('selectedVariant').textContent = codeVariants[variant];
+            });
+        });
+
+        function copySelectedCSS() {
+            if (!selectedVariant) {
+                alert('Сначала выберите вариант!');
+                return;
+            }
+            navigator.clipboard.writeText(codeVariants[selectedVariant]).then(() => {
+                alert('CSS скопирован!');
+            }).catch(() => alert('Ошибка копирования'));
+        }
+
+        window.addEventListener('load', initCanvas);
+    </script>
+</body>
+</html>

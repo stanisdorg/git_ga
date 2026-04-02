@@ -307,42 +307,68 @@
     background: var(--color-button-active);
 }
 
-/* История поиска */
-.search-history {
-    flex: 1;
-    overflow-y: auto;
-    padding: var(--grid-gap);
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.history-item {
+/* ============================================
+   Выпадающие подсказки поиска
+   ============================================ */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: var(--color-card);
     border: 1px solid var(--color-border);
-    border-radius: 4px;
-    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 4px;
+}
+
+.search-suggestion-item {
+    padding: 10px 16px;
     cursor: pointer;
-    margin-bottom: 8px;
-    color: var(--color-text); /* Явно задаём цвет текста */
+    transition: background 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.history-item:hover {
-    border-color: var(--color-text-secondary);
-    background: var(--color-card-hover); /* Добавляем hover фон */
+.search-suggestion-item:last-child {
+    border-bottom: none;
 }
 
-.history-item:active {
-    background: var(--color-button-active);
+.search-suggestion-item:hover {
+    background: var(--color-card-hover);
 }
 
-.history-item-query {
+.search-suggestion-query {
     color: var(--color-text);
     font-size: 14px;
-    margin-bottom: 4px;
+    font-weight: 500;
 }
 
-.history-item-time {
+.search-suggestion-time {
     color: var(--color-text-secondary);
-    font-size: 12px;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+/* Скроллбар для подсказок */
+.search-suggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-suggestions::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Основной контент */
