@@ -395,7 +395,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Обработчик ввода текста в поле поиска
         searchInput.addEventListener('input', function () {
+            // Показываем историю при вводе текста
+            if (searchHistory && searchHistoryArray.length > 0) {
+                searchHistory.style.display = 'block';
+                renderSearchHistory();
+            }
             performSearch(this.value);
+        });
+
+        // Показ истории при фокусе на поле поиска
+        searchInput.addEventListener('focus', function () {
+            if (searchHistory && searchHistoryArray.length > 0) {
+                searchHistory.style.display = 'block';
+                renderSearchHistory();
+            }
         });
 
         // Поддержка событий Electron STT для живого обновления
