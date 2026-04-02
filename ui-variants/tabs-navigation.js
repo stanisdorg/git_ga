@@ -301,7 +301,7 @@ async function autoLoadUserData() {
     // Загружаем данные через srs/storage.js
     // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.09.5');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.23.0');
         await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
@@ -690,11 +690,11 @@ export function initTabsNavigation(appVersion) {
 
                 let module;
                 try {
-                    module = await import('../srs/learn-ui.js?v=6.09.5');
+                    module = await import('../srs/learn-ui.js?v=6.23.0');
                 } catch (e1) {
                     console.warn('[Learn] Import v6.09.5 failed, trying plain import', e1);
                     try {
-                        module = await import('../srs/learn-ui.js?v=6.09.5');
+                        module = await import('../srs/learn-ui.js?v=6.23.0');
                     } catch (e2) {
                         throw new Error(`Failed to load learn-ui.js: ${e2.message}`);
                     }
@@ -724,7 +724,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.09');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.23.0');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -743,7 +743,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.09');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.23.0');
                     initStatsPage(appVersion);
                 }
 
@@ -1109,7 +1109,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=6.09').then(() => {
+                    import('../srs/stats-ui.js?v=6.23.0').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {

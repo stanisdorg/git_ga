@@ -1,8 +1,8 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime } from './stats-utils.js?v=6.09.5';
-import { syncFavorite } from './storage.js?v=6.09.5';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.09.5';
-import { getTodaysSession } from './category-scheduler.js?v=6.09.5';
-import { startLearnSession } from './learn-ui.js?v=6.09.5';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime } from './stats-utils.js?v=6.23.0';
+import { syncFavorite } from './storage.js?v=6.23.0';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.23.0';
+import { getTodaysSession } from './category-scheduler.js?v=6.23.0';
+import { startLearnSession } from './learn-ui.js?v=6.23.0';
 import { applyFormatting } from './text-formatter.js';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
@@ -2869,9 +2869,9 @@ function renderStats() {
               ${renderAchCard('consistency', '🧘', 'Стабильность', progress.streak14, 14, 'rare', '14 дней подряд без пропусков')}
               ${renderAchCard('marathoner', '🏃', 'Марафонец', progress.streak30, 30, 'epic', '30 дней подряд — целый месяц без пропусков!')}
               ${renderAchCard('hardToEasy', '📈', 'Прогресс', progress.hardToEasy, 10, 'rare', '10 карточек, которые были сложными, стали лёгкими (5 сердечек)')}
-              ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common', '50 карточек изучено (пройдено хотя бы один раз)')}
-              ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic', '100 карточек изучено — вы знаете больше половины базы!')}
-              ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic', '90%+ правильных ответов за всё время — почти без ошибок!')}
+              ${renderAchCard('fiftyCards', '📚', 'Набрал темп', progress.cards50, 50, 'common', '50 карточек с 5 сердечками — хороший прогресс!')}
+              ${renderAchCard('century', '💯', 'Центурион', progress.cards100, 100, 'epic', '100 карточек с 5 сердечками — отличное знание материала!')}
+              ${renderAchCard('ninetyAccuracy', '🎯', 'Снайпер', progress.accuracy90, 90, 'epic', '90+ правильных ответов из всех вопросов — почти без ошибок!')}
               ${renderAchCard('master', '👑', 'Мастер', progress.level10, 10, 'legendary', 'Уровень 10 — накопите 56250 XP')}
               ${renderAchCard('earlyBird', '🌅', 'Ранняя пташка', progress.earlyBird, 25, 'rare', '25 карточек, пройденных до 9:00 утра')}
               ${renderAchCard('nightRaider', '🌙', 'Ночной рейдер', progress.nightRaider, 50, 'epic', '50 карточек, пройденных после 23:00 (ночью)')}

@@ -1,4 +1,4 @@
-import { syncWithServer } from './storage.js?v=6.09.5';
+import { syncWithServer } from './storage.js?v=6.23.0';
 
 // Вспомогательные функции для работы с датой (MSK timezone UTC+3)
 function getMSKDate() {
@@ -244,12 +244,14 @@ export function checkAchievements() {
   progress.streak30 = Math.min(30, streak.current || 0);
   progress.streak100 = Math.min(100, streak.current || 0);
 
-  // Cards progress
-  progress.cards50 = Math.min(50, studiedCount);
-  progress.cards100 = Math.min(100, studiedCount);
+  // Cards progress - считаем только карточки с 5 сердечками (EF >= 2.4)
+  const fiveHeartsCount = Object.values(prog).filter(p => (p.easeFactor || 0) >= 2.4).length;
+  progress.cards50 = Math.min(50, fiveHeartsCount);
+  progress.cards100 = Math.min(100, fiveHeartsCount);
 
-  // Accuracy progress
-  progress.accuracy90 = Math.min(90, Math.round(accuracy));
+  // Accuracy progress - show correct answers count out of total questions (90)
+  const totalQuestions = (window.uniqueQaData && window.uniqueQaData.length) || 90;
+  progress.accuracy90 = Math.min(totalQuestions, stats.correct || 0);
 
   // Level progress
   const levelInfo = getCurrentLevel();
@@ -315,10 +317,12 @@ export function checkAchievements() {
   if (!ach.marathoner && (streak.current || 0) >= 30) ach.marathoner = true;
   if (!ach.unstoppable && (streak.current || 0) >= 100) ach.unstoppable = true;
 
-  if (!ach.ninetyAccuracy && accuracy >= 90) ach.ninetyAccuracy = true;
+  // Снайпер: 90+ правильных ответов из всех вопросов
+  if (!ach.ninetyAccuracy && (stats.correct || 0) >= totalQuestions) ach.ninetyAccuracy = true;
 
-  if (!ach.fiftyCards && studiedCount >= 50) ach.fiftyCards = true;
-  if (!ach.century && studiedCount >= 100) ach.century = true;
+  // Достижения за карточки с 5 сердечками
+  if (!ach.fiftyCards && fiveHeartsCount >= 50) ach.fiftyCards = true;
+  if (!ach.century && fiveHeartsCount >= 100) ach.century = true;
 
   if (!ach.guru && levelInfo.level >= 5) ach.guru = true;
   if (!ach.master && levelInfo.level >= 10) ach.master = true;
