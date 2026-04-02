@@ -2664,19 +2664,16 @@ function renderStats() {
   const lvlProgressPct = Math.max(0, Math.min(1, level.progress || 0)) * 100;
   const remainingXp = Math.max(0, Math.round(level.remaining || 0));
 
-  // MSK timezone - используем Intl.DateTimeFormat для правильного учёта часового пояса
+  // Используем локальное время устройства пользователя
   const todayStr = (() => {
-    try {
-      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-      const parts = fmt.formatToParts(new Date());
-      return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
-    } catch {
-      const mskOffset = 3 * 60 * 60 * 1000;
-      return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
-    }
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   })();
   /* DEBUG
-  console.log('[STATS.UI] todayStr (MSK):', todayStr, 'UTC:', new Date().toISOString());
+  console.log('[STATS.UI] todayStr (local):', todayStr, 'UTC:', new Date().toISOString());
   */
   let cardsDoneToday = 0;
 
@@ -4535,15 +4532,12 @@ window.renderModalChart = () => {
 
 // Получение данных для модального окна (полная копия getActivitySeries)
 window.getXpSeriesForModal = (mode) => {
-  const getMSKDate = (date) => {
-    try {
-      const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-      const parts = fmt.formatToParts(date);
-      return `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}`;
-    } catch {
-      const mskOffset = 3 * 60 * 60 * 1000;
-      return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
-    }
+  // Используем локальное время устройства
+  const getLocalDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Используем функции из stats-utils
@@ -5020,10 +5014,12 @@ function renderCategoryProgress() {
 // ======================================================================
 
 function getXpSeries(mode) {
-  // Вспомогательная функция для получения даты по MSK (UTC+3)
-  const getMSKDate = (date) => {
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
+  // Вспомогательная функция для получения даты локального времени устройства
+  const getLocalDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   /* DEBUG
@@ -5040,16 +5036,16 @@ function getXpSeries(mode) {
     });
   } catch { }
   const today = new Date();
-  const todayStr = getMSKDate(today);
+  const todayStr = getLocalDate(today);
   /* DEBUG
-  console.log('[CHART.XP] todayStr (MSK):', todayStr);
+  console.log('[CHART.XP] todayStr (local):', todayStr);
   */
   const days = mode === 'week' ? 7 : (mode === 'month' ? 30 : (mode === 'year' ? 365 : 365));
   const res = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const s = getMSKDate(d);
+    const s = getLocalDate(d);
     const entry = data.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
     /* DEBUG
     if (i <= 2 || i >= days - 2) {
@@ -5094,14 +5090,14 @@ function getActivitySeries(mode) {
       const end = new Date(y, m + 1, 0);
       let xp = 0, hearts = 0, cards = 0;
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const s = getMSKDate(d);
+        const s = getLocalDate(d);
         const de = daily.find(x => x.date === s);
         const im = impMap.get(s);
         xp += de ? (de.xp || 0) : 0;
         hearts += im ? (im.regressed || 0) : 0;
         cards += im ? (im.reviewed || 0) : 0;
       }
-      res.push({ date: getMSKDate(new Date(y, m, 1)), label: new Date(y, m, 1).toLocaleString('ru-RU', { month: 'short' }), xp, hearts, cards });
+      res.push({ date: getLocalDate(new Date(y, m, 1)), label: new Date(y, m, 1).toLocaleString('ru-RU', { month: 'short' }), xp, hearts, cards });
     }
     return res;
   }
@@ -5109,7 +5105,7 @@ function getActivitySeries(mode) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     if (mode === 'month' && d.getMonth() !== today.getMonth()) continue;
-    const s = getMSKDate(d);
+    const s = getLocalDate(d);
     const de = daily.find(x => x.date === s) || { xp: 0 };
     const im = impMap.get(s) || { improved: 0, regressed: 0, reviewed: 0 };
     res.push({

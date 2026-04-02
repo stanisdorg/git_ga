@@ -1,46 +1,32 @@
 import { syncWithServer } from './storage.js?v=6.24.0';
 
-// Вспомогательные функции для работы с датой (MSK timezone Europe/Moscow)
-function getMSKDate() {
-  // Возвращает дату в формате YYYY-MM-DD для московского времени
-  // Используем Intl.DateTimeFormat для правильного учёта часового пояса
-  try {
-    const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-    const parts = fmt.formatToParts(new Date());
-    return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
-  } catch {
-    // Fallback на смещение (UTC+3) если Intl не доступен
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(Date.now() + mskOffset).toISOString().split('T')[0];
-  }
+// Вспомогательные функции для работы с датой (локальное время устройства)
+function getLocalDate() {
+  // Возвращает дату в формате YYYY-MM-DD для локального времени устройства
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-function getMSKHours() {
-  // Возвращает часы по московскому времени
-  try {
-    const fmt = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', hour12: false });
-    return parseInt(fmt.format(new Date()));
-  } catch {
-    // Fallback на смещение
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(Date.now() + mskOffset).getHours();
-  }
+function getLocalHours() {
+  // Возвращает часы локального времени устройства
+  return new Date().getHours();
 }
 
-function toMSKDate(date) {
-  // Конвертирует любую дату в московскую дату YYYY-MM-DD
-  if (!date) return getMSKDate();
+function toLocalDate(date) {
+  // Конвертирует любую дату в локальную дату YYYY-MM-DD
+  if (!date) return getLocalDate();
   const d = typeof date === 'string' ? new Date(date) : date;
-  try {
-    const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-    const parts = fmt.formatToParts(d);
-    return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
-  } catch {
-    // Fallback на смещение
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(d.getTime() + mskOffset).toISOString().split('T')[0];
-  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
+
+// Экспорт для использования в других модулях
+export { getLocalDate as getMSKDate, getLocalHours as getMSKHours, toLocalDate as toMSKDate };
 
 // Миграция старых данных из UTC в MSK
 export function migrateToMSK() {

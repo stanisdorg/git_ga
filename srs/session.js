@@ -1,26 +1,16 @@
 ﻿import { calculateNextReview, canUseEasy } from './algorithm.js';
 import { updateCardProgress, syncDailyStats } from './storage.js';
 
-// Вспомогательные функции для получения московского времени
-function getMSKDate(date) {
-  try {
-    const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-    const parts = fmt.formatToParts(date);
-    return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
-  } catch {
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(date.getTime() + mskOffset).toISOString().split('T')[0];
-  }
+// Вспомогательные функции для получения локального времени устройства
+function getLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-function getMSKHours(date) {
-  try {
-    const fmt = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', hour12: false });
-    return parseInt(fmt.format(date));
-  } catch {
-    const mskOffset = 3 * 60 * 60 * 1000;
-    return new Date(date.getTime() + mskOffset).getHours();
-  }
+function getLocalHours(date) {
+  return date.getHours();
 }
 
 /**
@@ -236,24 +226,24 @@ export class LearningSession {
 
         const newProgress = calculateNextReview(this.currentCard.progress, grade);
         const now = new Date();
-        // Сохраняем дату и время по московскому времени (Europe/Moscow)
-        const mskDate = getMSKDate(now);
-        const mskHours = getMSKHours(now);
+        // Сохраняем дату и время локального времени устройства
+        const localDate = getLocalDate(now);
+        const localHours = getLocalHours(now);
 
-        console.log('[SESSION.MSK]', {
+        console.log('[SESSION.LOCAL]', {
             utc: now.toISOString(),
-            msk: mskDate,
-            hours: mskHours,
-            timezone: 'Europe/Moscow'
+            local: localDate,
+            hours: localHours,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
         });
         console.log('[SESSION.SAVE]', {
             question: this.currentCard.item.question?.substring(0, 50),
-            lastReviewed: mskDate,
-            lastReviewedTime: mskHours
+            lastReviewed: localDate,
+            lastReviewedTime: localHours
         });
 
-        newProgress.lastReviewed = mskDate;
-        newProgress.lastReviewedTime = mskHours;
+        newProgress.lastReviewed = localDate;
+        newProgress.lastReviewedTime = localHours;
 
         updateCardProgress(this.currentCard.item.question, newProgress);
 
@@ -353,9 +343,9 @@ export class LearningSession {
 }
 
 function updateStreak() {
-    // Получаем текущую дату по московскому времени (Europe/Moscow)
-    const today = getMSKDate(new Date());
-    const yesterday = getMSKDate(new Date(Date.now() - 86400000));
+    // Получаем текущую дату локального времени устройства
+    const today = getLocalDate(new Date());
+    const yesterday = getLocalDate(new Date(Date.now() - 86400000));
 
     const raw = localStorage.getItem('studyStreak') || '{}';
     const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
