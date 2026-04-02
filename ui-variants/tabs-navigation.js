@@ -342,6 +342,10 @@ export function initTabsNavigation(appVersion) {
     const isStatsPage = location.hash === '#/stats';
     console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
 
+    // 🔥 АВТОЗАГРУЗКА ДАННЫХ С СЕРВЕРА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+    // Вызывается из ui-manager.js, здесь не вызываем чтобы избежать дублирования
+    // autoLoadUserData() доступна для прямого вызова при необходимости
+
     // Показываем анимацию загрузки при старте
     showLoading();
 
@@ -926,19 +930,19 @@ export function initTabsNavigation(appVersion) {
             topActions.appendChild(editToggleBtn);
             topActions.appendChild(cloudBtn);
             topActions.appendChild(adminUsersBtn);
-            
+
             // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM (Desktop)
             setTimeout(() => {
                 try {
                     const user = JSON.parse(localStorage.getItem('qaSessionUser') || 'null');
-                    
+
                     // Кнопка редактирования: admin и editor
                     if (user && ['admin', 'editor'].includes(user.role)) {
                         editToggleBtn.style.setProperty('display', 'inline-block', 'important');
                     } else {
                         editToggleBtn.style.setProperty('display', 'none', 'important');
                     }
-                    
+
                     // Кнопка добавления пользователя: только admin
                     if (user && user.role === 'admin') {
                         adminUsersBtn.style.setProperty('display', 'inline-block', 'important');
@@ -1932,7 +1936,7 @@ export function initTabsNavigation(appVersion) {
                     return;
                 }
             } catch { }
-            
+
             let ov = document.getElementById('admin-users-overlay');
             if (!ov) {
                 ov = document.createElement('div');
@@ -1970,14 +1974,14 @@ export function initTabsNavigation(appVersion) {
                     const p = ov.querySelector('#new-password').value;
                     const r = ov.querySelector('#new-role').value;
                     if (!u || !p) { alert('Логин и пароль обязательны'); return; }
-                    
+
                     // 🔒 Получаем токен администратора
                     const user = JSON.parse(localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser') || 'null');
                     if (!user || user.role !== 'admin') {
                         alert('Только администратор может добавлять пользователей');
                         return;
                     }
-                    
+
                     // 🔒 Используем API сервера с токеном для проверки прав
                     (async () => {
                         try {
@@ -3677,10 +3681,10 @@ function refreshCurrentContext() {
         const key = currentContextKey || 'all';
         // 🔥 Получаем текущий поисковый запрос из search-highlight.js
         const searchQuery = (typeof window.getSearchQuery === 'function') ? window.getSearchQuery() : '';
-        
+
         // 🔥 Сохраняем запрос в глобальную переменную
         currentSearchQuery = searchQuery;
-        
+
         // 🔥 Если есть поисковый запрос, применяем его к результатам
         if (searchQuery) {
             console.log('[refreshCurrentContext] Search query detected:', searchQuery, 'context:', key);
@@ -3693,7 +3697,7 @@ function refreshCurrentContext() {
                 const inSubcategory = item.subcategory && item.subcategory.toLowerCase().includes(lowerQuery);
                 return inQuestion || inAnswer || inCategory || inSubcategory;
             });
-            
+
             // 🔥 Затем применяем фильтр по категории если нужно
             if (key === 'favorites') {
                 const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
@@ -3706,12 +3710,12 @@ function refreshCurrentContext() {
                 const [cat, sub] = payload.split('#');
                 filteredData = filteredData.filter(item => item.category === cat && item.subcategory === sub);
             }
-            
+
             // 🔥 Показываем отфильтрованные результаты
             displayQuestions(filteredData, searchQuery ? `Результаты поиска: ${searchQuery}` : 'Все вопросы');
             return;
         }
-        
+
         // 🔥 Если поиска нет, используем старую логику
         if (key === 'all') {
             return showAllQuestions();

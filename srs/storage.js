@@ -7,7 +7,7 @@ function getUserId() {
             const u = JSON.parse(raw);
             if (u && (u.id || u.email || u.username)) return u.id || u.email || u.username;
         }
-    } catch {}
+    } catch { }
     let id = localStorage.getItem('deviceId');
     if (!id) {
         id = 'device_' + Math.random().toString(36).slice(2);
@@ -27,7 +27,7 @@ export async function syncWithServer() {
     try {
         const u = JSON.parse(sessionUserRaw);
         if (u && u.username) username = u.username;
-    } catch {}
+    } catch { }
 
     if (!username) return; // Guest -> do not sync
 
@@ -49,7 +49,7 @@ export async function syncWithServer() {
         try {
             // Пробуем отправить на сервер, но не показываем ошибку если API недоступен
             window.dispatchEvent(new Event('sync-start'));
-            
+
             // Отправляем все данные на /api/progress
             const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
                 method: 'POST',
@@ -79,44 +79,29 @@ export async function syncWithServer() {
 }
 
 export async function loadFromServer(forceReload = false) {
-    console.log('[loadFromServer] === ЗАГРУЗКА С СЕРВЕРА === forceReload:', forceReload);
     // Only load if we have a logged-in user
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
     try {
         const u = JSON.parse(sessionUserRaw);
         if (u && u.username) username = u.username;
-    } catch {}
-
-    console.log('[loadFromServer] username:', username);
+    } catch { }
 
     if (!username) {
-        // Диспатчим dataLoaded чтобы UI загрузился с global.json
         window.dispatchEvent(new Event('dataLoaded'));
         return;
     }
 
     try {
         const url = `/api/progress?username=${encodeURIComponent(username)}`;
-
         const res = await fetch(url);
 
-        console.log('[loadFromServer] Response status:', res?.status);
-
-        // Если сервер недоступен (404, 500, network error) - загружаем локальные данные
         if (!res || !res.ok) {
             window.dispatchEvent(new Event('dataLoaded'));
             return;
         }
 
         const data = await res.json();
-
-        console.log('[loadFromServer] Получены данные:', {
-            hasCards: !!data._cards,
-            cardsCount: data._cards?.length || 0,
-            updatedAt: data.updatedAt,
-            hasProgress: !!data.srsProgress
-        });
 
         if (!data || Object.keys(data).length === 0) {
             window.dispatchEvent(new Event('dataLoaded'));
@@ -126,43 +111,24 @@ export async function loadFromServer(forceReload = false) {
         // Check if server data is newer than local last sync
         const localTS = parseInt(localStorage.getItem('localDataTimestamp') || '0');
         const serverTS = data.updatedAt || 0;
-        const localCardsCount = JSON.parse(localStorage.getItem('qaUserCards') || '[]').length;
 
-        console.log('[loadFromServer] Сравнение timestamp:', {
-            localTS,
-            serverTS,
-            localCardsCount,
-            serverCardsCount: data._cards?.length || 0,
-            forceReload
-        });
-
-        // 🔥 ПРИНУДИТЕЛЬНАЯ ПЕРЕЗАПИСЬ при forceReload
         if (forceReload) {
-            console.log('[loadFromServer] forceReload=true, загружаем с сервера');
         } else {
-            // Не перезаписываем если локальные данные свежее
             if (serverTS && serverTS <= localTS) {
-                console.log('[loadFromServer] Локальные данные свежее (serverTS <= localTS), пропускаем загрузку');
                 window.dispatchEvent(new Event('dataLoaded'));
                 return;
             }
         }
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
-        console.log('[loadFromServer] Загружаем данные с сервера в localStorage');
-
         // Restore keys
         if (data._cards) {
             localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
-            console.log('[loadFromServer] Сохранено', data._cards.length, 'карточек в localStorage');
-            
-            // 🔥 ВАЖНО: Обновляем uniqueQaData в all-data.js
-            // Это нужно для корректной работы на нескольких устройствах
+
             try {
                 const { setUniqueQaData } = await import('../all-data.js');
                 if (typeof setUniqueQaData === 'function') {
                     setUniqueQaData(data._cards);
-                    console.log('[loadFromServer] uniqueQaData обновлён:', data._cards.length);
                 }
             } catch (e) {
                 console.warn('[loadFromServer] Не удалось обновить uniqueQaData:', e.message);
@@ -188,7 +154,6 @@ export async function loadFromServer(forceReload = false) {
         window.dispatchEvent(new Event('xpUpdated'));
         window.dispatchEvent(new Event('favoritesUpdated'));
         window.dispatchEvent(new Event('dataLoaded'));
-        // 🔥 Событие для исправления кодировки
         window.dispatchEvent(new Event('qaDataLoadedFromServer'));
 
         // 🔒 Обновляем корзину ПОСЛЕ сохранения в localStorage
@@ -198,10 +163,8 @@ export async function loadFromServer(forceReload = false) {
             }
         }, 100);
 
-        console.log('[loadFromServer] === ДАННЫЕ УСПЕШНО ЗАГРУЖЕНЫ ===');
     } catch (e) {
         console.error('[loadFromServer] Ошибка загрузки:', e.message);
-        // При ошибке используем локальные данные
         window.dispatchEvent(new Event('dataLoaded'));
     }
 }
@@ -218,14 +181,14 @@ export async function syncDailyStats(date, xp, bonus, dayBonus, streak) {
 
 export async function syncFavorite(question, isFav) {
     console.log('[syncFavorite] Синхронизация избранного:', { question, isFav });
-    
+
     // Получаем username
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
     try {
         const u = JSON.parse(sessionUserRaw);
         if (u && u.username) username = u.username;
-    } catch {}
+    } catch { }
 
     if (!username) {
         console.log('[syncFavorite] Нет пользователя, сохраняем только локально');
@@ -316,20 +279,20 @@ export function updateCardProgress(question, progress) {
 export function getDueCards(candidateQuestions) {
     const map = getProgressMap();
     const now = new Date();
-    
+
     return candidateQuestions.map(item => {
         const progress = map[item.question];
         if (!progress) {
             // New card
             return { question: item.question, item, progress: null, isNew: true };
         }
-        
+
         const dueDate = new Date(progress.dueDate);
         if (dueDate <= now) {
             // Due card
             return { question: item.question, item, progress, isNew: false };
         }
-        
+
         return null; // Not due
     }).filter(Boolean);
 }

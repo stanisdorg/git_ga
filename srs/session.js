@@ -3,14 +3,14 @@ import { updateCardProgress, syncDailyStats } from './storage.js';
 
 // Вспомогательные функции для получения локального времени устройства
 function getLocalDate(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 function getLocalHours(date) {
-  return date.getHours();
+    return date.getHours();
 }
 
 /**
@@ -72,11 +72,6 @@ export class LearningSession {
     }
 
     goTo(index) {
-        console.log('[SESSION.GO TO] === START ===');
-        console.log('[SESSION.GO TO] index=', index, 'currentIndex=', this.currentIndex);
-        console.log('[SESSION.GO TO] queue.length=', this.queue.length);
-        console.log('[SESSION.GO TO] results BEFORE=', this.results);
-
         const n = this.queue.length;
         if (n === 0) {
             this.onComplete(this.stats, this.results, this.queue.length);
@@ -84,19 +79,11 @@ export class LearningSession {
         }
         const i = Math.max(0, Math.min(n - 1, Number(index) || 0));
         this.currentIndex = i;
-        console.log('[SESSION.GO TO] currentIndex set to=', this.currentIndex);
-        console.log('[SESSION.GO TO] results AFTER=', this.results);
         this.loadCurrentCard();
-        console.log('[SESSION.GO TO] === END ===');
     }
 
     loadCurrentCard() {
-        console.log('[SESSION.LOAD CARD] === START ===');
-        console.log('[SESSION.LOAD CARD] currentIndex=', this.currentIndex, 'queue.length=', this.queue.length);
-        console.log('[SESSION.LOAD CARD] results=', this.results);
-
         if (this.currentIndex >= this.queue.length) {
-            console.log('[SESSION.LOAD CARD] COMPLETE! currentIndex >= queue.length');
             this.onComplete(this.stats, this.results, this.queue.length);
             return;
         }
@@ -106,7 +93,6 @@ export class LearningSession {
 
         const pauseRec = this.checkSmartPause();
 
-        console.log('[SESSION.LOAD CARD] Calling onUpdateUI with results=', this.results);
         this.onUpdateUI({
             card: this.currentCard.item,
             cardProgress: this.currentCard.progress,
@@ -118,7 +104,6 @@ export class LearningSession {
             mode: this.mode,
             timeLeft: this.mode === 'time_attack' ? 5 : null
         });
-        console.log('[SESSION.LOAD CARD] === END ===');
 
         if (this.mode === 'time_attack') {
             this.startModeTimer(5);
@@ -154,18 +139,10 @@ export class LearningSession {
     }
 
     flip() {
-        console.log('[SESSION.FLIP] 🔄 flip() called, isFlipped=' + this.isFlipped + ', currentIndex=' + this.currentIndex);
-        if (this.isFlipped) {
-            console.log('[SESSION.FLIP] ⚠️ Already flipped, returning');
-            return;
-        }
-        if (this.modeTimer) {
-            console.log('[SESSION.FLIP] ⏹️ Clearing modeTimer');
-            clearInterval(this.modeTimer);
-        }
+        if (this.isFlipped) return;
+        if (this.modeTimer) clearInterval(this.modeTimer);
 
         this.isFlipped = true;
-        console.log('[SESSION.FLIP] ✅ isFlipped set to true, calling onUpdateUI');
         this.onUpdateUI({
             card: this.currentCard.item,
             cardProgress: this.currentCard.progress,
@@ -181,16 +158,14 @@ export class LearningSession {
      * Rate the current card
      * @param {0|1|2|3} grade
      */
-    rate(grade) {
-        console.log('[SESSION.RATE] 🖱️ rate(' + grade + ') called, currentIndex=' + this.currentIndex);
+    async rate(grade) {
         if (!this.currentCard) {
-            console.warn('[SESSION.RATE] ❌ currentCard is null!');
+            console.warn('[SESSION.RATE] currentCard is null!');
             return;
         }
 
         // Check for Game Over conditions
         if ((this.mode === 'sudden_death' || this.mode === 'time_attack') && grade === 0) {
-            console.log('[SESSION.RATE] 🎮 Game Over due to wrong answer in ' + this.mode);
             this.finishGame('wrong_answer');
             return;
         }
@@ -199,7 +174,6 @@ export class LearningSession {
         if (grade === 3) {
             const progress = this.currentCard.progress || { easeFactor: 2.5 };
             if (!canUseEasy(progress)) {
-                console.log('[SESSION.RATE] ⚠️ Downgrading Easy to Good (can\'t use Easy yet)');
                 grade = 2; // Downgrade to Good (2 in UI)
             }
         }
@@ -211,14 +185,10 @@ export class LearningSession {
         this.stats.reviewed++;
 
         // Сохраняем результат с привязкой к индексу карточки в очереди
-        // Если currentIndex >= results.length, расширяем массив
         while (this.results.length <= this.currentIndex) {
             this.results.push(null);
         }
         this.results[this.currentIndex] = grade;
-
-        console.log('[SESSION.RATE] grade=', grade, 'currentIndex=', this.currentIndex);
-        console.log('[SESSION.RATE] results AFTER=', this.results, 'length=', this.results.length);
 
         // Track recent performance
         this.recentGrades.push(grade);
@@ -229,18 +199,6 @@ export class LearningSession {
         // Сохраняем дату и время локального времени устройства
         const localDate = getLocalDate(now);
         const localHours = getLocalHours(now);
-
-        console.log('[SESSION.LOCAL]', {
-            utc: now.toISOString(),
-            local: localDate,
-            hours: localHours,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-        });
-        console.log('[SESSION.SAVE]', {
-            question: this.currentCard.item.question?.substring(0, 50),
-            lastReviewed: localDate,
-            lastReviewedTime: localHours
-        });
 
         newProgress.lastReviewed = localDate;
         newProgress.lastReviewedTime = localHours;
@@ -265,11 +223,8 @@ export class LearningSession {
         localStorage.setItem('studyStats', JSON.stringify(stats));
         try { window.dispatchEvent(new Event('xpUpdated')); } catch { }
         // Per-day points
-        // Получаем дату по московскому времени (UTC+3)
-        const mskOffset2 = 3 * 60 * 60 * 1000;
-        const mskTime2 = new Date(Date.now() + mskOffset2);
-        const todayKey = mskTime2.toISOString().split('T')[0];
-        console.log('[SESSION.DAILY]', { utc: new Date().toISOString(), msk: todayKey });
+        // 🔥 ИСПОЛЬЗУЕМ ЛОКАЛЬНОЕ ВРЕМЯ УСТРОЙСТВА (как в stats-utils.js)
+        const todayKey = getLocalDate(new Date());
         const dpRaw = localStorage.getItem('dailyPoints') || '{}';
         const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
         daily[todayKey] = (daily[todayKey] || 0) + points;
@@ -280,9 +235,9 @@ export class LearningSession {
         dailyBonus[todayKey] = dailyBonus[todayKey] || 0;
         localStorage.setItem('dailyBonusPoints', JSON.stringify(dailyBonus));
         updateStreak();
-        const streakRaw2 = localStorage.getItem('studyStreak') || '{}';
-        const st2 = (() => { try { return JSON.parse(streakRaw2); } catch { return {}; } })();
-        syncDailyStats(todayKey, daily[todayKey] || 0, dailyBonus[todayKey] || 0, 0, st2.current || 0);
+        // 🔥 СИНХРОНИЗАЦИЯ С СЕРВЕРОМ СРАЗУ ПОСЛЕ ОБНОВЛЕНИЯ ДАННЫХ
+        const { syncWithServer } = await import('./storage.js');
+        syncWithServer();
 
         // Re-queue if interval is 0 (Again/Hard on new cards)
         if (newProgress.interval === 0) {

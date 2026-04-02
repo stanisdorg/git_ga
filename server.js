@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.32.0';
+const VERSION = '6.33.0';
 const BACKEND_URL = process.env.BACKEND_URL || 'https://bytecards.ru';
 
 // ============================================
@@ -1253,17 +1253,7 @@ const server = http.createServer((req, res) => {
             hasQuestionInRussianResponse,
             responseLength: jsonResponse.length
           }, 'Load');
-
-          // Сохраняем для отладки
-          const debugResponsePath = path.join(__dirname, 'data', 'debug_server_response.json');
-          fs.writeFileSync(debugResponsePath, jsonResponse, 'utf-8');
         }
-
-        console.log('[SERVER /api/progress] Отправляем клиенту:', {
-          cardsCount: response._cards?.length || 0,
-          favoritesCount: response.qaFavorites?.length || 0,
-          updatedAt: response.updatedAt
-        });
 
         logger.info('=== ОТПРАВКА ДАННЫХ КЛИЕНТУ ===', null, 'Load');
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -1308,6 +1298,11 @@ const server = http.createServer((req, res) => {
           if (data.qaFavorites) userData._favorites = data.qaFavorites;
           if (data.srsProgress) userData._srsProgress = data.srsProgress;
           if (data.studyStats) userData._stats = data.studyStats;
+          // 🔥 Сохраняем стрики и daily stats
+          if (data.studyStreak) userData.studyStreak = data.studyStreak;
+          if (data.dailyPoints) userData.dailyPoints = data.dailyPoints;
+          if (data.dailyBonusPoints) userData.dailyBonusPoints = data.dailyBonusPoints;
+          if (data.dailyDayBonusPoints) userData.dailyDayBonusPoints = data.dailyDayBonusPoints;
 
           fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
             if (err) {

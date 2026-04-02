@@ -1,12 +1,23 @@
 {
-  "_cards": [
-    {
-      "category": "DevOps",
-      "subcategory": "CI/CD",
-      "question": "Медленный деплой",
-      "answer": "пересборка всего приложения при любом изменении"
-    }
-  ],
+  "_cards": [],
   "_srsProgress": {},
-  "_stats": {}
+  "_stats": {
+    "total": 30,
+    "correct": 25,
+    "points": 225
+  },
+  "_achievements": {},
+  "_favorites": [],
+  "studyStreak": {
+    "current": 3,
+    "best": 3,
+    "lastDate": "2026-04-03"
+  },
+  "dailyPoints": {
+    "2026-04-01": 50,
+    "2026-04-02": 100,
+    "2026-04-03": 75
+  },
+  "dailyBonusPoints": {},
+  "dailyDayBonusPoints": {}
 }

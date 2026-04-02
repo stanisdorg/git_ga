@@ -384,58 +384,34 @@ export function initLearnUI() {
 
         // Rating buttons
         const rates = container.querySelectorAll('.rate-btn');
-        console.log('[LEARN-UI] Найдено кнопок оценки:', rates.length);
 
         // Флаг блокировки повторных нажатий
         let isRatingInProgress = false;
 
-        rates.forEach((btn, index) => {
-            console.log(`[LEARN-UI] Кнопка ${index}:`, btn.className, btn.dataset.grade);
-            btn.addEventListener('click', (e) => {
+        rates.forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
 
-                // Блокируем повторные нажатия
                 if (isRatingInProgress) {
-                    console.warn('[RATE BUTTON CLICK] ⚠️ Rating already in progress, ignoring click!');
                     return;
                 }
 
                 const grade = parseInt(btn.dataset.grade);
-                console.log('========================================');
-                console.log('[RATE BUTTON CLICK] 🖱️ Клик по кнопке!');
-                console.log('[RATE BUTTON CLICK] Grade:', grade);
-                console.log('[RATE BUTTON CLICK] session:', session ? 'exists' : 'null');
-                console.log('[RATE BUTTON CLICK] session.currentIndex:', session ? session.currentIndex : 'N/A');
 
-                // Блокируем повторные нажатия
                 isRatingInProgress = true;
-                console.log('[RATE BUTTON CLICK] 🔒 isRatingInProgress: true');
-
-                // Временно отключаем pointer-events чтобы снять hover
                 btn.style.pointerEvents = 'none';
-                console.log('[RATE BUTTON CLICK] pointerEvents: none');
-
-                // Сбрасываем флаг ручного скролла перед ответом
                 userScrolled = false;
 
                 if (session) {
-                    console.log('[RATE BUTTON CLICK] ✅ Calling session.rate(' + grade + ')');
-                    session.rate(grade);
-                } else {
-                    console.warn('[RATE BUTTON CLICK] ❌ session is null!');
+                    await session.rate(grade);
                 }
-                // Сбрасываем фокус с кнопки чтобы не было обводки
-                btn.blur();
-                console.log('[RATE BUTTON CLICK] Focus blurred from button');
 
-                // Возвращаем pointer-events и снимаем блокировку через небольшую задержку
+                btn.blur();
+
                 setTimeout(() => {
                     btn.style.pointerEvents = '';
                     isRatingInProgress = false;
-                    console.log('[RATE BUTTON CLICK] 🔓 pointerEvents: restored, isRatingInProgress: false');
                 }, 300);
-
-                console.log('========================================');
             });
         });
 
@@ -980,7 +956,7 @@ function showEditNotification(message, type = 'success') {
 //    if (session) session.resumeFromPause();
 //}
 
-function handleKeydown(e) {
+async function handleKeydown(e) {
     // If no active session, ignore keys
     if (!session) return;
 
@@ -993,10 +969,10 @@ function handleKeydown(e) {
         }
     } else if (session.isFlipped) {
         // Rating keys
-        if (e.key === '1') { userScrolled = false; session.rate(0); }
-        if (e.key === '2') { userScrolled = false; session.rate(1); }
-        if (e.key === '3') { userScrolled = false; session.rate(2); }
-        if (e.key === '4') { userScrolled = false; session.rate(3); }
+        if (e.key === '1') { userScrolled = false; await session.rate(0); }
+        if (e.key === '2') { userScrolled = false; await session.rate(1); }
+        if (e.key === '3') { userScrolled = false; await session.rate(2); }
+        if (e.key === '4') { userScrolled = false; await session.rate(3); }
     }
 
     // Navigation arrows (Left/Right)
@@ -1123,26 +1099,21 @@ export function startLearnSession(candidateQuestions, options = {}) {
         let isRatingInProgress = false;
 
         rates.forEach((btn) => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
 
                 if (isRatingInProgress) {
-                    console.warn('[RATE BUTTON CLICK] ⚠️ Rating already in progress, ignoring click!');
                     return;
                 }
 
                 const grade = parseInt(btn.dataset.grade);
-                console.log('[RATE BUTTON CLICK] 🖱️ Клик по кнопке! Grade:', grade);
 
                 isRatingInProgress = true;
                 btn.style.pointerEvents = 'none';
                 userScrolled = false;
 
                 if (session) {
-                    console.log('[RATE BUTTON CLICK] ✅ Calling session.rate(' + grade + ')');
-                    session.rate(grade);
-                } else {
-                    console.warn('[RATE BUTTON CLICK] ❌ session is null!');
+                    await session.rate(grade);
                 }
 
                 btn.blur();
