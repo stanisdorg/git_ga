@@ -319,8 +319,8 @@
     flex-wrap: wrap;
     gap: 8px;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
     border-radius: 12px;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -339,8 +339,8 @@
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -349,8 +349,8 @@
 }
 
 .search-suggestion-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -365,23 +365,28 @@
 /* Кнопка удаления (крестик) */
 .search-suggestion-delete {
     position: absolute;
-    right: 4px;
+    right: -8px;
     top: 50%;
     transform: translateY(-50%) scale(0);
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 18px;
     height: 18px;
     padding: 0;
-    background: rgba(255, 100, 100, 0.5);
+    background: rgba(255, 100, 100, 0.6);
     border: none;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
     opacity: 0;
-    /* Задержка появления 1.5 секунды */
-    animation: show-delete-btn 0s ease forwards;
+    z-index: 10;
+}
+
+/* Крестик появляется только при hover на родительский элемент с задержкой 1.5с */
+.search-suggestion-item:hover .search-suggestion-delete {
+    animation: show-delete-btn 0.25s ease forwards;
     animation-delay: 1.5s;
 }
 
@@ -396,25 +401,8 @@
     }
 }
 
-.search-suggestion-item:hover .search-suggestion-delete {
-    /* Крестик появляется только при hover с задержкой */
-    animation: show-delete-btn-hover 0.2s ease forwards;
-    animation-delay: 1.5s;
-}
-
-@keyframes show-delete-btn-hover {
-    from {
-        opacity: 0;
-        transform: translateY(-50%) scale(0);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(-50%) scale(1);
-    }
-}
-
 .search-suggestion-delete:hover {
-    background: rgba(255, 100, 100, 0.8);
+    background: rgba(255, 100, 100, 0.9);
     transform: translateY(-50%) scale(1.2);
 }
 
@@ -430,12 +418,12 @@
 }
 
 .search-suggestions::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 2px;
 }
 
 .search-suggestions::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 2px;
 }
 
