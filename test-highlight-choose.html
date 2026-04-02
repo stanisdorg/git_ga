@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест подсветки - Выбор варианта</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+            background: linear-gradient(135deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .test-section {
+            max-width: 900px;
+            margin: 0 auto 50px;
+        }
+
+        .test-section h2 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+
+        .example-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .example-row:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .example-row.selected {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .example-label {
+            min-width: 180px;
+            font-size: 0.95em;
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        .example-text {
+            flex: 1;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        /* Кнопка с крестиком */
+        .select-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .select-btn:hover {
+            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            transform: scale(1.1);
+        }
+
+        .select-btn.selected {
+            background: #00ff88;
+            border-color: #00ff88;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .select-btn.selected::after {
+            content: '✓';
+            font-weight: bold;
+        }
+
+        /* ============================================
+           ВАРИАНТЫ ПОДСВЕТКИ
+           ============================================ */
+
+        /* Вариант 1: Минимальная прозрачная */
+        .highlight-v1 {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.06) 0%, 
+                rgba(255, 255, 255, 0.02) 100%);
+            border-radius: 2px;
+            padding: 0 1px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 6px rgba(255, 255, 255, 0.15),
+                0 0 4px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: inherit;
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v1:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.04) 100%);
+            box-shadow: 
+                inset 0 0 10px rgba(255, 255, 255, 0.2),
+                0 0 8px rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Вариант 2: Стекло с голубым оттенком */
+        .highlight-v2 {
+            background: linear-gradient(135deg, 
+                rgba(200, 240, 255, 0.08) 0%, 
+                rgba(150, 200, 255, 0.04) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 8px rgba(200, 240, 255, 0.2),
+                0 0 6px rgba(200, 240, 255, 0.1);
+            border: 1px solid rgba(200, 240, 255, 0.12);
+            color: inherit;
+            text-shadow: 0 0 6px rgba(200, 240, 255, 0.3);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v2:hover {
+            background: linear-gradient(135deg, 
+                rgba(200, 240, 255, 0.12) 0%, 
+                rgba(150, 200, 255, 0.06) 100%);
+            box-shadow: 
+                inset 0 0 12px rgba(200, 240, 255, 0.3),
+                0 0 10px rgba(200, 240, 255, 0.2);
+            border-color: rgba(200, 240, 255, 0.2);
+        }
+
+        /* Вариант 3: Тёплое стекло */
+        .highlight-v3 {
+            background: linear-gradient(135deg, 
+                rgba(255, 250, 200, 0.08) 0%, 
+                rgba(255, 230, 150, 0.04) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 8px rgba(255, 250, 200, 0.2),
+                0 0 6px rgba(255, 230, 150, 0.1);
+            border: 1px solid rgba(255, 230, 150, 0.12);
+            color: inherit;
+            text-shadow: 0 0 6px rgba(255, 230, 150, 0.3);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v3:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 250, 200, 0.12) 0%, 
+                rgba(255, 230, 150, 0.06) 100%);
+            box-shadow: 
+                inset 0 0 12px rgba(255, 250, 200, 0.3),
+                0 0 10px rgba(255, 230, 150, 0.2);
+            border-color: rgba(255, 230, 150, 0.2);
+        }
+
+        /* Вариант 4: Ледяной кристалл */
+        .highlight-v4 {
+            background: linear-gradient(135deg, 
+                rgba(220, 255, 255, 0.1) 0%, 
+                rgba(180, 240, 255, 0.05) 50%,
+                rgba(220, 255, 255, 0.1) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 10px rgba(220, 255, 255, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                0 0 8px rgba(220, 255, 255, 0.15);
+            border: 1px solid rgba(220, 255, 255, 0.15);
+            color: inherit;
+            text-shadow: 0 0 8px rgba(220, 255, 255, 0.4);
+            transition: all 0.2s ease;
+            display: inline-block;
+            position: relative;
+        }
+
+        .highlight-v4::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 3px;
+            right: 3px;
+            height: 30%;
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0.4),
+                transparent);
+            border-radius: 3px 3px 0 0;
+            pointer-events: none;
+        }
+
+        .highlight-v4:hover {
+            background: linear-gradient(135deg, 
+                rgba(220, 255, 255, 0.15) 0%, 
+                rgba(180, 240, 255, 0.08) 50%,
+                rgba(220, 255, 255, 0.15) 100%);
+            box-shadow: 
+                inset 0 0 15px rgba(220, 255, 255, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                0 0 12px rgba(220, 255, 255, 0.25);
+            border-color: rgba(220, 255, 255, 0.25);
+        }
+
+        /* Вариант 5: Фиолетовое неоновое стекло */
+        .highlight-v5 {
+            background: linear-gradient(135deg, 
+                rgba(200, 150, 255, 0.1) 0%, 
+                rgba(150, 100, 255, 0.05) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 10px rgba(200, 150, 255, 0.25),
+                0 0 8px rgba(200, 150, 255, 0.15);
+            border: 1px solid rgba(200, 150, 255, 0.15);
+            color: inherit;
+            text-shadow: 0 0 8px rgba(200, 150, 255, 0.4);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v5:hover {
+            background: linear-gradient(135deg, 
+                rgba(200, 150, 255, 0.15) 0%, 
+                rgba(150, 100, 255, 0.08) 100%);
+            box-shadow: 
+                inset 0 0 15px rgba(200, 150, 255, 0.35),
+                0 0 12px rgba(200, 150, 255, 0.25);
+            border-color: rgba(200, 150, 255, 0.25);
+        }
+
+        /* Вариант 6: Изумрудное стекло */
+        .highlight-v6 {
+            background: linear-gradient(135deg, 
+                rgba(150, 255, 200, 0.08) 0%, 
+                rgba(100, 230, 180, 0.04) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 8px rgba(150, 255, 200, 0.2),
+                0 0 6px rgba(150, 255, 200, 0.1);
+            border: 1px solid rgba(150, 255, 200, 0.12);
+            color: inherit;
+            text-shadow: 0 0 6px rgba(150, 255, 200, 0.3);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v6:hover {
+            background: linear-gradient(135deg, 
+                rgba(150, 255, 200, 0.12) 0%, 
+                rgba(100, 230, 180, 0.06) 100%);
+            box-shadow: 
+                inset 0 0 12px rgba(150, 255, 200, 0.3),
+                0 0 10px rgba(150, 255, 200, 0.2);
+            border-color: rgba(150, 255, 200, 0.2);
+        }
+
+        /* Вариант 7: Розовое неоновое */
+        .highlight-v7 {
+            background: linear-gradient(135deg, 
+                rgba(255, 150, 200, 0.1) 0%, 
+                rgba(255, 100, 180, 0.05) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 10px rgba(255, 150, 200, 0.25),
+                0 0 8px rgba(255, 150, 200, 0.15);
+            border: 1px solid rgba(255, 150, 200, 0.15);
+            color: inherit;
+            text-shadow: 0 0 8px rgba(255, 150, 200, 0.4);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v7:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 150, 200, 0.15) 0%, 
+                rgba(255, 100, 180, 0.08) 100%);
+            box-shadow: 
+                inset 0 0 15px rgba(255, 150, 200, 0.35),
+                0 0 12px rgba(255, 150, 200, 0.25);
+            border-color: rgba(255, 150, 200, 0.25);
+        }
+
+        /* Вариант 8: Оранжевое пламя */
+        .highlight-v8 {
+            background: linear-gradient(135deg, 
+                rgba(255, 180, 100, 0.1) 0%, 
+                rgba(255, 150, 80, 0.05) 100%);
+            border-radius: 3px;
+            padding: 0 2px;
+            margin: 0 1px;
+            box-shadow: 
+                inset 0 0 10px rgba(255, 180, 100, 0.25),
+                0 0 8px rgba(255, 180, 100, 0.15);
+            border: 1px solid rgba(255, 180, 100, 0.15);
+            color: inherit;
+            text-shadow: 0 0 8px rgba(255, 180, 100, 0.4);
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .highlight-v8:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 180, 100, 0.15) 0%, 
+                rgba(255, 150, 80, 0.08) 100%);
+            box-shadow: 
+                inset 0 0 15px rgba(255, 180, 100, 0.35),
+                0 0 12px rgba(255, 180, 100, 0.25);
+            border-color: rgba(255, 180, 100, 0.25);
+        }
+
+        /* ============================================
+           ТЕКУЩИЙ (старый)
+           ============================================ */
+        .highlight-current {
+            background: linear-gradient(135deg, rgba(255, 255, 0, 0.4) 0%, rgba(255, 200, 0, 0.3) 100%);
+            border-radius: 3px;
+            padding: 1px 4px;
+            margin: -1px -4px;
+            box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.3);
+            color: inherit;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .highlight-current:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 0, 0.6) 0%, rgba(255, 200, 0, 0.5) 100%);
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5), 0 0 8px rgba(255, 215, 0, 0.4);
+            transform: scale(1.02);
+        }
+
+        /* ============================================
+           ПАНЕЛЬ ВЫБРАННОГО ВАРИАНТА
+           ============================================ */
+        #selected-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px 30px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            z-index: 1000;
+            display: none;
+            min-width: 400px;
+        }
+
+        #selected-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+            color: #00ff88;
+            text-align: center;
+        }
+
+        #selected-preview {
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        #selected-class {
+            display: block;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+
+        .panel-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .panel-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, #00ccff, #0099dd);
+            color: #000;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 204, 255, 0.4);
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Тест подсветки поискового запроса</h1>
+    <p class="subtitle">Нажмите на ✕ чтобы выбрать вариант подсветки</p>
+
+    <div class="test-section">
+        <h2>🪞 Варианты подсветки</h2>
+
+        <div class="example-row" data-variant="highlight-v1">
+            <span class="example-label">1. Минимальная</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v1">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v2">
+            <span class="example-label">2. Голубое стекло</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v2">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v3">
+            <span class="example-label">3. Тёплое стекло</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v3">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v4">
+            <span class="example-label">4. Ледяной кристалл</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v4">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v5">
+            <span class="example-label">5. Фиолетовое неоновое</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v5">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v6">
+            <span class="example-label">6. Изумрудное стекло</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v6">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v7">
+            <span class="example-label">7. Розовое неоновое</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v7">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+
+        <div class="example-row" data-variant="highlight-v8">
+            <span class="example-label">8. Оранжевое пламя</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-v8">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📌 Текущий вариант (для сравнения)</h2>
+
+        <div class="example-row" data-variant="highlight-current">
+            <span class="example-label">Текущий</span>
+            <span class="example-text">
+                Тестирование <span class="highlight-current">безопасности</span> включает проверку
+            </span>
+            <button class="select-btn" title="Выбрать вариант">✕</button>
+        </div>
+    </div>
+
+    <div id="selected-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3>✅ Выбран вариант:</h3>
+            <button class="panel-btn close-btn" onclick="closePanel()">×</button>
+        </div>
+        <div id="selected-preview">
+            Тестирование <span id="preview-span">безопасности</span> включает проверку
+        </div>
+        <code id="selected-class">.highlight-v1</code>
+        <div class="panel-buttons">
+            <button class="panel-btn copy-btn" onclick="copyCSS()">📋 Скопировать CSS</button>
+            <button class="panel-btn apply-btn" onclick="applyVariant()">✨ Применить</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedVariant = null;
+
+        const cssVariants = {
+            'highlight-v1': `/* Вариант 1: Минимальная прозрачная */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.06) 0%, 
+        rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 2px;
+    padding: 0 1px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 6px rgba(255, 255, 255, 0.15),
+        0 0 4px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: inherit;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.04) 100%);
+    box-shadow: 
+        inset 0 0 10px rgba(255, 255, 255, 0.2),
+        0 0 8px rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.15);
+}`,
+
+            'highlight-v2': `/* Вариант 2: Голубое стекло */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(200, 240, 255, 0.08) 0%, 
+        rgba(150, 200, 255, 0.04) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 8px rgba(200, 240, 255, 0.2),
+        0 0 6px rgba(200, 240, 255, 0.1);
+    border: 1px solid rgba(200, 240, 255, 0.12);
+    color: inherit;
+    text-shadow: 0 0 6px rgba(200, 240, 255, 0.3);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(200, 240, 255, 0.12) 0%, 
+        rgba(150, 200, 255, 0.06) 100%);
+    box-shadow: 
+        inset 0 0 12px rgba(200, 240, 255, 0.3),
+        0 0 10px rgba(200, 240, 255, 0.2);
+    border-color: rgba(200, 240, 255, 0.2);
+}`,
+
+            'highlight-v3': `/* Вариант 3: Тёплое стекло */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(255, 250, 200, 0.08) 0%, 
+        rgba(255, 230, 150, 0.04) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 8px rgba(255, 250, 200, 0.2),
+        0 0 6px rgba(255, 230, 150, 0.1);
+    border: 1px solid rgba(255, 230, 150, 0.12);
+    color: inherit;
+    text-shadow: 0 0 6px rgba(255, 230, 150, 0.3);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 250, 200, 0.12) 0%, 
+        rgba(255, 230, 150, 0.06) 100%);
+    box-shadow: 
+        inset 0 0 12px rgba(255, 250, 200, 0.3),
+        0 0 10px rgba(255, 230, 150, 0.2);
+    border-color: rgba(255, 230, 150, 0.2);
+}`,
+
+            'highlight-v4': `/* Вариант 4: Ледяной кристалл */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(220, 255, 255, 0.1) 0%, 
+        rgba(180, 240, 255, 0.05) 50%,
+        rgba(220, 255, 255, 0.1) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 10px rgba(220, 255, 255, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 8px rgba(220, 255, 255, 0.15);
+    border: 1px solid rgba(220, 255, 255, 0.15);
+    color: inherit;
+    text-shadow: 0 0 8px rgba(220, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    display: inline-block;
+    position: relative;
+}
+
+.search-highlight::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 3px;
+    right: 3px;
+    height: 30%;
+    background: linear-gradient(to bottom, 
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    border-radius: 3px 3px 0 0;
+    pointer-events: none;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(220, 255, 255, 0.15) 0%, 
+        rgba(180, 240, 255, 0.08) 50%,
+        rgba(220, 255, 255, 0.15) 100%);
+    box-shadow: 
+        inset 0 0 15px rgba(220, 255, 255, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 0 12px rgba(220, 255, 255, 0.25);
+    border-color: rgba(220, 255, 255, 0.25);
+}`,
+
+            'highlight-v5': `/* Вариант 5: Фиолетовое неоновое стекло */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(200, 150, 255, 0.1) 0%, 
+        rgba(150, 100, 255, 0.05) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 10px rgba(200, 150, 255, 0.25),
+        0 0 8px rgba(200, 150, 255, 0.15);
+    border: 1px solid rgba(200, 150, 255, 0.15);
+    color: inherit;
+    text-shadow: 0 0 8px rgba(200, 150, 255, 0.4);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(200, 150, 255, 0.15) 0%, 
+        rgba(150, 100, 255, 0.08) 100%);
+    box-shadow: 
+        inset 0 0 15px rgba(200, 150, 255, 0.35),
+        0 0 12px rgba(200, 150, 255, 0.25);
+    border-color: rgba(200, 150, 255, 0.25);
+}`,
+
+            'highlight-v6': `/* Вариант 6: Изумрудное стекло */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(150, 255, 200, 0.08) 0%, 
+        rgba(100, 230, 180, 0.04) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 8px rgba(150, 255, 200, 0.2),
+        0 0 6px rgba(150, 255, 200, 0.1);
+    border: 1px solid rgba(150, 255, 200, 0.12);
+    color: inherit;
+    text-shadow: 0 0 6px rgba(150, 255, 200, 0.3);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(150, 255, 200, 0.12) 0%, 
+        rgba(100, 230, 180, 0.06) 100%);
+    box-shadow: 
+        inset 0 0 12px rgba(150, 255, 200, 0.3),
+        0 0 10px rgba(150, 255, 200, 0.2);
+    border-color: rgba(150, 255, 200, 0.2);
+}`,
+
+            'highlight-v7': `/* Вариант 7: Розовое неоновое */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(255, 150, 200, 0.1) 0%, 
+        rgba(255, 100, 180, 0.05) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 10px rgba(255, 150, 200, 0.25),
+        0 0 8px rgba(255, 150, 200, 0.15);
+    border: 1px solid rgba(255, 150, 200, 0.15);
+    color: inherit;
+    text-shadow: 0 0 8px rgba(255, 150, 200, 0.4);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 150, 200, 0.15) 0%, 
+        rgba(255, 100, 180, 0.08) 100%);
+    box-shadow: 
+        inset 0 0 15px rgba(255, 150, 200, 0.35),
+        0 0 12px rgba(255, 150, 200, 0.25);
+    border-color: rgba(255, 150, 200, 0.25);
+}`,
+
+            'highlight-v8': `/* Вариант 8: Оранжевое пламя */
+.search-highlight {
+    background: linear-gradient(135deg, 
+        rgba(255, 180, 100, 0.1) 0%, 
+        rgba(255, 150, 80, 0.05) 100%);
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 1px;
+    box-shadow: 
+        inset 0 0 10px rgba(255, 180, 100, 0.25),
+        0 0 8px rgba(255, 180, 100, 0.15);
+    border: 1px solid rgba(255, 180, 100, 0.15);
+    color: inherit;
+    text-shadow: 0 0 8px rgba(255, 180, 100, 0.4);
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 180, 100, 0.15) 0%, 
+        rgba(255, 150, 80, 0.08) 100%);
+    box-shadow: 
+        inset 0 0 15px rgba(255, 180, 100, 0.35),
+        0 0 12px rgba(255, 180, 100, 0.25);
+    border-color: rgba(255, 180, 100, 0.25);
+}`,
+
+            'highlight-current': `/* Текущий вариант */
+.search-highlight {
+    background: linear-gradient(135deg, rgba(255, 255, 0, 0.4) 0%, rgba(255, 200, 0, 0.3) 100%);
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin: -1px -4px;
+    box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.3);
+    color: inherit;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.search-highlight:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 0, 0.6) 0%, rgba(255, 200, 0, 0.5) 100%);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5), 0 0 8px rgba(255, 215, 0, 0.4);
+    transform: scale(1.02);
+}`
+        };
+
+        // Обработчики кнопок с крестиками
+        document.querySelectorAll('.select-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const row = this.closest('.example-row');
+                const variant = row.dataset.variant;
+                
+                // Снимаем выделение со всех
+                document.querySelectorAll('.example-row').forEach(r => r.classList.remove('selected'));
+                document.querySelectorAll('.select-btn').forEach(b => b.classList.remove('selected'));
+                
+                // Выделяем текущий
+                row.classList.add('selected');
+                this.classList.add('selected');
+                
+                selectedVariant = variant;
+                
+                // Обновляем превью
+                const previewSpan = document.getElementById('preview-span');
+                previewSpan.className = variant;
+                
+                // Показываем панель
+                document.getElementById('selected-panel').style.display = 'block';
+                document.getElementById('selected-class').textContent = `.${variant}`;
+            });
+        });
+
+        function closePanel() {
+            document.getElementById('selected-panel').style.display = 'none';
+        }
+
+        function copyCSS() {
+            if (!selectedVariant) return;
+
+            const css = cssVariants[selectedVariant];
+            navigator.clipboard.writeText(css).then(() => {
+                alert('CSS скопирован в буфер обмена!');
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+                const textarea = document.createElement('textarea');
+                textarea.value = css;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('CSS скопирован в буфер обмена!');
+            });
+        }
+
+        function applyVariant() {
+            if (!selectedVariant) return;
+            
+            const css = cssVariants[selectedVariant];
+            const fileName = `search-highlight-${selectedVariant}.css`;
+            
+            // Создаём файл для скачивания
+            const blob = new Blob([css], { type: 'text/css' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`CSS сохранён в файл ${fileName}\n\nТеперь замените стили .search-highlight в style.css на содержимое этого файла.`);
+        }
+
+        // Закрытие панели по клику вне
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('selected-panel');
+            if (!panel.contains(e.target) && !e.target.closest('.example-row')) {
+                closePanel();
+            }
+        });
+    </script>
+</body>
+</html>

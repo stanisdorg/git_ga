@@ -817,29 +817,33 @@
 
 /* ============================================
    Сброс браузерного autocomplete (белый фон)
+   Используем box-shadow для перекрытия
    ============================================ */
-#search-input::-webkit-autofill,
-#search-input::-webkit-autofill:hover,
-#search-input::-webkit-autofill:focus,
-#search-input::-webkit-autofill:active,
-#search-input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 100px var(--color-bg) inset !important;
-    box-shadow: 0 0 0 100px var(--color-bg) inset !important;
-    -webkit-text-fill-color: var(--color-text) !important;
-    color: var(--color-text) !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    caret-color: var(--color-text) !important;
-    transition: background-color 5000s ease-in-out 0s !important;
+#search-input:-webkit-autofill,
+#search-input:-webkit-autofill:hover,
+#search-input:-webkit-autofill:focus,
+#search-input:-webkit-autofill:active,
+#search-input:-webkit-autofill:focus-within {
+    -webkit-text-fill-color: #ffffff !important;
+    color: #ffffff !important;
+    caret-color: #ffffff !important;
+    /* Перекрытие белого фона конкретным цветом фона приложения */
+    -webkit-box-shadow: 0 0 0 100px #1a1a2e inset !important;
+    box-shadow: 0 0 0 100px #1a1a2e inset !important;
+    /* Анимация перехода */
+    transition: background-color 5000s ease-in-out 0s, box-shadow 5000s ease-in-out 0s !important;
 }
 
+/* Firefox */
 #search-input:-moz-autofill,
 #search-input:-moz-autofill-on-redesign {
-    background: transparent !important;
-    background-color: transparent !important;
-    color: var(--color-text) !important;
+    background: #1a1a2e !important;
+    background-color: #1a1a2e !important;
+    color: #ffffff !important;
+    caret-color: #ffffff;
 }
 
+/* Сброс кнопок поиска */
 #search-input::-webkit-search-decoration,
 #search-input::-webkit-search-cancel-button,
 #search-input::-webkit-search-results-button,
