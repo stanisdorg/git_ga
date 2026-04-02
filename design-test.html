@@ -168,6 +168,89 @@
             z-index: -1;
         }
 
+        /* Dark with small dots */
+        body[data-bg="dots-small"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="dots-small"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.12) 0.8px, transparent 0.8px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
+        /* Dark with large dots */
+        body[data-bg="dots-large"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="dots-large"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.5px, transparent 1.5px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        /* Dark with cyan dots */
+        body[data-bg="dots-cyan"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="dots-cyan"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(0, 217, 255, 0.2) 1px, transparent 1px);
+            background-size: 35px 35px;
+            z-index: -1;
+        }
+
+        /* Dark with purple dots */
+        body[data-bg="dots-purple"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="dots-purple"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(168, 85, 247, 0.18) 1.2px, transparent 1.2px);
+            background-size: 40px 40px;
+            z-index: -1;
+        }
+
+        /* Dark with gradient dots */
+        body[data-bg="dots-gradient"] {
+            background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
+        }
+        body[data-bg="dots-gradient"]::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(rgba(0, 217, 255, 0.15) 1px, transparent 1px),
+                radial-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            z-index: -1;
+        }
+
         /* Dark with waves */
         body[data-bg="waves"] {
             background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0d0d14 100%);
@@ -399,18 +482,18 @@
             gap: 20px;
         }
 
-        /* Glassmorphism Card */
+        /* Glassmorphism Card - Optimized version */
         .result-item {
-            background: rgba(37, 37, 43, 0.5) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(37, 37, 43, 0.08) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             border-radius: 16px;
             padding: 20px;
             position: relative;
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
-            border: none !important;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
             outline: none !important;
         }
 
@@ -420,7 +503,7 @@
             inset: 0;
             border-radius: 16px;
             padding: 1px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(0, 217, 255, 0.3));
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0, 217, 255, 0.15));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -429,9 +512,12 @@
         }
 
         .result-item:hover {
-            background: rgba(42, 42, 50, 0.7) !important;
+            background: rgba(42, 42, 50, 0.2) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.15);
+            border-color: rgba(0, 217, 255, 0.3) !important;
         }
 
         .question {
@@ -507,14 +593,14 @@
     <div class="control-panel">
         <h3>🎨 Выбор фона</h3>
         <div class="bg-selector">
-            <button class="bg-btn active" data-bg="grid">Grid</button>
-            <button class="bg-btn" data-bg="diagonal">Diagonal</button>
-            <button class="bg-btn" data-bg="circles">Circles</button>
+            <button class="bg-btn active" data-bg="dots">Dots</button>
+            <button class="bg-btn" data-bg="dots-small">Dots Small</button>
+            <button class="bg-btn" data-bg="dots-large">Dots Large</button>
+            <button class="bg-btn" data-bg="dots-cyan">Dots Cyan</button>
+            <button class="bg-btn" data-bg="dots-purple">Dots Purple</button>
+            <button class="bg-btn" data-bg="dots-gradient">Dots Gradient</button>
+            <button class="bg-btn" data-bg="grid">Grid</button>
             <button class="bg-btn" data-bg="hexagon">Hexagon</button>
-            <button class="bg-btn" data-bg="vertical">Vertical</button>
-            <button class="bg-btn" data-bg="horizontal">Horizontal</button>
-            <button class="bg-btn" data-bg="dots">Dots</button>
-            <button class="bg-btn" data-bg="waves">Waves</button>
         </div>
     </div>
 

@@ -35,6 +35,39 @@ body {
     position: relative;
 }
 
+/* ============================================
+   Сброс стилей автозаполнения браузера
+   ============================================ */
+#search-input::-webkit-autofill,
+#search-input::-webkit-autofill:hover,
+#search-input::-webkit-autofill:focus,
+#search-input::-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--color-bg) inset !important;
+    box-shadow: 0 0 0 30px var(--color-bg) inset !important;
+    -webkit-text-fill-color: var(--color-text) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    caret-color: var(--color-text);
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+#search-input::-webkit-search-decoration,
+#search-input::-webkit-search-cancel-button,
+#search-input::-webkit-search-results-button,
+#search-input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
+}
+
+/* Firefox autocomplete */
+#search-input:-moz-autofill,
+#search-input:-moz-autofill-on-redesign,
+#search-input:-webkit-autofill {
+    background: transparent !important;
+    background-color: transparent !important;
+    -webkit-text-fill-color: var(--color-text);
+}
+
 /* Фиксируем шапку на главной странице */
 .top-actions-bar {
     position: fixed !important;
