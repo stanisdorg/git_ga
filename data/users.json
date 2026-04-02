@@ -1,7 +1,7 @@
 [
   {
     "username": "admin",
-    "password": "5eeabbf52563baaa1d492f7e24ac5e975d3eb280992473498f3054deb5747e56",
+    "password": "eb653343d706617af1347831b5717c2609ffa4502217ab88a20acf1b9b9dd21c",
     "role": "admin",
     "createdAt": "2026-03-08T12:00:00Z",
     "lastLoginAt": "2026-03-25T14:37:30.844Z"
@@ -55,7 +55,7 @@
     "lastName": "Dorg",
     "role": "editor",
     "createdAt": "2026-03-23T23:58:28.121Z",
-    "lastLoginAt": "2026-04-02T00:57:00.196Z"
+    "lastLoginAt": "2026-04-02T01:02:28.027Z"
   },
   {
     "username": "stasdoroganov",
