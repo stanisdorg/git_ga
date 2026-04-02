@@ -804,13 +804,48 @@
 
 #search-input {
     flex: 1;
-    background: none;
+    background: none !important;
+    background-color: transparent !important;
     border: none;
-    color: var(--color-text);
+    color: var(--color-text) !important;
     padding: 8px 12px;
     font-size: 16px;
     outline: none;
     min-width: 0;
+    caret-color: var(--color-text);
+}
+
+/* ============================================
+   Сброс браузерного autocomplete (белый фон)
+   ============================================ */
+#search-input::-webkit-autofill,
+#search-input::-webkit-autofill:hover,
+#search-input::-webkit-autofill:focus,
+#search-input::-webkit-autofill:active,
+#search-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 100px var(--color-bg) inset !important;
+    box-shadow: 0 0 0 100px var(--color-bg) inset !important;
+    -webkit-text-fill-color: var(--color-text) !important;
+    color: var(--color-text) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    caret-color: var(--color-text) !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+}
+
+#search-input:-moz-autofill,
+#search-input:-moz-autofill-on-redesign {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--color-text) !important;
+}
+
+#search-input::-webkit-search-decoration,
+#search-input::-webkit-search-cancel-button,
+#search-input::-webkit-search-results-button,
+#search-input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
 }
 
 .reset-search-button,
