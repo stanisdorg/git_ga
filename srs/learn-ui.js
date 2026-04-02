@@ -1357,6 +1357,10 @@ export function startLearnSession(candidateQuestions, options = {}) {
 }
 
 function stopLearnSession() {
+    // 🔥 СРАЗУ ПЕРЕНАПРАВЛЯЕМ НА СТРАНИЦУ СТАТИСТИКИ
+    // Делаем это в начале, чтобы hashchange сработал до восстановления UI
+    location.hash = '#/stats';
+
     // 1. Очищаем таймер
     if (timerInterval) {
         clearInterval(timerInterval);
@@ -1446,9 +1450,6 @@ function stopLearnSession() {
 
     // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
     window.__learnUIInitialized = false;
-
-    // 🔥 ПЕРЕНАПРАВЛЕНИЕ НА СТРАНИЦУ СТАТИСТИКИ ПОСЛЕ ВЫХОДА ИЗ ОБУЧЕНИЯ
-    location.hash = '#/stats';
 }
 
 function renderCardState(state) {
