@@ -839,22 +839,22 @@ export function initTabsNavigation(appVersion) {
                 if (window.__statsTopActionsObserver) {
                     window.__statsTopActionsObserver.disconnect();
                     window.__statsTopActionsObserver = null;
-                    console.log('[HASHCHANGE #/] Disconnected __statsTopActionsObserver');
                 }
 
-                // 🔥 ПРОВЕРЯЕМ ФЛАГ изменений карточек (для отложенного обновления после редактирования)
+                // Проверяем флаг изменений карточек
                 try {
                     const cardsUpdated = localStorage.getItem('qaCardsUpdated');
                     if (cardsUpdated === 'true') {
-                        console.log('[HASHCHANGE #/] 🚨 Обнаружено изменение карточек (qaCardsUpdated=true)');
-                        console.log('[HASHCHANGE #/] 🔄 Вызываем refreshCurrentContext() для обновления UI');
-
-                        // Сбрасываем флаг
                         localStorage.removeItem('qaCardsUpdated');
                         localStorage.removeItem('qaCardsUpdatedTimestamp');
+
+                        // Визуальное логирование
+                        if (typeof window.showDebugLog === 'function') {
+                            window.showDebugLog('HASH', '🔄 Обнаружены изменения, обновляем UI', 'info');
+                        }
                     }
                 } catch (e) {
-                    console.error('[HASHCHANGE #/] ❌ Ошибка проверки флага qaCardsUpdated:', e);
+                    console.error('[HASHCHANGE #/] Ошибка проверки флага qaCardsUpdated:', e);
                 }
 
                 // Обновляем текущий контекст
@@ -3705,50 +3705,29 @@ function showFavorites() {
     currentContextKey = 'favorites';
     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
     const runtimeData = getRuntimeData();
-
-    console.log('[showFavorites] 🔍 Отладка:');
-    console.log('[showFavorites] - favorites count:', favorites.size);
-    console.log('[showFavorites] - runtimeData count:', runtimeData.length);
-    console.log('[showFavorites] - Примеры вопросов:', runtimeData.slice(0, 3).map(i => i.question?.substring(0, 30)));
-
     const favData = runtimeData.filter(item => favorites.has(item.question));
 
-    console.log('[showFavorites] - favData count:', favData.length);
-    console.log('[showFavorites] - favData вопросы:', favData.map(i => i.question?.substring(0, 40)));
+    // Визуальное логирование
+    if (typeof window.showDebugLog === 'function') {
+        window.showDebugLog('FAV', `Избранное: ${favorites.size} в favorites, ${favData.length} найдено`, 'info');
+    }
 
     displayQuestions(favData, 'Избранное');
 }
 
 // Универсальная перерисовка текущего контекста без сброса на «Все вопросы»
 function refreshCurrentContext() {
-    console.log('========================================');
-    console.log('[refreshCurrentContext] 🔥 START');
-    console.log('[refreshCurrentContext] Timestamp:', new Date().toISOString());
-    console.log('[refreshCurrentContext] Hash:', location.hash);
-    console.log('[refreshCurrentContext] currentContextKey:', currentContextKey);
-    console.log('[refreshCurrentContext] currentSearchQuery:', currentSearchQuery);
-
     // НЕ показываем вопросы если открыта страница статистики!
     if (location.hash === '#/stats') {
-        console.log('[refreshCurrentContext] ⚠️ Страница статистики - пропускаем рендер');
         return;
     }
 
     try {
         const key = currentContextKey || 'all';
-        // 🔥 Получаем текущий поисковый запрос из search-highlight.js
         const searchQuery = (typeof window.getSearchQuery === 'function') ? window.getSearchQuery() : '';
-
-        // 🔥 Сохраняем запрос в глобальную переменную
         currentSearchQuery = searchQuery;
 
-        console.log('[refreshCurrentContext] Search query from window:', searchQuery);
-        console.log('[refreshCurrentContext] Runtime data count:', getRuntimeData().length);
-
-        // 🔥 Если есть поисковый запрос, применяем его к результатам
         if (searchQuery) {
-            console.log('[refreshCurrentContext] Search query detected:', searchQuery, 'context:', key);
-            // Применяем поиск к текущим данным
             const lowerQuery = searchQuery.toLowerCase();
             let filteredData = getRuntimeData().filter(item => {
                 const inQuestion = item.question && item.question.toLowerCase().includes(lowerQuery);
@@ -3757,9 +3736,7 @@ function refreshCurrentContext() {
                 const inSubcategory = item.subcategory && item.subcategory.toLowerCase().includes(lowerQuery);
                 return inQuestion || inAnswer || inCategory || inSubcategory;
             });
-            console.log('[refreshCurrentContext] Filtered data count:', filteredData.length);
 
-            // 🔥 Затем применяем фильтр по категории если нужно
             if (key === 'favorites') {
                 const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
                 filteredData = filteredData.filter(item => favorites.has(item.question));
@@ -3772,43 +3749,30 @@ function refreshCurrentContext() {
                 filteredData = filteredData.filter(item => item.category === cat && item.subcategory === sub);
             }
 
-            // 🔥 Показываем отфильтрованные результаты
-            console.log('[refreshCurrentContext] Calling displayQuestions with search results');
             displayQuestions(filteredData, searchQuery ? `Результаты поиска: ${searchQuery}` : 'Все вопросы');
-            console.log('[refreshCurrentContext] ✅ displayQuestions completed');
             return;
         }
 
-        // 🔥 Если поиска нет, используем старую логику
-        console.log('[refreshCurrentContext] No search query, using context logic');
         if (key === 'all') {
-            console.log('[refreshCurrentContext] Calling showAllQuestions');
             return showAllQuestions();
         }
         if (key === 'favorites') {
-            console.log('[refreshCurrentContext] Calling showFavorites');
             return showFavorites();
         }
         if (key.startsWith('category:')) {
             const name = key.slice('category:'.length);
-            console.log('[refreshCurrentContext] Calling filterQuestionsByCategory:', name);
             return filterQuestionsByCategory(name);
         }
         if (key.startsWith('subcategory:')) {
             const payload = key.slice('subcategory:'.length);
             const [cat, sub] = payload.split('#');
-            console.log('[refreshCurrentContext] Calling filterQuestionsBySubcategory:', cat, sub);
             return filterQuestionsBySubcategory(cat, sub);
         }
-        // fallback
-        console.log('[refreshCurrentContext] Fallback to showAllQuestions');
         showAllQuestions();
     } catch (e) {
-        console.error('[refreshCurrentContext] ❌ Error:', e);
+        console.error('[refreshCurrentContext] Error:', e);
         showAllQuestions();
     }
-    console.log('[refreshCurrentContext] 🔥 END');
-    console.log('========================================');
 }
 
 // Функция для увеличения карточки (PC версия)
@@ -4890,26 +4854,10 @@ window.highlightSearchInText = highlightSearchInText;
 window.escapeRegExp = escapeRegExp;
 window.refreshCurrentContext = refreshCurrentContext; // 🔥 Для обновления после редактирования
 
-// 🔥 ОБРАБОТЧИК СОБЫТИЯ ОБ ИЗМЕНЕНИИ ДАННЫХ
-// Слушаем событие об изменении карточки и обновляем UI автоматически
+// Обработчик события об изменении данных
 window.addEventListener('qaDataUpdated', (event) => {
-    console.log('========================================');
-    console.log('[qaDataUpdated] 🔥 Получено событие об изменении карточки');
-    console.log('[qaDataUpdated] Timestamp:', new Date().toISOString());
-    console.log('[qaDataUpdated] Detail:', event.detail);
-
-    const { updatedCard, oldQuestion, newQuestion } = event.detail || {};
-
-    // Проверяем, что мы не на странице статистики
     if (location.hash === '#/stats') {
-        console.log('[qaDataUpdated] ⚠️ Страница статистики - откладываем обновление');
         return;
     }
-
-    // Обновляем текущий контекст
-    console.log('[qaDataUpdated] 🔄 Вызываем refreshCurrentContext()');
     refreshCurrentContext();
-
-    console.log('[qaDataUpdated] ✅ UI обновлён');
-    console.log('========================================');
 });

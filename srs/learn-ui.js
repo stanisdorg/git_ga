@@ -21,6 +21,47 @@ let userScrolled = false; // Флаг ручного скролла прогре
 let timerPaused = false; // Флаг паузы таймера
 let pausedTimeRemaining = 0; // Накопленное время при паузе
 
+// 🔥 ВИЗУАЛЬНОЕ ЛОГИРОВАНИЕ В БРАУЗЕРЕ
+function showDebugLog(tag, message, type = 'info') {
+    let debugPanel = document.getElementById('debug-log-panel');
+    if (!debugPanel) {
+        debugPanel = document.createElement('div');
+        debugPanel.id = 'debug-log-panel';
+        debugPanel.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.9);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 10px;
+            border-radius: 8px;
+            z-index: 99999;
+            border: 1px solid #333;
+        `;
+        document.body.appendChild(debugPanel);
+    }
+
+    const colors = { success: '#0f0', error: '#f00', info: '#0af', warn: '#fa0' };
+    const color = colors[type] || colors.info;
+    const time = new Date().toLocaleTimeString();
+
+    const logEntry = document.createElement('div');
+    logEntry.style.cssText = `margin-bottom: 4px; color: ${color}; border-bottom: 1px solid #333; padding-bottom: 2px;`;
+    logEntry.innerHTML = `<span style="opacity: 0.5">[${time}]</span> <b>[${tag}]</b> ${message}`;
+    debugPanel.appendChild(logEntry);
+    debugPanel.scrollTop = debugPanel.scrollHeight;
+}
+
+// Показываем начальное сообщение
+setTimeout(() => {
+    showDebugLog('INIT', '🔍 Debug логирование активно', 'info');
+}, 2000);
+
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
@@ -854,7 +895,6 @@ async function saveEditChanges() {
 
                 // Если qaUserCards пустой, берём данные из session.queue
                 if (!allCardsRaw || allCardsRaw === '[]') {
-                    console.log('[EDIT MODAL] ⚠️ qaUserCards пуст, берём из session.queue');
                     if (session && session.queue && session.queue.length > 0) {
                         allCards = session.queue.map(q => ({
                             question: q.question || q.item?.question,
@@ -863,7 +903,6 @@ async function saveEditChanges() {
                             subcategory: q.subcategory || q.item?.subcategory || 'Общее',
                             formatting: q.formatting || q.item?.formatting || createEmptyFormatting()
                         }));
-                        console.log('[EDIT MODAL] 📦 Загружено карточек из session.queue:', allCards.length);
                     }
                 } else {
                     allCards = JSON.parse(allCardsRaw);
@@ -877,7 +916,7 @@ async function saveEditChanges() {
                         allCards[cardIndex].formatting = currentFormatting;
                         localStorage.setItem('qaUserCards', JSON.stringify(allCards));
 
-                        // 🔥 ОБНОВЛЯЕМ также qaUserCards_{username} для getQaUserCards()
+                        // Сохраняем также в qaUserCards_{username}
                         const sessionUserRaw = localStorage.getItem('qaSessionUser');
                         if (sessionUserRaw) {
                             try {
@@ -885,29 +924,22 @@ async function saveEditChanges() {
                                 if (user && user.username) {
                                     const userKey = `qaUserCards_${user.username}`;
                                     localStorage.setItem(userKey, JSON.stringify(allCards));
-                                    console.log('[EDIT MODAL] ✅ Сохранено в', userKey);
                                 }
                             } catch (e) {
-                                console.warn('[EDIT MODAL] ⚠️ Ошибка сохранения в userKey:', e);
+                                console.warn('[EDIT MODAL] Ошибка сохранения в userKey:', e);
                             }
                         }
 
-                        console.log('[EDIT MODAL] ✅ localStorage обновлён');
-
-                        // 🔥 УСТАНАВЛИВАЕМ ФЛАГ для отложенного обновления UI
+                        // Устанавливаем флаг для отложенного обновления UI
                         localStorage.setItem('qaCardsUpdated', 'true');
                         localStorage.setItem('qaCardsUpdatedTimestamp', Date.now().toString());
-                        console.log('[EDIT MODAL] ✅ Флаг qaCardsUpdated установлен');
 
-                        // 🔥 ОБНОВЛЯЕМ uniqueQaData через setUniqueQaData
+                        // Обновляем uniqueQaData
                         if (typeof window.setUniqueQaData === 'function') {
                             window.setUniqueQaData(allCards);
-                            console.log('[EDIT MODAL] ✅ uniqueQaData обновлён через setUniqueQaData');
-                        } else {
-                            console.warn('[EDIT MODAL] ⚠️ window.setUniqueQaData не найден');
                         }
 
-                        // 🔥 ДИСПАТЧИМ СОБЫТИЕ для обновления UI
+                        // Диспатчим событие для обновления UI
                         window.dispatchEvent(new CustomEvent('qaDataUpdated', {
                             detail: {
                                 updatedCard: allCards[cardIndex],
@@ -915,15 +947,22 @@ async function saveEditChanges() {
                                 newQuestion: newQuestion
                             }
                         }));
-                        console.log('[EDIT MODAL] ✅ Событие qaDataUpdated отправлено');
+
+                        // 🔥 ВИЗУАЛЬНОЕ ЛОГИРОВАНИЕ В БРАУЗЕРЕ
+                        showDebugLog('SAVE', `✅ Сохранено: "${newQuestion?.substring(0, 30)}..."`, 'success');
+                        showDebugLog('SAVE', `qaUserCards: ${allCards.length} карт.`);
+                        showDebugLog('SAVE', `qaCardsUpdated: true`);
                     } else {
-                        console.warn('[EDIT MODAL] ❌ Карточка не найдена в localStorage');
+                        console.warn('[EDIT MODAL] Карточка не найдена в localStorage');
+                        showDebugLog('SAVE', `❌ Карточка не найдена!`, 'error');
                     }
                 } else {
-                    console.error('[EDIT MODAL] ❌ Нет данных для сохранения');
+                    console.error('[EDIT MODAL] Нет данных для сохранения');
+                    showDebugLog('SAVE', `❌ Нет данных!`, 'error');
                 }
             } catch (e) {
-                console.error('[EDIT MODAL] ❌ Ошибка обновления localStorage:', e);
+                console.error('[EDIT MODAL] Ошибка обновления localStorage:', e);
+                showDebugLog('SAVE', `❌ Ошибка: ${e.message}`, 'error');
             }
 
             // 4. Обновляем originalCard в state
