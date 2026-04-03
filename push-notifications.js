@@ -80,7 +80,8 @@ const PushNotifications = {
             if (permission === 'granted') {
                 localStorage.setItem(this.KEYS.PERMISSION, 'true');
 
-                await this.subscribeToPush();
+                // Отключено до настройки VAPID ключа
+                // await this.subscribeToPush();
                 this.showTestNotification();
             } else if (permission === 'denied') {
                 localStorage.setItem(this.KEYS.PERMISSION, 'false');
