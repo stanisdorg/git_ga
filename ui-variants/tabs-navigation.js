@@ -3674,6 +3674,9 @@ function openCardZoomModal(item, ef) {
     overlay.appendChild(styleEl);
     document.body.appendChild(overlay);
 
+    // Блокируем прокрутку фона
+    document.body.style.overflow = 'hidden';
+
     // Закрытие по клику на overlay
     overlay.addEventListener('click', () => closeCardZoomModal(overlay));
 
@@ -3688,6 +3691,9 @@ function openCardZoomModal(item, ef) {
 }
 
 function closeCardZoomModal(overlay) {
+    // Восстанавливаем прокрутку
+    document.body.style.overflow = '';
+
     overlay.classList.add('closing');
     overlay.querySelector('.card-zoom-modal')?.classList.add('closing');
 
@@ -4043,14 +4049,15 @@ export function displayQuestions(questions, title) {
                 <span class="subcategory-badge">${dispSub}</span>
             </div>
             ${renderHearts(ef)}
-            <button class="fav-btn ${favClass}" title="В избранное" style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:none;border:none;cursor:pointer;padding:0;z-index:999;display:block !important;opacity:1 !important;">${starSvg(isFav)}</button>
+            <button class="fav-btn ${favClass}" title="В избранное" style="position:absolute;top:0;right:0;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:4px;z-index:999;display:block !important;opacity:1 !important;border-radius:6px;">${starSvg(isFav)}</button>
             <div class="question">${questionHTML}</div>
             <div class="answer">${answerHTML}</div>
         `;
 
                 // Обработчик избранного
                 const favBtn = resultItem.querySelector('.fav-btn');
-                favBtn.addEventListener('click', () => {
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Останавливаем всплытие чтобы не открывалось модальное окно
                     const current = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
                     if (current.has(item.question)) {
                         current.delete(item.question);

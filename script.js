@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
             async function startMicVisualizer() {
                 try {
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-                    
+
                     // Используем Apple Neon Equalizer если доступен
                     if (window.AppleNeonEqualizer) {
                         equalizerContainer = document.getElementById('apple-neon-equalizer');
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                         return;
                     }
-                    
+
                     // Fallback на старый canvas визуализатор
                     micVizStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.AppleNeonEqualizer.stop();
                     return;
                 }
-                
+
                 // Fallback на старый canvas
                 try { if (micVizRAF) cancelAnimationFrame(micVizRAF); } catch (_) { }
                 try { if (micAudioContext) micAudioContext.close(); } catch (_) { }
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function () {
             resetSearchBtn.addEventListener('click', resetSearch);
         }
 
-        // 🔥 Двойное нажатие ESC - очистка поля поиска
+        // 🔥 ESC - закрытие подсказок или очистка поля
         let escapePressCount = 0;
         let escapePressTimer = null;
 
@@ -365,32 +365,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 🔥 ESC - закрытие подсказок или очистка поля
             if (e.key === 'Escape') {
-                escapePressCount++;
+                e.preventDefault();
 
-                if (escapePressCount === 1) {
-                    // Первое нажатие - закрываем подсказки если открыты
-                    if (searchSuggestions && searchSuggestions.style.display !== 'none') {
-                        hideSearchSuggestions();
-                        escapePressCount = 0;
-                        escapePressTimer = null;
-                    } else {
-                        // Подсказки закрыты - запускаем таймер для двойного ESC
-                        escapePressTimer = setTimeout(() => {
-                            escapePressCount = 0;
-                            escapePressTimer = null;
-                        }, 500); // 500мс между нажатиями
-                    }
-                } else if (escapePressCount === 2) {
-                    // Второе нажатие - очищаем поле
-                    if (searchInput && searchInput.value) {
-                        searchInput.value = '';
-                        performSearch('');
-                        hideSearchSuggestions();
-                    }
+                const suggestionsVisible = searchSuggestions && searchSuggestions.style.display !== 'none';
+                const hasValue = searchInput && searchInput.value.trim() !== '';
+
+                if (suggestionsVisible) {
+                    // Первое нажатие: скрываем подсказки
+                    hideSearchSuggestions();
                     escapePressCount = 0;
                     if (escapePressTimer) {
                         clearTimeout(escapePressTimer);
                         escapePressTimer = null;
+                    }
+                } else if (hasValue) {
+                    // Подсказки скрыты, но поле не пустое: очищаем поле
+                    searchInput.value = '';
+                    performSearch('');
+                    hideSearchSuggestions();
+                    escapePressCount = 0;
+                    if (escapePressTimer) {
+                        clearTimeout(escapePressTimer);
+                        escapePressTimer = null;
+                    }
+                } else {
+                    // Поле пустое и подсказки скрыты: снимаем фокус
+                    if (searchInput) {
+                        searchInput.blur();
                     }
                 }
             }
@@ -520,6 +521,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
+
+        // Функция отображения истории поиска в боковой панели
+        function renderSearchHistory() {
+            if (!searchHistory) return;
+            searchHistory.innerHTML = '';
+
+            if (searchHistoryArray.length === 0) {
+                searchHistory.innerHTML = '<p style="padding: 12px; color: #888; font-size: 13px;">История пуста</p>';
+                return;
+            }
+
+            searchHistoryArray.slice(0, 20).forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'search-history-item';
+                historyItem.textContent = item.query;
+                historyItem.addEventListener('click', () => {
+                    if (searchInput) {
+                        searchInput.value = item.query;
+                        performSearch(item.query);
+                    }
+                });
+                searchHistory.appendChild(historyItem);
+            });
+        }
 
         // Функция добавления запроса в историю поиска
         function addToSearchHistory(query) {

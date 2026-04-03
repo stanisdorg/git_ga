@@ -776,9 +776,23 @@
     padding: 0;
     display: flex;
     align-items: center;
+    justify-content: center;
     color: #777; /* Default gray */
-    transition: color 0.2s;
+    transition: background 0.2s;
     margin-left: 8px;
+}
+
+.fav-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.fav-btn:hover svg {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+}
+
+.fav-btn svg {
+    transition: transform 0.2s, filter 0.2s;
 }
 
 .fav-btn.fav-active {

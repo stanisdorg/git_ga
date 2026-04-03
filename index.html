@@ -292,10 +292,10 @@
         // Подавление ошибок расширений браузера (runtime.lastError)
         // Это НЕ ошибки приложения, а сообщения от расширений Chrome
         const originalConsoleError = console.error;
-        console.error = function(...args) {
+        console.error = function (...args) {
             const message = args[0]?.toString() || '';
             // Игнорируем ошибки расширений браузера
-            if (message.includes('runtime.lastError') || 
+            if (message.includes('runtime.lastError') ||
                 message.includes('message port closed')) {
                 return; // Не выводим эти ошибки
             }
@@ -415,7 +415,7 @@
     <!-- Скрипт управления Splash Screen -->
     <script>
         // Устанавливаем версию приложения глобально
-        window.currentAppVersion = '6.45.0';
+        window.currentAppVersion = '6.46.0';
 
         // Splash Screen - управление загрузкой приложения
         (function () {
