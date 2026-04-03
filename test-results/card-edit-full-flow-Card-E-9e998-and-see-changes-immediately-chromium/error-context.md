@@ -1,0 +1,2937 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - heading [level=2]
+      - generic "Режимы" [ref=e5]:
+        - button "История" [ref=e6] [cursor=pointer]:
+          - img [ref=e7]
+        - button "Transcription" [ref=e10] [cursor=pointer]:
+          - img [ref=e11]
+        - link "Логи сервера" [ref=e14] [cursor=pointer]:
+          - /url: /logs.html
+          - img [ref=e15]
+      - button "Свернуть историю" [expanded] [ref=e18] [cursor=pointer]:
+        - img [ref=e19]
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - button "Войти" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+          - button "Статистика" [ref=e28] [cursor=pointer]:
+            - img [ref=e29]
+          - button "Начать обучение" [ref=e33] [cursor=pointer]:
+            - img [ref=e34]
+          - generic [ref=e36]:
+            - generic [ref=e37]: Гость
+            - generic "Уровни и XP" [ref=e38] [cursor=pointer]:
+              - generic [ref=e39]: LV:1
+              - generic [ref=e40]:
+                - generic: 0/625
+          - generic [ref=e41]: v6.40.0
+        - generic [ref=e42]:
+          - generic [ref=e43] [cursor=pointer]: Все вопросы
+          - generic [ref=e44] [cursor=pointer]: ★
+          - generic [ref=e45] [cursor=pointer]: DevOps
+          - generic [ref=e46] [cursor=pointer]: Graphql, grpc
+          - generic [ref=e47] [cursor=pointer]: MindMap
+          - generic [ref=e48] [cursor=pointer]: Архитектура
+          - generic [ref=e49] [cursor=pointer]: Безопасность
+          - generic [ref=e50] [cursor=pointer]: Взаимодействие
+          - generic [ref=e51] [cursor=pointer]: Документация
+          - generic [ref=e52] [cursor=pointer]: Опыт
+          - generic [ref=e53] [cursor=pointer]: Процессы
+          - generic [ref=e54] [cursor=pointer]: Тестирование
+          - generic [ref=e55] [cursor=pointer]: Техники тест дизайна
+          - generic [ref=e56] [cursor=pointer]: Технические
+          - generic [ref=e57] [cursor=pointer]: Типы, виды тестирования
+      - generic [ref=e59]:
+        - button "Сбросить поиск (Ctrl+Я)" [ref=e60] [cursor=pointer]:
+          - img [ref=e61]
+        - textbox "Введите запрос или нажмите на микрофон (Alt+M)..." [ref=e63]
+        - button "Активировать микрофон" [ref=e64] [cursor=pointer]:
+          - img [ref=e65]
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - paragraph [ref=e68]: "Всего карточек: 316"
+          - 'button "Сортировка: По умолчанию" [ref=e69] [cursor=pointer]':
+            - img [ref=e70]
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - generic [ref=e75]:
+              - generic [ref=e76]: DevOps
+              - generic [ref=e77]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e78]: НОВАЯ
+            - button "В избранное" [ref=e79] [cursor=pointer]:
+              - img [ref=e80]
+            - generic [ref=e82]: CI CD?
+            - generic [ref=e83]: "contini… непрерывная интеграция, девопсы настраивают чтобы обеспечить разработчикам и тестировщикам раскатку приложений на тестовые стенды, в продакшн Там используются docker kuber, настроены пайплайны в которых могут прогоняться автоматические тесты, проверки безопасности, библиотек, линтеры… у нас было 4 стенда: dev, test, pre prod и prod"
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - generic [ref=e86]: DevOps
+              - generic [ref=e87]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e88]: НОВАЯ
+            - button "В избранное" [ref=e89] [cursor=pointer]:
+              - img [ref=e90]
+            - generic [ref=e92]: Из чего состоит Kafka и как работает?
+            - generic [ref=e93]: "из **Брокеров** (серверов, которые хранят и обрабатывают сообщения) **Топиков** (логических каналов для передачи сообщений) **Партиций** (разделов внутри топика для масштабирования и параллельной обработки) **Продюсеров** (отправляют сообщения в Kafka) **Консьюмеров** (забирают сообщения из Kafka) Работает так: продюсер пишет сообщение в топик, брокер хранит его в партиции, консьюмер читает сообщение. Сообщения асинхронно обрабатываются и гарантируется их доставка."
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]: DevOps
+              - generic [ref=e97]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e98]: НОВАЯ
+            - button "В избранное" [ref=e99] [cursor=pointer]:
+              - img [ref=e100]
+            - generic [ref=e102]: брокеры?
+            - generic [ref=e103]: не работал, но слышал, у меня монолит проект был, недостаточно большой чтобы превращать его в микросервисы и внедрять брокера брокер позволяет настривать взаимодействие между микросервисами, иметь определенную асинхронность, распределять нагрузку, запросы могут приходить в брокер, но не отправляться сразу, а подождать если необходимо, kafka сам отдает сообщения rabbitmq там микросервис сам должен обратиться чтобы проверить есть ли у него сообщения, забрать
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - generic [ref=e106]: DevOps
+              - generic [ref=e107]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e108]: НОВАЯ
+            - button "В избранное" [ref=e109] [cursor=pointer]:
+              - img [ref=e110]
+            - generic [ref=e112]: брокеры, кафка, как взаимодействовали сервисы?
+            - generic [ref=e113]: Основа взаимодействия это рест, + между несколькими сервисами была кафка, можно было зайти в offset UI, посмотреть в топике, ушло ли сообщение от микросервиса, в валидном формате, отправить его от туда же ручками. Смысл кафки-это брокер сообщений для асинхронного взаимодействия, то есть сообщения получают не мгновенно, а через определенный промежуток времени через очередь, это необходимо для высоконагруженных систем, когда у нас много сообщений и их нужно обработать асинхронно а не сразу, копии сообщений у нас сохраняются в рамках несколько партиций, что дает нам гарантию доставки
+          - generic [ref=e114]:
+            - generic [ref=e115]:
+              - generic [ref=e116]: DevOps
+              - generic [ref=e117]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e118]: НОВАЯ
+            - button "В избранное" [ref=e119] [cursor=pointer]:
+              - img [ref=e120]
+            - generic [ref=e122]: Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?
+            - generic [ref=e123]: "проверяют цепочку: отправка сообщения → получение в топике → обработка другим сервисом. Нужно мокать сторонние сервисы Возможны задержки или дублирование сообщений"
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - generic [ref=e126]: DevOps
+              - generic [ref=e127]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e128]: НОВАЯ
+            - button "В избранное" [ref=e129] [cursor=pointer]:
+              - img [ref=e130]
+            - generic [ref=e132]: как отправлял сообщения в кафке ручками?
+            - generic [ref=e133]: Offset UI заходишь в топик, там жмешь плюсик и ты можешь json отправить-негативные проверки проводили на стороне kafka, помимо того что просто проверить успешно отправленное сообщение? Например подмена сообщений? Нет не проводили Редко когда другой микросервис был не готов, могли заглушки использовать
+          - generic [ref=e134]:
+            - generic [ref=e135]:
+              - generic [ref=e136]: DevOps
+              - generic [ref=e137]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e138]: НОВАЯ
+            - button "В избранное" [ref=e139] [cursor=pointer]:
+              - img [ref=e140]
+            - generic [ref=e142]: Микросервис, продюсссер отправил консьюмеру сообщение, где его искать?
+            - generic [ref=e143]: В соотв. топик, в соотв. партицию, если мы подписаны на этот топик, смотрим туда, там будут партиции-очереди грубо говоря
+          - generic [ref=e144]:
+            - generic [ref=e145]:
+              - generic [ref=e146]: DevOps
+              - generic [ref=e147]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e148]: НОВАЯ
+            - button "В избранное" [ref=e149] [cursor=pointer]:
+              - img [ref=e150]
+            - generic [ref=e152]: kafka отличие партиций от топика
+            - generic [ref=e153]: топик- это общий канал для сообщений по одной бизнес-теме. =партиция- это физический «раздел» внутри топика, куда кладутся сообщения. Несколько партиций = больше производительность и параллелизм, можно быстрее читать и писать.
+          - generic [ref=e154]:
+            - generic [ref=e155]:
+              - generic [ref=e156]: DevOps
+              - generic [ref=e157]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e158]: НОВАЯ
+            - button "В избранное" [ref=e159] [cursor=pointer]:
+              - img [ref=e160]
+            - generic [ref=e162]: для чего нам нужны брокеры сообщений, kafka, rabbit?
+            - generic [ref=e163]: Большой объем данных, отказоустойчивость…
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]: DevOps
+              - generic [ref=e167]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e168]: НОВАЯ
+            - button "В избранное" [ref=e169] [cursor=pointer]:
+              - img [ref=e170]
+            - generic [ref=e172]: у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?
+            - generic [ref=e173]: "Если у нас есть доступ в очередь, то можно проверить: 1)отправляем данные 2)заходим в кафку проверяем количество, формат, правильность в целом 3)идем в сервис и смотрим, ничего ли он не потерял… Негативные проверки: невалидные данные, застрянет в очереди или не дойдет, большое количество отправить запросов"
+          - generic [ref=e174]:
+            - generic [ref=e175]:
+              - generic [ref=e176]: DevOps
+              - generic [ref=e177]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e178]: НОВАЯ
+            - button "В избранное" [ref=e179] [cursor=pointer]:
+              - img [ref=e180]
+            - generic [ref=e182]: брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?
+            - generic [ref=e183]: рест-синхронный, а через кафку будет асинхронный, REST-запрос отправляем, сразу получаем ответ, а при работе с кафкой там в порядке очереди -Преимущества и недостатки каждого? =Преимущества кафки-мы отправили сообщение и если будет какой либо микросервис недоступен, то сообщение не потеряется
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - generic [ref=e186]: DevOps
+              - generic [ref=e187]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e188]: НОВАЯ
+            - button "В избранное" [ref=e189] [cursor=pointer]:
+              - img [ref=e190]
+            - generic [ref=e192]: логи кафка
+            - generic [ref=e193]: проверяем что приходят нужные события(что продюсер производит их), в нужный топик, дальше проверяем что эти события обрабатываются и уходят в консьюмер - Kibana логи, трайс айди, ивенты, время
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - generic [ref=e196]: DevOps
+              - generic [ref=e197]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e198]: НОВАЯ
+            - button "В избранное" [ref=e199] [cursor=pointer]:
+              - img [ref=e200]
+            - generic [ref=e202]: как с kibana работал? уровни ошибок ?
+            - generic [ref=e203]: 90 процентов request id+фильтры(период времени короткий) также можно по микросервису, по времени, по статус коду, по уровню ошибок это расширенные-trace, INFO-просто, WARNING, DEBUG-разработчики могут подменять данные. У нас в основном не использовались, у нас стоял уровень ERROR, если требовалось могли до warning поднять, fatal(никогда не видел) Регулярные выражения редко (…).* В окд в сервисах, в редких кейсах в самом ребите можно зайти, последнее там сообщение посмотреть - docker, kuber
+          - generic [ref=e204]:
+            - generic [ref=e205]:
+              - generic [ref=e206]: DevOps
+              - generic [ref=e207]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e208]: НОВАЯ
+            - button "В избранное" [ref=e209] [cursor=pointer]:
+              - img [ref=e210]
+            - generic [ref=e212]: docker команды?
+            - generic [ref=e213]: скачать образ -pull, запустить контейнер который мы создали на основе образа -run, посмотреть все запущенные контейнеры -PS, ls-папки посмотреть, остановить -docker stop и название контенера либо его id, логи это-logs, удалить-rm(так же как и с папкой)-удалить контейнер, а RMI-это image удалить(образ), images-посмотреть какие есть образы в докере
+          - generic [ref=e214]:
+            - generic [ref=e215]:
+              - generic [ref=e216]: DevOps
+              - generic [ref=e217]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e218]: НОВАЯ
+            - button "В избранное" [ref=e219] [cursor=pointer]:
+              - img [ref=e220]
+            - generic [ref=e222]: сущности в докере?
+            - generic [ref=e223]: docker image-это образ который представляет набор правил по созданию виртуальной машины, какого то окружения своего docker image создан при помощи docker file-это описание, манифест докера о том как он должен запуститься, какие скрипты должны выполниться и тд docker container-экземпляр нашего образа(image), который изолирован от остальной ОС где мы запустились и от остальных контейнеров если они есть и запущены на этой же ОС docker compose-управляет несколькими контейнерами на одном сервере
+          - generic [ref=e224]:
+            - generic [ref=e225]:
+              - generic [ref=e226]: DevOps
+              - generic [ref=e227]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e228]: НОВАЯ
+            - button "В избранное" [ref=e229] [cursor=pointer]:
+              - img [ref=e230]
+            - generic [ref=e232]: docker swarm?
+            - generic [ref=e233]: позволяет управлять большим количеством контейнеров (Управляет **кластером из на серверах** как единым целым.)
+          - generic [ref=e234]:
+            - generic [ref=e235]:
+              - generic [ref=e236]: DevOps
+              - generic [ref=e237]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e238]: НОВАЯ
+            - button "В избранное" [ref=e239] [cursor=pointer]:
+              - img [ref=e240]
+            - generic [ref=e242]: с кубером тоже работали?
+            - generic [ref=e243]: При раскатке стенда, смотрел поды поднялись или нет, той или иной версии. До реализации кибаны мы смотрели логи в кубере
+          - generic [ref=e244]:
+            - generic [ref=e245]:
+              - generic [ref=e246]: DevOps
+              - generic [ref=e247]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e248]: НОВАЯ
+            - button "В избранное" [ref=e249] [cursor=pointer]:
+              - img [ref=e250]
+            - generic [ref=e252]: для чего виртуальное окружение?
+            - generic [ref=e253]: для запуска виртуальных машин, изолированная среда для приложений и сервисов
+          - generic [ref=e254]:
+            - generic [ref=e255]:
+              - generic [ref=e256]: DevOps
+              - generic [ref=e257]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e258]: НОВАЯ
+            - button "В избранное" [ref=e259] [cursor=pointer]:
+              - img [ref=e260]
+            - generic [ref=e262]: Как происходит тестирование локально с помощью Docker?
+            - generic [ref=e263]: С помощью Docker можно запускать контейнеры с необходимыми сервисами, такими как базы данных или веб-сервисы, чтобы создать локальное окружение для тестирования.
+          - generic [ref=e264]:
+            - generic [ref=e265]:
+              - generic [ref=e266]: DevOps
+              - generic [ref=e267]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e268]: НОВАЯ
+            - button "В избранное" [ref=e269] [cursor=pointer]:
+              - img [ref=e270]
+            - generic [ref=e272]: Как вы работали с Docker и TeamCity?
+            - generic [ref=e273]: С Docker мы использовали контейнеры для развертывания сервисов в CI/CD пайплайне, а с TeamCity - для автоматизации сборки и деплоя приложений в контейнерах.
+          - generic [ref=e274]:
+            - generic [ref=e275]:
+              - generic [ref=e276]: DevOps
+              - generic [ref=e277]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e278]: НОВАЯ
+            - button "В избранное" [ref=e279] [cursor=pointer]:
+              - img [ref=e280]
+            - generic [ref=e282]: контейнеры сам запускаю, а настройки каких то конфигов, манифестов для кубера у нас devops занимается
+            - generic [ref=e283]: devtools
+          - generic [ref=e284]:
+            - generic [ref=e285]:
+              - generic [ref=e286]: DevOps
+              - generic [ref=e287]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e288]: НОВАЯ
+            - button "В избранное" [ref=e289] [cursor=pointer]:
+              - img [ref=e290]
+            - generic [ref=e292]: devtools что смотришь?
+            - generic [ref=e293]: верстка, Console log-варнинги, к чему они относятся, Network смотрю какие запросы уходят, смотрю запрос уходит или нет, чтобы понять на какой стороне баг, Elements-верстка, Appilication-чтобы почистить кэш, куки
+          - generic [ref=e294]:
+            - generic [ref=e295]:
+              - generic [ref=e296]: DevOps
+              - generic [ref=e297]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e298]: НОВАЯ
+            - button "В избранное" [ref=e299] [cursor=pointer]:
+              - img [ref=e300]
+            - generic [ref=e302]: что в Elements смотришь обычно?
+            - generic [ref=e303]: путь к какому то елементу, стили, верстку(у меня на проекте такого нет) - postman, swagger
+          - generic [ref=e304]:
+            - generic [ref=e305]:
+              - generic [ref=e306]: DevOps
+              - generic [ref=e307]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e308]: НОВАЯ
+            - button "В избранное" [ref=e309] [cursor=pointer]:
+              - img [ref=e310]
+            - generic [ref=e312]: postman, swagger
+            - generic [ref=e313]: в swagger у нас была дока по описанию апишки(как должен работать метод) брал то что нужно отправить, делал запрос и сверял в постмане у меня есть коллекции, если какие то взаимодействия изменялись-это изменение этих коллекций. Отправка запросов по CRUDу, +писал пре-requests, пост скрипты, перед отправкой запроса получить токен например. проверку статус кода, на проверку валидности json-контрактное тестирование, времени ответа, и запуск коллекций - сниферы( charlies proxy)
+          - generic [ref=e314]:
+            - generic [ref=e315]:
+              - generic [ref=e316]: DevOps
+              - generic [ref=e317]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e318]: НОВАЯ
+            - button "В избранное" [ref=e319] [cursor=pointer]:
+              - img [ref=e320]
+            - generic [ref=e322]: charlies proxy
+            - generic [ref=e323]: чарльз у нас был в роли прокси сервера перенаправление урла-rewrite, изменение тела запроса и заголовка, например если я хочу увидеть как будет выглядеть окно заглушки ограничения доступа или недоступности какой то функции
+          - generic [ref=e324]:
+            - generic [ref=e325]:
+              - generic [ref=e326]: DevOps
+              - generic [ref=e327]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e328]: НОВАЯ
+            - button "В избранное" [ref=e329] [cursor=pointer]:
+              - img [ref=e330]
+            - generic [ref=e332]: пример для чего подмена запросов?
+            - generic [ref=e333]: можно добавить/убрать/заменить заголовки (например, Authorization, Content-Type). например, протестировать, что будет, если токен невалидный. - redis ????
+          - generic [ref=e334]:
+            - generic [ref=e335]:
+              - generic [ref=e336]: DevOps
+              - generic [ref=e337]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e338]: НОВАЯ
+            - button "В избранное" [ref=e339] [cursor=pointer]:
+              - img [ref=e340]
+            - generic [ref=e342]: radis?
+            - generic [ref=e343]: radis как нереляционная бд на проекте была - какими инструментами пользовался? testrail-коллекции тестов, jira для трекинга задач, Postman/Devtools для API тестирования, Docker для создания тестовых окружений, и Kibana для анализа логов, swagger документация. - Какие системы вы используете для трекинга времени и задач, багов? Для трекинга задач и времени используется Jira, Trello для управления задачами, а также TimeDoctor для учета рабочего времени, testrail описание, для управления тест кейсами, тест сьютами…) - Какие инструменты для логирования использовали? sentry, redis =Для логирования использовали Kibana, Logstash и ElasticSearch. Эти инструменты позволяли анализировать логи и выявлять ошибки
+          - generic [ref=e344]:
+            - generic [ref=e345]:
+              - generic [ref=e346]: DevOps
+              - generic [ref=e347]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e348]: НОВАЯ
+            - button "В избранное" [ref=e349] [cursor=pointer]:
+              - img [ref=e350]
+            - generic [ref=e352]: Gitlab Ci/Jenkins
+            - generic [ref=e353]: ямл файлом запускаются пайплайны
+          - generic [ref=e354]:
+            - generic [ref=e355]:
+              - generic [ref=e356]: DevOps
+              - generic [ref=e357]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e358]: НОВАЯ
+            - button "В избранное" [ref=e359] [cursor=pointer]:
+              - img [ref=e360]
+            - generic [ref=e362]: Kubernetes
+            - generic [ref=e363]: "заботится о: • Автоматическом развертывании приложений в контейнерах на разных серверах • Распределении нагрузки по нескольким серверам • Автоматическом масштабировании развернутых приложений • Мониторинге и проверке работоспособности контейнеров • Замене нерабочих контейнеров работает с: docker CRI-O containerd"
+          - generic [ref=e364]:
+            - generic [ref=e365]:
+              - generic [ref=e366]: Graphql, grpc
+              - generic [ref=e367]: REST/SOAP
+            - generic "Карточка еще не изучалась" [ref=e368]: НОВАЯ
+            - button "В избранное" [ref=e369] [cursor=pointer]:
+              - img [ref=e370]
+            - generic [ref=e372]: Что такое gRPC?
+            - generic [ref=e373]: gRPC — это технология, которая позволяет удаленно вызвать процедуру в другом месте. Она более производительная для случаев, когда нужно быстро получить информацию в реальном времени. Использует протокол HTTP/2 и сериализацию данных через Protocol Buffers (в отличие от JSON-REST).
+          - generic [ref=e374]:
+            - generic [ref=e375]:
+              - generic [ref=e376]: Graphql, grpc
+              - generic [ref=e377]: REST/SOAP
+            - generic "Карточка еще не изучалась" [ref=e378]: НОВАЯ
+            - button "В избранное" [ref=e379] [cursor=pointer]:
+              - img [ref=e380]
+            - generic [ref=e382]: Что такое GraphQL?
+            - generic [ref=e383]: GraphQL — это язык запросов для API, где клиент управляет данными. Он запрашивает только нужные поля и делает один запрос вместо нескольких в REST. Это полезно для социальных сетей или мобильных приложений с ограниченным трафиком, но есть риск DDoS-атак из-за сложных запросов.
+          - generic [ref=e384]:
+            - generic [ref=e385]:
+              - generic [ref=e386]: MindMap
+              - generic [ref=e387]: General
+            - generic "Карточка еще не изучалась" [ref=e388]: НОВАЯ
+            - button "В избранное" [ref=e389] [cursor=pointer]:
+              - img [ref=e390]
+            - generic [ref=e392]: 1) Физического доступа
+            - generic [ref=e393]: Провод
+          - generic [ref=e394]:
+            - generic [ref=e395]:
+              - generic [ref=e396]: MindMap
+              - generic [ref=e397]: General
+            - generic "Карточка еще не изучалась" [ref=e398]: НОВАЯ
+            - button "В избранное" [ref=e399] [cursor=pointer]:
+              - img [ref=e400]
+            - generic [ref=e402]: 2/3ех/многоуровневая
+            - generic [ref=e403]: 2ух и 3ех уровневые серверные архитектуры сейчас не применяются, это только теория
+          - generic [ref=e404]:
+            - generic [ref=e405]:
+              - generic [ref=e406]: MindMap
+              - generic [ref=e407]: General
+            - generic "Карточка еще не изучалась" [ref=e408]: НОВАЯ
+            - button "В избранное" [ref=e409] [cursor=pointer]:
+              - img [ref=e410]
+            - generic [ref=e412]: 4) Прикладной
+            - generic [ref=e413]: hhtp, методы
+          - generic [ref=e414]:
+            - generic [ref=e415]:
+              - generic [ref=e416]: MindMap
+              - generic [ref=e417]: General
+            - generic "Карточка еще не изучалась" [ref=e418]: НОВАЯ
+            - button "В избранное" [ref=e419] [cursor=pointer]:
+              - img [ref=e420]
+            - generic [ref=e422]: 403 Forbidden
+            - generic [ref=e423]: можно заменить 404, тогда человек не будет знать причины 403-доступ ограничен
+          - generic [ref=e424]:
+            - generic [ref=e425]:
+              - generic [ref=e426]: MindMap
+              - generic [ref=e427]: General
+            - generic "Карточка еще не изучалась" [ref=e428]: НОВАЯ
+            - button "В избранное" [ref=e429] [cursor=pointer]:
+              - img [ref=e430]
+            - generic [ref=e432]: 502 Bad Gateway
+            - generic [ref=e433]: Приложение упало
+          - generic [ref=e434]:
+            - generic [ref=e435]:
+              - generic [ref=e436]: MindMap
+              - generic [ref=e437]: General
+            - generic "Карточка еще не изучалась" [ref=e438]: НОВАЯ
+            - button "В избранное" [ref=e439] [cursor=pointer]:
+              - img [ref=e440]
+            - generic [ref=e442]: Access Token
+            - generic [ref=e443]: логин пароль-креды от слова credential
+          - generic [ref=e444]:
+            - generic [ref=e445]:
+              - generic [ref=e446]: MindMap
+              - generic [ref=e447]: General
+            - generic "Карточка еще не изучалась" [ref=e448]: НОВАЯ
+            - button "В избранное" [ref=e449] [cursor=pointer]:
+              - img [ref=e450]
+            - generic [ref=e452]: Foreign Key
+            - generic [ref=e453]: внешний ключ, столбец или столбцы которыми мы ссылаемся на первичный ключ другой таблицы
+          - generic [ref=e454]:
+            - generic [ref=e455]:
+              - generic [ref=e456]: MindMap
+              - generic [ref=e457]: General
+            - generic "Карточка еще не изучалась" [ref=e458]: НОВАЯ
+            - button "В избранное" [ref=e459] [cursor=pointer]:
+              - img [ref=e460]
+            - generic [ref=e462]: "Local Storage:"
+            - generic [ref=e463]: до 10ти Mb
+          - generic [ref=e464]:
+            - generic [ref=e465]:
+              - generic [ref=e466]: MindMap
+              - generic [ref=e467]: General
+            - generic "Карточка еще не изучалась" [ref=e468]: НОВАЯ
+            - button "В избранное" [ref=e469] [cursor=pointer]:
+              - img [ref=e470]
+            - generic [ref=e472]: PCT/IP
+            - generic [ref=e473]: уровни сети
+          - generic [ref=e474]:
+            - generic [ref=e475]:
+              - generic [ref=e476]: MindMap
+              - generic [ref=e477]: General
+            - generic "Карточка еще не изучалась" [ref=e478]: НОВАЯ
+            - button "В избранное" [ref=e479] [cursor=pointer]:
+              - img [ref=e480]
+            - generic [ref=e482]: "Session Storage:"
+            - generic [ref=e483]: • Хранится в течение сессии (если закрыть браузер или вкладку, сторадж будет очищен) • Свой у каждой вкладки браузера
+          - generic [ref=e484]:
+            - generic [ref=e485]:
+              - generic [ref=e486]: MindMap
+              - generic [ref=e487]: General
+            - generic "Карточка еще не изучалась" [ref=e488]: НОВАЯ
+            - button "В избранное" [ref=e489] [cursor=pointer]:
+              - img [ref=e490]
+            - generic [ref=e492]: UAT пользовательское
+            - generic [ref=e493]: группа пользователей
+          - generic [ref=e494]:
+            - generic [ref=e495]:
+              - generic [ref=e496]: MindMap
+              - generic [ref=e497]: General
+            - generic "Карточка еще не изучалась" [ref=e498]: НОВАЯ
+            - button "В избранное" [ref=e499] [cursor=pointer]:
+              - img [ref=e500]
+            - generic [ref=e502]: Use-cases
+            - generic [ref=e503]: "Название юз-кейса: краткое описание того, что делает пользователь. Акторы: список всех пользователей, которые могут использовать систему или приложение. Описание: детальное описание, как пользователь будет использовать систему или приложение для выполнения конкретной задачи. Предусловия: условия, которые должны быть выполнены до начала использования системы. Шаги использования: пошаговое описание того, что пользователь должен сделать, чтобы выполнить задачу. Альтернативные шаги: шаги, которые могут быть выполнены, если основные шаги не сработают. Результаты: описание того, что должно произойти после выполнения задачи. Ограничения: описание ограничений или ограничений, которые могут влиять на использование системы."
+          - generic [ref=e504]:
+            - generic [ref=e505]:
+              - generic [ref=e506]: MindMap
+              - generic [ref=e507]: General
+            - generic "Карточка еще не изучалась" [ref=e508]: НОВАЯ
+            - button "В избранное" [ref=e509] [cursor=pointer]:
+              - img [ref=e510]
+            - generic [ref=e512]: User story
+            - generic [ref=e513]: "Прием записи требования Обычно пишут аналитики* Ответ на три вопроса: 1)роль (я как QA manual) 2)что хочу получить? (хочу писать свои вопросы chat GPT) 3)с какой целью? (Получить ответ и применить в своей работе)"
+          - generic [ref=e514]:
+            - generic [ref=e515]:
+              - generic [ref=e516]: MindMap
+              - generic [ref=e517]: General
+            - generic "Карточка еще не изучалась" [ref=e518]: НОВАЯ
+            - button "В избранное" [ref=e519] [cursor=pointer]:
+              - img [ref=e520]
+            - generic [ref=e522]: id, module, title, str, OP, attachment
+            - generic [ref=e523]: "STR (Steps to Reproduce): ОР - ожидаемый результат Attachment: Скриншот формы с отображенными ошибками. Precondition: Пользователь не авторизован в системе."
+          - generic [ref=e524]:
+            - generic [ref=e525]:
+              - generic [ref=e526]: MindMap
+              - generic [ref=e527]: General
+            - generic "Карточка еще не изучалась" [ref=e528]: НОВАЯ
+            - button "В избранное" [ref=e529] [cursor=pointer]:
+              - img [ref=e530]
+            - generic [ref=e532]: sdls - жизненный цикл разработки (d - development)
+            - generic [ref=e533]: Software development lifecycle
+          - generic [ref=e534]:
+            - generic [ref=e535]:
+              - generic [ref=e536]: MindMap
+              - generic [ref=e537]: General
+            - generic "Карточка еще не изучалась" [ref=e538]: НОВАЯ
+            - button "В избранное" [ref=e539] [cursor=pointer]:
+              - img [ref=e540]
+            - generic [ref=e542]: БД правильно взаимодействует с другими системами и приложениями
+            - generic [ref=e543]: взаимодействие с вэбом например пройти e2e регистрация - авторизация - перейти в раздел профиль и имя соответствует
+          - generic [ref=e544]:
+            - generic [ref=e545]:
+              - generic [ref=e546]: MindMap
+              - generic [ref=e547]: General
+            - generic "Карточка еще не изучалась" [ref=e548]: НОВАЯ
+            - button "В избранное" [ref=e549] [cursor=pointer]:
+              - img [ref=e550]
+            - generic [ref=e552]: Белый ящик
+            - generic [ref=e553]: покрытие внутренней структуры системы (кода)
+          - generic [ref=e554]:
+            - generic [ref=e555]:
+              - generic [ref=e556]: MindMap
+              - generic [ref=e557]: General
+            - generic "Карточка еще не изучалась" [ref=e558]: НОВАЯ
+            - button "В избранное" [ref=e559] [cursor=pointer]:
+              - img [ref=e560]
+            - generic [ref=e562]: Берем значения с границ диапазона, а так же +1 -1
+            - generic [ref=e563]: Например на ограничение символов
+          - generic [ref=e564]:
+            - generic [ref=e565]:
+              - generic [ref=e566]: MindMap
+              - generic [ref=e567]: General
+            - generic "Карточка еще не изучалась" [ref=e568]: НОВАЯ
+            - button "В избранное" [ref=e569] [cursor=pointer]:
+              - img [ref=e570]
+            - generic [ref=e572]: Веб Сервис
+            - generic [ref=e573]: интеграция, например с курсом валюты или авторизация через соц. сети другие сторонние сервисы
+          - generic [ref=e574]:
+            - generic [ref=e575]:
+              - generic [ref=e576]: MindMap
+              - generic [ref=e577]: General
+            - generic "Карточка еще не изучалась" [ref=e578]: НОВАЯ
+            - button "В избранное" [ref=e579] [cursor=pointer]:
+              - img [ref=e580]
+            - generic [ref=e582]: Гибкость разработки
+            - generic [ref=e583]: разные команды работают независимо
+          - generic [ref=e584]:
+            - generic [ref=e585]:
+              - generic [ref=e586]: MindMap
+              - generic [ref=e587]: General
+            - generic "Карточка еще не изучалась" [ref=e588]: НОВАЯ
+            - button "В избранное" [ref=e589] [cursor=pointer]:
+              - img [ref=e590]
+            - generic [ref=e592]: Инсталляционное
+            - generic [ref=e593]: про стадию установки и обновления приложения
+          - generic [ref=e594]:
+            - generic [ref=e595]:
+              - generic [ref=e596]: MindMap
+              - generic [ref=e597]: General
+            - generic "Карточка еще не изучалась" [ref=e598]: НОВАЯ
+            - button "В избранное" [ref=e599] [cursor=pointer]:
+              - img [ref=e600]
+            - generic [ref=e602]: Интернационализация - заранее подумали как сделать локализацию
+            - generic [ref=e603]: Она также обозначается как i18n, где 18 – это количество букв от i до n в слове интернационализация. "яй-эйтин"
+          - generic [ref=e604]:
+            - generic [ref=e605]:
+              - generic [ref=e606]: MindMap
+              - generic [ref=e607]: General
+            - generic "Карточка еще не изучалась" [ref=e608]: НОВАЯ
+            - button "В избранное" [ref=e609] [cursor=pointer]:
+              - img [ref=e610]
+            - generic [ref=e612]: Клиент и сервер не зависимы друг от друга - к серверу может обращаться множество клиентов и ему не важно кто это, так же как и клиенту не важно что за сервер
+            - generic [ref=e613]: ссылка откроется с разных устройств
+          - generic [ref=e614]:
+            - generic [ref=e615]:
+              - generic [ref=e616]: MindMap
+              - generic [ref=e617]: General
+            - generic "Карточка еще не изучалась" [ref=e618]: НОВАЯ
+            - button "В избранное" [ref=e619] [cursor=pointer]:
+              - img [ref=e620]
+            - generic [ref=e622]: Конкурентное - между модулями
+            - generic [ref=e623]: Если у нас высокая нагрузка какая у нас приоритезация между модулями что первым сломается, что последним по логике вещей последним должна отвалится оплата или например, при одновременной авторизации нескольких пользователей в систему, все они должны авторизоваться, а система не выдать ошибок.
+          - generic [ref=e624]:
+            - generic [ref=e625]:
+              - generic [ref=e626]: MindMap
+              - generic [ref=e627]: General
+            - generic "Карточка еще не изучалась" [ref=e628]: НОВАЯ
+            - button "В избранное" [ref=e629] [cursor=pointer]:
+              - img [ref=e630]
+            - generic [ref=e632]: Масштабируемость
+            - generic [ref=e633]: можно масштабировать только нужные сервисы --- Из MindMap --- увеличение количества пользователей, запросов, и других динамических параметров системы.
+          - generic [ref=e634]:
+            - generic [ref=e635]:
+              - generic [ref=e636]: MindMap
+              - generic [ref=e637]: General
+            - generic "Карточка еще не изучалась" [ref=e638]: НОВАЯ
+            - button "В избранное" [ref=e639] [cursor=pointer]:
+              - img [ref=e640]
+            - generic [ref=e642]: Медленный деплой
+            - generic [ref=e643]: пересборка всего приложения при любом изменении
+          - generic [ref=e644]:
+            - generic [ref=e645]:
+              - generic [ref=e646]: MindMap
+              - generic [ref=e647]: General
+            - generic "Карточка еще не изучалась" [ref=e648]: НОВАЯ
+            - button "В избранное" [ref=e649] [cursor=pointer]:
+              - img [ref=e650]
+            - generic [ref=e652]: Модульное/компонентное
+            - generic [ref=e653]: например модуль с авторизацией
+          - generic [ref=e654]:
+            - generic [ref=e655]:
+              - generic [ref=e656]: MindMap
+              - generic [ref=e657]: General
+            - generic "Карточка еще не изучалась" [ref=e658]: НОВАЯ
+            - button "В избранное" [ref=e659] [cursor=pointer]:
+              - img [ref=e660]
+            - generic [ref=e662]: Назначен
+            - generic [ref=e663]: на разработчика
+          - generic [ref=e664]:
+            - generic [ref=e665]:
+              - generic [ref=e666]: MindMap
+              - generic [ref=e667]: General
+            - generic "Карточка еще не изучалась" [ref=e668]: НОВАЯ
+            - button "В избранное" [ref=e669] [cursor=pointer]:
+              - img [ref=e670]
+            - generic [ref=e672]: Накладные расходы
+            - generic [ref=e673]: сети, сериализация, оркестрация
+          - generic [ref=e674]:
+            - generic [ref=e675]:
+              - generic [ref=e676]: MindMap
+              - generic [ref=e677]: General
+            - generic "Карточка еще не изучалась" [ref=e678]: НОВАЯ
+            - button "В избранное" [ref=e679] [cursor=pointer]:
+              - img [ref=e680]
+            - generic [ref=e682]: Отказоустойчивость
+            - generic [ref=e683]: падение одного сервиса не ломает всю систему
+          - generic [ref=e684]:
+            - generic [ref=e685]:
+              - generic [ref=e686]: MindMap
+              - generic [ref=e687]: General
+            - generic "Карточка еще не изучалась" [ref=e688]: НОВАЯ
+            - button "В избранное" [ref=e689] [cursor=pointer]:
+              - img [ref=e690]
+            - generic [ref=e692]: Отладка и мониторинг
+            - generic [ref=e693]: сложнее отслеживать проблемы
+          - generic [ref=e694]:
+            - generic [ref=e695]:
+              - generic [ref=e696]: MindMap
+              - generic [ref=e697]: General
+            - generic "Карточка еще не изучалась" [ref=e698]: НОВАЯ
+            - button "В избранное" [ref=e699] [cursor=pointer]:
+              - img [ref=e700]
+            - generic [ref=e702]: "Под (Pod):"
+            - generic [ref=e703]: самый маленький элемент в мире k8s
+          - generic [ref=e704]:
+            - generic [ref=e705]:
+              - generic [ref=e706]: MindMap
+              - generic [ref=e707]: General
+            - generic "Карточка еще не изучалась" [ref=e708]: НОВАЯ
+            - button "В избранное" [ref=e709] [cursor=pointer]:
+              - img [ref=e710]
+            - generic [ref=e712]: Приемочное
+            - generic [ref=e713]: Выполняется для проверки соответствия программного обеспечения конечным требованиям заказчика или пользователя.
+          - generic [ref=e714]:
+            - generic [ref=e715]:
+              - generic [ref=e716]: MindMap
+              - generic [ref=e717]: General
+            - generic "Карточка еще не изучалась" [ref=e718]: НОВАЯ
+            - button "В избранное" [ref=e719] [cursor=pointer]:
+              - img [ref=e720]
+            - generic [ref=e722]: Проблемы масштабирования
+            - generic [ref=e723]: нужно масштабировать всё приложение
+          - generic [ref=e724]:
+            - generic [ref=e725]:
+              - generic [ref=e726]: MindMap
+              - generic [ref=e727]: General
+            - generic "Карточка еще не изучалась" [ref=e728]: НОВАЯ
+            - button "В избранное" [ref=e729] [cursor=pointer]:
+              - img [ref=e730]
+            - generic [ref=e732]: Производительность
+            - generic [ref=e733]: нет сетевых задержек между компонентами --- Из MindMap --- стабильность, производительность, масштабируемость в различных условиях нагрузки
+          - generic [ref=e734]:
+            - generic [ref=e735]:
+              - generic [ref=e736]: MindMap
+              - generic [ref=e737]: General
+            - generic "Карточка еще не изучалась" [ref=e738]: НОВАЯ
+            - button "В избранное" [ref=e739] [cursor=pointer]:
+              - img [ref=e740]
+            - generic [ref=e742]: Простота отладки
+            - generic [ref=e743]: все компоненты в одном процессе
+          - generic [ref=e744]:
+            - generic [ref=e745]:
+              - generic [ref=e746]: MindMap
+              - generic [ref=e747]: General
+            - generic "Карточка еще не изучалась" [ref=e748]: НОВАЯ
+            - button "В избранное" [ref=e749] [cursor=pointer]:
+              - img [ref=e750]
+            - generic [ref=e752]: Протокол обмена структурированными сообщениями в определенной вычислительной среде. Обмен произвольных сообщений в формате xml, описываемый wsdl (Web Services Description Language)
+            - generic [ref=e753]: "WS- спецификации: Поддерживает расширенный набор стандартов (например, WS-Security, WS-ReliableMessaging), что делает его подходящим для сложных бизнес-транзакций."
+          - generic [ref=e754]:
+            - generic [ref=e755]:
+              - generic [ref=e756]: MindMap
+              - generic [ref=e757]: General
+            - generic "Карточка еще не изучалась" [ref=e758]: НОВАЯ
+            - button "В избранное" [ref=e759] [cursor=pointer]:
+              - img [ref=e760]
+            - generic [ref=e762]: Сервер (Бизнес логика)
+            - generic [ref=e763]: например алгоритм выдачи контенкта
+          - generic [ref=e764]:
+            - generic [ref=e765]:
+              - generic [ref=e766]: MindMap
+              - generic [ref=e767]: General
+            - generic "Карточка еще не изучалась" [ref=e768]: НОВАЯ
+            - button "В избранное" [ref=e769] [cursor=pointer]:
+              - img [ref=e770]
+            - generic [ref=e772]: Сервер не хранит состояние, это может делать только клиент - для сервера каждый запрос самодостаточный, он не знает сколько раз клиент обращался и на каком этапе находится клиент
+            - generic [ref=e773]: Клиент хранит у себя локально кэш, ключи, токены
+          - generic [ref=e774]:
+            - generic [ref=e775]:
+              - generic [ref=e776]: MindMap
+              - generic [ref=e777]: General
+            - generic "Карточка еще не изучалась" [ref=e778]: НОВАЯ
+            - button "В избранное" [ref=e779] [cursor=pointer]:
+              - img [ref=e780]
+            - generic [ref=e782]: Серый ящик
+            - generic [ref=e783]: например с использованием dev tools, postman, смотрим какие то логи ожидается что хороший QA специалист будет пользоваться только серым ящиком, будет копаться, искать причину
+          - generic [ref=e784]:
+            - generic [ref=e785]:
+              - generic [ref=e786]: MindMap
+              - generic [ref=e787]: General
+            - generic "Карточка еще не изучалась" [ref=e788]: НОВАЯ
+            - button "В избранное" [ref=e789] [cursor=pointer]:
+              - img [ref=e790]
+            - generic [ref=e792]: Сложность
+            - generic [ref=e793]: много взаимодействий между сервисами
+          - generic [ref=e794]:
+            - generic [ref=e795]:
+              - generic [ref=e796]: MindMap
+              - generic [ref=e797]: General
+            - generic "Карточка еще не изучалась" [ref=e798]: НОВАЯ
+            - button "В избранное" [ref=e799] [cursor=pointer]:
+              - img [ref=e800]
+            - generic [ref=e802]: Технологический долг
+            - generic [ref=e803]: сложнее менять технологии
+          - generic [ref=e804]:
+            - generic [ref=e805]:
+              - generic [ref=e806]: MindMap
+              - generic [ref=e807]: General
+            - generic "Карточка еще не изучалась" [ref=e808]: НОВАЯ
+            - button "В избранное" [ref=e809] [cursor=pointer]:
+              - img [ref=e810]
+            - generic [ref=e812]: Толстый - логика на клиента (онлайн игры)
+            - generic [ref=e813]: Fat Client)
+          - generic [ref=e814]:
+            - generic [ref=e815]:
+              - generic [ref=e816]: MindMap
+              - generic [ref=e817]: General
+            - generic "Карточка еще не изучалась" [ref=e818]: НОВАЯ
+            - button "В избранное" [ref=e819] [cursor=pointer]:
+              - img [ref=e820]
+            - generic [ref=e822]: Тонкий - логика не сервере (Частный пример это браузер)
+            - generic [ref=e823]: Thin Client
+          - generic [ref=e824]:
+            - generic [ref=e825]:
+              - generic [ref=e826]: MindMap
+              - generic [ref=e827]: General
+            - generic "Карточка еще не изучалась" [ref=e828]: НОВАЯ
+            - button "В избранное" [ref=e829] [cursor=pointer]:
+              - img [ref=e830]
+            - generic [ref=e832]: Транзакции
+            - generic [ref=e833]: например одна операция создать в бд пользователя
+          - generic [ref=e834]:
+            - generic [ref=e835]:
+              - generic [ref=e836]: MindMap
+              - generic [ref=e837]: General
+            - generic "Карточка еще не изучалась" [ref=e838]: НОВАЯ
+            - button "В избранное" [ref=e839] [cursor=pointer]:
+              - img [ref=e840]
+            - generic [ref=e842]: Юзабилити - порог вхождения, как быстро достигается цель
+            - generic [ref=e843]: насколько много нужно сделать кликов
+          - generic [ref=e844]:
+            - generic [ref=e845]:
+              - generic [ref=e846]: MindMap
+              - generic [ref=e847]: General
+            - generic "Карточка еще не изучалась" [ref=e848]: НОВАЯ
+            - button "В избранное" [ref=e849] [cursor=pointer]:
+              - img [ref=e850]
+            - generic [ref=e852]: аспекты качества продукта
+            - generic [ref=e853]: "Наиболее критичные аспекты качества для продукта: Примеры: 1. Удобство использования: *Риски: Плохая навигация, неудобный интерфейс. 2. Функциональность: *Риски: Неправильная работа функций, сбои в работе. 3. Производительность: *Риски: Долгое время загрузки страниц, низкая скорость работы 4. Безопасность: *Риски: Уязвимости, утечки даных"
+          - generic [ref=e854]:
+            - generic [ref=e855]:
+              - generic [ref=e856]: MindMap
+              - generic [ref=e857]: General
+            - generic "Карточка еще не изучалась" [ref=e858]: НОВАЯ
+            - button "В избранное" [ref=e859] [cursor=pointer]:
+              - img [ref=e860]
+            - generic [ref=e862]: валидация
+            - generic [ref=e863]: проверка того что продукт соответствует потребностям и ожиданиям пользователя
+          - generic [ref=e864]:
+            - generic [ref=e865]:
+              - generic [ref=e866]: MindMap
+              - generic [ref=e867]: General
+            - generic "Карточка еще не изучалась" [ref=e868]: НОВАЯ
+            - button "В избранное" [ref=e869] [cursor=pointer]:
+              - img [ref=e870]
+            - generic [ref=e872]: верификация
+            - generic [ref=e873]: проверка того что продукт соответствует требованиям
+          - generic [ref=e874]:
+            - generic [ref=e875]:
+              - generic [ref=e876]: MindMap
+              - generic [ref=e877]: General
+            - generic "Карточка еще не изучалась" [ref=e878]: НОВАЯ
+            - button "В избранное" [ref=e879] [cursor=pointer]:
+              - img [ref=e880]
+            - generic [ref=e882]: запрос не может быть выполнен из-за конфликтного обращения к ресурсу.
+            - generic [ref=e883]: Например при повторном вызове PUT, повторно не будет создана сущность
+          - generic [ref=e884]:
+            - generic [ref=e885]:
+              - generic [ref=e886]: MindMap
+              - generic [ref=e887]: General
+            - generic "Карточка еще не изучалась" [ref=e888]: НОВАЯ
+            - button "В избранное" [ref=e889] [cursor=pointer]:
+              - img [ref=e890]
+            - generic [ref=e892]: ключ идемпотентности
+            - generic [ref=e893]: "Клиент генерирует уникальный идентификатор (UUID или случайную строку) для конкретного запроса. Ключ идемпотентности отправляется вместе с запросом (обычно в заголовке Idempotency-Key) Сервер сохраняет ключ и результат запроса: • Если приходит новый запрос с этим ключом, сервер не выполняет действие снова, а возвращает тот же результат, что и при первом запросе. • Если ключа нет — выполняет действие и сохраняет результат."
+          - generic [ref=e894]:
+            - generic [ref=e895]:
+              - generic [ref=e896]: MindMap
+              - generic [ref=e897]: General
+            - generic "Карточка еще не изучалась" [ref=e898]: НОВАЯ
+            - button "В избранное" [ref=e899] [cursor=pointer]:
+              - img [ref=e900]
+            - generic [ref=e902]: система знает как реагировать ДАЖЕ на ошибки пользователя
+            - generic [ref=e903]: например макет о системной ошибке
+          - generic [ref=e904]:
+            - generic [ref=e905]:
+              - generic [ref=e906]: MindMap
+              - generic [ref=e907]: General
+            - generic "Карточка еще не изучалась" [ref=e908]: НОВАЯ
+            - button "В избранное" [ref=e909] [cursor=pointer]:
+              - img [ref=e910]
+            - generic [ref=e912]: системное интеграционное
+            - generic [ref=e913]: более высокоуровневые интеграции
+          - generic [ref=e914]:
+            - generic [ref=e915]:
+              - generic [ref=e916]: MindMap
+              - generic [ref=e917]: General
+            - generic "Карточка еще не изучалась" [ref=e918]: НОВАЯ
+            - button "В избранное" [ref=e919] [cursor=pointer]:
+              - img [ref=e920]
+            - generic [ref=e922]: сопровождаемость
+            - generic [ref=e923]: насколько сложно поддерживать систему
+          - generic [ref=e924]:
+            - generic [ref=e925]:
+              - generic [ref=e926]: Архитектура
+              - generic [ref=e927]: API
+            - generic "Карточка еще не изучалась" [ref=e928]: НОВАЯ
+            - button "В избранное" [ref=e929] [cursor=pointer]:
+              - img [ref=e930]
+            - generic [ref=e932]: Фронтенд vs Бэкенд?
+            - generic [ref=e933]: Тестирование фронтенда включает проверку UI/UX, взаимодействия с пользователем, а также работу с браузером. Тестирование бэкенда сосредоточено на логике, базах данных и API.
+          - generic [ref=e934]:
+            - generic [ref=e935]:
+              - generic [ref=e936]: Архитектура
+              - generic [ref=e937]: API
+            - generic "Карточка еще не изучалась" [ref=e938]: НОВАЯ
+            - button "В избранное" [ref=e939] [cursor=pointer]:
+              - img [ref=e940]
+            - generic [ref=e942]: Как релизится бэк и фронт, вместе или раздельно?
+            - generic [ref=e943]: Одновременно с синхронизацией через API и обязательной проверкой совместимости.
+          - generic [ref=e944]:
+            - generic [ref=e945]:
+              - generic [ref=e946]: Архитектура
+              - generic [ref=e947]: HTTP
+            - generic "Карточка еще не изучалась" [ref=e948]: НОВАЯ
+            - button "В избранное" [ref=e949] [cursor=pointer]:
+              - img [ref=e950]
+            - generic [ref=e952]: Что происходит после того как ты нажимаешь на поиск в Google?
+            - generic [ref=e953]: После нажатия на кнопку поиска, браузер отправляет HTTP-запрос к серверу Google с параметрами запроса. Сервер обрабатывает запрос, формирует результаты и отправляет их обратно, что позволяет отображать результаты поиска на экране. --- Дополнительный ответ --- После нажатия на кнопку поиска браузер отправляет HTTP-запрос к серверу Google с параметрами запроса, затем сервер обрабатывает запрос, формирует результаты и отправляет их обратно, что позволяет отображать результаты поиска на экране. ВЫУЧИТЬ ПОЛНЫЙ ВАРИАНТ
+          - generic [ref=e954]:
+            - generic [ref=e955]:
+              - generic [ref=e956]: Архитектура
+              - generic [ref=e957]: REST/SOAP
+            - generic "Карточка еще не изучалась" [ref=e958]: НОВАЯ
+            - button "В избранное" [ref=e959] [cursor=pointer]:
+              - img [ref=e960]
+            - generic [ref=e962]: Как происходит взаимодействие между микросервисами в вашем проекте?
+            - generic [ref=e963]: Взаимодействие происходит через API, REST. Для асинхронного обмена сообщениями могут использоваться брокеры сообщений Kafka (RabbitMQ). Кэш — Redis.
+          - generic [ref=e964]:
+            - generic [ref=e965]:
+              - generic [ref=e966]: Архитектура
+              - generic [ref=e967]: Ui/ux
+            - generic "Карточка еще не изучалась" [ref=e968]: НОВАЯ
+            - button "В избранное" [ref=e969] [cursor=pointer]:
+              - img [ref=e970]
+            - generic [ref=e972]: UI/UX каким инструментом тестишь?
+            - generic [ref=e973]: Руки, dev/tools, Figma.
+          - generic [ref=e974]:
+            - generic [ref=e975]:
+              - generic [ref=e976]: Архитектура
+              - generic [ref=e977]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e978]: НОВАЯ
+            - button "В избранное" [ref=e979] [cursor=pointer]:
+              - img [ref=e980]
+            - generic [ref=e982]: синхронность и асинхронность
+            - generic [ref=e983]: Синхронность — это выполнение операций по очереди, где каждая операция должна завершиться перед началом следующей. Асинхронность позволяет выполнять операции как одним потоком, так и параллельно, и результаты могут быть получены позже, чем они были запрошены, или не получены вовсе, но это не повлияет на другие потоки
+          - generic [ref=e984]:
+            - generic [ref=e985]:
+              - generic [ref=e986]: Архитектура
+              - generic [ref=e987]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e988]: НОВАЯ
+            - button "В избранное" [ref=e989] [cursor=pointer]:
+              - img [ref=e990]
+            - generic [ref=e992]: по ресту какое?
+            - generic [ref=e993]: Cинхронное -рест, PostgreSQL, GraphQL Aсинхронное брокеры(кафка, Redis, RabbitMQ.)
+          - generic [ref=e994]:
+            - generic [ref=e995]:
+              - generic [ref=e996]: Архитектура
+              - generic [ref=e997]: Локализация дефектов
+            - generic "Карточка еще не изучалась" [ref=e998]: НОВАЯ
+            - button "В избранное" [ref=e999] [cursor=pointer]:
+              - img [ref=e1000]
+            - generic [ref=e1002]: Как локализуешь дефекты, бэк фронт?
+            - generic [ref=e1003]: Изолируем фронтенд от бэка, заменяем всё на заглушки, получаем ожидаемые респонсы.
+          - generic [ref=e1004]:
+            - generic [ref=e1005]:
+              - generic [ref=e1006]: Архитектура
+              - generic [ref=e1007]: Микросервис
+            - generic "Карточка еще не изучалась" [ref=e1008]: НОВАЯ
+            - button "В избранное" [ref=e1009] [cursor=pointer]:
+              - img [ref=e1010]
+            - generic [ref=e1012]: Микросервис недоступен, что делать?
+            - generic [ref=e1013]: Если микросервис недоступен, следует проверить логи и убедиться, что нет ошибок в соединении. В случае использования брокера сообщений, система продолжит работать, и сообщение будет доставлено, когда сервис снова станет доступен.
+          - generic [ref=e1014]:
+            - generic [ref=e1015]:
+              - generic [ref=e1016]: Архитектура
+              - generic [ref=e1017]: Тестирование бэкенда
+            - generic "Карточка еще не изучалась" [ref=e1018]: НОВАЯ
+            - button "В избранное" [ref=e1019] [cursor=pointer]:
+              - img [ref=e1020]
+            - generic [ref=e1022]: Работал ли с тестированием бэка?
+            - generic [ref=e1023]: Да, конечно, дергал ручки в Postman, pre-requests, post скрипты… Из Swagger брал данные для отправки, делал запрос и сверял. --- Дополнительный ответ --- Да, конечно, дергал ручки в постмане, пре-requests, пост скрипты… Из swagger брал то что нужно отправить, делал запрос и сверял
+          - generic [ref=e1024]:
+            - generic [ref=e1025]:
+              - generic [ref=e1026]: Безопасность
+              - generic [ref=e1027]: HTTP
+            - generic "Карточка еще не изучалась" [ref=e1028]: НОВАЯ
+            - button "В избранное" [ref=e1029] [cursor=pointer]:
+              - img [ref=e1030]
+            - generic [ref=e1032]: Как вы проводили тестирование безопасности (авторизация, SQL-инъекции)?
+            - generic [ref=e1033]: Тестирование безопасности включало проверку на слабые пароли, SQL-инъекции, XSS. Также проверяли, где передаются логин и пароль — они не должны передаваться в хедерах, должны быть в теле запроса и передаваться по HTTPS, с сертификатом TLS. --- Дополнительный ответ --- слабые пароли, SQL-инъекции, XSS + Проверить где передаются логин пароль, они не должны передаваться в хедерах, должны в теле и по https и должны быть сертификация TLS
+          - generic [ref=e1034]:
+            - generic [ref=e1035]:
+              - generic [ref=e1036]: Взаимодействие
+              - generic [ref=e1037]: HTTP
+            - generic "Карточка еще не изучалась" [ref=e1038]: НОВАЯ
+            - button "В избранное" [ref=e1039] [cursor=pointer]:
+              - img [ref=e1040]
+            - generic [ref=e1042]: Эстимация задач.
+            - generic [ref=e1043]: Эстимация задач проводится с учетом сложности задачи, предполагаемых трудозатрат и приоритетности. Обычно используется метод, основанный на истории задач и предположениях о времени их выполнения.
+          - generic [ref=e1044]:
+            - generic [ref=e1045]:
+              - generic [ref=e1046]: Взаимодействие
+              - generic [ref=e1047]: Адаптация нового сотрудника
+            - generic "Карточка еще не изучалась" [ref=e1048]: НОВАЯ
+            - button "В избранное" [ref=e1049] [cursor=pointer]:
+              - img [ref=e1050]
+            - generic [ref=e1052]: Как происходит адаптация нового сотрудника в команде?
+            - generic [ref=e1053]: Адаптация нового сотрудника включает введение в проект, обучение инструментам и процессам, ознакомление с кодовой базой и тестированием, а также регулярные проверки прогресса.
+          - generic [ref=e1054]:
+            - generic [ref=e1055]:
+              - generic [ref=e1056]: Взаимодействие
+              - generic [ref=e1057]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1058]: НОВАЯ
+            - button "В избранное" [ref=e1059] [cursor=pointer]:
+              - img [ref=e1060]
+            - generic [ref=e1062]: Демо для заказчика было?
+            - generic [ref=e1063]: Демо со стороны команды тестирования, PSI — аналитики, документация, отчет о тестировании, отчет о трудозатратах, тест кейсы, чек-листы, тест планы и баг-репорты.
+          - generic [ref=e1064]:
+            - generic [ref=e1065]:
+              - generic [ref=e1066]: Взаимодействие
+              - generic [ref=e1067]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1068]: НОВАЯ
+            - button "В избранное" [ref=e1069] [cursor=pointer]:
+              - img [ref=e1070]
+            - generic [ref=e1072]: Опишите ситуацию, когда вам пришлось работать под давлением.
+            - generic [ref=e1073]: Нужно было устранить баг (Race Condition). Быстрая диагностика, общение с разработчиками и приоритизация задач для минимизации воздействия.
+          - generic [ref=e1074]:
+            - generic [ref=e1075]:
+              - generic [ref=e1076]: Взаимодействие
+              - generic [ref=e1077]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1078]: НОВАЯ
+            - button "В избранное" [ref=e1079] [cursor=pointer]:
+              - img [ref=e1080]
+            - generic [ref=e1082]: Разработчик возвращает баг с пометкой 'не воспроизводится'. Что делать?
+            - generic [ref=e1083]: Когда баг помечен как 'не воспроизводится', важно провести дополнительные шаги для уточнения условий. Я могу запросить дополнительные логи или уточнить детали окружения, на котором баг был найден. Иногда полезно предложить шаги для воспроизведения с другими входными данными или конфигурациями.
+          - generic [ref=e1084]:
+            - generic [ref=e1085]:
+              - generic [ref=e1086]: Взаимодействие
+              - generic [ref=e1087]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1088]: НОВАЯ
+            - button "В избранное" [ref=e1089] [cursor=pointer]:
+              - img [ref=e1090]
+            - generic [ref=e1092]: Как можно повлиять на то, чтобы разработчики быстрее исправляли баги?
+            - generic [ref=e1093]: Четкие баг-репорты, приоритетные задачи и активное взаимодействие с разработчиками для быстрой локализации проблемы.
+          - generic [ref=e1094]:
+            - generic [ref=e1095]:
+              - generic [ref=e1096]: Взаимодействие
+              - generic [ref=e1097]: Взаимодействие
+            - generic "Карточка еще не изучалась" [ref=e1098]: НОВАЯ
+            - button "В избранное" [ref=e1099] [cursor=pointer]:
+              - img [ref=e1100]
+            - generic [ref=e1102]: Как происходит взаимодействие с аналитиками на этапе разработки требований?
+            - generic [ref=e1103]: Встречаемся с аналитиком, обсуждаем требования, уточняю возможные уязвимости в требованиях, как эти требования можно протестировать.
+          - generic [ref=e1104]:
+            - generic [ref=e1105]:
+              - generic [ref=e1106]: Взаимодействие
+              - generic [ref=e1107]: Взаимодействие с другими командами
+            - generic "Карточка еще не изучалась" [ref=e1108]: НОВАЯ
+            - button "В избранное" [ref=e1109] [cursor=pointer]:
+              - img [ref=e1110]
+            - generic [ref=e1112]: Взаимодействие с другими командами?
+            - generic [ref=e1113]: Взаимодействие с другими командами происходило через регулярные встречи и использование инструментов для коммуникации, таких как Slack и Jira.
+          - generic [ref=e1114]:
+            - generic [ref=e1115]:
+              - generic [ref=e1116]: Взаимодействие
+              - generic [ref=e1117]: Взаимодействие с командой
+            - generic "Карточка еще не изучалась" [ref=e1118]: НОВАЯ
+            - button "В избранное" [ref=e1119] [cursor=pointer]:
+              - img [ref=e1120]
+            - generic [ref=e1122]: С кем чаще общался в команде?
+            - generic [ref=e1123]: С аналитиками для уточнения требований и с разработчиками для решения технических вопросов.
+          - generic [ref=e1124]:
+            - generic [ref=e1125]:
+              - generic [ref=e1126]: Взаимодействие
+              - generic [ref=e1127]: Документация от аналитиков
+            - generic "Карточка еще не изучалась" [ref=e1128]: НОВАЯ
+            - button "В избранное" [ref=e1129] [cursor=pointer]:
+              - img [ref=e1130]
+            - generic [ref=e1132]: Документация от аналитиков была? Use case?
+            - generic [ref=e1133]: Да, были сценарии пользовательские, были даже критерии приемки, но мы улучшили этот момент, макет и аналитика.
+          - generic [ref=e1134]:
+            - generic [ref=e1135]:
+              - generic [ref=e1136]: Взаимодействие
+              - generic [ref=e1137]: Жизненный цикл
+            - generic "Карточка еще не изучалась" [ref=e1138]: НОВАЯ
+            - button "В избранное" [ref=e1139] [cursor=pointer]:
+              - img [ref=e1140]
+            - generic [ref=e1142]: Кто проводил демо?
+            - generic [ref=e1143]: Демо проводил технический лидер проекта, показывая результаты работы за спринт или релиз.
+          - generic [ref=e1144]:
+            - generic [ref=e1145]:
+              - generic [ref=e1146]: Взаимодействие
+              - generic [ref=e1147]: Жизненный цикл
+            - generic "Карточка еще не изучалась" [ref=e1148]: НОВАЯ
+            - button "В избранное" [ref=e1149] [cursor=pointer]:
+              - img [ref=e1150]
+            - generic [ref=e1152]: Как у вас проводилось PCT и кто его проводил?
+            - generic [ref=e1153]: PCT (Post-Release Test) проводился для проверки системы после релиза, обычно им занимались старшие тестировщики и QA-лидеры.
+          - generic [ref=e1154]:
+            - generic [ref=e1155]:
+              - generic [ref=e1156]: Взаимодействие
+              - generic [ref=e1157]: Жизненный цикл
+            - generic "Карточка еще не изучалась" [ref=e1158]: НОВАЯ
+            - button "В избранное" [ref=e1159] [cursor=pointer]:
+              - img [ref=e1160]
+            - generic [ref=e1162]: Что хорошего и что плохого у вас есть на проекте?
+            - generic [ref=e1163]: На проекте есть хорошие инструменты для тестирования и хорошо налаженная коммуникация в команде. Минус — иногда бывает перегрузка задачами, особенно перед релизами.
+          - generic [ref=e1164]:
+            - generic [ref=e1165]:
+              - generic [ref=e1166]: Взаимодействие
+              - generic [ref=e1167]: Инициирование проблемы
+            - generic "Карточка еще не изучалась" [ref=e1168]: НОВАЯ
+            - button "В избранное" [ref=e1169] [cursor=pointer]:
+              - img [ref=e1170]
+            - generic [ref=e1172]: Был ли инициатором проблемы, пример на демо или дейлике что рассказал, какую проблему решал?
+            - generic [ref=e1173]: Уточнение нужно.
+          - generic [ref=e1174]:
+            - generic [ref=e1175]:
+              - generic [ref=e1176]: Взаимодействие
+              - generic [ref=e1177]: Интересные задачи
+            - generic "Карточка еще не изучалась" [ref=e1178]: НОВАЯ
+            - button "В избранное" [ref=e1179] [cursor=pointer]:
+              - img [ref=e1180]
+            - generic [ref=e1182]: Расскажи пару интересных задач.
+            - generic [ref=e1183]: 1) Race Condition. 2) Был опыт взаимодействия с бизнесом вместе с аналитиком, делали фичу, которая работала хорошо, но через полгода на проде вылетела критическая ошибка из-за специфики мониторинга системы. Мы это решили моками и добавили алерты для проверки. --- Дополнительный ответ --- Rase Condition?, 2)….[**(История 2)**=был опыт взаимодействия с бизнесом вместе с аналитиком, мы делали…. там подгружалось то то то… фича работала здорово, но на проде спустя пол года вылетела критикал бага, как оказалось они подключили новый вид мониторинг систем, начали разбираться выяснять причину, у него из за специфики, не постоянно данные передавались, а прерывались и из за этого вылетала вот такая ситуация, мы это решили моками, то есть вывели закономерность что из за вот этого вылетала вот такая вот штука, и теперь когда передача прерывалась, мы их мокали, и делали алерт чтобы человек пошел проверил все ли впорядке с этим прибором .. в таком плане… ](https://www.notion.so/2-29c92bb3060d807bba5ff882a8a3e5f0?pvs=21)
+          - generic [ref=e1184]:
+            - generic [ref=e1185]:
+              - generic [ref=e1186]: Взаимодействие
+              - generic [ref=e1187]: Клиент-Сервер
+            - generic "Карточка еще не изучалась" [ref=e1188]: НОВАЯ
+            - button "В избранное" [ref=e1189] [cursor=pointer]:
+              - img [ref=e1190]
+            - generic [ref=e1192]: Чек-лист для погружения в новый проект?
+            - generic [ref=e1193]: 1) Продукт пощупать как пользователь. 2) Как устроена клиент-серверная архитектура проекта? 3) Как движутся данные от клиента к серверу, какая была авторизация?
+          - generic [ref=e1194]:
+            - generic [ref=e1195]:
+              - generic [ref=e1196]: Взаимодействие
+              - generic [ref=e1197]: Коммуникация с командой
+            - generic "Карточка еще не изучалась" [ref=e1198]: НОВАЯ
+            - button "В избранное" [ref=e1199] [cursor=pointer]:
+              - img [ref=e1200]
+            - generic [ref=e1202]: Как вы коммуницируете с командой?
+            - generic [ref=e1203]: Коммуникация с командой происходит через ежедневные стендапы, задачи распределяются через Jira и активно обсуждаются на встречах.
+          - generic [ref=e1204]:
+            - generic [ref=e1205]:
+              - generic [ref=e1206]: Взаимодействие
+              - generic [ref=e1207]: Конфликтные ситуации
+            - generic "Карточка еще не изучалась" [ref=e1208]: НОВАЯ
+            - button "В избранное" [ref=e1209] [cursor=pointer]:
+              - img [ref=e1210]
+            - generic [ref=e1212]: Как ты обычно справляешься с конфликтными ситуациями на работе?
+            - generic [ref=e1213]: С максимальной открытостью и пониманием. Важно слушать каждую сторону и пытаться найти компромиссное решение. --- Дополнительный ответ --- С максимальной открытостью и пониманием. Важно слушать каждую сторону и пытаться найти компромиссное решение. В случае необходимости могу предложить решение, которое подходит всем сторонам, или привлечь внешнего специалиста для урегулирования разногласий.
+          - generic [ref=e1214]:
+            - generic [ref=e1215]:
+              - generic [ref=e1216]: Взаимодействие
+              - generic [ref=e1217]: Неприемлемые действия
+            - generic "Карточка еще не изучалась" [ref=e1218]: НОВАЯ
+            - button "В избранное" [ref=e1219] [cursor=pointer]:
+              - img [ref=e1220]
+            - generic [ref=e1222]: Что максимально неприемлемо?
+            - generic [ref=e1223]: Дискриминация по полу.
+          - generic [ref=e1224]:
+            - generic [ref=e1225]:
+              - generic [ref=e1226]: Взаимодействие
+              - generic [ref=e1227]: Опыт проведения демо
+            - generic "Карточка еще не изучалась" [ref=e1228]: НОВАЯ
+            - button "В избранное" [ref=e1229] [cursor=pointer]:
+              - img [ref=e1230]
+            - generic [ref=e1232]: Опыт проведения демо?
+            - generic [ref=e1233]: Уточнение нужно.
+          - generic [ref=e1234]:
+            - generic [ref=e1235]:
+              - generic [ref=e1236]: Взаимодействие
+              - generic [ref=e1237]: Планирование задач на спринт
+            - generic "Карточка еще не изучалась" [ref=e1238]: НОВАЯ
+            - button "В избранное" [ref=e1239] [cursor=pointer]:
+              - img [ref=e1240]
+            - generic [ref=e1242]: Как у вас проходило планирование задач на спринт?
+            - generic [ref=e1243]: Планирование задач на спринт включает обсуждение задач с командой, оценку сложности и назначение задач по приоритетности.
+          - generic [ref=e1244]:
+            - generic [ref=e1245]:
+              - generic [ref=e1246]: Взаимодействие
+              - generic [ref=e1247]: Последний проект
+            - generic "Карточка еще не изучалась" [ref=e1248]: НОВАЯ
+            - button "В избранное" [ref=e1249] [cursor=pointer]:
+              - img [ref=e1250]
+            - generic [ref=e1252]: "Расскажи про свой последний проект: чем занимался, что тестировал?"
+            - generic [ref=e1253]: В последнем проекте занимался тестированием системы для онлайн-торговли. Тестировал функционал корзины, оформление заказов и интеграцию с платежной системой.
+          - generic [ref=e1254]:
+            - generic [ref=e1255]:
+              - generic [ref=e1256]: Взаимодействие
+              - generic [ref=e1257]: Пример задачи
+            - generic "Карточка еще не изучалась" [ref=e1258]: НОВАЯ
+            - button "В избранное" [ref=e1259] [cursor=pointer]:
+              - img [ref=e1260]
+            - generic [ref=e1262]: Опишите пример задачи от самого начального этапа до завершения.
+            - generic [ref=e1263]: Требования с аналитиками, план трудозатрат, код, юнит тесты, тестирование, деплой, мониторинг, обновление документации.
+          - generic [ref=e1264]:
+            - generic [ref=e1265]:
+              - generic [ref=e1266]: Взаимодействие
+              - generic [ref=e1267]: Процесс тестирования
+            - generic "Карточка еще не изучалась" [ref=e1268]: НОВАЯ
+            - button "В избранное" [ref=e1269] [cursor=pointer]:
+              - img [ref=e1270]
+            - generic [ref=e1272]: Какой у вас был процесс тестирования на проекте?
+            - generic [ref=e1273]: По скраму, спринт 2 недели, иногда 4 недели. --- Дополнительный ответ --- по скрам, 2, иногда 4 недели спринт
+          - generic [ref=e1274]:
+            - generic [ref=e1275]:
+              - generic [ref=e1276]: Взаимодействие
+              - generic [ref=e1277]: Процесс тестирования
+            - generic "Карточка еще не изучалась" [ref=e1278]: НОВАЯ
+            - button "В избранное" [ref=e1279] [cursor=pointer]:
+              - img [ref=e1280]
+            - generic [ref=e1282]: Расскажите немного про процесс тестирования в вашем проекте.
+            - generic [ref=e1283]: Анализ требований, написание тестовых кейсов, функциональное тестирование, регрессия, интеграционное тестирование.
+          - generic [ref=e1284]:
+            - generic [ref=e1285]:
+              - generic [ref=e1286]: Взаимодействие
+              - generic [ref=e1287]: Ревью кода
+            - generic "Карточка еще не изучалась" [ref=e1288]: НОВАЯ
+            - button "В избранное" [ref=e1289] [cursor=pointer]:
+              - img [ref=e1290]
+            - generic [ref=e1292]: Как у вас проходил процесс ревью кода?
+            - generic [ref=e1293]: Процесс ревью кода включает регулярные проверки кода другими разработчиками для улучшения качества и выявления ошибок.
+          - generic [ref=e1294]:
+            - generic [ref=e1295]:
+              - generic [ref=e1296]: Взаимодействие
+              - generic [ref=e1297]: Скрам vs канбан
+            - generic "Карточка еще не изучалась" [ref=e1298]: НОВАЯ
+            - button "В избранное" [ref=e1299] [cursor=pointer]:
+              - img [ref=e1300]
+            - generic [ref=e1302]: Отличие скрама от канбана?
+            - generic [ref=e1303]: По классическому скраму, но элементы канбана присутствуют.
+          - generic [ref=e1304]:
+            - generic [ref=e1305]:
+              - generic [ref=e1306]: Взаимодействие
+              - generic [ref=e1307]: Тестирование требований
+            - generic "Карточка еще не изучалась" [ref=e1308]: НОВАЯ
+            - button "В избранное" [ref=e1309] [cursor=pointer]:
+              - img [ref=e1310]
+            - generic [ref=e1312]: На каком этапе тестирование требований, когда подключается тестировщик?
+            - generic [ref=e1313]: По сути, было бы здорово подключаться с начала с аналитиком, но по-разному, от фичи к фиче.
+          - generic [ref=e1314]:
+            - generic [ref=e1315]:
+              - generic [ref=e1316]: Взаимодействие
+              - generic [ref=e1317]: Уровень самостоятельности
+            - generic "Карточка еще не изучалась" [ref=e1318]: НОВАЯ
+            - button "В избранное" [ref=e1319] [cursor=pointer]:
+              - img [ref=e1320]
+            - generic [ref=e1322]: Уровень самостоятельности, как решаешь вопросы с командой?
+            - generic [ref=e1323]: Стремлюсь быть самостоятельным в решении задач, но при этом открыт для обсуждений и помощи от команды. Важна коммуникация с коллегами.
+          - generic [ref=e1324]:
+            - generic [ref=e1325]:
+              - generic [ref=e1326]: Взаимодействие
+              - generic [ref=e1327]: Чтение материалов
+            - generic "Карточка еще не изучалась" [ref=e1328]: НОВАЯ
+            - button "В избранное" [ref=e1329] [cursor=pointer]:
+              - img [ref=e1330]
+            - generic [ref=e1332]: Что читал в последнее время, статьи каналы?
+            - generic [ref=e1333]: Look Live QA, Lucy Ladybug QA, GPT, habr.
+          - generic [ref=e1334]:
+            - generic [ref=e1335]:
+              - generic [ref=e1336]: Документация
+              - generic [ref=e1337]: API
+            - generic "Карточка еще не изучалась" [ref=e1338]: НОВАЯ
+            - button "В избранное" [ref=e1339] [cursor=pointer]:
+              - img [ref=e1340]
+            - generic [ref=e1342]: Какая документация к вам попадает?
+            - generic [ref=e1343]: Техническое задание, API, Архитектура. --- Дополнительный ответ --- техническое требования, API, Архитектура
+          - generic [ref=e1344]:
+            - generic [ref=e1345]:
+              - generic [ref=e1346]: Документация
+              - generic [ref=e1347]: API
+            - generic "Карточка еще не изучалась" [ref=e1348]: НОВАЯ
+            - button "В избранное" [ref=e1349] [cursor=pointer]:
+              - img [ref=e1350]
+            - generic [ref=e1352]: Понимание того, как ляжет новое требование относительно всей архитектуры
+            - generic [ref=e1353]: Потребуется ли изменение БД (добавление индексов, нагрузка на БД), совместимость с API, производительность.
+          - generic [ref=e1354]:
+            - generic [ref=e1355]:
+              - generic [ref=e1356]: Документация
+              - generic [ref=e1357]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1358]: НОВАЯ
+            - button "В избранное" [ref=e1359] [cursor=pointer]:
+              - img [ref=e1360]
+            - generic [ref=e1362]: Чем отличаются серьёзность и приоритет бага?
+            - generic [ref=e1363]: "**Приоритет** определяет, насколько быстро нужно устранить дефект (команда). **Серьезность** указывает на воздействие дефекта на работоспособность или безопасность системы (бизнес)."
+          - generic [ref=e1364]:
+            - generic [ref=e1365]:
+              - generic [ref=e1366]: Документация
+              - generic [ref=e1367]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1368]: НОВАЯ
+            - button "В избранное" [ref=e1369] [cursor=pointer]:
+              - img [ref=e1370]
+            - generic [ref=e1372]: Какие поля обязательны для заполнения при заведении бага?
+            - generic [ref=e1373]: Название (компонент + ошибка), описание проблемы, предусловие, шаги воспроизведения, ожидаемый/фактический результат, окружение и приоритет/серьезность, логи, информацию о системе и версию ПО, скринрекорд.
+          - generic [ref=e1374]:
+            - generic [ref=e1375]:
+              - generic [ref=e1376]: Документация
+              - generic [ref=e1377]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1378]: НОВАЯ
+            - button "В избранное" [ref=e1379] [cursor=pointer]:
+              - img [ref=e1380]
+            - generic [ref=e1382]: Что такое локализация бага?
+            - generic [ref=e1383]: Локализация бага — это процесс поиска и определения точного места, где баг возникает в коде или системе, чтобы его можно было исправить.
+          - generic [ref=e1384]:
+            - generic [ref=e1385]:
+              - generic [ref=e1386]: Документация
+              - generic [ref=e1387]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1388]: НОВАЯ
+            - button "В избранное" [ref=e1389] [cursor=pointer]:
+              - img [ref=e1390]
+            - generic [ref=e1392]: Опишите процесс работы с баг-репортами.
+            - generic [ref=e1393]: Необходимо правильно оформить баг-репорт, указав все условия воспроизведения, логи, окружение и шаги. После этого баг отправляется на разработку и тестируется после исправления.
+          - generic [ref=e1394]:
+            - generic [ref=e1395]:
+              - generic [ref=e1396]: Документация
+              - generic [ref=e1397]: Выбор тестов для регресса
+            - generic "Карточка еще не изучалась" [ref=e1398]: НОВАЯ
+            - button "В избранное" [ref=e1399] [cursor=pointer]:
+              - img [ref=e1400]
+            - generic [ref=e1402]: Как выбираете тесты для регресса из всего скоупа тестов, и как понимаете, что регресс покрывает всё, что нужно?
+            - generic [ref=e1403]: Смотрю, что было изменено, ключевая бизнес-логика, области рисков.
+          - generic [ref=e1404]:
+            - generic [ref=e1405]:
+              - generic [ref=e1406]: Документация
+              - generic [ref=e1407]: Документация
+            - generic "Карточка еще не изучалась" [ref=e1408]: НОВАЯ
+            - button "В избранное" [ref=e1409] [cursor=pointer]:
+              - img [ref=e1410]
+            - generic [ref=e1412]: Как проверить (принять, или на доработку) требование?
+            - generic [ref=e1413]: Полнота, ясность, тестируемость, трассируемость, конкретизация на этапах(например 1000 запросов в сек) -Примеры незавершенности требования? =Неясные формулировки, отсутствие деталей, критериев приемки, отсутствие контекста(например:система должна быть быстрой и удобной)
+          - generic [ref=e1414]:
+            - generic [ref=e1415]:
+              - generic [ref=e1416]: Документация
+              - generic [ref=e1417]: Документация
+            - generic "Карточка еще не изучалась" [ref=e1418]: НОВАЯ
+            - button "В избранное" [ref=e1419] [cursor=pointer]:
+              - img [ref=e1420]
+            - generic [ref=e1422]: Опыт оценки трудозатрат, регресс еще чего то…
+            - generic [ref=e1423]: разбивал задачи на мелкие, искал аналогичные уже выполненные для оценки времени. Регресс зависит от изменения функционала, что было затронуто
+          - generic [ref=e1424]:
+            - generic [ref=e1425]:
+              - generic [ref=e1426]: Документация
+              - generic [ref=e1427]: Начало тестирования требований
+            - generic "Карточка еще не изучалась" [ref=e1428]: НОВАЯ
+            - button "В избранное" [ref=e1429] [cursor=pointer]:
+              - img [ref=e1430]
+            - generic [ref=e1432]: Как вы начинаете тестирование требований?
+            - generic [ref=e1433]: Тестирование требований начинается с анализа документации, понимания бизнес-логики и составления тестовых кейсов, которые охватывают все возможные сценарии.
+          - generic [ref=e1434]:
+            - generic [ref=e1435]:
+              - generic [ref=e1436]: Документация
+              - generic [ref=e1437]: Незавершенные требования
+            - generic "Карточка еще не изучалась" [ref=e1438]: НОВАЯ
+            - button "В избранное" [ref=e1439] [cursor=pointer]:
+              - img [ref=e1440]
+            - generic [ref=e1442]: Примеры незавершенности требования?
+            - generic [ref=e1443]: "Неясные формулировки, отсутствие деталей, критериев приемки, отсутствие контекста (например: система должна быть быстрой и удобной)."
+          - generic [ref=e1444]:
+            - generic [ref=e1445]:
+              - generic [ref=e1446]: Документация
+              - generic [ref=e1447]: Оценка задач
+            - generic "Карточка еще не изучалась" [ref=e1448]: НОВАЯ
+            - button "В избранное" [ref=e1449] [cursor=pointer]:
+              - img [ref=e1450]
+            - generic [ref=e1452]: Как происходит оценка задач в вашем проекте?
+            - generic [ref=e1453]: Оценка задач происходит на основе анализа сложности, трудозатрат, а также приоритетности для бизнеса и клиентов.
+          - generic [ref=e1454]:
+            - generic [ref=e1455]:
+              - generic [ref=e1456]: Документация
+              - generic [ref=e1457]: Оценка трудозатрат
+            - generic "Карточка еще не изучалась" [ref=e1458]: НОВАЯ
+            - button "В избранное" [ref=e1459] [cursor=pointer]:
+              - img [ref=e1460]
+            - generic [ref=e1462]: Опыт оценки трудозатрат, регресс и других
+            - generic [ref=e1463]: Разбивал задачи на мелкие, искал аналогичные уже выполненные для оценки времени. Регресс зависит от изменения функционала, что было затронуто.
+          - generic [ref=e1464]:
+            - generic [ref=e1465]:
+              - generic [ref=e1466]: Документация
+              - generic [ref=e1467]: Пример high priority-trivial severity
+            - generic "Карточка еще не изучалась" [ref=e1468]: НОВАЯ
+            - button "В избранное" [ref=e1469] [cursor=pointer]:
+              - img [ref=e1470]
+            - generic [ref=e1472]: Пример high priority-trivial severity
+            - generic [ref=e1473]: Сломалась ссылка на мануал, основной сервис работает и данные в безопасности. Уведомление приходит с неправильной формулировкой. Важность высокая, потому что влияет на восприятие пользователем, но это не критично для работы системы. Ошибка в расчете суммы налога при оформлении заказа для определенных товаров.
+          - generic [ref=e1474]:
+            - generic [ref=e1475]:
+              - generic [ref=e1476]: Документация
+              - generic [ref=e1477]: Приоритеты и срочность
+            - generic "Карточка еще не изучалась" [ref=e1478]: НОВАЯ
+            - button "В избранное" [ref=e1479] [cursor=pointer]:
+              - img [ref=e1480]
+            - generic [ref=e1482]: Приоритеты и срочность
+            - generic [ref=e1483]: Приоритеты от тривиал до блокера (low, medium, high priority). Срочности нет, но в Jira есть список, где сверху — срочные задачи, а ниже — минимальные. --- Дополнительный ответ --- приоритеты от тривиал до блокера(low,medium,hight priority), а критичность низкая, средняя и высокая, у нас нет срочности у нас есть список, что наверху-это срочное, что ниже по доске в jira -это минимальная
+          - generic [ref=e1484]:
+            - generic [ref=e1485]:
+              - generic [ref=e1486]: Документация
+              - generic [ref=e1487]: Проверка требований
+            - generic "Карточка еще не изучалась" [ref=e1488]: НОВАЯ
+            - button "В избранное" [ref=e1489] [cursor=pointer]:
+              - img [ref=e1490]
+            - generic [ref=e1492]: Как проверить требование?
+            - generic [ref=e1493]: Требование проверяется на полноту, ясность, тестируемость, трассируемость и конкретизацию на этапах (например, 1000 запросов в секунду).
+          - generic [ref=e1494]:
+            - generic [ref=e1495]:
+              - generic [ref=e1496]: Документация
+              - generic [ref=e1497]: Тестовая документация
+            - generic "Карточка еще не изучалась" [ref=e1498]: НОВАЯ
+            - button "В избранное" [ref=e1499] [cursor=pointer]:
+              - img [ref=e1500]
+            - generic [ref=e1502]: Какую тестовую документацию писал?
+            - generic [ref=e1503]: Чек-лист, тест-кейс, отчет о тестировании.
+          - generic [ref=e1504]:
+            - generic [ref=e1505]:
+              - generic [ref=e1506]: Документация
+              - generic [ref=e1507]: Чек-листы и тест-планы
+            - generic "Карточка еще не изучалась" [ref=e1508]: НОВАЯ
+            - button "В избранное" [ref=e1509] [cursor=pointer]:
+              - img [ref=e1510]
+            - generic [ref=e1512]: Как вы пишете чек-листы и тест-планы?
+            - generic [ref=e1513]: На основе требований и функциональных характеристик системы, обеспечивая полное покрытие всех функций и сценариев использования. Чек-листы включают в себя списки проверок, а тест-планы описывают подробности тестирования, стратегии и ресурсы.
+          - generic [ref=e1514]:
+            - generic [ref=e1515]:
+              - generic [ref=e1516]: Опыт
+              - generic [ref=e1517]: Истории
+            - generic "Карточка еще не изучалась" [ref=e1518]: НОВАЯ
+            - button "В избранное" [ref=e1519] [cursor=pointer]:
+              - img [ref=e1520]
+            - generic [ref=e1522]: (История)-как был организован процесс тестирования в команде? Кто ставил задачи, какого вида задачи были? Как тестировали, что делали?
+            - generic [ref=e1523]: В зависимости от фичи, если были уже подобные какие то, у меня в резюме еще написано что я ввел left shiftинг, я его попытался организовать, я по сути его для себя и сделал и сейчас этим пользуется вся команда -что это такое? =это когда мы пытаемся реализовать процесс тестирования еще до того как разработчики начнут что то реализовать -ничеси, как такое организовать? =допустим у нас приходит какая то задача от бизнеса, опять же если это новая фича-могу я подключиться, а если что то старое, то наш лид забирает, передает нам-мы делаем дальше свою работу После этого идет анализ требований, мы это делаем всей командой, у нас 4 бэка 2 фронта, 4 qa, проджект, аналитик и девопс на несколько команд Анализируем требования, планируем что может происходить, если старая фича, мы тест кейсы можем накидывать еще до того как разработчики приступили к работе, то есть мы можем весь план отработать, по api запросам, и потом когда по сути фича выкатывается(на тестирование), остается только внести небольшие правки в тест кейсы, дополнить, может что то убрать по минимуму и очень ускоряется весь процесс разработки, то есть все этапы проходят намного быстрей при таком подходе А если новая фича, требования на нее могут очень часто меняться, соответственно все твои тест кейсы, все наработки и задумки могут рухнуть и время в пустоту потратишь, но в целом это все равно ускоряет процесс, допустим требования изменились, но уже окончательно-ты можешь тест кейсы которые тебе не нужны сразу откидывать и будешь понимать с какими зонами тебе нужно будет работать =Дальше идем, разработчики выкатили на тестовый, мы протестировали готовыми кейсами, либо не с готовыми, мы протестили, и начинаем регресс гонять уже на препроде У нас sandbox такой на котором мы можем кубером поды поднимать, сейчас это разработчики грубо говоря командами нам скидывают, а когда то давно это тоже приходилось все самому прописывать, то есть поднять два сервиса себе и между ними взаимодействовать (тестировать) вот когда мы это сделаем, мы начинаем гонять регресс на стейдже препрод-и когда все окей, мы созваниваемся и куа лид у нас принимает решение можно ли уже закидывать фичи =По тестированию, или дополнить, у нас на апишку документация находится в свагере, я знаю что можно вызывать методы через свагер, но мы его чисто как доку используем Так еще у нас ELC-стэк, если мы про логи говорим, если про серверные ошибки, то у нас СENTRY еще есть, разработчикам нравится, нам тоже - если по серверу какие то ошибки, то в сентри зашел, по тегам нашел что тебе нужно, закинул разрабу и очень быстро локализация проходит бага
+          - generic [ref=e1524]:
+            - generic [ref=e1525]:
+              - generic [ref=e1526]: Опыт
+              - generic [ref=e1527]: Истории
+            - generic "Карточка еще не изучалась" [ref=e1528]: НОВАЯ
+            - button "В избранное" [ref=e1529] [cursor=pointer]:
+              - img [ref=e1530]
+            - generic [ref=e1532]: "**(История 2)**"
+            - generic [ref=e1533]: был опыт взаимодействия с бизнесом вместе с аналитиком, мы делали…. там подгружалось то то то… фича работала здорово, но на проде спустя пол года вылетела критикал бага, как оказалось они подключили новый вид мониторинг систем, начали разбираться выяснять причину, у него из за специфики, не постоянно данные передавались, а прерывались и из за этого вылетала вот такая ситуация, мы это решили моками, то есть вывели закономерность что из за вот этого вылетала вот такая вот штука, и теперь когда передача прерывалась, мы их мокали, и делали алерт чтобы человек пошел проверил все ли впорядке с этим прибором .. в таком плане…
+          - generic [ref=e1534]:
+            - generic [ref=e1535]:
+              - generic [ref=e1536]: Опыт
+              - generic [ref=e1537]: Истории
+            - generic "Карточка еще не изучалась" [ref=e1538]: НОВАЯ
+            - button "В избранное" [ref=e1539] [cursor=pointer]:
+              - img [ref=e1540]
+            - generic [ref=e1542]: Процессы говно, что делать? с чего начать?
+            - generic [ref=e1543]: 1)понять что мы хотим тестировать 2)поссчитать какие тесты трудозатратны для ручника, какие сложно автоматизировать, после этого мы можем начать внедрять логирование, внедрить метрики, для понимания насколько наши тесты хороши, продумал бы генерацию тестовых данных, и очищение, чтобы после автотестов мы могли очищать то что уже не будет использоваться добавили бы api классы, чтоб для каждой api, для простоты расширения при изменениях в api
+          - generic [ref=e1544]:
+            - generic [ref=e1545]:
+              - generic [ref=e1546]: Опыт
+              - generic [ref=e1547]: Истории
+            - generic "Карточка еще не изучалась" [ref=e1548]: НОВАЯ
+            - button "В избранное" [ref=e1549] [cursor=pointer]:
+              - img [ref=e1550]
+            - generic [ref=e1552]: (История)тест кейсы писал? Для каких видов тестирования?
+            - generic [ref=e1553]: для функционального, обычно процесс был так построен что я получал задачу, вычитывал требования, если были вопросы-уточнял, потом начинал тестировать, писал короткий чек лист, потом тестировал задачу, и по нему уже писал тест кейс, потому что у нас так было устроено, потому что протестировать и отдать было важнее, нежели написать тестовую документацию в полном объеме, поэтому в основном функциональное тестирование, testrail тесткейсы и потом регресс тоже по ним проходился
+          - generic [ref=e1554]:
+            - generic [ref=e1555]:
+              - generic [ref=e1556]: Опыт
+              - generic [ref=e1557]: Истории
+            - generic "Карточка еще не изучалась" [ref=e1558]: НОВАЯ
+            - button "В избранное" [ref=e1559] [cursor=pointer]:
+              - img [ref=e1560]
+            - generic [ref=e1562]: (История)-как был выстроен жизненный цикл тестирования? когда начинали тестировать, мб тест кейсы писали?
+            - generic [ref=e1563]: "от бизнеса поступали задачи-сист аналитик-дока-встреча триамигостолк-я правлю доку, подмечаю какие то непонятные для меня моменты, у меня уже есть готовый черновик чек листа скажем так, слушаю аналитика разраба, разраб рассказывает как он будет тестировать-разрабатывать Затем я составляю пользовательские сценарии, потом я пишу чек лист и я пишу тест кейсы, в testrail Потом задача переходит в ready for test. Я беру задачу в тестирование-Тестирую фичу на стенде, потом сливаю в дев, дев разворачиваю, снова тестирую на деве+регресс. Если я развернул фича ветку и на этом этапе у меня какие-то баги, я пишу об этом в лс разработчикам либо фронту либо беку, беку ссылку на лог в кибане, скриншоты, скринкасты, чтоы был понятен путь воспроизведения. Если на деве развернул и прохожу регресс+функциональное тестирование, то тут я уже завожу баг репорты, после чего безопасники, все это разруливаю, как мы идем в релиз: назначаем дату релиза, я сливаю эту релизную ветку которая была сделана из дева в мастер и тегаю ее со стандартным семантическим версионированием, скидываю теги девопсу, он разворачивает на стейдже, проверяю, он разворачивает на проде, проверяю, если все окей радуемся, если нет, откатываемся, фиксим баги"
+          - generic [ref=e1564]:
+            - generic [ref=e1565]:
+              - generic [ref=e1566]: Опыт
+              - generic [ref=e1567]: Истории
+            - generic "Карточка еще не изучалась" [ref=e1568]: НОВАЯ
+            - button "В избранное" [ref=e1569] [cursor=pointer]:
+              - img [ref=e1570]
+            - generic [ref=e1572]: (История)-от кого приходит задача, в каком виде?
+            - generic [ref=e1573]: у нас jira, если это новая фича, у нас тех лид узнает об этом заранее, я присутствую на этапе, слушая что бизнес хочет, могу какие то вопросы задавать и подобное, чтоб потом с требованиями у нас накладок не было и мы могли это обсудить заранее Если у нас функциональность которую мы уже делали или похожую-то у нас лид ходит на эти встречи и потом переводит нам что нужно сделать -как тестировать прорабатывать набор тест кейсов, нужно ли только функциональное тестирование делать или тут нужно еще какой то нагрузочный делать? У нас нагрузочный, это отдельные ребята занимаются, и в основном они не грузят отдельное формочки, а грузят сервисы на отказоустойчивость, я понимаю как это сделать, вот опять же про потоки ты говорил-много потоков создать, которые будут отправлять запросы грубо говоря, тогда это и получится функциональное тестирование, но у нас этим другие ребята занимаются
+          - generic [ref=e1574]:
+            - generic [ref=e1575]:
+              - generic [ref=e1576]: Процессы
+              - generic [ref=e1577]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1578]: НОВАЯ
+            - button "В избранное" [ref=e1579] [cursor=pointer]:
+              - img [ref=e1580]
+            - generic [ref=e1582]: Какие критерии запуска и завершения тестирования?
+            - generic [ref=e1583]: Критерии запуска включают готовность приложения для тестирования, наличие тестовых данных, документации, оценка времени. Критерии завершения — все тесты пройдены, баги исправлены, тестирование завершено с отчетом.
+          - generic [ref=e1584]:
+            - generic [ref=e1585]:
+              - generic [ref=e1586]: Процессы
+              - generic [ref=e1587]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1588]: НОВАЯ
+            - button "В избранное" [ref=e1589] [cursor=pointer]:
+              - img [ref=e1590]
+            - generic [ref=e1592]: Как вы получаете фикс бага?
+            - generic [ref=e1593]: Фикс бага получаем через систему трекинга, такие как Jira, после чего проводим повторное тестирование, чтобы убедиться в исправлении проблемы.
+          - generic [ref=e1594]:
+            - generic [ref=e1595]:
+              - generic [ref=e1596]: Процессы
+              - generic [ref=e1597]: Взаимодействие
+            - generic "Карточка еще не изучалась" [ref=e1598]: НОВАЯ
+            - button "В избранное" [ref=e1599] [cursor=pointer]:
+              - img [ref=e1600]
+            - generic [ref=e1602]: А для тебя с опытом это понятие изменилось?
+            - generic [ref=e1603]: Я бы сказал, что это также анализ требований, понимание того, что нужно бизнесу и пользователям, подключение на планировании к разработке, определение слабых мест, исправление документации и требований, если они не однозначны или не совсем верно описаны.
+          - generic [ref=e1604]:
+            - generic [ref=e1605]:
+              - generic [ref=e1606]: Процессы
+              - generic [ref=e1607]: Жизненный цикл
+            - generic "Карточка еще не изучалась" [ref=e1608]: НОВАЯ
+            - button "В избранное" [ref=e1609] [cursor=pointer]:
+              - img [ref=e1610]
+            - generic [ref=e1612]: Жизненный цикл релиза?
+            - generic [ref=e1613]: Релиз привязан к фичам, катим в прод после того как фича реализована и протестирована.
+          - generic [ref=e1614]:
+            - generic [ref=e1615]:
+              - generic [ref=e1616]: Процессы
+              - generic [ref=e1617]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1618]: НОВАЯ
+            - button "В избранное" [ref=e1619] [cursor=pointer]:
+              - img [ref=e1620]
+            - generic [ref=e1622]: Что вы понимаете под ошибкой?
+            - generic [ref=e1623]: Ошибка — это, когда кнопка на странице не выполняет действие, или данные не сохраняются.
+          - generic [ref=e1624]:
+            - generic [ref=e1625]:
+              - generic [ref=e1626]: Тестирование
+              - generic [ref=e1627]: API
+            - generic "Карточка еще не изучалась" [ref=e1628]: НОВАЯ
+            - button "В избранное" [ref=e1629] [cursor=pointer]:
+              - img [ref=e1630]
+            - generic [ref=e1632]: Что такое пирамида тестирования?
+            - generic [ref=e1633]: "Пирамида тестирования — это концепция, которая демонстрирует, как распределяются тесты: внизу находятся модульные (unit) тесты, интеграционные (API тесты) и системные (E2E тесты). Модульные тесты имеют большое покрытие, требуют меньших затрат на поддержку и более стабильны. Двигаемся вверх: API тесты — покрытие меньше, затраты выше, стабильности меньше. Системные тесты самые дорогие, их покрытие также меньше, и они менее стабильны."
+          - generic [ref=e1634]:
+            - generic [ref=e1635]:
+              - generic [ref=e1636]: Тестирование
+              - generic [ref=e1637]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e1638]: НОВАЯ
+            - button "В избранное" [ref=e1639] [cursor=pointer]:
+              - img [ref=e1640]
+            - generic [ref=e1642]: Тестирование
+            - generic [ref=e1643]: Тестирование — это сверка ожиданий и реального результата для идентификации багов функциональности проекта или продукта с действительностью, проверка соответствия качеству требованиям. --- Дополнительный ответ --- теcтирование-это сверка ожид и реально результата для идентификации багов функциональности проекта продукта с действительностью, проверяем соответствие качеству требованиям -а для тебя с опытом это понятие изменилось? =я бы сказал еще это анализ требований, понимание того что нужно бизнесу и пользователям, подключение на планировании к разработке, определение слабых мест, исправление документации и требований, если они не однозначны или не совсем верно описаны
+          - generic [ref=e1644]:
+            - generic [ref=e1645]:
+              - generic [ref=e1646]: Тестирование
+              - generic [ref=e1647]: Виды тестирования
+            - generic "Карточка еще не изучалась" [ref=e1648]: НОВАЯ
+            - button "В избранное" [ref=e1649] [cursor=pointer]:
+              - img [ref=e1650]
+            - generic [ref=e1652]: интеграционных тестирование?
+            - generic [ref=e1653]: Тестирование интеграций включало проверку API, взаимодействие с внешними сервисами и мониторинг потоков данных между микросервисами в том числе взаимодействие с внешними сервисами, например, с платежной системой. =была только одна интеграция с платежкой, она довольно просто реализовывалась, платежка нам генерирует ссылку, тестирование довольно простое, есть веб форма в которую в кнопку встраивается ссылка, я просто должен проверить что при нажатии происходит редирект на страницу платежки - С точки зрения бэка вы проверяли этот редирект или достаточно было того что перешли на экран? -да, достаточно было просто редиректа на эту систему, так как это уже внешняя платежка, это уже их ответственность как там дальше
+          - generic [ref=e1654]:
+            - generic [ref=e1655]:
+              - generic [ref=e1656]: Тестирование
+              - generic [ref=e1657]: Виды тестирования
+            - generic "Карточка еще не изучалась" [ref=e1658]: НОВАЯ
+            - button "В избранное" [ref=e1659] [cursor=pointer]:
+              - img [ref=e1660]
+            - generic [ref=e1662]: типы тестирования
+            - generic [ref=e1663]: функц-это то что относится напрямую к продукту, это когда мы проверяем конкретно его взаимодействие по логике, по шаблону происходит Нефункц-требования со стороны пользовательского интерфейса, безопасность…
+          - generic [ref=e1664]:
+            - generic [ref=e1665]:
+              - generic [ref=e1666]: Тестирование
+              - generic [ref=e1667]: Виды тестирования
+            - generic "Карточка еще не изучалась" [ref=e1668]: НОВАЯ
+            - button "В избранное" [ref=e1669] [cursor=pointer]:
+              - img [ref=e1670]
+            - generic [ref=e1672]: Регрессионное тестирование
+            - generic [ref=e1673]: Проводится после внесения изменений в систему, таких как исправления багов или добавление новых функций =Это почти верхушка пирамиды тестирования, это прогонка, проверка всего функционала приложения, продукта, от и до это наиболее сложный и трудозатратный процесс, который автотестами лучше покрывать, потому что там присутствуют какие то стабильные вещи, которые редко меняются и это лучше прогонять каждый релиз, какой то серьезный билд, у нас было так что мы раз в полторы в две недели это делали -зачем он нужен? =Он нужен, чтобы прогнать, полностью функционально удостовериться, что наше приложение, сервис работает, все модули включены, все взаимодействуют как следует, особенно критическая бизнес логика
+          - generic [ref=e1674]:
+            - generic [ref=e1675]:
+              - generic [ref=e1676]: Тестирование
+              - generic [ref=e1677]: Количество браузеров
+            - generic "Карточка еще не изучалась" [ref=e1678]: НОВАЯ
+            - button "В избранное" [ref=e1679] [cursor=pointer]:
+              - img [ref=e1680]
+            - generic [ref=e1682]: Сколько браузеров тестировать?
+            - generic [ref=e1683]: Количество браузеров зависит от требований аналитика.
+          - generic [ref=e1684]:
+            - generic [ref=e1685]:
+              - generic [ref=e1686]: Тестирование
+              - generic [ref=e1687]: Кроссбраузерное тестирование
+            - generic "Карточка еще не изучалась" [ref=e1688]: НОВАЯ
+            - button "В избранное" [ref=e1689] [cursor=pointer]:
+              - img [ref=e1690]
+            - generic [ref=e1692]: Кроссбраузерное тестирование, каким инструментом пользовался?
+            - generic [ref=e1693]: Для кроссбраузерного тестирования использовал Selenium и BrowserStack для проверки работоспособности на разных браузерах и устройствах.
+          - generic [ref=e1694]:
+            - generic [ref=e1695]:
+              - generic [ref=e1696]: Тестирование
+              - generic [ref=e1697]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1698]: НОВАЯ
+            - button "В избранное" [ref=e1699] [cursor=pointer]:
+              - img [ref=e1700]
+            - generic [ref=e1702]: DoD
+            - generic [ref=e1703]: "Definition of done (DoD) Критерии, которым должна соответствовать задача, прежде чем она будет считаться завершенной: 1. Все запланированные тест-кейсы выполнены 2. Все найденные баги зарегистрированы в баг-трекинговой системе 3. Все критические и блокирующие баги исправлены 4. Ретест и регрессионное тестироважние проведены успешно 5. Итоговый отчет подготовлен и передан команде 6. Обновлена документация по итогам тестирования"
+          - generic [ref=e1704]:
+            - generic [ref=e1705]:
+              - generic [ref=e1706]: Тестирование
+              - generic [ref=e1707]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1708]: НОВАЯ
+            - button "В избранное" [ref=e1709] [cursor=pointer]:
+              - img [ref=e1710]
+            - generic [ref=e1712]: New feature test - тестирование новой фичи, и не затрагивает старый функционал
+            - generic [ref=e1713]: то чем мы будем чаще всего заниматься
+          - generic [ref=e1714]:
+            - generic [ref=e1715]:
+              - generic [ref=e1716]: Тестирование
+              - generic [ref=e1717]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1718]: НОВАЯ
+            - button "В избранное" [ref=e1719] [cursor=pointer]:
+              - img [ref=e1720]
+            - generic [ref=e1722]: confirmation (подтверждающее) - перед регрессом для проверки фикса багов
+            - generic [ref=e1723]: Подтверждающее тестирование 1) убедиться, что неудачные тестовые случаи не попали в новую сборку 2) после исправления ошибок разработчиками 3) применяется только для неудачных тестов 4) можно сделать до регрессионного тестирования
+          - generic [ref=e1724]:
+            - generic [ref=e1725]:
+              - generic [ref=e1726]: Тестирование
+              - generic [ref=e1727]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1728]: НОВАЯ
+            - button "В избранное" [ref=e1729] [cursor=pointer]:
+              - img [ref=e1730]
+            - generic [ref=e1732]: dev
+            - generic [ref=e1733]: разрабы new feature test
+          - generic [ref=e1734]:
+            - generic [ref=e1735]:
+              - generic [ref=e1736]: Тестирование
+              - generic [ref=e1737]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1738]: НОВАЯ
+            - button "В избранное" [ref=e1739] [cursor=pointer]:
+              - img [ref=e1740]
+            - generic [ref=e1742]: id, module, title, str, OP, ФР, attachment, priority, severity, environment
+            - generic [ref=e1743]: "STR (Steps to Reproduce): ОР - ожидаемый результат ФР - фактический результат priority - приоритет severity - серьезность environment - окружающая среда Уникальный идентификатор (ID) — присваивается автоматически системой при создании баг-репорта. Тема (краткое описание, Summary) — кратко сформулированный смысл, отвечающий на вопросы. Что? Где? Когда? (при каких условиях)? Подробное описание (Description) — более широкое описание (указывается опционально). Шаги для воспроизведения (Steps To Reproduce) — описание четкой последовательности действий, которая привела к выявлению. В шагах воспроизведения должен быть описан каждый шаг, вплоть до конкретных вводимых значений, если они играют роль в воспроизведении недочетов. Фактический результат (Actual result) — описывается поведение системы на момент обнаружения дефекта в ней. чаще всего, содержит краткое описание некорректного поведения (может совпадать с темой отчета). Ожидаемый результат (Expected result) — описание того, как именно должна работать система в соответствии с документацией. Вложения (Attachments) — скриншоты, видео или лог-файлы. Серьезность (важность, Severity) — характеризует влияние дефекта на работоспособность приложения. Приоритет (срочность, Priority) — указывает на очередность выполнения задачи или устранения. Статус (Status) — определяет текущее состояние дефекта. Статусы могут быть разными в разных баг-трекинговых системах. Окружение (Environment) – окружение, на котором воспроизводится баг."
+          - generic [ref=e1744]:
+            - generic [ref=e1745]:
+              - generic [ref=e1746]: Тестирование
+              - generic [ref=e1747]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1748]: НОВАЯ
+            - button "В избранное" [ref=e1749] [cursor=pointer]:
+              - img [ref=e1750]
+            - generic [ref=e1752]: mock-тестирование
+            - generic [ref=e1753]: Моки позволяют заменить реальные объекты на контролируемые имитации, чтобы создать предсказуемое и изолированное окружение для тестирования. Они помогают сократить время на разработку и тестирование, а также снизить риски при ведении бизнеса. Моки играют важную роль в тестировании. Моки — это заглушки, которые контролируют вызов методов, передачу аргументов и проверку ожидаемого поведения системы. Целесообразность применения моков зависит от целей тестирования.
+          - generic [ref=e1754]:
+            - generic [ref=e1755]:
+              - generic [ref=e1756]: Тестирование
+              - generic [ref=e1757]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1758]: НОВАЯ
+            - button "В избранное" [ref=e1759] [cursor=pointer]:
+              - img [ref=e1760]
+            - generic [ref=e1762]: sanity(санитарное) - глубокое тестирование определенного модуля (функционала) после изменений, исправлений
+            - generic [ref=e1763]: sanity* Exploratory Testing может быть в начале если в прошлом релизе был найден баг, и этот модуль очень важен для бизнеса, проджект менеджер может попросить сделать санитарное тестирование этого модуля
+          - generic [ref=e1764]:
+            - generic [ref=e1765]:
+              - generic [ref=e1766]: Тестирование
+              - generic [ref=e1767]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1768]: НОВАЯ
+            - button "В избранное" [ref=e1769] [cursor=pointer]:
+              - img [ref=e1770]
+            - generic [ref=e1772]: sbls - жизненный цикл бага (b - bag)
+            - generic [ref=e1773]: Software bag lifecycle
+          - generic [ref=e1774]:
+            - generic [ref=e1775]:
+              - generic [ref=e1776]: Тестирование
+              - generic [ref=e1777]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1778]: НОВАЯ
+            - button "В избранное" [ref=e1779] [cursor=pointer]:
+              - img [ref=e1780]
+            - generic [ref=e1782]: stage
+            - generic [ref=e1783]: разрабы и тестеры regress
+          - generic [ref=e1784]:
+            - generic [ref=e1785]:
+              - generic [ref=e1786]: Тестирование
+              - generic [ref=e1787]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1788]: НОВАЯ
+            - button "В избранное" [ref=e1789] [cursor=pointer]:
+              - img [ref=e1790]
+            - generic [ref=e1792]: stls - жизненный цикл тестирования (t - testing)
+            - generic [ref=e1793]: Software testing lifecycle
+          - generic [ref=e1794]:
+            - generic [ref=e1795]:
+              - generic [ref=e1796]: Тестирование
+              - generic [ref=e1797]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1798]: НОВАЯ
+            - button "В избранное" [ref=e1799] [cursor=pointer]:
+              - img [ref=e1800]
+            - generic [ref=e1802]: Баг репорт
+            - generic [ref=e1803]: Заголовок, Описание, Приоритет, Серьезность, Статус, Версия продукта, Дата создания, Ответственный, Дата обновления и др.
+          - generic [ref=e1804]:
+            - generic [ref=e1805]:
+              - generic [ref=e1806]: Тестирование
+              - generic [ref=e1807]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1808]: НОВАЯ
+            - button "В избранное" [ref=e1809] [cursor=pointer]:
+              - img [ref=e1810]
+            - generic [ref=e1812]: Единая точка отказа
+            - generic [ref=e1813]: баг может уронить всю систему
+          - generic [ref=e1814]:
+            - generic [ref=e1815]:
+              - generic [ref=e1816]: Тестирование
+              - generic [ref=e1817]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1818]: НОВАЯ
+            - button "В избранное" [ref=e1819] [cursor=pointer]:
+              - img [ref=e1820]
+            - generic [ref=e1822]: Интеграционное???
+            - generic [ref=e1823]: "Виды интеграционного тестирования: Поэлементное (Unit Integration) — интеграция по одному компоненту. Постепенное (Incremental) — компоненты интегрируются постепенно. Big Bang — все компоненты интегрируются одновременно."
+          - generic [ref=e1824]:
+            - generic [ref=e1825]:
+              - generic [ref=e1826]: Тестирование
+              - generic [ref=e1827]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1828]: НОВАЯ
+            - button "В избранное" [ref=e1829] [cursor=pointer]:
+              - img [ref=e1830]
+            - generic [ref=e1832]: Конфигурационные - разные конфигурации, устройства, браузеры???
+            - generic [ref=e1833]: "Тестирование совместимости браузеров Тестирование на разных операционных системах Тестирование на мобильных устройствах Тестирование на разных разрешениях экрана: Конфигурационное тестирование - это, тестирование, к примеру, на только компьютерах с различным набором железа/софта и т.п. А тестирование совместимости, на различных платформах - компьютеры, ноутбуки, планшеты, смартфоны и т.д."
+          - generic [ref=e1834]:
+            - generic [ref=e1835]:
+              - generic [ref=e1836]: Тестирование
+              - generic [ref=e1837]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1838]: НОВАЯ
+            - button "В избранное" [ref=e1839] [cursor=pointer]:
+              - img [ref=e1840]
+            - generic [ref=e1842]: Монитиринг
+            - generic [ref=e1843]: запросы которые дергаются раз в 15 минут простые автотесты на авторизацию, , на отправку письма, на оплату
+          - generic [ref=e1844]:
+            - generic [ref=e1845]:
+              - generic [ref=e1846]: Тестирование
+              - generic [ref=e1847]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1848]: НОВАЯ
+            - button "В избранное" [ref=e1849] [cursor=pointer]:
+              - img [ref=e1850]
+            - generic [ref=e1852]: Нагрузочное - нагрузка как обычно + 30%
+            - generic [ref=e1853]: на эту роль обычно нанимают отдельного тестировщика, "нагрузочкик" При таком тестировании замеряется время отклика системы и скорость обработки запросов от пользователей (например, как быстро открываются и прогружаются страницы сайта, как быстро система выполняет расчеты, выдает результаты поиска и т. д.), а также сколько ресурсов "съедает" система — сетевых, процессорных, памяти.
+          - generic [ref=e1854]:
+            - generic [ref=e1855]:
+              - generic [ref=e1856]: Тестирование
+              - generic [ref=e1857]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1858]: НОВАЯ
+            - button "В избранное" [ref=e1859] [cursor=pointer]:
+              - img [ref=e1860]
+            - generic [ref=e1862]: Нефункциональное
+            - generic [ref=e1863]: нефункциональное тестирование проверяет, как хорошо программа работает, то есть насколько она быстро, надежно и безопасно выполняет свои функции. --- Из MindMap --- просто тестируем функциональность по требованиям Функциональное тестирование проверяет, соответствует ли программа спецификации и выполняет ли она все заданные функции 1)целесообразность 2)корректность 3)полнота
+          - generic [ref=e1864]:
+            - generic [ref=e1865]:
+              - generic [ref=e1866]: Тестирование
+              - generic [ref=e1867]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1868]: НОВАЯ
+            - button "В избранное" [ref=e1869] [cursor=pointer]:
+              - img [ref=e1870]
+            - generic [ref=e1872]: Отменен/отложен/закрыт
+            - generic [ref=e1873]: "например: когда мы завели дубликат баг больше не воспроизводится либо когда он на так важен чтоб его сейчас тестировать, и сейчас мы его не берем в работу"
+          - generic [ref=e1874]:
+            - generic [ref=e1875]:
+              - generic [ref=e1876]: Тестирование
+              - generic [ref=e1877]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1878]: НОВАЯ
+            - button "В избранное" [ref=e1879] [cursor=pointer]:
+              - img [ref=e1880]
+            - generic [ref=e1882]: Отчет о тестировании
+            - generic [ref=e1883]: дневной, недельный, месячный, итерационный финальный
+          - generic [ref=e1884]:
+            - generic [ref=e1885]:
+              - generic [ref=e1886]: Тестирование
+              - generic [ref=e1887]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1888]: НОВАЯ
+            - button "В избранное" [ref=e1889] [cursor=pointer]:
+              - img [ref=e1890]
+            - generic [ref=e1892]: Поэтапный план
+            - generic [ref=e1893]: "Основные этапы проведения ручного тестирования: Этап 1: Подготовка * Цель: Подготовка тест-кейсов и тестового окружения. * Дедлайн:_____ * Ключевые шаги: Составление тест-кейсов, настройка инструментов. Этап 2: Проведение тестирования. * Цель: Проведение ручного тестирования. * Дедлайн: _____ * Ключевые шаги: Выполнение тест-кейсов, регистрация багов. Этап 3: Анализ результатов * Цель: Анализ найденных багов и их приоритетизация. * Дедлайн: _____ * Ключевые шаги: Анализ багов, составление отчетов. Этап 4: Ретест и регрессионное тестирование * Цель: Проверка исправленных багов и регрессионное тестирование. *Дедлайн: _____ *Ключевые шаги: Ретест исправленных багов, выполнение регрессионных тестов Этап 5: Заключение * Цель: Подготовка итогового отчета и передача результатов команде. * Дедлайн: _____ * Ключевые шаги: Составление итогового отчета, проведение заключительного митинга."
+          - generic [ref=e1894]:
+            - generic [ref=e1895]:
+              - generic [ref=e1896]: Тестирование
+              - generic [ref=e1897]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1898]: НОВАЯ
+            - button "В избранное" [ref=e1899] [cursor=pointer]:
+              - img [ref=e1900]
+            - generic [ref=e1902]: Работа всей системы, e2e
+            - generic [ref=e1903]: Обычно включают симуляцию типичных пользовательских сценариев взаимодействия с системой для проверки её работоспособности в реальных условиях. часто автотесты
+          - generic [ref=e1904]:
+            - generic [ref=e1905]:
+              - generic [ref=e1906]: Тестирование
+              - generic [ref=e1907]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1908]: НОВАЯ
+            - button "В избранное" [ref=e1909] [cursor=pointer]:
+              - img [ref=e1910]
+            - generic [ref=e1912]: Регулярное повторение одних и тех же тестов теряет эффективность; необходимо обновлять тесты.
+            - generic [ref=e1913]: Этот эффект связан с тем, что программное обеспечение может развиваться и изменяться, и тесты, которые успешно обнаруживали ошибки в прошлом, могут не быть достаточно адаптированы для выявления новых ошибок или изменений в системе.
+          - generic [ref=e1914]:
+            - generic [ref=e1915]:
+              - generic [ref=e1916]: Тестирование
+              - generic [ref=e1917]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1918]: НОВАЯ
+            - button "В избранное" [ref=e1919] [cursor=pointer]:
+              - img [ref=e1920]
+            - generic [ref=e1922]: Совместимость - кроссбраузерное, кроссплатформенное???
+            - generic [ref=e1923]: Взаимодействие с другими приложениями Конфигурационное тестирование - это, тестирование, к примеру, на только компьютерах с различным набором железа/софта и т.п. А тестирование совместимости, на различных платформах - компьютеры, ноутбуки, планшеты, смартфоны и т.д.
+          - generic [ref=e1924]:
+            - generic [ref=e1925]:
+              - generic [ref=e1926]: Тестирование
+              - generic [ref=e1927]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1928]: НОВАЯ
+            - button "В избранное" [ref=e1929] [cursor=pointer]:
+              - img [ref=e1930]
+            - generic [ref=e1932]: Стабильности - нагрузка 2x длится сутки
+            - generic [ref=e1933]: Тестирование стабильности.
+          - generic [ref=e1934]:
+            - generic [ref=e1935]:
+              - generic [ref=e1936]: Тестирование
+              - generic [ref=e1937]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1938]: НОВАЯ
+            - button "В избранное" [ref=e1939] [cursor=pointer]:
+              - img [ref=e1940]
+            - generic [ref=e1942]: Стек тестирования
+            - generic [ref=e1943]: "используемые инструменты и ресурсы для ручного тестирования: 1. Система управления тестами: * TestRail (или аналог) 2. Баг-трекинговая система * Jira (или аналог) 3. Инструмент для отправки запросов * Postman (или аналог)"
+          - generic [ref=e1944]:
+            - generic [ref=e1945]:
+              - generic [ref=e1946]: Тестирование
+              - generic [ref=e1947]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1948]: НОВАЯ
+            - button "В избранное" [ref=e1949] [cursor=pointer]:
+              - img [ref=e1950]
+            - generic [ref=e1952]: Тест кейс
+            - generic [ref=e1953]: артефакт, суть которого в выполнении некоторого количества действий и/или условий, для проверки определенной функциональности +ожид/факт результат
+          - generic [ref=e1954]:
+            - generic [ref=e1955]:
+              - generic [ref=e1956]: Тестирование
+              - generic [ref=e1957]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1958]: НОВАЯ
+            - button "В избранное" [ref=e1959] [cursor=pointer]:
+              - img [ref=e1960]
+            - generic [ref=e1962]: Тест стратегия
+            - generic [ref=e1963]: часть тест плана
+          - generic [ref=e1964]:
+            - generic [ref=e1965]:
+              - generic [ref=e1966]: Тестирование
+              - generic [ref=e1967]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1968]: НОВАЯ
+            - button "В избранное" [ref=e1969] [cursor=pointer]:
+              - img [ref=e1970]
+            - generic [ref=e1972]: Тест-дизайн???
+            - generic [ref=e1973]: один из этапов тестирования, во время которого проектируются возможные тест-кейсы (случаи).
+          - generic [ref=e1974]:
+            - generic [ref=e1975]:
+              - generic [ref=e1976]: Тестирование
+              - generic [ref=e1977]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1978]: НОВАЯ
+            - button "В избранное" [ref=e1979] [cursor=pointer]:
+              - img [ref=e1980]
+            - generic [ref=e1982]: Тест-план???
+            - generic [ref=e1983]: документ, в котором указан весь объем работ по тестированию, а также оценки рисков с вариантами их решения. цели стратегия область расписание и ресурсы ожид. результ. и крит. приемки
+          - generic [ref=e1984]:
+            - generic [ref=e1985]:
+              - generic [ref=e1986]: Тестирование
+              - generic [ref=e1987]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1988]: НОВАЯ
+            - button "В избранное" [ref=e1989] [cursor=pointer]:
+              - img [ref=e1990]
+            - generic [ref=e1992]: Тестирование сборки (Build Verification Test)
+            - generic [ref=e1993]: как стенд у нас собрался из нескольких фич
+          - generic [ref=e1994]:
+            - generic [ref=e1995]:
+              - generic [ref=e1996]: Тестирование
+              - generic [ref=e1997]: Общее
+            - generic "Карточка еще не изучалась" [ref=e1998]: НОВАЯ
+            - button "В избранное" [ref=e1999] [cursor=pointer]:
+              - img [ref=e2000]
+            - generic [ref=e2002]: Уровни
+            - generic [ref=e2003]: существуют для эффективности тестирования, чтобы не тратить лишнее время и ресурсы
+          - generic [ref=e2004]:
+            - generic [ref=e2005]:
+              - generic [ref=e2006]: Тестирование
+              - generic [ref=e2007]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2008]: НОВАЯ
+            - button "В избранное" [ref=e2009] [cursor=pointer]:
+              - img [ref=e2010]
+            - generic [ref=e2012]: Чек лист
+            - generic [ref=e2013]: документ, в котором определен перечень того, что должно быть протестированным. Как правило, чек-лист содержит только действия (шаги) без ожидаемого результата.
+          - generic [ref=e2014]:
+            - generic [ref=e2015]:
+              - generic [ref=e2016]: Тестирование
+              - generic [ref=e2017]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2018]: НОВАЯ
+            - button "В избранное" [ref=e2019] [cursor=pointer]:
+              - img [ref=e2020]
+            - generic [ref=e2022]: Эквивалентное разбиение
+            - generic [ref=e2023]: "метод который уменьшает количество тестовых сценариев, не уменьшая при этом покрытие тестами (часто диапазон возможных вводимых значений) Классы: Допустимые значения (от 1 до 100); Недопустимые значения: от — ∞ до 0; от 101 до + ∞; специальные символы (# @ + — / _ : ; “ ‘ и т.д.); буквы."
+          - generic [ref=e2024]:
+            - generic [ref=e2025]:
+              - generic [ref=e2026]: Тестирование
+              - generic [ref=e2027]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2028]: НОВАЯ
+            - button "В избранное" [ref=e2029] [cursor=pointer]:
+              - img [ref=e2030]
+            - generic [ref=e2032]: анализ результатов и отчетность
+            - generic [ref=e2033]: смотрим сколько у нас критических багов сколько блокеров сколько минорных смотрим сколько еще нужно пофиксить и принимаем решение о переносе релиза, либо релизим фичу в прод отчетность - сколько тест кейсов было выполнено, сколько из них багов отчетность нужна для отслеживания метрик
+          - generic [ref=e2034]:
+            - generic [ref=e2035]:
+              - generic [ref=e2036]: Тестирование
+              - generic [ref=e2037]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2038]: НОВАЯ
+            - button "В избранное" [ref=e2039] [cursor=pointer]:
+              - img [ref=e2040]
+            - generic [ref=e2042]: анализ требований
+            - generic [ref=e2043]: не приступаем к тестированию до анализа требований --- Из MindMap --- вначале приходят требования бизнесовые, например product owner сделать то то то то их оценивает qa, либо аналитик
+          - generic [ref=e2044]:
+            - generic [ref=e2045]:
+              - generic [ref=e2046]: Тестирование
+              - generic [ref=e2047]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2048]: НОВАЯ
+            - button "В избранное" [ref=e2049] [cursor=pointer]:
+              - img [ref=e2050]
+            - generic [ref=e2052]: выполнение тестов и фиксация результатов
+            - generic [ref=e2053]: а тесты выполнять может уже тестер
+          - generic [ref=e2054]:
+            - generic [ref=e2055]:
+              - generic [ref=e2056]: Тестирование
+              - generic [ref=e2057]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2058]: НОВАЯ
+            - button "В избранное" [ref=e2059] [cursor=pointer]:
+              - img [ref=e2060]
+            - generic [ref=e2062]: матрица трассировки трассабилити
+            - generic [ref=e2063]: "Сопоставление требований Отслеживание изменений Управление изменениями: Анализ покрытия: это таблица, которая устанавливает связь между требованиями, тестовыми случаями и результатами тестирования, обеспечивая отслеживаемость требований через всю разработку и тестирование."
+          - generic [ref=e2064]:
+            - generic [ref=e2065]:
+              - generic [ref=e2066]: Тестирование
+              - generic [ref=e2067]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2068]: НОВАЯ
+            - button "В избранное" [ref=e2069] [cursor=pointer]:
+              - img [ref=e2070]
+            - generic [ref=e2072]: метрики качетсва
+            - generic [ref=e2073]: "Метрики для оценки качества ручного тестирования: 1. Количество найденных багов: * Важность: Помогает выявить проблемные области продукта. * Как считать: Количество зарегистрированных багов за период 2. Время на проведение тестирования: * Важность: Эффективность тестирования. * Как считать: Время, затраченное на тестирование одного релиза. 3. Качество локализации и описания багов: * Важность: Облегчает фикс ошибок. * Как считать: Оценка полноты и ясности описания багов. 4. Количество багов после исправления: * Важность: Проверка стабильности продукта после изменений. * Как считать: Количество багов, появившихся повторно после исправления."
+          - generic [ref=e2074]:
+            - generic [ref=e2075]:
+              - generic [ref=e2076]: Тестирование
+              - generic [ref=e2077]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2078]: НОВАЯ
+            - button "В избранное" [ref=e2079] [cursor=pointer]:
+              - img [ref=e2080]
+            - generic [ref=e2082]: основанный на спецификации / ручками без знания внутренней структуры или кода
+            - generic [ref=e2083]: методом тыка, вот нажать то то то, такой то баг, такой ожидаемый, такой фактический
+          - generic [ref=e2084]:
+            - generic [ref=e2085]:
+              - generic [ref=e2086]: Тестирование
+              - generic [ref=e2087]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2088]: НОВАЯ
+            - button "В избранное" [ref=e2089] [cursor=pointer]:
+              - img [ref=e2090]
+            - generic [ref=e2092]: отслеживание процесса
+            - generic [ref=e2093]: "Как и когда будет сообщаться прогресс и статус тест плана: * Митинг: Еженедельные встречи команды. * Информирование в канале: Еженедельные обновления в Slack (или аналогичном инструменте)"
+          - generic [ref=e2094]:
+            - generic [ref=e2095]:
+              - generic [ref=e2096]: Тестирование
+              - generic [ref=e2097]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2098]: НОВАЯ
+            - button "В избранное" [ref=e2099] [cursor=pointer]:
+              - img [ref=e2100]
+            - generic [ref=e2102]: планирование
+            - generic [ref=e2103]: "на планирование приграшаются: project менеджер product owner разработчики и QA оцениваем сколько story point (2 часа) задача у нас займет и сколько мы ее будем делать QA может какие тосвои риски подстветить и запланировать чуть боьше времени чем разработчики, потому что знает всю систему идеально и подозревает что будет много багов"
+          - generic [ref=e2104]:
+            - generic [ref=e2105]:
+              - generic [ref=e2106]: Тестирование
+              - generic [ref=e2107]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2108]: НОВАЯ
+            - button "В избранное" [ref=e2109] [cursor=pointer]:
+              - img [ref=e2110]
+            - generic [ref=e2112]: разработка тестов
+            - generic [ref=e2113]: разработкой тестов занимался QC
+          - generic [ref=e2114]:
+            - generic [ref=e2115]:
+              - generic [ref=e2116]: Тестирование
+              - generic [ref=e2117]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2118]: НОВАЯ
+            - button "В избранное" [ref=e2119] [cursor=pointer]:
+              - img [ref=e2120]
+            - generic [ref=e2122]: риски
+            - generic [ref=e2123]: "Потенциальные риски и планы их минимизации: Риск 1: Пропуск критических багов * Как минимизировать: Регулярные проверки, перекрестное тестирование. * План Б: Увеличение времени на тестирование, привлечение дополнительных ресурсов. Риск 2: Недостаток времени на тестирование * Как минимизировать: Четкое планирование, приоритизация задач. * План Б: привлечение дополнительных тестировщиков. Риск 3: Неполные или нечеткие требования * Как минимизировать: Предварительное ревью требований перед тем, как взять их в работу. * План Б: Быстрая адаптация тест-кейсов, тесная работа с разработчиками, регулярные встречи с аналитиками и заказчиками. Риск 4: Проблемы с тестовым окружением * Как минимизировать: Регулярное тестирование окружения, резервные стенды. * План Б: Быстрое восстановление окружения, использование облачных сервисов."
+          - generic [ref=e2124]:
+            - generic [ref=e2125]:
+              - generic [ref=e2126]: Тестирование
+              - generic [ref=e2127]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2128]: НОВАЯ
+            - button "В избранное" [ref=e2129] [cursor=pointer]:
+              - img [ref=e2130]
+            - generic [ref=e2132]: тестовая стратегия / test plan
+            - generic [ref=e2133]: Разрабатывает QA должны быть прописаны аспекты качества приписываем какие виды и уровни тестирования мы будем использовать для данной фичи прописываем метрики качества которые позже попадут в отчет
+          - generic [ref=e2134]:
+            - generic [ref=e2135]:
+              - generic [ref=e2136]: Тестирование
+              - generic [ref=e2137]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2138]: НОВАЯ
+            - button "В избранное" [ref=e2139] [cursor=pointer]:
+              - img [ref=e2140]
+            - generic [ref=e2142]: тесты на код, пишутся разрабами
+            - generic [ref=e2143]: например у них есть какая то функция, передающая какие то значения в бд и проверяют что в бд это значение записалось
+          - generic [ref=e2144]:
+            - generic [ref=e2145]:
+              - generic [ref=e2146]: Тестирование
+              - generic [ref=e2147]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2148]: НОВАЯ
+            - button "В избранное" [ref=e2149] [cursor=pointer]:
+              - img [ref=e2150]
+            - generic [ref=e2152]: цели
+            - generic [ref=e2153]: "повышение качества продукта за счет тщательного обнаружения и документирования багов, улучшения пользовательского опыта и проверки соответствия продукта бизнес требованиям. для этого мы прописываем конкретные метрики которые хотим улучшить. Пример: *Метрика 1: Уменьшение количества критических багов, обнаруженных пользователем, на 50% *Метрика 2: Уменьшить среднее время на исправление багов на 25% *Метрика 3: Сокращение времени на проверку новой функциональности на 30%."
+          - generic [ref=e2154]:
+            - generic [ref=e2155]:
+              - generic [ref=e2156]: Тестирование
+              - generic [ref=e2157]: Общее
+            - generic "Карточка еще не изучалась" [ref=e2158]: НОВАЯ
+            - button "В избранное" [ref=e2159] [cursor=pointer]:
+              - img [ref=e2160]
+            - generic [ref=e2162]: юнит
+            - generic [ref=e2163]: "Statement coverage- покрытия операторов Покрытие: отношение количества операторов, выполненных тестом / к общему числу операторов в тестируемом коде. Decision coverage- покрытия условий Покрытие: отношение количества условий, выполненных тестом / к общему числу условий в тестируемом коде."
+          - generic [ref=e2164]:
+            - generic [ref=e2165]:
+              - generic [ref=e2166]: Тестирование
+              - generic [ref=e2167]: Особенности тестирования
+            - generic "Карточка еще не изучалась" [ref=e2168]: НОВАЯ
+            - button "В избранное" [ref=e2169] [cursor=pointer]:
+              - img [ref=e2170]
+            - generic [ref=e2172]: Что особенного в тестировании в браузере?
+            - generic [ref=e2173]: Разные браузеры могут показывать разные результаты, не требуется установка приложений. --- Дополнительный ответ --- Разные браузеры, разные отображения, не требуется установка приложений -типы браузеров? =хром, опера, сафари, екплорер не тестировал -сколько браузеров? =аналитик скажет
+          - generic [ref=e2174]:
+            - generic [ref=e2175]:
+              - generic [ref=e2176]: Тестирование
+              - generic [ref=e2177]: Пирамида
+            - generic "Карточка еще не изучалась" [ref=e2178]: НОВАЯ
+            - button "В избранное" [ref=e2179] [cursor=pointer]:
+              - img [ref=e2180]
+            - generic [ref=e2182]: пирамида?
+            - generic [ref=e2183]: "концепция которая демонстрирует: внизу у нас распологается модульный(unit) тесты, интеграционный(наши api тесты) и системные e2e тесты, почему оно все внизу, потому что у модульного покрытие большое, затраты на поддержку у них меньше, они более стабильные их быстрее и проще писать, двигаемся вверх API тесты-покрытие у них не такое большое, затраты больше, стабильности меньше по сравнению с UI и системные у нас самые дорогие и меньше покрывают и они не такие стабильные у нас и больше всего трудозатрат и приемочное альфа, бета, релиз кандидат, UAT пользовательское"
+          - generic [ref=e2184]:
+            - generic [ref=e2185]:
+              - generic [ref=e2186]: Тестирование
+              - generic [ref=e2187]: Тестирование в браузерах
+            - generic "Карточка еще не изучалась" [ref=e2188]: НОВАЯ
+            - button "В избранное" [ref=e2189] [cursor=pointer]:
+              - img [ref=e2190]
+            - generic [ref=e2192]: На каких браузерах ты будешь тестировать новую фичу?
+            - generic [ref=e2193]: "Буду тестировать на основных браузерах: Chrome, Firefox, Safari, Edge, чтобы обеспечить кроссбраузерную совместимость."
+          - generic [ref=e2194]:
+            - generic [ref=e2195]:
+              - generic [ref=e2196]: Тестирование
+              - generic [ref=e2197]: Типы браузеров
+            - generic "Карточка еще не изучалась" [ref=e2198]: НОВАЯ
+            - button "В избранное" [ref=e2199] [cursor=pointer]:
+              - img [ref=e2200]
+            - generic [ref=e2202]: Какие типы браузеров ты тестировал?
+            - generic [ref=e2203]: Хром, Opera, Safari, Explorer — не тестировал.
+          - generic [ref=e2204]:
+            - generic [ref=e2205]:
+              - generic [ref=e2206]: Техники тест дизайна
+              - generic [ref=e2207]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e2208]: НОВАЯ
+            - button "В избранное" [ref=e2209] [cursor=pointer]:
+              - img [ref=e2210]
+            - generic [ref=e2212]: Для чего придуманы техники тест-дизайна?
+            - generic [ref=e2213]: Для облегчения тестирования, ускорения процесса нахождения ошибок, сокращения расходов на багфиксы и улучшения пользовательского опыта. --- Дополнительный ответ --- для облегчения тестирования, тестирование части, как если бы ты тестировал все, это позволяет ранее выявлять ошибки, для бизнеса это сокращает расходы на багфиксы, а для пользователя это улучшает экспириенс
+          - generic [ref=e2214]:
+            - generic [ref=e2215]:
+              - generic [ref=e2216]: Техники тест дизайна
+              - generic [ref=e2217]: Применение
+            - generic "Карточка еще не изучалась" [ref=e2218]: НОВАЯ
+            - button "В избранное" [ref=e2219] [cursor=pointer]:
+              - img [ref=e2220]
+            - generic [ref=e2222]: Тестируем поле, в которое можно ввести целые числа от 1 до 10. Протестируй поле, используя техники.
+            - generic [ref=e2223]: 1, 2, 9, 10, 11, дробное число, отрицательные числа, 0 и пустое значение. --- Дополнительный ответ --- 1, потом 2, потом 9, потом 10, 11, попробовать дробное число, отрицательные числа, 0 и пустое значение
+          - generic [ref=e2224]:
+            - generic [ref=e2225]:
+              - generic [ref=e2226]: Техники тест дизайна
+              - generic [ref=e2227]: Принципы
+            - generic "Карточка еще не изучалась" [ref=e2228]: НОВАЯ
+            - button "В избранное" [ref=e2229] [cursor=pointer]:
+              - img [ref=e2230]
+            - generic [ref=e2232]: Какие принципы тестирования ты знаешь?
+            - generic [ref=e2233]: Тестирование показывает наличие дефектов, исчерпывающее тестирование невозможно, раннее тестирование, скопление дефектов, парадокс пестицида, тестирование зависит от контекста, заблуждение об отсутствии ошибок.
+          - generic [ref=e2234]:
+            - generic [ref=e2235]:
+              - generic [ref=e2236]: Техники тест дизайна
+              - generic [ref=e2237]: Техники
+            - generic "Карточка еще не изучалась" [ref=e2238]: НОВАЯ
+            - button "В избранное" [ref=e2239] [cursor=pointer]:
+              - img [ref=e2240]
+            - generic [ref=e2242]: Какие техники тест-дизайна вы знаете и применяете на практике?
+            - generic [ref=e2243]: Эквивалентное разбиение, граничные значения, таблицу принятия решений, попарное тестирование и тестирование состояний.
+          - generic [ref=e2244]:
+            - generic [ref=e2245]:
+              - generic [ref=e2246]: Техники тест дизайна
+              - generic [ref=e2247]: Техники
+            - generic "Карточка еще не изучалась" [ref=e2248]: НОВАЯ
+            - button "В избранное" [ref=e2249] [cursor=pointer]:
+              - img [ref=e2250]
+            - generic [ref=e2252]: Техники тест дизайна?
+            - generic [ref=e2253]: "Граничные значения (проверяем данные, такие как возраст клиента банка). Эквивалентное разбиение (разделяем проверки, например, по уровням доступа пользователей). Попарное тестирование (тестируем на определенной версии ОС, браузере и приложении). Таблица принятия решений — матрица для проверки параметров, например, кредиты в банках. --- Дополнительный ответ --- граничные значения возраст проверяем, данные которые условным слайдером, возраст клиента банка не должен быть меньше 18ти(мы проверяем от -1 до 18ти, потом включительно 18, 19, 149,150,151, эквивалентное классы -можно разделить проверки: например у пользователя ограниченные права(тип лицензии пользователь, а есть руководить и директор), как раз таки нам не нужно проверять каждого пользователя, нам достаточно разделить пользователей на классы по уровню доступа и сходить под ними проверить… сокращаем количество проверок или:когда у нас есть какая то формочка, например мы можем вводить какие то символы и можем разделить сразу для проверки для того чтобы упростить себе задачу, разделись на валидные(буквенные)(цифры), невалидные(спецсимволы), пустое значение , граф состояний и переходов часто использую, потому что система достаточно сложная, чтоб для себя понять, рисую схему mind-map, попарное тестирование например мы тестируем на определенной версии ОС такой то билд браузера, с каким то приложением, таблица принятия решений связана с какими то параметрами, условиями, например кредиты в банках, можно составить матрицу где у нас множество входных значений и мы хотим быстрее понять как это сделать"
+          - generic [ref=e2254]:
+            - generic [ref=e2255]:
+              - generic [ref=e2256]: Техники тест дизайна
+              - generic [ref=e2257]: Техники
+            - generic "Карточка еще не изучалась" [ref=e2258]: НОВАЯ
+            - button "В избранное" [ref=e2259] [cursor=pointer]:
+              - img [ref=e2260]
+            - generic [ref=e2262]: Что такое эквивалентное разбиение?
+            - generic [ref=e2263]: Эквивалентное разбиение — это техника тест-дизайна, где входные данные делятся на группы, каждая из которых одинаково влияет на систему.
+          - generic [ref=e2264]:
+            - generic [ref=e2265]:
+              - generic [ref=e2266]: Технические
+              - generic [ref=e2267]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2268]: НОВАЯ
+            - button "В избранное" [ref=e2269] [cursor=pointer]:
+              - img [ref=e2270]
+            - generic [ref=e2272]: Что такое синхронность?
+            - generic [ref=e2273]: Синхронность — это выполнение операций по очереди, где каждая операция должна завершиться перед началом следующей. --- Дополнительный ответ --- Асинхронность позволяет выполнять операции как одним потоком, так и параллельно. Результаты могут быть получены позже, чем они были запрошены, или не получены вовсе, но это не повлияет на другие потоки.
+          - generic [ref=e2274]:
+            - generic [ref=e2275]:
+              - generic [ref=e2276]: Технические
+              - generic [ref=e2277]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2278]: НОВАЯ
+            - button "В избранное" [ref=e2279] [cursor=pointer]:
+              - img [ref=e2280]
+            - generic [ref=e2282]: По REST какое?
+            - generic [ref=e2283]: Синхронное — REST, PostgreSQL, GraphQL. Асинхронное — брокеры (Kafka, Redis, RabbitMQ).
+          - generic [ref=e2284]:
+            - generic [ref=e2285]:
+              - generic [ref=e2286]: Технические
+              - generic [ref=e2287]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2288]: НОВАЯ
+            - button "В избранное" [ref=e2289] [cursor=pointer]:
+              - img [ref=e2290]
+            - generic [ref=e2292]: Что такое подготовка тестового окружения?
+            - generic [ref=e2293]: Подготовка тестового окружения включает в себя создание среды для тестирования, настройку баз данных, внешних сервисов, API, конфигурации и других необходимых компонентов.
+          - generic [ref=e2294]:
+            - generic [ref=e2295]:
+              - generic [ref=e2296]: Технические
+              - generic [ref=e2297]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2298]: НОВАЯ
+            - button "В избранное" [ref=e2299] [cursor=pointer]:
+              - img [ref=e2300]
+            - generic [ref=e2302]: Что такое REST?
+            - generic [ref=e2303]: REST (Representational State Transfer) - архитектурный стиль взаимодействия систем, использующий HTTP для обмена данными и поддерживающий операции CRUD.
+          - generic [ref=e2304]:
+            - generic [ref=e2305]:
+              - generic [ref=e2306]: Технические
+              - generic [ref=e2307]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2308]: НОВАЯ
+            - button "В избранное" [ref=e2309] [cursor=pointer]:
+              - img [ref=e2310]
+            - generic [ref=e2312]: Что такое протоколы и контракты в контексте API?
+            - generic [ref=e2313]: "Протоколы: HTTP/HTTPS, WebSocket, gRPC. Контракты API: OpenAPI/Swagger, GraphQL schema, SOAP WSDL."
+          - generic [ref=e2314]:
+            - generic [ref=e2315]:
+              - generic [ref=e2316]: Технические
+              - generic [ref=e2317]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2318]: НОВАЯ
+            - button "В избранное" [ref=e2319] [cursor=pointer]:
+              - img [ref=e2320]
+            - generic [ref=e2322]: Чем отличается JSON от XML?
+            - generic [ref=e2323]: JSON легче воспринимается, имеет компактную структуру и используется в основном для обмена данными в веб-приложениях. Менее безопасен (JSON инъекции). JavaScript имеет встроенную функцию парсинга JSON. XML более формален, поддерживает атрибуты для хранения дополнительных данных. Парсится Java, Python, PHP, Ruby.
+          - generic [ref=e2324]:
+            - generic [ref=e2325]:
+              - generic [ref=e2326]: Технические
+              - generic [ref=e2327]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2328]: НОВАЯ
+            - button "В избранное" [ref=e2329] [cursor=pointer]:
+              - img [ref=e2330]
+            - generic [ref=e2332]: DHCP протокол для чего нужен?
+            - generic [ref=e2333]: Чтобы автоматически выдавать IP-адреса устройствам в сети.
+          - generic [ref=e2334]:
+            - generic [ref=e2335]:
+              - generic [ref=e2336]: Технические
+              - generic [ref=e2337]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2338]: НОВАЯ
+            - button "В избранное" [ref=e2339] [cursor=pointer]:
+              - img [ref=e2340]
+            - generic [ref=e2342]: Из чего состоит HTTP запрос?
+            - generic [ref=e2343]: Запрос состоит из реквестлайна (стартовая строка), метода, URL, версии HTTP (например, 1.1), хедера и боди. --- Дополнительный ответ --- запрос у нас реквестлайн(стартовая срока)метод, урл, версию http 1.1(например) и хедер, боди, метод, url
+          - generic [ref=e2344]:
+            - generic [ref=e2345]:
+              - generic [ref=e2346]: Технические
+              - generic [ref=e2347]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2348]: НОВАЯ
+            - button "В избранное" [ref=e2349] [cursor=pointer]:
+              - img [ref=e2350]
+            - generic [ref=e2352]: PUT vs PATCH? (пример неидемпотентного PATCH)
+            - generic [ref=e2353]: "Оба метода изменяют информацию. PUT — (идемпотентный) например, создание новой карточки, передаем все поля. PATCH — (неидемпотентный) редактирование уже существующего объекта. Пример: запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным. --- Дополнительный ответ --- оба метода меняют информацию put - (идемпот+?)например создание новой карточки, передаем все поля patch - (не идемпот)редактирование уже существующего объекта PUT-обновление, PATCH-частичное обновление, пример: Запрос увеличивает баланс пользователя на 100. Повторный запрос увеличивает баланс ещё на 100, что делает его неидемпотентным."
+          - generic [ref=e2354]:
+            - generic [ref=e2355]:
+              - generic [ref=e2356]: Технические
+              - generic [ref=e2357]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2358]: НОВАЯ
+            - button "В избранное" [ref=e2359] [cursor=pointer]:
+              - img [ref=e2360]
+            - generic [ref=e2362]: GET vs POST?
+            - generic [ref=e2363]: GET — получаем информацию от сервера (идемпотентный), не имеет тела (есть query params). POST — метод, отправляющий информацию на сервер, информация в body (неидемпотентный). --- Дополнительный ответ --- get - получаем инфу от сервера(идемпот+?), не имеет тела(есть query params) post - метод отправляющий информацию на сервер, информация в body, (не идемпот)
+          - generic [ref=e2364]:
+            - generic [ref=e2365]:
+              - generic [ref=e2366]: Технические
+              - generic [ref=e2367]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2368]: НОВАЯ
+            - button "В избранное" [ref=e2369] [cursor=pointer]:
+              - img [ref=e2370]
+            - generic [ref=e2372]: HTTP/HTTPS?
+            - generic [ref=e2373]: HTTP — это протокол, а HTTPS — это расширение, которое более secure (последнее слово), это протокол, с помощью которого передаются данные.
+          - generic [ref=e2374]:
+            - generic [ref=e2375]:
+              - generic [ref=e2376]: Технические
+              - generic [ref=e2377]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2378]: НОВАЯ
+            - button "В избранное" [ref=e2379] [cursor=pointer]:
+              - img [ref=e2380]
+            - generic [ref=e2382]: На каких портах работают HTTP и HTTPS?
+            - generic [ref=e2383]: 80, 443.
+          - generic [ref=e2384]:
+            - generic [ref=e2385]:
+              - generic [ref=e2386]: Технические
+              - generic [ref=e2387]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2388]: НОВАЯ
+            - button "В избранное" [ref=e2389] [cursor=pointer]:
+              - img [ref=e2390]
+            - generic [ref=e2392]: Что такое REST, SOAP?
+            - generic [ref=e2393]: REST — архитектурный стиль. SOAP — протокол (SOAP WSDL), подзапросы в XML. REST — stateless клиент, кешируемость. --- Дополнительный ответ --- rest-архитектурный стиль soap-протокол soap -wsdl, подзапросы в xml rest-steteless клиент, кешируемость
+          - generic [ref=e2394]:
+            - generic [ref=e2395]:
+              - generic [ref=e2396]: Технические
+              - generic [ref=e2397]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2398]: НОВАЯ
+            - button "В избранное" [ref=e2399] [cursor=pointer]:
+              - img [ref=e2400]
+            - generic [ref=e2402]: Что такое хэдеры и для чего они используются?
+            - generic [ref=e2403]: Хэдеры — это метаданные в HTTP-запросах, которые передают дополнительную информацию о запросе или ответе, например, тип контента, авторизацию и т.д. (User-Agent, Authorization, Content-Type, Accept).
+          - generic [ref=e2404]:
+            - generic [ref=e2405]:
+              - generic [ref=e2406]: Технические
+              - generic [ref=e2407]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2408]: НОВАЯ
+            - button "В избранное" [ref=e2409] [cursor=pointer]:
+              - img [ref=e2410]
+            - generic [ref=e2412]: REST какие методы знаешь?
+            - generic [ref=e2413]: GET, PUT, POST, PATCH, DELETE (HEAD, OPTIONS, TRACE) — это основные методы взаимодействия по REST, которые рекомендованы к использованию. Они под собой имеют определенную реализацию. --- Дополнительный ответ --- GET PUT POST PATCH DELITE (head options trace)- это основные методы взаимодействия по ресту, которые рекомендованы к использованию, они под собой имеют определенную реализацию, то есть GET метод используем для того чтобы что то получить POST для создания отправки данных get-получить инфо, в теле не передаем инфу, передаем через url get-идемпотентный post-создает сущность, но при повторном запросе у нас должна быть 409 ошибка, put-изменяет полностью объект(если нет объекта, то создает), patch-заменяет часть нашего объекта =Все эти методы не обязательно будут выполняться именно так, то есть если разработчик указал поведение немного иное, то мы можем на get выполнять delite
+          - generic [ref=e2414]:
+            - generic [ref=e2415]:
+              - generic [ref=e2416]: Технические
+              - generic [ref=e2417]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2418]: НОВАЯ
+            - button "В избранное" [ref=e2419] [cursor=pointer]:
+              - img [ref=e2420]
+            - generic [ref=e2422]: Что такое идемпотентность в контексте HTTP-запросов?
+            - generic [ref=e2423]: Когда повторный запрос не меняет состояние на сервере.
+          - generic [ref=e2424]:
+            - generic [ref=e2425]:
+              - generic [ref=e2426]: Технические
+              - generic [ref=e2427]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2428]: НОВАЯ
+            - button "В избранное" [ref=e2429] [cursor=pointer]:
+              - img [ref=e2430]
+            - generic [ref=e2432]: gRPC?(Remote procedure calls)
+            - generic [ref=e2433]: штука которая позволяет удаленно вызвать процедуру в другом месте. Она более производительная для случаев, когда нам нужно очень быстро получить какую-то информацию в режиме реального времени. То есть это инвестиционные какие-то приложения, ставки, какие-то видеоконференции. Использует протокол HTTP/2 и сериализацию данных через Protocol Buffers(0101 vs JSON-REST)
+          - generic [ref=e2434]:
+            - generic [ref=e2435]:
+              - generic [ref=e2436]: Технические
+              - generic [ref=e2437]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2438]: НОВАЯ
+            - button "В избранное" [ref=e2439] [cursor=pointer]:
+              - img [ref=e2440]
+            - generic [ref=e2442]: "GraphQL:"
+            - generic [ref=e2443]: "Язык запросов для API, Клиент управляет данными. запрашивает только нужные поля, 1 запрос вместо нескольких в REST, Социальные сети (запросы с вложенными данными: пользователь + посты+ комментарии). Мобильные приложения с ограниченным трафиком. Риск DDoS-атак из-за сложных запросов.Если клиенту нужна гибкость в запросах. --- Из MindMap --- В GraphQL сервер определяет набор доступных ресурсов, а клиент указывает необходимые ему данные прямо в запросе. помимо контроля доступа к данным и нагрузки на сервер GraphQL кладёт большой болт на кеширование). Больше принципиальных отличий между этими двумя подходами в построении API нет"
+          - generic [ref=e2444]:
+            - generic [ref=e2445]:
+              - generic [ref=e2446]: Технические
+              - generic [ref=e2447]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2448]: НОВАЯ
+            - button "В избранное" [ref=e2449] [cursor=pointer]:
+              - img [ref=e2450]
+            - generic [ref=e2452]: "API Redis: Тестировщик должен знать основные команды Redis, такие как SET, GET, EXPIRE, DEL, EXISTS"
+            - generic [ref=e2453]: "Шаг 4.1: Если вы хотите убедиться, что ключ существует в Redis, вы можете использовать команду EXISTS: EXISTS product:123:price"
+          - generic [ref=e2454]:
+            - generic [ref=e2455]:
+              - generic [ref=e2456]: Технические
+              - generic [ref=e2457]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2458]: НОВАЯ
+            - button "В избранное" [ref=e2459] [cursor=pointer]:
+              - img [ref=e2460]
+            - generic [ref=e2462]: DoR
+            - generic [ref=e2463]: "DoR должны писаться к каждой задаче definition of ready (DoR) критерии, которым должна соответствовать задача, прежде чем она будет принята в работу: 1. Требования к задаче четко сформулированы и понятны 2. Вся необходимая документация предоставлена 3. Тестовое окружение настроено и готово к использованию 4. Все внешние зависимости (API, интеграции) доступны и работают 5. Оценка времени на выполнение задачи выполнена и согласована"
+          - generic [ref=e2464]:
+            - generic [ref=e2465]:
+              - generic [ref=e2466]: Технические
+              - generic [ref=e2467]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2468]: НОВАЯ
+            - button "В избранное" [ref=e2469] [cursor=pointer]:
+              - img [ref=e2470]
+            - generic [ref=e2472]: Fiddler everywhere
+            - generic [ref=e2473]: перехватчик запросов Кроссплатформенное приложение прокси-сервера для отладки HTTP
+          - generic [ref=e2474]:
+            - generic [ref=e2475]:
+              - generic [ref=e2476]: Технические
+              - generic [ref=e2477]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2478]: НОВАЯ
+            - button "В избранное" [ref=e2479] [cursor=pointer]:
+              - img [ref=e2480]
+            - generic [ref=e2482]: "Json: Легковесный формат обмена данными (имеет структуру ключ: значение)"
+            - generic [ref=e2483]: javascript object notation 2 в 53ей степени, если больше, то оно будет округлено
+          - generic [ref=e2484]:
+            - generic [ref=e2485]:
+              - generic [ref=e2486]: Технические
+              - generic [ref=e2487]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2488]: НОВАЯ
+            - button "В избранное" [ref=e2489] [cursor=pointer]:
+              - img [ref=e2490]
+            - generic [ref=e2492]: Rest
+            - generic [ref=e2493]: representational state transfer архитектурный стиль, набор рекомендаций которым необходимо следовать несколько простых запросов → каждый делает одно действие.
+          - generic [ref=e2494]:
+            - generic [ref=e2495]:
+              - generic [ref=e2496]: Технические
+              - generic [ref=e2497]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2498]: НОВАЯ
+            - button "В избранное" [ref=e2499] [cursor=pointer]:
+              - img [ref=e2500]
+            - generic [ref=e2502]: Soap
+            - generic [ref=e2503]: simple object access protocol формат обмена сообщениями протокол один сложный запрос → может содержать несколько подзапросов внутри XML.
+          - generic [ref=e2504]:
+            - generic [ref=e2505]:
+              - generic [ref=e2506]: Технические
+              - generic [ref=e2507]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2508]: НОВАЯ
+            - button "В избранное" [ref=e2509] [cursor=pointer]:
+              - img [ref=e2510]
+            - generic [ref=e2512]: Единый интерфейс для клиентов
+            - generic [ref=e2513]: с разных устройств один URL, один метод(GET), один Payload один Response Одни json Одни коды ошибок отображаться может на разных устройствах иначе
+          - generic [ref=e2514]:
+            - generic [ref=e2515]:
+              - generic [ref=e2516]: Технические
+              - generic [ref=e2517]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2518]: НОВАЯ
+            - button "В избранное" [ref=e2519] [cursor=pointer]:
+              - img [ref=e2520]
+            - generic [ref=e2522]: Например у нас 5 фильтров с 3мя значениями, и чтобы не тестировать каждый фильтр со всеми значениями, мы комбинируем между собой -чтобы меньше тестов делать( только уникальные тесты pairvise)
+            - generic [ref=e2523]: Тула https://pairwise. teremokgames.com - генерация наиболее эффективных тестовых кейсов (работает на основе ортогональных массивов)
+          - generic [ref=e2524]:
+            - generic [ref=e2525]:
+              - generic [ref=e2526]: Технические
+              - generic [ref=e2527]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2528]: НОВАЯ
+            - button "В избранное" [ref=e2529] [cursor=pointer]:
+              - img [ref=e2530]
+            - generic [ref=e2532]: Например, тестирование API частичное знание о внутренней структуре
+            - generic [ref=e2533]: нагрузочное, безопасности, интеграционное
+          - generic [ref=e2534]:
+            - generic [ref=e2535]:
+              - generic [ref=e2536]: Технические
+              - generic [ref=e2537]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2538]: НОВАЯ
+            - button "В избранное" [ref=e2539] [cursor=pointer]:
+              - img [ref=e2540]
+            - generic [ref=e2542]: Регрессия - проверяем старый функционал на предмет того, не поломала ли новая фича что то в старом API, ФРОНТ
+            - generic [ref=e2543]: часто помогают автоматизаторы основной критический функционал при каждом релизе или даже чаще Регрессионное тестирование 1) проверить, не влияют ли недавние изменения кода на существующую функциональность 2) после модификации кода, реализация новых функций 3) применяется только для пройденных тестов 4) может проводиться параллельно с подтверждающим тестированием
+          - generic [ref=e2544]:
+            - generic [ref=e2545]:
+              - generic [ref=e2546]: Технические
+              - generic [ref=e2547]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2548]: НОВАЯ
+            - button "В избранное" [ref=e2549] [cursor=pointer]:
+              - img [ref=e2550]
+            - generic [ref=e2552]: Тестирование интерфейсов API, CLI, GUI
+            - generic [ref=e2553]: внешние интеграции
+          - generic [ref=e2554]:
+            - generic [ref=e2555]:
+              - generic [ref=e2556]: Технические
+              - generic [ref=e2557]: API и Сети
+            - generic "Карточка еще не изучалась" [ref=e2558]: НОВАЯ
+            - button "В избранное" [ref=e2559] [cursor=pointer]:
+              - img [ref=e2560]
+            - generic [ref=e2562]: Уточнение критериев приемки (DoD, DoR) и стратегию тестирования
+            - generic [ref=e2563]: "тестовую стратегию разрабатывал QA DoR должны писаться к каждой задаче definition of ready (DoR) критерии, которым должна соответствовать задача, прежде чем она будет принята в работу: 1. Требования к задаче четко сформулированы и понятны 2. Вся необходимая документация предоставлена 3. Тестовое окружение настроено и готово к использованию 4. Все внешние зависимости (API, интеграции) доступны и работают 5. Оценка времени на выполнение задачи выполнена и согласована Definition of done (DoD) Критерии, которым должна соответствовать задача, прежде чем она будет считаться завершенной: 1. Все запланированные тест-кейсы выполнены 2. Все найденные баги зарегистрированы в баг-трекинговой системе 3. Все критические и блокирующие баги исправлены 4. Ретест и регрессионное тестироважние проведены успешно 5. Итоговый отчет подготовлен и передан команде 6. Обновлена документация по итогам тестирования"
+          - generic [ref=e2564]:
+            - generic [ref=e2565]:
+              - generic [ref=e2566]: Технические
+              - generic [ref=e2567]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e2568]: НОВАЯ
+            - button "В избранное" [ref=e2569] [cursor=pointer]:
+              - img [ref=e2570]
+            - generic [ref=e2572]: Как был построен процесс тестирования? CI/CD STLC уточнить
+            - generic [ref=e2573]: Процесс тестирования был построен с использованием CI/CD для автоматической сборки и тестирования. В STLC этапы включали планирование, анализ требований, проектирование тестов, выполнение тестов и отчетность.
+          - generic [ref=e2574]:
+            - generic [ref=e2575]:
+              - generic [ref=e2576]: Технические
+              - generic [ref=e2577]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e2578]: НОВАЯ
+            - button "В избранное" [ref=e2579] [cursor=pointer]:
+              - img [ref=e2580]
+            - generic [ref=e2582]: CI/CD у вас был?
+            - generic [ref=e2583]: Да, был Jenkins, мы раскатывали ветку разработчика на стенде. --- Дополнительный ответ --- дженкинс, раскатывали ветку разраба у себя на стенде
+          - generic [ref=e2584]:
+            - generic [ref=e2585]:
+              - generic [ref=e2586]: Технические
+              - generic [ref=e2587]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e2588]: НОВАЯ
+            - button "В избранное" [ref=e2589] [cursor=pointer]:
+              - img [ref=e2590]
+            - generic [ref=e2592]: CI/CD?
+            - generic [ref=e2593]: "Непрерывная интеграция (CI) — это процесс, при котором разработчики часто интегрируют свои изменения в общий код. Девопсы настраивают пайплайны для обеспечения тестирования и деплоя на тестовые стенды и продакшн. У нас было 4 стенда: dev, test, pre prod и prod."
+          - generic [ref=e2594]:
+            - generic [ref=e2595]:
+              - generic [ref=e2596]: Технические
+              - generic [ref=e2597]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e2598]: НОВАЯ
+            - button "В избранное" [ref=e2599] [cursor=pointer]:
+              - img [ref=e2600]
+            - generic [ref=e2602]: А знаешь, где в GitLab хранятся настройки вот этой джобы? В каком формате прописывают?
+            - generic [ref=e2603]: "В GitLab настройки джоб описываются в файле `.gitlab-ci.yml`, который находится в корне репозитория."
+          - generic [ref=e2604]:
+            - generic [ref=e2605]:
+              - generic [ref=e2606]: Технические
+              - generic [ref=e2607]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e2608]: НОВАЯ
+            - button "В избранное" [ref=e2609] [cursor=pointer]:
+              - img [ref=e2610]
+            - generic [ref=e2612]: Что такое пайплайн и как он используется?
+            - generic [ref=e2613]: Пайплайн — это последовательность автоматизированных шагов, которые используются для непрерывной интеграции и доставки (CI/CD). Он включает сборку, тестирование, деплой и другие операции.
+          - generic [ref=e2614]:
+            - generic [ref=e2615]:
+              - generic [ref=e2616]: Технические
+              - generic [ref=e2617]: CI/CD
+            - generic "Карточка еще не изучалась" [ref=e2618]: НОВАЯ
+            - button "В избранное" [ref=e2619] [cursor=pointer]:
+              - img [ref=e2620]
+            - generic [ref=e2622]: Как вы используете пайплайны в GitLab/Jenkins?
+            - generic [ref=e2623]: В GitLab и Jenkins пайплайны используются для автоматической сборки, тестирования и деплоя. Например, после коммита в репозиторий запускаются тесты и производится деплой на тестовый сервер.
+          - generic [ref=e2624]:
+            - generic [ref=e2625]:
+              - generic [ref=e2626]: Технические
+              - generic [ref=e2627]: Cookies
+            - generic "Карточка еще не изучалась" [ref=e2628]: НОВАЯ
+            - button "В избранное" [ref=e2629] [cursor=pointer]:
+              - img [ref=e2630]
+            - generic [ref=e2632]: Проверки на cookies, как они влияют на авторизацию?
+            - generic [ref=e2633]: Это действия пользователя на сайте, которые сохраняются в куках. У нас есть токен, и когда мы авторизуемся на сайте, нужно проверить, что токен присвоен. У нас есть session token, refresh token. Session токен имеет определённый период протухания, и нам нужно это проверить.
+          - generic [ref=e2634]:
+            - generic [ref=e2635]:
+              - generic [ref=e2636]: Технические
+              - generic [ref=e2637]: Get
+            - generic "Карточка еще не изучалась" [ref=e2638]: НОВАЯ
+            - button "В избранное" [ref=e2639] [cursor=pointer]:
+              - img [ref=e2640]
+            - generic [ref=e2642]: Где передается GET?
+            - generic [ref=e2643]: В URL, query parameters.
+          - generic [ref=e2644]:
+            - generic [ref=e2645]:
+              - generic [ref=e2646]: Технические
+              - generic [ref=e2647]: Git
+            - generic "Карточка еще не изучалась" [ref=e2648]: НОВАЯ
+            - button "В избранное" [ref=e2649] [cursor=pointer]:
+              - img [ref=e2650]
+            - generic [ref=e2652]: Что делал в git?
+            - generic [ref=e2653]: Уточните, что именно было сделано в git (например, коммиты, слияния, создание веток).
+          - generic [ref=e2654]:
+            - generic [ref=e2655]:
+              - generic [ref=e2656]: Технические
+              - generic [ref=e2657]: Git
+            - generic "Карточка еще не изучалась" [ref=e2658]: НОВАЯ
+            - button "В избранное" [ref=e2659] [cursor=pointer]:
+              - img [ref=e2660]
+            - generic [ref=e2662]: Какие команды git знаешь?
+            - generic [ref=e2663]: git fetch origin, git pull, git add -A, git commit -m, git push.
+          - generic [ref=e2664]:
+            - generic [ref=e2665]:
+              - generic [ref=e2666]: Технические
+              - generic [ref=e2667]: Web
+            - generic "Карточка еще не изучалась" [ref=e2668]: НОВАЯ
+            - button "В избранное" [ref=e2669] [cursor=pointer]:
+              - img [ref=e2670]
+            - generic [ref=e2672]: Cookie и cache?
+            - generic [ref=e2673]: Кэш — это сохранение данных для ускорения загрузки, но они могут быть устаревшими. Куки — это данные на компьютере пользователя, часто используются для идентификации пользователя и хранения его настроек.
+          - generic [ref=e2674]:
+            - generic [ref=e2675]:
+              - generic [ref=e2676]: Технические
+              - generic [ref=e2677]: Web
+            - generic "Карточка еще не изучалась" [ref=e2678]: НОВАЯ
+            - button "В избранное" [ref=e2679] [cursor=pointer]:
+              - img [ref=e2680]
+            - generic [ref=e2682]: Чем отличается session storage от local storage?
+            - generic [ref=e2683]: Session Storage сохраняет данные на время сессии и удаляется после закрытия вкладки браузера, в то время как Local Storage сохраняет данные на постоянной основе, даже после закрытия вкладки или браузера.
+          - generic [ref=e2684]:
+            - generic [ref=e2685]:
+              - generic [ref=e2686]: Технические
+              - generic [ref=e2687]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e2688]: НОВАЯ
+            - button "В избранное" [ref=e2689] [cursor=pointer]:
+              - img [ref=e2690]
+            - generic [ref=e2692]: Как устроена клиент-серверная архитектура?
+            - generic [ref=e2693]: Это когда клиент (например, браузер или мобильное приложение) отправляет запросы серверу, а сервер обрабатывает их и возвращает ответ. Сервер хранит данные и логику.
+          - generic [ref=e2694]:
+            - generic [ref=e2695]:
+              - generic [ref=e2696]: Технические
+              - generic [ref=e2697]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e2698]: НОВАЯ
+            - button "В избранное" [ref=e2699] [cursor=pointer]:
+              - img [ref=e2700]
+            - generic [ref=e2702]: Какие промежуточные звенья могут быть в клиент-серверной архитектуре?
+            - generic [ref=e2703]: Очередь/брокер, Фаервол, Прокси, Балансировщик.
+          - generic [ref=e2704]:
+            - generic [ref=e2705]:
+              - generic [ref=e2706]: Технические
+              - generic [ref=e2707]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e2708]: НОВАЯ
+            - button "В избранное" [ref=e2709] [cursor=pointer]:
+              - img [ref=e2710]
+            - generic [ref=e2712]: Какая роль API в клиент-серверном взаимодействии?
+            - generic [ref=e2713]: API — это связующее звено между микросервисами. --- Дополнительный ответ --- апи это связ. звено между микросервисами
+          - generic [ref=e2714]:
+            - generic [ref=e2715]:
+              - generic [ref=e2716]: Технические
+              - generic [ref=e2717]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e2718]: НОВАЯ
+            - button "В избранное" [ref=e2719] [cursor=pointer]:
+              - img [ref=e2720]
+            - generic [ref=e2722]: Отличие монолита от микросервисов?
+            - generic [ref=e2723]: "Микросервисы: 1) гибкость разработки 2) масштабируемость 3) отказоустойчивость 4) сложней локализовать ошибку, заглушки 5) сложней разворачивать..."
+          - generic [ref=e2724]:
+            - generic [ref=e2725]:
+              - generic [ref=e2726]: Технические
+              - generic [ref=e2727]: Архитектура
+            - generic "Карточка еще не изучалась" [ref=e2728]: НОВАЯ
+            - button "В избранное" [ref=e2729] [cursor=pointer]:
+              - img [ref=e2730]
+            - generic [ref=e2732]: модель ОСИ, больше верхнеуровневые, или ниже спускался?
+            - generic [ref=e2733]: мы сейчас рассматриваем уровни, прикладной(http/https/dns/Ftp), транспортный(TCP надежное соединение, а UDP - быстрое, но без гарантии доставки), сетевой(Протокол IP(распределяет адреса) DHCP)
+          - generic [ref=e2734]:
+            - generic [ref=e2735]:
+              - generic [ref=e2736]: Технические
+              - generic [ref=e2737]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2738]: НОВАЯ
+            - button "В избранное" [ref=e2739] [cursor=pointer]:
+              - img [ref=e2740]
+            - generic [ref=e2742]: "Cookies:"
+            - generic [ref=e2743]: "Серверная часть: - Сервер хранит ключ шифрования - Все данные шифруются перед отправкой Пример: Кука: encrypted_data=\"aBcDeF123...\" (расшифровывается в {user_id: 456, role: \"admin\"}) Работа: 1. Сервер шифрует данные → отправляет в куке 2. Клиент получает \"мусор\" (не может прочитать) 3. Сервер расшифровывает и получает оригинальные данные Пример: Сервер: - Проверяет логин/пароль - Генерирует JWT токен → отправляет в куке - При запросах: проверяет валидность токена Кука: auth_token=\"eyJhbGciOiJIUzI1NiIs...\""
+          - generic [ref=e2744]:
+            - generic [ref=e2745]:
+              - generic [ref=e2746]: Технические
+              - generic [ref=e2747]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2748]: НОВАЯ
+            - button "В избранное" [ref=e2749] [cursor=pointer]:
+              - img [ref=e2750]
+            - generic [ref=e2752]: Exploratory Testing
+            - generic [ref=e2753]: (эксплоративное тестирование) это метод тестирования, при котором тестировщик исследует и тестирует приложение одновременно, без заранее заданных тест-кейсов или скриптов. Основная цель обнаружить ошибки и неожиданные поведения программы, которые могли бы быть упущены при традиционном планировании тестирования.
+          - generic [ref=e2754]:
+            - generic [ref=e2755]:
+              - generic [ref=e2756]: Технические
+              - generic [ref=e2757]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2758]: НОВАЯ
+            - button "В избранное" [ref=e2759] [cursor=pointer]:
+              - img [ref=e2760]
+            - generic [ref=e2762]: gRPC
+            - generic [ref=e2763]: используется Pratabav для передачи данных
+          - generic [ref=e2764]:
+            - generic [ref=e2765]:
+              - generic [ref=e2766]: Технические
+              - generic [ref=e2767]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2768]: НОВАЯ
+            - button "В избранное" [ref=e2769] [cursor=pointer]:
+              - img [ref=e2770]
+            - generic [ref=e2772]: Более наглядное предствление тз
+            - generic [ref=e2773]: Текущее состояние- событие-следующее состояние-выход Не авторизован - нажатие кнопки "Логин" - авторизация - Запросить учетные данные Авторизация - Учетные данные введены верно - Авторизован - Переход на главную страницу Авторизация - Учетные данные введены неверно - Ошибка - Показать сообщение об ошибке Ошибка - Нажатие кнопки "Назад"- Не авторизован - Вернуться на страницу логина Авторизован - Нажатие кнопки "Выйти" - Не авторизован - Переход на главную страницу
+          - generic [ref=e2774]:
+            - generic [ref=e2775]:
+              - generic [ref=e2776]: Технические
+              - generic [ref=e2777]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2778]: НОВАЯ
+            - button "В избранное" [ref=e2779] [cursor=pointer]:
+              - img [ref=e2780]
+            - generic [ref=e2782]: Данные могут хранится в таблицах, которые могут быть связаны друг с другом
+            - generic [ref=e2783]: postgress, mysql
+          - generic [ref=e2784]:
+            - generic [ref=e2785]:
+              - generic [ref=e2786]: Технические
+              - generic [ref=e2787]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2788]: НОВАЯ
+            - button "В избранное" [ref=e2789] [cursor=pointer]:
+              - img [ref=e2790]
+            - generic [ref=e2792]: Документно-ориентированная No SQL
+            - generic [ref=e2793]: Если вам нужно хранить много файлов/документов и вы не хотите задумываться (до разумных пределов, разумеется) о структуре хранения, иерархии, связях, вам может подойти одна из документо-ориентированных баз данных. Дополнительным преимуществом являются широкие возможности для масштабирования. документо-ориентированные базы данных созданы для хранения иерархических структур данных (документов). Основой документоориентированных СУБД являются документные хранилища, имеющие структуру дерева или леса. Деревья начинаются с корневого узла и могут содержать несколько внутренних и листовых узлов. Листовые узлы содержат данные, которые при добавлении документа заносятся в индексы, это дает возможность даже при достаточно сложной структуре находить путь к искомым данным. В отличие от хранилищ типа ключ-значение, выборка по запросу к документному хранилищу может содержать части большого количества документов без полной загрузки этих документов в оперативную память.
+          - generic [ref=e2794]:
+            - generic [ref=e2795]:
+              - generic [ref=e2796]: Технические
+              - generic [ref=e2797]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2798]: НОВАЯ
+            - button "В избранное" [ref=e2799] [cursor=pointer]:
+              - img [ref=e2800]
+            - generic [ref=e2802]: Иерархическая / графы / дерево
+            - generic [ref=e2803]: "### 4. Иерархические базы данных Иерархическая база данных (ИБД) организует данные в виде древовидной структуры. Основные характеристики иерархических баз данных: 1. **Древовидная структура**: Данные организованы в иерархию, где каждый узел (node) имеет один родительский узел и может иметь множество дочерних узлов. 2. **Связи родитель-дитя**: Основной тип связи — родитель-дитя (parent-child). Каждый узел может иметь только одного родителя, что ограничивает гибкость структуры. 3. **Процедурные запросы**: Для доступа к данным часто используются процедуры, которые обходят иерархию, начиная с корневого узла. Пример: IBM Information Management System (IMS)."
+          - generic [ref=e2804]:
+            - generic [ref=e2805]:
+              - generic [ref=e2806]: Технические
+              - generic [ref=e2807]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2808]: НОВАЯ
+            - button "В избранное" [ref=e2809] [cursor=pointer]:
+              - img [ref=e2810]
+            - generic [ref=e2812]: Как БД справляется с большими объемами данных и большим числом запросов
+            - generic [ref=e2813]: скрипты для нагрузки, 100-1000 пользователей, JMeter Yandex tank
+          - generic [ref=e2814]:
+            - generic [ref=e2815]:
+              - generic [ref=e2816]: Технические
+              - generic [ref=e2817]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2818]: НОВАЯ
+            - button "В избранное" [ref=e2819] [cursor=pointer]:
+              - img [ref=e2820]
+            - generic [ref=e2822]: Ключ значение
+            - generic [ref=e2823]: Принцип Key-Value Словари содержат коллекцию объектов или записей, а объекты содержат множество различных полей, каждое из которых содержит данные. Записи хранятся и извлекаются с использованием ключа, который однозначно идентифицирует запись и используется для быстрого поиска данных. Основным применением является ускорение отображения данных для конечных пользователей и снижение нагрузок, в том числе I/O на инфраструктуру организаций. Наиболее известными и широко используемыми Key-Value решениями являются Redis и Memcached.
+          - generic [ref=e2824]:
+            - generic [ref=e2825]:
+              - generic [ref=e2826]: Технические
+              - generic [ref=e2827]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2828]: НОВАЯ
+            - button "В избранное" [ref=e2829] [cursor=pointer]:
+              - img [ref=e2830]
+            - generic [ref=e2832]: На отказ и восстановление - как быстро софт восстановится
+            - generic [ref=e2833]: Например, работая в текстовом редакторе, при потери сети, отключении электричества на стороне клиента / сервера, данные должны сохраниться.
+          - generic [ref=e2834]:
+            - generic [ref=e2835]:
+              - generic [ref=e2836]: Технические
+              - generic [ref=e2837]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2838]: НОВАЯ
+            - button "В избранное" [ref=e2839] [cursor=pointer]:
+              - img [ref=e2840]
+            - generic [ref=e2842]: Необходимые ресурсы
+            - generic [ref=e2843]: "Помощь других отделов и ролей в команде: Задача 1: Определение требований * Ответственный: Бизнес-аналитик * Дедлайн: _____ * Ожидание: Своевременное предоставление четких требований. Задача 2: Настройка тестового окружения * Ответственный: devOps * Дедлайн: _____ * Ожидание: Подготовка и настройка тестовых серверов и баз данных. Задача 3: Поддержка разработки * Ответственный: Разработчики * Дедлайн: _____ * Ожидание: Подготовка документации по итогам тестирования. Задача 4: Подготовка документации * Ответственный: Технический писатель * Дедлайн: _____ * Ожидание: Подготовка документации по итогам тестирования. Задача 5: Координация и управление проектом * Ответственный: Менеджер проекта * Дедлайн: _____ * Ожидание: Координация работы команды, контроль сроков и качества."
+          - generic [ref=e2844]:
+            - generic [ref=e2845]:
+              - generic [ref=e2846]: Технические
+              - generic [ref=e2847]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2848]: НОВАЯ
+            - button "В избранное" [ref=e2849] [cursor=pointer]:
+              - img [ref=e2850]
+            - generic [ref=e2852]: Объектно-ориентированная
+            - generic [ref=e2853]: "Объектно-ориентированные базы данных представляют собой базы данных, в где информация представлена в виде объектов, как в объектно-ориентированных языках программирования. Объектно-ориентированные базы данных появились как способ нативной коммуникации кода написанного с использованием объектно-ориентированных языков с базой данных. Объектно-ориентированные базы данных обладают следующими преимуществами:"
+          - generic [ref=e2854]:
+            - generic [ref=e2855]:
+              - generic [ref=e2856]: Технические
+              - generic [ref=e2857]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2858]: НОВАЯ
+            - button "В избранное" [ref=e2859] [cursor=pointer]:
+              - img [ref=e2860]
+            - generic [ref=e2862]: Объемами - передача большой информации
+            - generic [ref=e2863]: допустим когда мы максимальный объем файла загружаем или выгружаем или при записи большого объема данных в БД
+          - generic [ref=e2864]:
+            - generic [ref=e2865]:
+              - generic [ref=e2866]: Технические
+              - generic [ref=e2867]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2868]: НОВАЯ
+            - button "В избранное" [ref=e2869] [cursor=pointer]:
+              - img [ref=e2870]
+            - generic [ref=e2872]: Простота разработки
+            - generic [ref=e2873]: одна кодовая база, меньше сложностей
+          - generic [ref=e2874]:
+            - generic [ref=e2875]:
+              - generic [ref=e2876]: Технические
+              - generic [ref=e2877]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2878]: НОВАЯ
+            - button "В избранное" [ref=e2879] [cursor=pointer]:
+              - img [ref=e2880]
+            - generic [ref=e2882]: Сложность поддержки
+            - generic [ref=e2883]: кодовая база растет, все связано
+          - generic [ref=e2884]:
+            - generic [ref=e2885]:
+              - generic [ref=e2886]: Технические
+              - generic [ref=e2887]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2888]: НОВАЯ
+            - button "В избранное" [ref=e2889] [cursor=pointer]:
+              - img [ref=e2890]
+            - generic [ref=e2892]: "Согласованность: БД останется в согласованном состоянии после завершения транзакции"
+            - generic [ref=e2893]: Запись должна состоять из каких то обязательных данных после транзакции
+          - generic [ref=e2894]:
+            - generic [ref=e2895]:
+              - generic [ref=e2896]: Технические
+              - generic [ref=e2897]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2898]: НОВАЯ
+            - button "В избранное" [ref=e2899] [cursor=pointer]:
+              - img [ref=e2900]
+            - generic [ref=e2902]: Тестовый сценарии / Тест кейсы
+            - generic [ref=e2903]: "Они же \"Тест кейсы\" написать их может QC с шагами, с ожидаемым и с фактическим результатом 1. Сценарий 1: Проверка функциональности входа в систему * Шаги: Открыть страницу входа, ввести данные пользователя, нажать кнопку \"Войти\", проверить успешный вход. 2. Сценарий 2: Проверка регистрации нового пользователя *Шаги: Открыть страницу регистрации, ввести данные нового пользователя, нажать кнопку \"Зарегистрироваться\", проверить успешную регистрацию. 3. Сценарий 3: Проверка функциональности сброса пароля * Шаги: Открыть страницу входа, нажать \"Забыли пароль?\", ввести email, проверить получение письма, следовать инструкциям. 4. Сценарий 4: Проверка добавления товара в корзину * Шаги: Открыть страницу товара, нажать \"Добавить в корзину\", проверить добавление товара в корзину. 5. Сценарий 5: Проверка оформления заказа * Шаги: Перейти в корзину, нажать \"Оформить заказ\", ввести данные для доставки, подтвердить заказ, проверить успешное оформление."
+          - generic [ref=e2904]:
+            - generic [ref=e2905]:
+              - generic [ref=e2906]: Технические
+              - generic [ref=e2907]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2908]: НОВАЯ
+            - button "В избранное" [ref=e2909] [cursor=pointer]:
+              - img [ref=e2910]
+            - generic [ref=e2912]: виды и уровни тестирования
+            - generic [ref=e2913]: "Пример используемых видов и уровней тестирования: 1. Функциональное тестирование: *Проверка соответствия функциональности требованиям. 2. Тестирование пользовательских сценариев: *Проверка работы продукта в реальных условиях использования. 3. Исследовательское тестирование: *Интуитивное исследование продукта для выявления неожиданных багов. 4. Тестирование безопасности: *Проверка на уязвимости и потенциальные угрозы безопасности"
+          - generic [ref=e2914]:
+            - generic [ref=e2915]:
+              - generic [ref=e2916]: Технические
+              - generic [ref=e2917]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2918]: НОВАЯ
+            - button "В избранное" [ref=e2919] [cursor=pointer]:
+              - img [ref=e2920]
+            - generic [ref=e2922]: микросервис ждет подтверждения от кафки
+            - generic [ref=e2923]: acnwledgement отправляются в случае сохранения полученных данных кафкой
+          - generic [ref=e2924]:
+            - generic [ref=e2925]:
+              - generic [ref=e2926]: Технические
+              - generic [ref=e2927]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2928]: НОВАЯ
+            - button "В избранное" [ref=e2929] [cursor=pointer]:
+              - img [ref=e2930]
+            - generic [ref=e2932]: приоритеты багов
+            - generic [ref=e2933]: "примеры: low priority high severity 1) орфографическая ошибка на главной странице сайта 2) неверная контактная информация high priority low severity 1)редкоиспользуемая функция(архивация данных) 2)дефект в панели админа который редко используется"
+          - generic [ref=e2934]:
+            - generic [ref=e2935]:
+              - generic [ref=e2936]: Технические
+              - generic [ref=e2937]: Базы данных
+            - generic "Карточка еще не изучалась" [ref=e2938]: НОВАЯ
+            - button "В избранное" [ref=e2939] [cursor=pointer]:
+              - img [ref=e2940]
+            - generic [ref=e2942]: проектировка и дизайн
+            - generic [ref=e2943]: требование разрабатываются аналитиками/архитектор изначальные требования переводятся в более технический язык они гооврят конкретно какие поля будут в базе данных, каие будет интерграции и
+          - generic [ref=e2944]:
+            - generic [ref=e2945]:
+              - generic [ref=e2946]: Технические
+              - generic [ref=e2947]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e2948]: НОВАЯ
+            - button "В избранное" [ref=e2949] [cursor=pointer]:
+              - img [ref=e2950]
+            - generic [ref=e2952]: Токен?
+            - generic [ref=e2953]: Токен — это уникальный идентификатор пользователя, который генерируется, когда пользователь регистрируется.
+          - generic [ref=e2954]:
+            - generic [ref=e2955]:
+              - generic [ref=e2956]: Технические
+              - generic [ref=e2957]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e2958]: НОВАЯ
+            - button "В избранное" [ref=e2959] [cursor=pointer]:
+              - img [ref=e2960]
+            - generic [ref=e2962]: Идентификация, валидация, авторизация примеры
+            - generic [ref=e2963]: Идентификация — это процесс понимания, кто перед нами (по логину, телефону). Аутентификация — подтверждение, что клиент действительно тот, за кого себя выдает (по паролю, по двухфакторной аутентификации). Авторизация — это доступ в системы, присвоение прав пользователю (как физическому или юридическому лицу, как администратору). --- Дополнительный ответ --- идентификация-мы понимаем кто это по сущностям, по логину, по телефону-аутентификация, мы подтверждаем что этот клиент действительно этот клиент(по паролю, по сист. двухфакторной аутентиф.) авторизация это уже доступ в системы, пользователь, как. физическое лицо, как юр лицо, разный функционал, как админ когда сервер присваивает определенные права этому пользователю
+          - generic [ref=e2964]:
+            - generic [ref=e2965]:
+              - generic [ref=e2966]: Технические
+              - generic [ref=e2967]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e2968]: НОВАЯ
+            - button "В избранное" [ref=e2969] [cursor=pointer]:
+              - img [ref=e2970]
+            - generic [ref=e2972]: Возможен ли вариант авторизации без аутентификации и идентификации?
+            - generic [ref=e2973]: Аутентификация (пароль) без идентификации (логин) не сработает.
+          - generic [ref=e2974]:
+            - generic [ref=e2975]:
+              - generic [ref=e2976]: Технические
+              - generic [ref=e2977]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e2978]: НОВАЯ
+            - button "В избранное" [ref=e2979] [cursor=pointer]:
+              - img [ref=e2980]
+            - generic [ref=e2982]: Тебе кто-то дал ссылку на гугл документы на просмотр и редактирование файла, нужна ли аутентификация или авторизация?
+            - generic [ref=e2983]: Мы не авторизовались конкретно в этом документе, но нам выдали доступ. Получается, авторизация возможна, если тебе выдали определенный доступ.
+          - generic [ref=e2984]:
+            - generic [ref=e2985]:
+              - generic [ref=e2986]: Технические
+              - generic [ref=e2987]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e2988]: НОВАЯ
+            - button "В избранное" [ref=e2989] [cursor=pointer]:
+              - img [ref=e2990]
+            - generic [ref=e2992]: Верификация и валидация?
+            - generic [ref=e2993]: Верификация — это проверка по требованиям, а валидация — это проверка правильности продукта для пользователя. --- Из MindMap --- не равны потому что спецификации и требования не могут учесть всех требований пользователя
+          - generic [ref=e2994]:
+            - generic [ref=e2995]:
+              - generic [ref=e2996]: Технические
+              - generic [ref=e2997]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e2998]: НОВАЯ
+            - button "В избранное" [ref=e2999] [cursor=pointer]:
+              - img [ref=e3000]
+            - generic [ref=e3002]: Что такое SSL?
+            - generic [ref=e3003]: SSL (Secure Sockets Layer) - это протокол для шифрования данных при передаче через сеть, обеспечивающий безопасность и конфиденциальность данных.
+          - generic [ref=e3004]:
+            - generic [ref=e3005]:
+              - generic [ref=e3006]: Технические
+              - generic [ref=e3007]: Безопасность
+            - generic "Карточка еще не изучалась" [ref=e3008]: НОВАЯ
+            - button "В избранное" [ref=e3009] [cursor=pointer]:
+              - img [ref=e3010]
+            - generic [ref=e3012]: Сертификаты безопасности?
+            - generic [ref=e3013]: SSL, TLS (протоколы почти, защита DNS).
+          - generic [ref=e3014]:
+            - generic [ref=e3015]:
+              - generic [ref=e3016]: Технические
+              - generic [ref=e3017]: Ответ
+            - generic "Карточка еще не изучалась" [ref=e3018]: НОВАЯ
+            - button "В избранное" [ref=e3019] [cursor=pointer]:
+              - img [ref=e3020]
+            - generic [ref=e3022]: Это все про запрос, а в ответе есть какие-то характерные части?
+            - generic [ref=e3023]: Статус код.
+          - generic [ref=e3024]:
+            - generic [ref=e3025]:
+              - generic [ref=e3026]: Технические
+              - generic [ref=e3027]: Ошибки
+            - generic "Карточка еще не изучалась" [ref=e3028]: НОВАЯ
+            - button "В избранное" [ref=e3029] [cursor=pointer]:
+              - img [ref=e3030]
+            - generic [ref=e3032]: Ошибки?
+            - generic [ref=e3033]: Чаще всего встречал 200, 201, 400, 401, 403. 5 — ответ сервера, 4 — клиента, 3 — редирект, 100 — информационные, 200 — успешный, 403 — запрещено, 404 — не найдено. --- Дополнительный ответ --- чаще всего встречал 200,201,400,401,403 5-ответ сервера, 4-клиента ,3-редирект, 100-инфо, 200-успешный, 403-запрещено, 404-не найдено -401 код? =неавторизован -как передать? =через токен, через логин пароль -401 vs 403? =мы авторизованы, но нет прав
+          - generic [ref=e3034]:
+            - generic [ref=e3035]:
+              - generic [ref=e3036]: Технические
+              - generic [ref=e3037]: Ошибки
+            - generic "Карточка еще не изучалась" [ref=e3038]: НОВАЯ
+            - button "В избранное" [ref=e3039] [cursor=pointer]:
+              - img [ref=e3040]
+            - generic [ref=e3042]: 401 код?
+            - generic [ref=e3043]: Неавторизован.
+          - generic [ref=e3044]:
+            - generic [ref=e3045]:
+              - generic [ref=e3046]: Технические
+              - generic [ref=e3047]: Ошибки
+            - generic "Карточка еще не изучалась" [ref=e3048]: НОВАЯ
+            - button "В избранное" [ref=e3049] [cursor=pointer]:
+              - img [ref=e3050]
+            - generic [ref=e3052]: Как передать?
+            - generic [ref=e3053]: Через токен, через логин и пароль.
+          - generic [ref=e3054]:
+            - generic [ref=e3055]:
+              - generic [ref=e3056]: Технические
+              - generic [ref=e3057]: Ошибки
+            - generic "Карточка еще не изучалась" [ref=e3058]: НОВАЯ
+            - button "В избранное" [ref=e3059] [cursor=pointer]:
+              - img [ref=e3060]
+            - generic [ref=e3062]: 401 vs 403?
+            - generic [ref=e3063]: Мы авторизованы, но нет прав.
+          - generic [ref=e3064]:
+            - generic [ref=e3065]:
+              - generic [ref=e3066]: Технические
+              - generic [ref=e3067]: Ошибки
+            - generic "Карточка еще не изучалась" [ref=e3068]: НОВАЯ
+            - button "В избранное" [ref=e3069] [cursor=pointer]:
+              - img [ref=e3070]
+            - generic [ref=e3072]: Неверно передали в хедере информацию, какая ошибка будет?
+            - generic [ref=e3073]: 400, ошибка на стороне клиента, 404 или 422 (Unprocessable Entity).
+          - generic [ref=e3074]:
+            - generic [ref=e3075]:
+              - generic [ref=e3076]: Технические
+              - generic [ref=e3077]: Стенды и Окружение
+            - generic "Карточка еще не изучалась" [ref=e3078]: НОВАЯ
+            - button "В избранное" [ref=e3079] [cursor=pointer]:
+              - img [ref=e3080]
+            - generic [ref=e3082]: Как у вас проходит работа со стендами?
+            - generic [ref=e3083]: Работа со стендами включает развертывание приложений в тестовой среде, проверку их стабильности и функциональности, а также создание и обновление тестовых данных.
+          - generic [ref=e3084]:
+            - generic [ref=e3085]:
+              - generic [ref=e3086]: Типы, виды тестирования
+              - generic [ref=e3087]: API
+            - generic "Карточка еще не изучалась" [ref=e3088]: НОВАЯ
+            - button "В избранное" [ref=e3089] [cursor=pointer]:
+              - img [ref=e3090]
+            - generic [ref=e3092]: Что такое интеграционное тестирование?
+            - generic [ref=e3093]: Тестирование интеграций включало проверку API, взаимодействие с внешними сервисами и мониторинг потоков данных между микросервисами, включая взаимодействие с внешними сервисами, такими как платежная система.
+          - generic [ref=e3094]:
+            - generic [ref=e3095]:
+              - generic [ref=e3096]: Типы, виды тестирования
+              - generic [ref=e3097]: API
+            - generic "Карточка еще не изучалась" [ref=e3098]: НОВАЯ
+            - button "В избранное" [ref=e3099] [cursor=pointer]:
+              - img [ref=e3100]
+            - generic [ref=e3102]: Какие техники относятся к черному, какие к белому?
+            - generic [ref=e3103]: "Черный: эквивалентное разбиение, граничные значения, тестирование состояний. Серый: API, интеграции, производительности, безопасности. Белый: покрытие кода, тестирование на основе путей, условий и циклов. --- Дополнительный ответ --- черный: экв. разбиение, граничные знач., Тестирование состояния серый: API, интеграции, производительности, безопасности белый: покрытие кода, тест. на основе путей, условий и циклов"
+          - generic [ref=e3104]:
+            - generic [ref=e3105]:
+              - generic [ref=e3106]: Типы, виды тестирования
+              - generic [ref=e3107]: HTTP
+            - generic "Карточка еще не изучалась" [ref=e3108]: НОВАЯ
+            - button "В избранное" [ref=e3109] [cursor=pointer]:
+              - img [ref=e3110]
+            - generic [ref=e3112]: Что такое тестирование методом чёрного ящика, белого ящика и серого ящика?
+            - generic [ref=e3113]: Белый ящик — полный доступ к коду, в основном разработчики. Серый ящик — частичное понимание, например, dev tools, Postman, смотрим логи. Черный ящик — основан на спецификации, тестирование ожидаемого/фактического результата вручную. --- Дополнительный ответ --- белый- полный доступ к коду, в основном разработчики серый-частичное понимание, например dev tools, postman, смотрим логи черный- основанный на спецификации, ручками, ожидаемый / фактический
+          - generic [ref=e3114]:
+            - generic [ref=e3115]:
+              - generic [ref=e3116]: Типы, виды тестирования
+              - generic [ref=e3117]: Usability testing
+            - generic "Карточка еще не изучалась" [ref=e3118]: НОВАЯ
+            - button "В избранное" [ref=e3119] [cursor=pointer]:
+              - img [ref=e3120]
+            - generic [ref=e3122]: Что такое тестирование удобства использования (usability testing)?
+            - generic [ref=e3123]: Новая форма регистрации, насколько интуитивно понятно. Тестирование скорости загрузки.
+          - generic [ref=e3124]:
+            - generic [ref=e3125]:
+              - generic [ref=e3126]: Типы, виды тестирования
+              - generic [ref=e3127]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e3128]: НОВАЯ
+            - button "В избранное" [ref=e3129] [cursor=pointer]:
+              - img [ref=e3130]
+            - generic [ref=e3132]: Когда проводится регрессионное тестирование?
+            - generic [ref=e3133]: Регрессионное тестирование проводится после внесения изменений в систему, таких как исправления багов или добавление новых функций.
+          - generic [ref=e3134]:
+            - generic [ref=e3135]:
+              - generic [ref=e3136]: Типы, виды тестирования
+              - generic [ref=e3137]: Баги и Отчеты
+            - generic "Карточка еще не изучалась" [ref=e3138]: НОВАЯ
+            - button "В избранное" [ref=e3139] [cursor=pointer]:
+              - img [ref=e3140]
+            - generic [ref=e3142]: Регресс vs ретест?
+            - generic [ref=e3143]: Ретест — проверка фикса багов. Регресс — проверка, не поломала ли новая фича старый функционал. --- Дополнительный ответ --- ретест - проверка фикса багов регресс - не поломала ли фича старый функционал
+          - generic [ref=e3144]:
+            - generic [ref=e3145]:
+              - generic [ref=e3146]: Типы, виды тестирования
+              - generic [ref=e3147]: Жизненный цикл
+            - generic "Карточка еще не изучалась" [ref=e3148]: НОВАЯ
+            - button "В избранное" [ref=e3149] [cursor=pointer]:
+              - img [ref=e3150]
+            - generic [ref=e3152]: Как вы оптимизируете процесс регрессионного тестирования?
+            - generic [ref=e3153]: Автоматизация тестов, минимизация дублирующихся проверок и выбор наиболее критичных тестов для каждого релиза.
+          - generic [ref=e3154]:
+            - generic [ref=e3155]:
+              - generic [ref=e3156]: Типы, виды тестирования
+              - generic [ref=e3157]: Нефункциональное тестирование
+            - generic "Карточка еще не изучалась" [ref=e3158]: НОВАЯ
+            - button "В избранное" [ref=e3159] [cursor=pointer]:
+              - img [ref=e3160]
+            - generic [ref=e3162]: Нефункциональные виды тестов?
+            - generic [ref=e3163]: Например, время отклика, SLA, нагрузочное тестирование, безопасность. --- Дополнительный ответ --- например время отклика, или мы можем проверить какой-нибудь SLA, по которым мы должны отдавать ответы из одного приложения в другое. нагруз..
+          - generic [ref=e3164]:
+            - generic [ref=e3165]:
+              - generic [ref=e3166]: Типы, виды тестирования
+              - generic [ref=e3167]: Типы тестирования
+            - generic "Карточка еще не изучалась" [ref=e3168]: НОВАЯ
+            - button "В избранное" [ref=e3169] [cursor=pointer]:
+              - img [ref=e3170]
+            - generic [ref=e3172]: Какие виды тестирования ты знаешь и какие применял на своем проекте?
+            - generic [ref=e3173]: Функциональное тестирование, регрессионное, интеграционное, тестирование безопасности, а также нагрузочное тестирование.
+          - generic [ref=e3174]:
+            - generic [ref=e3175]:
+              - generic [ref=e3176]: Типы, виды тестирования
+              - generic [ref=e3177]: Типы тестирования
+            - generic "Карточка еще не изучалась" [ref=e3178]: НОВАЯ
+            - button "В избранное" [ref=e3179] [cursor=pointer]:
+              - img [ref=e3180]
+            - generic [ref=e3182]: Санити vs смок?
+            - generic [ref=e3183]: Санити — если нужно протестировать какую-то фичу изолированно, новую. Смок — быстрая проверка новой фичи после разработки.
+          - generic [ref=e3184]:
+            - generic [ref=e3185]:
+              - generic [ref=e3186]: Типы, виды тестирования
+              - generic [ref=e3187]: Типы тестирования
+            - generic "Карточка еще не изучалась" [ref=e3188]: НОВАЯ
+            - button "В избранное" [ref=e3189] [cursor=pointer]:
+              - img [ref=e3190]
+            - generic [ref=e3192]: Регресс vs смок?
+            - generic [ref=e3193]: Регрессия — более глубокая проверка после изменений. Смок — быстрая проверка ключевых функций.
+          - generic [ref=e3194]:
+            - generic [ref=e3195]:
+              - generic [ref=e3196]: Типы, виды тестирования
+              - generic [ref=e3197]: Типы тестирования
+            - generic "Карточка еще не изучалась" [ref=e3198]: НОВАЯ
+            - button "В избранное" [ref=e3199] [cursor=pointer]:
+              - img [ref=e3200]
+            - generic [ref=e3202]: Ограниченное время на регресс?
+            - generic [ref=e3203]: Провести smoke/sanity тесты для тех модулей, что попали в свежий билд.
+          - generic [ref=e3204]:
+            - generic [ref=e3205]:
+              - generic [ref=e3206]: Типы, виды тестирования
+              - generic [ref=e3207]: Типы тестирования
+            - generic "Карточка еще не изучалась" [ref=e3208]: НОВАЯ
+            - button "В избранное" [ref=e3209] [cursor=pointer]:
+              - img [ref=e3210]
+            - generic [ref=e3212]: Какие виды тестирования связаны с изменениями?
+            - generic [ref=e3213]: Регрессионное тестирование и тестирование новой функциональности.
+          - generic [ref=e3214]:
+            - generic [ref=e3215]:
+              - generic [ref=e3216]: Типы, виды тестирования
+              - generic [ref=e3217]: Функциональное тестирование
+            - generic "Карточка еще не изучалась" [ref=e3218]: НОВАЯ
+            - button "В избранное" [ref=e3219] [cursor=pointer]:
+              - img [ref=e3220]
+            - generic [ref=e3222]: Функциональное от нефункционального уточнить
+            - generic [ref=e3223]: Функциональное — соответствие требованиям, логике, GUI. Нефункциональное — надежность, юзабилити, переносимость. --- Дополнительный ответ --- функц.- соответствие требованиям, логике, GUI(кнопка при наведении) нефункц.- надежности, юзабилити, переносимость и т.д.
+          - generic [ref=e3224]:
+            - generic [ref=e3225]:
+              - generic [ref=e3226]: Документация
+              - generic [ref=e3227]: Типы требований
+            - generic "Карточка еще не изучалась" [ref=e3228]: НОВАЯ
+            - button "В избранное" [ref=e3229] [cursor=pointer]:
+              - img [ref=e3230]
+            - generic [ref=e3232]: Какие виды требований знаете?
+            - generic [ref=e3233]: "Функциональные — это как работает система. Нефункциональные — это про UI, UX, дизайн, насколько удобно пользователю, например, доступность не менее 99,9% времени в год.\\n\\n--- Дополнительный ответ ---\\nфункц-то как работает система, нефункц-про ui, ux, дизайн, про то насколько удобно пользователю, нефункц- по нагрузке, например: доступность не менее 99,9% времени в год"
+  - generic [ref=e3234]:
+    - generic [ref=e3235]:
+      - heading "Фильтры" [level=3] [ref=e3236]
+      - button [ref=e3237] [cursor=pointer]:
+        - img [ref=e3238]
+    - generic [ref=e3241]:
+      - generic [ref=e3242]:
+        - generic [ref=e3243]: Статус
+        - generic [ref=e3244]:
+          - button "Новые" [ref=e3245] [cursor=pointer]
+          - button "Изучаются" [ref=e3246] [cursor=pointer]
+          - button "Повторение" [ref=e3247] [cursor=pointer]
+      - generic [ref=e3248]:
+        - generic [ref=e3249]: Сложность
+        - generic [ref=e3250]:
+          - button "Легко" [ref=e3251] [cursor=pointer]
+          - button "Средне" [ref=e3252] [cursor=pointer]
+          - button "Сложно" [ref=e3253] [cursor=pointer]
+    - generic [ref=e3254]:
+      - button "Сбросить" [ref=e3255] [cursor=pointer]
+      - button "Применить" [ref=e3256] [cursor=pointer]
+  - generic [ref=e3257]:
+    - generic [ref=e3258]:
+      - img [ref=e3259]
+      - text: Включить уведомления?
+    - paragraph [ref=e3262]: Получайте уведомления о новых функциях и обновлениях приложения.
+    - generic [ref=e3263]:
+      - button "Позже" [ref=e3264] [cursor=pointer]
+      - button "Разрешить" [ref=e3265] [cursor=pointer]
+  - generic "Статус синхронизации" [ref=e3266]:
+    - img [ref=e3267]
+```
