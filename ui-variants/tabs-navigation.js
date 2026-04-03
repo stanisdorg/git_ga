@@ -620,6 +620,8 @@ export function initTabsNavigation(appVersion) {
                 } else if (categoryId === 'favorites') {
                     // Избранное без подкатегорий
                     subcategoriesContainer.style.display = 'none';
+                    // 🔥 Принудительно читаем свежие данные из localStorage
+                    console.log('[TABS-NAVIGATION] 📌 Клик на вкладку избранного - обновляем данные');
                     showFavorites();
                 } else {
                     const selectedCategory = categories.find(cat => cat.id == categoryId);
@@ -3702,7 +3704,18 @@ function showAllQuestions() {
 function showFavorites() {
     currentContextKey = 'favorites';
     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
-    const favData = getRuntimeData().filter(item => favorites.has(item.question));
+    const runtimeData = getRuntimeData();
+
+    console.log('[showFavorites] 🔍 Отладка:');
+    console.log('[showFavorites] - favorites count:', favorites.size);
+    console.log('[showFavorites] - runtimeData count:', runtimeData.length);
+    console.log('[showFavorites] - Примеры вопросов:', runtimeData.slice(0, 3).map(i => i.question?.substring(0, 30)));
+
+    const favData = runtimeData.filter(item => favorites.has(item.question));
+
+    console.log('[showFavorites] - favData count:', favData.length);
+    console.log('[showFavorites] - favData вопросы:', favData.map(i => i.question?.substring(0, 40)));
+
     displayQuestions(favData, 'Избранное');
 }
 
@@ -4891,12 +4904,6 @@ window.addEventListener('qaDataUpdated', (event) => {
     if (location.hash === '#/stats') {
         console.log('[qaDataUpdated] ⚠️ Страница статистики - откладываем обновление');
         return;
-    }
-
-    // 🔥 Если мы на вкладке избранного - обновляем favorites
-    if (currentContextKey === 'favorites') {
-        console.log('[qaDataUpdated] 📌 Находимся на вкладке избранного - обновляем');
-        showFavorites();
     }
 
     // Обновляем текущий контекст
