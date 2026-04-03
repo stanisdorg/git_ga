@@ -858,6 +858,22 @@ async function saveEditChanges() {
                         allCards[cardIndex].answer = newAnswer;
                         allCards[cardIndex].formatting = currentFormatting;
                         localStorage.setItem('qaUserCards', JSON.stringify(allCards));
+
+                        // 🔥 ОБНОВЛЯЕМ также qaUserCards_{username} для getQaUserCards()
+                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                        if (sessionUserRaw) {
+                            try {
+                                const user = JSON.parse(sessionUserRaw);
+                                if (user && user.username) {
+                                    const userKey = `qaUserCards_${user.username}`;
+                                    localStorage.setItem(userKey, JSON.stringify(allCards));
+                                    console.log('[EDIT MODAL] ✅ Сохранено в', userKey);
+                                }
+                            } catch (e) {
+                                console.warn('[EDIT MODAL] ⚠️ Ошибка сохранения в userKey:', e);
+                            }
+                        }
+
                         console.log('[EDIT MODAL] ✅ localStorage обновлён');
 
                         // 🔥 УСТАНАВЛИВАЕМ ФЛАГ для отложенного обновления UI
