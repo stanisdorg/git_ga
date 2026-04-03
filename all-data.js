@@ -365,7 +365,6 @@ let uniqueQaData = [];
 // Это нужно для корректной работы на нескольких устройствах
 function setUniqueQaData(cards) {
     uniqueQaData = cards;
-    console.log('[all-data] setUniqueQaData вызван:', cards.length, 'карточек');
 }
 
 // Применение локальных админ-правок (overrides) и новых карточек к данным
@@ -425,7 +424,6 @@ function loadUserCardsFromStorage() {
         const userCards = JSON.parse(userCardsRaw);
         if (!Array.isArray(userCards) || userCards.length === 0) return false;
 
-        console.log(`[all-data] Загружено ${userCards.length} карточек пользователя ${user.username} из localStorage`);
         uniqueQaData = [...userCards];
         return true;
     } catch (e) {
@@ -443,29 +441,19 @@ async function initializeData() {
         // Если данные пользователя загружены, НЕ применяем overrides
         // (они уже применены в qaUserCards)
         if (!userCardsLoaded) {
-            console.log('[all-data] Данные пользователя не найдены, загружаем global.json');
             const jsonData = await loadJsonData();
 
-            // Если данные успешно загружены и содержат валидные вопросы
             if (jsonData && jsonData.length > 0) {
-                // Фильтруем пустые объекты, если они есть
                 const validData = jsonData.filter(item => item && item.question);
 
                 if (validData.length > 0) {
                     uniqueQaData = validData;
-                    console.log(`Всего загружено ${uniqueQaData.length} вопросов из global.json`);
-
-                    // Применяем локальные overrides и новые карточки (только для global.json)
                     applyAdminOverridesAndNewItems();
                 }
             }
-        } else {
-            console.log('[all-data] Используем данные пользователя из localStorage');
         }
 
-        console.log(`[all-data] Итоговое количество карточек: ${uniqueQaData.length}`);
-
-        // Вызываем событие, чтобы уведомить о загрузке данных
+        // Dispatch event to notify data is loaded
         document.dispatchEvent(new CustomEvent('dataLoaded', { detail: { data: uniqueQaData } }));
     } catch (error) {
         console.error('[all-data] Ошибка при инициализации данных:', error);
@@ -484,7 +472,6 @@ Object.defineProperty(window, 'uniqueQaData', {
 
 // Принудительная перезагрузка данных после успешного сохранения
 window.addEventListener('forceReloadData', () => {
-    console.log('Получен сигнал принудительной перезагрузки данных');
     initializeData();
 });
 

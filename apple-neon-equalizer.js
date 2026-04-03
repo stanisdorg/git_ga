@@ -140,6 +140,4 @@
         stop: stopRecording,
         isRecording: () => isRecording
     };
-
-    console.log('[Apple Neon Equalizer] Готов к использованию');
 })();

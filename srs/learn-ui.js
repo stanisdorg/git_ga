@@ -971,6 +971,20 @@ export function startLearnSession(candidateQuestions, options = {}) {
 
     initLearnUI(); // Ensure UI exists
 
+    // 🔧 ФОКУСИРУЕМСЯ на flashcard для работы горячих клавиш
+    // Это решает проблему, когда фокус остается на элементах главной страницы
+    setTimeout(() => {
+        const flashcardEl = container.querySelector('.flashcard');
+        if (flashcardEl) {
+            flashcardEl.setAttribute('tabindex', '0');
+            flashcardEl.focus();
+        }
+        // Также убираем фокус с любых input/button которые могли остаться активными
+        if (document.activeElement && document.activeElement !== document.body) {
+            document.activeElement?.blur();
+        }
+    }, 50);
+
     // 🔧 ПЕРЕЗАПУСК ОБРАБОТЧИКОВ КАРТОЧКИ
     // При повторном запуске сессии нужно перерегистрировать обработчики
     const flashcard = container.querySelector('.flashcard');

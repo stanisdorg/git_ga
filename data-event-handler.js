@@ -7,9 +7,6 @@ import { initUI } from './ui-manager.js';
 export function initDataEventHandlers() {
     // Обработчик события загрузки данных
     document.addEventListener('dataLoaded', function(event) {
-        console.log('Данные загружены, обновляем UI');
-        
-        // Обновляем UI с новыми данными
         initUI();
     });
 }

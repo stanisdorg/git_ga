@@ -56,5 +56,3 @@ window.setSearchQuery = setSearchQuery;
 window.getSearchQuery = getSearchQuery;
 window.escapeRegExp = escapeRegExp;
 window.highlightSearchQuery = highlightSearchQuery;
-
-console.log('[Search Highlight] Module loaded');

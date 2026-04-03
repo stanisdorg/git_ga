@@ -220,32 +220,22 @@ export function getSelectionStyles(start, end, existingRules = []) {
  * Применяет цвет к выделению
  */
 export function applyColorToSelection(start, end, color, existingRules = [], field, formatting) {
-    console.log('[text-formatter.applyColorToSelection] START', { start, end, color, field });
-    
     const fieldRules = formatting[field] || [];
     const newRules = [];
-
     const segments = splitRulesIntoSegments(fieldRules, start, end);
-
-    console.log('[text-formatter.applyColorToSelection] segments:', segments);
 
     segments.forEach(segment => {
         const segStart = segment.start;
         const segEnd = segment.end;
         const styles = { ...segment.styles };
-
-        // Применяем цвет ТОЛЬКО к сегментам внутри нового выделения
         const isInSelection = segStart >= start && segEnd <= end;
-        
+
         if (isInSelection) {
             if (color !== null) {
                 styles.color = color;
             } else {
                 delete styles.color;
             }
-            console.log('[text-formatter.applyColorToSelection] Color applied to segment:', { segStart, segEnd, styles });
-        } else {
-            console.log('[text-formatter.applyColorToSelection] Segment NOT in selection, keeping original:', { segStart, segEnd, styles });
         }
 
         if (hasStyles(styles)) {
@@ -260,45 +250,32 @@ export function applyColorToSelection(start, end, color, existingRules = [], fie
     newRules.sort((a, b) => a.start - b.start);
     const mergedRules = mergeRules(newRules);
 
-    const result = {
+    return {
         ...formatting,
         [field]: mergedRules
     };
-
-    console.log('[text-formatter.applyColorToSelection] RESULT:', result);
-    return result;
 }
 
 /**
  * Применяет цвет фона к выделению
  */
 export function applyBackgroundColorToSelection(start, end, backgroundColor, existingRules = [], field, formatting) {
-    console.log('[text-formatter.applyBackgroundColorToSelection] START', { start, end, backgroundColor, field });
-    
     const fieldRules = formatting[field] || [];
     const newRules = [];
-
     const segments = splitRulesIntoSegments(fieldRules, start, end);
-
-    console.log('[text-formatter.applyBackgroundColorToSelection] segments:', segments);
 
     segments.forEach(segment => {
         const segStart = segment.start;
         const segEnd = segment.end;
         const styles = { ...segment.styles };
-
-        // Применяем цвет фона ТОЛЬКО к сегментам внутри нового выделения
         const isInSelection = segStart >= start && segEnd <= end;
-        
+
         if (isInSelection) {
             if (backgroundColor !== null) {
                 styles.backgroundColor = backgroundColor;
             } else {
                 delete styles.backgroundColor;
             }
-            console.log('[text-formatter.applyBackgroundColorToSelection] BG color applied to segment:', { segStart, segEnd, styles });
-        } else {
-            console.log('[text-formatter.applyBackgroundColorToSelection] Segment NOT in selection, keeping original:', { segStart, segEnd, styles });
         }
 
         if (hasStyles(styles)) {
@@ -313,47 +290,30 @@ export function applyBackgroundColorToSelection(start, end, backgroundColor, exi
     newRules.sort((a, b) => a.start - b.start);
     const mergedRules = mergeRules(newRules);
 
-    const result = {
+    return {
         ...formatting,
         [field]: mergedRules
     };
-
-    console.log('[text-formatter.applyBackgroundColorToSelection] RESULT:', result);
-    return result;
 }
 
 /**
  * Применяет стиль (жирный/курсив/подчёркивание/код) к выделению
  */
 export function applyStyleToSelection(styleName, start, end, value, existingRules = [], field, formatting) {
-    console.log('[text-formatter.applyStyleToSelection] START', { styleName, start, end, value, field });
-    console.log('[text-formatter.applyStyleToSelection] existingRules:', existingRules);
-    console.log('[text-formatter.applyStyleToSelection] formatting:', formatting);
-    
     const fieldRules = formatting[field] || [];
     const newRules = [];
-
-    // Разбиваем существующие правила и добавляем новое
     const segments = splitRulesIntoSegments(fieldRules, start, end);
-
-    console.log('[text-formatter.applyStyleToSelection] segments:', segments);
 
     segments.forEach(segment => {
         const segStart = segment.start;
         const segEnd = segment.end;
         const styles = { ...segment.styles };
-
-        // Применяем стиль ТОЛЬКО к сегментам внутри нового выделения
         const isInSelection = segStart >= start && segEnd <= end;
-        
+
         if (isInSelection) {
             styles[styleName] = value;
-            console.log('[text-formatter.applyStyleToSelection] Style applied to segment:', { segStart, segEnd, styles });
-        } else {
-            console.log('[text-formatter.applyStyleToSelection] Segment NOT in selection, keeping original:', { segStart, segEnd, styles });
         }
 
-        // Добавляем правило только если есть стили
         if (hasStyles(styles)) {
             newRules.push({
                 start: segStart,
@@ -363,21 +323,13 @@ export function applyStyleToSelection(styleName, start, end, value, existingRule
         }
     });
 
-    // Сортируем правила по start
     newRules.sort((a, b) => a.start - b.start);
-
-    // Merge overlapping rules with same styles
     const mergedRules = mergeRules(newRules);
 
-    console.log('[text-formatter.applyStyleToSelection] mergedRules:', mergedRules);
-
-    const result = {
+    return {
         ...formatting,
         [field]: mergedRules
     };
-
-    console.log('[text-formatter.applyStyleToSelection] RESULT:', result);
-    return result;
 }
 
 /**
@@ -387,7 +339,6 @@ export function applyStyleToSelection(styleName, start, end, value, existingRule
 function splitRulesIntoSegments(existingRules, newStart, newEnd) {
     const segments = [];
 
-    // Если нет существующих правил, создаём один сегмент для нового выделения
     if (!existingRules || existingRules.length === 0) {
         return [{
             start: newStart,
@@ -396,7 +347,6 @@ function splitRulesIntoSegments(existingRules, newStart, newEnd) {
         }];
     }
 
-    // Находим все уникальные точки (start/end)
     const points = new Set([0, newStart, newEnd]);
     existingRules.forEach(rule => {
         points.add(rule.start || 0);
@@ -405,21 +355,14 @@ function splitRulesIntoSegments(existingRules, newStart, newEnd) {
 
     const sortedPoints = Array.from(points).sort((a, b) => a - b);
 
-    console.log('[splitRulesIntoSegments] points:', sortedPoints);
-    console.log('[splitRulesIntoSegments] existingRules:', existingRules);
-    console.log('[splitRulesIntoSegments] newStart:', newStart, 'newEnd:', newEnd);
-
-    // Создаём сегменты между точками
     for (let i = 0; i < sortedPoints.length - 1; i++) {
         const segStart = sortedPoints[i];
         const segEnd = sortedPoints[i + 1];
 
         if (segStart >= segEnd) continue;
 
-        // Проверяем, попадает ли сегмент в новое выделение
         const isInNewSelection = segStart >= newStart && segEnd <= newEnd;
 
-        // Находим все стили, которые применяются к этому сегменту из СУЩЕСТВУЮЩИХ правил
         const styles = {};
         let hasExistingStyles = false;
 
@@ -427,7 +370,6 @@ function splitRulesIntoSegments(existingRules, newStart, newEnd) {
             const ruleStart = rule.start || 0;
             const ruleEnd = rule.end || 0;
 
-            // Проверяем, попадает ли сегмент в существующее правило
             if (segStart >= ruleStart && segEnd <= ruleEnd) {
                 if (rule.color !== undefined) { styles.color = rule.color; hasExistingStyles = true; }
                 if (rule.backgroundColor !== undefined) { styles.backgroundColor = rule.backgroundColor; hasExistingStyles = true; }
@@ -438,30 +380,23 @@ function splitRulesIntoSegments(existingRules, newStart, newEnd) {
             }
         });
 
-        // Добавляем сегмент ТОЛЬКО если:
-        // 1. Он попадает в новое выделение (для применения новых стилей)
-        // 2. ИЛИ у него есть существующие стили (для сохранения старых стилей)
         if (isInNewSelection || hasExistingStyles) {
             segments.push({
                 start: segStart,
                 end: segEnd,
                 styles
             });
-            console.log('[splitRulesIntoSegments] Added segment:', { segStart, segEnd, styles, isInNewSelection, hasExistingStyles });
         }
     }
 
-    // Если сегментов всё ещё нет, создаём сегмент для нового выделения
     if (segments.length === 0) {
         segments.push({
             start: newStart,
             end: newEnd,
             styles: {}
         });
-        console.log('[splitRulesIntoSegments] Created default segment for new selection');
     }
 
-    console.log('[splitRulesIntoSegments] Final segments:', segments);
     return segments;
 }
 

@@ -6,11 +6,6 @@ import { setSearchQuery } from './search-highlight.js';
 let transcriptionMode = false; // глобальное состояние режима транскрипции
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('[SCRIPT.JS] DOMContentLoaded fired');
-    console.log('[SCRIPT.JS] Body styles:', window.getComputedStyle(document.body));
-    console.log('[SCRIPT.JS] Body overflow:', window.getComputedStyle(document.body).overflow);
-    console.log('[SCRIPT.JS] uniqueQaData initial length:', uniqueQaData ? uniqueQaData.length : 'UNDEFINED');
-
     const searchInput = document.getElementById('search-input');
     const micButton = document.getElementById('mic-button');
     const statusIndicator = document.getElementById('status-indicator');
@@ -19,33 +14,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const micVisualizer = document.getElementById('mic-visualizer');
-    // Элементы режимов (кнопки в сайдбаре)
     const historyButton = document.getElementById('history-button');
     const transcriptionButton = document.getElementById('transcription-button');
     const transcriptionHistory = document.getElementById('transcription-history');
 
-    console.log('[SCRIPT.JS] Main elements found:', {
-        searchInput: !!searchInput,
-        micButton: !!micButton,
-        resultsList: !!resultsList,
-        sidebar: !!sidebar
-    });
-
-    // 🔥 Ждём загрузки данных перед отображением
     if (!uniqueQaData || uniqueQaData.length === 0) {
-        console.log('[SCRIPT.JS] Waiting for data to load...');
         document.addEventListener('dataLoaded', () => {
-            console.log('[SCRIPT.JS] Data loaded, initializing search');
             initializeSearch();
         }, { once: true });
     } else {
-        console.log('[SCRIPT.JS] Data already available, initializing search');
         initializeSearch();
     }
 
-    // Функция инициализации поиска
     function initializeSearch() {
-        console.log('[SCRIPT.JS] initializeSearch called, uniqueQaData.length:', uniqueQaData.length);
 
         // По умолчанию открываем вкладку транскрипции
         if (searchHistory && transcriptionHistory && transcriptionButton) {
@@ -82,16 +63,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Загружаем историю из localStorage
         try {
             const savedHistory = localStorage.getItem('qaSearchHistory');
-            console.log('[SEARCH] Saved history from localStorage:', savedHistory);
             if (savedHistory) {
                 searchHistoryArray = JSON.parse(savedHistory);
-                console.log('[SEARCH] ✅ Загружено элементов истории:', searchHistoryArray.length);
-                console.log('[SEARCH] История:', searchHistoryArray);
-            } else {
-                console.log('[SEARCH] ⚠️ История пуста в localStorage');
             }
         } catch (e) {
-            console.error('[SEARCH] ❌ Ошибка загрузки истории:', e);
+            console.error('[SEARCH] Ошибка загрузки истории:', e);
             searchHistoryArray = [];
         }
 
@@ -177,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (equalizerContainer) {
                             window.AppleNeonEqualizer.create(equalizerContainer);
                             await window.AppleNeonEqualizer.start();
-                            console.log('[Apple Neon Equalizer] Запущен');
                         }
                         return;
                     }
@@ -202,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Останавливаем Apple Neon Equalizer
                 if (window.AppleNeonEqualizer && window.AppleNeonEqualizer.isRecording()) {
                     window.AppleNeonEqualizer.stop();
-                    console.log('[Apple Neon Equalizer] Остановлен');
                     return;
                 }
                 
@@ -396,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (escapePressCount === 1) {
                     // Первое нажатие - закрываем подсказки если открыты
                     if (searchSuggestions && searchSuggestions.style.display !== 'none') {
-                        console.log('[SEARCH] ESC - закрытие подсказок');
                         hideSearchSuggestions();
                         escapePressCount = 0;
                         escapePressTimer = null;
@@ -411,7 +384,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Второе нажатие - очищаем поле
                     if (searchInput && searchInput.value) {
                         searchInput.value = '';
-                        console.log('[SEARCH] Double ESC - очистка поля');
                         performSearch('');
                         hideSearchSuggestions();
                     }
@@ -474,32 +446,36 @@ document.addEventListener('DOMContentLoaded', function () {
             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
         }
 
-        // Обработчик ввода текста в поле поиска
-        searchInput.addEventListener('input', function () {
-            console.log('[SEARCH] Input event, value:', this.value);
-            // Показываем подсказки при вводе текста
+        // Debounce utility
+        function debounce(fn, delay) {
+            let timer = null;
+            return function (...args) {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        // Обработчик ввода текста в поле поиска (с debounce 200мс)
+        const handleSearchInput = debounce(function (value) {
             if (searchSuggestions && searchHistoryArray.length > 0) {
-                console.log('[SEARCH] Показываем подсказки при вводе');
                 renderSearchSuggestions();
             }
-            performSearch(this.value);
+            performSearch(value);
+        }, 200);
+
+        searchInput.addEventListener('input', function () {
+            handleSearchInput(this.value);
         });
 
         // Показ подсказок при фокусе на поле поиска
         searchInput.addEventListener('focus', function () {
-            console.log('[SEARCH] Focus event, searchHistoryArray.length:', searchHistoryArray.length);
             if (searchSuggestions && searchHistoryArray.length > 0) {
-                console.log('[SEARCH] Показываем подсказки при фокусе');
                 renderSearchSuggestions();
-            } else {
-                console.log('[SEARCH] ⚠️ История пуста или searchSuggestions не найден');
             }
         });
 
         // Скрытие подсказок при потере фокуса
         searchInput.addEventListener('blur', function () {
-            console.log('[SEARCH] Blur event, скрываем подсказки');
-            // Небольшая задержка чтобы успеть кликнуть на подсказку
             setTimeout(() => {
                 hideSearchSuggestions();
             }, 200);
@@ -536,87 +512,64 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Обработчик нажатия Enter в поле поиска — всегда выполняет поиск и пишет в историю
         searchInput.addEventListener('keydown', function (event) {
-            console.log('[SEARCH] Keydown event, key:', event.key);
             if (event.key === 'Enter') {
                 const query = this.value.trim();
-                console.log('[SEARCH] Enter pressed, query:', query);
                 if (query) {
                     performSearch(query);
                     addToSearchHistory(query);
-                } else {
-                    console.log('[SEARCH] ⚠️ Пустой query при Enter');
                 }
             }
         });
 
         // Функция добавления запроса в историю поиска
         function addToSearchHistory(query) {
-            console.log('[SEARCH] addToSearchHistory вызван с query:', query);
-
-            // Проверяем, что запрос не пустой
             if (!query.trim()) {
-                console.log('[SEARCH] ⚠️ Пустой запрос, пропускаем');
                 return;
             }
 
-            // Создаем объект с запросом и временем
             const historyItem = {
                 query: query,
                 timestamp: new Date().toLocaleTimeString(),
-                id: Date.now() // уникальный идентификатор для элемента истории
+                id: Date.now()
             };
-            console.log('[SEARCH] Создаём элемент истории:', historyItem);
 
-            // Добавляем в начало массива истории
             searchHistoryArray.unshift(historyItem);
-            console.log('[SEARCH] Массив после добавления:', searchHistoryArray.length, 'элементов');
 
-            // 🔥 Сохраняем в localStorage (храним последние 20 запросов)
             try {
                 const limitedHistory = searchHistoryArray.slice(0, 20);
                 localStorage.setItem('qaSearchHistory', JSON.stringify(limitedHistory));
-                console.log('[SEARCH] ✅ Сохранено в localStorage:', limitedHistory.length, 'элементов');
             } catch (e) {
-                console.error('[SEARCH] ❌ Ошибка сохранения истории:', e);
+                console.error('[SEARCH] Ошибка сохранения истории:', e);
             }
 
-            // Обновляем отображение истории
             renderSearchHistory();
         }
 
         // Функция отображения подсказок (выпадающий список)
         function renderSearchSuggestions() {
-            console.log('[SEARCH] renderSearchSuggestions вызван');
-
             if (!searchSuggestions) {
-                console.error('[SEARCH] ❌ searchSuggestions element не найден!');
+                console.error('[SEARCH] searchSuggestions element не найден!');
                 return;
             }
 
             if (searchHistoryArray.length === 0) {
-                console.log('[SEARCH] ⚠️ История пуста, скрываем подсказки');
                 searchSuggestions.style.display = 'none';
                 searchSuggestions.innerHTML = '';
                 return;
             }
 
-            // Рендерим подсказки
             searchSuggestions.innerHTML = '';
-
-            // Показываем только последние 10 запросов
             const recentHistory = searchHistoryArray.slice(0, 10);
 
             recentHistory.forEach(item => {
                 const suggestionEl = document.createElement('div');
                 suggestionEl.className = 'search-suggestion-item';
 
-                // Текст запроса
                 const querySpan = document.createElement('span');
                 querySpan.className = 'search-suggestion-query';
                 querySpan.textContent = item.query;
                 suggestionEl.appendChild(querySpan);
 
-                // Кнопка удаления (крестик)
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'search-suggestion-delete';
                 deleteBtn.innerHTML = `
@@ -625,15 +578,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     </svg>
                 `;
                 deleteBtn.addEventListener('click', function (e) {
-                    e.stopPropagation(); // Не триггерить клик по подсказке
-                    console.log('[SEARCH] Удаление подсказки:', item.query);
+                    e.stopPropagation();
                     deleteSearchSuggestion(item.id);
                 });
                 suggestionEl.appendChild(deleteBtn);
 
-                // Клик по подсказке
                 suggestionEl.addEventListener('click', function () {
-                    console.log('[SEARCH] Клик на подсказку:', item.query);
                     searchInput.value = item.query;
                     searchSuggestions.style.display = 'none';
                     performSearch(item.query);
@@ -643,7 +593,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             searchSuggestions.style.display = 'flex';
-            console.log('[SEARCH] ✅ Подсказки отображены, элементов:', recentHistory.length);
         }
 
         // Функция удаления подсказки
@@ -651,24 +600,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const index = searchHistoryArray.findIndex(item => item.id === id);
             if (index !== -1) {
                 searchHistoryArray.splice(index, 1);
-                console.log('[SEARCH] Удалено из массива, осталось:', searchHistoryArray.length);
 
-                // Сохраняем в localStorage
                 try {
                     localStorage.setItem('qaSearchHistory', JSON.stringify(searchHistoryArray));
-                    console.log('[SEARCH] ✅ Сохранено в localStorage');
                 } catch (e) {
-                    console.error('[SEARCH] ❌ Ошибка сохранения:', e);
+                    console.error('[SEARCH] Ошибка сохранения:', e);
                 }
 
-                // Перерисовываем подсказки
                 renderSearchSuggestions();
 
-                // Если пусто - скрываем
                 if (searchHistoryArray.length === 0) {
                     searchSuggestions.style.display = 'none';
                 }
-                // 🔥 Иначе оставляем панель открытой (не скрываем)
             }
         }
 
@@ -738,14 +681,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Функция выполнения поиска
         function performSearch(query) {
-            console.log('[SEARCH] performSearch called with query:', query);
-            console.log('[SEARCH] uniqueQaData length:', uniqueQaData ? uniqueQaData.length : 'UNDEFINED');
-
             // Сохраняем поисковый запрос для подсветки
             setSearchQuery(query);
 
             if (!query) {
-                console.log('[SEARCH] No query, displaying all data');
                 displaySearchResults(uniqueQaData, '');
                 return;
             }
@@ -760,29 +699,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 return inQuestion || inAnswer || inCategory || inSubcategory;
             });
 
-            console.log('[SEARCH] Filtered data count:', filteredData.length);
             displaySearchResults(filteredData, query);
         }
 
         // Функция отображения результатов поиска
         function displaySearchResults(filteredData, query) {
-            console.log('[SCRIPT.JS] displaySearchResults called, count:', filteredData.length);
-
             // Use the advanced display logic from tabs-navigation if available
             if (typeof displayQuestions === 'function') {
-                console.log('[SCRIPT.JS] Using displayQuestions from tabs-navigation');
                 displayQuestions(filteredData, query ? `Результаты поиска: ${query}` : 'Результаты поиска');
                 return;
             }
 
             const resultsList = document.getElementById('results-list');
-            console.log('[SCRIPT.JS] resultsList element:', resultsList);
-            console.log('[SCRIPT.JS] resultsList parent:', resultsList?.parentElement);
-            console.log('[SCRIPT.JS] resultsList parent computed styles:', {
-                overflow: resultsList?.parentElement ? window.getComputedStyle(resultsList.parentElement).overflow : 'N/A',
-                overflowY: resultsList?.parentElement ? window.getComputedStyle(resultsList.parentElement).overflowY : 'N/A'
-            });
-
             resultsList.innerHTML = '';
 
             // Обновляем счетчик результатов (вынесен из grid)

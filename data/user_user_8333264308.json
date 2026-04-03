@@ -2088,13 +2088,13 @@
   "_srsProgress": {
     "Access Token": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1774909164263,
-      "nextReviewDate": 1775005200000,
-      "dueDate": "2026-04-01T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243573591,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2104,11 +2104,15 @@
         {
           "date": 1774909164263,
           "grade": 2
+        },
+        {
+          "date": 1775243573591,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-31",
-      "lastReviewedTime": 4,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "Access Token"
     },
     "2/3ех/многоуровневая": {
@@ -2138,23 +2142,27 @@
     },
     "Foreign Key": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774387788479,
-      "nextReviewDate": 1774486800000,
-      "dueDate": "2026-03-26T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775243573359,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1774387788479,
           "grade": 3
+        },
+        {
+          "date": 1775243573359,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-25",
-      "lastReviewedTime": 3,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "Foreign Key"
     },
     "PCT/IP": {
@@ -2209,14 +2217,14 @@
     },
     "брокеры, кафка, как взаимодействовали сервисы?": {
       "interval": 1,
-      "easeFactor": 1.75,
-      "streak": 0,
-      "repetitionCount": 3,
-      "history": 3,
-      "lastReviewDate": 1775089002551,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.8,
+      "streak": 1,
+      "repetitionCount": 4,
+      "history": 4,
+      "lastReviewDate": 1775243559901,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1774387798044,
@@ -2229,11 +2237,15 @@
         {
           "date": 1775089002551,
           "grade": 2
+        },
+        {
+          "date": 1775243559901,
+          "grade": 3
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "брокеры, кафка, как взаимодействовали сервисы?"
     },
     "для чего виртуальное окружение?": {
@@ -2288,13 +2300,13 @@
     },
     "kafka отличие партиций от топика": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775088911685,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243573038,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2304,11 +2316,15 @@
         {
           "date": 1775088911685,
           "grade": 2
+        },
+        {
+          "date": 1775243573038,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "kafka отличие партиций от топика"
     },
     "docker команды?": {
@@ -2359,23 +2375,27 @@
     },
     "Local Storage:": {
       "interval": 1,
-      "easeFactor": 2.3499999999999996,
-      "streak": 1,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774909068779,
-      "nextReviewDate": 1775005200000,
-      "dueDate": "2026-04-01T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 2.1999999999999997,
+      "streak": 0,
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775243559045,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1774909068779,
           "grade": 3
+        },
+        {
+          "date": 1775243559045,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-31",
-      "lastReviewedTime": 4,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "Local Storage:"
     },
     "502 Bad Gateway": {
@@ -2426,14 +2446,14 @@
     },
     "как отправлял сообщения в кафке ручками?": {
       "interval": 1,
-      "easeFactor": 2.1999999999999997,
-      "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775089048417,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 2.2499999999999996,
+      "streak": 1,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243560262,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1774909069669,
@@ -2442,11 +2462,15 @@
         {
           "date": 1775089048417,
           "grade": 2
+        },
+        {
+          "date": 1775243560262,
+          "grade": 3
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "как отправлял сообщения в кафке ручками?"
     },
     "пример для чего подмена запросов?": {
@@ -2660,13 +2684,13 @@
     },
     "Use-cases": {
       "interval": 1,
-      "easeFactor": 1.6999999999999997,
+      "easeFactor": 1.5499999999999998,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775089003859,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243558592,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2676,11 +2700,15 @@
         {
           "date": 1775089003859,
           "grade": 1
+        },
+        {
+          "date": 1775243558592,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "Use-cases"
     },
     "с кубером тоже работали?": {
@@ -2756,14 +2784,14 @@
     },
     "Что такое gRPC?": {
       "interval": 1,
-      "easeFactor": 1.6999999999999997,
-      "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775088912980,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
-      "repetitions": 0,
+      "easeFactor": 1.7499999999999998,
+      "streak": 1,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243560834,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitions": 1,
       "historyArray": [
         {
           "date": 1774910020475,
@@ -2772,11 +2800,15 @@
         {
           "date": 1775088912980,
           "grade": 1
+        },
+        {
+          "date": 1775243560834,
+          "grade": 3
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "Что такое gRPC?"
     },
     "Инсталляционное": {
@@ -3475,13 +3507,13 @@
     },
     "id, module, title, str, OP, attachment": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775089001659,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243573845,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -3491,23 +3523,27 @@
         {
           "date": 1775089001659,
           "grade": 2
+        },
+        {
+          "date": 1775243573845,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "id, module, title, str, OP, attachment"
     },
     "charlies proxy": {
       "interval": 1,
-      "easeFactor": 1.9999999999999998,
-      "streak": 1,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775089005085,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.8499999999999999,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775243559380,
+      "nextReviewDate": 1775264400000,
+      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1774919609594,
@@ -3516,11 +3552,15 @@
         {
           "date": 1775089005085,
           "grade": 3
+        },
+        {
+          "date": 1775243559380,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 6,
+      "lastReviewed": "2026-04-03",
+      "lastReviewedTime": 22,
       "question": "charlies proxy"
     },
     "запрос не может быть выполнен из-за конфликтного обращения к ресурсу.": {
@@ -3609,10 +3649,10 @@
     }
   },
   "_stats": {
-    "total": 104,
-    "timeSpent": 157918,
-    "points": 535,
-    "correct": 20
+    "total": 114,
+    "timeSpent": 162304,
+    "points": 600,
+    "correct": 23
   },
   "_meta": {
     "username": "user_8333264308",
@@ -3621,5 +3661,17 @@
     "lastLoginAt": "2026-04-02T06:57:19.504Z",
     "cardsCount": 317,
     "lastSavedAt": "2026-04-02T06:57:19.504Z"
-  }
+  },
+  "studyStreak": {
+    "current": 1,
+    "best": 1,
+    "lastDate": "2026-04-03"
+  },
+  "dailyPoints": {
+    "2026-04-03": 65
+  },
+  "dailyBonusPoints": {
+    "2026-04-03": 0
+  },
+  "dailyDayBonusPoints": {}
 }

@@ -63,17 +63,10 @@ export async function syncWithServer() {
                 localStorage.setItem('localDataTimestamp', data.updatedAt);
                 window.dispatchEvent(new Event('sync-success'));
             } else {
-                // Сервер ответил, но не 200 - сохраняем локально
                 localStorage.setItem('localDataTimestamp', data.updatedAt);
-                // Не диспатчим sync-success, чтобы не показывать зеленую галочку
-                console.log('Sync: server responded with', res.status, '- data saved locally');
             }
         } catch (e) {
-            // Сервер недоступен - это нормально для локальной разработки
-            // Сохраняем timestamp и не показываем ошибку пользователю
             localStorage.setItem('localDataTimestamp', data.updatedAt);
-            console.log('Sync: server unavailable - data saved locally');
-            // Не диспатчим sync-error, чтобы не показывать красный индикатор
         }
     }, 1000);
 }
@@ -180,9 +173,6 @@ export async function syncDailyStats(date, xp, bonus, dayBonus, streak) {
 }
 
 export async function syncFavorite(question, isFav) {
-    console.log('[syncFavorite] Синхронизация избранного:', { question, isFav });
-
-    // Получаем username
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     let username = null;
     try {
@@ -191,11 +181,9 @@ export async function syncFavorite(question, isFav) {
     } catch { }
 
     if (!username) {
-        console.log('[syncFavorite] Нет пользователя, сохраняем только локально');
         return;
     }
 
-    // Сохраняем избранное в localStorage
     const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
     if (isFav) {
         favorites.add(question);
@@ -205,7 +193,6 @@ export async function syncFavorite(question, isFav) {
     const favArray = Array.from(favorites);
     localStorage.setItem('qaFavorites', JSON.stringify(favArray));
 
-    // НЕМЕДЛЕННО отправляем ВЕСЬ список на сервер
     try {
         const url = `/api/favorites?username=${encodeURIComponent(username)}`;
         const res = await fetch(url, {
@@ -214,16 +201,13 @@ export async function syncFavorite(question, isFav) {
             body: JSON.stringify(favArray)
         });
 
-        if (res.ok) {
-            console.log('[syncFavorite] Успешно сохранено на сервер:', favArray.length, 'карточек');
-        } else {
+        if (!res.ok) {
             console.warn('[syncFavorite] Сервер вернул ошибку:', res.status);
         }
     } catch (e) {
         console.error('[syncFavorite] Ошибка отправки на сервер:', e);
     }
 
-    // Обновляем UI
     window.dispatchEvent(new Event('favoritesUpdated'));
 }
 
