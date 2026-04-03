@@ -849,9 +849,27 @@ async function saveEditChanges() {
 
             // 3. Обновляем localStorage (ВАЖНО для сохранения после перезагрузки!)
             try {
-                const allCardsRaw = localStorage.getItem('qaUserCards');
-                if (allCardsRaw) {
-                    const allCards = JSON.parse(allCardsRaw);
+                let allCardsRaw = localStorage.getItem('qaUserCards');
+                let allCards = [];
+
+                // Если qaUserCards пустой, берём данные из session.queue
+                if (!allCardsRaw || allCardsRaw === '[]') {
+                    console.log('[EDIT MODAL] ⚠️ qaUserCards пуст, берём из session.queue');
+                    if (session && session.queue && session.queue.length > 0) {
+                        allCards = session.queue.map(q => ({
+                            question: q.question || q.item?.question,
+                            answer: q.answer || q.item?.answer,
+                            category: q.category || q.item?.category || 'Без категории',
+                            subcategory: q.subcategory || q.item?.subcategory || 'Общее',
+                            formatting: q.formatting || q.item?.formatting || createEmptyFormatting()
+                        }));
+                        console.log('[EDIT MODAL] 📦 Загружено карточек из session.queue:', allCards.length);
+                    }
+                } else {
+                    allCards = JSON.parse(allCardsRaw);
+                }
+
+                if (allCards.length > 0) {
                     const cardIndex = allCards.findIndex(c => c.question === editModalState.originalCard.question);
                     if (cardIndex !== -1) {
                         allCards[cardIndex].question = newQuestion;
@@ -901,6 +919,8 @@ async function saveEditChanges() {
                     } else {
                         console.warn('[EDIT MODAL] ❌ Карточка не найдена в localStorage');
                     }
+                } else {
+                    console.error('[EDIT MODAL] ❌ Нет данных для сохранения');
                 }
             } catch (e) {
                 console.error('[EDIT MODAL] ❌ Ошибка обновления localStorage:', e);
