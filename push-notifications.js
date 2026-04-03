@@ -80,16 +80,10 @@ const PushNotifications = {
             if (permission === 'granted') {
                 localStorage.setItem(this.KEYS.PERMISSION, 'true');
 
-                // Подписываемся на push (для демонстрации сохраняем в localStorage)
                 await this.subscribeToPush();
-
-                // Показываем тестовое уведомление
                 this.showTestNotification();
-
-                console.log('[Push] Permission granted & subscribed');
             } else if (permission === 'denied') {
                 localStorage.setItem(this.KEYS.PERMISSION, 'false');
-                console.log('[Push] Permission denied');
             }
         } catch (error) {
             console.error('[Push] Error requesting permission:', error);
@@ -98,26 +92,27 @@ const PushNotifications = {
         this.hidePrompt();
     },
 
-    // ===================================================================
-    // Push Subscription (без сервера - демо режим)
-    // ===================================================================
-
     async subscribeToPush() {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-            console.log('[Push] Push not supported');
             return null;
         }
 
         try {
             const registration = await navigator.serviceWorker.ready;
 
-            // Для работы без сервера используем demo VAPID key
-            // В продакшене нужен реальный VAPID ключ с бэкенда
+            // TODO: Заменить на реальный VAPID public key с бэкенда
+            // Временно отключена подписка — нужен валидный base64 ключ
+            // Сгенерировать: npx web-push generate-vapid-keys --json
+            const VAPID_PUBLIC_KEY = null; // 'ЗДЕСЬ_ВАЛИДНЫЙ_BASE64_КЛЮЧ'
+
+            if (!VAPID_PUBLIC_KEY) {
+                console.warn('[Push] VAPID key не установлен, подписка пропущена');
+                return null;
+            }
+
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: this.urlBase64ToUint8Array(
-                    'BKagOu7jQjJpR8sT9vXx2qL5mN3oP1qR7sT9vXx2qL5mN3oP1qR7sT9vXx2qL5mN3oP1qR7sT9vXx2qL5mN3oP1qR'
-                )
+                applicationServerKey: this.urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
             });
 
             // Сохраняем подписку локально (в демо режиме)
@@ -141,7 +136,6 @@ const PushNotifications = {
                 await subscription.unsubscribe();
                 localStorage.removeItem(this.KEYS.SUBSCRIPTION);
                 localStorage.removeItem(this.KEYS.PERMISSION);
-                console.log('[Push] Unsubscribed');
             }
         } catch (error) {
             console.error('[Push] Unsubscribe error:', error);
