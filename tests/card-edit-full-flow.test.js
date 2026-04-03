@@ -202,31 +202,31 @@ test.describe('Card Edit Full Flow - E2E с API авторизацией', () =>
     // ==========================================
     console.log('[E2E] ШАГ 10: Проверка localStorage');
 
-    const afterSave = await page.evaluate(() => {
+    const afterSave = await page.evaluate((username) => {
       const cards = JSON.parse(localStorage.getItem('qaUserCards') || '[]');
-      const cardsAdmin = JSON.parse(localStorage.getItem('qaUserCards_admin') || '[]');
+      const cardsUser = JSON.parse(localStorage.getItem(`qaUserCards_${username}`) || '[]');
       const flag = localStorage.getItem('qaCardsUpdated');
 
       const editedCard = cards.find(c => c.question?.includes('[E2E TEST]'));
-      const editedCardAdmin = cardsAdmin.find(c => c.question?.includes('[E2E TEST]'));
+      const editedCardUser = cardsUser.find(c => c.question?.includes('[E2E TEST]'));
 
       return {
         qaUserCardsCount: cards.length,
-        qaUserCardsAdminCount: cardsAdmin.length,
+        qaUserCardsUserCount: cardsUser.length,
         editedCardExists: !!editedCard,
-        editedCardAdminExists: !!editedCardAdmin,
+        editedCardUserExists: !!editedCardUser,
         qaCardsUpdatedFlag: flag,
         editedCardFormatting: editedCard?.formatting?.length || 0
       };
-    });
+    }, TEST_USERNAME);
 
     console.log('[E2E] После сохранения:', afterSave);
 
     // КРИТИЧЕСКИЕ ПРОВЕРКИ
     expect(afterSave.qaUserCardsCount).toBeGreaterThan(0);
-    expect(afterSave.qaUserCardsAdminCount).toBeGreaterThan(0);
+    expect(afterSave.qaUserCardsUserCount).toBeGreaterThan(0);
     expect(afterSave.editedCardExists).toBeTruthy();
-    expect(afterSave.editedCardAdminExists).toBeTruthy();
+    expect(afterSave.editedCardUserExists).toBeTruthy();
     expect(afterSave.qaCardsUpdatedFlag).toBe('true');
 
     console.log('[E2E] ✅ localStorage обновлён корректно');
