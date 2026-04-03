@@ -1065,7 +1065,7 @@ export function initTabsNavigation(appVersion) {
             usernameSpan.className = 'username-display';
             usernameSpan.style.marginRight = '8px';
             usernameSpan.style.fontSize = '13px';
-            usernameSpan.style.color = '#4ec9b0';
+            usernameSpan.style.color = '#00d9ff';
             usernameSpan.style.fontWeight = '600';
 
             // Получаем имя из сессии
@@ -3849,11 +3849,22 @@ export function displayQuestions(questions, title) {
             : `Всего карточек: ${questions.length}`;
 
         countContainer.innerHTML = `
+        <button id="create-card-btn" class="nav-icon-btn" title="Создать карточку" style="padding:6px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:all 0.2s ease; box-shadow:0 0 0 2px rgba(0,217,255,0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d9ff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
         <p class="results-count" style="margin:0">${countText}</p>
         <button id="sort-toggle-btn" class="nav-icon-btn" title="${sortTitle[sortMode]}" style="padding:4px 8px; border-radius:4px; border:1px solid #444; background:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             ${sortIcons[sortMode]}
         </button>
     `;
+
+        // Обработчик кнопки создания карточки
+        const createBtn = countContainer.querySelector('#create-card-btn');
+        if (createBtn && typeof openCreateModal === 'function') {
+            createBtn.addEventListener('click', () => {
+                openCreateModal();
+            });
+        }
 
         // Обработчик кнопки сортировки
         const sortBtn = countContainer.querySelector('#sort-toggle-btn');

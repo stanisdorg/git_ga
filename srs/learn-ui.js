@@ -7,6 +7,20 @@ import { getTodaysSession } from './category-scheduler.js?v=6.44.0';
 import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.44.0';
 import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.44.0';
 import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.44.0';
+import { buildCategoriesFromData } from '../computed-categories.js?v=6.44.0';
+
+// Helper function to get runtime data (similar to tabs-navigation.js)
+function getRuntimeData() {
+    try {
+        const userCards = localStorage.getItem('qaUserCards');
+        if (userCards) {
+            return JSON.parse(userCards);
+        }
+    } catch (e) {
+        console.warn('[getRuntimeData] Ошибка загрузки userCards:', e);
+    }
+    return window.uniqueQaData || [];
+}
 
 // DOM Elements
 let container = null;
@@ -903,6 +917,518 @@ function showEditNotification(message, type = 'success') {
     }, 3000);
 }
 
+// ============================================
+// СОЗДАНИЕ НОВЫХ КАРТОЧЕК
+// ============================================
+
+// Состояние модального окна создания карточки
+let createModalState = {
+    isOpen: false,
+    formatting: null  // { question: [], answer: [] }
+};
+
+// Открытие модального окна создания новой карточки
+function openCreateModal() {
+    // Создаём пустой formatting
+    const formatting = createEmptyFormatting();
+
+    // Получаем данные о категориях
+    const categoriesData = buildCategoriesFromData(getRuntimeData());
+    const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+    
+    // По умолчанию выбираем первую категорию и её подкатегории
+    const defaultCategory = categoriesData[0];
+    const subcategoryOptions = defaultCategory
+        ? defaultCategory.subcategories.map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('')
+        : '<option value="Общее">Общее</option>';
+
+    // Сохраняем состояние
+    createModalState = {
+        isOpen: true,
+        formatting: { ...formatting },
+        categoriesData: categoriesData  // Сохраняем для обработчика изменений
+    };
+
+    // Блокируем навигацию и переворот карточки (если есть активная сессия)
+    if (session) {
+        session.pauseNavigation = true;
+        session.blockFlip = true;
+    }
+
+    // Блокируем клики по карточке (если есть)
+    const flashcard = container?.querySelector('.flashcard');
+    if (flashcard) {
+        flashcard.style.pointerEvents = 'none';
+    }
+
+    // Создаем модальное окно с ОДНОЙ панелью форматирования и выпадающими списками
+    // Порядок блоков КАК В РЕДАКТИРОВАНИИ: категории, форматирование, вопрос, ответ
+    const modalHTML = `
+        <div class="edit-modal-overlay" id="create-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 10px;">
+            <div class="edit-modal" style="background: #1e1e1e; border-radius: 12px; padding: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); box-sizing: border-box;">
+
+                <!-- Категория и подкатегория в 2 колонки -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Категория</label>
+                        <select id="create-category-select" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${categoryOptions}</select>
+                    </div>
+                    <div>
+                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Подкатегория</label>
+                        <select id="create-subcategory-select" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${subcategoryOptions}</select>
+                    </div>
+                </div>
+
+                <!-- Панель форматирования -->
+                <div style="margin-bottom: 12px;">
+                    <div class="format-toolbar" id="create-format-toolbar" style="width: 100%; box-sizing: border-box;"></div>
+                </div>
+
+                <!-- Вопрос -->
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Вопрос</label>
+                    <div class="edit-field-editor" id="create-question-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
+                </div>
+
+                <!-- Ответ -->
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Ответ</label>
+                    <div class="edit-field-editor" id="create-answer-editor" contenteditable="true" spellcheck="true" style="width: 100%; min-height: 80px; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px; line-height: 1.5; outline: none; word-wrap: break-word; overflow-wrap: break-word; box-sizing: border-box;"></div>
+                </div>
+
+                <!-- Кнопки -->
+                <div style="display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+                    <button class="edit-modal-btn cancel" id="create-cancel-btn" style="padding: 10px 20px; background: transparent; border: 1px solid #444; border-radius: 6px; color: #aaa; cursor: pointer; font-size: 14px; flex-shrink: 0;">Отмена</button>
+                    <button class="edit-modal-btn save" id="create-save-btn" style="padding: 10px 20px; background: #4CAF50; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: 14px; flex-shrink: 0;">Создать</button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            /* Все элементы на 100% ширины */
+            #create-format-toolbar,
+            #create-question-editor,
+            #create-answer-editor,
+            #create-category-select,
+            #create-subcategory-select {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Адаптивные стили для модального окна */
+            @media (max-width: 768px) {
+                .edit-modal {
+                    padding: 16px !important;
+                    max-width: 100% !important;
+                }
+                .edit-field-editor {
+                    font-size: 13px !important;
+                    min-height: 60px !important;
+                }
+                .format-toolbar {
+                    padding: 4px !important;
+                }
+                .format-btn {
+                    font-size: 12px !important;
+                }
+                .edit-modal-btn {
+                    padding: 10px 18px !important;
+                    font-size: 13px !important;
+                }
+            }
+            @media (max-width: 480px) {
+                .edit-modal-overlay {
+                    padding: 0 !important;
+                    align-items: stretch !important;
+                    padding-top: 0 !important;
+                    overflow-y: auto !important;
+                }
+                .edit-modal {
+                    padding: 12px !important;
+                    border-radius: 0 !important;
+                    max-height: none !important;
+                    min-height: 100vh !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    box-sizing: border-box !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+                .edit-field-editor {
+                    font-size: 14px !important;
+                    min-height: 70px !important;
+                    padding: 10px 12px !important;
+                }
+                .format-toolbar {
+                    overflow-x: auto !important;
+                    white-space: nowrap !important;
+                    padding: 2px !important;
+                }
+                .format-btn,
+                .format-color-btn {
+                    min-width: 28px !important;
+                    min-height: 28px !important;
+                    padding: 4px !important;
+                }
+                .edit-modal > div:last-child {
+                    margin-top: auto !important;
+                    padding-top: 12px !important;
+                    flex-wrap: wrap !important;
+                }
+                .edit-modal-btn {
+                    flex: 1 !important;
+                    text-align: center !important;
+                }
+            }
+        </style>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Обработчик изменения категории
+    const categorySelect = document.getElementById('create-category-select');
+    const subcategorySelect = document.getElementById('create-subcategory-select');
+    
+    categorySelect?.addEventListener('change', () => {
+        const newCategory = categorySelect.value;
+        const category = categoriesData.find(cat => cat.name === newCategory);
+        const newSubs = category
+            ? category.subcategories.map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('')
+            : '<option value="Общее">Общее</option>';
+        subcategorySelect.innerHTML = newSubs;
+    });
+
+    // Создаём toolbar
+    const toolbarContainer = document.getElementById('create-format-toolbar');
+    const questionEditor = document.getElementById('create-question-editor');
+    const answerEditor = document.getElementById('create-answer-editor');
+
+    if (toolbarContainer) {
+        const mainToolbar = createFormatToolbar('both');
+        toolbarContainer.appendChild(mainToolbar);
+    }
+
+    // Очищаем редакторы (они уже пустые, но на всякий случай)
+    if (questionEditor) {
+        questionEditor.innerHTML = '';
+    }
+    if (answerEditor) {
+        answerEditor.innerHTML = '';
+    }
+
+    // Инициализируем toolbar с ОБОИМИ редакторами
+    const mainToolbar = toolbarContainer?.querySelector('.format-toolbar');
+    if (mainToolbar && questionEditor && answerEditor) {
+        initFormatToolbar(mainToolbar, questionEditor, answerEditor, createModalState.formatting, (newFormatting) => {
+            createModalState.formatting = newFormatting;
+        });
+    }
+
+    // Обработчики кнопок
+    const cancelBtn = document.getElementById('create-cancel-btn');
+    const saveBtn = document.getElementById('create-save-btn');
+    const overlay = document.getElementById('create-modal-overlay');
+
+    cancelBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeCreateModal(true);
+    });
+
+    saveBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        saveCreateChanges();
+    });
+
+    overlay?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            e.stopPropagation();
+            closeCreateModal(true);
+        }
+    });
+
+    // Обработчик Enter (Ctrl+Enter для сохранения)
+    const handleKeyDown = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (e.key === 'Enter' && e.ctrlKey) {
+            saveCreateChanges();
+        } else if (e.key === 'Escape') {
+            closeCreateModal(true);
+        }
+    };
+
+    // Блокируем стандартные события клавиатуры для редакторов
+    questionEditor?.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            saveCreateChanges();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeCreateModal(true);
+        }
+    });
+    answerEditor?.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            saveCreateChanges();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeCreateModal(true);
+        }
+    });
+
+    // Фокус на первый редактор
+    setTimeout(() => {
+        questionEditor?.focus();
+    }, 100);
+}
+
+// Закрытие модального окна создания
+function closeCreateModal(discardChanges = true) {
+    const modal = document.getElementById('create-modal-overlay');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.remove();
+        }, 200);
+    }
+
+    createModalState.isOpen = false;
+
+    // Разблокируем навигацию и карточку
+    if (session) {
+        session.pauseNavigation = false;
+        session.blockFlip = false;
+    }
+
+    // Восстанавливаем клики по карточке
+    const flashcard = container?.querySelector('.flashcard');
+    if (flashcard) {
+        flashcard.style.pointerEvents = '';
+    }
+}
+
+// Сохранение новой карточки
+async function saveCreateChanges() {
+    const questionEditor = document.getElementById('create-question-editor');
+    const answerEditor = document.getElementById('create-answer-editor');
+    const categorySelect = document.getElementById('create-category-select');
+    const subcategorySelect = document.getElementById('create-subcategory-select');
+
+    if (!questionEditor || !answerEditor) {
+        console.error('[CREATE MODAL] Редакторы не найдены');
+        return;
+    }
+
+    // Получаем HTML из редакторов
+    const questionHTML = questionEditor.innerHTML.trim();
+    const answerHTML = answerEditor.innerHTML.trim();
+
+    // Конвертируем HTML в чистый текст + formatting
+    const questionData = convertHtmlToTextAndFormatting(questionHTML);
+    const answerData = convertHtmlToTextAndFormatting(answerHTML);
+
+    const newQuestion = questionData.text.trim();
+    const newAnswer = answerData.text.trim();
+
+    // Получаем категорию и подкатегорию
+    const newCategory = categorySelect?.value || 'Без категории';
+    const newSubcategory = subcategorySelect?.value || 'Общее';
+
+    // Получаем formatting из createModalState
+    const currentFormatting = createModalState.formatting || createEmptyFormatting();
+
+    // Валидация
+    if (!newQuestion) {
+        showCreateNotification('Вопрос не может быть пустым', 'error');
+        questionEditor.focus();
+        return;
+    }
+
+    if (!newAnswer) {
+        showCreateNotification('Ответ не может быть пустым', 'error');
+        answerEditor.focus();
+        return;
+    }
+
+    // Блокируем кнопку создания
+    const saveBtn = document.getElementById('create-save-btn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Создание...';
+    }
+
+    try {
+        // Получаем текущего пользователя
+        let username = null;
+
+        const currentUser = window.UserSystem?.getCurrentUser?.();
+        if (currentUser?.username) {
+            username = currentUser.username;
+        }
+
+        if (!username) {
+            try {
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                if (sessionUserRaw) {
+                    const sessionUser = JSON.parse(sessionUserRaw);
+                    if (sessionUser?.username) {
+                        username = sessionUser.username;
+                    }
+                }
+            } catch (e) {
+                console.warn('[CREATE MODAL] Не удалось получить пользователя из qaSessionUser:', e);
+            }
+        }
+
+        if (!username) {
+            throw new Error('Пользователь не авторизован');
+        }
+
+        const requestUrl = `/api/card/create?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
+
+        // Отправляем на сервер с категорией и подкатегорией
+        const response = await fetch(requestUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            body: JSON.stringify({
+                question: newQuestion,
+                answer: newAnswer,
+                category: newCategory,
+                subcategory: newSubcategory,
+                formatting: currentFormatting
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.ok) {
+            // Успех - карточка создана
+            const newCard = {
+                question: newQuestion,
+                answer: newAnswer,
+                category: newCategory,
+                subcategory: newSubcategory,
+                formatting: currentFormatting
+            };
+
+            // Обновляем localStorage
+            try {
+                let allCardsRaw = localStorage.getItem('qaUserCards');
+                let allCards = [];
+
+                if (allCardsRaw && allCardsRaw !== '[]') {
+                    allCards = JSON.parse(allCardsRaw);
+                }
+
+                // Добавляем новую карточку
+                allCards.push(newCard);
+                localStorage.setItem('qaUserCards', JSON.stringify(allCards));
+
+                // Сохраняем также в qaUserCards_{username}
+                const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                if (sessionUserRaw) {
+                    try {
+                        const user = JSON.parse(sessionUserRaw);
+                        if (user && user.username) {
+                            const userKey = `qaUserCards_${user.username}`;
+                            localStorage.setItem(userKey, JSON.stringify(allCards));
+                        }
+                    } catch (e) {
+                        console.warn('[CREATE MODAL] Ошибка сохранения в userKey:', e);
+                    }
+                }
+
+                // Обновляем uniqueQaData
+                if (typeof window.setUniqueQaData === 'function') {
+                    window.setUniqueQaData(allCards);
+                }
+
+                // Диспатчим событие для обновления UI
+                window.dispatchEvent(new CustomEvent('qaDataUpdated', {
+                    detail: {
+                        newCard: newCard
+                    }
+                }));
+            } catch (e) {
+                console.error('[CREATE MODAL] Ошибка обновления localStorage:', e);
+            }
+
+            // Закрываем модальное окно
+            closeCreateModal(false);
+
+            // Показываем уведомление
+            showCreateNotification('Карточка успешно создана', 'success');
+
+            // Синхронизируем с сервером
+            if (typeof syncWithServer === 'function') {
+                syncWithServer();
+            }
+        } else {
+            // Ошибка сервера
+            console.error('[CREATE MODAL] Ошибка сервера:', result);
+            throw new Error(result.error || 'Ошибка сервера');
+        }
+    } catch (error) {
+        console.error('[CREATE MODAL] Ошибка создания карточки:', error);
+        showCreateNotification(`Ошибка создания: ${error.message}`, 'error');
+    } finally {
+        // Разблокируем кнопку
+        const saveBtn = document.getElementById('create-save-btn');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Создать';
+        }
+    }
+}
+
+// Показ уведомления для создания карточки
+function showCreateNotification(message, type = 'success') {
+    // Удаляем предыдущее уведомление если есть
+    const existingNotification = document.querySelector('.create-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    const iconSVG = type === 'success'
+        ? '<svg class="create-notification-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
+        : '<svg class="create-notification-icon error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+    const notificationHTML = `
+        <div class="create-notification ${type}" id="create-notification" style="position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1e1e1e; border-radius: 8px; padding: 12px 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 10001; display: flex; align-items: center; gap: 12px; opacity: 0; transition: all 0.3s ease-out;">
+            ${iconSVG}
+            <span class="create-notification-message" style="color: #fff; font-size: 14px;">${message}</span>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', notificationHTML);
+
+    // Показываем уведомление
+    const notification = document.getElementById('create-notification');
+
+    setTimeout(() => {
+        if (notification) {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(-50%) translateY(0)';
+        }
+    }, 10);
+
+    // Скрываем через 3 секунды
+    setTimeout(() => {
+        notification?.classList.remove('show');
+        setTimeout(() => {
+            notification?.remove();
+        }, 300);
+    }, 3000);
+}
+
 // Stub for Smart Pause feature to prevent errors
 // function showSmartPause(recommendation) {
 //    if (!recommendation) return;
@@ -1261,7 +1787,7 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
 
     // Safety cap for session length (except cram?)
-    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death') ? 100 : 40;
+    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death') ? 100 : 20;
     if (sessionCards.length > MAX_SESSION) {
         sessionCards = sessionCards.slice(0, MAX_SESSION);
     }
@@ -2800,3 +3326,8 @@ window.debugSegments = () => {
     });
     console.log('   Индексы видимых:', visibleIndices);
 };
+
+// Экспорт функций создания карточки в глобальную область
+window.openCreateModal = openCreateModal;
+window.saveCreateChanges = saveCreateChanges;
+window.closeCreateModal = closeCreateModal;

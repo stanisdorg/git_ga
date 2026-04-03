@@ -22,7 +22,13 @@
       "question": "брокеры?",
       "answer": "Не работал, но слышал, у меня монолит проект был, недостаточно большой чтобы превращать его в микросервисы и внедрять брокера\n        брокер позволяет настривать взаимодействие между микросервисами, иметь определенную асинхронность, распределять нагрузку, запросы могут приходить в брокер, но не отправляться сразу, а подождать если необходимо, kafka сам отдает сообщения rabbitmq там микросервис сам должен обратиться чтобы проверить есть ли у него сообщения, забрать",
       "formatting": {
-        "question": [],
+        "question": [
+          {
+            "start": 0,
+            "end": 7,
+            "color": "#FF6B6B"
+          }
+        ],
         "answer": []
       }
     },
@@ -2191,7 +2197,8 @@
     "firstSessionCompleted": true
   },
   "_favorites": [
-    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?"
+    "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?",
+    "брокеры?"
   ],
   "_srsProgress": {
     "как с kibana работал?  уровни ошибок ?": {
@@ -2262,15 +2269,15 @@
       "question": "сущности в докере?"
     },
     "502 Bad Gateway": {
-      "interval": 3,
-      "easeFactor": 2.3999999999999995,
-      "streak": 2,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1774693103924,
-      "nextReviewDate": 1774918800000,
-      "dueDate": "2026-03-31T01:00:00.000Z",
-      "repetitions": 2,
+      "interval": 1,
+      "easeFactor": 2.2499999999999996,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775253460220,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1774615025877,
@@ -2279,11 +2286,15 @@
         {
           "date": 1774693103924,
           "grade": 3
+        },
+        {
+          "date": 1775253460220,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-28",
-      "lastReviewedTime": 16,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
       "question": "502 Bad Gateway"
     },
     "UAT пользовательское": {
@@ -2397,23 +2408,27 @@
     },
     "radis?": {
       "interval": 1,
-      "easeFactor": 2.05,
+      "easeFactor": 1.9,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1774692807121,
-      "nextReviewDate": 1774746000000,
-      "dueDate": "2026-03-29T01:00:00.000Z",
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775250675899,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
           "date": 1774692807121,
           "grade": 1
+        },
+        {
+          "date": 1775250675899,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-03-28",
-      "lastReviewedTime": 16,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
       "question": "radis?"
     },
     "у тебя есть два сервера, один кладет, другой забирает из кафки, какие интеграционные проверки ты сделаешь?": {
@@ -2545,13 +2560,223 @@
       "lastReviewed": "2026-04-02",
       "lastReviewedTime": 18,
       "question": "403 Forbidden"
+    },
+    "1) Физического доступа": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775250670205,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775250670205,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "1) Физического доступа"
+    },
+    "Как вы работали с Docker и TeamCity?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775250672214,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1775250672214,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "Как вы работали с Docker и TeamCity?"
+    },
+    "postman, swagger": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775250674092,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775250674092,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "postman, swagger"
+    },
+    "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775250678144,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1775250678144,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "Как работают интеграционные тесты, и какие трудности могут возникнуть при интеграции сервисов через Kafka?"
+    },
+    "User story": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775253453485,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775253453485,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "User story"
+    },
+    "devtools что смотришь?": {
+      "interval": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775253454898,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775253454898,
+          "grade": 2
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "devtools что смотришь?"
+    },
+    "как отправлял сообщения в кафке ручками?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775253456104,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775253456104,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "как отправлял сообщения в кафке ручками?"
+    },
+    "Gitlab Ci/Jenkins": {
+      "interval": 1,
+      "easeFactor": 2.3499999999999996,
+      "streak": 1,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775253457506,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 1,
+      "historyArray": [
+        {
+          "date": 1775253457506,
+          "grade": 3
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "Gitlab Ci/Jenkins"
+    },
+    "брокеры, кафка, как взаимодействовали сервисы?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775253458906,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775253458906,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "брокеры, кафка, как взаимодействовали сервисы?"
+    },
+    "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?": {
+      "interval": 1,
+      "easeFactor": 2.05,
+      "streak": 0,
+      "repetitionCount": 1,
+      "history": 1,
+      "lastReviewDate": 1775253461830,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
+      "historyArray": [
+        {
+          "date": 1775253461830,
+          "grade": 1
+        }
+      ],
+      "state": "learning",
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 0,
+      "question": "брокер сообщений, рест, отличие синхронного и асинхронного взаимодействия, как это правильно протестировать?"
     }
   },
   "_stats": {
-    "total": 20,
-    "timeSpent": 876760,
-    "points": 175,
-    "correct": 15
+    "total": 32,
+    "timeSpent": 900274,
+    "points": 225,
+    "correct": 18
   },
   "_meta": {
     "username": "stasdoroganov",
@@ -2559,18 +2784,20 @@
     "createdAt": "2026-03-27T00:30:58.223Z",
     "lastLoginAt": "2026-03-29T03:55:48.510Z",
     "cardsCount": 317,
-    "lastSavedAt": "2026-03-29T03:55:48.510Z"
+    "lastSavedAt": "2026-04-03T21:12:14.873Z"
   },
   "studyStreak": {
     "current": 1,
     "best": 1,
-    "lastDate": "2026-04-02"
+    "lastDate": "2026-04-04"
   },
   "dailyPoints": {
-    "2026-04-02": 50
+    "2026-04-02": 50,
+    "2026-04-04": 50
   },
   "dailyBonusPoints": {
-    "2026-04-02": 0
+    "2026-04-02": 0,
+    "2026-04-04": 0
   },
   "dailyDayBonusPoints": {}
 }

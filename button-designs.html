@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест дизайнов кнопки создания карточки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+            color: #06D6A0;
+        }
+
+        .variants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .variant-card {
+            background: #25252b;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #333;
+        }
+
+        .variant-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .variant-desc {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .button-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: #1e1e24;
+            border-radius: 8px;
+        }
+
+        .button-label {
+            font-size: 11px;
+            color: #666;
+            min-width: 60px;
+        }
+
+        .context-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #1e1e24;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .context-text {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        /* Variant 1: Green flat */
+        .btn-v1 {
+            padding: 6px;
+            background: #06D6A0;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-v1 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #888;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v1:hover {
+            background: #05c494;
+        }
+        .btn-v1:hover svg {
+            stroke: #fff;
+        }
+
+        /* Variant 2: Dark with green border */
+        .btn-v2 {
+            padding: 6px;
+            background: #2a2a2a;
+            border: 2px solid #06D6A0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-v2 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #06D6A0;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v2:hover {
+            background: #06D6A0;
+        }
+        .btn-v2:hover svg {
+            stroke: #fff;
+        }
+
+        /* Variant 3: Circle */
+        .btn-v3 {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            background: #06D6A0;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        .btn-v3 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #888;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v3:hover {
+            background: #05c494;
+            transform: scale(1.1);
+        }
+        .btn-v3:hover svg {
+            stroke: #fff;
+        }
+
+        /* Variant 4: Glow effect */
+        .btn-v4 {
+            padding: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 0 2px rgba(6, 214, 160, 0.3);
+        }
+        .btn-v4 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #06D6A0;
+            stroke-width: 2.5;
+            transition: all 0.2s ease;
+        }
+        .btn-v4:hover {
+            box-shadow: 0 0 12px rgba(6, 214, 160, 0.6);
+            background: rgba(6, 214, 160, 0.1);
+        }
+        .btn-v4:hover svg {
+            stroke: #06D6A0;
+            filter: drop-shadow(0 0 4px rgba(6, 214, 160, 0.8));
+        }
+
+        /* Variant 5: Minimalist */
+        .btn-v5 {
+            padding: 6px 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .btn-v5 svg {
+            width: 14px;
+            height: 14px;
+            stroke: #888;
+            stroke-width: 2.5;
+            transition: all 0.2s ease;
+        }
+        .btn-v5:hover {
+            border-color: #06D6A0;
+            background: rgba(6, 214, 160, 0.1);
+        }
+        .btn-v5:hover svg {
+            stroke: #06D6A0;
+        }
+
+        /* Variant 6: Gradient */
+        .btn-v6 {
+            padding: 6px;
+            background: linear-gradient(135deg, #06D6A0 0%, #00b894 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-v6 svg {
+            width: 16px;
+            height: 16px;
+            stroke: rgba(255,255,255,0.7);
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v6:hover {
+            background: linear-gradient(135deg, #05c494 0%, #00a383 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(6, 214, 160, 0.3);
+        }
+        .btn-v6:hover svg {
+            stroke: #fff;
+        }
+
+        /* Variant 7: Outline + hover fill */
+        .btn-v7 {
+            padding: 6px;
+            background: transparent;
+            border: 1px solid #06D6A0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-v7 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #06D6A0;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v7:hover {
+            background: #06D6A0;
+            border-color: #06D6A0;
+        }
+        .btn-v7:hover svg {
+            stroke: #fff;
+        }
+
+        /* Variant 8: Square */
+        .btn-v8 {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            background: #06D6A0;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .btn-v8 svg {
+            width: 14px;
+            height: 14px;
+            stroke: #fff;
+            stroke-width: 2.5;
+            transition: transform 0.2s ease;
+        }
+        .btn-v8:hover {
+            background: #05c494;
+        }
+        .btn-v8:hover svg {
+            transform: rotate(90deg);
+        }
+
+        /* Variant 9: Pulsing */
+        .btn-v9 {
+            padding: 6px;
+            background: #06D6A0;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            animation: pulse-v9 2s infinite;
+        }
+        .btn-v9 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #888;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v9:hover {
+            animation: none;
+            background: #05c494;
+        }
+        .btn-v9:hover svg {
+            stroke: #fff;
+        }
+        @keyframes pulse-v9 {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(6, 214, 160, 0); }
+        }
+
+        /* Variant 10: Icon + text */
+        .btn-v10 {
+            padding: 6px 12px;
+            background: #06D6A0;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+        }
+        .btn-v10 svg {
+            width: 14px;
+            height: 14px;
+            stroke: #888;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v10:hover {
+            background: #05c494;
+            color: #fff;
+        }
+        .btn-v10:hover svg {
+            stroke: #fff;
+        }
+
+        /* Variant 11: Ghost with color */
+        .btn-v11 {
+            padding: 6px;
+            background: rgba(6, 214, 160, 0.15);
+            border: 1px solid rgba(6, 214, 160, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-v11 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #06D6A0;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v11:hover {
+            background: rgba(6, 214, 160, 0.25);
+            border-color: rgba(6, 214, 160, 0.5);
+        }
+        .btn-v11:hover svg {
+            stroke: #06D6A0;
+        }
+
+        /* Variant 12: Elevated */
+        .btn-v12 {
+            padding: 6px;
+            background: #06D6A0;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .btn-v12 svg {
+            width: 16px;
+            height: 16px;
+            stroke: #fff;
+            stroke-width: 2.5;
+            transition: stroke 0.2s ease;
+        }
+        .btn-v12:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background: #05c494;
+        }
+
+        .note {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .note strong {
+            color: #06D6A0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Тест дизайнов кнопки создания карточки</h1>
+
+    <div class="variants-grid">
+        <!-- Variant 1 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 1: Green Flat (текущий)</div>
+            <div class="variant-desc">Зелёный фон, серый крестик. При наведении — крестик становится белым.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v1">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v1" style="background:#05c494;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v1">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 2 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 2: Dark + Green Border</div>
+            <div class="variant-desc">Тёмный фон, зелёная обводка. При наведении — заполняется зелёным.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v2">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v2" style="background:#06D6A0;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v2">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 3 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 3: Circle</div>
+            <div class="variant-desc">Круглая кнопка. При наведении — увеличивается.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v3">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v3" style="background:#05c494; transform:scale(1.1);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v3">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 4 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 4: Glow Effect</div>
+            <div class="variant-desc">Прозрачная с зелёным свечением. При наведении — усиление свечения.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v4">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v4" style="box-shadow:0 0 12px rgba(6,214,160,0.6); background:rgba(6,214,160,0.1);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#06D6A0" style="filter:drop-shadow(0 0 4px rgba(6,214,160,0.8));"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v4">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 5 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 5: Minimalist</div>
+            <div class="variant-desc">Тёмная с серой обводкой. При наведении — зелёная обводка.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v5">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v5" style="border-color:#06D6A0; background:rgba(6,214,160,0.1);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#06D6A0"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v5">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 6 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 6: Gradient</div>
+            <div class="variant-desc">Градиент от #06D6A0 к #00b894. При наведении — подъём + тень.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v6">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v6" style="background:linear-gradient(135deg,#05c494,#00a383); transform:translateY(-1px); box-shadow:0 4px 8px rgba(6,214,160,0.3);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v6">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 7 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 7: Outline → Fill</div>
+            <div class="variant-desc">Только зелёная обводка. При наведении — заполняется зелёным.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v7">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v7" style="background:#06D6A0; border-color:#06D6A0;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v7">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 8 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 8: Square + Rotate</div>
+            <div class="variant-desc">Квадратная зелёная кнопка. При наведении — крестик вращается на 90°.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v8">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v8" style="background:#05c494;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="transform:rotate(90deg);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v8">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 9 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 9: Pulsing</div>
+            <div class="variant-desc">Пульсирующее свечение. При наведении — пульсация останавливается.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v9">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v9" style="animation:none; background:#05c494;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v9">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 10 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 10: Icon + Text</div>
+            <div class="variant-desc">Зелёная кнопка с текстом "Создать". При наведении — текст белеет.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v10">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Создать</span>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v10" style="background:#05c494; color:#fff;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span style="color:#fff;">Создать</span>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v10">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Создать</span>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 11 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 11: Ghost Transparent</div>
+            <div class="variant-desc">Полупрозрачный зелёный фон. При наведении — чуть ярче.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v11">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v11" style="background:rgba(6,214,160,0.25); border-color:rgba(6,214,160,0.5);">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v11">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+
+        <!-- Variant 12 -->
+        <div class="variant-card">
+            <div class="variant-title">Вариант 12: Elevated</div>
+            <div class="variant-desc">Зелёная с тенью. При наведении — поднимается, тень увеличивается.</div>
+            <div class="button-row">
+                <span class="button-label">Default:</span>
+                <button class="btn-v12">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="button-row">
+                <span class="button-label">Hover:</span>
+                <button class="btn-v12" style="transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.3);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div class="context-row">
+                <button class="btn-v12">
+                    <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <span class="context-text">Найдено: 321</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="note">
+        💡 <strong>Наведите мышь</strong> на кнопки, чтобы увидеть эффект при наведении.<br>
+        Каждая карточка показывает: Default, Hover состояние, и пример в контексте с текстом.
+    </div>
+</body>
+</html>

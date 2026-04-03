@@ -1,9 +1,9 @@
 ﻿import { syncWithServer } from './storage.js?v=6.24.0';
 
 // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґР°С‚РѕР№ (Р»РѕРєР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°)
-function getLocalDate() {
-  // Р’РѕР·РІСЂР°С‰Р°РµС‚ РґР°С‚Сѓ РІ С„РѕСЂРјР°С‚Рµ YYYY-MM-DD РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё СѓСЃС‚СЂРѕР№СЃС‚РІР°
-  const now = new Date();
+function getLocalDate(date) {
+  // Р'РѕР·РІСЂР°С‰Р°РµС‚ РґР°С‚Сѓ РІ С„РѕСЂРјР°С‚Рµ YYYY-MM-DD РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё СѓСЃС‚СЂРѕР№СЃС‚РІР°
+  const now = date ? new Date(date) : new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');

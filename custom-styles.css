@@ -508,6 +508,10 @@
     margin-bottom: 8px;
     color: var(--color-text);
     padding-right: 32px; /* Space for star */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
 
 .answer {
@@ -515,6 +519,10 @@
     color: var(--color-text-secondary);
     line-height: 1.5;
     white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
 
 .no-results {
@@ -638,7 +646,7 @@
 }
 
 .nav-icon-btn.edit-mode-btn.on svg {
-    fill: #06D6A0 !important;
+    fill: #00d9ff !important;
     width: 21px !important; /* 20px + 5% */
     height: 21px !important; /* 20px + 5% */
 }
@@ -3047,6 +3055,106 @@ body.learning-mode #bottom-nav {
     font-size: 14px;
 }
 
+/* Стили для уведомлений создания карточки */
+.create-notification {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--color-bg-secondary, #1e1e1e);
+    border-radius: 8px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+
+.create-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.create-notification.success {
+    border-left: 4px solid #4caf50;
+}
+
+.create-notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.create-notification-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.create-notification-icon.success {
+    color: #4caf50;
+}
+
+.create-notification-icon.error {
+    color: #f44336;
+}
+
+.create-notification-message {
+    color: var(--color-text-primary, #fff);
+    font-size: 14px;
+}
+
+/* Кастомный скроллбар для модальных окон редактирования и создания */
+.edit-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.edit-modal::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.edit-modal::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.edit-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Firefox support */
+.edit-modal {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
+}
+
+/* Кнопка создания карточки - Variant 4: Glow Effect (цвет как у hover карточек) */
+#create-card-btn {
+    padding: 6px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.3) !important;
+    transition: all 0.2s ease !important;
+}
+
+#create-card-btn svg {
+    stroke: #00d9ff !important;
+    transition: all 0.2s ease !important;
+}
+
+#create-card-btn:hover {
+    box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15), 0 0 12px rgba(0, 217, 255, 0.6) !important;
+    background: rgba(0, 217, 255, 0.1) !important;
+}
+
+#create-card-btn:hover svg {
+    stroke: #00d9ff !important;
+    filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.8)) !important;
+}
+
 /* Mobile Layout */
 @media (max-width: 768px) {
     .learn-edit-btn {
@@ -3073,6 +3181,10 @@ body.learning-mode #bottom-nav {
         font-size: 14px;
     }
     .edit-notification {
+        bottom: 70px;
+        padding: 10px 16px;
+    }
+    .create-notification {
         bottom: 70px;
         padding: 10px 16px;
     }
@@ -3161,6 +3273,24 @@ body.learning-mode #bottom-nav {
 .flashcard-back-question i {
     display: inline !important;
     white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+}
+
+/* КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: принудительный перенос для ВСЕХ дочерних элементов внутри flashcard */
+.flashcard-front *,
+.flashcard-back * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.flashcard-front .flashcard-content,
+.flashcard-back .flashcard-content,
+.flashcard-back-question {
+    overflow: visible !important;
+    word-break: break-word !important;
+    hyphens: auto !important;
 }
 
 /* Sync Indicator Widget */

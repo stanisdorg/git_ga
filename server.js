@@ -1486,6 +1486,122 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    // POST /api/card/create - Создание новой карточки
+    if (req.method === 'POST' && pathname === '/api/card/create') {
+      const urlObj = new URL(req.url, `http://${req.headers.host}`);
+      const username = urlObj.searchParams.get('username');
+
+      console.log('========================================');
+      console.log('[SERVER /api/card/create] === ЗАПРОС НА СОЗДАНИЕ КАРТОЧКИ ===');
+      console.log('[SERVER /api/card/create] username:', username);
+      console.log('========================================');
+
+      logger.info('=== ЗАПРОС НА СОЗДАНИЕ КАРТОЧКИ ===', { username }, 'CardCreate');
+
+      if (!username) {
+        logger.error('Ошибка: username не указан', null, 'CardCreate');
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          const { question, answer, category, subcategory, formatting } = data;
+
+          logger.info('Получены данные для создания', {
+            questionLength: question?.length,
+            answerLength: answer?.length,
+            hasCategory: !!category,
+            hasSubcategory: !!subcategory,
+            hasFormatting: !!formatting
+          }, 'CardCreate');
+
+          if (!question || !answer) {
+            logger.error('Ошибка: question и answer обязательны', null, 'CardCreate');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'question and answer required' }));
+            return;
+          }
+
+          const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
+          let userData = { _cards: [], _meta: {} };
+
+          if (fs.existsSync(targetPath)) {
+            userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+            if (!userData._cards) {
+              userData._cards = [];
+            }
+            console.log('[SERVER /api/card/create] Файл прочитан, количество карточек:', userData._cards.length);
+          } else {
+            console.log('[SERVER /api/card/create] Файл не существует, создаём новый:', targetPath);
+          }
+
+          // Создаём новую карточку с переданными категорией и подкатегорией
+          const newCard = {
+            category: category || 'Без категории',
+            subcategory: subcategory || 'Общее',
+            question: question,
+            answer: answer,
+            formatting: formatting || {}
+          };
+
+          // Добавляем карточку в массив
+          userData._cards.push(newCard);
+
+          // Обновляем метаданные
+          if (!userData._meta) {
+            userData._meta = {};
+          }
+          userData._meta.cardsCount = userData._cards.length;
+          userData._meta.lastSavedAt = new Date().toISOString();
+
+          console.log('[SERVER /api/card/create] Добавляем карточку, всего карточек:', userData._cards.length);
+
+          // Записываем файл
+          try {
+            const jsonString = JSON.stringify(userData, null, 2);
+            fs.writeFileSync(targetPath, jsonString, 'utf-8');
+            console.log('[SERVER /api/card/create] Файл успешно записан');
+
+            // Проверяем запись
+            const verifyData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
+            const createdCard = verifyData._cards?.[verifyData._cards.length - 1];
+            console.log('[SERVER /api/card/create] Проверка: последняя карточка:', createdCard?.question?.substring(0, 30));
+
+            logger.info('Карточка успешно создана', {
+              totalCards: verifyData._cards?.length || 0,
+              questionLength: question.length
+            }, 'CardCreate');
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+              ok: true,
+              card: {
+                question: newCard.question,
+                answer: newCard.answer,
+                formatting: newCard.formatting
+              },
+              totalCards: verifyData._cards?.length || 0
+            }));
+          } catch (err) {
+            console.error('[SERVER /api/card/create] Ошибка записи:', err);
+            logger.error('Ошибка записи файла', { error: err.message }, 'CardCreate');
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
+          }
+        } catch (e) {
+          logger.error('Ошибка парсинга JSON', { error: e.message }, 'CardCreate');
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
+        }
+      });
+      return;
+    }
+
     // Сохранение данных в JSON (персональное для пользователя)
     if (req.method === 'POST' && pathname === '/save') {
       const username = urlObj.searchParams.get('user');
