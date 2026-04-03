@@ -1,5 +1,4 @@
 // Вариант 3: Табы для категорий и карточки для подкатегорий
-console.log('[TABS-NAVIGATION] Module loaded');
 
 // Импортируем данные и генератор категорий
 import { uniqueQaData } from '../all-data.js';
@@ -9,8 +8,6 @@ import { getProgressMap } from '../srs/stats-utils.js';
 import { getDifficultyLevel, getLevelProgress } from '../srs/algorithm.js';
 import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from '../srs/text-formatter.js';
 import { createFormatToolbar, initFormatToolbar } from '../srs/format-toolbar.js';
-
-console.log('[TABS-NAVIGATION] Imports completed');
 
 // Глобальные флаги/состояния для режима редактирования и логина
 let editMode = (typeof localStorage !== 'undefined' && localStorage.getItem('qaEditMode') === 'true') ? true : false;
@@ -183,7 +180,6 @@ function fixEncodingIssues(data) {
 
         setQaUserCards(fixedCards);
         // 🔥 НЕ отправляем на сервер автоматически — исправления сохранятся при следующем явном сохранении
-        console.log('[fixEncodingIssues] Исправлено карточек:', fixedCount, '(сохранятся при следующем сохранении)');
     }
 }
 
@@ -340,14 +336,11 @@ function hideLoading() {
 export function initTabsNavigation(appVersion) {
     // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
-    console.log('[initTabsNavigation] Called! isStatsPage:', isStatsPage, 'location.hash:', location.hash);
 
     // 🔥 ПРОВЕРЯЕМ ФЛАГ изменений карточек (для отложенного обновления после редактирования)
     try {
         const cardsUpdated = localStorage.getItem('qaCardsUpdated');
         if (cardsUpdated === 'true' && !isStatsPage) {
-            console.log('[initTabsNavigation] 🚨 Обнаружено изменение карточек (qaCardsUpdated=true)');
-            console.log('[initTabsNavigation] 🔄 Вызываем refreshCurrentContext() для обновления UI');
 
             // Сбрасываем флаг
             localStorage.removeItem('qaCardsUpdated');
@@ -356,7 +349,6 @@ export function initTabsNavigation(appVersion) {
             // Обновляем UI с небольшой задержкой чтобы данные загрузились
             setTimeout(() => {
                 refreshCurrentContext();
-                console.log('[initTabsNavigation] ✅ UI обновлён после редактирования карточки');
             }, 200);
         }
     } catch (e) {
@@ -376,12 +368,10 @@ export function initTabsNavigation(appVersion) {
         // НО НЕ для страницы статистики!
         if (container && !isStatsPage) {
             container.style.display = '';
-            console.log('[initTabsNavigation] container display reset');
         }
         const sidebar = document.querySelector('.sidebar');
         if (sidebar && !isStatsPage) {
             sidebar.style.display = '';
-            console.log('[initTabsNavigation] sidebar display reset');
         }
 
         const searchContainer = document.querySelector('.search-container');
@@ -390,10 +380,8 @@ export function initTabsNavigation(appVersion) {
             // Для статистики оставляем display:none, для остальных страниц показываем
             if (!isStatsPage) {
                 searchContainer.style.display = '';
-                console.log('[initTabsNavigation] search-container display reset');
             } else {
                 searchContainer.style.display = 'none';
-                console.log('[initTabsNavigation] search-container hidden (stats page)');
             }
         }
         // Удаляем старую админ-панель из DOM (новая логика редактирования сверху)
@@ -451,33 +439,6 @@ export function initTabsNavigation(appVersion) {
         // Обновляем контекст через 100мс (после загрузки данных из all-data.js)
         setTimeout(() => {
             refreshCurrentContext();
-
-            // Логирование размеров для отладки
-            /* DEBUG
-            const topBar = document.querySelector('.top-actions-bar');
-            const container = document.querySelector('.container');
-            const sidebar = document.querySelector('.sidebar');
-            if (topBar && container && sidebar) {
-                const topRect = topBar.getBoundingClientRect();
-                const contRect = container.getBoundingClientRect();
-                const sideRect = sidebar.getBoundingClientRect();
-                console.log('[LAYOUT DEBUG]:', {
-                    'Sidebar collapsed': sidebar.classList.contains('collapsed'),
-                    'Sidebar width': sideRect.width,
-                    'Sidebar right': sideRect.right,
-                    'Sidebar left': sideRect.left,
-                    'Top bar left': topRect.left,
-                    'Top bar right': topRect.right,
-                    'Top bar width': topRect.width,
-                    'Container left': contRect.left,
-                    'Container right': contRect.right,
-                    'Container width': contRect.width,
-                    'Container margin-left': getComputedStyle(container).marginLeft,
-                    'Container margin-right': getComputedStyle(container).marginRight,
-                    'Match (top vs container)': topRect.width === contRect.width
-                });
-            }
-            */
         }, 100);
 
         // Слушаем обновление избранного из облака
@@ -514,8 +475,6 @@ export function initTabsNavigation(appVersion) {
         // Создаем контейнер для табов
         const tabsContainer = document.createElement('div');
         tabsContainer.className = 'tabs-container';
-        console.log('[TABS-NAVIGATION] tabsContainer created:', tabsContainer);
-        console.log('[TABS-NAVIGATION] tabs-container parent will be:', document.querySelector('.tabs-header'));
 
         // Создаем таб "Все вопросы"
         const allTab = document.createElement('div');
@@ -544,12 +503,7 @@ export function initTabsNavigation(appVersion) {
             tab.dataset.category = category.id;
             tab.textContent = category.displayName || category.name;
             tabsContainer.appendChild(tab);
-            if (index < 3) {
-                console.log('[TABS-NAVIGATION] Tab', index, 'created:', tab);
-            }
         });
-
-        console.log('[TABS-NAVIGATION] All tabs created, total:', tabsContainer.querySelectorAll('.tab').length);
 
         // Создаем контейнер для подкатегорий
         const subcategoriesContainer = document.createElement('div');
@@ -589,27 +543,13 @@ export function initTabsNavigation(appVersion) {
 
         // Добавляем обработчики клика по табам
         tabsContainer.addEventListener('click', function (e) {
-            console.log('[TABS-NAVIGATION] Click on tabsContainer, target:', e.target);
             if (e.target.classList.contains('tab')) {
-                console.log('[TABS-NAVIGATION] Tab clicked:', e.target);
-                console.log('[TABS-NAVIGATION] Tab computed styles before active:', {
-                    transform: window.getComputedStyle(e.target).transform,
-                    zIndex: window.getComputedStyle(e.target).zIndex,
-                    position: window.getComputedStyle(e.target).position
-                });
-
                 // Удаляем класс active у всех табов
                 const tabs = tabsContainer.querySelectorAll('.tab');
                 tabs.forEach(tab => tab.classList.remove('active'));
 
                 // Добавляем класс active выбранному табу
                 e.target.classList.add('active');
-
-                console.log('[TABS-NAVIGATION] Tab after active:', {
-                    transform: window.getComputedStyle(e.target).transform,
-                    zIndex: window.getComputedStyle(e.target).zIndex,
-                    position: window.getComputedStyle(e.target).position
-                });
 
                 const categoryId = e.target.dataset.category;
 
@@ -620,8 +560,6 @@ export function initTabsNavigation(appVersion) {
                 } else if (categoryId === 'favorites') {
                     // Избранное без подкатегорий
                     subcategoriesContainer.style.display = 'none';
-                    // 🔥 Принудительно читаем свежие данные из localStorage
-                    console.log('[TABS-NAVIGATION] 📌 Клик на вкладку избранного - обновляем данные');
                     showFavorites();
                 } else {
                     const selectedCategory = categories.find(cat => cat.id == categoryId);
@@ -771,7 +709,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.43.0');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.44.0');
                     initStatsPage(appVersion);
                 }
 
@@ -786,33 +724,28 @@ export function initTabsNavigation(appVersion) {
                 }
             } else if (location.hash === '' || location.hash === '#/' || location.hash === '#') {
                 // Переход на главную - закрываем статистику если открыта
-                console.log('[HASHCHANGE #/] Navigating to home page...');
 
                 // Очищаем состояние обучения если есть
                 if (window.__lastCandidates) {
                     window.__lastCandidates = null;
-                    console.log('[HASHCHANGE #/] Cleared __lastCandidates');
                 }
 
                 // Закрываем статистику если открыта
                 const statsContainer = document.getElementById('stats-container');
                 if (statsContainer) {
                     statsContainer.remove();
-                    console.log('[HASHCHANGE #/] Removed stats-container');
                 }
 
                 // Показываем главный контейнер
                 const mainContainer = document.querySelector('.container');
                 if (mainContainer) {
                     mainContainer.style.display = 'block';
-                    console.log('[HASHCHANGE #/] mainContainer display set to block');
                 }
 
                 // Восстанавливаем sidebar
                 const sidebar = document.querySelector('.sidebar');
                 if (sidebar) {
                     sidebar.style.display = '';
-                    console.log('[HASHCHANGE #/] sidebar display reset');
                 } else {
                     console.warn('[HASHCHANGE #/] sidebar NOT FOUND!');
                 }
@@ -821,7 +754,6 @@ export function initTabsNavigation(appVersion) {
                 const topActionsBar = document.querySelector('.top-actions-bar');
                 if (topActionsBar) {
                     topActionsBar.style.display = 'flex';
-                    console.log('[HASHCHANGE #/] top-actions-bar display set to flex');
                 } else {
                     console.warn('[HASHCHANGE #/] top-actions-bar NOT FOUND!');
                 }
@@ -830,7 +762,6 @@ export function initTabsNavigation(appVersion) {
                 const searchContainer = document.querySelector('.search-container');
                 if (searchContainer) {
                     searchContainer.style.display = '';
-                    console.log('[HASHCHANGE #/] search-container display reset');
                 } else {
                     console.warn('[HASHCHANGE #/] search-container NOT FOUND!');
                 }
@@ -847,11 +778,6 @@ export function initTabsNavigation(appVersion) {
                     if (cardsUpdated === 'true') {
                         localStorage.removeItem('qaCardsUpdated');
                         localStorage.removeItem('qaCardsUpdatedTimestamp');
-
-                        // Визуальное логирование
-                        if (typeof window.showDebugLog === 'function') {
-                            window.showDebugLog('HASH', '🔄 Обнаружены изменения, обновляем UI', 'info');
-                        }
                     }
                 } catch (e) {
                     console.error('[HASHCHANGE #/] Ошибка проверки флага qaCardsUpdated:', e);
@@ -859,7 +785,6 @@ export function initTabsNavigation(appVersion) {
 
                 // Обновляем текущий контекст
                 refreshCurrentContext();
-                console.log('[HASHCHANGE #] Home page setup complete');
             }
         });
 
@@ -1427,7 +1352,6 @@ export function initTabsNavigation(appVersion) {
 
             // Переключение User -> Guest (Logout)
             if (loggedInUser && !user) {
-                console.log('[LOGOUT] === НАЧАЛО ВЫХОДА ===');
 
                 // 🔥 Очищаем ключи Telegram авторизации в localStorage
                 localStorage.removeItem('qaUsername');
@@ -1446,21 +1370,12 @@ export function initTabsNavigation(appVersion) {
                 const hasUnsavedChanges = (newItems && newItems.length > 0) ||
                     (deletedItems && Object.keys(deletedItems).length > 0);
 
-                console.log('[LOGOUT] Проверяем есть ли несохранённые данные:', {
-                    hasUnsavedChanges,
-                    newItemsCount: newItems?.length || 0,
-                    deletedCount: Object.keys(deletedItems || {}).length
-                });
-
                 if (hasUnsavedChanges) {
-                    console.log('[LOGOUT] Сохраняем данные на сервере перед выходом...');
                     try {
                         await saveMergedToServer();
                     } catch (e) {
                         console.error('[Logout] Failed to save data before logout:', e);
                     }
-                } else {
-                    console.log('[LOGOUT] Все данные уже сохранены, пропускаем saveMergedToServer');
                 }
 
                 // ⚠️ ВАЖНО: Полностью очищаем localStorage пользователя
@@ -1483,8 +1398,6 @@ export function initTabsNavigation(appVersion) {
                 ];
                 DATA_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
 
-                console.log('[LOGOUT] localStorage очищен, ключи:', DATA_KEYS_TO_CLEAR);
-
                 // Также очищаем старые ключи без суффиксов
                 ['qaUserCards', 'qaFavorites', 'qaUserTrash'].forEach(key => localStorage.removeItem(key));
 
@@ -1495,7 +1408,6 @@ export function initTabsNavigation(appVersion) {
                 // ⚠️ ВАЖНО: Удаляем сессию полностью
                 clearQaUserCards();
 
-                console.log('[LOGOUT] === ВЫХОД ЗАВЕРШЕН ===');
             }
 
             loggedInUser = user;
@@ -1687,12 +1599,10 @@ export function initTabsNavigation(appVersion) {
                 const googleBtn = ov.querySelector('#google-login-btn');
                 if (googleBtn) {
                     googleBtn.addEventListener('click', function () {
-                        console.log('[Google Auth] Button clicked');
                         // Загружаем Google OAuth скрипт
                         const script = document.createElement('script');
                         script.src = 'https://accounts.google.com/gsi/client';
                         script.onload = function () {
-                            console.log('[Google Auth] Script loaded, initializing...');
                             // Инициализируем Google OAuth с redirect mode (надёжнее без FedCM)
                             google.accounts.id.initialize({
                                 client_id: '862467912934-pjug7gt80qcp3t4rmtjvvu78fa6nukuf.apps.googleusercontent.com',
@@ -1700,7 +1610,6 @@ export function initTabsNavigation(appVersion) {
                                 auto_select: false,
                                 ux_mode: 'redirect'  // Redirect вместо popup (надёжнее)
                             });
-                            console.log('[Google Auth] Initialized, redirecting to Google...');
                             // Перенаправляем на Google
                             google.accounts.id.prompt();
                         };
@@ -1715,7 +1624,6 @@ export function initTabsNavigation(appVersion) {
                 const githubBtn = ov.querySelector('#github-login-btn');
                 if (githubBtn) {
                     githubBtn.addEventListener('click', function () {
-                        console.log('[GitHub Auth] Button clicked');
                         // Открываем GitHub OAuth в popup окне
                         const popup = window.open(
                             `${BACKEND_URL}/api/auth/github`,
@@ -1726,7 +1634,6 @@ export function initTabsNavigation(appVersion) {
                         // Слушаем сообщение от popup
                         const handleMessage = (event) => {
                             if (event.data && event.data.type === 'github-auth') {
-                                console.log('[GitHub Auth] Success:', event.data);
                                 // Сохраняем данные
                                 localStorage.setItem('qaUsername', event.data.username);
                                 localStorage.setItem('qaAuthType', 'github');
@@ -1755,7 +1662,6 @@ export function initTabsNavigation(appVersion) {
 
                 // Telegram Login Widget - загружаем сразу
                 const widgetContainer = ov.querySelector('#tg-widget-container');
-                console.log('[TG DEBUG] Контейнер виджета найден:', !!widgetContainer);
 
                 if (widgetContainer) {
                     const script = document.createElement('script');
@@ -1767,17 +1673,11 @@ export function initTabsNavigation(appVersion) {
                     script.setAttribute('data-onauth', 'onTelegramAuth(user)');
                     script.setAttribute('data-request-access', 'write');
 
-                    script.onload = () => {
-                        console.log('[TG Auth] ✅ Виджет Telegram загружен');
-                    };
-
                     widgetContainer.appendChild(script);
                 }
 
                 // Глобальный коллбэк для Google OAuth
                 window.handleGoogleSignIn = async function (response) {
-                    console.log('[Google Auth] === RESPONSE RECEIVED ===');
-                    console.log('[Google Auth] Full response:', JSON.stringify(response, null, 2));
 
                     try {
                         // Проверяем что credential существует
@@ -1787,8 +1687,6 @@ export function initTabsNavigation(appVersion) {
                             return;
                         }
 
-                        console.log('[Google Auth] Credential received');
-
                         // Разделяем JWT на части
                         const parts = response.credential.split('.');
 
@@ -1796,10 +1694,7 @@ export function initTabsNavigation(appVersion) {
                         let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
                         const userInfo = JSON.parse(atob(base64));
 
-                        console.log('[Google Auth] User info:', userInfo);
-
                         // ОТПРАВЛЯЕМ ЛОГИ НА СЕРВЕР
-                        console.log('[Google Auth] Sending logs to server...');
                         await fetch('/api/iphone-logs', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1808,7 +1703,6 @@ export function initTabsNavigation(appVersion) {
                                 url: window.location.href,
                                 timestamp: new Date().toISOString(),
                                 logs: [
-                                    '[Google Auth] === RESPONSE RECEIVED ===',
                                     '[Google Auth] User: ' + userInfo.email,
                                     '[Google Auth] Name: ' + userInfo.name,
                                     '[Google Auth] Google ID: ' + userInfo.sub
@@ -1818,7 +1712,6 @@ export function initTabsNavigation(appVersion) {
 
                         // Отправляем на сервер для авторизации
                         const authUrl = `${BACKEND_URL}/api/auth/google`;
-                        console.log('[Google Auth] Sending to:', authUrl);
                         const res = await fetch(authUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1830,12 +1723,9 @@ export function initTabsNavigation(appVersion) {
                             })
                         });
 
-                        console.log('[Google Auth] Response status:', res.status);
                         const data = await res.json();
-                        console.log('[Google Auth] Response data:', data);
 
                         if (res.ok && data.ok) {
-                            console.log('[Google Auth] SUCCESS! Username:', data.username);
                             // Сохраняем данные для автозагрузки
                             localStorage.setItem('qaUsername', data.username);
                             localStorage.setItem('qaAuthType', 'google');
@@ -1862,7 +1752,6 @@ export function initTabsNavigation(appVersion) {
 
                 // Глобальный коллбэк для виджета Telegram
                 window.onTelegramAuth = async function (user) {
-                    console.log('[TG Auth] Данные от Telegram:', user);
 
                     const authUrl = `${BACKEND_URL}/api/auth/telegram`;
 
@@ -1874,7 +1763,6 @@ export function initTabsNavigation(appVersion) {
                         });
 
                         const data = await res.json();
-                        console.log('[TG Auth] Ответ сервера:', data);
 
                         if (res.ok && data.ok) {
                             // 🔥 НЕ сохраняем данные для автозагрузки - просто входим
@@ -3069,8 +2957,6 @@ async function saveMergedToServer(skipReload = false) {
         // Отправляем событие начала синхронизации
         window.dispatchEvent(new Event('sync-start'));
 
-        console.log('[saveMergedToServer] === НАЧАЛО СИНХРОНИЗАЦИИ === skipReload:', skipReload);
-
         // 🔍 ИСПРАВЛЕНИЕ КОДИРОВКИ ПЕРЕД ОТПРАВКОЙ
         const fixEncoding = (text) => {
             if (!text || typeof text !== 'string') return text;
@@ -3141,11 +3027,6 @@ async function saveMergedToServer(skipReload = false) {
                 if (userCardsRaw) {
                     const userCards = JSON.parse(userCardsRaw);
                     if (Array.isArray(userCards)) {
-                        console.log('[saveMergedToServer] qaUserCards:', {
-                            totalCards: userCards.length,
-                            uniqueQaDataCount: uniqueQaData.length,
-                            newItemsCount: newItems.length
-                        });
 
                         let addedCount = 0;
                         let checkedCount = 0;
@@ -3166,13 +3047,6 @@ async function saveMergedToServer(skipReload = false) {
                             // Считаем дубликаты
                             if (uc.question.includes('копия')) {
                                 duplicatesFound++;
-                                console.log('[saveMergedToServer] Найден дубликат в qaUserCards:', {
-                                    question: uc.question.substring(0, 50),
-                                    isAlreadyAdded,
-                                    isInBase,
-                                    isNewItem,
-                                    isDeleted
-                                });
                             }
 
                             // Добавляем только если это пользовательская карточка, которой нет в базе и новых элементах
@@ -3182,13 +3056,6 @@ async function saveMergedToServer(skipReload = false) {
                                 seen.add(uc.question);
                                 addedCount++;
                             }
-                        });
-
-                        console.log('[saveMergedToServer] Обработано qaUserCards:', {
-                            checkedCount,
-                            duplicatesFound,
-                            addedCount,
-                            mergedCount: merged.length
                         });
                     }
                 }
@@ -3228,50 +3095,16 @@ async function saveMergedToServer(skipReload = false) {
 
         const url = `${BACKEND_URL}/save?user=${encodeURIComponent(username || 'guest')}`;
 
-        console.log('[saveMergedToServer] Отправляем на сервер:', {
-            mergedCount: merged.length,
-            newItemsCount: newItems.length,
-            deletedCount: Object.keys(deletedMap).length,
-            username,
-            bodyLength: JSON.stringify(fixedMerged).length
-        });
-
-        // 🔍 ЛОГ: первые 3 карточки для проверки
-        const first3 = merged.slice(0, 3).map(c => ({
-            question: c.question?.substring(0, 50),
-            hasCopy: c.question?.includes('копия'),
-            category: c.category,
-            subcategory: c.subcategory
-        }));
-        console.log('[saveMergedToServer] Первые 3 карточки:', first3);
-
-        // 🔍 ЛОГ: поиск дубликата во всём массиве
-        const dupIndex = merged.findIndex(c => c.question?.includes('копия'));
-        console.log('[saveMergedToServer] Дубликат найден на индексе:', dupIndex);
-        if (dupIndex >= 0) {
-            console.log('[saveMergedToServer] Дубликат:', {
-                question: merged[dupIndex].question,
-                category: merged[dupIndex].category,
-                subcategory: merged[dupIndex].subcategory
-            });
-        }
-
         const resp = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(fixedMerged)
         });
 
-        console.log('[saveMergedToServer] Ответ сервера:', {
-            status: resp.status,
-            ok: resp.ok,
-            statusText: resp.statusText
-        });
         let ok = resp.ok;
         let responseJson = null;
         try {
             responseJson = await resp.json();
-            console.log('[saveMergedToServer] ПОЛУЧЕНО ОТ СЕРВЕРА:', responseJson);
             if (typeof responseJson?.ok === 'boolean') ok = ok && responseJson.ok;
         } catch (parseErr) {
             console.warn('[saveMergedToServer] Не удалось распарсить ответ:', parseErr);
@@ -3285,13 +3118,10 @@ async function saveMergedToServer(skipReload = false) {
         // Успешное сохранение
         setSaveStatus('success');
 
-        console.log('[saveMergedToServer] Сервер ответил:', { ok, responseJson });
-
         // 🔥 ОБНОВЛЯЕМ localDataTimestamp после успешного сохранения на сервер
         // Это нужно для корректной синхронизации между устройствами
         const serverTimestamp = responseJson?.updatedAt || Date.now();
         localStorage.setItem('localDataTimestamp', serverTimestamp.toString());
-        console.log('[saveMergedToServer] localDataTimestamp обновлён:', serverTimestamp);
 
         // Отправляем событие успешной синхронизации
         window.dispatchEvent(new Event('sync-success'));
@@ -3299,16 +3129,9 @@ async function saveMergedToServer(skipReload = false) {
         // ОБНОВЛЯЕМ qaUserCards в localStorage
         try {
             setQaUserCards(merged);
-            console.log('[saveMergedToServer] setQaUserCards вызван:', {
-                mergedLength: merged.length,
-                savedCards: merged.length
-            });
 
             // 🔍 ПРОВЕРЯЕМ что записалось в localStorage
             const verifyCards = getQaUserCards();
-            console.log('[saveMergedToServer] Проверка localStorage:', {
-                cardsInLocalStorage: verifyCards?.length || 0
-            });
 
             // 🔥 ОБНОВЛЯЕМ uniqueQaData в памяти из localStorage
             // Это нужно чтобы следующие дубликаты использовали актуальные данные
@@ -3316,14 +3139,10 @@ async function saveMergedToServer(skipReload = false) {
             const { setUniqueQaData } = await import('../all-data.js');
             if (typeof setUniqueQaData === 'function' && verifyCards && verifyCards.length > 0) {
                 setUniqueQaData(verifyCards);
-                console.log('[saveMergedToServer] uniqueQaData обновлён:', {
-                    newLength: verifyCards.length
-                });
             }
 
             // Очищаем qaNewItems после успешной синхронизации, чтобы дубликаты не добавлялись повторно
             const newItems = getNewItems();
-            console.log('[saveMergedToServer] Очищаем qaNewItems:', newItems.length, 'элементов');
             if (Array.isArray(newItems) && newItems.length > 0) {
                 localStorage.setItem('qaNewItems', JSON.stringify([]));
             }
@@ -3338,7 +3157,6 @@ async function saveMergedToServer(skipReload = false) {
         }
 
         // Принудительная перезагрузка данных через 50мс
-        console.log('[saveMergedToServer] Dispatch forceReloadData:', !skipReload);
         setTimeout(() => {
             if (!skipReload) window.dispatchEvent(new Event('forceReloadData'));
         }, 50);
@@ -3707,11 +3525,6 @@ function showFavorites() {
     const runtimeData = getRuntimeData();
     const favData = runtimeData.filter(item => favorites.has(item.question));
 
-    // Визуальное логирование
-    if (typeof window.showDebugLog === 'function') {
-        window.showDebugLog('FAV', `Избранное: ${favorites.size} в favorites, ${favData.length} найдено`, 'info');
-    }
-
     displayQuestions(favData, 'Избранное');
 }
 
@@ -3777,11 +3590,9 @@ function refreshCurrentContext() {
 
 // Функция для увеличения карточки (PC версия)
 function openCardZoomModal(item, ef) {
-    console.log('[CARD ZOOM] openCardZoomModal called with:', { question: item.question?.substring(0, 20), category: item.category, ef });
 
     // Проверяем, не открыто ли уже модальное окно
     if (document.querySelector('.card-zoom-overlay')) {
-        console.log('[CARD ZOOM] Modal already open');
         return;
     }
 
@@ -3789,12 +3600,8 @@ function openCardZoomModal(item, ef) {
     const questionFormatting = item.formatting?.question || [];
     const answerFormatting = item.formatting?.answer || [];
 
-    console.log('[CARD ZOOM] Formatting:', { questionFormatting, answerFormatting });
-
     const questionHTML = applyFormatting(item.question, questionFormatting);
     const answerHTML = applyFormatting(item.answer, answerFormatting);
-
-    console.log('[CARD ZOOM] HTML generated:', { questionHTML: questionHTML?.substring(0, 50), answerHTML: answerHTML?.substring(0, 50) });
 
     // Создаем overlay
     const overlay = document.createElement('div');
@@ -3864,10 +3671,8 @@ function openCardZoomModal(item, ef) {
         </div>
     `;
 
-    console.log('[CARD ZOOM] Overlay created, appending to body');
     overlay.appendChild(styleEl);
     document.body.appendChild(overlay);
-    console.log('[CARD ZOOM] Overlay appended, check if visible:', document.querySelector('.card-zoom-overlay'));
 
     // Закрытие по клику на overlay
     overlay.addEventListener('click', () => closeCardZoomModal(overlay));
@@ -4030,9 +3835,8 @@ export function displayQuestions(questions, title) {
         };
 
         // Формируем текст счетчика
-        // 🔒 Используем getRuntimeData() для консистентности
-        const runtimeData = getRuntimeData();
-        const totalCount = runtimeData.length;
+        // 🔒 Используем uniqueQaData.length напрямую вместо clone всего набора данных
+        const totalCount = uniqueQaData ? uniqueQaData.length : 0;
         const isFiltered = questions.length !== totalCount;
         const countText = isFiltered
             ? `Найдено: ${questions.length} из ${totalCount}`
@@ -4099,7 +3903,7 @@ export function displayQuestions(questions, title) {
 
                 let html = '<div class="hearts-container" title="Уровень: ' + levelName + '\\nEF: ' + ef.toFixed(2) + '\\nСердечек: ' + heartsCount.toFixed(2) + '" style="position:absolute; top:12px; right:40px; display:flex; gap:2px; z-index:998;">';
 
-                // Рисуем 5 сердечек
+                // Рисуем 5 сердечек с переиспользуемыми ID градиентов (без random)
                 for (let i = 0; i < 5; i++) {
                     let fill = 0;
                     if (heartsCount >= i + 1) {
@@ -4109,7 +3913,7 @@ export function displayQuestions(questions, title) {
                     }
 
                     const stopVal = Math.round(fill * 100);
-                    const id = `heart-grad-${Math.random().toString(36).substr(2, 9)}`;
+                    const id = `heart-${i}`; // Reusable ID instead of random
 
                     html += `
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
@@ -4273,7 +4077,6 @@ export function displayQuestions(questions, title) {
                     if (window.innerWidth <= 768) {
                         return;
                     }
-                    console.log('[CARD ZOOM] Click detected, opening modal for:', item.question.substring(0, 30));
                     if (typeof openCardZoomModal === 'function') {
                         openCardZoomModal(item, ef);
                     } else {
@@ -4678,12 +4481,6 @@ export function displayQuestions(questions, title) {
                                 const copyQ = genUniqueQuestion(item.question);
                                 const duplicatedItem = { ...item, question: copyQ };
 
-                                console.log('[DUPLICATE] Создан дубликат:', {
-                                    original: item.question?.substring(0, 50),
-                                    copy: copyQ,
-                                    timestamp: Date.now()
-                                });
-
                                 // 🔥 Вставляем дубликат СРАЗУ ПОСЛЕ оригинала в qaUserCards
                                 const sessionUserRaw = localStorage.getItem('qaSessionUser');
                                 if (sessionUserRaw) {
@@ -4710,8 +4507,6 @@ export function displayQuestions(questions, title) {
                                     if (!newItems.some(n => n.question === copyQ)) {
                                         newItems.push(duplicatedItem);
                                         localStorage.setItem('qaNewItems', JSON.stringify(newItems));
-
-                                        console.log('[DUPLICATE] Добавлено в qaNewItems, всего:', newItems.length);
                                     }
                                 }
 
@@ -4739,7 +4534,6 @@ export function displayQuestions(questions, title) {
                                         setInlineSaveStatus(rowEl, 'success');
 
                                         // 🔥 Сохраняем на сервер БЕЗ forceReloadData
-                                        console.log('[DUPLICATE] Вызываем saveMergedToServer(true)');
                                         saveMergedToServer(true).then(saveOk => {
                                             if (!saveOk) {
                                                 setInlineSaveStatus(rowEl, 'error', 'Ошибка сохранения');
@@ -4808,7 +4602,13 @@ function highlightSearchInText(originalText, query, html) {
         }
     });
 
-    // Применяем замены только к текстовым узлам (не к HTML тегам)
+    if (replacements.size === 0) return html;
+
+    // 🔥 Компилируем RegExp один раз для всех замен
+    const escapedWords = Array.from(replacements.keys()).map(escapeRegExp);
+    const combinedRegex = new RegExp(escapedWords.join('|'), 'gi');
+
+    // Применяем замену за один проход через textContent, без RegExp per word
     let result = '';
     let i = 0;
     while (i < html.length) {
@@ -4822,16 +4622,16 @@ function highlightSearchInText(originalText, query, html) {
             result += html.substring(i, tagEnd + 1);
             i = tagEnd + 1;
         } else {
-            // Это текст - ищем совпадения
+            // Это текст - ищем конец текстового узла
             let textEnd = html.indexOf('<', i);
             if (textEnd === -1) textEnd = html.length;
 
             let textNode = html.substring(i, textEnd);
 
-            // Применяем замены к текстовому узлу
-            replacements.forEach((replacement, original) => {
-                const regex = new RegExp(escapeRegExp(original), 'gi');
-                textNode = textNode.replace(regex, replacement);
+            // 🔥 Одна замена через combined RegExp вместо N отдельных RegExp
+            textNode = textNode.replace(combinedRegex, (match) => {
+                const replacement = replacements.get(match);
+                return replacement || match;
             });
 
             result += textNode;

@@ -1,12 +1,12 @@
-import { LearningSession } from './session.js?v=6.43.0';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.43.0';
-import { getProgressMap } from './stats-utils.js?v=6.43.0';
-import { checkAchievements } from './stats-utils.js?v=6.43.0';
-import { Scheduler } from './scheduler.js?v=6.43.0';
-import { getTodaysSession } from './category-scheduler.js?v=6.43.0';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.43.0';
-import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.43.0';
-import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.43.0';
+import { LearningSession } from './session.js?v=6.44.0';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.44.0';
+import { getProgressMap } from './stats-utils.js?v=6.44.0';
+import { checkAchievements } from './stats-utils.js?v=6.44.0';
+import { Scheduler } from './scheduler.js?v=6.44.0';
+import { getTodaysSession } from './category-scheduler.js?v=6.44.0';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.44.0';
+import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.44.0';
+import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.44.0';
 
 // DOM Elements
 let container = null;
@@ -20,47 +20,6 @@ let sessionTimerStart = 0;
 let userScrolled = false; // Флаг ручного скролла прогресс-бара
 let timerPaused = false; // Флаг паузы таймера
 let pausedTimeRemaining = 0; // Накопленное время при паузе
-
-// 🔥 ВИЗУАЛЬНОЕ ЛОГИРОВАНИЕ В БРАУЗЕРЕ
-function showDebugLog(tag, message, type = 'info') {
-    let debugPanel = document.getElementById('debug-log-panel');
-    if (!debugPanel) {
-        debugPanel = document.createElement('div');
-        debugPanel.id = 'debug-log-panel';
-        debugPanel.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 350px;
-            max-height: 400px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.9);
-            color: #0f0;
-            font-family: monospace;
-            font-size: 11px;
-            padding: 10px;
-            border-radius: 8px;
-            z-index: 99999;
-            border: 1px solid #333;
-        `;
-        document.body.appendChild(debugPanel);
-    }
-
-    const colors = { success: '#0f0', error: '#f00', info: '#0af', warn: '#fa0' };
-    const color = colors[type] || colors.info;
-    const time = new Date().toLocaleTimeString();
-
-    const logEntry = document.createElement('div');
-    logEntry.style.cssText = `margin-bottom: 4px; color: ${color}; border-bottom: 1px solid #333; padding-bottom: 2px;`;
-    logEntry.innerHTML = `<span style="opacity: 0.5">[${time}]</span> <b>[${tag}]</b> ${message}`;
-    debugPanel.appendChild(logEntry);
-    debugPanel.scrollTop = debugPanel.scrollHeight;
-}
-
-// Показываем начальное сообщение
-setTimeout(() => {
-    showDebugLog('INIT', '🔍 Debug логирование активно', 'info');
-}, 2000);
 
 const starSvg = (filled) => `
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
@@ -461,10 +420,8 @@ export function initLearnUI() {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!session || !session.currentCard) {
-                    console.log('[EDIT] Нет активной карточки для редактирования');
                     return;
                 }
-                console.log('[EDIT] Открытие редактора для карточки:', session.currentCard.question?.substring(0, 50));
                 openEditModal(session.currentCard);
             });
         });
@@ -490,15 +447,10 @@ let editModalState = {
 
 // Открытие модального окна редактирования
 function openEditModal(card) {
-    console.log('[EDIT MODAL] Открытие модального окна');
-
     // Получаем актуальные данные из session.currentCard (не из card!)
     const currentCard = session?.currentCard;
     const question = currentCard?.question || card.question || '';
     const answer = currentCard?.answer || currentCard?.item?.answer || card.answer || card.item?.answer || '';
-
-    console.log('[EDIT MODAL] card.question:', question);
-    console.log('[EDIT MODAL] answer:', answer?.substring(0, 50));
 
     // Получаем formatting из карточки или создаём пустой
     const formatting = card.formatting || createEmptyFormatting();
@@ -519,9 +471,6 @@ function openEditModal(card) {
         oldQuestion: question
     };
 
-    console.log('[EDIT MODAL] editModalState.originalCard.question:', editModalState.originalCard.question);
-    console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion);
-
     // Блокируем навигацию и переворот карточки
     if (session) {
         session.pauseNavigation = true;
@@ -532,7 +481,6 @@ function openEditModal(card) {
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = 'none';
-        console.log('[EDIT MODAL] Card clicks blocked');
     }
 
     // Создаем модальное окно с ОДНОЙ панелью форматирования
@@ -572,8 +520,6 @@ function openEditModal(card) {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    console.log('[EDIT MODAL] Modal HTML inserted, checking element:', document.getElementById('edit-modal-overlay'));
-
     // Создаём toolbar
     const toolbarContainer = document.getElementById('main-format-toolbar');
     const questionEditor = document.getElementById('edit-question-editor');
@@ -582,21 +528,15 @@ function openEditModal(card) {
     if (toolbarContainer) {
         const mainToolbar = createFormatToolbar('both');  // 'both' означает общий для всех
         toolbarContainer.appendChild(mainToolbar);
-
-        console.log('[EDIT MODAL] Toolbar created:', mainToolbar);
     }
-
-    console.log('[EDIT MODAL] Editors found:', { questionEditor, answerEditor });
 
     if (questionEditor) {
         // Применяем форматирование к вопросу
         renderFormattingInEditor(questionEditor, question, formatting.question || []);
-        console.log('[EDIT MODAL] Question set:', question?.substring(0, 50));
     }
     if (answerEditor) {
         // Применяем форматирование к ответу
         renderFormattingInEditor(answerEditor, answer, formatting.answer || []);
-        console.log('[EDIT MODAL] Answer set:', answer?.substring(0, 50));
     }
 
     // Инициализируем toolbar с ОБОИМИ редакторами
@@ -612,25 +552,19 @@ function openEditModal(card) {
     const saveBtn = document.getElementById('edit-save-btn');
     const overlay = document.getElementById('edit-modal-overlay');
 
-    console.log('[EDIT MODAL] Buttons found:', { cancelBtn, saveBtn, overlay });
-
-    // Добавляем отладочные логи для кнопок
     cancelBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
-        console.log('[EDIT MODAL] Cancel button clicked');
         closeEditModal(true);
     });
 
     saveBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
-        console.log('[EDIT MODAL] Save button clicked');
         saveEditChanges();
     });
 
     overlay?.addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
             e.stopPropagation();
-            console.log('[EDIT MODAL] Overlay clicked');
             closeEditModal(true);
         }
     });
@@ -674,26 +608,12 @@ function openEditModal(card) {
 
     // Фокус на первый редактор
     setTimeout(() => {
-        const overlay = document.getElementById('edit-modal-overlay');
-        const modal = document.querySelector('.edit-modal');
-        console.log('[EDIT MODAL] Final check:', {
-            overlayExists: !!overlay,
-            modalExists: !!modal,
-            overlayDisplay: overlay?.style?.display,
-            overlayZIndex: overlay?.style?.zIndex,
-            computedZIndex: overlay ? getComputedStyle(overlay).zIndex : 'N/A',
-            computedDisplay: overlay ? getComputedStyle(overlay).display : 'N/A'
-        });
         questionEditor?.focus();
     }, 100);
-
-    console.log('[EDIT MODAL] Модальное окно открыто');
 }
 
 // Закрытие модального окна
 function closeEditModal(discardChanges = true) {
-    console.log('[EDIT MODAL] Закрытие модального окна, discardChanges:', discardChanges);
-
     const modal = document.getElementById('edit-modal-overlay');
     if (modal) {
         modal.style.opacity = '0';
@@ -714,16 +634,11 @@ function closeEditModal(discardChanges = true) {
     const flashcard = container?.querySelector('.flashcard');
     if (flashcard) {
         flashcard.style.pointerEvents = '';
-        console.log('[EDIT MODAL] Card clicks restored');
     }
-
-    console.log('[EDIT MODAL] Модальное окно закрыто');
 }
 
 // Сохранение изменений
 async function saveEditChanges() {
-    console.log('[EDIT MODAL] Сохранение изменений');
-
     const questionEditor = document.getElementById('edit-question-editor');
     const answerEditor = document.getElementById('edit-answer-editor');
 
@@ -745,16 +660,6 @@ async function saveEditChanges() {
 
     // Получаем formatting из editModalState и обновляем его с новыми данными
     const currentFormatting = editModalState.formatting || createEmptyFormatting();
-
-    console.log('[EDIT MODAL] Новые данные:', {
-        newQuestion: newQuestion.substring(0, 50),
-        newAnswer: newAnswer.substring(0, 50),
-        hasFormatting: !!(currentFormatting.question?.length || currentFormatting.answer?.length)
-    });
-    console.log('[EDIT MODAL] currentFormatting:', currentFormatting);
-    console.log('[EDIT MODAL] editModalState.formatting:', editModalState.formatting);
-    console.log('[EDIT MODAL] New question length:', newQuestion.length);
-    console.log('[EDIT MODAL] New answer length:', newAnswer.length);
 
     // Валидация
     if (!newQuestion) {
@@ -784,7 +689,6 @@ async function saveEditChanges() {
         const currentUser = window.UserSystem?.getCurrentUser?.();
         if (currentUser?.username) {
             username = currentUser.username;
-            console.log('[EDIT MODAL] Пользователь из UserSystem:', username);
         }
 
         // Если не нашли, пробуем qaSessionUser
@@ -795,7 +699,6 @@ async function saveEditChanges() {
                     const sessionUser = JSON.parse(sessionUserRaw);
                     if (sessionUser?.username) {
                         username = sessionUser.username;
-                        console.log('[EDIT MODAL] Пользователь из qaSessionUser:', username);
                     }
                 }
             } catch (e) {
@@ -813,19 +716,7 @@ async function saveEditChanges() {
         const oldQuestion = currentCard?.question;
         const oldAnswer = currentCard?.answer || currentCard?.item?.answer;
 
-        console.log('[EDIT MODAL] Отправка данных на сервер', {
-            username,
-            oldQuestion: oldQuestion?.substring(0, 50),
-            newQuestion: newQuestion.substring(0, 50),
-            hasNewAnswer: newAnswer !== oldAnswer
-        });
-
-        console.log('[EDIT MODAL] session.currentCard.question:', currentCard?.question?.substring(0, 50));
-        console.log('[EDIT MODAL] editModalState.oldQuestion:', editModalState.oldQuestion?.substring(0, 50));
-        console.log('[EDIT MODAL] editor text:', newQuestion.substring(0, 50));
-
         const requestUrl = `/api/card/update?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
-        console.log('[EDIT MODAL] Request URL:', requestUrl);
 
         // Отправляем на сервер
         const response = await fetch(requestUrl, {
@@ -842,24 +733,10 @@ async function saveEditChanges() {
             })
         });
 
-        console.log('[EDIT MODAL] Status:', response.status);
-
         const result = await response.json();
-
-        console.log('[EDIT MODAL] Ответ сервера:', result);
-
-        // Выводим debug информацию от сервера
-        if (result.debug) {
-            console.log('[EDIT MODAL] SERVER DEBUG:', result.debug);
-            if (result.debug.questionsInFile) {
-                console.log('[EDIT MODAL] Questions in file:', result.debug.questionsInFile);
-            }
-        }
 
         if (response.ok && result.ok) {
             // Успех
-            console.log('[EDIT MODAL] Карточка успешно обновлена');
-
             const currentIndex = session.currentIndex || 0;
 
             // 1. Обновляем session.queue
@@ -884,8 +761,6 @@ async function saveEditChanges() {
                 session.currentCard.item.question = newQuestion;
                 session.currentCard.item.answer = newAnswer;
                 session.currentCard.item.formatting = currentFormatting;
-
-                console.log('[EDIT MODAL] Updated session.currentCard:', session.currentCard.question?.substring(0, 50));
             }
 
             // 3. Обновляем localStorage (ВАЖНО для сохранения после перезагрузки!)
@@ -947,32 +822,20 @@ async function saveEditChanges() {
                                 newQuestion: newQuestion
                             }
                         }));
-
-                        // 🔥 ВИЗУАЛЬНОЕ ЛОГИРОВАНИЕ В БРАУЗЕРЕ
-                        showDebugLog('SAVE', `✅ Сохранено: "${newQuestion?.substring(0, 30)}..."`, 'success');
-                        showDebugLog('SAVE', `qaUserCards: ${allCards.length} карт.`);
-                        showDebugLog('SAVE', `qaCardsUpdated: true`);
                     } else {
                         console.warn('[EDIT MODAL] Карточка не найдена в localStorage');
-                        showDebugLog('SAVE', `❌ Карточка не найдена!`, 'error');
                     }
                 } else {
                     console.error('[EDIT MODAL] Нет данных для сохранения');
-                    showDebugLog('SAVE', `❌ Нет данных!`, 'error');
                 }
             } catch (e) {
                 console.error('[EDIT MODAL] Ошибка обновления localStorage:', e);
-                showDebugLog('SAVE', `❌ Ошибка: ${e.message}`, 'error');
             }
 
             // 4. Обновляем originalCard в state
             editModalState.originalCard.question = newQuestion;
             editModalState.originalCard.answer = newAnswer;
             editModalState.originalCard.formatting = currentFormatting;
-
-            console.log('[EDIT MODAL] editModalState.originalCard обновлён:', {
-                question: editModalState.originalCard.question?.substring(0, 50)
-            });
 
             // Закрываем модальное окно
             closeEditModal(false);
@@ -1002,12 +865,9 @@ async function saveEditChanges() {
 
 // Показ уведомления
 function showEditNotification(message, type = 'success') {
-    console.log('[EDIT NOTIFICATION] Показ уведомления:', message, type);
-
     // Удаляем предыдущее уведомление если есть
     const existingNotification = document.querySelector('.edit-notification');
     if (existingNotification) {
-        console.log('[EDIT NOTIFICATION] Удаляем старое уведомление');
         existingNotification.remove();
     }
 
@@ -1026,14 +886,11 @@ function showEditNotification(message, type = 'success') {
 
     // Показываем уведомление
     const notification = document.getElementById('edit-notification');
-    console.log('[EDIT NOTIFICATION] Notification element:', notification);
-    console.log('[EDIT NOTIFICATION] Computed styles:', notification ? getComputedStyle(notification) : 'N/A');
 
     setTimeout(() => {
         if (notification) {
             notification.style.opacity = '1';
             notification.style.transform = 'translateX(-50%) translateY(0)';
-            console.log('[EDIT NOTIFICATION] Notification shown');
         }
     }, 10);
 
@@ -1190,9 +1047,8 @@ export function startLearnSession(candidateQuestions, options = {}) {
             });
         });
 
-        // 🔧 Rate buttons (оценка) - перерегистрируем после клонирования
+        // Rate buttons (оценка) - перерегистрируем после клонирования
         const rates = newFlashcard.querySelectorAll('.rate-btn');
-        console.log('[startLearnSession] 🔄 Re-registering rate buttons:', rates.length);
 
         let isRatingInProgress = false;
 
@@ -1223,9 +1079,8 @@ export function startLearnSession(candidateQuestions, options = {}) {
             });
         });
 
-        // 🔧 Navigation buttons (вперед/назад) - перерегистрируем после клонирования
+        // Navigation buttons (вперед/назад) - перерегистрируем после клонирования
         const navBtns = newFlashcard.querySelectorAll('.nav-arrow-btn');
-        console.log('[startLearnSession] 🔄 Re-registering nav buttons:', navBtns.length);
 
         navBtns.forEach((btn) => {
             btn.addEventListener('click', (e) => {
@@ -1234,7 +1089,6 @@ export function startLearnSession(candidateQuestions, options = {}) {
                 if (!session) return;
 
                 const direction = btn.classList.contains('right') ? 1 : -1;
-                console.log('[NAV BUTTON CLICK] 🖱️ Nav clicked! Direction:', direction);
 
                 session.goTo(session.currentIndex + direction);
                 btn.blur();
@@ -1455,56 +1309,33 @@ export function startLearnSession(candidateQuestions, options = {}) {
 }
 
 function stopLearnSession() {
-    console.log('========================================');
-    console.log('[STOP LEARN SESSION] ========== START ==========');
-    console.log('[STOP LEARN SESSION] Timestamp:', new Date().toISOString());
-    console.log('[STOP LEARN SESSION] Current hash:', location.hash);
-    console.log('[STOP LEARN SESSION] container:', container ? 'exists' : 'null');
-    console.log('[STOP LEARN SESSION] mainContainer:', mainContainer ? 'exists' : 'null');
-
-    // 🔥 ПЕРЕНАПРАВЛЯЕМ НА СТРАНИЦУ СТАТИСТИКИ
-    // Устанавливаем hash для истории браузера
     const wasOnStats = location.hash === '#/stats';
-    console.log('[STOP LEARN SESSION] Was on stats page:', wasOnStats);
 
     if (wasOnStats) {
-        console.log('[STOP LEARN SESSION] Already on stats, using intermediate hash');
         location.hash = '#/learning-exit';
     }
 
     location.hash = '#/stats';
-    console.log('[STOP LEARN SESSION] Hash after set:', location.hash);
 
-    // 🔥 ВАЖНО: Вызываем initStatsPage() напрямую, а не ждем hashchange
-    // Это гарантирует мгновенный переход без задержек и мелькания главной страницы
-    console.log('[STOP LEARN SESSION] Calling initStatsPage() directly...');
-
-    // 🔥 ВАЖНО: НЕ восстанавливаем UI пока статистика не загрузится
-    // Иначе главная страница успеет показаться раньше статистики
     import('./stats-ui.js?v=6.24.0').then(({ initStatsPage }) => {
-        console.log('[STOP LEARN SESSION] Stats module loaded, calling initStatsPage...');
         initStatsPage(window.currentAppVersion || '6.09');
-        console.log('[STOP LEARN SESSION] initStatsPage called');
 
         // Теперь восстанавливаем UI ПОСЛЕ инициализации статистики
         // 1. Очищаем таймер
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            console.log('[STOP LEARN SESSION] Timer interval cleared');
         }
 
         // 1.5. Отменяем отложенный запуск таймера если он есть
         if (window._learnTimerStartTimeout) {
             clearTimeout(window._learnTimerStartTimeout);
             window._learnTimerStartTimeout = null;
-            console.log('[STOP LEARN SESSION] Deferred timer start cleared');
         }
 
         // 2. Выключаем глобальный флаг - это заблокирует все orphaned setInterval
         isTimerRunning = false;
         currentIntervalId = null;
-        console.log('[STOP LEARN SESSION] isTimerRunning=false, currentIntervalId=null');
 
         // 3. Сбрасываем флаги таймера
         timerPaused = false;
@@ -1515,7 +1346,6 @@ function stopLearnSession() {
         const timerEl = document.getElementById('mode-timer');
         if (timerEl) {
             timerEl.textContent = '00:00';
-            console.log('[STOP LEARN SESSION] Timer element hidden');
         }
 
         // 4. Сбрасываем иконку паузы
@@ -1523,7 +1353,6 @@ function stopLearnSession() {
         if (pauseBtn) {
             pauseBtn.classList.remove('paused');
             pauseBtn.classList.add('running');
-            console.log('[STOP LEARN SESSION] Pause button reset');
         }
 
         // 5. Очищаем обработчики таймера
@@ -1541,37 +1370,30 @@ function stopLearnSession() {
         timerPauseHandler = null;
         timerClickHandler = null;
         timerControlsHandler = null;
-        console.log('[STOP LEARN SESSION] Timer event handlers cleaned');
 
         if (container) {
             container.style.display = 'none';
-            console.log('[STOP LEARN SESSION] container.style.display = "none"');
         }
         if (mainContainer) {
             mainContainer.style.display = 'block';
-            console.log('[STOP LEARN SESSION] mainContainer.style.display = "block"');
         }
         // Restore sidebar
         const sidebar = document.querySelector('.sidebar');
         if (sidebar) {
             sidebar.style.display = '';
-            console.log('[STOP LEARN SESSION] sidebar display reset');
         }
 
         // Возвращаем навигацию и убираем класс с body
         document.body.classList.remove('learning-mode');
-        console.log('[STOP LEARN SESSION] learning-mode class removed from body');
         const bottomNav = document.getElementById('bottom-nav');
         if (bottomNav) {
             bottomNav.style.display = 'flex';
-            console.log('[STOP LEARN SESSION] bottomNav displayed');
         }
 
         // Восстанавливаем search-container и top-actions-bar
         const searchContainer = document.querySelector('.search-container');
         if (searchContainer) {
             searchContainer.style.display = '';
-            console.log('[STOP LEARN SESSION] search-container display reset');
         }
 
         const topActionsBar = document.querySelector('.top-actions-bar');
@@ -1588,8 +1410,6 @@ function stopLearnSession() {
 
         // 🔧 СБРАСЫВАЕМ флаг инициализации UI чтобы можно было переинициализировать при необходимости
         window.__learnUIInitialized = false;
-
-        console.log('[STOP LEARN SESSION] ========== END ==========');
     }).catch(err => {
         console.error('[STOP LEARN SESSION] Failed to load stats-ui:', err);
     });
@@ -1602,12 +1422,6 @@ function renderCardState(state) {
 
     if (!container) return; // Guard against missing container
 
-    console.log('[RENDER CARD STATE] === CALLED ===');
-    console.log('[RENDER CARD STATE] state.results=', state.results, 'length=', state.results.length);
-    console.log('[RENDER CARD STATE] session=', session ? 'exists' : 'null');
-    console.log('[RENDER CARD STATE] session.results=', session ? session.results : 'null');
-    console.log('[RENDER CARD STATE] session.currentIndex=', session ? session.currentIndex : 'null');
-
     const cardEl = container.querySelector('.flashcard');
     const front = container.querySelector('.flashcard-front');
     const back = container.querySelector('.flashcard-back');
@@ -1619,11 +1433,7 @@ function renderCardState(state) {
     // Update segments
     // Используем session.currentIndex вместо state.currentIndex
     const currentIndex = session ? (session.currentIndex || 0) : 0;
-    console.log('[SEGMENTS DEBUG] Перед updateSegments: currentIndex=', currentIndex, 'total=', state.total);
-    console.log('[SEGMENTS DEBUG] results=', state.results, 'length=', state.results.length);
-    console.log('[SEGMENTS DEBUG] session.results=', session ? session.results : 'no session', 'session.currentIndex=', session ? session.currentIndex : 'no session');
     updateSegments(state.results, state.total, currentIndex, true);
-    console.log('[SEGMENTS DEBUG] После updateSegments');
     // Update nav buttons availability
     try {
         const prevBtn = document.getElementById('learn-prev-btn');
@@ -1650,32 +1460,6 @@ function renderCardState(state) {
         const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         qEl.innerHTML = questionHTML;
-
-        // DEBUG: Проверяем, что вставилось
-        console.log('[RENDER CARD] Question rendered:', {
-            text: questionText,
-            formatting: questionFormatting,
-            html: questionHTML,
-            innerHTML: qEl.innerHTML,
-            childrenCount: qEl.children.length,
-            spans: Array.from(qEl.querySelectorAll('span')).map(s => s.outerHTML)
-        });
-
-        // DEBUG: Проверяем стили первого span
-        setTimeout(() => {
-            const firstSpan = qEl.querySelector('span');
-            if (firstSpan) {
-                const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] ❗ First QUESTION span STYLES:', {
-                    display: styles.display,
-                    color: styles.color,
-                    textDecoration: styles.textDecoration,
-                    fontFamily: styles.fontFamily,
-                    fontWeight: styles.fontWeight,
-                    fontStyle: styles.fontStyle
-                });
-            }
-        }, 100);
     }
     if (aEl && state.card) {
         // Применяем форматирование к ответу
@@ -1684,102 +1468,7 @@ function renderCardState(state) {
         const answerText = sessionCard?.answer || state.card.answer || '(Пустой ответ)';
         const answerHTML = applyFormatting(answerText, answerFormatting);
         aEl.innerHTML = answerHTML;
-
-        // DEBUG: Проверяем, что вставилось
-        console.log('[RENDER CARD] Answer rendered:', {
-            text: answerText,
-            formatting: answerFormatting,
-            html: answerHTML,
-            innerHTML: aEl.innerHTML,
-            childrenCount: aEl.children.length,
-            spans: Array.from(aEl.querySelectorAll('span')).map(s => s.outerHTML)
-        });
-
-        // DEBUG: Проверяем стили первого span
-        setTimeout(() => {
-            const firstSpan = aEl.querySelector('span');
-            if (firstSpan) {
-                const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] ❗ First ANSWER span STYLES:', {
-                    display: styles.display,
-                    color: styles.color,
-                    textDecoration: styles.textDecoration,
-                    fontFamily: styles.fontFamily,
-                    fontWeight: styles.fontWeight,
-                    fontStyle: styles.fontStyle
-                });
-            }
-        }, 100);
     }
-
-    // DEBUG: Логируем стили ответа
-    console.log('\n📦 FLASHCARD ANSWER DEBUG:');
-    console.log('   #learn-answer элемент:', aEl);
-    if (aEl) {
-        const styles = window.getComputedStyle(aEl);
-        console.log('   padding-top:', styles.paddingTop);
-        console.log('   margin-top:', styles.marginTop);
-        console.log('   font-size:', styles.fontSize);
-        console.log('   display:', styles.display);
-        console.log('   align-items:', styles.alignItems);
-        console.log('   Parent (.flashcard-back) styles:');
-        const backStyles = window.getComputedStyle(back);
-        console.log('      padding:', backStyles.padding);
-        console.log('      display:', backStyles.display);
-    }
-
-    // Проверка перекрытия front/back
-    console.log('\n🔄 FRONT/BACK OVERLAP CHECK:');
-    if (front && back) {
-        const frontStyles = window.getComputedStyle(front);
-        const backStyles = window.getComputedStyle(back);
-        const frontRect = front.getBoundingClientRect();
-        const backRect = back.getBoundingClientRect();
-
-        console.log('   .flashcard-front:');
-        console.log('      display:', frontStyles.display);
-        console.log('      position:', frontStyles.position);
-        console.log('      z-index:', frontStyles.zIndex);
-        console.log('      transform:', frontStyles.transform);
-        console.log('      opacity:', frontStyles.opacity);
-        console.log('      rect:', frontRect);
-
-        console.log('   .flashcard-back:');
-        console.log('      display:', backStyles.display);
-        console.log('      position:', backStyles.position);
-        console.log('      z-index:', backStyles.zIndex);
-        console.log('      transform:', backStyles.transform);
-        console.log('      opacity:', backStyles.opacity);
-        console.log('      rect:', backRect);
-
-        console.log('   .flashcard (parent):');
-        const cardStyles = window.getComputedStyle(cardEl);
-        console.log('      display:', cardStyles.display);
-        console.log('      position:', cardStyles.position);
-        console.log('      perspective:', cardStyles.perspective);
-        console.log('      transform-style:', cardStyles.transformStyle);
-    }
-
-    // Проверка custom-styles.css
-    console.log('\n📜 CUSTOM-styles.css CHECK:');
-    const allStyles = Array.from(document.styleSheets);
-    console.log('   Всего style sheets:', allStyles.length);
-    allStyles.forEach((sheet, i) => {
-        try {
-            const rules = Array.from(sheet.cssRules || []);
-            const hasFlashcardBack = rules.some(r => r.selectorText && r.selectorText.includes('.flashcard-back'));
-            if (hasFlashcardBack) {
-                console.log(`   Sheet ${i}: содержит .flashcard-back правила`);
-                rules.forEach(r => {
-                    if (r.selectorText && r.selectorText.includes('.flashcard-back .flashcard-content')) {
-                        console.log(`      Rule: ${r.selectorText} -> padding-top: ${r.style.paddingTop}, margin-top: ${r.style.marginTop}`);
-                    }
-                });
-            }
-        } catch (e) {
-            // CORS
-        }
-    });
 
     // Обновляем вопрос на back-стороне С ФОРМАТИРОВАНИЕМ
     const backQuestionEl = document.getElementById('learn-back-question');
@@ -1789,29 +1478,6 @@ function renderCardState(state) {
         const questionText = sessionCard?.question || state.card.question || '(Пустой вопрос)';
         const questionHTML = applyFormatting(questionText, questionFormatting);
         backQuestionEl.innerHTML = questionHTML;
-
-        console.log('[RENDER CARD] Back question rendered:', {
-            text: questionText,
-            formatting: questionFormatting,
-            html: questionHTML,
-            innerHTML: backQuestionEl.innerHTML
-        });
-
-        // DEBUG: Проверяем стили первого span
-        setTimeout(() => {
-            const firstSpan = backQuestionEl.querySelector('span');
-            if (firstSpan) {
-                const styles = window.getComputedStyle(firstSpan);
-                console.log('[RENDER CARD] ❗ First BACK QUESTION span STYLES:', {
-                    display: styles.display,
-                    color: styles.color,
-                    textDecoration: styles.textDecoration,
-                    fontFamily: styles.fontFamily,
-                    fontWeight: styles.fontWeight,
-                    fontStyle: styles.fontStyle
-                });
-            }
-        }, 100);
     }
 
     // Update Hearts and Difficulty Label
@@ -2044,7 +1710,6 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
 
     // Центрируем текущий сегмент
     const currentEl = segs.children[currentIndex];
-    console.log('[SEGMENTS] currentEl=', currentEl, 'autoScroll=', autoScroll, 'userScrolled=', userScrolled);
 
     // Если был ручной скролл и autoScroll не включён принудительно - не скроллим
     const shouldScroll = autoScroll && !userScrolled;
@@ -2058,19 +1723,15 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
         const segWidth = currentEl.offsetWidth + 2; // width + gap
         const targetPosition = startIdx * segWidth;
 
-        console.log('[SEGMENTS SCROLL] segWidth=', segWidth, 'startIdx=', startIdx, 'targetPosition=', targetPosition, 'current scrollLeft=', segs.scrollLeft);
-
         segs.scrollTo({
             left: Math.max(0, targetPosition),
             behavior: 'smooth'
         });
 
         currentEl.classList.add('current');
-        console.log('[SEGMENTS] Added class current to segment', currentIndex);
     } else if (currentEl) {
         // Просто добавляем класс current без скролла
         currentEl.classList.add('current');
-        console.log('[SEGMENTS] Added class current (no scroll) to segment', currentIndex);
     }
 
     // Убираем класс current у остальных
@@ -2081,14 +1742,9 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
     });
 
     // Color segments by results
-    console.log('[SEGMENTS COLOR] === START ===');
-    console.log('[SEGMENTS COLOR] results=', results, 'total=', total, 'currentIndex=', currentIndex);
-    console.log('[SEGMENTS COLOR] segs.children.count=', segs.children.length);
-
     if (results && results.length) {
         // results[i] содержит оценку для карточки с индексом i
         // null означает, что карточка ещё не пройдена
-        let coloredCount = 0;
         for (let idx = 0; idx < results.length && idx < total; idx++) {
             const g = results[idx];
             if (g === null || g === undefined) {
@@ -2097,14 +1753,11 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
             }
             const el = segs.children[idx];
             if (!el) {
-                console.log('[SEGMENTS COLOR] el NOT FOUND for idx=', idx, 'grade=', g);
                 continue;
             }
 
             // Проверяем, является ли этот сегмент текущим
             const isCurrent = (idx === currentIndex);
-            console.log('[SEGMENTS COLOR] idx=', idx, 'grade=', g, 'isCurrent=', isCurrent, 'currentIndex=', currentIndex);
-            console.log('[SEGMENTS COLOR] el.className BEFORE=', el.className);
 
             // Устанавливаем базовый класс + цвет
             el.className = 'learn-progress-segment';
@@ -2116,27 +1769,9 @@ function updateSegments(results, total, currentIndex = 0, autoScroll = true) {
             // Добавляем класс current, если это текущий сегмент
             if (isCurrent) {
                 el.classList.add('current');
-                console.log('[SEGMENTS COLOR] Added .current to idx=', idx);
             }
-
-            console.log('[SEGMENTS COLOR] el.className AFTER=', el.className);
-            console.log('[SEGMENTS COLOR] el.classList=', Array.from(el.classList));
-            coloredCount++;
         }
-        console.log('[SEGMENTS COLOR] Colored', coloredCount, 'segments out of', total);
-    } else {
-        console.log('[SEGMENTS COLOR] NO RESULTS to color');
     }
-    console.log('[SEGMENTS COLOR] === END ===');
-
-    // Финальная отладка
-    console.log('[SEGMENTS] currentIndex:', currentIndex, 'visible:', startIdx, '-', endIdx, 'count:', (endIdx - startIdx + 1), 'autoScroll:', autoScroll);
-
-    // Проверяем все сегменты после покраски
-    console.log('[SEGMENTS FINAL] === ALL SEGMENTS STATE ===');
-    Array.from(segs.children).forEach((el, i) => {
-        console.log('[SEGMENTS FINAL] idx=', i, 'className=', el.className, 'classList=', Array.from(el.classList));
-    });
 }
 
 function wireSegmentsInteractions(sess) {
@@ -2145,7 +1780,6 @@ function wireSegmentsInteractions(sess) {
 
     // Отслеживаем ручной скролл пользователя
     segs.addEventListener('scroll', () => {
-        console.log('[SEGMENTS] user scrolled');
         userScrolled = true;
     }, { passive: true });
 
@@ -2392,28 +2026,16 @@ function wireSegmentsInteractions(sess) {
             e.stopPropagation(); /* Останавливаем всплытие к карточке */
             e.preventDefault();
 
-            console.log('[SEGMENT CLICK] === CLICK START ===');
-            console.log('[SEGMENT CLICK] Clicked on segment', i);
-            console.log('[SEGMENT CLICK] sess.currentIndex BEFORE goTo=', sess.currentIndex);
-            console.log('[SEGMENT CLICK] sess.results BEFORE goTo=', sess.results);
-
             // Переходим к карточке
             sess.goTo(i);
             hidePreview();
-
-            console.log('[SEGMENT CLICK] sess.currentIndex AFTER goTo=', sess.currentIndex);
-            console.log('[SEGMENT CLICK] sess.results AFTER goTo=', sess.results);
 
             // Сбрасываем флаг ручного скролла
             userScrolled = false;
 
             // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
             // sess.results - это уже массив чисел (оценок)
-            console.log('[SEGMENT CLICK] Calling updateSegments with results=', sess.results);
             updateSegments(sess.results, sess.queue.length, i, true);
-
-            console.log('[SEGMENT CLICK] === CLICK END ===');
-            console.log('[SEGMENT CLICK] Done');
         });
         seg.addEventListener('mouseenter', () => showPreview(i, seg));
         seg.addEventListener('mouseleave', hidePreview);
@@ -2435,7 +2057,6 @@ function wireSegmentsInteractions(sess) {
 
                 // Вызываем updateSegments с autoScroll=true для возврата к 3-1-2
                 // sess.results - это уже массив чисел (оценок)
-                console.log('[SEGMENT TOUCHEND] sess.results=', sess.results);
                 updateSegments(sess.results, sess.queue.length, i, true);
             }
         });
@@ -2445,7 +2066,6 @@ function wireSegmentsInteractions(sess) {
 }
 
 function showStats(stats, results, total) {
-    console.log('[MODAL.TEMPLATE] === CREATING MODAL ===');
 
     // Update segments one last time to show the final card's result
     if (results && total && session) {
@@ -2499,51 +2119,34 @@ function showStats(stats, results, total) {
                 </div>
             </div>
         `;
-        console.log('[MODAL.TEMPLATE] New template created with .stats-grid and .stat-item');
         container.appendChild(overlay);
 
         // Кнопка "Статистика" - переход на страницу статистики
         overlay.querySelector('#sum-exit').addEventListener('click', () => {
-            console.log('========================================');
-            console.log('[STATS BUTTON] ========== STATS BUTTON CLICKED ==========');
-            console.log('[STATS BUTTON] Timestamp:', new Date().toISOString());
-            console.log('[STATS BUTTON] currentScheduler:', currentScheduler);
-            console.log('[STATS BUTTON] document.body.classList:', document.body.classList.toString());
-
-            // ПРИНУДИТЕЛЬНО завершаем сессию обучения
+            // Принудительно завершаем сессию обучения
             if (currentScheduler) {
                 currentScheduler = null;
-                console.log('[STATS BUTTON] Cleared currentScheduler');
             }
 
-            // ПРИНУДИТЕЛЬНО убираем класс learning-mode
+            // Принудительно убираем класс learning-mode
             document.body.classList.remove('learning-mode');
-            console.log('[STATS BUTTON] Removed learning-mode');
 
-            // ПРИНУДИТЕЛЬНО показываем навигацию
+            // Принудительно показываем навигацию
             const bottomNav = document.getElementById('bottom-nav');
             if (bottomNav) {
                 bottomNav.style.display = 'flex';
-                console.log('[STATS BUTTON] Showed bottomNav');
             }
 
-            // ПРИНУДИТЕЛЬНО скрываем контейнер обучения
+            // Принудительно скрываем контейнер обучения
             const learnContainer = document.getElementById('learn-container');
             if (learnContainer) {
                 learnContainer.style.display = 'none';
-                console.log('[STATS BUTTON] Hid learn-container');
             }
 
             // Закрываем модалку
             overlay.remove();
-            console.log('[STATS BUTTON] Removed overlay');
-
-            // ИСПРАВЛЕНИЕ: Вызываем initStatsPage() напрямую, а не через hashchange
-            // Потому что если hash уже #/stats, событие hashchange не сработает
-            console.log('[STATS BUTTON] Calling initStatsPage() directly...');
 
             // Показываем placeholder ДО загрузки модуля
-            console.log('[STATS BUTTON] Creating loading placeholder...');
             const skeletonPlaceholder = document.createElement('div');
             skeletonPlaceholder.id = 'stats-skeleton-placeholder';
             skeletonPlaceholder.style.cssText = `
@@ -2562,28 +2165,20 @@ function showStats(stats, results, total) {
                 <div style="color: #8B949E; font-size: 14px;">Загрузка статистики...</div>
             `;
             document.body.appendChild(skeletonPlaceholder);
-            console.log('[STATS BUTTON] Loading placeholder shown');
 
             // Импортируем и вызываем initStatsPage
             import('./stats-ui.js?v=6.24.0').then(({ initStatsPage }) => {
-                console.log('[STATS BUTTON] Stats module loaded, calling initStatsPage...');
                 initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
                 skeletonPlaceholder.remove();
             });
-
-            console.log('[STATS BUTTON] ========== END STATS BUTTON ==========');
-            console.log('========================================');
         });
 
         // Кнопка "Продолжить" - следующий круг обучения
         overlay.querySelector('#sum-continue').addEventListener('click', () => {
-            console.log('[CONTINUE BTN] Clicked!');
-            console.log('[CONTINUE BTN] __lastCandidates:', window.__lastCandidates ? 'EXISTS' : 'null');
             overlay.classList.remove('show');
             if (window.__lastCandidates) {
-                console.log('[CONTINUE BTN] Starting session with __lastCandidates');
                 startLearnSession(window.__lastCandidates);
             }
         });
@@ -2619,18 +2214,14 @@ function showStats(stats, results, total) {
     overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
     // Завершаем сессию обучения
-    console.log('[showStats] Ending learning session...');
     if (currentScheduler) {
         currentScheduler = null;
-        console.log('[showStats] Cleared currentScheduler');
     }
 
     // Убираем класс learning-mode
     document.body.classList.remove('learning-mode');
     const bottomNav = document.getElementById('bottom-nav');
     if (bottomNav) bottomNav.style.display = 'flex';
-
-    console.log('[showStats] Removed learning-mode, showed bottomNav');
 
     // Motivational Message Logic (Expert Psychology)
     let motivation = 'Продолжайте в том же духе!';
@@ -2689,13 +2280,9 @@ function showStats(stats, results, total) {
     syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
     try { window.dispatchEvent(new Event('xpUpdated')); } catch { }
 
-    console.log('[MODAL.ANIM] === START ANIMATION ===');
-    console.log('[MODAL.ANIM] startXP:', session.startXP, 'earned:', earned, 'bonus:', bonus);
-
     // Level info on top
     import('./stats-utils.js?v=3').then(({ getCurrentLevel }) => {
         const lvl = getCurrentLevel();
-        console.log('[MODAL.ANIM] Current level:', lvl.level, 'XP:', lvl.xp);
 
         overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
@@ -2704,25 +2291,17 @@ function showStats(stats, results, total) {
         const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
         const bonus = Math.min(100, (st.current || 0) * 5);
 
-        console.log('[MODAL.ANIM] startXP:', startXP, 'earned:', earned, 'bonus:', bonus);
-
         // Определяем, было ли повышение уровня
         const startLevel = getLevelFromXP(startXP);
         const endLevel = lvl.level;
         const leveledUp = endLevel > startLevel;
-
-        console.log('[MODAL.ANIM] startLevel:', startLevel, 'endLevel:', endLevel, 'leveledUp:', leveledUp);
 
         const bar = overlay.querySelector('.level-progress-bar');
         const oldEl = bar.querySelector('.level-progress-fill-old');
         const earnEl = bar.querySelector('.level-progress-fill-earned');
         const bonusEl = bar.querySelector('.level-progress-fill-bonus');
 
-        console.log('[MODAL.ANIM] Elements found:', { bar: !!bar, oldEl: !!oldEl, earnEl: !!earnEl, bonusEl: !!bonusEl });
-
         if (leveledUp) {
-            console.log('[MODAL.ANIM] === LEVEL UP ANIMATION ===');
-
             // 1. Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
@@ -2733,31 +2312,24 @@ function showStats(stats, results, total) {
             earnEl.style.left = '100%';
             bonusEl.style.left = '100%';
 
-            console.log('[MODAL.ANIM] Step 1: Set to 100% (transition: none)');
-
             // 2. Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
-                console.log('[MODAL.ANIM] Step 2: Enable transition');
 
                 // 3. Вспышка уровня
                 const levelEl = overlay.querySelector('#sum-level');
                 levelEl.classList.add('flash');
                 levelEl.textContent = `LV:${endLevel}!`;
-                console.log('[MODAL.ANIM] Step 3: Flash level');
 
                 setTimeout(() => {
                     levelEl.classList.remove('flash');
                     levelEl.textContent = `LV:${endLevel} • ${lvl.xp} XP`;
-                    console.log('[MODAL.ANIM] Step 4: Remove flash');
 
                     // 4. Быстрое сжатие (200ms)
                     oldEl.style.transition = 'width 0.2s ease';
                     oldEl.style.width = '0%';
-                    console.log('[MODAL.ANIM] Step 5: Shrink old (200ms)');
 
                     setTimeout(() => {
-                        console.log('[MODAL.ANIM] Step 6: Fill new level (1.5s)');
                         // 5. Заполнение нового уровня (1.5s)
                         earnEl.style.transition = 'width 1.5s ease';
                         bonusEl.style.transition = 'width 1.5s ease';
@@ -2769,8 +2341,6 @@ function showStats(stats, results, total) {
                         const earnedPct = totalForLevel > 0 ? (earnedInLevel / totalForLevel) * 100 : 0;
                         const bonusPct = totalForLevel > 0 ? (bonus / totalForLevel) * 100 : 0;
 
-                        console.log('[MODAL.ANIM] earnedPct:', earnedPct, 'bonusPct:', bonusPct);
-
                         earnEl.style.width = `${Math.min(100, earnedPct)}%`;
                         bonusEl.style.width = `${Math.min(100, bonusPct)}%`;
                     }, 200);
@@ -2778,8 +2348,6 @@ function showStats(stats, results, total) {
             }, 50);
 
         } else {
-            console.log('[MODAL.ANIM] === NORMAL ANIMATION (no level up) ===');
-
             // Отключаем transition для мгновенной установки
             oldEl.style.transition = 'none';
             earnEl.style.transition = 'none';
@@ -2796,22 +2364,16 @@ function showStats(stats, results, total) {
             bonusEl.style.left = `${startPct * 100}%`;
             bonusEl.style.width = '0%';
 
-            console.log('[MODAL.ANIM] Step 1: Set startPct:', startPct * 100);
-
             // Включаем transition и запускаем анимацию
             setTimeout(() => {
                 oldEl.style.transition = 'width 0.5s ease';
-                console.log('[MODAL.ANIM] Step 2: Enable transition');
 
                 setTimeout(() => {
-                    console.log('[MODAL.ANIM] Step 3: Fill earned + bonus (1.5s)');
                     earnEl.style.transition = 'width 1.5s ease';
                     bonusEl.style.transition = 'width 1.5s ease';
 
                     const earnedPct = Math.max(0, pct(startXP + earned) - startPct) * 100;
                     const bonusPct = Math.max(0, pct(startXP + earned + bonus) - pct(startXP + earned)) * 100;
-
-                    console.log('[MODAL.ANIM] earnedPct:', earnedPct, 'bonusPct:', bonusPct);
 
                     earnEl.style.width = `${earnedPct}%`;
                     bonusEl.style.width = `${bonusPct}%`;
@@ -2824,7 +2386,6 @@ function showStats(stats, results, total) {
 
     // Animate overlay and stats
     overlay.classList.add('show');
-    console.log('[MODAL.ANIM] Overlay show class added');
 
     // Show all stats immediately (without staggered delay)
     const totalEl = overlay.querySelector('#stat-total');
@@ -2834,27 +2395,16 @@ function showStats(stats, results, total) {
     const xpEl = overlay.querySelector('#sum-xp');
     const actions = overlay.querySelector('.summary-actions');
 
-    console.log('[MODAL.ANIM] Elements found:', {
-        total: !!totalEl,
-        accuracy: !!accWrap,
-        streak: !!streakWrap,
-        motivation: !!motEl,
-        xp: !!xpEl,
-        actions: !!actions
-    });
-
     // Apply animations simultaneously
     if (totalEl) {
         totalEl.style.display = '';
         totalEl.classList.add('fade-in');
-        console.log('[MODAL.ANIM] totalEl fade-in added');
         // Animate numbers counting up
         animateValue(totalEl.querySelector('.stat-value'), 0, parseInt(totalEl.querySelector('.stat-value').textContent) || 0, 1000);
     }
     if (accWrap) {
         accWrap.style.display = '';
         accWrap.classList.add('fade-in');
-        console.log('[MODAL.ANIM] accWrap fade-in added');
         // Animate accuracy percentage
         const accValue = accWrap.querySelector('.stat-value');
         const accNum = parseInt(accValue.textContent) || 0;
@@ -2863,7 +2413,6 @@ function showStats(stats, results, total) {
     if (streakWrap) {
         streakWrap.style.display = '';
         streakWrap.classList.add('fade-in');
-        console.log('[MODAL.ANIM] streakWrap fade-in added');
         // Animate streak number
         animateValue(streakWrap.querySelector('.stat-value'), 0, parseInt(streakWrap.querySelector('.stat-value').textContent) || 0, 1000);
     }
@@ -2872,17 +2421,14 @@ function showStats(stats, results, total) {
     if (motEl) {
         motEl.style.display = '';
         motEl.classList.add('fade-in');
-        console.log('[MODAL.ANIM] motEl fade-in added');
     }
     if (xpEl) {
         xpEl.style.display = '';
         xpEl.classList.add('fade-in');
-        console.log('[MODAL.ANIM] xpEl fade-in added');
     }
     if (actions) {
         actions.style.display = '';
         actions.classList.add('fade-in');
-        console.log('[MODAL.ANIM] actions fade-in added');
     }
 }
 
@@ -2939,7 +2485,6 @@ function updateTimerDisplay() {
  * Toggle timer pause/resume
  */
 function toggleTimerPause() {
-    console.log('[TIMER] toggleTimerPause called, timerPaused BEFORE:', timerPaused);
     const pauseBtn = document.getElementById('timer-pause-btn');
     const timerControls = document.getElementById('timer-controls');
 
@@ -2950,17 +2495,14 @@ function toggleTimerPause() {
 
     if (timerPaused) {
         // RESUME: продолжаем отсчёт
-        console.log('[TIMER] ▶️ RESUMING timer');
-
         // Проверяем, нет ли уже активного интервала
         if (timerInterval) {
-            console.log('[TIMER] ⚠️ timerInterval already exists (ID=' + timerInterval + '), skipping restart');
+            // timerInterval already exists, skipping restart
         } else {
             sessionTimerStart = Date.now();
 
             // Запускаем интервал
             timerInterval = setInterval(updateTimerDisplay, 1000);
-            console.log('[TIMER] ✅ timerInterval restarted, ID=' + timerInterval);
             updateTimerDisplay();
         }
 
@@ -2971,19 +2513,15 @@ function toggleTimerPause() {
         if (timerControls) timerControls.title = 'Нажмите для паузы таймера';
     } else {
         // PAUSE: сохраняем накопленное время
-        console.log('[TIMER] ⏸️ PAUSING timer');
         const now = Date.now();
         const startTime = sessionTimerStart;
         const elapsed = Math.floor((now - startTime) / 1000);
         pausedTimeRemaining += elapsed;
-        console.log('[TIMER] elapsed:', elapsed, 'seconds, pausedTimeRemaining:', pausedTimeRemaining);
 
         // Останавливаем интервал
         if (timerInterval) {
-            console.log('[TIMER] ⏹️ Clearing timerInterval (ID=' + timerInterval + ')');
             clearInterval(timerInterval);
             timerInterval = null;
-            console.log('[TIMER] ✅ timerInterval cleared');
         }
 
         // Визуально: иконка паузы, мятное свечение
@@ -2994,7 +2532,6 @@ function toggleTimerPause() {
     }
 
     timerPaused = !timerPaused;
-    console.log('[TIMER] timerPaused AFTER:', timerPaused);
 }
 
 // Глобальные переменные для обработчиков таймера
@@ -3104,10 +2641,9 @@ function setupTimerControls() {
             if (!wasManuallyPausedByUser && timerPaused && autoPaused) {
                 // Проверяем, нет ли уже активного интервала
                 if (timerInterval) {
-                    console.log('[TIMER] visibilitychange: timerInterval already exists, skipping');
+                    // timerInterval already exists, skipping
                 } else {
                     // RESUME: продолжаем отсчёт
-                    console.log('[TIMER] visibilitychange: resuming timer');
                     sessionTimerStart = Date.now();
 
                     // Запускаем интервал
@@ -3250,5 +2786,3 @@ window.debugSegments = () => {
     });
     console.log('   Индексы видимых:', visibleIndices);
 };
-
-console.log('[LEARN-UI] debugSegments loaded. Run window.debugSegments() in console');

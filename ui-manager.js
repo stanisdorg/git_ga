@@ -6,14 +6,12 @@ import { initStatsPage, hideStatsPage } from './srs/stats-ui.js';
 import { loadFromServer } from './srs/storage.js';
 import { initSyncIndicator } from './srs/sync-ui.js';
 
-export const APP_VERSION = '6.43.0';
+export const APP_VERSION = '6.44.0';
 
 let uiInitialized = false;
 
 // Функция для инициализации UI
 export function initUI() {
-    console.log('initUI called');
-
     // Скрываем строку поиска СРАЗУ если это страница статистики
     const isStats = location.hash && location.hash.includes('stats');
     if (isStats) {
