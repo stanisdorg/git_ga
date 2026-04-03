@@ -1,0 +1,80 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - heading [level=2]
+      - generic "Режимы" [ref=e5]:
+        - button "История" [ref=e6] [cursor=pointer]:
+          - img [ref=e7]
+        - button "Transcription" [ref=e10] [cursor=pointer]:
+          - img [ref=e11]
+        - link "Логи сервера" [ref=e14] [cursor=pointer]:
+          - /url: /logs.html
+          - img [ref=e15]
+      - button "Свернуть историю" [expanded] [ref=e18] [cursor=pointer]:
+        - img [ref=e19]
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - button "Выйти" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+          - button "Статистика" [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+          - button "Начать обучение" [active] [ref=e34] [cursor=pointer]:
+            - img [ref=e35]
+          - generic [ref=e37]:
+            - generic [ref=e38]: autotest_user
+            - generic "Уровни и XP" [ref=e39] [cursor=pointer]:
+              - generic [ref=e40]: LV:1
+              - generic [ref=e41]:
+                - generic: 225/625
+          - generic [ref=e43]: v6.42.0
+        - generic [ref=e44]:
+          - generic [ref=e45] [cursor=pointer]: Все вопросы
+          - generic [ref=e46] [cursor=pointer]: ★
+      - generic [ref=e48]:
+        - button "Сбросить поиск (Ctrl+Я)" [ref=e49] [cursor=pointer]:
+          - img [ref=e50]
+        - textbox "Введите запрос или нажмите на микрофон (Alt+M)..." [ref=e52]
+        - button "Активировать микрофон" [ref=e53] [cursor=pointer]:
+          - img [ref=e54]
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - paragraph [ref=e57]: "Всего карточек: 0"
+          - 'button "Сортировка: По умолчанию" [ref=e58] [cursor=pointer]':
+            - img [ref=e59]
+        - generic [ref=e63]: Список вопросов пуст
+  - generic [ref=e64]:
+    - generic [ref=e65]:
+      - heading "Фильтры" [level=3] [ref=e66]
+      - button [ref=e67] [cursor=pointer]:
+        - img [ref=e68]
+    - generic [ref=e71]:
+      - generic [ref=e72]:
+        - generic [ref=e73]: Статус
+        - generic [ref=e74]:
+          - button "Новые" [ref=e75] [cursor=pointer]
+          - button "Изучаются" [ref=e76] [cursor=pointer]
+          - button "Повторение" [ref=e77] [cursor=pointer]
+      - generic [ref=e78]:
+        - generic [ref=e79]: Сложность
+        - generic [ref=e80]:
+          - button "Легко" [ref=e81] [cursor=pointer]
+          - button "Средне" [ref=e82] [cursor=pointer]
+          - button "Сложно" [ref=e83] [cursor=pointer]
+    - generic [ref=e84]:
+      - button "Сбросить" [ref=e85] [cursor=pointer]
+      - button "Применить" [ref=e86] [cursor=pointer]
+  - generic [ref=e87]:
+    - generic [ref=e88]:
+      - img [ref=e89]
+      - text: Включить уведомления?
+    - paragraph [ref=e92]: Получайте уведомления о новых функциях и обновлениях приложения.
+    - generic [ref=e93]:
+      - button "Позже" [ref=e94] [cursor=pointer]
+      - button "Разрешить" [ref=e95] [cursor=pointer]
+  - generic "Статус синхронизации" [ref=e96]:
+    - img [ref=e97]
+```
