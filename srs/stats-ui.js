@@ -2664,6 +2664,15 @@ function renderStats() {
     planMins = Math.ceil(totalSec / 60); // конвертируем в минуты
   } catch { }
 
+  // Рандомные сообщения когда всё пройдено
+  const doneMessages = [
+    '✅ Всё пройдено! Следующая сессия завтра',
+    '✅ На сегодня всё! Возвращайтесь завтра',
+    '✅ План выполнен! До завтра!',
+    '✅ Отличная работа! На сегодня всё'
+  ];
+  const doneMessage = doneMessages[Math.floor(Math.random() * doneMessages.length)];
+
   const totalCards = uniqueQaData ? uniqueQaData.length : 0;
   const studiedCards = metrics.studiedCount || 0;
   const remainingCards = Math.max(0, totalCards - studiedCards);
@@ -2799,10 +2808,14 @@ function renderStats() {
             <div class="metric"><span>⚡</span> ${easyCount}</div>
             <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
           </div>
+          ${sessionCount > 0 ? `
           <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${sessionCount} карточек • ~${planMins} мин">
             <span style="display:flex;align-items:center;line-height:1;"><svg viewBox="0 0 24 24" fill="#000" style="width:16px;height:16px;margin-right:6px;"><path d="M8 5v14l11-7z"/></svg>Обучение</span>
             <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${sessionCount} карт • ~${planMins} мин</span>
-          </button>
+          </button>` : `
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;white-space:nowrap;opacity:0.8;cursor:default;" title="Все карточки на сегодня пройдены">
+            <span style="display:flex;align-items:center;line-height:1;">${doneMessage}</span>
+          </button>`}
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
@@ -2822,7 +2835,9 @@ function renderStats() {
         </div>
 
         <!-- Кнопка продолжить на всю ширину (мобильная версия) -->
-        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> карточек • ~${planMins} мин</div></div></button>
+        ${sessionCount > 0 ? `
+        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> карточек • ~${planMins} мин</div></div></button>` : `
+        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.8;cursor:default;"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="font-size:15px;font-weight:700;">${doneMessage}</div></div></button>`}
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
