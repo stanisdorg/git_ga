@@ -2655,14 +2655,17 @@ function renderStats() {
   let planMins = 0;
   let sessionCount = 0;
   let todaysSession = [];
-  try {
-    todaysSession = getTodaysSession(uniqueQaData || []);
-    sessionCount = todaysSession.length;
-    // Расчёт времени на основе среднего времени прохождения последних 40 карточек
-    const avgSecPerCard = getAverageCardTime(40); // секунды на карточку
-    const totalSec = sessionCount * avgSecPerCard;
-    planMins = Math.ceil(totalSec / 60); // конвертируем в минуты
-  } catch { }
+  const dataLoaded = uniqueQaData && uniqueQaData.length > 0;
+  if (dataLoaded) {
+    try {
+      todaysSession = getTodaysSession(uniqueQaData);
+      sessionCount = todaysSession.length;
+      // Расчёт времени на основе среднего времени прохождения последних 40 карточек
+      const avgSecPerCard = getAverageCardTime(40); // секунды на карточку
+      const totalSec = sessionCount * avgSecPerCard;
+      planMins = Math.ceil(totalSec / 60); // конвертируем в минуты
+    } catch { }
+  }
 
   // Рандомные сообщения когда всё пройдено
   const doneMessages = [
@@ -2672,7 +2675,7 @@ function renderStats() {
     'Отличная работа! На сегодня всё'
   ];
   const doneMessage = doneMessages[Math.floor(Math.random() * doneMessages.length)];
-  const doneIcon = `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;flex-shrink:0;"><circle cx="12" cy="12" r="11" fill="#06D6A0" opacity="0.15"/><circle cx="12" cy="12" r="9" fill="#06D6A0" opacity="0.25"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#06D6A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const doneIcon = `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;flex-shrink:0;"><rect x="2" y="2" width="20" height="20" rx="5" fill="#06D6A0"/><path d="M7 12.5l3.5 3.5L17 9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
   const totalCards = uniqueQaData ? uniqueQaData.length : 0;
   const studiedCards = metrics.studiedCount || 0;
@@ -2809,7 +2812,10 @@ function renderStats() {
             <div class="metric"><span>⚡</span> ${easyCount}</div>
             <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
           </div>
-          ${sessionCount > 0 ? `
+          ${!dataLoaded ? `
+          <button class="st-cta-btn" id="st-continue-top-btn" style="margin-left:12px;padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;white-space:nowrap;opacity:0.5;cursor:wait;" disabled>
+            <span style="display:flex;align-items:center;line-height:1;">Загрузка...</span>
+          </button>` : sessionCount > 0 ? `
           <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${sessionCount} карточек • ~${planMins} мин">
             <span style="display:flex;align-items:center;line-height:1;"><svg viewBox="0 0 24 24" fill="#000" style="width:16px;height:16px;margin-right:6px;"><path d="M8 5v14l11-7z"/></svg>Обучение</span>
             <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${sessionCount} карт • ~${planMins} мин</span>
@@ -2837,7 +2843,8 @@ function renderStats() {
         </div>
 
         <!-- Кнопка продолжить на всю ширину (мобильная версия) -->
-        ${sessionCount > 0 ? `
+        ${!dataLoaded ? `
+        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.5;cursor:wait;" disabled><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="font-size:15px;font-weight:700;">Загрузка...</div></div></button>` : sessionCount > 0 ? `
         <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> карточек • ~${planMins} мин</div></div></button>` : `
         <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.8;cursor:default;"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;">${doneIcon}<div style="font-size:15px;font-weight:700;">${doneMessage}</div></div></button>`}
 
