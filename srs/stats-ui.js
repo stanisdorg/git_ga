@@ -290,7 +290,7 @@ const STATS_STYLES = `
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 16px;
-  padding: 16px 16px 12px;
+  padding: 8px 0 4px;
   grid-column: span 8;
   height: 320px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -303,22 +303,40 @@ const STATS_STYLES = `
 .activity-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 16px;
   margin-bottom: 8px;
   padding-right: 40px; /* Место для кнопки развёртывания */
 }
-.period-switch { display: flex; gap: 12px; font-size: 12px; color: var(--st-muted); }
-.period-switch .active { color: #fff; font-weight: 600; }
-.month-switch { font-size: 12px; color: var(--st-text-sec); }
-.chart-wrapper { display: block; height: calc(100% - 8px); position: relative; }
+.period-switch { display: flex; gap: 6px; font-size: 12px; color: var(--st-muted); margin-left: 20px; }
+.period-switch > div {
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 1px solid transparent;
+}
+.period-switch > div:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+}
+.period-switch .active {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.2);
+}
+.month-switch { font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 400; letter-spacing: 0.02em; margin-left: auto; margin-right: 10px; }
+.chart-wrapper { display: block; height: 270px; position: relative; }
 .chart { width: 100%; height: 100%; overflow: visible; }
 .chart-label { font-size: 11px; opacity: 0.45; fill: var(--st-text); }
 .bar-xp { display: none; }
 .bar-hearts { opacity: 1; }
 .bar-cards { opacity: 0.9; stroke: none; }
 .chart-grid-line { stroke: rgba(255,255,255,0.06); stroke-width: 1; }
-.tooltip { position: absolute; width: 160px; padding: 8px 10px; font-size: 12px; border-radius: 8px; background: var(--st-surf-h); color: var(--st-text); border: 1px solid var(--st-border); display: none; pointer-events: none; z-index: 3000; }
-.tooltip .tip-arrow { position: absolute; bottom: -6px; left: calc(50% - 6px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid var(--st-surf-h); }
+.tooltip { position: absolute; width: 160px; padding: 8px 10px; font-size: 12px; border-radius: 8px; background: rgba(37, 37, 43, 0.05); color: var(--st-text); border: 1px solid rgba(255,255,255,0.05); display: none; pointer-events: none; z-index: 3000; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+.tooltip .tip-arrow { position: absolute; top: -6px; left: calc(50% - 6px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid var(--st-surf-h); }
 
 /* Кнопка развёртывания графика */
 .st-expand-btn {
@@ -868,7 +886,7 @@ const STATS_STYLES = `
 .st-wrapper {
   max-width: 600px; /* Mobile-first constraint */
   margin: 0 auto;
-  padding: 0 16px 120px; /* Нижний отступ для достижений (возвращено к 120px для предотвращения обрезки контента) */
+  padding: 0 4px 120px; /* Нижний отступ для достижений, боковые минимальные */
   display: flex;
   flex-direction: column;
   gap: 24px; /* Увеличено с 20px до 24px для отступов между блоками */
@@ -1979,7 +1997,7 @@ const STATS_STYLES = `
   @media (max-width: 768px) {
     .st-activity-section {
       min-height: 240px;
-      aspect-ratio: 16/9;
+      height: 280px;
     }
   }
   .st-xp-tabs { background: none; padding: 0; margin-bottom: 12px; display: flex; gap: 16px; }
@@ -2336,32 +2354,21 @@ export function initStatsPage(appVersion) {
   // Создаём контейнер статистики если не существует
   let statsContainerEl = document.getElementById('stats-container');
   if (!statsContainerEl) {
-    /* DEBUG
-    console.log('[STATS INIT] Creating stats-container...');
-    */
     statsContainerEl = document.createElement('div');
     statsContainerEl.id = 'stats-container';
 
     const appWrapper = document.querySelector('.app-wrapper') || document.body;
     appWrapper.appendChild(statsContainerEl);
-
-    const styleEl = document.createElement('style');
-    styleEl.setAttribute('data-stats-style', 'true');
-    styleEl.textContent = SKELETON_STYLES + STATS_STYLES;
-    document.head.appendChild(styleEl);
-
-    /* DEBUG
-    console.log('[STATS INIT] Style element created:', styleEl);
-    console.log('[STATS INIT] Style length:', (SKELETON_STYLES + STATS_STYLES).length);
-    console.log('[STATS INIT] Contains .st-block-2 .modes-grid:', STATS_STYLES.includes('.st-block-2 .modes-grid'));
-
-    console.log('[STATS INIT] stats-container created');
-    */
-  } else {
-    /* DEBUG
-    console.log('[STATS INIT] stats-container already exists');
-    */
   }
+
+  // Всегда обновляем стили (даже если контейнер уже есть)
+  let styleEl = document.querySelector('style[data-stats-style="true"]');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.setAttribute('data-stats-style', 'true');
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = SKELETON_STYLES + STATS_STYLES;
 
   // Показываем скелетон-лоадер
   showSkeletonLoader();
@@ -2640,7 +2647,7 @@ function renderStats() {
     }
   } catch (e) { /* DEBUG */ console.log('[USERNAME] error:', e); /* */ }
   const usernameDisplay = username ? username : '';
-  const usernameStyle = username ? 'position:absolute;top:0;left:210px;font-size:10px;color:var(--st-muted);text-align:center;font-weight:500;margin:0;padding:0 8px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:10;pointer-events:none;' : 'display:none!important;';
+  const usernameStyle = username ? 'position:absolute;top:0;left:210px;font-size:10px;color:#06D6A0;text-align:center;font-weight:500;margin:0;padding:0 8px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:10;pointer-events:none;' : 'display:none!important;';
   let planMins = 0;
   let sessionCount = 0;
   let todaysSession = [];
@@ -3653,10 +3660,11 @@ function renderStats() {
     const maxVal = currentXpMode === 'week' ? rawMax * 1.2
       : currentXpMode === 'month' ? rawMax * 1.15
         : rawMax * 1.2;
-    const h = chartEl.clientHeight || 280;
+    // Фиксированная высота графика для всех режимов (согласована с CSS .chart-wrapper)
+    const h = 270;
     const bottomPad = 16;
     const topPad = 20;
-    const leftMargin = 40;
+    const leftMargin = 28;
     const innerH = h - bottomPad - topPad;
     const ticks = currentXpMode === 'week'
       ? [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal]
@@ -3669,18 +3677,22 @@ function renderStats() {
     const mName = monthNames[now.getMonth()] + ' ' + now.getFullYear();
     monthLabel.textContent = mName;
     const cfg = currentXpMode === 'week' ? { bar: 18, gap: 8, count: 14, labelStep: 2 }
-      : currentXpMode === 'month' ? { bar: 12, gap: 6, count: data.length, labelStep: 4 }
-        : { bar: 28, gap: 16, count: 12, labelStep: 1 };
+      : currentXpMode === 'month' ? { bar: 12, gap: 6, count: data.length, labelStep: 2 }
+        : { bar: 28, gap: 16, count: 12, labelStep: 2 };
     const width = chartEl.clientWidth || 600;
-    const wideBarW = 14;
-    const narrowBarW = 8;
-    const innerGap = 0;
+    // Динамически рассчитываем ширину баров, чтобы все помещались
+    const availableWidth = width - leftMargin - 4; // минимальный запас справа
+    const maxGroupW = Math.floor(availableWidth / cfg.count);
+    const wideBarW = Math.max(3, Math.min(14, maxGroupW - 2)); // минимум 3px, максимум 14px
+    const narrowBarW = Math.max(1, Math.round(wideBarW * 0.4));
     const groupW = wideBarW;
-    const colsW = cfg.count * groupW + (cfg.count - 1) * cfg.gap + leftMargin;
-    chartEl.setAttribute('viewBox', `0 0 ${Math.max(width, colsW)} ${h}`);
+    const dynamicGap = Math.max(1, maxGroupW - wideBarW);
+    const colsW = width; // viewBox всегда равен ширине контейнера
+    chartEl.setAttribute('viewBox', `0 0 ${colsW} ${h}`);
+    chartEl.removeAttribute('preserveAspectRatio');
     const grid = ticks.map(t => {
       const y = (innerH / maxVal) * t;
-      return `<line class="chart-grid-line" x1="${leftMargin}" y1="${topPad + (innerH - y)}" x2="${Math.max(width, colsW)}" y2="${topPad + (innerH - y)}"/>`;
+      return `<line class="chart-grid-line" x1="${leftMargin}" y1="${topPad + (innerH - y)}" x2="${colsW}" y2="${topPad + (innerH - y)}"/>`;
     }).join('');
     const yLabels = ticks.map(t => {
       const y = (innerH / maxVal) * t;
@@ -3699,7 +3711,7 @@ function renderStats() {
     const minBarH = 4;
     const zeroBarH = 1;
     data.forEach((d, idx) => {
-      const labelOk = currentXpMode === 'year' ? true : (idx % cfg.labelStep === 0);
+      const labelOk = idx % cfg.labelStep === 0;
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
       const rWide = Math.round(wideBarW / 2);
@@ -3737,33 +3749,118 @@ function renderStats() {
       if (labelOk) {
         bars.push(`<text class="chart-label" x="${x + groupW / 2}" y="${h - 4}" text-anchor="middle">${d.label}</text>`);
       }
-      x += groupW + cfg.gap;
+      x += groupW + dynamicGap;
     });
-    chartEl.innerHTML = `<defs>${defs.join('')}</defs>${grid}${yLabels}${bars.join('')}`;
+    // Прозрачный overlay для отслеживания мыши по всей области графика
+    bars.push(`<rect class="chart-overlay" x="${leftMargin}" y="${topPad}" width="${colsW - leftMargin}" height="${innerH}" fill="transparent" style="cursor:default"/>`);
+    defs.push(`<linearGradient id="ghost-grad" gradientUnits="userSpaceOnUse" x1="0" y1="${topPad + innerH}" x2="0" y2="${topPad}"><stop offset="0%" stop-color="rgba(255,255,255,0.12)"/><stop offset="100%" stop-color="rgba(255,255,255,0.06)"/></linearGradient>`);
+    const ghostRx = Math.round(wideBarW / 2);
+    const ghostBarSVG = `<path class="ghost-bar" d="M 0 ${topPad + innerH} L 0 ${topPad + ghostRx} Q 0 ${topPad} ${ghostRx} ${topPad} L ${wideBarW - ghostRx} ${topPad} Q ${wideBarW} ${topPad} ${wideBarW} ${topPad + ghostRx} L ${wideBarW} ${topPad + innerH} Z" fill="url(#ghost-grad)" opacity="0" style="pointer-events:none;"/>`;
+    chartEl.innerHTML = `<defs>${defs.join('')}</defs>${grid}${yLabels}${bars.join('')}${ghostBarSVG}`;
+
     let tip = document.querySelector('.tooltip');
     if (!tip) {
       tip = document.createElement('div');
       tip.className = 'tooltip';
       document.body.appendChild(tip);
     }
-    const showTip = (ev, tgt) => {
-      const date = tgt.getAttribute('data-date');
-      const hearts = tgt.getAttribute('data-hearts');
-      const cards = tgt.getAttribute('data-cards');
-      const type = tgt.getAttribute('data-type');
-      const typeLabel = type === 'hearts' ? 'Сердечки (красный)' : 'Карточки (оранжевый)';
-      tip.innerHTML = `<div class="tooltip-date">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>❤️: ${hearts}</div><div>📚: ${cards}</div><div class="tip-arrow"></div>`;
+    const tooltipW = 160;
+    const overlay = chartEl.querySelector('.chart-overlay');
+    const ghostBar = chartEl.querySelector('.ghost-bar');
+
+    // Функции подсветки реальных столбиков
+    let highlightedBars = [];
+    function highlightBars(idx) {
+      clearBarHighlight();
+      const date = data[idx].date;
+      chartEl.querySelectorAll(`[data-date="${date}"]`).forEach(el => {
+        el.style.filter = 'brightness(1.3)';
+        highlightedBars.push(el);
+      });
+    }
+    function clearBarHighlight() {
+      highlightedBars.forEach(el => { el.style.filter = ''; });
+      highlightedBars = [];
+    }
+
+    overlay.addEventListener('mousemove', (e) => {
+      const rect = chartEl.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      // Масштабирование координат из экрана в viewBox
+      const scaleX = colsW / rect.width;
+      const scaleY = innerH / rect.height;
+      const viewBoxX = mouseX * scaleX;
+      const viewBoxY = topPad + mouseY * scaleY;
+      // Определяем индекс дня по X
+      const dayIdx = Math.floor((viewBoxX - leftMargin) / (groupW + dynamicGap));
+      if (dayIdx < 0 || dayIdx >= data.length) { tip.style.display = 'none'; ghostBar.setAttribute('opacity', '0'); clearBarHighlight(); return; }
+      // Проверяем что курсор в зоне столбика (а не в gap между столбиками)
+      const barStartX = leftMargin + dayIdx * (groupW + dynamicGap);
+      const barEndX = barStartX + groupW;
+      if (viewBoxX < barStartX || viewBoxX > barEndX) { tip.style.display = 'none'; ghostBar.setAttribute('opacity', '0'); clearBarHighlight(); return; }
+
+      const d = data[dayIdx];
+      const cardsH = d.cards > 0 ? Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * d.cards)) : 0;
+      const heartsH = d.hearts > 0 ? Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * d.hearts)) : 0;
+      const cardsTopY = topPad + innerH - cardsH;
+      const heartsTopY = topPad + innerH - heartsH;
+      const narrowBarW = Math.round(wideBarW * 0.4);
+      const heartsX = barStartX + Math.round((wideBarW - narrowBarW) / 2);
+
+      // Определяем на какую часть столбика наведен курсор
+      // Призрак показываем всегда когда курсор в X-зоне столбика, а тип — по позиции
+      let typeLabel;
+      const inHeartsX = viewBoxX >= heartsX && viewBoxX <= heartsX + narrowBarW;
+      const inHeartsY = viewBoxY >= heartsTopY && viewBoxY <= topPad + innerH;
+      const inCardsY = viewBoxY >= cardsTopY && viewBoxY <= topPad + innerH;
+
+      if (inHeartsX && inHeartsY && heartsH > 0) {
+        typeLabel = 'Сердечки (красный)';
+      } else if (inCardsY && cardsH > 0) {
+        typeLabel = 'Карточки (оранжевый)';
+      } else if (inHeartsX && heartsH > 0) {
+        // Курсор в X-зоне hearts, но выше/ниже столбика — всё равно показываем
+        typeLabel = 'Сердечки (красный)';
+      } else if (cardsH > 0) {
+        // Курсор в X-зоне cards — показываем карточки
+        typeLabel = 'Карточки (оранжевый)';
+      } else if (heartsH > 0) {
+        typeLabel = 'Сердечки (красный)';
+      } else {
+        // Нулевой столбик — всё равно показываем призрак и тултип
+        typeLabel = 'Нет данных';
+      }
+
+      // Подсвечиваем реальные столбики этого дня
+      highlightBars(dayIdx);
+
+      // Показываем призрачный столбик
+      const gRx = Math.round(wideBarW / 2);
+      const ghostPath = `M ${barStartX} ${topPad + innerH} L ${barStartX} ${topPad + gRx} Q ${barStartX} ${topPad} ${barStartX + gRx} ${topPad} L ${barStartX + wideBarW - gRx} ${topPad} Q ${barStartX + wideBarW} ${topPad} ${barStartX + wideBarW} ${topPad + gRx} L ${barStartX + wideBarW} ${topPad + innerH} Z`;
+      ghostBar.setAttribute('d', ghostPath);
+      ghostBar.setAttribute('opacity', '1');
+
+      tip.innerHTML = `<div class="tooltip-date">${new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })}</div><div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div><div>❤️: ${d.hearts || 0}</div><div>📚: ${d.cards || 0}</div><div class="tip-arrow"></div>`;
       tip.style.display = 'block';
-      const bb = tgt.getBoundingClientRect();
-      tip.style.left = Math.round(bb.left + window.scrollX + (bb.width / 2) + 12) + 'px';
-      tip.style.top = Math.round(bb.top + window.scrollY - 8) + 'px';
-    };
-    const moveTip = () => { };
-    const hideTip = () => { tip.style.display = 'none'; };
+      // Позиционируем рядом с курсором
+      const spaceRight = window.innerWidth - e.clientX;
+      let tipLeft, tipTop;
+      if (spaceRight >= tooltipW + 10) {
+        tipLeft = e.clientX + 10;
+        tip.querySelector('.tip-arrow').style.cssText = 'position:absolute;top:10px;left:-6px;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:6px solid var(--st-surf-h);border-left:none;';
+      } else {
+        tipLeft = e.clientX - tooltipW - 10;
+        tip.querySelector('.tip-arrow').style.cssText = 'position:absolute;top:10px;right:-6px;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:6px solid var(--st-surf-h);border-right:none;';
+      }
+      tipTop = e.clientY - 10;
+      tip.style.left = Math.round(tipLeft) + 'px';
+      tip.style.top = Math.round(tipTop) + 'px';
+    });
+    overlay.addEventListener('mouseleave', () => { tip.style.display = 'none'; ghostBar.setAttribute('opacity', '0'); clearBarHighlight(); });
+    // Убираем pointer-events с баров (overlay перехватывает события)
     chartEl.querySelectorAll('.bar-hearts,.bar-cards').forEach(el => {
-      el.addEventListener('mouseenter', (e) => { showTip(e, e.currentTarget); e.currentTarget.style.filter = 'brightness(1.2)'; });
-      el.addEventListener('mousemove', moveTip);
-      el.addEventListener('mouseleave', (e) => { hideTip(); e.currentTarget.style.filter = ''; });
+      el.style.pointerEvents = 'none';
     });
   }
 }
@@ -4341,9 +4438,9 @@ window.openChartModal = () => {
           <div class="st-modal-title">📈 График активности</div>
           <button class="st-modal-close" onclick="window.closeChartModal()">×</button>
        </div>
-       <div class="st-modal-body" style="padding:24px;height:calc(80vh - 80px);">
-          <div class="activity-card" style="height:100%;width:100%;transform:none;box-shadow:none;">
-            <div class="activity-header">
+       <div class="st-modal-body" style="padding:24px;height:calc(80vh - 80px);display:flex;flex-direction:column;">
+          <div class="activity-card" style="height:100%;width:100%;transform:none;box-shadow:none;display:flex;flex-direction:column;">
+            <div class="activity-header" style="flex-shrink:0;">
               <div class="period-switch">
                 <div class="week-btn" onclick="window.changeModalXpMode('week')">Неделя</div>
                 <div class="month-btn" onclick="window.changeModalXpMode('month')">Месяц</div>
@@ -4351,8 +4448,8 @@ window.openChartModal = () => {
               </div>
               <div class="month-switch"><span id="st-modal-month-label"></span></div>
             </div>
-            <div class="chart-wrapper">
-              <svg class="chart" id="st-modal-activity-chart"></svg>
+            <div class="chart-wrapper" style="flex:1;height:auto;min-height:0;">
+              <svg class="chart" id="st-modal-activity-chart" style="width:100%;height:100%;"></svg>
               <div id="st-modal-tooltip" class="tooltip"></div>
             </div>
           </div>
@@ -4439,125 +4536,210 @@ window.renderModalChart = () => {
     return;
   }
 
-  const width = svg.clientWidth || 800;
-  const height = svg.clientHeight || 400;
-  const padding = { top: 20, right: 30, bottom: 40, left: 50 };
-  const innerWidth = width - padding.left - padding.right;
-  const innerHeight = height - padding.top - padding.bottom;
+  // Небольшая задержка чтобы flex-layout успел примениться
+  requestAnimationFrame(() => {
+    const width = svg.clientWidth || 800;
+    const height = svg.clientHeight || 400;
+    const padding = { top: 20, right: 30, bottom: 40, left: 50 };
+    const innerWidth = width - padding.left - padding.right;
+    const innerHeight = height - padding.top - padding.bottom;
 
-  // Увеличенные параметры (как в оригинале)
-  const cfg = mode === 'week' ? { bar: 28, gap: 8, count: 14, labelStep: 2 }
-    : (mode === 'month' ? { bar: 20, gap: 6, count: data.length, labelStep: 2 }
-      : { bar: 46, gap: 28, count: 12, labelStep: 1 });
+    // Увеличенные параметры (как в оригинале)
+    const cfg = mode === 'week' ? { bar: 28, gap: 8, count: 14, labelStep: 2 }
+      : (mode === 'month' ? { bar: 20, gap: 6, count: data.length, labelStep: 1 }
+        : { bar: 46, gap: 28, count: 12, labelStep: 2 });
 
-  const barWidth = cfg.bar;
-  const gap = mode === 'year' ? cfg.gap : (innerWidth - (cfg.bar * data.length)) / (data.length + 1);
-  const fontSize = 14;
+    const barWidth = cfg.bar;
+    const gap = mode === 'year' ? cfg.gap : (innerWidth - (cfg.bar * data.length)) / (data.length + 1);
+    const fontSize = 14;
 
-  // Находим максимум
-  const maxValue = Math.max(...data.map(d => (d.cards || 0) + (d.hearts || 0)), 1);
+    // Находим максимум
+    const maxValue = Math.max(...data.map(d => (d.cards || 0) + (d.hearts || 0)), 1);
 
-  // Градиенты
-  const toRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
-  const lerp = (a, b, t) => Math.round(a + (b - a) * t);
-  const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
-  const redDark = '#8B0000'; const redBright = '#FF3B3B';
-  const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
+    // Градиенты
+    const toRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
+    const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+    const lerpHex = (h1, h2, t) => { const [r1, g1, b1] = toRgb(h1), [r2, g2, b2] = toRgb(h2); const r = lerp(r1, r2, t).toString(16).padStart(2, '0'); const g = lerp(g1, g2, t).toString(16).padStart(2, '0'); const b = lerp(b1, b2, t).toString(16).padStart(2, '0'); return `#${r}${g}${b}`; };
+    const redDark = '#8B0000'; const redBright = '#FF3B3B';
+    const orangeDark = '#B45309'; const orangeBright = '#FF9F1C';
 
-  // Генерируем SVG
-  let defs = '';
-  let content = '';
-  let bars = '';
+    // Генерируем SVG
+    let defs = '';
+    let content = '';
+    let bars = '';
 
-  // Сетка
-  for (let i = 0; i <= 4; i++) {
-    const y = padding.top + (innerHeight / 4) * i;
-    content += `<line class="chart-grid-line" x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
-    const value = Math.round(maxValue - (maxValue / 4) * i);
-    content += `<text class="chart-label" x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="${fontSize}">${value}</text>`;
-  }
-
-  // Бары
-  const minBarH = 4;
-  const zeroBarH = 1;
-  let x = padding.left + gap;
-  data.forEach((d, idx) => {
-    const cardsVal = d.cards || 0;
-    const heartsVal = d.hearts || 0;
-
-    // Cards (оранжевый, широкий)
-    if (cardsVal > 0) {
-      const cardsH = Math.max(minBarH, (innerHeight / maxValue) * cardsVal);
-      const yCards = padding.top + innerHeight - cardsH;
-      const tCards = Math.max(0, Math.min(1, cardsVal / maxValue));
-      const topOrange = lerpHex(orangeDark, orangeBright, tCards);
-      defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`;
-      const rx = Math.min(Math.round(barWidth / 2), Math.max(1, Math.round(cardsH / 2)));
-      const pathCards = `M ${x} ${padding.top + innerHeight} L ${x} ${yCards + rx} Q ${x} ${yCards} ${x + rx} ${yCards} L ${x + barWidth - rx} ${yCards} Q ${x + barWidth} ${yCards} ${x + barWidth} ${yCards + rx} L ${x + barWidth} ${padding.top + innerHeight} Z`;
-      bars += `<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="0.9"/>`;
-    } else {
-      defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${orangeDark}"/></linearGradient>`;
-      const yZero = padding.top + innerHeight - zeroBarH;
-      bars += `<rect class="bar-cards" x="${x}" y="${yZero}" width="${barWidth}" height="${zeroBarH}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="0" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="0.15"/>`;
+    // Сетка
+    for (let i = 0; i <= 4; i++) {
+      const y = padding.top + (innerHeight / 4) * i;
+      content += `<line class="chart-grid-line" x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
+      const value = Math.round(maxValue - (maxValue / 4) * i);
+      content += `<text class="chart-label" x="${padding.left - 10}" y="${y + 4}" text-anchor="end" font-size="${fontSize}">${value}</text>`;
     }
 
-    // Hearts (красный, узкий, по центру)
-    const narrowBarW = Math.round(barWidth * 0.4);
-    const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
-    if (heartsVal > 0) {
-      const heartsH = Math.max(minBarH, (innerHeight / maxValue) * heartsVal);
-      const yHearts = padding.top + innerHeight - heartsH;
-      const tHearts = Math.max(0, Math.min(1, heartsVal / maxValue));
-      const topRed = lerpHex(redDark, redBright, tHearts);
-      defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`;
-      const rx = Math.min(Math.round(narrowBarW / 2), Math.max(1, Math.round(heartsH / 2)));
-      const pathHearts = `M ${heartsX} ${padding.top + innerHeight} L ${heartsX} ${yHearts + rx} Q ${heartsX} ${yHearts} ${heartsX + rx} ${yHearts} L ${heartsX + narrowBarW - rx} ${yHearts} Q ${heartsX + narrowBarW} ${yHearts} ${heartsX + narrowBarW} ${yHearts + rx} L ${heartsX + narrowBarW} ${padding.top + innerHeight} Z`;
-      bars += `<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-gh${idx})" style="cursor:pointer" opacity="1"/>`;
-    } else {
-      defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${redDark}"/></linearGradient>`;
-      const yZero = padding.top + innerHeight - zeroBarH;
-      bars += `<rect class="bar-hearts" x="${heartsX}" y="${yZero}" width="${narrowBarW}" height="${zeroBarH}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-gh${idx})" style="cursor:pointer" opacity="0.1"/>`;
+    // Бары
+    const minBarH = 4;
+    const zeroBarH = 1;
+    let x = padding.left + gap;
+    data.forEach((d, idx) => {
+      const cardsVal = d.cards || 0;
+      const heartsVal = d.hearts || 0;
+
+      // Cards (оранжевый, широкий)
+      if (cardsVal > 0) {
+        const cardsH = Math.max(minBarH, (innerHeight / maxValue) * cardsVal);
+        const yCards = padding.top + innerHeight - cardsH;
+        const tCards = Math.max(0, Math.min(1, cardsVal / maxValue));
+        const topOrange = lerpHex(orangeDark, orangeBright, tCards);
+        defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${topOrange}"/></linearGradient>`;
+        const rx = Math.min(Math.round(barWidth / 2), Math.max(1, Math.round(cardsH / 2)));
+        const pathCards = `M ${x} ${padding.top + innerHeight} L ${x} ${yCards + rx} Q ${x} ${yCards} ${x + rx} ${yCards} L ${x + barWidth - rx} ${yCards} Q ${x + barWidth} ${yCards} ${x + barWidth} ${yCards + rx} L ${x + barWidth} ${padding.top + innerHeight} Z`;
+        bars += `<path class="bar-cards" d="${pathCards}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="0.9"/>`;
+      } else {
+        defs += `<linearGradient id="modal-go${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${orangeDark}"/><stop offset="100%" stop-color="${orangeDark}"/></linearGradient>`;
+        const yZero = padding.top + innerHeight - zeroBarH;
+        bars += `<rect class="bar-cards" x="${x}" y="${yZero}" width="${barWidth}" height="${zeroBarH}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="0" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="0.15"/>`;
+      }
+
+      // Hearts (красный, узкий, по центру)
+      const narrowBarW = Math.round(barWidth * 0.4);
+      const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
+      if (heartsVal > 0) {
+        const heartsH = Math.max(minBarH, (innerHeight / maxValue) * heartsVal);
+        const yHearts = padding.top + innerHeight - heartsH;
+        const tHearts = Math.max(0, Math.min(1, heartsVal / maxValue));
+        const topRed = lerpHex(redDark, redBright, tHearts);
+        defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${topRed}"/></linearGradient>`;
+        const rx = Math.min(Math.round(narrowBarW / 2), Math.max(1, Math.round(heartsH / 2)));
+        const pathHearts = `M ${heartsX} ${padding.top + innerHeight} L ${heartsX} ${yHearts + rx} Q ${heartsX} ${yHearts} ${heartsX + rx} ${yHearts} L ${heartsX + narrowBarW - rx} ${yHearts} Q ${heartsX + narrowBarW} ${yHearts} ${heartsX + narrowBarW} ${yHearts + rx} L ${heartsX + narrowBarW} ${padding.top + innerHeight} Z`;
+        bars += `<path class="bar-hearts" d="${pathHearts}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-gh${idx})" style="cursor:pointer" opacity="1"/>`;
+      } else {
+        defs += `<linearGradient id="modal-gh${idx}" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="${redDark}"/><stop offset="100%" stop-color="${redDark}"/></linearGradient>`;
+        const yZero = padding.top + innerHeight - zeroBarH;
+        bars += `<rect class="bar-hearts" x="${heartsX}" y="${yZero}" width="${narrowBarW}" height="${zeroBarH}" data-type="hearts" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="${cardsVal}" fill="url(#modal-gh${idx})" style="cursor:pointer" opacity="0.1"/>`;
+      }
+
+      // Подпись
+      const labelOk = mode === 'year' ? true : (idx % cfg.labelStep === 0);
+      if (labelOk) {
+        bars += `<text class="chart-label" x="${x + barWidth / 2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
+      }
+
+      x += barWidth + gap;
+    });
+
+    // Прозрачный overlay для отслеживания мыши по всей области графика
+    bars += `<rect class="chart-overlay" x="${padding.left}" y="${padding.top}" width="${innerWidth}" height="${innerHeight}" fill="transparent" style="cursor:default"/>`;
+    defs += `<linearGradient id="ghost-grad" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="rgba(255,255,255,0.12)"/><stop offset="100%" stop-color="rgba(255,255,255,0.06)"/></linearGradient>`;
+    const ghostRx = Math.round(barWidth / 2);
+    const ghostBarSVG = `<path class="ghost-bar" d="M 0 ${padding.top + innerHeight} L 0 ${padding.top + ghostRx} Q 0 ${padding.top} ${ghostRx} ${padding.top} L ${barWidth - ghostRx} ${padding.top} Q ${barWidth} ${padding.top} ${barWidth} ${padding.top + ghostRx} L ${barWidth} ${padding.top + innerHeight} Z" fill="url(#ghost-grad)" opacity="0" style="pointer-events:none;"/>`;
+    svg.innerHTML = `<defs>${defs}</defs>${content}${bars}${ghostBarSVG}`;
+
+    // Tooltip — рядом с курсором
+    const tooltip = document.getElementById('st-modal-tooltip');
+    const tooltipW = 160;
+    const overlay = svg.querySelector('.chart-overlay');
+    const ghostBar = svg.querySelector('.ghost-bar');
+
+    // Функции подсветки реальных столбиков
+    let highlightedBars = [];
+    function highlightBars(idx) {
+      clearBarHighlight();
+      const date = data[idx].date;
+      svg.querySelectorAll(`[data-date="${date}"]`).forEach(el => {
+        el.style.filter = 'brightness(1.3)';
+        highlightedBars.push(el);
+      });
+    }
+    function clearBarHighlight() {
+      highlightedBars.forEach(el => { el.style.filter = ''; });
+      highlightedBars = [];
     }
 
-    // Подпись
-    const labelOk = mode === 'year' ? true : (idx % cfg.labelStep === 0);
-    if (labelOk) {
-      bars += `<text class="chart-label" x="${x + barWidth / 2}" y="${height - padding.bottom + 20}" text-anchor="middle" font-size="${fontSize}">${d.label}</text>`;
-    }
+    overlay.addEventListener('mousemove', (e) => {
+      const rect = svg.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      // Масштабирование координат из экрана в viewBox
+      const scaleX = width / rect.width;
+      const viewBoxX = mouseX * scaleX;
+      // Определяем индекс дня по X (учитываем начальный gap: x начинается с padding.left + gap)
+      const dayIdx = Math.floor((viewBoxX - padding.left - gap) / (barWidth + gap));
+      if (dayIdx < 0 || dayIdx >= data.length) { tooltip.style.display = 'none'; ghostBar.setAttribute('opacity', '0'); clearBarHighlight(); return; }
+      // Проверяем что курсор в зоне столбика (а не в gap между столбиками)
+      // x начинается с padding.left + gap, затем каждый bar сдвигается на barWidth + gap
+      const barStartX = padding.left + gap + dayIdx * (barWidth + gap);
+      const barEndX = barStartX + barWidth;
+      if (viewBoxX < barStartX || viewBoxX > barEndX) { tooltip.style.display = 'none'; ghostBar.setAttribute('opacity', '0'); clearBarHighlight(); return; }
 
-    x += barWidth + gap;
-  });
+      // Подсвечиваем реальные столбики этого дня
+      highlightBars(dayIdx);
 
-  svg.innerHTML = `<defs>${defs}</defs>${content}${bars}`;
+      // Показываем призрачный столбик
+      const gRx = Math.round(barWidth / 2);
+      const ghostPath = `M ${barStartX} ${padding.top + innerHeight} L ${barStartX} ${padding.top + gRx} Q ${barStartX} ${padding.top} ${barStartX + gRx} ${padding.top} L ${barStartX + barWidth - gRx} ${padding.top} Q ${barStartX + barWidth} ${padding.top} ${barStartX + barWidth} ${padding.top + gRx} L ${barStartX + barWidth} ${padding.top + innerHeight} Z`;
+      ghostBar.setAttribute('d', ghostPath);
+      ghostBar.setAttribute('opacity', '1');
 
-  // Tooltip
-  const tooltip = document.getElementById('st-modal-tooltip');
-  svg.querySelectorAll('.bar-hearts,.bar-cards').forEach((bar) => {
-    bar.addEventListener('mouseenter', (e) => {
-      const date = bar.getAttribute('data-date');
-      const hearts = bar.getAttribute('data-hearts');
-      const cards = bar.getAttribute('data-cards');
-      const type = bar.getAttribute('data-type');
-      const typeLabel = type === 'hearts' ? '❤️ Сердечки' : '📚 Карточки';
+      const d = data[dayIdx];
+
+      // Определяем на какую часть столбика наведён курсор
+      const cardsH = d.cards > 0 ? Math.max(4, (innerHeight / maxValue) * d.cards) : 0;
+      const heartsH = d.hearts > 0 ? Math.max(4, (innerHeight / maxValue) * d.hearts) : 0;
+      const narrowBarW = Math.round(barWidth * 0.4);
+      const heartsX = barStartX + Math.round((barWidth - narrowBarW) / 2);
+      const cardsTopY = padding.top + innerHeight - cardsH;
+      const heartsTopY = padding.top + innerHeight - heartsH;
+
+      // Масштабируем Y курсора в viewBox
+      const scaleY = innerHeight / rect.height;
+      const viewBoxY = padding.top + (e.clientY - rect.top) * scaleY;
+
+      let typeLabel;
+      const inHeartsX = viewBoxX >= heartsX && viewBoxX <= heartsX + narrowBarW;
+      const inHeartsY = viewBoxY >= heartsTopY && viewBoxY <= padding.top + innerHeight;
+      const inCardsY = viewBoxY >= cardsTopY && viewBoxY <= padding.top + innerHeight;
+
+      if (inHeartsX && inHeartsY && heartsH > 0) {
+        typeLabel = 'Сердечки (красный)';
+      } else if (inCardsY && cardsH > 0) {
+        typeLabel = 'Карточки (оранжевый)';
+      } else if (inHeartsX && heartsH > 0) {
+        typeLabel = 'Сердечки (красный)';
+      } else if (cardsH > 0) {
+        typeLabel = 'Карточки (оранжевый)';
+      } else if (heartsH > 0) {
+        typeLabel = 'Сердечки (красный)';
+      } else {
+        // Нулевой столбик — всё равно показываем
+        typeLabel = 'Нет данных';
+      }
+
       tooltip.innerHTML = `
-        <div style="font-weight:700">${new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</div>
+        <div style="font-weight:700">${new Date(d.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</div>
         <div style="margin:4px 0;color:#fff;font-weight:600">${typeLabel}</div>
-        <div>❤️: ${hearts}</div>
-        <div>📚: ${cards}</div>
+        <div>❤️: ${d.hearts || 0}</div>
+        <div>📚: ${d.cards || 0}</div>
         <div class="tip-arrow"></div>
       `;
       tooltip.style.display = 'block';
-      tooltip.style.left = `${e.offsetX - 80}px`;
-      tooltip.style.top = `${e.offsetY - 100}px`;
-      bar.style.filter = 'brightness(1.2)';
+      tooltip.style.width = `${tooltipW}px`;
+      // Позиционируем рядом с курсором
+      const spaceRight = rect.width - mouseX;
+      let tipLeft, tipTop;
+      if (spaceRight >= tooltipW + 10) {
+        tipLeft = mouseX + 10;
+        tooltip.querySelector('.tip-arrow').style.cssText = 'position:absolute;top:10px;left:-6px;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:6px solid var(--st-surf-h);border-left:none;';
+      } else {
+        tipLeft = mouseX - tooltipW - 10;
+        tooltip.querySelector('.tip-arrow').style.cssText = 'position:absolute;top:10px;right:-6px;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:6px solid var(--st-surf-h);border-right:none;';
+      }
+      tipTop = e.clientY - rect.top - 10;
+      tooltip.style.left = `${tipLeft}px`;
+      tooltip.style.top = `${tipTop}px`;
     });
-    bar.addEventListener('mousemove', (e) => {
-      tooltip.style.left = `${e.offsetX - 80}px`;
-      tooltip.style.top = `${e.offsetY - 100}px`;
-    });
-    bar.addEventListener('mouseleave', () => {
-      tooltip.style.display = 'none';
-      bar.style.filter = '';
+    overlay.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; ghostBar.setAttribute('opacity', '0'); clearBarHighlight(); });
+    // Убираем pointer-events с баров (overlay перехватывает события)
+    svg.querySelectorAll('.bar-hearts,.bar-cards').forEach(el => {
+      el.style.pointerEvents = 'none';
     });
   });
 };
@@ -4608,10 +4790,33 @@ window.getXpSeriesForModal = (mode) => {
     return res;
   }
 
-  // Неделя (14 дней) или Месяц (все дни)
-  const days = mode === 'week' ? 14 : (mode === 'month' ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 30);
+  // Неделя (14 дней) или Месяц (все дни текущего месяца)
   const res = [];
 
+  if (mode === 'month') {
+    // Для месяца: все дни текущего месяца с 1-го числа
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const d = new Date(year, month, day);
+      const s = getMSKDate(d);
+      const entry = daily.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
+      const im = impMap.get(s);
+      res.push({
+        date: s,
+        label: d.getDate().toString(),
+        xp: entry.xp,
+        hearts: entry.dayBonus || entry.bonus || (im ? im.regressed : 0),
+        cards: im ? im.reviewed : 0
+      });
+    }
+    console.log('[MODAL.DATA] Month:', res);
+    return res;
+  }
+
+  // Неделя (14 дней)
+  const days = 14;
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
@@ -5129,16 +5334,37 @@ function getActivitySeries(mode) {
     }
     return res;
   }
+  if (mode === 'month') {
+    // Для месяца: все дни текущего месяца с 1-го числа
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const d = new Date(year, month, day);
+      const s = getLocalDate(d);
+      const de = daily.find(x => x.date === s) || { xp: 0 };
+      const im = impMap.get(s) || { improved: 0, regressed: 0, reviewed: 0 };
+      res.push({
+        date: s,
+        label: d.getDate().toString(),
+        xp: de.xp || 0,
+        hearts: im.regressed || 0,
+        cards: im.reviewed || 0
+      });
+    }
+    console.log('[DEBUG getActivitySeries] mode:', mode, 'res.length:', res.length);
+    return res;
+  }
+  // Для недели: последние 14 дней
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    if (mode === 'month' && d.getMonth() !== today.getMonth()) continue;
     const s = getLocalDate(d);
     const de = daily.find(x => x.date === s) || { xp: 0 };
     const im = impMap.get(s) || { improved: 0, regressed: 0, reviewed: 0 };
     res.push({
       date: s,
-      label: mode === 'week' ? d.toLocaleDateString('ru-RU', { day: 'numeric' }) : d.getDate().toString(),
+      label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
       xp: de.xp || 0,
       hearts: im.regressed || 0,
       cards: im.reviewed || 0
