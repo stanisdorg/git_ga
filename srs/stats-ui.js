@@ -2674,10 +2674,10 @@ function renderStats() {
     'План выполнен! До завтра!',
     'Отличная работа! На сегодня всё'
   ];
-  const todayStr = new Date().toDateString();
-  if (!window._doneMessageIndex || window._doneMessageDate !== todayStr) {
+  const _todayKey = new Date().toDateString();
+  if (!window._doneMessageIndex || window._doneMessageDate !== _todayKey) {
     window._doneMessageIndex = Math.floor(Math.random() * doneMessages.length);
-    window._doneMessageDate = todayStr;
+    window._doneMessageDate = _todayKey;
   }
   const doneMessage = doneMessages[window._doneMessageIndex];
   const doneIcon = `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;flex-shrink:0;"><rect x="2" y="2" width="20" height="20" rx="5" fill="#06D6A0"/><path d="M7 12.5l3.5 3.5L17 9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
