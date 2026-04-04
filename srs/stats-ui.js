@@ -3716,16 +3716,13 @@ function renderStats() {
       const heartsVal = d.hearts || 0;
       const rWide = Math.round(wideBarW / 2);
 
-      // Серые плейсхолдеры-тени на полную высоту (всегда видны позади основных баров)
-      const placeholderCardsRx = Math.min(rWide, Math.max(1, Math.round(innerH / 2)));
-      const pathPlaceholderCards = `M ${x} ${topPad + innerH} L ${x} ${topPad + placeholderCardsRx} Q ${x} ${topPad} ${x + placeholderCardsRx} ${topPad} L ${x + wideBarW - placeholderCardsRx} ${topPad} Q ${x + wideBarW} ${topPad} ${x + wideBarW} ${topPad + placeholderCardsRx} L ${x + wideBarW} ${topPad + innerH} Z`;
-      bars.push(`<path class="bar-placeholder-cards" d="${pathPlaceholderCards}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`);
+      // Тёмный плейсхолдер-тень на полную высоту (один на весь столбик)
+      const placeholderRx = Math.min(rWide, Math.max(1, Math.round(innerH / 2)));
+      const pathPlaceholder = `M ${x} ${topPad + innerH} L ${x} ${topPad + placeholderRx} Q ${x} ${topPad} ${x + placeholderRx} ${topPad} L ${x + wideBarW - placeholderRx} ${topPad} Q ${x + wideBarW} ${topPad} ${x + wideBarW} ${topPad + placeholderRx} L ${x + wideBarW} ${topPad + innerH} Z`;
+      bars.push(`<path class="bar-placeholder" d="${pathPlaceholder}" fill="rgba(0,0,0,0.25)" style="pointer-events:none"/>`);
 
       const narrowBarW = Math.round(wideBarW * 0.4);
       const heartsX = x + Math.round((wideBarW - narrowBarW) / 2);
-      const placeholderHeartsRx = Math.min(Math.round(narrowBarW / 2), Math.max(1, Math.round(innerH / 2)));
-      const pathPlaceholderHearts = `M ${heartsX} ${topPad + innerH} L ${heartsX} ${topPad + placeholderHeartsRx} Q ${heartsX} ${topPad} ${heartsX + placeholderHeartsRx} ${topPad} L ${heartsX + narrowBarW - placeholderHeartsRx} ${topPad} Q ${heartsX + narrowBarW} ${topPad} ${heartsX + narrowBarW} ${topPad + placeholderHeartsRx} L ${heartsX + narrowBarW} ${topPad + innerH} Z`;
-      bars.push(`<path class="bar-placeholder-hearts" d="${pathPlaceholderHearts}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`);
 
       if (cardsVal > 0) {
         const cardsH = Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * cardsVal));
@@ -4594,15 +4591,13 @@ window.renderModalChart = () => {
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
 
-      // Серые плейсхолдеры-тени на полную высоту (всегда видны позади основных баров)
+      // Тёмный плейсхолдер-тень на полную высоту (один на весь столбик)
+      const placeholderRx = Math.min(Math.round(barWidth / 2), Math.max(1, Math.round(innerHeight / 2)));
+      const pathPlaceholder = `M ${x} ${padding.top + innerHeight} L ${x} ${padding.top + placeholderRx} Q ${x} ${padding.top} ${x + placeholderRx} ${padding.top} L ${x + barWidth - placeholderRx} ${padding.top} Q ${x + barWidth} ${padding.top} ${x + barWidth} ${padding.top + placeholderRx} L ${x + barWidth} ${padding.top + innerHeight} Z`;
+      bars += `<path class="bar-placeholder" d="${pathPlaceholder}" fill="rgba(0,0,0,0.25)" style="pointer-events:none"/>`;
+
       const narrowBarW = Math.round(barWidth * 0.4);
       const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
-      const placeholderCardsRx = Math.min(Math.round(barWidth / 2), Math.max(1, Math.round(innerHeight / 2)));
-      const pathPlaceholderCards = `M ${x} ${padding.top + innerHeight} L ${x} ${padding.top + placeholderCardsRx} Q ${x} ${padding.top} ${x + placeholderCardsRx} ${padding.top} L ${x + barWidth - placeholderCardsRx} ${padding.top} Q ${x + barWidth} ${padding.top} ${x + barWidth} ${padding.top + placeholderCardsRx} L ${x + barWidth} ${padding.top + innerHeight} Z`;
-      bars += `<path class="bar-placeholder-cards" d="${pathPlaceholderCards}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`;
-      const placeholderHeartsRx = Math.min(Math.round(narrowBarW / 2), Math.max(1, Math.round(innerHeight / 2)));
-      const pathPlaceholderHearts = `M ${heartsX} ${padding.top + innerHeight} L ${heartsX} ${padding.top + placeholderHeartsRx} Q ${heartsX} ${padding.top} ${heartsX + placeholderHeartsRx} ${padding.top} L ${heartsX + narrowBarW - placeholderHeartsRx} ${padding.top} Q ${heartsX + narrowBarW} ${padding.top} ${heartsX + narrowBarW} ${padding.top + placeholderHeartsRx} L ${heartsX + narrowBarW} ${padding.top + innerHeight} Z`;
-      bars += `<path class="bar-placeholder-hearts" d="${pathPlaceholderHearts}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`;
 
       // Cards (оранжевый, широкий)
       if (cardsVal > 0) {
