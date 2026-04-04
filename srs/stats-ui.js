@@ -3719,7 +3719,7 @@ function renderStats() {
       // Тёмный плейсхолдер-тень на полную высоту (один на весь столбик)
       const placeholderRx = Math.min(rWide, Math.max(1, Math.round(innerH / 2)));
       const pathPlaceholder = `M ${x} ${topPad + innerH} L ${x} ${topPad + placeholderRx} Q ${x} ${topPad} ${x + placeholderRx} ${topPad} L ${x + wideBarW - placeholderRx} ${topPad} Q ${x + wideBarW} ${topPad} ${x + wideBarW} ${topPad + placeholderRx} L ${x + wideBarW} ${topPad + innerH} Z`;
-      bars.push(`<path class="bar-placeholder" d="${pathPlaceholder}" fill="rgba(0,0,0,0.25)" style="pointer-events:none"/>`);
+      bars.push(`<path class="bar-placeholder" d="${pathPlaceholder}" fill="rgba(0,0,0,0.12)" style="pointer-events:none"/>`);
 
       const narrowBarW = Math.round(wideBarW * 0.4);
       const heartsX = x + Math.round((wideBarW - narrowBarW) / 2);
@@ -4594,7 +4594,7 @@ window.renderModalChart = () => {
       // Тёмный плейсхолдер-тень на полную высоту (один на весь столбик)
       const placeholderRx = Math.min(Math.round(barWidth / 2), Math.max(1, Math.round(innerHeight / 2)));
       const pathPlaceholder = `M ${x} ${padding.top + innerHeight} L ${x} ${padding.top + placeholderRx} Q ${x} ${padding.top} ${x + placeholderRx} ${padding.top} L ${x + barWidth - placeholderRx} ${padding.top} Q ${x + barWidth} ${padding.top} ${x + barWidth} ${padding.top + placeholderRx} L ${x + barWidth} ${padding.top + innerHeight} Z`;
-      bars += `<path class="bar-placeholder" d="${pathPlaceholder}" fill="rgba(0,0,0,0.25)" style="pointer-events:none"/>`;
+      bars += `<path class="bar-placeholder" d="${pathPlaceholder}" fill="rgba(0,0,0,0.12)" style="pointer-events:none"/>`;
 
       const narrowBarW = Math.round(barWidth * 0.4);
       const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
