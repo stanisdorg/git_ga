@@ -1857,7 +1857,17 @@ function stopLearnSession() {
 
     location.hash = '#/stats';
 
-    import('./stats-ui.js?v=6.50.0').then(({ initStatsPage }) => {
+    import('./stats-ui.js?v=6.55.0').then(({ initStatsPage }) => {
+        // Обновляем uniqueQaData из localStorage перед рендером
+        try {
+            const userCardsRaw = localStorage.getItem('qaUserCards');
+            if (userCardsRaw) {
+                window.uniqueQaData = JSON.parse(userCardsRaw);
+            }
+        } catch (e) {
+            console.warn('[stopLearnSession] Не удалось обновить uniqueQaData:', e);
+        }
+
         initStatsPage(window.currentAppVersion || '6.09');
 
         // Теперь восстанавливаем UI ПОСЛЕ инициализации статистики
