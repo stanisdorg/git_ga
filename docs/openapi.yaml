@@ -1,0 +1,1097 @@
+openapi: 3.0.3
+info:
+  title: ByteCards API
+  description: |
+    REST API для системы интервального повторения (SRS) ByteCards — QA Voice Assistant с карточками вопросов-ответов.
+    
+    ## Аутентификация
+    Большинство эндпоинтов требуют параметр `user` или `username` в query string.
+    Некоторые эндпоинты (логи) требуют роль `admin`.
+    
+    ## Версия сервера
+    Текущая версия: 6.34.0
+    
+    ## Базовый URL
+    ```
+    https://bytecards.ru
+    ```
+  version: 6.34.0
+  contact:
+    name: ByteCards Support
+  license:
+    name: MIT
+
+servers:
+  - url: https://bytecards.ru
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: Эндпоинты аутентификации (Login, Register, OAuth)
+  - name: Cards
+    description: Создание и обновление карточек
+  - name: Data
+    description: Загрузка и сохранение данных пользователя
+  - name: Progress
+    description: Прогресс обучения (SRS, статистика, достижения)
+  - name: Trash
+    description: Корзина карточек (восстановление, удаление)
+  - name: Metadata
+    description: Метаданные (порядок категорий и карточек)
+  - name: Admin
+    description: Административные эндпоинты (логи)
+  - name: Webhooks
+    description: Webhook'и для ботов
+  - name: System
+    description: Системные эндпоинты
+
+paths:
+  /api/login:
+    post:
+      tags:
+        - Authentication
+      summary: Вход в систему
+      description: Аутентификация пользователя по username и паролю. Имеет rate limiting (5 попыток, блокировка 15 минут).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              username: jeff
+              password: mypassword123
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                ok: true
+                username: jeff
+                role: editor
+        '400':
+          description: Ошибка запроса (пустое тело, неверный формат)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неверные учётные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Превышен лимит попыток
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Выход из системы
+      description: Завершение сессии пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Токен сессии
+      responses:
+        '200':
+          description: Успешный выход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+  /api/register:
+    post:
+      tags:
+        - Authentication
+      summary: Регистрация нового пользователя
+      description: Создание нового пользователя (требует adminToken)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - adminToken
+              properties:
+                username:
+                  type: string
+                  maxLength: 50
+                  pattern: '^[a-zA-Z0-9_]{1,50}$'
+                password:
+                  type: string
+                  maxLength: 100
+                role:
+                  type: string
+                  enum: [user, editor, admin]
+                  default: user
+                adminToken:
+                  type: string
+                  description: Токен администратора
+      responses:
+        '200':
+          description: Пользователь зарегистрирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Пользователь уже существует или ошибка запроса
+        '403':
+          description: Требуется авторизация администратора
+
+  /api/auth/github:
+    get:
+      tags:
+        - Authentication
+      summary: GitHub OAuth — редирект
+      description: Редирект на страницу авторизации GitHub OAuth
+      responses:
+        '302':
+          description: Редирект на GitHub
+
+  /api/auth/github/callback:
+    get:
+      tags:
+        - Authentication
+      summary: GitHub OAuth — callback
+      description: Обработка callback от GitHub OAuth
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Код авторизации от GitHub
+      responses:
+        '200':
+          description: Успешная авторизация (HTML с postMessage)
+        '400':
+          description: Ошибка авторизации
+
+  /api/auth/google:
+    post:
+      tags:
+        - Authentication
+      summary: Вход через Google OAuth
+      description: Аутентификация через Google (email, name, picture, googleId)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - googleId
+              properties:
+                email:
+                  type: string
+                  format: email
+                name:
+                  type: string
+                picture:
+                  type: string
+                  format: uri
+                googleId:
+                  type: string
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /api/auth/telegram:
+    post:
+      tags:
+        - Authentication
+      summary: Вход через Telegram
+      description: |
+        Аутентификация через Telegram с проверкой подписи и подписки на канал.
+        Требуется подписка на канал @brotherhood_qa.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelegramAuthRequest'
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '403':
+          description: Неверная подпись или пользователь не подписан на канал
+
+  /api/card/create:
+    post:
+      tags:
+        - Cards
+      summary: Создание карточки
+      description: Создание новой карточки вопроса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardCreateRequest'
+      responses:
+        '200':
+          description: Карточка создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  card:
+                    $ref: '#/components/schemas/Card'
+        '400':
+          description: Ошибка запроса
+
+  /api/card/update:
+    post:
+      tags:
+        - Cards
+      summary: Обновление карточки
+      description: Обновление существующей карточки (вопрос/ответ/форматирование)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardUpdateRequest'
+      responses:
+        '200':
+          description: Карточка обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Ошибка запроса
+
+  /load:
+    get:
+      tags:
+        - Data
+      summary: Загрузка данных пользователя
+      description: Загружает все данные пользователя (карточки, прогресс, избранное, достижения)
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      responses:
+        '200':
+          description: Данные загружены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadDataResponse'
+        '400':
+          description: Требуется username
+
+  /save:
+    post:
+      tags:
+        - Data
+      summary: Сохранение данных пользователя
+      description: Сохраняет все карточки пользователя на сервер
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Card'
+      responses:
+        '200':
+          description: Данные сохранены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Ошибка запроса
+
+  /api/progress:
+    get:
+      tags:
+        - Progress
+      summary: Получение прогресса пользователя
+      description: Получает прогресс пользователя (SRS, статистика, достижения)
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      responses:
+        '200':
+          description: Прогресс получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressResponse'
+        '400':
+          description: Требуется username
+
+    post:
+      tags:
+        - Progress
+      summary: Сохранение прогресса пользователя
+      description: Обновляет прогресс пользователя (SRS, статистика, достижения)
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgressUpdateRequest'
+      responses:
+        '200':
+          description: Прогресс сохранён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Ошибка запроса
+
+  /api/achievements:
+    post:
+      tags:
+        - Progress
+      summary: Сохранение достижений
+      description: Сохраняет достижения пользователя
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                achievements:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Достижения сохранены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+  /api/favorites:
+    post:
+      tags:
+        - Progress
+      summary: Сохранение избранного
+      description: Сохраняет избранные карточки пользователя
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                favorites:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: Избранное сохранено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+  /trash:
+    post:
+      tags:
+        - Trash
+      summary: Перемещение в корзину
+      description: Перемещает карточки в корзину пользователя
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Card'
+      responses:
+        '200':
+          description: Карточки перемещены в корзину
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  trash_size:
+                    type: integer
+                    description: Размер корзины
+        '400':
+          description: Ошибка запроса
+
+  /restore:
+    post:
+      tags:
+        - Trash
+      summary: Восстановление из корзины
+      description: Восстанавливает карточки из корзины
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - questions
+              properties:
+                questions:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Карточки восстановлены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  restored_count:
+                    type: integer
+                    description: Количество восстановленных карточек
+        '400':
+          description: Ошибка запроса
+
+  /delete-permanent:
+    post:
+      tags:
+        - Trash
+      summary: Удаление из корзины навсегда
+      description: Полностью удаляет карточки из корзины без возможности восстановления
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - questions
+              properties:
+                questions:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Карточки удалены навсегда
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  deleted_count:
+                    type: integer
+                    description: Количество удалённых карточек
+        '400':
+          description: Ошибка запроса
+
+  /metadata:
+    get:
+      tags:
+        - Metadata
+      summary: Получение метаданных
+      description: Получает метаданные пользователя и содержимое корзины
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      responses:
+        '200':
+          description: Метаданные получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataResponse'
+        '400':
+          description: Ошибка запроса
+
+    post:
+      tags:
+        - Metadata
+      summary: Обновление метаданных
+      description: Обновляет метаданные пользователя (порядок категорий, карточек)
+      parameters:
+        - name: user
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataUpdateRequest'
+      responses:
+        '200':
+          description: Метаданные обновлены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Ошибка запроса
+
+  /duplicate:
+    post:
+      tags:
+        - System
+      summary: Отслеживание дубликатов
+      description: Фиксирует факт дублирования карточки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+                - duplicated_by
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      original_question:
+                        type: string
+                      new_question:
+                        type: string
+                duplicated_by:
+                  type: string
+      responses:
+        '200':
+          description: Дубликат зафиксирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Ошибка запроса
+
+  /api/logs:
+    get:
+      tags:
+        - Admin
+      summary: Получение логов
+      description: Получает логи сервера. Доступно только пользователям с ролью `admin`.
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Имя пользователя (admin)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+          description: Максимальное количество записей
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [DEBUG, INFO, WARN, ERROR]
+            default: DEBUG
+          description: Минимальный уровень логирования
+        - name: context
+          in: query
+          schema:
+            type: string
+          description: Фильтр по контексту
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Текстовый поиск
+      responses:
+        '200':
+          description: Логи получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  logs:
+                    type: array
+                    items:
+                      type: object
+        '403':
+          description: Требуется роль admin
+
+  /api/logs/clear:
+    post:
+      tags:
+        - Admin
+      summary: Очистка логов
+      description: Очищает все логи сервера. Только для админов.
+      responses:
+        '200':
+          description: Логи очищены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '403':
+          description: Требуется роль admin
+
+  /api/logs/stats:
+    get:
+      tags:
+        - Admin
+      summary: Статистика логов
+      description: Получает статистику логов. Только для админов.
+      responses:
+        '200':
+          description: Статистика получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  stats:
+                    type: object
+        '403':
+          description: Требуется роль admin
+
+  /api/iphone-logs:
+    post:
+      tags:
+        - System
+      summary: Приём логов с iPhone
+      description: Принимает логи с iPhone приложения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Логи приняты
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+  /api/bot-webhook/{token}:
+    post:
+      tags:
+        - Webhooks
+      summary: Telegram Bot Webhook
+      description: Принимает обновления от Telegram Bot API
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Токен Telegram бота
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Webhook обработан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_]{1,50}$'
+          description: Имя пользователя (буквы, цифры, _)
+        password:
+          type: string
+          maxLength: 100
+          description: Пароль пользователя
+
+    LoginResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        username:
+          type: string
+          description: Имя пользователя
+        role:
+          type: string
+          enum: [user, editor, admin]
+          description: Роль пользователя
+
+    TelegramAuthRequest:
+      type: object
+      required:
+        - id
+        - hash
+      properties:
+        id:
+          type: integer
+          description: Telegram User ID
+        username:
+          type: string
+          description: Telegram username
+        first_name:
+          type: string
+          description: Имя
+        last_name:
+          type: string
+          description: Фамилия
+        auth_date:
+          type: string
+          format: date-time
+          description: Дата авторизации
+        hash:
+          type: string
+          description: HMAC-SHA256 подпись
+
+    Card:
+      type: object
+      required:
+        - question
+        - answer
+        - category
+      properties:
+        id:
+          type: integer
+          description: Уникальный ID карточки
+        question:
+          type: string
+          description: Текст вопроса
+        answer:
+          type: string
+          description: Текст ответа
+        category:
+          type: string
+          description: Категория
+        subcategory:
+          type: string
+          description: Подкатегория
+        formatting:
+          type: object
+          description: Настройки форматирования
+
+    CardCreateRequest:
+      type: object
+      required:
+        - question
+        - answer
+        - category
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+        category:
+          type: string
+        subcategory:
+          type: string
+        formatting:
+          type: object
+
+    CardUpdateRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: ID карточки для обновления
+        question:
+          type: string
+        answer:
+          type: string
+        formatting:
+          type: object
+
+    LoadDataResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        userData:
+          type: object
+          properties:
+            cards:
+              type: array
+              items:
+                $ref: '#/components/schemas/Card'
+            _favorites:
+              type: array
+              items:
+                type: integer
+            _achievements:
+              type: object
+            _stats:
+              type: object
+
+    ProgressResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        userData:
+          type: object
+          properties:
+            _srsProgress:
+              type: object
+              description: Прогресс SRS
+            _stats:
+              type: object
+              description: Статистика
+            _achievements:
+              type: object
+              description: Достижения
+
+    ProgressUpdateRequest:
+      type: object
+      properties:
+        _srsProgress:
+          type: object
+          additionalProperties: true
+        _stats:
+          type: object
+          additionalProperties: true
+        _achievements:
+          type: object
+          additionalProperties: true
+
+    MetadataResponse:
+      type: object
+      properties:
+        category_order:
+          type: array
+          items:
+            type: string
+          description: Порядок категорий
+        subcategory_order:
+          type: object
+          additionalProperties: true
+          description: Порядок подкатегорий
+        card_order:
+          type: object
+          additionalProperties: true
+          description: Порядок карточек
+        trash_bin:
+          type: array
+          items:
+            type: object
+            properties:
+              item:
+                $ref: '#/components/schemas/Card'
+              deleted_at:
+                type: string
+                format: date-time
+              deleted_by:
+                type: string
+
+    MetadataUpdateRequest:
+      type: object
+      properties:
+        category_order:
+          type: array
+          items:
+            type: string
+        subcategory_order:
+          type: object
+          additionalProperties: true
+        card_order:
+          type: object
+          additionalProperties: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Код ошибки
+        details:
+          type: string
+          description: Детали ошибки (опционально)

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ByteCards API — Swagger Documentation</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.0/swagger-ui.css">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --accent: #818cf8;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --accent: #667eea;
+    }
+
+    html {
+      overflow: hidden;
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      height: 100%;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    #header .version {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    #header .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+    }
+
+    #header .back-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    #swagger-ui {
+      height: calc(100% - 60px);
+      overflow: auto;
+      background: var(--bg-primary);
+    }
+
+    /* Minimal dark theme overrides - don't break toggle arrows */
+    .swagger-ui {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .topbar {
+      display: none;
+    }
+
+    .swagger-ui .info {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .swagger-ui .info .title {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .info .description {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .info .description p {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .info .description h2 {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .info .description code {
+      background: var(--bg-primary);
+      color: var(--accent);
+    }
+
+    .swagger-ui .info .description pre {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .info .description a {
+      color: var(--accent);
+    }
+
+    .swagger-ui .info .description table {
+      border-color: var(--border-color);
+    }
+
+    .swagger-ui .info .description th {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .swagger-ui .info .description td {
+      border-color: var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .scheme-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .scheme-container .schemes {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .scheme-container .schemes label {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .scheme-container .schemes select {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .opblock-tag {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .opblock-tag:hover {
+      background: var(--border-color);
+    }
+
+    .swagger-ui .opblock-tag small {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .opblock {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .swagger-ui .opblock .opblock-summary {
+      border-color: var(--border-color);
+    }
+
+    .swagger-ui .opblock .opblock-summary-method {
+      color: white;
+    }
+
+    .swagger-ui .opblock .opblock-summary-path {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .opblock .opblock-summary-description {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .opblock.opblock-get {
+      border-color: #3b82f6;
+    }
+
+    .swagger-ui .opblock.opblock-get .opblock-summary-method {
+      background: #3b82f6;
+    }
+
+    .swagger-ui .opblock.opblock-post {
+      border-color: #10b981;
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method {
+      background: #10b981;
+    }
+
+    .swagger-ui .opblock.opblock-put {
+      border-color: #f59e0b;
+    }
+
+    .swagger-ui .opblock.opblock-put .opblock-summary-method {
+      background: #f59e0b;
+    }
+
+    .swagger-ui .opblock.opblock-delete {
+      border-color: #ef4444;
+    }
+
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method {
+      background: #ef4444;
+    }
+
+    .swagger-ui .opblock .opblock-section-header {
+      background: var(--bg-primary);
+      border-color: var(--border-color);
+    }
+
+    .swagger-ui .opblock .opblock-section-header h4 {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .opblock .opblock-section-header label {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .opblock-body {
+      background: var(--bg-secondary);
+    }
+
+    .swagger-ui .opblock-body pre {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .opblock-body pre.microlight {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .swagger-ui table {
+      border-color: var(--border-color);
+    }
+
+    .swagger-ui table thead tr td,
+    .swagger-ui table thead tr th {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .swagger-ui table tbody tr td {
+      border-color: var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui table tbody tr td code {
+      background: var(--bg-primary);
+      color: var(--accent);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .btn {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .btn:hover {
+      background: var(--border-color);
+    }
+
+    .swagger-ui .btn.execute {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .swagger-ui .btn.execute:hover {
+      background: #6366f1;
+    }
+
+    .swagger-ui input[type="text"],
+    .swagger-ui input[type="password"],
+    .swagger-ui input[type="search"],
+    .swagger-ui textarea {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui input[type="text"]:focus,
+    .swagger-ui input[type="password"]:focus,
+    .swagger-ui input[type="search"]:focus,
+    .swagger-ui textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .swagger-ui .parameter__name {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .parameter__type {
+      color: var(--accent);
+    }
+
+    .swagger-ui .parameter__description {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .parameter__in {
+      color: #f59e0b;
+    }
+
+    .swagger-ui .response-col_status {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .response-col_description {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .response-col_links {
+      color: var(--accent);
+    }
+
+    .swagger-ui section.models {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .swagger-ui section.models h4 {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .swagger-ui section.models h4 span {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui section.models .model-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui section.models .model-box .model-title {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui section.models .model-box .model-description {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui section.models .model-box code {
+      background: var(--bg-secondary);
+      color: var(--accent);
+    }
+
+    .swagger-ui .model .property {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .model .property .prop-format {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .model .property .prop-type {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    .swagger-ui .model .property .prop-name {
+      color: #93c5fd;
+      font-weight: 600;
+    }
+
+    .swagger-ui .model .property .prop-enum {
+      color: #f59e0b;
+    }
+
+    .swagger-ui .model .property .prop-default {
+      color: #10b981;
+    }
+
+    .swagger-ui .model .property .brace-open,
+    .swagger-ui .model .property .brace-close {
+      color: #64748b;
+    }
+
+    .swagger-ui .model .property .renderedMarkdown {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .model .property .model-title {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .model .property .model-description {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .model .property .model-box {
+      background: var(--bg-primary);
+    }
+
+    .swagger-ui .model-toggle {
+      color: var(--accent);
+    }
+
+    .swagger-ui .markdown p,
+    .swagger-ui .markdown pre,
+    .swagger-ui .markdown code {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .markdown h1,
+    .swagger-ui .markdown h2,
+    .swagger-ui .markdown h3,
+    .swagger-ui .markdown h4 {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .markdown a {
+      color: var(--accent);
+    }
+
+    .swagger-ui .filter .operation-filter-input {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .filter .operation-filter-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .dialog-ux .modal-ux {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .dialog-ux .modal-ux-header {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .swagger-ui .dialog-ux .modal-ux-header h3 {
+      color: var(--text-primary);
+    }
+
+    .swagger-ui .dialog-ux .modal-ux-content {
+      color: var(--text-secondary);
+    }
+
+    .swagger-ui .dialog-ux .modal-ux-content p {
+      color: var(--text-secondary);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    #loading {
+      text-align: center;
+      padding: 50px;
+      font-size: 18px;
+      color: var(--accent);
+      background: var(--bg-primary);
+      height: calc(100% - 60px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #loading .spinner {
+      border: 4px solid var(--bg-secondary);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    #error {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: #ef4444;
+      background: var(--bg-primary);
+      height: calc(100% - 60px);
+      overflow-y: auto;
+    }
+
+    #error h2 {
+      color: #ef4444;
+      margin-bottom: 20px;
+    }
+
+    #error pre {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: left;
+      max-width: 800px;
+      margin: 20px auto;
+      font-size: 13px;
+      white-space: pre-wrap;
+      border: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <img src="logo.svg" alt="ByteCards Logo" style="width: 36px; height: 36px;">
+      <h1>ByteCards API Documentation</h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="version">v6.34.0</span>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">☀️</span><span
+          id="themeText">Light</span></button>
+      <a href="index.html" class="back-link">← На главную</a>
+    </div>
+  </div>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>Загрузка Swagger UI...</div>
+  </div>
+  <div id="error">
+    <h2>❌ Ошибка загрузки Swagger UI</h2>
+    <p id="errorMsg"></p>
+    <pre>Запустите сервер: docs\serve-docs.bat\nЗатем откройте: http://localhost:9000/swagger.html</pre>
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.17.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.17.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    function getTheme() { return localStorage.getItem('swaggerTheme') || 'dark'; }
+    function setTheme(theme) {
+      localStorage.setItem('swaggerTheme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+      if (theme === 'dark') { icon.textContent = '☀️'; text.textContent = 'Light'; }
+      else { icon.textContent = '🌙'; text.textContent = 'Dark'; }
+    }
+    function toggleTheme() { setTheme(getTheme() === 'light' ? 'dark' : 'light'); }
+    setTheme(getTheme());
+    window.onload = async function () {
+      try {
+        console.log('[Swagger] Loading...');
+        if (typeof SwaggerUIBundle === 'undefined') throw new Error('SwaggerUIBundle not loaded');
+        const response = await fetch('openapi.yaml');
+        if (!response.ok) throw new Error('Failed to load openapi.yaml: HTTP ' + response.status);
+        const yamlText = await response.text();
+        const spec = jsyaml.load(yamlText);
+        console.log('[Swagger] Loaded: ' + spec.info.title + ' v' + spec.info.version);
+        document.getElementById('loading').style.display = 'none';
+        const ui = SwaggerUIBundle({
+          spec: spec, dom_id: '#swagger-ui', deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: 'StandaloneLayout', validatorUrl: null, docExpansion: 'list',
+          defaultModelsExpandDepth: 3, defaultModelExpandDepth: 3,
+          displayRequestDuration: true, filter: true, tryItOutEnabled: true,
+          requestSnippetsEnabled: true, supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+          onComplete: function () { console.log('[Swagger] Ready!'); },
+          onFailure: function (data) { console.error('[Swagger] Failed:', data); }
+        });
+        window.ui = ui;
+      } catch (e) {
+        console.error('[Swagger] Error:', e);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('errorMsg').textContent = e.message;
+      }
+    };
+  </script>
+</body>
+
+</html>

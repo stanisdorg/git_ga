@@ -2345,9 +2345,9 @@
   "_rewards": {},
   "_streaks": {},
   "_stats": {
-    "total": 137,
-    "timeSpent": 179996,
-    "points": 790,
+    "total": 149,
+    "timeSpent": 183509,
+    "points": 850,
     "correct": 20
   },
   "_srsProgress": {
@@ -2465,13 +2465,13 @@
     },
     "Что такое GraphQL?": {
       "interval": 1,
-      "easeFactor": 1.6,
+      "easeFactor": 1.4500000000000002,
       "streak": 0,
-      "repetitionCount": 4,
-      "history": 4,
-      "lastReviewDate": 1775230349015,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 5,
+      "history": 5,
+      "lastReviewDate": 1775324707250,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2489,23 +2489,27 @@
         {
           "date": 1775230349015,
           "grade": 2
+        },
+        {
+          "date": 1775324707250,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 18,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "Что такое GraphQL?"
     },
     "что в Elements смотришь обычно?": {
       "interval": 1,
-      "easeFactor": 2.0999999999999996,
-      "streak": 1,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775230356544,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.9499999999999997,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324700967,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1774294105355,
@@ -2514,11 +2518,15 @@
         {
           "date": 1775230356544,
           "grade": 4
+        },
+        {
+          "date": 1775324700967,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 18,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "что в Elements смотришь обычно?"
     },
     "kafka отличие партиций от топика": {
@@ -2639,13 +2647,13 @@
     },
     "сущности в докере?": {
       "interval": 1,
-      "easeFactor": 2.1999999999999997,
+      "easeFactor": 2.05,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775247974936,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324707605,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2655,11 +2663,15 @@
         {
           "date": 1775247974936,
           "grade": 2
+        },
+        {
+          "date": 1775324707605,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 23,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "сущности в докере?"
     },
     "брокеры, кафка, как взаимодействовали сервисы?": {
@@ -2693,13 +2705,13 @@
     },
     "4) Прикладной": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775230354796,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324701316,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2709,32 +2721,40 @@
         {
           "date": 1775230354796,
           "grade": 2
+        },
+        {
+          "date": 1775324701316,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 18,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "4) Прикладной"
     },
     "PCT/IP": {
       "interval": 1,
-      "easeFactor": 1.9499999999999997,
+      "easeFactor": 1.7999999999999998,
       "streak": 0,
-      "repetitionCount": 1,
-      "history": 1,
-      "lastReviewDate": 1775115684953,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitionCount": 2,
+      "history": 2,
+      "lastReviewDate": 1775324706475,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
           "date": 1775115684953,
           "grade": 2
+        },
+        {
+          "date": 1775324706475,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 10,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "PCT/IP"
     },
     "radis?": {
@@ -2935,13 +2955,13 @@
     },
     "docker swarm?": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775243689791,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324700455,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -2951,11 +2971,15 @@
         {
           "date": 1775243689791,
           "grade": 2
+        },
+        {
+          "date": 1775324700455,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 22,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "docker swarm?"
     },
     "1) Физического доступа": {
@@ -3102,13 +3126,13 @@
     },
     "пример для чего подмена запросов?": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775243606380,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324706886,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -3118,11 +3142,15 @@
         {
           "date": 1775243606380,
           "grade": 2
+        },
+        {
+          "date": 1775324706886,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 22,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "пример для чего подмена запросов?"
     },
     "403 Forbidden": {
@@ -3198,14 +3226,14 @@
     },
     "для чего нам нужны брокеры сообщений, kafka, rabbit?": {
       "interval": 1,
-      "easeFactor": 1.9999999999999998,
-      "streak": 1,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775239814411,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.8499999999999999,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324700709,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1775145003746,
@@ -3214,22 +3242,26 @@
         {
           "date": 1775239814411,
           "grade": 3
+        },
+        {
+          "date": 1775324700709,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 21,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "для чего нам нужны брокеры сообщений, kafka, rabbit?"
     },
     "postman, swagger": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775243606657,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324707438,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -3239,11 +3271,15 @@
         {
           "date": 1775243606657,
           "grade": 2
+        },
+        {
+          "date": 1775324707438,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 22,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "postman, swagger"
     },
     "Масштабируемость": {
@@ -3273,13 +3309,13 @@
     },
     "Как происходит тестирование локально с помощью Docker?": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775243596881,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324701653,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -3289,11 +3325,15 @@
         {
           "date": 1775243596881,
           "grade": 2
+        },
+        {
+          "date": 1775324701653,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 22,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "Как происходит тестирование локально с помощью Docker?"
     },
     "Тонкий - логика не сервере\n(Частный пример это браузер)": {
@@ -3390,13 +3430,13 @@
     },
     "Что такое gRPC?": {
       "interval": 1,
-      "easeFactor": 1.7999999999999998,
+      "easeFactor": 1.65,
       "streak": 0,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775156473026,
-      "nextReviewDate": 1775178000000,
-      "dueDate": "2026-04-03T01:00:00.000Z",
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324707079,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
       "repetitions": 0,
       "historyArray": [
         {
@@ -3406,11 +3446,15 @@
         {
           "date": 1775156473026,
           "grade": 2
+        },
+        {
+          "date": 1775324707079,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-02",
-      "lastReviewedTime": 22,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "Что такое gRPC?"
     },
     "Технологический долг": {
@@ -3758,14 +3802,14 @@
     },
     "Foreign Key": {
       "interval": 1,
-      "easeFactor": 1.9999999999999998,
-      "streak": 1,
-      "repetitionCount": 2,
-      "history": 2,
-      "lastReviewDate": 1775230347420,
-      "nextReviewDate": 1775264400000,
-      "dueDate": "2026-04-04T01:00:00.000Z",
-      "repetitions": 1,
+      "easeFactor": 1.8499999999999999,
+      "streak": 0,
+      "repetitionCount": 3,
+      "history": 3,
+      "lastReviewDate": 1775324706678,
+      "nextReviewDate": 1775350800000,
+      "dueDate": "2026-04-05T01:00:00.000Z",
+      "repetitions": 0,
       "historyArray": [
         {
           "date": 1775146889574,
@@ -3774,11 +3818,15 @@
         {
           "date": 1775230347420,
           "grade": 3
+        },
+        {
+          "date": 1775324706678,
+          "grade": 2
         }
       ],
       "state": "learning",
-      "lastReviewed": "2026-04-03",
-      "lastReviewedTime": 18,
+      "lastReviewed": "2026-04-04",
+      "lastReviewedTime": 20,
       "question": "Foreign Key"
     },
     "по ресту какое?": {
@@ -4209,7 +4257,7 @@
   "dailyPoints": {
     "2026-04-02": 300,
     "2026-04-03": 300,
-    "2026-04-04": 95
+    "2026-04-04": 155
   },
   "dailyBonusPoints": {
     "2026-04-02": 0,

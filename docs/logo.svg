@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48">
+  <!-- Background circle -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#e0e7ff"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#bgGrad)"/>
+  
+  <!-- Card 1 (back) -->
+  <rect x="14" y="16" width="24" height="32" rx="3" fill="url(#cardGrad)" opacity="0.6" transform="rotate(-8 26 32)"/>
+  
+  <!-- Card 2 (middle) -->
+  <rect x="20" y="14" width="24" height="32" rx="3" fill="url(#cardGrad)" opacity="0.8" transform="rotate(-3 32 30)"/>
+  
+  <!-- Card 3 (front) -->
+  <rect x="26" y="12" width="24" height="32" rx="3" fill="url(#cardGrad)"/>
+  
+  <!-- Question mark on front card -->
+  <text x="38" y="34" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#667eea" text-anchor="middle">?</text>
+  
+  <!-- Checkmark badge -->
+  <circle cx="48" cy="44" r="8" fill="#10b981"/>
+  <path d="M44 44 L47 47 L52 41" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

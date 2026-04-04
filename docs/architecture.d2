@@ -1,0 +1,227 @@
+# ByteCards — Архитектура системы
+# D2 Diagram (https://d2lang.com)
+# Запустить: d2 architecture.d2 --watch
+
+direction: right
+
+# ============================================
+# КЛИЕНТСКИЕ ПРИЛОЖЕНИЯ (Контейнеры)
+# ============================================
+
+PWA: {
+  shape: diamond
+  style.fill: "#667eea"
+  
+  "index.html\nГлавная страница"
+  "script.js\nОсновная логика"
+  "sw.js\nService Worker\n(offline режим)"
+  "style.css\nКастомные стили"
+}
+
+Electron: {
+  shape: diamond
+  style.fill: "#475569"
+  
+  "main.js\nГлавный процесс"
+  "preload.js\nIPC мост"
+  "renderer-stt.js\nРендерер STT"
+  "stt_worker.py\nPython STT Worker"
+}
+
+Mobile: {
+  shape: diamond
+  style.fill: "#059669"
+  
+  "iOS Safari\nPWA режим"
+  "Android Chrome\nPWA режим"
+}
+
+# ============================================
+# СЕРВЕР (Backend)
+# ============================================
+
+Server: {
+  shape: hexagon
+  style.fill: "#dc2626"
+  style.stroke-width: 3
+  
+  "server.js\nHTTP Server\n(Port 8085)"
+  
+  Auth: {
+    shape: hexagon
+    style.fill: "#f59e0b"
+    label: "Authentication Module"
+    
+    "login/logout\nUsername + Password"
+    "GitHub OAuth"
+    "Google OAuth"
+    "Telegram Auth\n(+ проверка подписки)"
+    "Rate Limiting\n(5 попыток / 15 мин)"
+  }
+  
+  Cards: {
+    shape: hexagon
+    style.fill: "#10b981"
+    label: "Cards Module"
+    
+    "CRUD карточек"
+    "Создание / Обновление"
+    "Форматирование текста"
+  }
+  
+  Data: {
+    shape: hexagon
+    style.fill: "#3b82f6"
+    label: "Data Management"
+    
+    "Загрузка /save"
+    "Сохранение /load"
+    "Метаданные"
+    "Корзина (Trash)"
+  }
+  
+  SRS: {
+    shape: hexagon
+    style.fill: "#8b5cf6"
+    label: "Spaced Repetition System"
+    
+    "Алгоритм интервалов"
+    "Планировщик"
+    "Сессии обучения"
+    "Статистика"
+  }
+  
+  Admin: {
+    shape: hexagon
+    style.fill: "#ef4444"
+    label: "Admin Panel"
+    
+    "Логи сервера"
+    "Статистика логов"
+    "Очистка логов"
+    "Управление пользователями"
+  }
+  
+  Webhooks: {
+    shape: hexagon
+    style.fill: "#ec4899"
+    label: "Webhooks & Integrations"
+    
+    "Telegram Bot Webhook"
+    "iPhone Logs Receiver"
+    "Sentry Error Tracking"
+  }
+}
+
+# ============================================
+# ХРАНИЛИЩЕ ДАННЫХ
+# ============================================
+
+FileSystem: {
+  shape: cylinder
+  style.fill: "#64748b"
+  label: "File Storage (JSON)"
+  
+  "users.json\nБаза пользователей"
+  "user_{name}.json\nДанные пользователя"
+  "user_{name}_metadata.json\nМетаданные"
+  "user_{name}_trash.json\nКорзина"
+  "global.json\nГлобальные карточки"
+}
+
+# ============================================
+# ВНЕШНИЕ СЕРВИСЫ
+# ============================================
+
+ExternalServices: {
+  shape: cloud
+  style.fill: "#94a3b8"
+  
+  GitHub: {
+    shape: cloud
+    style.fill: "#24292e"
+    label: "GitHub OAuth API"
+  }
+  
+  Google: {
+    shape: cloud
+    style.fill: "#4285f4"
+    label: "Google OAuth API"
+  }
+  
+  Telegram: {
+    shape: cloud
+    style.fill: "#0088cc"
+    label: "Telegram Bot API"
+  }
+  
+  Sentry: {
+    shape: cloud
+    style.fill: "#362d59"
+    label: "Sentry Monitoring"
+  }
+}
+
+# ============================================
+# СВЯЗИ (Клиенты → Сервер)
+# ============================================
+
+PWA -> Server: "HTTP/REST API\n(Port 8085)"
+Electron -> Server: "HTTP/REST API\n(Local)"
+Mobile -> Server: "HTTPS/REST API\n(Public URL)"
+
+# ============================================
+# СВЯЗИ (Внутри сервера)
+# ============================================
+
+Auth -> Data: "Проверка прав\n(username, role)"
+Cards -> Data: "Сохранение карточек"
+SRS -> Data: "Чтение/запись прогресса"
+Admin -> FileSystem: "Прямой доступ к логам"
+Webhooks -> Auth: "Telegram Auth\nпроверка подписки"
+
+# ============================================
+# СВЯЗИ (Сервер → Хранилище)
+# ============================================
+
+Server -> FileSystem: "Чтение/Запись\nJSON файлы"
+
+# ============================================
+# СВЯЗИ (Сервер → Внешние сервисы)
+# ============================================
+
+Server -> GitHub: "OAuth Flow\n(обмен кода на токен)"
+Server -> Google: "OAuth Flow\n(верификация email)"
+Server -> Telegram: "Проверка подписки\nна канал"
+Server -> Sentry: "Отправка ошибок\n(error tracking)"
+
+# ============================================
+# ПОДПИСИ СВЯЗЕЙ
+# ============================================
+
+(PWA -> Server).style.stroke-dash: 3
+(Electron -> Server).style.stroke-dash: 3
+(Mobile -> Server).style.stroke-dash: 3
+
+# ============================================
+# LEGEND
+# ============================================
+
+Legend: {
+  shape: page
+  style.fill: "#f8fafc"
+  style.stroke-width: 2
+  
+  "🟦 PWA — Прогрессивное веб-приложение"
+  "⬛ Electron — Десктопная версия"
+  "🟩 Mobile — Мобильные браузеры"
+  "🟥 Server — Node.js HTTP сервер"
+  "🟨 Auth — Модуль аутентификации"
+  "🟩 Cards — Управление карточками"
+  "🟦 Data — Управление данными"
+  "🟪 SRS — Интервальное повторение"
+  "🟥 Admin — Админ-панель"
+  "🩷 Webhooks — Интеграции"
+  "⬜ FileSystem — JSON хранилище"
+  "☁️ External — Внешние API"
+}

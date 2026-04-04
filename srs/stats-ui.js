@@ -2156,9 +2156,13 @@ const STATS_STYLES = `
   }
 
   /* Achievements: Full Width at Bottom */
-  .st-ach-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
-  .st-ach-scroll { display: flex; gap: 12px; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; }
-  .st-ach-card { width: 96px; height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+  .st-ach-section { background: var(--st-surf); padding: 0; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
+  .st-ach-scroll-wrap { display: flex; gap: 12px; padding: 20px; overflow-x: auto; overflow-y: hidden; justify-content: space-between; scrollbar-width: thin; scrollbar-color: var(--st-prim) var(--st-surf-h); }
+  .st-ach-scroll-wrap::-webkit-scrollbar { height: 8px; }
+  .st-ach-scroll-wrap::-webkit-scrollbar-track { background: var(--st-surf-h); border-radius: 4px; }
+  .st-ach-scroll-wrap::-webkit-scrollbar-thumb { background: linear-gradient(90deg, var(--st-prim), #FFB142); border-radius: 4px; }
+  .st-ach-scroll-wrap::-webkit-scrollbar-thumb:hover { background: linear-gradient(90deg, #FFB142, var(--st-prim)); }
+  .st-ach-card { width: 96px; height: 96px; flex-shrink: 0; }
   .st-ach-icon { font-size: 28px; margin-bottom: 6px; }
   .st-ach-title { font-size: 12px; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .st-ach-desc { display: none; }

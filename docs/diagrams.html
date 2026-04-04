@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ByteCards — Диаграммы архитектуры</title>
+  <link rel="icon" type="image/svg+xml" href="../icons/icon-192.svg">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5568d8;
+      --secondary: #764ba2;
+      --accent: #f59e0b;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --light: #f8fafc;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Dark theme variables */
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-dark: #6366f1;
+      --secondary: #a78bfa;
+      --accent: #fbbf24;
+      --dark: #f1f5f9;
+      --gray: #94a3b8;
+      --light: #1e293b;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: var(--dark);
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    [data-theme="dark"] header {
+      background: rgba(30, 41, 59, 0.95);
+    }
+
+    header h1 {
+      font-size: 2em;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .theme-toggle .icon {
+      font-size: 18px;
+    }
+
+    .diagram-card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-lg);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    [data-theme="dark"] .diagram-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+    }
+
+    .diagram-card h2 {
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      color: var(--dark);
+      border-left: 4px solid var(--primary);
+      padding-left: 15px;
+    }
+
+    .diagram-card p {
+      color: var(--gray);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .mermaid {
+      background: var(--light);
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .diagram-number {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      font-weight: 700;
+      margin-right: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: white;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <img src="logo.svg" alt="ByteCards Logo" style="width: 56px; height: 56px;">
+        <h1 style="margin: 0;">Диаграммы архитектуры ByteCards</h1>
+      </div>
+      <div class="header-controls">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+          <span class="icon" id="themeIcon">🌙</span>
+          <span id="themeText">Dark</span>
+        </button>
+        <a href="index.html" class="back-link">← На главную</a>
+      </div>
+    </header>
+
+    <!-- Диаграмма 1: Общая архитектура -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">1</span> Общая архитектура системы (C4 Context)</h2>
+      <p>Все компоненты системы и связи между ними: клиентские приложения, серверные модули, хранилище данных и внешние
+        сервисы.</p>
+      <div class="mermaid">
+        graph TB
+        subgraph Клиенты
+        PWA[PWA Web App<br />index.html + script.js]
+        Electron[Electron Desktop App<br />main.js + preload.js]
+        Mobile[Mobile Browsers<br />iOS Safari / Android Chrome]
+        end
+
+        subgraph Сервер
+        Server[Node.js HTTP Server<br />server.js:8085]
+        Auth[Auth Module<br />Login/OAuth/Rate Limit]
+        Cards[Cards Module<br />CRUD Operations]
+        Data[Data Module<br />Save/Load/Trash]
+        SRS[SRS Module<br />Spaced Repetition]
+        Admin[Admin Module<br />Logs & Management]
+        Webhooks[Webhooks<br />Telegram Bot]
+        end
+
+        subgraph Хранилище
+        FS[(File System<br />JSON Files)]
+        end
+
+        subgraph Внешние сервисы
+        GitHub[GitHub OAuth]
+        Google[Google OAuth]
+        Telegram[Telegram Bot API]
+        Sentry[Sentry Monitoring]
+        end
+
+        PWA -->|REST API| Server
+        Electron -->|REST API| Server
+        Mobile -->|REST API| Server
+
+        Server --> Auth
+        Server --> Cards
+        Server --> Data
+        Server --> SRS
+        Server --> Admin
+        Server --> Webhooks
+
+        Auth --> FS
+        Cards --> FS
+        Data --> FS
+        SRS --> FS
+        Admin --> FS
+
+        Auth --> GitHub
+        Auth --> Google
+        Auth --> Telegram
+        Server --> Sentry
+
+        style PWA fill:#667eea,color:#fff
+        style Electron fill:#475569,color:#fff
+        style Mobile fill:#059669,color:#fff
+        style Server fill:#dc2626,color:#fff
+        style FS fill:#64748b,color:#fff
+      </div>
+    </div>
+
+    <!-- Диаграмма 2: Последовательность аутентификации -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">2</span> Последовательность: Аутентификация пользователя</h2>
+      <p>Как работает вход в систему через Login и GitHub OAuth.</p>
+      <div class="mermaid">
+        sequenceDiagram
+        participant User as 👤 Пользователь
+        participant Client as 🖥️ Клиент (PWA)
+        participant Server as 🚀 Сервер (server.js)
+        participant FS as 💾 users.json
+        participant OAuth as 🔐 OAuth Provider
+
+        alt Login (username + password)
+        User->>Client: Вводит логин/пароль
+        Client->>Server: POST /api/login
+        Server->>Server: Проверка Rate Limit
+        Server->>FS: Поиск пользователя
+        FS-->>Server: Данные пользователя
+        Server->>Server: verifyPassword(SHA256)
+        alt Успех
+        Server-->>Client: {ok, username, role}
+        Client-->>User: Вход выполнен
+        else Ошибка
+        Server-->>Client: {ok: false, error}
+        Client-->>User: Ошибка входа
+        end
+        else GitHub OAuth
+        User->>Client: Нажимает "GitHub Login"
+        Client->>Server: GET /api/auth/github
+        Server-->>Client: 302 → GitHub
+        Client->>OAuth: Авторизация
+        OAuth-->>Client: Redirect с code
+        Client->>Server: GET /api/auth/github/callback
+        Server->>OAuth: Обмен code → token
+        OAuth-->>Server: access_token
+        Server->>OAuth: GET /user (данные)
+        OAuth-->>Server: UserData
+        Server->>FS: Поиск/создание пользователя
+        Server-->>Client: HTML с postMessage
+        Client-->>User: Вход через GitHub
+        end
+      </div>
+    </div>
+
+    <!-- Диаграмма 3: Поток данных карточек -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">3</span> Поток данных: Работа с карточками</h2>
+      <p>Как данные карточек перемещаются от UI до файлового хранилища.</p>
+      <div class="mermaid">
+        flowchart LR
+        subgraph Клиент
+        UI[UI Карточки]
+        Script[script.js]
+        Local[(localStorage<br />кэш)]
+        end
+
+        subgraph Сервер
+        API[API Endpoints<br />/save /load]
+        Handler[Request Handler]
+        end
+
+        subgraph Файлы
+        UserFile[(user_<br />username.json)]
+        MetaFile[(user_<br />metadata.json)]
+        TrashFile[(user_<br />trash.json)]
+        end
+
+        UI --> Script
+        Script --> Local
+        Script -->|POST /save| API
+        Script -->|GET /load| API
+        API --> Handler
+        Handler --> UserFile
+        Handler --> MetaFile
+        Handler --> TrashFile
+        UserFile -.->|Ответ| Handler
+        Handler -.->|JSON| API
+        API -.->|Ответ| Script
+        Script -.->|Обновление| UI
+        Local -.->|Кэш при загрузке| Script
+
+        style UI fill:#667eea,color:#fff
+        style Script fill:#3b82f6,color:#fff
+        style API fill:#dc2626,color:#fff
+        style UserFile fill:#64748b,color:#fff
+      </div>
+    </div>
+
+    <!-- Диаграмма 4: Компоненты SRS -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">4</span> Компоненты SRS (Spaced Repetition System)</h2>
+      <p>9 модулей системы интервального повторения и их связи.</p>
+      <div class="mermaid">
+        graph TB
+        subgraph SRS Components
+        Algorithm[algorithm.js<br />Алгоритм интервалов]
+        Scheduler[scheduler.js<br />Планировщик]
+        CatScheduler[category-scheduler.js<br />Планировщик по категориям]
+        Session[session.js<br />Управление сессией]
+        Storage[storage.js<br />Хранение данных]
+        StatsUI[stats-ui.js<br />UI статистики]
+        StatsUtils[stats-utils.js<br />Утилиты статистики]
+        LearnUI[learn-ui.js<br />UI обучения]
+        SyncUI[sync-ui.js<br />UI синхронизации]
+        end
+
+        Algorithm --> Scheduler
+        Scheduler --> CatScheduler
+        CatScheduler --> Session
+        Session --> Storage
+        Storage --> StatsUI
+        Storage --> StatsUtils
+        Storage --> LearnUI
+        Storage --> SyncUI
+
+        StatsUI --> StatsUtils
+        LearnUI --> Session
+        SyncUI --> Storage
+
+        style Algorithm fill:#8b5cf6,color:#fff
+        style Scheduler fill:#7c3aed,color:#fff
+        style Session fill:#6d28d9,color:#fff
+        style Storage fill:#5b21b6,color:#fff
+      </div>
+    </div>
+
+    <!-- Диаграмма 5: Жизненный цикл карточки -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">5</span> Жизненный цикл карточки (State Diagram)</h2>
+      <p>Все состояния карточки. <strong>Изученные карточки НЕ удаляются автоматически</strong> — они остаются в системе
+        навсегда и повторяются по расписанию (макс. интервал 180 дней).</p>
+      <div class="mermaid">
+        stateDiagram-v2
+        [*] --> Создана: POST /api/card/create
+
+        Создана --> Активна: Добавлена в обучение
+
+        Активна --> learning: 1-20 дней интервал
+        learning --> review: 21-60 дней интервал
+        review --> mastered: 61-180 дней интервал
+
+        mastered --> mastered: Повторяется каждые 180 дней
+        review --> review: Повторяется по расписанию
+        learning --> learning: Повторяется часто
+
+        mastered --> learning: Ошибка при ответе
+        review --> learning: Ошибка при ответе
+
+        Активна --> В_корзине: POST /trash (вручную)
+        В_корзине --> Активна: POST /restore
+        В_корзине --> Удалена: POST /delete-permanent (вручную)
+
+        Активна --> Активна: POST /api/card/update
+
+        Удалена --> [*]
+
+        note right of mastered
+        📌 Карточка изучена!
+        НЕ удаляется автоматически.
+        Повторяется каждые 180 дней.
+        Удаляется только вручную.
+        end note
+
+        note right of В_корзине
+        🗑️ Только ручное удаление
+        через POST /trash
+        end note
+
+        state В_корзине {
+        [*] --> Помечена
+        Помечена --> Ожидает: deleted_at записан
+        Ожидает --> [*]
+        }
+      </div>
+    </div>
+
+    <!-- Диаграмма 6: ER-модель -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">6</span> ER-модель данных (Entity-Relationship)</h2>
+      <p>Структура базы данных: пользователи, данные, метаданные, корзина.</p>
+      <div class="mermaid">
+        erDiagram
+        USERS {
+        string username PK
+        string password
+        string role
+        string email
+        string githubId
+        string googleId
+        string telegramId
+        datetime createdAt
+        datetime lastLoginAt
+        }
+
+        USER_DATA {
+        string username FK
+        json cards
+        json favorites
+        json achievements
+        json srsProgress
+        json stats
+        json meta
+        }
+
+        METADATA {
+        string username FK
+        json category_order
+        json subcategory_order
+        json card_order
+        }
+
+        TRASH_BIN {
+        string username FK
+        json items
+        datetime deleted_at
+        string deleted_by
+        }
+
+        CARD {
+        int id PK
+        string question
+        string answer
+        string category
+        string subcategory
+        json formatting
+        }
+
+        USERS ||--o| USER_DATA : has
+        USERS ||--o| METADATA : has
+        USERS ||--o| TRASH_BIN : has
+        USER_DATA }o--o{ CARD : contains
+      </div>
+    </div>
+
+    <!-- Диаграмма 7: Последовательность SRS -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">7</span> Последовательность: Сохранение прогресса SRS</h2>
+      <p>Как сохраняется прогресс обучения при ответе на карточку.</p>
+      <div class="mermaid">
+        sequenceDiagram
+        participant User as 👤 Пользователь
+        participant LearnUI as learn-ui.js
+        participant Session as session.js
+        participant Storage as storage.js
+        participant Server as server.js
+        participant FS as user_*.json
+
+        User->>LearnUI: Ответ на карточку
+        LearnUI->>Session: recordAnswer(cardId, quality)
+        Session->>Session: Рассчитать интервал
+        Session->>Storage: updateProgress(cardId, interval)
+        Storage->>Storage: Обновить _srsProgress
+        Storage->>Server: POST /api/progress?username=X
+        Server->>FS: Записать прогресс
+        FS-->>Server: OK
+        Server-->>Storage: {ok: true}
+        Storage-->>Session: Прогресс сохранён
+        Session-->>LearnUI: Обновить UI
+        LearnUI-->>User: Показать результат
+      </div>
+    </div>
+
+    <!-- Диаграмма 8: Deployment -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">8</span> Deployment Diagram (Схема развертывания)</h2>
+      <p>Как приложение развернуто в production (Cloudflare → Reg.ru → Node.js).</p>
+      <div class="mermaid">
+        graph TB
+        subgraph Production
+        Cloudflare[Cloudflare<br />DNS + CDN]
+        Tunnel[Cloudflare Tunnel<br />Без открытых портов]
+        RegRu[Reg.ru VPS<br />Ubuntu Server]
+
+        subgraph Приложение
+        NodeJS[Node.js Process<br />server.js:8085]
+        Sentry[Sentry SDK<br />Error Tracking]
+        end
+
+        subgraph Данные
+        DataDir[data/ directory<br />JSON файлы]
+        Logs[logs/ directory<br />Логирование]
+        end
+        end
+
+        subgraph Разработка
+        Dev[Developer Machine<br />https://bytecards.ru]
+        Git[(Git Repository<br />GitHub)]
+        end
+
+        User((👤 Пользователь)) -->|HTTPS| Cloudflare
+        Cloudflare --> Tunnel
+        Tunnel --> RegRu
+        RegRu --> NodeJS
+        NodeJS --> DataDir
+        NodeJS --> Logs
+        NodeJS --> Sentry
+
+        Dev -->|git push| Git
+        Git -->|deploy| RegRu
+
+        style Cloudflare fill:#f38020,color:#fff
+        style RegRu fill:#dc2626,color:#fff
+        style NodeJS fill:#10b981,color:#fff
+        style DataDir fill:#64748b,color:#fff
+        style Dev fill:#3b82f6,color:#fff
+      </div>
+    </div>
+
+    <!-- Диаграмма 9: localStorage и сессия -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">9</span> localStorage и управление сессией</h2>
+      <p>Детальная схема всех ключей localStorage, потоков чтения/записи и управления сессией. <strong>Cookies НЕ
+          используются</strong> — вся аутентификация через localStorage.</p>
+      <div class="mermaid">
+        graph LR
+        subgraph Auth["Auth Keys"]
+        A1["qaSessionUser"]
+        A2["currentUser (legacy)"]
+        A3["deviceId (guest)"]
+        A4["usersDB"]
+        end
+
+        subgraph UserData["User Data Keys"]
+        U1["qaUserCards_{user}"]
+        U2["qaFavorites_{user}"]
+        U3["qaUserTrash_{user}"]
+        U4["srsProgress"]
+        U5["studyStats"]
+        U6["studyStreak"]
+        U7["achievements"]
+        end
+
+        subgraph Admin["Admin Keys"]
+        D1["qaAdminOverrides"]
+        D2["qaNewItems"]
+        D3["qaOrderOverrides"]
+        end
+
+        subgraph Other["Other Keys"]
+        O1["localDataTimestamp"]
+        O2["qaSearchHistory"]
+        O3["guest_backup"]
+        end
+
+        subgraph Server["Server Sync"]
+        S1["POST /api/progress<br />cards, srsProgress,<br />stats, achievements"]
+        S2["POST /api/favorites<br />qaFavorites"]
+        S3["GET /api/progress<br />loads trash + favorites"]
+        end
+
+        A1 --> U1
+        A1 --> U2
+        A1 --> U4
+        A1 --> U5
+        A1 --> U7
+
+        U1 -->|sync| S1
+        U4 -->|sync| S1
+        U5 -->|sync| S1
+        U6 -->|sync| S1
+        U7 -->|sync| S1
+
+        U2 -->|sync| S2
+        U3 -->|loaded| S3
+        U2 -->|loaded| S3
+
+        O1 -->|updated| S1
+        O1 -->|checks| R1["loadFromServer"]
+        O3 -->|backup| R2["user-system.js"]
+        A3 -->|guest| R3["storage.js"]
+
+        D1 --> R4["all-data.js"]
+        D2 --> R4
+        D3 --> R5["tabs-navigation.js"]
+
+        style A1 fill:#667eea,color:#fff
+        style U1 fill:#10b981,color:#fff
+        style U2 fill:#10b981,color:#fff
+        style U4 fill:#8b5cf6,color:#fff
+        style S1 fill:#dc2626,color:#fff
+        style S2 fill:#dc2626,color:#fff
+        style S3 fill:#dc2626,color:#fff
+      </div>
+    </div>
+
+    <!-- Диаграмма 10: Поток синхронизации Client ↔ Server -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">10</span> Полный поток синхронизации (Client ↔ Server)</h2>
+      <p>Детальная последовательность загрузки и сохранения данных, включая все этапы от загрузки страницы до записи на
+        сервер.</p>
+      <div class="mermaid">
+        sequenceDiagram
+        participant Page as Page
+        participant UI as ui-manager.js
+        participant Tabs as tabs-navigation.js
+        participant Storage as srs/storage.js
+        participant Server as server.js
+        participant FS as user_*.json
+
+        Note over Page,FS: PHASE 1: PAGE LOAD (Server to Client)
+        Page->>UI: DOMContentLoaded
+        UI->>Storage: loadFromServer(true)
+        Storage->>Server: GET /api/progress?username=X
+        Server->>FS: Read user_X.json
+        FS-->>Server: cards, srsProgress, stats
+        Server-->>Storage: JSON response
+        Storage->>Storage: Write to localStorage
+        Storage->>Storage: localDataTimestamp = now
+        Storage-->>UI: dataLoaded event
+        UI->>Page: Update card UI
+
+        Note over Page,FS: PHASE 2: AUTO-LOAD (after 1 sec)
+        Page->>Tabs: autoLoadUserData()
+        Tabs->>Storage: loadFromServer()
+        Storage->>Storage: Check timestamp
+        alt Server is newer
+        Storage->>Server: GET /api/progress
+        Server-->>Storage: Data
+        Storage->>Storage: Update localStorage
+        else Local is newer
+        Storage-->>Tabs: Skip (data fresh)
+        end
+
+        Note over Page,FS: PHASE 3: SAVE (Client to Server)
+        Page->>Storage: Answer card
+        Storage->>Storage: Update srsProgress
+        Storage->>Storage: debounce 1 second
+        Storage->>Storage: Collect ALL data
+        Storage->>Server: POST /api/progress
+        Server->>FS: Read user_X.json
+        Server->>Server: Replace fields
+        Server->>FS: Write user_X.json
+        Server-->>Storage: ok true
+        Storage->>Storage: Update localDataTimestamp
+        Storage-->>Page: sync-success event
+
+        Note over Page,FS: PHASE 4: ERROR HANDLING
+        Storage->>Server: POST /api/progress
+        Server-->>Storage: Network error
+        Storage->>Storage: localDataTimestamp NOT updated
+        Storage-->>Page: sync-error event
+        Note right of Storage: Data saved locally, retry on next change
+      </div>
+    </div>
+
+    <!-- Диаграмма 11: Борьба с гонками данных -->
+    <div class="diagram-card">
+      <h2><span class="diagram-number">11</span> Борьба с гонками данных (Multi-Device Sync)</h2>
+      <p>Как система обрабатывает работу с нескольких устройств одного пользователя. <strong>Стратегия: Last Write Wins
+          (LWW)</strong> с debounce и timestamp проверками.</p>
+      <div class="mermaid">
+        graph TB
+        subgraph DeviceA["Device A (Desktop)"]
+        A1["User answers card"]
+        A2["debounce 1 second"]
+        A3["Collect ALL localStorage"]
+        A4["POST /api/progress"]
+        A5["Update localDataTimestamp"]
+
+        A1 --> A2
+        A2 --> A3
+        A3 --> A4
+        A4 --> A5
+        end
+
+        subgraph DeviceB["Device B (Phone)"]
+        B1["User answers card"]
+        B2["debounce 1 second"]
+        B3["Collect ALL localStorage"]
+        B4["POST /api/progress"]
+        B5["Update localDataTimestamp"]
+
+        B1 --> B2
+        B2 --> B3
+        B3 --> B4
+        B4 --> B5
+        end
+
+        subgraph Server["Server (Last Write Wins)"]
+        S1["POST /api/progress"]
+        S2["Read user_X.json"]
+        S3["Replace fields"]
+        S4["Write user_X.json"]
+        S5["Response: ok true"]
+
+        S1 --> S2
+        S2 --> S3
+        S3 --> S4
+        S4 --> S5
+        end
+
+        A4 --> S1
+        B4 --> S1
+
+        S5 --> A5
+        S5 --> B5
+
+        subgraph Problems["Problems (Current Implementation)"]
+        P1["No data merge<br />Full field replacement"]
+        P2["No versioning<br />Cannot rollback"]
+        P3["No push notifications<br />Data loads only on page load"]
+        P4["No polling<br />Changes from other devices<br />not visible until reload"]
+        P5["Client-side timestamp<br />Clock sync issues"]
+        end
+
+        subgraph Solutions["What Works"]
+        W1["Debounce 1s<br />Prevents request spam"]
+        W2["AbortSignal 3s<br />Timeout for hung requests"]
+        W3["localDataTimestamp<br />Data freshness check"]
+        W4["forceReload<br />Forced load on startup"]
+        W5["Sync UI indicator<br />Visual sync status"]
+        end
+
+        style A1 fill:#667eea,color:#fff
+        style B1 fill:#059669,color:#fff
+        style S1 fill:#dc2626,color:#fff
+        style P1 fill:#fee2e2,color:#991b1b
+        style W1 fill:#d1fae5,color:#065f46
+      </div>
+    </div>
+
+    <footer>
+      <p>ByteCards Architecture Diagrams v6.34.0 | 11 Mermaid Diagrams</p>
+      <p style="margin-top: 10px;">
+        <a href="index.html" style="color: white; margin: 0 10px;">← На главную</a> |
+        <a href="swagger.html" style="color: white; margin: 0 10px;">Swagger UI →</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // Theme management
+    function getTheme() {
+      return localStorage.getItem('diagramsTheme') || 'dark'; // Default to dark
+    }
+
+    function setTheme(theme) {
+      localStorage.setItem('diagramsTheme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        text.textContent = 'Light';
+      } else {
+        icon.textContent = '🌙';
+        text.textContent = 'Dark';
+      }
+    }
+
+    function toggleTheme() {
+      const current = getTheme();
+      const next = current === 'light' ? 'dark' : 'light';
+      localStorage.setItem('diagramsTheme', next);
+
+      // Reload page to re-render Mermaid diagrams with new theme
+      window.location.reload();
+    }
+
+    // Apply saved theme on load (don't reload, just set CSS)
+    const savedTheme = getTheme();
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Update button state
+    const icon = document.getElementById('themeIcon');
+    const text = document.getElementById('themeText');
+    if (savedTheme === 'dark') {
+      icon.textContent = '☀️';
+      text.textContent = 'Light';
+    } else {
+      icon.textContent = '🌙';
+      text.textContent = 'Dark';
+    }
+
+    // Initialize mermaid with saved theme
+    const initialTheme = getTheme();
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: initialTheme === 'dark' ? 'dark' : 'default',
+      securityLevel: 'loose',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+      sequence: { useMaxWidth: true, diagramMarginX: 50, diagramMarginY: 10, actorMargin: 50, width: 150, height: 65, boxMargin: 10 },
+      er: { useMaxWidth: true, diagramPadding: 20 }
+    });
+  </script>
+</body>
+
+</html>
