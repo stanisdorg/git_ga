@@ -3571,9 +3571,9 @@ function renderStats() {
 
   // Функция для кнопки "Продолжить обучение" в шапке
   window.startDailySession = () => {
-    const questions = (window.currentQuestions && window.currentQuestions.length > 0)
-      ? window.currentQuestions
-      : uniqueQaData;
+    // Берём ТОЧНО те карточки, которые показали в счётчике
+    const todaysSession = getTodaysSession(uniqueQaData || []);
+    const questions = todaysSession.map(c => c.item || c);
 
     if (!questions || questions.length === 0) {
       alert('Нет вопросов для изучения');
@@ -3593,9 +3593,8 @@ function renderStats() {
   const startTodayLink = container.querySelector('#st-start-today');
   if (startTodayLink) {
     startTodayLink.addEventListener('click', () => {
-      const questions = (window.currentQuestions && window.currentQuestions.length > 0)
-        ? window.currentQuestions
-        : uniqueQaData;
+      const todaysSession = getTodaysSession(uniqueQaData || []);
+      const questions = todaysSession.map(c => c.item || c);
 
       if (!questions || questions.length === 0) {
         alert('Нет вопросов для изучения');
@@ -3639,7 +3638,8 @@ function renderStats() {
   const learnMainBtn = container.querySelector('.st-learn-btn');
   if (learnMainBtn) {
     learnMainBtn.addEventListener('click', () => {
-      const qs = (window.currentQuestions && window.currentQuestions.length > 0) ? window.currentQuestions : uniqueQaData;
+      const todaysSession = getTodaysSession(uniqueQaData || []);
+      const qs = todaysSession.map(c => c.item || c);
       if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
       hideStatsPage();
       startLearnSession(qs);
