@@ -2667,14 +2667,19 @@ function renderStats() {
     } catch { }
   }
 
-  // Рандомные сообщения когда всё пройдено
+  // Рандомные сообщения когда всё пройдено (фиксируем при первом рендере, сбрасываем каждый день)
   const doneMessages = [
     'Всё пройдено! Следующая сессия завтра',
     'На сегодня всё! Возвращайтесь завтра',
     'План выполнен! До завтра!',
     'Отличная работа! На сегодня всё'
   ];
-  const doneMessage = doneMessages[Math.floor(Math.random() * doneMessages.length)];
+  const todayStr = new Date().toDateString();
+  if (!window._doneMessageIndex || window._doneMessageDate !== todayStr) {
+    window._doneMessageIndex = Math.floor(Math.random() * doneMessages.length);
+    window._doneMessageDate = todayStr;
+  }
+  const doneMessage = doneMessages[window._doneMessageIndex];
   const doneIcon = `<svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;flex-shrink:0;"><rect x="2" y="2" width="20" height="20" rx="5" fill="#06D6A0"/><path d="M7 12.5l3.5 3.5L17 9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
   const totalCards = uniqueQaData ? uniqueQaData.length : 0;
