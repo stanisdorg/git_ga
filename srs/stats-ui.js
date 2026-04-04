@@ -3715,6 +3715,18 @@ function renderStats() {
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
       const rWide = Math.round(wideBarW / 2);
+
+      // Серые плейсхолдеры-тени на полную высоту (всегда видны позади основных баров)
+      const placeholderCardsRx = Math.min(rWide, Math.max(1, Math.round(innerH / 2)));
+      const pathPlaceholderCards = `M ${x} ${topPad + innerH} L ${x} ${topPad + placeholderCardsRx} Q ${x} ${topPad} ${x + placeholderCardsRx} ${topPad} L ${x + wideBarW - placeholderCardsRx} ${topPad} Q ${x + wideBarW} ${topPad} ${x + wideBarW} ${topPad + placeholderCardsRx} L ${x + wideBarW} ${topPad + innerH} Z`;
+      bars.push(`<path class="bar-placeholder-cards" d="${pathPlaceholderCards}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`);
+
+      const narrowBarW = Math.round(wideBarW * 0.4);
+      const heartsX = x + Math.round((wideBarW - narrowBarW) / 2);
+      const placeholderHeartsRx = Math.min(Math.round(narrowBarW / 2), Math.max(1, Math.round(innerH / 2)));
+      const pathPlaceholderHearts = `M ${heartsX} ${topPad + innerH} L ${heartsX} ${topPad + placeholderHeartsRx} Q ${heartsX} ${topPad} ${heartsX + placeholderHeartsRx} ${topPad} L ${heartsX + narrowBarW - placeholderHeartsRx} ${topPad} Q ${heartsX + narrowBarW} ${topPad} ${heartsX + narrowBarW} ${topPad + placeholderHeartsRx} L ${heartsX + narrowBarW} ${topPad + innerH} Z`;
+      bars.push(`<path class="bar-placeholder-hearts" d="${pathPlaceholderHearts}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`);
+
       if (cardsVal > 0) {
         const cardsH = Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * cardsVal));
         const yCards = topPad + (innerH - cardsH);
@@ -3730,8 +3742,6 @@ function renderStats() {
         bars.push(`<rect class="bar-cards" x="${x}" y="${yZero}" width="${wideBarW}" height="${zeroBarH}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="0" fill="url(#go${idx})" opacity="0.15"/>`);
       }
 
-      const narrowBarW = Math.round(wideBarW * 0.4);
-      const heartsX = x + Math.round((wideBarW - narrowBarW) / 2);
       if (heartsVal > 0) {
         const heartsH = Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * heartsVal));
         const yHearts = topPad + (innerH - heartsH);
@@ -4584,6 +4594,16 @@ window.renderModalChart = () => {
       const cardsVal = d.cards || 0;
       const heartsVal = d.hearts || 0;
 
+      // Серые плейсхолдеры-тени на полную высоту (всегда видны позади основных баров)
+      const narrowBarW = Math.round(barWidth * 0.4);
+      const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
+      const placeholderCardsRx = Math.min(Math.round(barWidth / 2), Math.max(1, Math.round(innerHeight / 2)));
+      const pathPlaceholderCards = `M ${x} ${padding.top + innerHeight} L ${x} ${padding.top + placeholderCardsRx} Q ${x} ${padding.top} ${x + placeholderCardsRx} ${padding.top} L ${x + barWidth - placeholderCardsRx} ${padding.top} Q ${x + barWidth} ${padding.top} ${x + barWidth} ${padding.top + placeholderCardsRx} L ${x + barWidth} ${padding.top + innerHeight} Z`;
+      bars += `<path class="bar-placeholder-cards" d="${pathPlaceholderCards}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`;
+      const placeholderHeartsRx = Math.min(Math.round(narrowBarW / 2), Math.max(1, Math.round(innerHeight / 2)));
+      const pathPlaceholderHearts = `M ${heartsX} ${padding.top + innerHeight} L ${heartsX} ${padding.top + placeholderHeartsRx} Q ${heartsX} ${padding.top} ${heartsX + placeholderHeartsRx} ${padding.top} L ${heartsX + narrowBarW - placeholderHeartsRx} ${padding.top} Q ${heartsX + narrowBarW} ${padding.top} ${heartsX + narrowBarW} ${padding.top + placeholderHeartsRx} L ${heartsX + narrowBarW} ${padding.top + innerHeight} Z`;
+      bars += `<path class="bar-placeholder-hearts" d="${pathPlaceholderHearts}" fill="rgba(255,255,255,0.03)" style="pointer-events:none"/>`;
+
       // Cards (оранжевый, широкий)
       if (cardsVal > 0) {
         const cardsH = Math.max(minBarH, (innerHeight / maxValue) * cardsVal);
@@ -4600,9 +4620,7 @@ window.renderModalChart = () => {
         bars += `<rect class="bar-cards" x="${x}" y="${yZero}" width="${barWidth}" height="${zeroBarH}" data-type="cards" data-date="${d.date}" data-hearts="${heartsVal}" data-cards="0" fill="url(#modal-go${idx})" style="cursor:pointer" opacity="0.15"/>`;
       }
 
-      // Hearts (красный, узкий, по центру)
-      const narrowBarW = Math.round(barWidth * 0.4);
-      const heartsX = x + Math.round((barWidth - narrowBarW) / 2);
+      // Hearts (красный, узкий, по центру) — narrowBarW и heartsX уже объявлены выше
       if (heartsVal > 0) {
         const heartsH = Math.max(minBarH, (innerHeight / maxValue) * heartsVal);
         const yHearts = padding.top + innerHeight - heartsH;
