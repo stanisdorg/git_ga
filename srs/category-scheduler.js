@@ -25,13 +25,22 @@ export function getTodaysSession(allQuestions) {
     const stats = getStudyStats();
     const accuracy = (stats.total && stats.total > 0) ? (stats.correct / stats.total) : 0;
 
-    // 1. Identify DUE cards and NEW cards
+    // Получаем сегодняшнюю дату в локальном формате YYYY-MM-DD
+    const today = new Date();
+    const todayStr = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+
+    // 1. Identify DUE cards and NEW cards (исключая уже пройденные сегодня)
     const dueCards = [];
     const newCards = [];
 
     allQuestions.forEach(q => {
         const progress = progressMap[q.question];
         if (progress) {
+            // Пропускаем карточки, уже пройденные сегодня
+            if (progress.lastReviewed === todayStr) return;
+
             // Check if due
             // Compatible with both timestamp (nextReviewDate) and ISO string (dueDate)
             let dueDate = progress.nextReviewDate;
