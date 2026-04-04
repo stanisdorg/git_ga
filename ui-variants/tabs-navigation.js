@@ -690,7 +690,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.24.0');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.50.0');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -709,7 +709,7 @@ export function initTabsNavigation(appVersion) {
 
                 // Если stats-container НЕ существует, создаем его
                 if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.44.0');
+                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.50.0');
                     initStatsPage(appVersion);
                 }
 
@@ -1059,7 +1059,7 @@ export function initTabsNavigation(appVersion) {
             window.location.reload();
         };
         // Плашка уровня и XP
-        import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+        import('../srs/stats-utils.js?v=6.52.0').then(({ getCurrentLevel }) => {
             // Добавляем имя пользователя
             const usernameSpan = document.createElement('span');
             usernameSpan.className = 'username-display';
@@ -1103,7 +1103,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=6.24.0').then(() => {
+                    import('../srs/stats-ui.js?v=6.50.0').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {
@@ -1153,19 +1153,27 @@ export function initTabsNavigation(appVersion) {
             box.appendChild(label); box.appendChild(bar);
             levelContainer.appendChild(box);
             // Огонёк стрика рядом со шкалой уровня
-            const streakRaw = localStorage.getItem('studyStreak') || '{}';
-            let streakVal = 0;
-            try { const s = JSON.parse(streakRaw); streakVal = s.current || 0; } catch { }
-            if (streakVal > 0) {
-                const flame = document.createElement('span');
-                flame.textContent = `🔥 ${streakVal}`;
-                flame.className = 'streak-flame';
-                flame.style.fontSize = '12px';
-                flame.style.marginLeft = '4px';
-                levelContainer.appendChild(flame);
-            }
+            // Используем getStudyStreak() для консистентности с графиком
+            import('../srs/stats-utils.js?v=6.52.0').then(({ getStudyStreak }) => {
+                try {
+                    const streak = getStudyStreak();
+                    const streakVal = streak.current || 0;
+                    if (streakVal > 0) {
+                        const flame = document.createElement('span');
+                        flame.textContent = `🔥 ${streakVal}`;
+                        flame.className = 'streak-flame';
+                        flame.style.fontSize = '12px';
+                        flame.style.marginLeft = '4px';
+                        levelContainer.appendChild(flame);
+                    }
+                } catch (e) {
+                    console.error('[STREAK] Error loading streak:', e);
+                }
+            }).catch(e => {
+                console.error('[STREAK] Failed to load stats-utils:', e);
+            });
             function updateLevelInline() {
-                import('../srs/stats-utils.js').then(({ getCurrentLevel }) => {
+                import('../srs/stats-utils.js?v=6.52.0').then(({ getCurrentLevel }) => {
                     const d = getCurrentLevel();
                     const cont = levelContainer.querySelector('.level-inline');
                     if (!cont) return;

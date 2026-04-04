@@ -1,7 +1,7 @@
 import { LearningSession } from './session.js?v=6.44.0';
 import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.44.0';
-import { getProgressMap } from './stats-utils.js?v=6.44.0';
-import { checkAchievements } from './stats-utils.js?v=6.44.0';
+import { getProgressMap } from './stats-utils.js?v=6.49.0';
+import { checkAchievements } from './stats-utils.js?v=6.49.0';
 import { Scheduler } from './scheduler.js?v=6.44.0';
 import { getTodaysSession } from './category-scheduler.js?v=6.44.0';
 import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.44.0';
@@ -935,7 +935,7 @@ function openCreateModal() {
     // Получаем данные о категориях
     const categoriesData = buildCategoriesFromData(getRuntimeData());
     const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
-    
+
     // По умолчанию выбираем первую категорию и её подкатегории
     const defaultCategory = categoriesData[0];
     const subcategoryOptions = defaultCategory
@@ -1089,7 +1089,7 @@ function openCreateModal() {
     // Обработчик изменения категории
     const categorySelect = document.getElementById('create-category-select');
     const subcategorySelect = document.getElementById('create-subcategory-select');
-    
+
     categorySelect?.addEventListener('change', () => {
         const newCategory = categorySelect.value;
         const category = categoriesData.find(cat => cat.name === newCategory);
@@ -1857,7 +1857,7 @@ function stopLearnSession() {
 
     location.hash = '#/stats';
 
-    import('./stats-ui.js?v=6.24.0').then(({ initStatsPage }) => {
+    import('./stats-ui.js?v=6.50.0').then(({ initStatsPage }) => {
         initStatsPage(window.currentAppVersion || '6.09');
 
         // Теперь восстанавливаем UI ПОСЛЕ инициализации статистики
@@ -2707,7 +2707,7 @@ function showStats(stats, results, total) {
             document.body.appendChild(skeletonPlaceholder);
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=6.24.0').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=6.50.0').then(({ initStatsPage }) => {
                 initStatsPage(window.currentAppVersion || '6.09');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
@@ -2742,8 +2742,16 @@ function showStats(stats, results, total) {
     }
     const statsRaw = localStorage.getItem('studyStats') || '{}';
     const s = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
-    const streakRaw = localStorage.getItem('studyStreak') || '{}';
-    const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
+    // Используем getStudyStreak() для консистентности с графиком
+    let st = { current: 0, best: 0 };
+    import('./stats-utils.js?v=6.52.0').then(({ getStudyStreak }) => {
+        st = getStudyStreak();
+        // Обновляем стрик после загрузки
+        overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
+    }).catch(e => {
+        console.error('[LEARN-UI] Error loading streak:', e);
+        overlay.querySelector('#sum-streak').textContent = '0';
+    });
     const correctSession = stats.good + stats.easy;
     const accuracy = stats.reviewed > 0 ? Math.round((correctSession / stats.reviewed) * 100) : 0;
     overlay.querySelector('#sum-total').textContent = String(stats.reviewed);
@@ -2751,7 +2759,6 @@ function showStats(stats, results, total) {
     accEl.textContent = `${accuracy}%`;
     accEl.classList.remove('acc-good', 'acc-mid', 'acc-bad');
     accEl.classList.add(accuracy >= 80 ? 'acc-good' : accuracy >= 50 ? 'acc-mid' : 'acc-bad');
-    overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
 
     // Завершаем сессию обучения
     if (currentScheduler) {
@@ -2787,49 +2794,55 @@ function showStats(stats, results, total) {
     }
 
     overlay.querySelector('#sum-motivation').textContent = motivation;
-    const earned = session.stats.pointsEarned || 0;
-    const bonus = Math.min(100, (st.current || 0) * 5);
-    const dayBonus = bonus > 0 ? Math.min(5, bonus) : 0;
-    const streakBonus = Math.max(0, bonus - dayBonus);
-    overlay.querySelector('#sum-xp').textContent = `+${earned} XP • бонусы: день +${dayBonus} XP, стрик +${streakBonus} XP`;
-    // Apply bonus split to stats and daily points
-    const todayKey = (() => {
-        try {
-            const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
-            const parts = fmt.formatToParts(new Date());
-            const y = parts.find(p => p.type === 'year')?.value || '0000';
-            const m = parts.find(p => p.type === 'month')?.value || '01';
-            const d = parts.find(p => p.type === 'day')?.value || '01';
-            return `${y}-${m}-${d}`;
-        } catch { return new Date().toISOString().split('T')[0]; }
-    })();
-    s.points = (s.points || 0) + bonus;
-    localStorage.setItem('studyStats', JSON.stringify(s));
-    const dpRaw2 = localStorage.getItem('dailyPoints') || '{}';
-    const daily2 = (() => { try { return JSON.parse(dpRaw2); } catch { return {}; } })();
-    daily2[todayKey] = (daily2[todayKey] || 0) + bonus;
-    localStorage.setItem('dailyPoints', JSON.stringify(daily2));
-    const dbRaw = localStorage.getItem('dailyBonusPoints') || '{}';
-    const dBonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();
-    dBonus[todayKey] = (dBonus[todayKey] || 0) + streakBonus;
-    localStorage.setItem('dailyBonusPoints', JSON.stringify(dBonus));
-    const ddRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
-    const dDay = (() => { try { return JSON.parse(ddRaw); } catch { return {}; } })();
-    dDay[todayKey] = (dDay[todayKey] || 0) + dayBonus;
-    localStorage.setItem('dailyDayBonusPoints', JSON.stringify(dDay));
-    syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
-    try { window.dispatchEvent(new Event('xpUpdated')); } catch { }
+
+    // Загружаем стрик асинхронно и выполняем все зависимые операции
+    import('./stats-utils.js?v=6.52.0').then(({ getStudyStreak }) => {
+        const st = getStudyStreak();
+        const earned = session.stats.pointsEarned || 0;
+        const bonus = Math.min(100, (st.current || 0) * 5);
+        const dayBonus = bonus > 0 ? Math.min(5, bonus) : 0;
+        const streakBonus = Math.max(0, bonus - dayBonus);
+        overlay.querySelector('#sum-xp').textContent = `+${earned} XP • бонусы: день +${dayBonus} XP, стрик +${streakBonus} XP`;
+        // Apply bonus split to stats and daily points
+        const todayKey = (() => {
+            try {
+                const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' });
+                const parts = fmt.formatToParts(new Date());
+                const y = parts.find(p => p.type === 'year')?.value || '0000';
+                const m = parts.find(p => p.type === 'month')?.value || '01';
+                const d = parts.find(p => p.type === 'day')?.value || '01';
+                return `${y}-${m}-${d}`;
+            } catch { return new Date().toISOString().split('T')[0]; }
+        })();
+        s.points = (s.points || 0) + bonus;
+        localStorage.setItem('studyStats', JSON.stringify(s));
+        const dpRaw2 = localStorage.getItem('dailyPoints') || '{}';
+        const daily2 = (() => { try { return JSON.parse(dpRaw2); } catch { return {}; } })();
+        daily2[todayKey] = (daily2[todayKey] || 0) + bonus;
+        localStorage.setItem('dailyPoints', JSON.stringify(daily2));
+        const dbRaw = localStorage.getItem('dailyBonusPoints') || '{}';
+        const dBonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();
+        dBonus[todayKey] = (dBonus[todayKey] || 0) + streakBonus;
+        localStorage.setItem('dailyBonusPoints', JSON.stringify(dBonus));
+        const ddRaw = localStorage.getItem('dailyDayBonusPoints') || '{}';
+        const dDay = (() => { try { return JSON.parse(ddRaw); } catch { return {}; } })();
+        dDay[todayKey] = (dDay[todayKey] || 0) + dayBonus;
+        localStorage.setItem('dailyDayBonusPoints', JSON.stringify(dDay));
+        syncDailyStats(todayKey, daily2[todayKey] || 0, dBonus[todayKey] || 0, dDay[todayKey] || 0, st.current || 0);
+        try { window.dispatchEvent(new Event('xpUpdated')); } catch { }
+    }).catch(e => {
+        console.error('[LEARN-UI] Error loading streak for bonuses:', e);
+    });
 
     // Level info on top
-    import('./stats-utils.js?v=3').then(({ getCurrentLevel }) => {
+    import('./stats-utils.js?v=6.52.0').then(({ getCurrentLevel, getStudyStreak }) => {
         const lvl = getCurrentLevel();
+        const streak = getStudyStreak();
+        const bonus = Math.min(100, (streak.current || 0) * 5);
 
         overlay.querySelector('#sum-level').textContent = `LV:${lvl.level} • ${lvl.xp} XP`;
         const startXP = session.startXP || 0;
         const earned = session.stats.pointsEarned || 0;
-        const streakRaw = localStorage.getItem('studyStreak') || '{}';
-        const st = (() => { try { return JSON.parse(streakRaw); } catch { return {}; } })();
-        const bonus = Math.min(100, (st.current || 0) * 5);
 
         // Определяем, было ли повышение уровня
         const startLevel = getLevelFromXP(startXP);

@@ -1,4 +1,4 @@
-﻿import { syncWithServer } from './storage.js?v=6.24.0';
+﻿import { syncWithServer } from './storage.js?v=6.52.0';
 
 // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґР°С‚РѕР№ (Р»РѕРєР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°)
 function getLocalDate(date) {
@@ -118,28 +118,28 @@ export function getProgressMap() {
 export function getAverageCardTime(sampleSize = 40) {
   const progressMap = getProgressMap();
   const cards = Object.values(progressMap);
-  
+
   // Р¤РёР»СЊС‚СЂСѓРµРј РєР°СЂС‚РѕС‡РєРё Сѓ РєРѕС‚РѕСЂС‹С… РµСЃС‚СЊ lastReviewedTime
   const cardsWithTime = cards.filter(p => p && typeof p.lastReviewedTime === 'number');
-  
+
   if (cardsWithTime.length === 0) {
     return 90; // Р—РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (1.5 РјРёРЅСѓС‚С‹) РµСЃР»Рё РЅРµС‚ РґР°РЅРЅС‹С…
   }
-  
+
   // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ lastReviewed (РґР°С‚Рµ) С‡С‚РѕР±С‹ РІР·СЏС‚СЊ РїРѕСЃР»РµРґРЅРёРµ
   cardsWithTime.sort((a, b) => {
     const dateA = a.lastReviewed || '';
     const dateB = b.lastReviewed || '';
     return dateB.localeCompare(dateA); // РџРѕ СѓР±С‹РІР°РЅРёСЋ (СЃРЅР°С‡Р°Р»Р° РЅРѕРІС‹Рµ)
   });
-  
+
   // Р‘РµСЂС‘Рј РїРѕСЃР»РµРґРЅРёРµ sampleSize РєР°СЂС‚РѕС‡РµРє
   const recentCards = cardsWithTime.slice(0, sampleSize);
-  
+
   // РЎС‡РёС‚Р°РµРј СЃСЂРµРґРЅРµРµ РІСЂРµРјСЏ
   const totalTime = recentCards.reduce((sum, card) => sum + (card.lastReviewedTime || 0), 0);
   const avgTime = totalTime / recentCards.length;
-  
+
   return Math.round(avgTime); // Р’РѕР·РІСЂР°С‰Р°РµРј РІ СЃРµРєСѓРЅРґР°С…
 }
 
@@ -148,52 +148,85 @@ export function getStudyStats() {
 }
 
 export function getStudyStreak() {
-  // рџ”Ґ РЎС‡РёС‚Р°РµРј СЃС‚СЂРёРє РїРѕ dailyPoints (XP > 0), Р° РЅРµ РёР· studyStreak
-  // Р­С‚Рѕ РѕР±РµСЃРїРµС‡РёРІР°РµС‚ РєРѕРЅСЃРёСЃС‚РµРЅС‚РЅРѕСЃС‚СЊ СЃ РіСЂР°С„РёРєРѕРј Р°РєС‚РёРІРЅРѕСЃС‚Рё
+  // 🔥 Считаем стрик по повторениям карточек (cards > 0), а не по XP
+  // XP могут начисляться за бонусы, а стрик должен считаться только за учёбу
   const dpRaw = localStorage.getItem('dailyPoints') || '{}';
   const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
-  
+
+  // Получаем данные о повторениях карточек
+  const imp = getDailyImprovements(400);
+  const impMap = new Map(imp.map(d => [d.date, d]));
+
   const dates = Object.keys(daily).sort();
   if (dates.length === 0) {
     return { current: 0, best: 0, lastDate: null };
   }
-  
-  // РЎС‡РёС‚Р°РµРј С‚РµРєСѓС‰РёР№ СЃС‚СЂРёРє (РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рµ РґРЅРё СЃ XP > 0 РґРѕ СЃРµРіРѕРґРЅСЏ)
+
+  // Считаем текущий стрик - последовательные дни с повторениями карточек от сегодня назад
   const today = toLocalDate(new Date());
   let current = 0;
   let best = 0;
+
+  // Проверяем дни от сегодня назад, пока есть повторения карточек
+  // НО: если сегодня ещё не учились, начинаем с вчера
+  let checkDate = new Date();
+  const todayCards = impMap.get(toLocalDate(checkDate))?.reviewed || 0;
+
+  // Если сегодня ещё не учились, начинаем проверку с вчера
+  if (todayCards === 0) {
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  for (let i = 0; i < 365; i++) { // Максимум год назад
+    const dateStr = toLocalDate(checkDate);
+    const im = impMap.get(dateStr);
+    const cards = im ? (im.reviewed || 0) : 0;
+
+    if (cards > 0) {
+      current++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      // Прерываем стрик - дальше не считаем
+      break;
+    }
+  }
+
+  // Считаем лучший стрик за всё время
   let tempStreak = 0;
-  
-  // РџСЂРѕС…РѕРґРёРј РїРѕ РІСЃРµРј РґРЅСЏРј Рё СЃС‡РёС‚Р°РµРј СЃС‚СЂРёРєРё
+  let lastDate = null;
+
   for (let i = 0; i < dates.length; i++) {
     const date = dates[i];
-    const xp = daily[date] || 0;
-    
-    if (xp > 0) {
-      tempStreak++;
-      best = Math.max(best, tempStreak);
-      
-      // Р•СЃР»Рё СЌС‚Рѕ СЃРµРіРѕРґРЅСЏ, С‚Рѕ СЌС‚Рѕ С‚РµРєСѓС‰РёР№ СЃС‚СЂРёРє
-      if (date === today) {
-        current = tempStreak;
+    const im = impMap.get(date);
+    const cards = im ? (im.reviewed || 0) : 0;
+
+    if (cards > 0) {
+      // Проверяем, что это следующий день после lastDate
+      if (lastDate) {
+        const lastDateObj = new Date(lastDate + 'T00:00:00');
+        const currentDateObj = new Date(date + 'T00:00:00');
+        const diffDays = Math.round((currentDateObj - lastDateObj) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          // Последовательный день
+          tempStreak++;
+        } else {
+          // Пропуск - сбрасываем стрик
+          tempStreak = 1;
+        }
+      } else {
+        // Первый день
+        tempStreak = 1;
       }
+
+      best = Math.max(best, tempStreak);
+      lastDate = date;
     } else {
       tempStreak = 0;
+      lastDate = null;
     }
   }
-  
-  // Р•СЃР»Рё СЃРµРіРѕРґРЅСЏ РµС‰С‘ РЅРµ Р±С‹Р»Рѕ XP, РЅРѕ РІС‡РµСЂР° Р±С‹Р» СЃС‚СЂРёРє, РїСЂРѕРІРµСЂСЏРµРј Р±С‹Р» Р»Рё РІС‡РµСЂР°
-  if (current === 0) {
-    const yesterdayTime = new Date();
-    yesterdayTime.setDate(yesterdayTime.getDate() - 1);
-    const yesterday = toLocalDate(yesterdayTime);
-    
-    // Р•СЃР»Рё РІС‡РµСЂР° Р±С‹Р» XP > 0, С‚Рѕ С‚РµРєСѓС‰РёР№ СЃС‚СЂРёРє = РїРѕСЃР»РµРґРЅРёР№ С‚РµРјРї СЃС‚СЂРёРє (РѕРЅ Р±С‹Р» РїСЂРµСЂРІР°РЅ СЃРµРіРѕРґРЅСЏ)
-    if (daily[yesterday] > 0) {
-      current = tempStreak;
-    }
-  }
-  
+
   return { current, best, lastDate: dates[dates.length - 1] || null };
 }
 

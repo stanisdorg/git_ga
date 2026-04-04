@@ -1,5 +1,5 @@
-﻿import { getProgressMap } from './stats-utils.js?v=6';
-import { getStudyStats } from './stats-utils.js?v=3';
+﻿import { getProgressMap } from './stats-utils.js?v=6.49.0';
+import { getStudyStats } from './stats-utils.js?v=6.49.0';
 
 /**
  * Implements "Contextual Cognitive Linking" for session generation.
@@ -9,8 +9,8 @@ import { getStudyStats } from './stats-utils.js?v=3';
 function getDaysDiff(date1, date2) {
     const d1 = new Date(date1);
     const d2 = new Date(date2);
-    d1.setHours(0,0,0,0);
-    d2.setHours(0,0,0,0);
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
     return Math.floor((d1 - d2) / (1000 * 60 * 60 * 24));
 }
 
@@ -28,7 +28,7 @@ export function getTodaysSession(allQuestions) {
     // 1. Identify DUE cards and NEW cards
     const dueCards = [];
     const newCards = [];
-    
+
     allQuestions.forEach(q => {
         const progress = progressMap[q.question];
         if (progress) {
@@ -38,7 +38,7 @@ export function getTodaysSession(allQuestions) {
             if (!dueDate && progress.dueDate) {
                 dueDate = new Date(progress.dueDate).getTime();
             }
-            
+
             if (!dueDate || dueDate <= now) {
                 dueCards.push({ item: q, progress, isNew: false });
             }
@@ -82,13 +82,13 @@ export function getTodaysSession(allQuestions) {
         const catCards = grouped[cat].cards.filter(c => !c.isNew); // Due reviews
         sessionCards.push(...catCards);
     });
-    
+
     // Remove duplicates if any logic added them (currently safe)
-    
+
     // B. New Cards: Contextual Injection
     // Add new cards from "Active" categories (those being reviewed) to reinforce context
     // Limit new cards per day
-    
+
     // Determine limits based on "Starting Plan" (Days 1-10) and adapt by accuracy
     const studiedCount = Object.values(progressMap).filter(p => (p.repetitionCount || p.repetitions || 0) > 0).length;
     let DAILY_NEW_LIMIT = 10;
@@ -149,7 +149,7 @@ function groupByCategoryAndSubcategory(cards) {
             groups[cat] = { cards: [], mastery: 0, subcategories: {} };
         }
         groups[cat].cards.push(c);
-        
+
         // Subcategory
         const sub = c.item.subcategory || 'General';
         if (!groups[cat].subcategories[sub]) {
@@ -164,10 +164,10 @@ function calculateCategoryMastery(grouped, progressMap) {
     Object.keys(grouped).forEach(cat => {
         const cards = grouped[cat].cards;
         if (cards.length === 0) return;
-        
+
         let totalScore = 0;
         let learnedCount = 0;
-        
+
         cards.forEach(c => {
             if (!c.isNew && c.progress) {
                 // Score based on interval
@@ -178,7 +178,7 @@ function calculateCategoryMastery(grouped, progressMap) {
                 learnedCount++;
             }
         });
-        
+
         // Mastery is average score of LEARNED cards (or 0 if none)
         // Penalize for unlearned cards? Maybe slight penalty.
         // Let's keep it simple: Average of all cards in category (unlearned = 0)
@@ -190,12 +190,12 @@ function ensureCategoryDiversity(sessionCards) {
     // Shuffle but try to avoid same category back-to-back if possible?
     // Or just simple shuffle as the text says "Ensure diversity".
     // "Smart Shuffle"
-    
+
     // Fisher-Yates shuffle first
     for (let i = sessionCards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [sessionCards[i], sessionCards[j]] = [sessionCards[j], sessionCards[i]];
     }
-    
+
     return sessionCards;
 }

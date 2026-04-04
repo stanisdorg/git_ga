@@ -234,7 +234,8 @@ export class LearningSession {
         const dailyBonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();
         dailyBonus[todayKey] = dailyBonus[todayKey] || 0;
         localStorage.setItem('dailyBonusPoints', JSON.stringify(dailyBonus));
-        updateStreak();
+        // Стрик теперь считается автоматически по dailyPoints в getStudyStreak()
+        // updateStreak() удалён для избежания дублирования логики
         // 🔥 СИНХРОНИЗАЦИЯ С СЕРВЕРОМ СРАЗУ ПОСЛЕ ОБНОВЛЕНИЯ ДАННЫХ
         const { syncWithServer } = await import('./storage.js');
         syncWithServer();
@@ -295,22 +296,4 @@ export class LearningSession {
         this.lastPauseTime = Date.now();
         this.recentGrades = []; // Reset recent context
     }
-}
-
-function updateStreak() {
-    // Получаем текущую дату локального времени устройства
-    const today = getLocalDate(new Date());
-    const yesterday = getLocalDate(new Date(Date.now() - 86400000));
-
-    const raw = localStorage.getItem('studyStreak') || '{}';
-    const streak = (() => { try { return JSON.parse(raw); } catch { return {}; } })();
-    if (streak.lastDate === today) return;
-    if (!streak.lastDate) {
-        streak.current = 1;
-    } else {
-        streak.current = (streak.lastDate === yesterday) ? (streak.current || 0) + 1 : 1;
-    }
-    streak.best = Math.max(streak.best || 0, streak.current || 0);
-    streak.lastDate = today;
-    localStorage.setItem('studyStreak', JSON.stringify(streak));
 }
