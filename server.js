@@ -1394,13 +1394,14 @@ const server = http.createServer((req, res) => {
           } else if (data._compressed && data.data) {
             // Сжатые данные - распаковываем
             console.log('[api/progress] Получены сжатые данные, размер base64:', data.data.length);
+            let decompressedData;
             try {
               const zlib = require('zlib');
               // Декодируем base64 и распаковываем
               const compressedBuffer = Buffer.from(data.data, 'base64');
               const decompressed = zlib.inflateSync(compressedBuffer);
               const decompressedStr = decompressed.toString('utf-8');
-              const decompressedData = JSON.parse(decompressedStr);
+              decompressedData = JSON.parse(decompressedStr);
 
               console.log('[api/progress] Распакованные данные, размер:', decompressedStr.length, 'байт');
 
@@ -1416,6 +1417,10 @@ const server = http.createServer((req, res) => {
               if (decompressedData.studyAchievements) userData.studyAchievements = decompressedData.studyAchievements;
             } catch (decompressError) {
               console.error('[api/progress] Ошибка распаковки:', decompressError);
+              // Возвращаем ошибку чтобы клиент попробовал без сжатия
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, error: 'decompression_failed', details: decompressError.message }));
+              return;
             }
           } else {
             // Это полные данные

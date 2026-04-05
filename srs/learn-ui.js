@@ -1,9 +1,9 @@
 import { LearningSession } from './session.js?v=6.44.0';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.57.0';
-import { getProgressMap } from './stats-utils.js?v=6.49.0';
-import { checkAchievements } from './stats-utils.js?v=6.49.0';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.61.0';
+import { getProgressMap } from './stats-utils.js?v=6.67.0';
+import { checkAchievements } from './stats-utils.js?v=6.67.0';
 import { Scheduler } from './scheduler.js?v=6.44.0';
-import { getTodaysSession } from './category-scheduler.js?v=6.44.0';
+import { getTodaysSession } from './category-scheduler.js?v=6.67.0';
 import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.44.0';
 import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.44.0';
 import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.44.0';
@@ -1879,7 +1879,7 @@ function stopLearnSession() {
         }
 
         // Принудительно синхронизируем прогресс перед возвратом на главную
-        import('./storage.js?v=6.57.0').then(({ syncWithServer }) => {
+        import('./storage.js?v=6.61.0').then(({ syncWithServer }) => {
             // Отменяем debounce и синхронизируем сразу
             if (window._syncDebounceTimer) clearTimeout(window._syncDebounceTimer);
             syncWithServer(true); // forceSync = true
@@ -2771,7 +2771,7 @@ function showStats(stats, results, total) {
     const s = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
     // Используем getStudyStreak() для консистентности с графиком
     let st = { current: 0, best: 0 };
-    import('./stats-utils.js?v=6.52.0').then(({ getStudyStreak }) => {
+    import('./stats-utils.js?v=6.67.0').then(({ getStudyStreak }) => {
         st = getStudyStreak();
         // Обновляем стрик после загрузки
         overlay.querySelector('#sum-streak').textContent = String(st.current || 0);
@@ -2823,7 +2823,7 @@ function showStats(stats, results, total) {
     overlay.querySelector('#sum-motivation').textContent = motivation;
 
     // Загружаем стрик асинхронно и выполняем все зависимые операции
-    import('./stats-utils.js?v=6.52.0').then(({ getStudyStreak }) => {
+    import('./stats-utils.js?v=6.67.0').then(({ getStudyStreak }) => {
         const st = getStudyStreak();
         const earned = session.stats.pointsEarned || 0;
         const bonus = Math.min(100, (st.current || 0) * 5);
@@ -2862,7 +2862,7 @@ function showStats(stats, results, total) {
     });
 
     // Level info on top
-    import('./stats-utils.js?v=6.52.0').then(({ getCurrentLevel, getStudyStreak }) => {
+    import('./stats-utils.js?v=6.67.0').then(({ getCurrentLevel, getStudyStreak }) => {
         const lvl = getCurrentLevel();
         const streak = getStudyStreak();
         const bonus = Math.min(100, (streak.current || 0) * 5);

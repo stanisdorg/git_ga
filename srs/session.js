@@ -236,9 +236,7 @@ export class LearningSession {
         localStorage.setItem('dailyBonusPoints', JSON.stringify(dailyBonus));
         // Стрик теперь считается автоматически по dailyPoints в getStudyStreak()
         // updateStreak() удалён для избежания дублирования логики
-        // 🔥 СИНХРОНИЗАЦИЯ С СЕРВЕРОМ СРАЗУ ПОСЛЕ ОБНОВЛЕНИЯ ДАННЫХ
-        const { syncWithServer } = await import('./storage.js');
-        syncWithServer();
+        // Синхронизация уже происходит в updateCardProgress -> syncCardProgress
 
         // Re-queue if interval is 0 (Again/Hard on new cards)
         if (newProgress.interval === 0) {

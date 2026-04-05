@@ -1,7 +1,7 @@
-import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime, getMSKDate } from './stats-utils.js?v=6.52.0';
-import { syncFavorite } from './storage.js?v=6.57.0';
+import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime, getMSKDate, getTotalHearts, getDailyHearts } from './stats-utils.js?v=6.67.0';
+import { syncFavorite } from './storage.js?v=6.61.0';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.44.0';
-import { getTodaysSession, getTodaysSessionBreakdown } from './category-scheduler.js?v=6.44.0';
+import { getTodaysSession, getTodaysSessionBreakdown } from './category-scheduler.js?v=6.68.0';
 import { startLearnSession } from './learn-ui.js?v=6.44.0';
 import { applyFormatting } from './text-formatter.js';
 
@@ -2641,6 +2641,7 @@ function showStats() {
 }
 
 function renderStats() {
+  console.log('[renderStats] === НАЧАЛО РЕНДЕРА СТАТИСТИКИ ===');
   let level, metrics, achievements, progress, top5, rest;
   try { level = getCurrentLevel(); } catch { level = { level: 1, xp: 0, remaining: 100, progress: 0 }; }
   try { metrics = getMetrics(uniqueQaData); } catch { metrics = { streakCurrent: 0, studiedCount: 0 }; }
@@ -2650,6 +2651,8 @@ function renderStats() {
     progress = achResult.progress || {};
   } catch { achievements = {}; progress = {}; }
   try { ({ top5, rest } = getCategoryProgress(uniqueQaData)); } catch { top5 = []; rest = []; }
+
+  console.log('[renderStats] Данные получены:', { level: level.level, streak: metrics.streakCurrent, studied: metrics.studiedCount });
 
   // Получаем имя пользователя
   let username = '';
@@ -2732,6 +2735,14 @@ function renderStats() {
   const finishDateStr = finishDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const progressMap = getProgressMap();
+
+  // XP из studyStats
+  const studyStats = getStudyStats();
+  const totalXP = studyStats.points || 0;
+
+  // Общее количество сердечек (сумма всех efChange)
+  const totalHearts = getTotalHearts();
+
   const easyCount = (() => {
     try {
       return Object.values(progressMap).filter(p => p && typeof p.easeFactor === 'number' && p.easeFactor >= 2.4).length;
@@ -2849,9 +2860,9 @@ function renderStats() {
           </div>
           <div class="app-version-display" style="font-size:11px;color:#555;font-weight:bold;margin-left:10px;">v${window.currentAppVersion || ''}</div>
           <div class="st-top-metrics">
-            <div class="metric"><span>🔥</span> ${metrics.streakCurrent}</div>
-            <div class="metric"><span>⚡</span> ${easyCount}</div>
-            <div class="metric"><span>❤️</span> ${cardsDoneToday}</div>
+            <div class="metric" title="Стрик дней"><span>🔥</span> ${metrics.streakCurrent}</div>
+            <div class="metric" title="Общий XP"><span>⚡</span> ${totalXP}</div>
+            <div class="metric" title="Всего сердечек"><span>❤️</span> ${totalHearts}</div>
           </div>
           ${!dataLoaded ? `
           <button class="st-cta-btn" id="st-continue-top-btn" style="margin-left:12px;padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;white-space:nowrap;opacity:0.5;cursor:wait;" disabled>
@@ -3821,7 +3832,7 @@ function renderStats() {
       }
 
       if (heartsVal > 0) {
-        const heartsH = Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * heartsVal));
+        const heartsH = Math.max(minBarH, Math.min(innerH, (innerH / hcMax) * heartsVal * 20));
         const yHearts = topPad + (innerH - heartsH);
         const tHearts = Math.max(0, Math.min(1, heartsVal / hcMax));
         const topRed = lerpHex(redDark, redBright, tHearts);
@@ -4869,7 +4880,7 @@ window.getXpSeriesForModal = (mode) => {
         const de = daily.find(x => x.date === s);
         const im = impMap.get(s);
         xp += de ? (de.xp || 0) : 0;
-        hearts += im ? (im.regressed || 0) : 0;
+        hearts += getDailyHearts(s);
         cards += im ? (im.reviewed || 0) : 0;
       }
       res.push({
@@ -4901,7 +4912,7 @@ window.getXpSeriesForModal = (mode) => {
         date: s,
         label: d.getDate().toString(),
         xp: entry.xp,
-        hearts: entry.dayBonus || entry.bonus || (im ? im.regressed : 0),
+        hearts: getDailyHearts(s),
         cards: im ? im.reviewed : 0
       });
     }
@@ -4922,7 +4933,7 @@ window.getXpSeriesForModal = (mode) => {
       date: s,
       label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
       xp: entry.xp,
-      hearts: entry.dayBonus || entry.bonus || (im ? im.regressed : 0),
+      hearts: getDailyHearts(s),
       cards: im ? im.reviewed : 0
     });
   }
@@ -5421,7 +5432,7 @@ function getActivitySeries(mode) {
         const de = daily.find(x => x.date === s);
         const im = impMap.get(s);
         xp += de ? (de.xp || 0) : 0;
-        hearts += im ? (im.regressed || 0) : 0;
+        hearts += getDailyHearts(s);
         cards += im ? (im.reviewed || 0) : 0;
       }
       res.push({ date: getLocalDate(new Date(y, m, 1)), label: new Date(y, m, 1).toLocaleString('ru-RU', { month: 'short' }), xp, hearts, cards });
@@ -5442,7 +5453,7 @@ function getActivitySeries(mode) {
         date: s,
         label: d.getDate().toString(),
         xp: de.xp || 0,
-        hearts: im.regressed || 0,
+        hearts: getDailyHearts(s),
         cards: im.reviewed || 0
       });
     }
@@ -5460,7 +5471,7 @@ function getActivitySeries(mode) {
       date: s,
       label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
       xp: de.xp || 0,
-      hearts: im.regressed || 0,
+      hearts: getDailyHearts(s),
       cards: im.reviewed || 0
     });
   }

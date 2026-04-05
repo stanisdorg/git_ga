@@ -1,4 +1,4 @@
-﻿import { syncWithServer } from './storage.js?v=6.57.0';
+﻿import { syncWithServer } from './storage.js?v=6.61.0';
 
 // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґР°С‚РѕР№ (Р»РѕРєР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°)
 function getLocalDate(date) {
@@ -513,7 +513,10 @@ export function getMetrics(allData) {
 }
 
 export function getHeartsDistribution() {
+  console.log('[getHeartsDistribution] === РАСЧЁТ СЕРДЕЧЕК ===');
   const prog = getProgressMap();
+  console.log('[getHeartsDistribution] Размер прогресса:', Object.keys(prog).length);
+
   const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
   // РџРѕР»СѓС‡Р°РµРј РІСЃРµ РєР°СЂС‚РѕС‡РєРё РґР»СЏ СЂР°СЃС‡С‘С‚Р° РѕР±С‰РµРіРѕ РєРѕР»РёС‡РµСЃС‚РІР°
@@ -550,6 +553,12 @@ export function getHeartsDistribution() {
   const totalCards = Array.isArray(allCards) ? allCards.length : 0;
   const unstudiedCount = Math.max(0, totalCards - studiedQuestions.size);
   dist[1] += unstudiedCount;
+
+  console.log('[getHeartsDistribution] Распределение:', dist);
+  console.log('[getHeartsDistribution] Изучено карточек:', studiedQuestions.size);
+  console.log('[getHeartsDistribution] Всего карточек:', totalCards);
+  console.log('[getHeartsDistribution] Неизучено:', unstudiedCount);
+  console.log('[getHeartsDistribution] =========================================');
 
   return dist;
 }
@@ -600,5 +609,104 @@ try {
   }
 } catch (e) {
   console.error('[MSK Auto-Migrate] Error:', e);
+}
+
+/**
+ * Подсчёт суммы всех efChange (сердечек) за всё время
+ * На основе historyArray - массива ответов для каждой карточки
+ * @returns {number} Сумма всех efChange
+ */
+export function getTotalHearts() {
+  const prog = getProgressMap();
+  console.log('[getTotalHearts] Размер прогресса:', Object.keys(prog).length);
+
+  let totalHearts = 0;
+  let totalAnswers = 0;
+
+  Object.values(prog).forEach(p => {
+    if (!p.historyArray || !Array.isArray(p.historyArray)) return;
+
+    p.historyArray.forEach(h => {
+      const grade = h.grade;
+      let efChange = 0;
+
+      switch (grade) {
+        case 1: // Снова
+          efChange = -0.25;
+          break;
+        case 2: // Трудно
+          efChange = -0.15;
+          break;
+        case 3: // Хорошо
+          efChange = 0.05;
+          break;
+        case 4: // Легко
+          efChange = 0.05;
+          break;
+      }
+
+      totalHearts += efChange;
+      totalAnswers++;
+    });
+  });
+
+  console.log('[getTotalHearts] Всего ответов:', totalAnswers);
+  console.log('[getTotalHearts] Сумма efChange (сырая):', totalHearts);
+  console.log('[getTotalHearts] Округлённо:', Math.round(totalHearts * 100) / 100);
+
+  return Math.round(totalHearts * 100) / 100; // Округляем до 2 знаков
+}
+
+/**
+ * Подсчёт суммы efChange (сердечек) за конкретный день
+ * На основе historyArray - массива ответов для каждой карточки
+ * @param {string} dateStr - Дата в формате YYYY-MM-DD
+ * @returns {number} Сумма efChange за день
+ */
+export function getDailyHearts(dateStr) {
+  const prog = getProgressMap();
+  let dailyHearts = 0;
+  let answersToday = 0;
+
+  Object.values(prog).forEach(p => {
+    if (!p.historyArray || !Array.isArray(p.historyArray)) return;
+
+    p.historyArray.forEach(h => {
+      if (!h.date) return;
+
+      // Преобразуем timestamp в дату
+      const hDate = new Date(h.date);
+      const hDateStr = hDate.getFullYear() + '-' +
+        String(hDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(hDate.getDate()).padStart(2, '0');
+
+      if (hDateStr !== dateStr) return;
+
+      const grade = h.grade;
+      let efChange = 0;
+
+      switch (grade) {
+        case 1: // Снова
+          efChange = -0.25;
+          break;
+        case 2: // Трудно
+          efChange = -0.15;
+          break;
+        case 3: // Хорошо
+          efChange = 0.05;
+          break;
+        case 4: // Легко
+          efChange = 0.05;
+          break;
+      }
+
+      dailyHearts += efChange;
+      answersToday++;
+    });
+  });
+
+  console.log(`[getDailyHearts] ${dateStr}: ответов=${answersToday}, hearts=${dailyHearts}`);
+
+  return Math.round(dailyHearts * 100) / 100;
 }
 

@@ -37,6 +37,8 @@ export async function syncWithServer() {
     if (!username) return; // Guest -> do not sync
 
     syncDebounceTimer = setTimeout(async () => {
+        console.log('[syncWithServer] === НАЧАЛО СИНХРОНИЗАЦИИ ===');
+
         // Collect all data
         let data;
         try {
@@ -52,6 +54,11 @@ export async function syncWithServer() {
                 studyAchievements: JSON.parse(localStorage.getItem('studyAchievements') || '{}'),
                 updatedAt: Date.now()
             };
+            console.log('[syncWithServer] Данные собраны:', {
+                cardsCount: data._cards.length,
+                srsProgressKeys: Object.keys(data.srsProgress).length,
+                updatedAt: data.updatedAt
+            });
         } catch (e) {
             console.error('[syncWithServer] Ошибка чтения данных:', e);
             return;
@@ -81,64 +88,39 @@ export async function syncWithServer() {
             }
 
             console.log('[syncWithServer] Отправка данных на сервер, размер:', body.length, 'байт');
+            console.log('[syncWithServer] Username:', username);
+            console.log('[syncWithServer] URL:', `/api/progress?username=${encodeURIComponent(username)}`);
 
-            // Используем сжатие для больших данных (>30KB)
-            const COMPRESS_THRESHOLD = 30 * 1024; // 30KB
-            let res;
+            // Отправляем данные без сжатия (сжатие пока отключено)
+            console.log('[syncWithServer] Отправка POST запроса...');
+            const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: body,
+                signal: AbortSignal.timeout(5000)
+            });
 
-            if (body.length > COMPRESS_THRESHOLD && typeof CompressionStream !== 'undefined') {
-                // Сжимаем данные используя браузерный CompressionStream API
-                console.log('[syncWithServer] Применяем сжатие...');
-                try {
-                    const compressedBase64 = await compressData(body);
-                    console.log('[syncWithServer] Сжатый размер (base64):', compressedBase64.length, 'байт');
+            console.log('[syncWithServer] Получен ответ:', { status: res.status, ok: res.ok });
 
-                    // Отправляем сжатые данные как JSON объект
-                    const compressedPayload = JSON.stringify({
-                        _compressed: true,
-                        data: compressedBase64
-                    });
-
-                    console.log('[syncWithServer] Размер payload с обёрткой:', compressedPayload.length, 'байт');
-
-                    res = await fetch(`/api/progress?username=${encodeURIComponent(username)}&compressed=true`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: compressedPayload,
-                        signal: AbortSignal.timeout(5000)
-                    });
-
-                    // Если сервер не поддерживает сжатие (400 error), пробуем отправить без сжатия
-                    if (!res.ok && res.status === 400) {
-                        console.warn('[syncWithServer] Сервер не поддерживает сжатие, отправляем без сжатия');
-                        res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: body,
-                            signal: AbortSignal.timeout(5000)
-                        });
-                    }
-                } catch (compressError) {
-                    console.error('[syncWithServer] Ошибка сжатия:', compressError);
-                    // Fallback: отправляем без сжатия
-                    res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: body,
-                        signal: AbortSignal.timeout(5000)
-                    });
-                }
+            // Обрабатываем результат запроса
+            if (res && res.ok) {
+                console.log('[syncWithServer] ✅ Синхронизация успешна!');
+                localStorage.setItem('localDataTimestamp', data.updatedAt);
+                lastSyncedData = JSON.parse(JSON.stringify(data)); // Глубокая копия
+                window.dispatchEvent(new Event('sync-success'));
+            } else if (res) {
+                const errorText = await res.text().catch(() => 'неизвестная ошибка');
+                console.error('[syncWithServer] ❌ Ошибка сервера:', res.status, errorText);
+                console.error('[syncWithServer] Response body:', errorText);
+                localStorage.setItem('localDataTimestamp', data.updatedAt);
+                window.dispatchEvent(new Event('sync-error'));
             } else {
-                // Данные маленькие или нет поддержки сжатия
-                res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: body,
-                    signal: AbortSignal.timeout(5000)
-                });
+                console.error('[syncWithServer] ❌ Ответ от сервера не получен (res is null/undefined)');
+                window.dispatchEvent(new Event('sync-error'));
             }
         } catch (e) {
-            console.error('[syncWithServer] Ошибка синхронизации:', e);
+            console.error('[syncWithServer] ❌ Исключение при синхронизации:', e);
+            console.error('[syncWithServer] Stack:', e.stack);
             localStorage.setItem('localDataTimestamp', Date.now());
         }
     }, 1000);

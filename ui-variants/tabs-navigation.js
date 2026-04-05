@@ -298,7 +298,7 @@ async function autoLoadUserData() {
     // Загружаем данные через srs/storage.js
     // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.57.0');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.61.0');
         await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
@@ -704,14 +704,11 @@ export function initTabsNavigation(appVersion) {
             }
 
             if (location.hash === '#/stats') {
-                // ПРОВЕРЯЕМ: существует ли stats-container
-                const statsContainerExists = document.getElementById('stats-container');
+                console.log('[HASHCHANGE #/stats] Переход на статистику, обновляем данные');
 
-                // Если stats-container НЕ существует, создаем его
-                if (!statsContainerExists) {
-                    const { initStatsPage } = await import('../srs/stats-ui.js?v=6.50.0');
-                    initStatsPage(appVersion);
-                }
+                // ВСЕГДА обновляем статистику при переходе на #/stats
+                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.50.0');
+                initStatsPage(appVersion);
 
                 // Скрываем главный контейнер и sidebar
                 const mainContainer = document.querySelector('.container');

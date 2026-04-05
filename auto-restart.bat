@@ -9,11 +9,16 @@ echo.
 
 :loop
     echo [%date% %time%] Проверка сервера...
-    
+
     REM Проверка Node.js сервера
     netstat -ano | findstr ":8085" >nul 2>&1
     if errorlevel 1 (
         echo [%date% %time%] Сервер не работает. Перезапуск...
+        
+        REM Бэкап перед рестартом
+        echo [%date% %time%] Создание бэкапа данных...
+        node auto-backup.cjs
+        
         taskkill /F /IM node.exe >nul 2>&1
         timeout /t 1 /nobreak >nul
         start "QA Server" node server.js

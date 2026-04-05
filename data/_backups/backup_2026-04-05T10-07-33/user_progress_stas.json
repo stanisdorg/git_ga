@@ -1,0 +1,18 @@
+{
+  "username": "stas",
+  "lastSessionDate": null,
+  "sessionCards": 0,
+  "totalCards": 0,
+  "correctAnswers": 0,
+  "incorrectAnswers": 0,
+  "skippedCards": 0,
+  "timeSpent": 0,
+  "points": 0,
+  "streak": 0,
+  "longestStreak": 0,
+  "cardsSeen": 0,
+  "cardsLearned": 0,
+  "categoryStats": {},
+  "qaFavorites": [],
+  "studyAchievements": {}
+}
