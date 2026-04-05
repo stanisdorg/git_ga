@@ -298,7 +298,7 @@ async function autoLoadUserData() {
     // Загружаем данные через srs/storage.js
     // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.24.0');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.57.0');
         await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);

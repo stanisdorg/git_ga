@@ -1,4 +1,6 @@
-﻿const STORAGE_KEY = 'srsProgress';
+﻿import { invalidateSessionCache } from './category-scheduler.js';
+
+const STORAGE_KEY = 'srsProgress';
 
 function getUserId() {
     try {
@@ -18,6 +20,9 @@ function getUserId() {
 
 let syncDebounceTimer = null;
 
+// Отслеживаем последние отправленные данные для增量ной синхронизации
+let lastSyncedData = null;
+
 export async function syncWithServer() {
     if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
 
@@ -33,42 +38,143 @@ export async function syncWithServer() {
 
     syncDebounceTimer = setTimeout(async () => {
         // Collect all data
-        const data = {
-            _cards: JSON.parse(localStorage.getItem('qaUserCards') || '[]'),
-            srsProgress: JSON.parse(localStorage.getItem('srsProgress') || '{}'),
-            studyStats: JSON.parse(localStorage.getItem('studyStats') || '{}'),
-            studyStreak: JSON.parse(localStorage.getItem('studyStreak') || '{}'),
-            dailyPoints: JSON.parse(localStorage.getItem('dailyPoints') || '{}'),
-            dailyBonusPoints: JSON.parse(localStorage.getItem('dailyBonusPoints') || '{}'),
-            dailyDayBonusPoints: JSON.parse(localStorage.getItem('dailyDayBonusPoints') || '{}'),
-            qaFavorites: JSON.parse(localStorage.getItem('qaFavorites') || '[]'),
-            studyAchievements: JSON.parse(localStorage.getItem('studyAchievements') || '{}'),
-            updatedAt: Date.now()
-        };
+        let data;
+        try {
+            data = {
+                _cards: JSON.parse(localStorage.getItem('qaUserCards') || '[]'),
+                srsProgress: JSON.parse(localStorage.getItem('srsProgress') || '{}'),
+                studyStats: JSON.parse(localStorage.getItem('studyStats') || '{}'),
+                studyStreak: JSON.parse(localStorage.getItem('studyStreak') || '{}'),
+                dailyPoints: JSON.parse(localStorage.getItem('dailyPoints') || '{}'),
+                dailyBonusPoints: JSON.parse(localStorage.getItem('dailyBonusPoints') || '{}'),
+                dailyDayBonusPoints: JSON.parse(localStorage.getItem('dailyDayBonusPoints') || '{}'),
+                qaFavorites: JSON.parse(localStorage.getItem('qaFavorites') || '[]'),
+                studyAchievements: JSON.parse(localStorage.getItem('studyAchievements') || '{}'),
+                updatedAt: Date.now()
+            };
+        } catch (e) {
+            console.error('[syncWithServer] Ошибка чтения данных:', e);
+            return;
+        }
 
         try {
             // Пробуем отправить на сервер, но не показываем ошибку если API недоступен
             window.dispatchEvent(new Event('sync-start'));
 
-            // Отправляем все данные на /api/progress
-            const res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                // Не ждем долго и не показываем ошибку если сервер недоступен
-                signal: AbortSignal.timeout(3000)
-            });
+            // Валидируем JSON перед отправкой
+            const body = JSON.stringify(data);
 
-            if (res.ok) {
-                localStorage.setItem('localDataTimestamp', data.updatedAt);
-                window.dispatchEvent(new Event('sync-success'));
+            // Дополнительная валидация: пробуем распарсить обратно чтобы убедиться что JSON валидный
+            try {
+                JSON.parse(body);
+            } catch (validateError) {
+                console.error('[syncWithServer] Сгенерированный JSON невалидный:', validateError.message);
+                console.error('[syncWithServer] Размер body:', body.length);
+                console.error('[syncWithServer] Первые 200 символов:', body.substring(0, 200));
+                return;
+            }
+
+            // Проверка на слишком большой payload
+            if (body.length > 5 * 1024 * 1024) { // 5MB
+                console.warn('[syncWithServer] Payload слишком большой:', body.length, 'байт');
+                return;
+            }
+
+            console.log('[syncWithServer] Отправка данных на сервер, размер:', body.length, 'байт');
+
+            // Используем сжатие для больших данных (>30KB)
+            const COMPRESS_THRESHOLD = 30 * 1024; // 30KB
+            let res;
+
+            if (body.length > COMPRESS_THRESHOLD && typeof CompressionStream !== 'undefined') {
+                // Сжимаем данные используя браузерный CompressionStream API
+                console.log('[syncWithServer] Применяем сжатие...');
+                try {
+                    const compressedBase64 = await compressData(body);
+                    console.log('[syncWithServer] Сжатый размер (base64):', compressedBase64.length, 'байт');
+
+                    // Отправляем сжатые данные как JSON объект
+                    const compressedPayload = JSON.stringify({
+                        _compressed: true,
+                        data: compressedBase64
+                    });
+
+                    console.log('[syncWithServer] Размер payload с обёрткой:', compressedPayload.length, 'байт');
+
+                    res = await fetch(`/api/progress?username=${encodeURIComponent(username)}&compressed=true`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: compressedPayload,
+                        signal: AbortSignal.timeout(5000)
+                    });
+
+                    // Если сервер не поддерживает сжатие (400 error), пробуем отправить без сжатия
+                    if (!res.ok && res.status === 400) {
+                        console.warn('[syncWithServer] Сервер не поддерживает сжатие, отправляем без сжатия');
+                        res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: body,
+                            signal: AbortSignal.timeout(5000)
+                        });
+                    }
+                } catch (compressError) {
+                    console.error('[syncWithServer] Ошибка сжатия:', compressError);
+                    // Fallback: отправляем без сжатия
+                    res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: body,
+                        signal: AbortSignal.timeout(5000)
+                    });
+                }
             } else {
-                localStorage.setItem('localDataTimestamp', data.updatedAt);
+                // Данные маленькие или нет поддержки сжатия
+                res = await fetch(`/api/progress?username=${encodeURIComponent(username)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body,
+                    signal: AbortSignal.timeout(5000)
+                });
             }
         } catch (e) {
-            localStorage.setItem('localDataTimestamp', data.updatedAt);
+            console.error('[syncWithServer] Ошибка синхронизации:', e);
+            localStorage.setItem('localDataTimestamp', Date.now());
         }
     }, 1000);
+}
+
+// Функция для сжатия данных используя CompressionStream API
+async function compressData(data) {
+    const encoder = new TextEncoder();
+    const input = encoder.encode(data);
+
+    // Используем CompressionStream API (поддерживается в современных браузерах)
+    const cs = new CompressionStream('deflate');
+    const writer = cs.writable.getWriter();
+    writer.write(input);
+    writer.close();
+
+    const reader = cs.readable.getReader();
+    const chunks = [];
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+    }
+
+    // Объединяем все chunks
+    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    const compressed = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+        compressed.set(chunk, offset);
+        offset += chunk.length;
+    }
+
+    // Конвертируем в base64 для передачи как JSON
+    return btoa(String.fromCharCode(...compressed));
 }
 
 export async function loadFromServer(forceReload = false) {
@@ -115,7 +221,7 @@ export async function loadFromServer(forceReload = false) {
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
         // Restore keys
-        if (data._cards) {
+        if (data._cards && data._cards.length > 0) {
             localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
 
             try {
@@ -227,10 +333,16 @@ export function getProgressMap() {
 
 /**
  * Saves the progress map to local storage.
- * @param {Object} map 
+ * @param {Object} map
  */
 function saveProgressMap(map) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+    // Сбрасываем кэш сессии при изменении прогресса
+    try {
+        invalidateSessionCache();
+    } catch (e) {
+        // Игнорируем ошибки при импорте
+    }
 }
 
 /**

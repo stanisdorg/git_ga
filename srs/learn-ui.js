@@ -1,5 +1,5 @@
 import { LearningSession } from './session.js?v=6.44.0';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.44.0';
+import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.57.0';
 import { getProgressMap } from './stats-utils.js?v=6.49.0';
 import { checkAchievements } from './stats-utils.js?v=6.49.0';
 import { Scheduler } from './scheduler.js?v=6.44.0';
@@ -1787,7 +1787,17 @@ export function startLearnSession(candidateQuestions, options = {}) {
     }
 
     // Safety cap for session length (except cram?)
-    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death') ? 100 : 20;
+    // Read user settings for daily study time
+    const settings = (typeof window !== 'undefined' && window.appSettings) || { dailyStudyTime: 60 };
+    const dailyMinutes = settings.dailyStudyTime || 60;
+    const avgTimePerCard = 1.5; // minutes
+    const buffer = 1.15; // +15%
+    const calculatedMax = Math.floor((dailyMinutes * buffer) / avgTimePerCard);
+
+    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death')
+        ? 100
+        : Math.max(15, Math.min(60, calculatedMax));
+
     if (sessionCards.length > MAX_SESSION) {
         sessionCards = sessionCards.slice(0, MAX_SESSION);
     }
@@ -1858,15 +1868,22 @@ function stopLearnSession() {
     location.hash = '#/stats';
 
     import('./stats-ui.js?v=6.55.0').then(({ initStatsPage }) => {
-        // Обновляем uniqueQaData из localStorage перед рендером
+        // Обновляем uniqueQaData через setUniqueQaData (не напрямую!)
         try {
             const userCardsRaw = localStorage.getItem('qaUserCards');
-            if (userCardsRaw) {
-                window.uniqueQaData = JSON.parse(userCardsRaw);
+            if (userCardsRaw && typeof window.setUniqueQaData === 'function') {
+                window.setUniqueQaData(JSON.parse(userCardsRaw));
             }
         } catch (e) {
             console.warn('[stopLearnSession] Не удалось обновить uniqueQaData:', e);
         }
+
+        // Принудительно синхронизируем прогресс перед возвратом на главную
+        import('./storage.js?v=6.57.0').then(({ syncWithServer }) => {
+            // Отменяем debounce и синхронизируем сразу
+            if (window._syncDebounceTimer) clearTimeout(window._syncDebounceTimer);
+            syncWithServer(true); // forceSync = true
+        });
 
         initStatsPage(window.currentAppVersion || '6.09');
 

@@ -1,7 +1,7 @@
 import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime, getMSKDate } from './stats-utils.js?v=6.52.0';
-import { syncFavorite } from './storage.js?v=6.44.0';
+import { syncFavorite } from './storage.js?v=6.57.0';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.44.0';
-import { getTodaysSession } from './category-scheduler.js?v=6.44.0';
+import { getTodaysSession, getTodaysSessionBreakdown } from './category-scheduler.js?v=6.44.0';
 import { startLearnSession } from './learn-ui.js?v=6.44.0';
 import { applyFormatting } from './text-formatter.js';
 
@@ -286,6 +286,10 @@ const STATS_STYLES = `
 .st-auth-btn svg { width: 20px; height: 20px; }
 .st-top-actions .nav-icon-btn { padding: 0; }
 .st-top-actions .tab { width: 36px; height: 36px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card); padding: 0; display:flex; align-items:center; justify-content:center; box-sizing: border-box; }
+.st-settings-btn { transition: all 0.2s; }
+.st-settings-btn:hover { background: rgba(255,255,255,0.15) !important; }
+.st-settings-btn:hover svg { color: rgba(255,255,255,0.9) !important; transform: rotate(90deg); }
+.st-settings-btn svg { transition: all 0.3s; }
 .activity-card {
   background: var(--st-surf);
   border: 1px solid var(--st-border);
@@ -2315,6 +2319,18 @@ const STATS_STYLES = `
 `;
 
 export function initStatsPage(appVersion) {
+  // Загружаем настройки пользователя
+  try {
+    const savedSettings = localStorage.getItem('appSettings');
+    if (savedSettings) {
+      window.appSettings = JSON.parse(savedSettings);
+    } else {
+      window.appSettings = { language: 'ru', theme: 'dark', dailyStudyTime: 60 };
+    }
+  } catch {
+    window.appSettings = { language: 'ru', theme: 'dark', dailyStudyTime: 60 };
+  }
+
   /* DEBUG
   console.log('========================================');
   console.log('[STATS INIT] ========== initStatsPage CALLED ==========');
@@ -2654,16 +2670,36 @@ function renderStats() {
   const usernameStyle = username ? 'position:absolute;top:0;left:210px;font-size:10px;color:#06D6A0;text-align:center;font-weight:500;margin:0;padding:0 8px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:10;pointer-events:none;' : 'display:none!important;';
   let planMins = 0;
   let sessionCount = 0;
+  let dueCount = 0;
+  let newCount = 0;
   let todaysSession = [];
   const dataLoaded = uniqueQaData && uniqueQaData.length > 0;
   if (dataLoaded) {
     try {
       todaysSession = getTodaysSession(uniqueQaData);
       sessionCount = todaysSession.length;
-      // Расчёт времени на основе среднего времени прохождения последних 40 карточек
-      const avgSecPerCard = getAverageCardTime(40); // секунды на карточку
-      const totalSec = sessionCount * avgSecPerCard;
-      planMins = Math.ceil(totalSec / 60); // конвертируем в минуты
+      // Разбивка на повторения и новые
+      const breakdown = getTodaysSessionBreakdown(uniqueQaData);
+      dueCount = breakdown.dueCount;
+      newCount = breakdown.newCount;
+
+      // Расчёт времени на основе настроек пользователя
+      const settings = window.appSettings || { dailyStudyTime: 60 };
+      const dailyMinutes = settings.dailyStudyTime || 60;
+
+      // Если сессия пустая — показываем 0
+      if (sessionCount === 0) {
+        planMins = 0;
+      } else {
+        // Используем реальное среднее время или дефолт 1.5 мин
+        const avgSecPerCard = getAverageCardTime(40);
+        const avgMinPerCard = avgSecPerCard > 0 ? avgSecPerCard / 60 : 1.5;
+        planMins = Math.ceil(sessionCount * avgMinPerCard);
+
+        // Ограничиваем временем из настроек (+15% буфер)
+        const maxAllowed = Math.ceil(dailyMinutes * 1.15);
+        if (planMins > maxAllowed) planMins = maxAllowed;
+      }
     } catch { }
   }
 
@@ -2821,14 +2857,26 @@ function renderStats() {
           <button class="st-cta-btn" id="st-continue-top-btn" style="margin-left:12px;padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;white-space:nowrap;opacity:0.5;cursor:wait;" disabled>
             <span style="display:flex;align-items:center;line-height:1;">Загрузка...</span>
           </button>` : sessionCount > 0 ? `
-          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${sessionCount} карточек • ~${planMins} мин">
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="margin-left:12px;padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${dueCount} повторений + ${newCount} новых">
             <span style="display:flex;align-items:center;line-height:1;"><svg viewBox="0 0 24 24" fill="#000" style="width:16px;height:16px;margin-right:6px;"><path d="M8 5v14l11-7z"/></svg>Обучение</span>
-            <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${sessionCount} карт • ~${planMins} мин</span>
+            <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${dueCount} повт. + ${newCount} новых</span>
           </button>` : `
           <button class="st-cta-btn" id="st-continue-top-btn" style="margin-left:12px;padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;opacity:0.8;cursor:default;" title="Все карточки на сегодня пройдены">
             ${doneIcon}
             <span style="display:flex;align-items:center;line-height:1;">${doneMessage}</span>
-          </button>`}
+          </button>`}${(() => {
+      try {
+        const s = localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser');
+        console.log('[SETTINGS_BTN] qaSessionUser (local+session):', s);
+        if (s) { const u = JSON.parse(s); console.log('[SETTINGS_BTN] parsed:', u); if (u && u.username) return true; }
+      } catch (e) { console.error('[SETTINGS_BTN] error:', e); }
+      return false;
+    })() ? `
+          <button class="nav-icon-btn st-settings-btn" onclick="window.openSettingsModal()" title="Настройки" style="min-width:32px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);border:none;border-radius:8px;cursor:pointer;transition:background 0.2s;">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;color:rgba(255,255,255,0.6);">
+              <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+            </svg>
+          </button>` : ''}
           <div class="st-level-inline" style="margin-left:auto;display:flex;align-items:center;gap:6px;"></div>
         </div>
       </div>
@@ -2850,7 +2898,7 @@ function renderStats() {
         <!-- Кнопка продолжить на всю ширину (мобильная версия) -->
         ${!dataLoaded ? `
         <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.5;cursor:wait;" disabled><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="font-size:15px;font-weight:700;">Загрузка...</div></div></button>` : sessionCount > 0 ? `
-        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${sessionCount}</span> карточек • ~${planMins} мин</div></div></button>` : `
+        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${dueCount}</span> повторений + <span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${newCount}</span> новых</div></div></button>` : `
         <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.8;cursor:default;"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;">${doneIcon}<div style="font-size:15px;font-weight:700;">${doneMessage}</div></div></button>`}
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
@@ -5418,5 +5466,185 @@ function getActivitySeries(mode) {
   }
   return res;
 }
+
+// ============================================
+// Модальное окно настроек
+// ============================================
+
+function getSettings() {
+  try {
+    const saved = localStorage.getItem('appSettings');
+    if (saved) return JSON.parse(saved);
+  } catch { }
+  return {
+    language: 'ru',
+    theme: 'dark',
+    dailyStudyTime: 60 // минуты по умолчанию
+  };
+}
+
+function saveSettings(settings) {
+  localStorage.setItem('appSettings', JSON.stringify(settings));
+  window.dispatchEvent(new Event('settingsChanged'));
+}
+
+window.openSettingsModal = function () {
+  // Удаляем старое модальное окно если есть
+  const old = document.getElementById('settings-modal-overlay');
+  if (old) old.remove();
+
+  const settings = getSettings();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'settings-modal-overlay';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:10000;animation:fadeIn 0.2s;';
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'background:#1a1a2e;border-radius:16px;width:90%;max-width:500px;max-height:85vh;overflow-y:auto;padding:0;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:slideUp 0.3s;';
+
+  modal.innerHTML = `
+    <!-- Шапка -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.1);">
+      <h2 style="margin:0;font-size:20px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:24px;height:24px;color:#FF9F1C;">
+          <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+        </svg>
+        Настройки
+      </h2>
+      <button onclick="document.getElementById('settings-modal-overlay').remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:4px;border-radius:4px;transition:all 0.2s;" onmouseover="this.style.color='#fff';this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.color='rgba(255,255,255,0.5)';this.style.background='none'">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:24px;height:24px;">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Контент -->
+    <div style="padding:24px;">
+      <!-- 1. Настройки приложения -->
+      <div style="margin-bottom:28px;">
+        <h3 style="margin:0 0 16px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">⚙️ Настройки приложения</h3>
+        
+        <!-- Язык -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:14px;color:#fff;margin-bottom:8px;font-weight:500;">Язык интерфейса</label>
+          <select id="settings-language" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:14px;cursor:pointer;">
+            <option value="ru" ${settings.language === 'ru' ? 'selected' : ''}>🇷🇺 Русский</option>
+            <option value="en" ${settings.language === 'en' ? 'selected' : ''}>🇬🇧 English (в разработке)</option>
+          </select>
+        </div>
+
+        <!-- Тема -->
+        <div>
+          <label style="display:block;font-size:14px;color:#fff;margin-bottom:8px;font-weight:500;">Тема оформления</label>
+          <select id="settings-theme" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:14px;cursor:pointer;">
+            <option value="dark" ${settings.theme === 'dark' ? 'selected' : ''}>🌙 Тёмная</option>
+            <option value="light" ${settings.theme === 'light' ? 'selected' : ''}>☀️ Светлая (в разработке)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2. Настройки пользователя -->
+      <div style="margin-bottom:28px;">
+        <h3 style="margin:0 0 16px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">👤 Настройки обучения</h3>
+        
+        <div>
+          <label style="display:block;font-size:14px;color:#fff;margin-bottom:8px;font-weight:500;">
+            Время на обучение в день
+            <span style="color:#FF9F1C;font-size:16px;font-weight:700;" id="settings-time-display">${settings.dailyStudyTime} мин</span>
+          </label>
+          <input type="range" id="settings-study-time" min="30" max="120" step="15" value="${settings.dailyStudyTime}" style="width:100%;margin-bottom:12px;accent-color:#FF9F1C;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.4);">
+            <span>30 мин</span>
+            <span>60 мин</span>
+            <span>90 мин</span>
+            <span>120 мин</span>
+          </div>
+          <p style="margin:12px 0 0 0;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.5;">
+            💡 Система адаптирует количество карточек под ваше время. Допускается +15% к выбранному времени.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Информация -->
+      <div>
+        <h3 style="margin:0 0 16px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">ℹ️ Информация</h3>
+        
+        <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:16px;font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;">
+          <p style="margin:0 0 12px 0;"><strong style="color:#fff;">Как работает обучение?</strong></p>
+          <p style="margin:0 0 12px 0;">Система использует метод интервальных повторений (SRS) — карточки показываются через оптимальные промежутки времени, чтобы вы запоминали материал надолго.</p>
+          
+          <p style="margin:0 0 12px 0;"><strong style="color:#fff;">Сколько карточек в день?</strong></p>
+          <p style="margin:0 0 12px 0;">Количество зависит от вашего времени обучения и точности ответов. В среднем:</p>
+          <ul style="margin:0 0 12px 16px;padding:0;">
+            <li>30 мин → ~10-15 новых карточек + повторения</li>
+            <li>60 мин → ~20-30 новых карточек + повторения</li>
+            <li>90 мин → ~30-40 новых карточек + повторения</li>
+          </ul>
+          
+          <p style="margin:0 0 12px 0;"><strong style="color:#fff;">Что такое "повторения" и "новые"?</strong></p>
+          <p style="margin:0 0 12px 0;">• <strong>Новые</strong> — карточки, которые вы видите впервые<br>• <strong>Повторения</strong> — карточки, которые пора повторить по алгоритму</p>
+          
+          <p style="margin:0 0 12px 0;"><strong style="color:#fff;">Что будет если пропустить день?</strong></p>
+          <p style="margin:0 0 0 0;">Ничего страшного! Карточки накопятся и будут показаны в следующей сессии. Рекомендуется заниматься регулярно для лучшего запоминания.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Футер -->
+    <div style="display:flex;gap:12px;padding:20px 24px;border-top:1px solid rgba(255,255,255,0.1);">
+      <button onclick="document.getElementById('settings-modal-overlay').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Отмена</button>
+      <button id="settings-save-btn" style="flex:1;padding:12px;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%);border:none;border-radius:8px;color:#000;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">Сохранить</button>
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // Закрытие по клику на оверлей
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  // Закрытие по Escape
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      overlay.remove();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+
+  // Обновление отображения времени
+  const timeSlider = document.getElementById('settings-study-time');
+  const timeDisplay = document.getElementById('settings-time-display');
+  timeSlider.addEventListener('input', () => {
+    timeDisplay.textContent = timeSlider.value + ' мин';
+  });
+
+  // Сохранение настроек
+  document.getElementById('settings-save-btn').addEventListener('click', () => {
+    const newSettings = {
+      language: document.getElementById('settings-language').value,
+      theme: document.getElementById('settings-theme').value,
+      dailyStudyTime: parseInt(document.getElementById('settings-study-time').value)
+    };
+    saveSettings(newSettings);
+    overlay.remove();
+
+    // Показываем уведомление
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#06D6A0;color:#000;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;z-index:10001;animation:slideUp 0.3s;';
+    toast.textContent = '✓ Настройки сохранены';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  });
+};
+
+// Загружаем настройки при старте
+window.addEventListener('DOMContentLoaded', () => {
+  const settings = getSettings();
+  window.appSettings = settings;
+  window.dispatchEvent(new Event('settingsLoaded'));
+});
 
 

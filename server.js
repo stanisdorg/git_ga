@@ -6,6 +6,10 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { logger } from './logger.js';
 import * as Sentry from '@sentry/node';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { createBackup } = require('./auto-backup.cjs');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1269,6 +1273,7 @@ const server = http.createServer((req, res) => {
     // POST /api/progress - Save all user progress (achievements, favorites, stats)
     if (req.method === 'POST' && pathname === '/api/progress') {
       const username = urlObj.searchParams.get('username');
+      const isCompressed = urlObj.searchParams.get('compressed') === 'true';
 
       if (!username) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -1277,10 +1282,51 @@ const server = http.createServer((req, res) => {
       }
 
       let body = '';
-      req.on('data', chunk => { body += chunk; });
-      req.on('end', () => {
+      let bodySize = 0;
+      req.on('data', chunk => {
+        body += chunk;
+        bodySize += chunk.length;
+      });
+      req.on('end', async () => {
         try {
-          const data = JSON.parse(body);
+          console.log(`[api/progress] Получено тело запроса: размер=${bodySize}, длина строки=${body.length}, username=${username}, isCompressed=${isCompressed}`);
+
+          if (!body || body.length === 0) {
+            console.error('[api/progress] Пустое тело запроса');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'empty_body' }));
+            return;
+          }
+
+          // Логгируем первые 500 символов для отладки
+          console.log(`[api/progress] Первые 500 символов тела:`, body.substring(0, 500));
+
+          // Пробуем распарсить JSON с детальной обработкой ошибок
+          let data;
+          try {
+            const parsed = JSON.parse(body);
+
+            // Проверяем это сжатые данные
+            if (parsed._compressed && parsed.data) {
+              console.log('[api/progress] Обнаружены сжатые данные, распаковываем...');
+              // TODO: Распаковка данных на сервере
+              // Пока просто логируем
+              console.log('[api/progress] Размер сжатых данных (base64):', parsed.data.length);
+              // Для полной поддержки нужно добавить zlib для распаковки
+              data = parsed; // Пока сохраняем как есть
+            } else {
+              data = parsed;
+            }
+          } catch (parseError) {
+            console.error('[api/progress] Ошибка парсинга JSON:', parseError.message);
+            console.error('[api/progress] Тип body:', typeof body);
+            console.error('[api/progress] Кодировка первого символа:', body.charCodeAt(0));
+            console.error('[api/progress] Последние 100 символов:', body.substring(body.length - 100));
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'invalid_json', details: parseError.message }));
+            return;
+          }
+
           const targetPath = path.join(__dirname, 'data', `user_${username}.json`);
 
           let userData = {};
@@ -1288,21 +1334,107 @@ const server = http.createServer((req, res) => {
             userData = JSON.parse(fs.readFileSync(targetPath, 'utf-8'));
           }
 
-          // Обновляем все данные
-          if (data._cards) userData._cards = data._cards;
-          if (data._achievements) userData._achievements = data._achievements;
-          if (data._favorites) userData._favorites = data._favorites;
-          if (data._stats) userData._stats = data._stats;
-          if (data._srsProgress) userData._srsProgress = data._srsProgress;
-          if (data.studyAchievements) userData._achievements = data.studyAchievements;
-          if (data.qaFavorites) userData._favorites = data.qaFavorites;
-          if (data.srsProgress) userData._srsProgress = data.srsProgress;
-          if (data.studyStats) userData._stats = data.studyStats;
-          // 🔥 Сохраняем стрики и daily stats
-          if (data.studyStreak) userData.studyStreak = data.studyStreak;
-          if (data.dailyPoints) userData.dailyPoints = data.dailyPoints;
-          if (data.dailyBonusPoints) userData.dailyBonusPoints = data.dailyBonusPoints;
-          if (data.dailyDayBonusPoints) userData.dailyDayBonusPoints = data.dailyDayBonusPoints;
+          // Проверяем это chunk или полные данные
+          if (data._chunkInfo && data._chunkData) {
+            // Это chunk большого поля
+            console.log(`[api/progress] Обработка chunk'а: поле=${data._chunkInfo.field}, index=${data._chunkInfo.index}/${data._chunkInfo.total}`);
+
+            // TODO: Нужно собрать все chunk'и и объединить
+            // Пока просто сохраняем как есть
+            const field = data._chunkInfo.field;
+            const chunkData = data._chunkData;
+
+            // Сохраняем chunk во временное хранилище
+            const chunkDir = path.join(__dirname, 'data', 'chunks', username);
+            if (!fs.existsSync(chunkDir)) {
+              fs.mkdirSync(chunkDir, { recursive: true });
+            }
+
+            // Если это первый chunk, очищаем предыдущие
+            if (data._chunkInfo.index === 0) {
+              const files = fs.readdirSync(chunkDir);
+              files.forEach(f => {
+                if (f.startsWith(field + '_')) fs.unlinkSync(path.join(chunkDir, f));
+              });
+            }
+
+            // Сохраняем chunk
+            fs.writeFileSync(path.join(chunkDir, `${field}_${data._chunkInfo.index}.json`), chunkData);
+
+            // Если это последний chunk, собираем все вместе
+            if (data._chunkInfo.index === data._chunkInfo.total - 1) {
+              console.log(`[api/progress] Последний chunk, собираем поле ${field}`);
+              let fullData = '';
+              for (let i = 0; i < data._chunkInfo.total; i++) {
+                const chunkFile = path.join(chunkDir, `${field}_${i}.json`);
+                if (fs.existsSync(chunkFile)) {
+                  fullData += fs.readFileSync(chunkFile, 'utf-8');
+                }
+              }
+
+              // Парсим и сохраняем
+              try {
+                const parsedFieldData = JSON.parse(fullData);
+                if (field === 'srsProgress') userData.srsProgress = parsedFieldData;
+                else if (field === 'studyStats') userData.studyStats = parsedFieldData;
+                else if (field === '_cards') userData._cards = parsedFieldData;
+                // ... добавить другие поля по необходимости
+
+                console.log(`[api/progress] Поле ${field} собрано и сохранено`);
+              } catch (e) {
+                console.error(`[api/progress] Ошибка сборки chunk'ов для ${field}:`, e);
+              }
+
+              // Удаляем временные файлы
+              const files = fs.readdirSync(chunkDir);
+              files.forEach(f => {
+                if (f.startsWith(field + '_')) fs.unlinkSync(path.join(chunkDir, f));
+              });
+            }
+          } else if (data._compressed && data.data) {
+            // Сжатые данные - распаковываем
+            console.log('[api/progress] Получены сжатые данные, размер base64:', data.data.length);
+            try {
+              const zlib = require('zlib');
+              // Декодируем base64 и распаковываем
+              const compressedBuffer = Buffer.from(data.data, 'base64');
+              const decompressed = zlib.inflateSync(compressedBuffer);
+              const decompressedStr = decompressed.toString('utf-8');
+              const decompressedData = JSON.parse(decompressedStr);
+
+              console.log('[api/progress] Распакованные данные, размер:', decompressedStr.length, 'байт');
+
+              // Теперь сохраняем распакованные данные
+              if (decompressedData._cards) userData._cards = decompressedData._cards;
+              if (decompressedData.srsProgress) userData.srsProgress = decompressedData.srsProgress;
+              if (decompressedData.studyStats) userData.studyStats = decompressedData.studyStats;
+              if (decompressedData.studyStreak) userData.studyStreak = decompressedData.studyStreak;
+              if (decompressedData.dailyPoints) userData.dailyPoints = decompressedData.dailyPoints;
+              if (decompressedData.dailyBonusPoints) userData.dailyBonusPoints = decompressedData.dailyBonusPoints;
+              if (decompressedData.dailyDayBonusPoints) userData.dailyDayBonusPoints = decompressedData.dailyDayBonusPoints;
+              if (decompressedData.qaFavorites) userData.qaFavorites = decompressedData.qaFavorites;
+              if (decompressedData.studyAchievements) userData.studyAchievements = decompressedData.studyAchievements;
+            } catch (decompressError) {
+              console.error('[api/progress] Ошибка распаковки:', decompressError);
+            }
+          } else {
+            // Это полные данные
+            // Обновляем все данные
+            if (data._cards) userData._cards = data._cards;
+            if (data._achievements) userData._achievements = data._achievements;
+            if (data._favorites) userData._favorites = data._favorites;
+            if (data._stats) userData._stats = data._stats;
+            if (data._srsProgress) userData._srsProgress = data._srsProgress;
+            if (data.studyAchievements) userData._achievements = data.studyAchievements;
+            if (data.qaFavorites) userData._favorites = data.qaFavorites;
+            if (data.srsProgress) userData._srsProgress = data.srsProgress;
+            if (data.studyStats) userData._stats = data.studyStats;
+            // 🔥 Сохраняем стрики и daily stats
+            if (data.studyStreak) userData.studyStreak = data.studyStreak;
+            if (data.dailyPoints) userData.dailyPoints = data.dailyPoints;
+            if (data.dailyBonusPoints) userData.dailyBonusPoints = data.dailyBonusPoints;
+            if (data.dailyDayBonusPoints) userData.dailyDayBonusPoints = data.dailyDayBonusPoints;
+          }
 
           fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
             if (err) {
@@ -1311,7 +1443,7 @@ const server = http.createServer((req, res) => {
               res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
               return;
             }
-            console.log(`[Progress] User ${username} saved progress`);
+            console.log(`[Progress] User ${username} saved progress${isCompressed ? ' (compressed)' : ''}`);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ ok: true }));
           });
@@ -1847,68 +1979,8 @@ const server = http.createServer((req, res) => {
     }
 
 
-    // Сохранение пользовательского прогресса (объединено с основным файлом)
-    if (req.method === 'POST' && req.url.startsWith('/api/progress')) {
-      const urlObj = new URL(req.url, `http://${req.headers.host}`);
-      const username = urlObj.searchParams.get('username');
-      const token = urlObj.searchParams.get('token');
-
-      // Verify token (опционально - для обратной совместимости)
-      if (token) {
-        const userInfo = verifyToken(token);
-        if (!userInfo || userInfo.username !== username) {
-          res.writeHead(401, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ ok: false, error: 'Unauthorized' }));
-          return;
-        }
-      }
-
-      // Если нет username, возвращаем ошибку
-      if (!username) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ok: false, error: 'username required' }));
-        return;
-      }
-
-      let body = '';
-      req.on('data', chunk => { body += chunk; });
-      req.on('end', () => {
-        try {
-          const data = JSON.parse(body);
-          const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
-
-          // Читаем текущие данные
-          let userData = {};
-          if (fs.existsSync(userFilePath)) {
-            userData = JSON.parse(fs.readFileSync(userFilePath, 'utf-8'));
-          }
-
-          // Обновляем поля прогресса
-          if (data._achievements) userData._achievements = data._achievements;
-          if (data._stats) userData._stats = data._stats;
-          if (data._srsProgress) userData._srsProgress = data._srsProgress;
-          if (data._favorites) userData._favorites = data._favorites;
-
-          // Записываем обратно
-          fs.writeFile(userFilePath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
-            if (err) {
-              console.error('Failed to write progress:', err);
-              res.writeHead(500, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ ok: false, error: 'write_failed' }));
-              return;
-            }
-            console.log(`[Progress] User ${username} saved progress`);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ ok: true }));
-          });
-        } catch (e) {
-          console.error('Invalid JSON body:', e);
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ ok: false, error: 'invalid_json' }));
-        }
-      });
-      return;
-    }
+    // Сохранение пользовательского прогресса - объединено с основным обработчиком выше
+    // Этот код был дубликатом и удалён для предотвращения конфликтов
 
     // Загрузка пользовательского прогресса (теперь часть /load)
     // Оставляем для обратной совместимости, но возвращаем данные из основного файла
@@ -2217,6 +2289,14 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, IP, () => {
   console.log(`Server running at http://${IP}:${PORT}/`);
   console.log(`Open http://localhost:${PORT}/ in your browser`);
+
+  // Запуск автоматического бэкапа каждые 6 часов
+  console.log('[BACKUP] Initializing auto-backup service...');
+  createBackup(); // Первый бэкап при старте
+  setInterval(() => {
+    console.log('\n[BACKUP] Scheduled backup starting...');
+    createBackup();
+  }, 6 * 60 * 60 * 1000); // 6 часов
 
   // Автоматическая установка команд меню в Telegram (v6.09.5)
   const menuCommands = JSON.stringify({
