@@ -535,6 +535,10 @@
     margin-bottom: 16px;
     color: var(--color-text-secondary);
     font-size: 14px;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding-top: 12px !important;
+    padding-bottom: 20px !important;
 }
 
 /* Tabs Navigation Wrapper */
@@ -609,13 +613,28 @@
     background: none !important;
     border: none !important;
     color: #9BA3AF !important; /* var(--st-text-sec) match */
-    padding: 6px;
+    padding: 6px !important;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 6px;
     transition: color 0.2s, background 0.2s;
+    height: 36px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+}
+.nav-icon-btn.tab {
+    width: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+}
+/* Buttons inside results header — не ограничивать высоту */
+#results-count-container .nav-icon-btn {
+    height: auto !important;
+    min-height: auto !important;
+    width: auto !important;
+    min-width: auto !important;
 }
 .nav-icon-btn:hover {
     color: #fff !important;
@@ -2109,13 +2128,15 @@ body.learning-mode #bottom-nav {
 /* Top Actions Bar - равномерные отступы для мобильных */
 @media (max-width: 768px) {
     .top-actions-bar {
-        padding-left: 8px !important;
-        padding-right: 8px !important;
-        padding: 4px 8px !important;
+        padding: 10px 0 0 0 !important;
         gap: 4px !important;
-        justify-content: flex-start !important; /* Фикс: убираем space-between */
+        justify-content: flex-start !important;
         display: flex !important;
-        flex-wrap: nowrap !important; /* Запрещаем перенос */
+        flex-wrap: nowrap !important;
+    }
+    .top-actions-bar > :first-child {
+        padding-left: 11px !important;
+        padding-right: 4px !important;
     }
     .top-actions-bar .nav-icon-btn {
         padding: 0px 8px !important;
@@ -2123,7 +2144,7 @@ body.learning-mode #bottom-nav {
         flex-shrink: 0 !important; /* Не сжимать кнопки */
     }
     .top-actions-bar .level-container-right {
-        margin-left: auto !important; /* Прижимаем вправо */
+        margin-left: 0 !important; /* На мобильной — без авто-отступа */
         flex-shrink: 0 !important; /* Не сжимать */
     }
     .level-container-right {
@@ -2255,9 +2276,7 @@ body.learning-mode #bottom-nav {
     }
     /* Top Actions Bar - кнопки должны быть видны */
     .top-actions-bar {
-        padding-left: 4px !important;
-        padding-right: 4px !important;
-        padding: 4px 4px !important;
+        padding: 4px 12px 4px 0 !important;
         gap: 2px !important;
     }
     .top-actions-bar .nav-icon-btn {
@@ -2285,7 +2304,7 @@ body.learning-mode #bottom-nav {
         min-width: 0 !important;
     }
     .level-container-right {
-        margin-left: 4px !important;
+        margin-left: 0 !important;
         padding-right: 4px !important;
         gap: 1px !important;
     }
@@ -2488,8 +2507,12 @@ body.learning-mode #bottom-nav {
     }
     /* Top Actions Bar - кнопки должны быть видны */
     .top-actions-bar {
-        padding: 4px 4px !important;
+        padding: 10px 0 0 0 !important;
         gap: 4px !important;
+    }
+    .top-actions-bar > :first-child {
+        padding-left: 11px !important;
+        padding-right: 4px !important;
     }
     .top-actions-bar .nav-icon-btn {
         padding: 0px 4px !important;
@@ -2516,7 +2539,7 @@ body.learning-mode #bottom-nav {
         min-width: 0 !important;
     }
     .level-container-right {
-        margin-left: auto !important;
+        margin-left: 0 !important;
         padding-right: 0 !important;
         gap: 2px !important;
     }
@@ -3837,8 +3860,10 @@ body.learning-mode #bottom-nav {
     z-index: 1000 !important;
     background: var(--color-bg) !important;
     left: var(--sidebar-width) !important;
-    right: 5px !important;
-    width: calc(100% - var(--sidebar-width) - 5px) !important;
+    right: 0 !important;
+    width: calc(100% - var(--sidebar-width)) !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
 }
 
 /* Мобильная версия - на всю ширину */
@@ -3847,6 +3872,12 @@ body.learning-mode #bottom-nav {
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
+        padding: 10px 0 0 0 !important;
+    }
+    /* Первый элемент (статистика) — отступ слева 11px */
+    .top-actions-bar > :first-child {
+        padding-left: 11px !important;
+        padding-right: 4px !important;
     }
 }
 
@@ -3896,17 +3927,17 @@ body.learning-mode #bottom-nav {
     /* Шапка: те же отступы что у контейнера (по умолчанию - открытый сайдбар) */
     .top-actions-bar {
         left: var(--sidebar-width) !important;
-        right: 5px !important;
-        width: calc(100% - var(--sidebar-width) - 5px) !important;
-        padding-left: var(--content-padding-x) !important;
-        padding-right: var(--content-padding-x) !important;
+        right: 0 !important;
+        width: calc(100% - var(--sidebar-width)) !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         box-sizing: border-box !important;
     }
     
     /* Шапка при закрытом сайдбаре (используем :has для современных браузеров) */
     body:has(.sidebar.collapsed) .top-actions-bar {
         left: var(--sidebar-collapsed-width) !important;
-        width: calc(100% - var(--sidebar-collapsed-width) - 5px) !important;
+        width: calc(100% - var(--sidebar-collapsed-width)) !important;
     }
     
     /* Поисковая строка: отступы как у контента */
@@ -4077,8 +4108,7 @@ body.learning-mode #bottom-nav {
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        padding-left: 8px !important;
-        padding-right: 8px !important;
+        padding: 10px 0 0 0 !important;
         box-sizing: border-box !important;
     }
     
@@ -4143,8 +4173,7 @@ body.learning-mode #bottom-nav {
 /* Очень маленькие экраны (≤375px): ещё меньше отступы */
 @media (max-width: 375px) {
     .top-actions-bar {
-        padding-left: 4px !important;
-        padding-right: 4px !important;
+        padding: 10px 0 0 0 !important;
     }
 
     .search-container {

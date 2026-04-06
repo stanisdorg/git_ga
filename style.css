@@ -42,6 +42,8 @@ body {
     z-index: 1000 !important;
     background: var(--color-bg) !important;
     overflow: visible !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
 }
 
 /* DEBUG: логирование для .top-actions-bar */
@@ -55,12 +57,20 @@ body {
     }
 }
 
-/* ПК версия - отступ для сайдбара слева и отступ справа */
+/* ПК версия - отступ для сайдбара слева, 12px справа */
 @media (min-width: 769px) {
     .top-actions-bar {
         left: var(--sidebar-width, 300px) !important;
-        right: 80px !important;
-        width: calc(100% - var(--sidebar-width, 300px) - 80px) !important;
+        right: 0 !important;
+        width: calc(100% - var(--sidebar-width, 300px)) !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        box-sizing: border-box !important;
+    }
+    /* Центрируем уровень на десктопе */
+    .top-actions-bar .level-container-right {
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 }
 
@@ -71,8 +81,13 @@ body {
         right: 0 !important;
         width: 100% !important;
         justify-content: space-between !important;
-        padding: 4px 12px !important;
+        padding: 10px 0 0 0 !important;
         overflow: hidden !important; /* Обрезать всё что не влезает */
+    }
+    /* Первый элемент (статистика) — отступ слева 11px */
+    .top-actions-bar > :first-child {
+        padding-left: 11px !important;
+        padding-right: 4px !important;
     }
     /* Распределяем контент шапки на мобильном */
     .top-actions-bar .st-top-actions {
@@ -103,14 +118,15 @@ body {
     .top-actions-bar .st-level-inline {
         margin-left: 4px !important;
     }
-    /* Имя пользователя - сильно сокращённое */
+    /* Имя пользователя - полностью убираем из раскладки на мобильном */
     .top-actions-bar .username-display {
-        max-width: 60px !important;
+        display: none !important;
+        visibility: collapse !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
         overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-        font-size: 11px !important; /* Меньше шрифт */
-        flex-shrink: 1 !important; /* Сжимать имя в первую очередь */
     }
 }
 
@@ -131,12 +147,15 @@ body {
     max-height: none; /* Убираем ограничение */
 }
 
-/* Шапка той же ширины что и контейнер */
+/* Шапка той же ширины что и контейнер (свёрнутый сайдбар) */
 @media (min-width: 769px) {
     .top-actions-bar {
-        left: calc(48px + 12px) !important; /* От правого края свёрнутого сайдбара (48px) + 12px отступ */
-        right: 12px !important; /* Отступ справа 12px */
-        width: calc(100% - 48px - 24px) !important; /* 48px сайдбар + 12px слева + 12px справа */
+        left: calc(48px + 12px) !important;
+        right: 0 !important;
+        width: calc(100% - 48px - 12px) !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        box-sizing: border-box !important;
     }
 }
 
@@ -162,19 +181,16 @@ body {
         margin: 0 12px !important; /* Симметричные отступы на мобильном */
         padding: 0 0 80px 0 !important; /* Отступ для навигации снизу */
     }
-    /* На мобильном шапка на всю ширину с отступами */
+    /* На мобильном/планшете шапка на всю ширину */
     .top-actions-bar {
-        left: 12px !important;
-        right: 12px !important;
-        width: calc(100% - 24px) !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        padding: 10px 0 0 0 !important;
     }
 }
 
 .mic-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
     border-radius: 50%;
     transition: background-color 0.3s;
 }

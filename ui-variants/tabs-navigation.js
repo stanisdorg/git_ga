@@ -395,11 +395,16 @@ export function initTabsNavigation(appVersion) {
         // Контейнер для верхних действий (статистика, админка)
         const topActions = document.createElement('div');
         topActions.className = 'top-actions-bar';
+
+        // Определяем мобильную версию заранее
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
         // СКРЫВАЕМ top-actions-bar для страницы статистики!
         topActions.style.display = isStatsPage ? 'none' : 'flex';
         topActions.style.alignItems = 'center';
-        topActions.style.justifyContent = 'flex-start';
-        topActions.style.padding = '4px 0';
+        topActions.style.justifyContent = 'space-between';
+        topActions.style.setProperty('padding', isMobile ? '4px 0px 4px 0px' : '4px 12px', 'important');
+        topActions.style.setProperty('box-sizing', 'border-box', 'important');
 
         // Создаём MutationObserver для отслеживания изменений display
         if (isStatsPage) {
@@ -428,7 +433,6 @@ export function initTabsNavigation(appVersion) {
         // Контейнер для правой части (Уровень + Стрик)
         const levelContainer = document.createElement('div');
         levelContainer.className = 'level-container-right';
-        levelContainer.style.marginLeft = 'auto';
         levelContainer.style.display = 'flex';
         levelContainer.style.alignItems = 'center';
 
@@ -785,15 +789,15 @@ export function initTabsNavigation(appVersion) {
             }
         });
 
-        // Кнопка профиля / Войти
+        // Кнопка профиля / Войти (единый стиль со страницей статистики)
         const loginMainBtn = document.createElement('button');
-        loginMainBtn.className = 'nav-icon-btn login-main-btn tab';
+        loginMainBtn.className = 'nav-icon-btn login-main-btn tab st-auth-btn';
         loginMainBtn.style.minWidth = 'auto';
-        loginMainBtn.style.padding = '0 10px';
         loginMainBtn.style.backgroundColor = 'var(--color-card)';
 
-        const userIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
-        loginMainBtn.innerHTML = userIconSvg;
+        const loginIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/><path d="M4 20v-2c0-3.3 4.7-5 8-5s8 1.7 8 5v2H4z"/></svg>`;
+        const logoutIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5z"/><path d="M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>`;
+        loginMainBtn.innerHTML = loginIconSvg;
         loginMainBtn.title = 'Войти';
         ensureDefaultUsers();
         loginMainBtn.addEventListener('click', () => {
@@ -833,30 +837,19 @@ export function initTabsNavigation(appVersion) {
         cloudBtn.addEventListener('click', openCloudOverview);
 
         // Добавляем кнопки: на мобильных в topActions, на desktop тоже в topActions
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
         const isTablet = window.matchMedia('(min-width: 769px) and (max-width: 1024px)').matches;
 
-        // 🔥 ВСЕГДА добавляем кнопки в topActions (и mobile, и desktop)
-        topActions.appendChild(loginMainBtn); /* Вход/Выход - первый */
-        topActions.appendChild(statsBtn); /* Статистика - второй */
-        topActions.appendChild(learnBtn); /* Обучение - третий */
-        topActions.appendChild(levelContainer);
-
         if (isMobile) {
-            // Mobile: дополнительные кнопки в topActions
-            loginMainBtn.style.position = 'sticky';
-            loginMainBtn.style.right = '0';
-            loginMainBtn.style.zIndex = '10';
-            loginMainBtn.style.borderLeft = '1px solid var(--color-border)';
-
-            // Версия приложения (компактная)
-            topActions.appendChild(verEl);
-
-            // Кнопка редактирования (для admin и editor)
-            topActions.appendChild(editToggleBtn);
-
-            // Кнопка добавления пользователя (только admin)
-            topActions.appendChild(adminUsersBtn);
+            // Mobile: порядок кнопок
+            // 📊         📖 | LV:2 | 🔥 ✏️ 👤
+            topActions.appendChild(statsBtn); /* Статистика — слева */
+            learnBtn.style.marginLeft = 'auto'; /* Разрыв: остальное вправо */
+            topActions.appendChild(learnBtn); /* Обучение — слева от уровня */
+            topActions.appendChild(levelContainer); /* Уровень + стрик */
+            topActions.appendChild(editToggleBtn); /* Редактирование — справа */
+            topActions.appendChild(adminUsersBtn); /* Добавить пользователя — справа */
+            topActions.appendChild(verEl); /* Версия */
+            topActions.appendChild(loginMainBtn); /* Вход/Выход — самый правый */
 
             // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM
             setTimeout(() => {
@@ -876,20 +869,65 @@ export function initTabsNavigation(appVersion) {
                     } else {
                         adminUsersBtn.style.setProperty('display', 'none', 'important');
                     }
+
+                    // 🔍 ЛОГИРОВАНИЕ: порядок кнопок и стили
+                    setTimeout(() => {
+                        console.log('[HEADER_DEBUG] === MOBILE HEADER LAYOUT ===');
+                        console.log('[HEADER_DEBUG] isMobile:', isMobile, '| window.innerWidth:', window.innerWidth);
+                        const ta = document.querySelector('.top-actions-bar');
+                        if (ta) {
+                            const taStyles = window.getComputedStyle(ta);
+                            const taRect = ta.getBoundingClientRect();
+                            console.log('[HEADER_DEBUG] .top-actions-bar:', {
+                                justifyContent: taStyles.justifyContent,
+                                alignItems: taStyles.alignItems,
+                                padding: taStyles.padding,
+                                paddingTop: taStyles.paddingTop,
+                                paddingLeft: taStyles.paddingLeft,
+                                paddingRight: taStyles.paddingRight,
+                                gap: taStyles.gap,
+                                display: taStyles.display,
+                                flexWrap: taStyles.flexWrap,
+                                rect: { left: taRect.left, right: taRect.right, width: taRect.width, height: taRect.height }
+                            });
+                        }
+                        const children = topActions.children;
+                        for (let i = 0; i < children.length; i++) {
+                            const el = children[i];
+                            const styles = window.getComputedStyle(el);
+                            const rect = el.getBoundingClientRect();
+                            const className = el.className || el.tagName;
+                            console.log(`[HEADER_DEBUG] [${i}] ${className}`, {
+                                title: el.title || '',
+                                display: styles.display,
+                                visibility: styles.visibility,
+                                marginLeft: styles.marginLeft,
+                                marginRight: styles.marginRight,
+                                width: styles.width,
+                                height: styles.height,
+                                rect: { left: rect.left, right: rect.right, width: rect.width },
+                                innerHTML_preview: el.innerHTML.substring(0, 50)
+                            });
+                        }
+                        console.log('[HEADER_DEBUG] === END HEADER LAYOUT ===');
+                    }, 100);
                 } catch (e) {
                     console.error('[MOBILE ACCESS] Ошибка проверки прав:', e);
-                    // По умолчанию скрываем кнопки
                     editToggleBtn.style.setProperty('display', 'none', 'important');
                     adminUsersBtn.style.setProperty('display', 'none', 'important');
                 }
             }, 50);
         } else {
-            // Desktop: дополнительные кнопки в topActions
-            // Order: Stats -> Learn -> Login -> Version -> Edit -> Cloud -> Admin -> Level (Right Aligned)
-            topActions.appendChild(verEl);
-            topActions.appendChild(editToggleBtn);
-            topActions.appendChild(cloudBtn);
-            topActions.appendChild(adminUsersBtn);
+            // Desktop: порядок кнопок
+            // 📊 📖 LV:2 | ✏️  v6 | Вход/Выход → отступ 12px
+            topActions.appendChild(statsBtn);
+            topActions.appendChild(learnBtn);
+            topActions.appendChild(levelContainer);
+            topActions.appendChild(editToggleBtn); /* Редактирование */
+            topActions.appendChild(adminUsersBtn); /* Добавить пользователя */
+            topActions.appendChild(verEl); /* Версия */
+            topActions.appendChild(cloudBtn); /* Облако */
+            topActions.appendChild(loginMainBtn); /* Вход/Выход — самый правый (margin-left: auto уже задан) */
 
             // 🔥 СРАЗУ проверяем права доступа после добавления кнопок в DOM (Desktop)
             setTimeout(() => {
@@ -911,12 +949,67 @@ export function initTabsNavigation(appVersion) {
                     }
                 } catch (e) {
                     console.error('[DESKTOP ACCESS] Ошибка проверки прав:', e);
-                    // По умолчанию скрываем кнопки
                     editToggleBtn.style.setProperty('display', 'none', 'important');
                     adminUsersBtn.style.setProperty('display', 'none', 'important');
                 }
             }, 50);
         }
+
+        // Кнопка входа/выхода — прижата к правому краю только на мобильной
+        if (isMobile) {
+            loginMainBtn.style.marginLeft = 'auto';
+        }
+
+        // 🔍 ЛОГИРОВАНИЕ: стили шапки на главной странице
+        setTimeout(() => {
+            console.log('[HEADER_DEBUG_MAIN] === ГЛАВНАЯ СТРАНИЦА ===');
+            const ta = document.querySelector('.top-actions-bar');
+            if (ta) {
+                const cs = window.getComputedStyle(ta);
+                const rect = ta.getBoundingClientRect();
+                console.log('[HEADER_DEBUG_MAIN] .top-actions-bar computed styles:', {
+                    display: cs.display,
+                    position: cs.position,
+                    top: cs.top,
+                    left: cs.left,
+                    right: cs.right,
+                    width: cs.width,
+                    height: cs.height,
+                    padding: cs.padding,
+                    paddingTop: cs.paddingTop,
+                    paddingRight: cs.paddingRight,
+                    paddingBottom: cs.paddingBottom,
+                    paddingLeft: cs.paddingLeft,
+                    justifyContent: cs.justifyContent,
+                    alignItems: cs.alignItems,
+                    boxSizing: cs.boxSizing,
+                    margin: cs.margin,
+                    marginLeft: cs.marginLeft,
+                    marginRight: cs.marginRight,
+                    overflow: cs.overflow,
+                    zIndex: cs.zIndex
+                });
+                console.log('[HEADER_DEBUG_MAIN] .top-actions-bar bounding rect:', rect);
+                console.log('[HEADER_DEBUG_MAIN] .top-actions-bar inline styles:', ta.getAttribute('style'));
+                // Найдём все CSS-правила для .top-actions-bar
+                const allRules = [];
+                for (const sheet of document.styleSheets) {
+                    try {
+                        for (const rule of sheet.cssRules) {
+                            if (rule.selectorText && rule.selectorText.includes('top-actions-bar')) {
+                                allRules.push({
+                                    sheet: sheet.href || 'inline',
+                                    selector: rule.selectorText,
+                                    cssText: rule.cssText.substring(0, 200)
+                                });
+                            }
+                        }
+                    } catch (e) { /* CORS */ }
+                }
+                console.log('[HEADER_DEBUG_MAIN] CSS rules matching .top-actions-bar:', allRules);
+            }
+            console.log('[HEADER_DEBUG_MAIN] === END ===');
+        }, 200);
 
         // Добавляем контейнер табов в навигацию напрямую
         navigationContainer.appendChild(tabsContainer);
@@ -1040,10 +1133,7 @@ export function initTabsNavigation(appVersion) {
         // Logic to update icon/tooltip on login change
         function updateLoginBtnState() {
             loginMainBtn.title = loggedInUser ? 'Выйти' : 'Войти';
-            const exitIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 17l1.41-1.41L8.83 13H17v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"/><path d="M19 3h-8c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4H9v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`;
-            loginMainBtn.innerHTML = loggedInUser ? exitIconSvg : userIconSvg;
-            // loginMainBtn.style.color = '#d0d0d0';
-            // try { statsBtn.style.color = '#d0d0d0'; } catch {}
+            loginMainBtn.innerHTML = loggedInUser ? logoutIconSvg : loginIconSvg;
         }
         if (!window.qaAuth) window.qaAuth = {};
         window.qaAuth.getUser = () => loggedInUser;
