@@ -5,3 +5,6 @@ node_modules/
 .env
 .env.google
 .env.github
+
+# User data backups (auto-generated, not source code)
+data/_backups/
