@@ -342,12 +342,16 @@ export function initLearnUI() {
                 </div>
             </div>
 
-            <!-- Bottom Sheet для истории карточки -->
-            <div class="history-bottom-sheet-overlay" id="history-bs-overlay" onclick="window.closeHistoryBottomSheet()"></div>
-            <div class="history-bottom-sheet" id="history-bottom-sheet">
-                <div class="bs-handle"></div>
-                <div class="bs-title" id="history-bs-title">📋 Последние ответы</div>
-                <div class="bs-content" id="history-bs-content"></div>
+            <!-- Модальное окно истории (glassmorphism) -->
+            <div class="history-modal-overlay" id="history-bs-overlay" onclick="window.closeHistoryBottomSheet()"></div>
+            <div class="history-modal" id="history-bottom-sheet">
+                <div class="history-modal-header">
+                    <div class="history-modal-title">История ответов</div>
+                    <button class="history-modal-close" onclick="window.closeHistoryBottomSheet()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="history-modal-content" id="history-bs-content"></div>
             </div>
 
             <div id="learn-stats" style="display:none">
@@ -3609,13 +3613,9 @@ function renderHistoryBadge(card) {
 function openHistoryBottomSheet(question, history) {
     const overlay = document.getElementById('history-bs-overlay');
     const sheet = document.getElementById('history-bottom-sheet');
-    const title = document.getElementById('history-bs-title');
     const content = document.getElementById('history-bs-content');
 
-    if (!overlay || !sheet || !title || !content) return;
-
-    const shortQ = question.length > 40 ? question.slice(0, 40) + '…' : question;
-    title.textContent = `📋 Последние ответы — «${shortQ}»`;
+    if (!overlay || !sheet || !content) return;
 
     const last5 = history.slice(0, 5);
 
@@ -3642,8 +3642,12 @@ function openHistoryBottomSheet(question, history) {
 
     content.innerHTML = html;
 
-    overlay.classList.add('active');
-    sheet.classList.add('active');
+    // Force reflow then animate
+    overlay.style.display = 'block';
+    requestAnimationFrame(() => {
+        overlay.classList.add('active');
+        sheet.classList.add('active');
+    });
 }
 
 window.closeHistoryBottomSheet = function () {
@@ -3651,4 +3655,10 @@ window.closeHistoryBottomSheet = function () {
     const sheet = document.getElementById('history-bottom-sheet');
     if (overlay) overlay.classList.remove('active');
     if (sheet) sheet.classList.remove('active');
+    // Hide overlay after transition
+    setTimeout(() => {
+        if (!overlay.classList.contains('active')) {
+            overlay.style.display = 'none';
+        }
+    }, 300);
 };

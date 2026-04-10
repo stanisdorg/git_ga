@@ -4280,56 +4280,116 @@ body.learning-mode #bottom-nav {
     }
 }
 
-/* Bottom Sheet Overlay */
-.history-bottom-sheet-overlay {
+/* Glassmorphism Modal Overlay */
+.history-modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
-.history-bottom-sheet-overlay.active {
+.history-modal-overlay.active {
     display: block;
+    opacity: 1;
 }
 
-/* Bottom Sheet */
-.history-bottom-sheet {
+/* Glassmorphism Modal */
+.history-modal {
     position: fixed;
-    bottom: -500px;
-    left: 0;
-    right: 0;
-    background: #161B22;
-    border-top: 1px solid #222938;
-    border-radius: 16px 16px 0 0;
-    padding: 12px 16px 24px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    max-width: 405px;
+    background: rgba(22, 27, 34, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 0;
     z-index: 1000;
-    transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    max-height: 60vh;
-    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
 }
-.history-bottom-sheet.active {
-    bottom: 0;
+.history-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
 }
-.bs-handle {
-    width: 40px;
-    height: 4px;
-    background: #222938;
-    border-radius: 4px;
-    margin: 0 auto 10px;
+.history-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.bs-title {
-    font-size: 14px;
+.history-modal-title {
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 10px;
     color: #E6EDF3;
 }
+.history-modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #9BA3AF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.history-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #E6EDF3;
+}
+.history-modal-close svg {
+    width: 16px;
+    height: 16px;
+}
+.history-modal-content {
+    padding: 12px 16px 16px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+/* Кастомный скроллбар для модалки */
+.history-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+.history-modal-content::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+}
+.history-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+.history-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4);
+}
+.history-modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.05);
+}
+
+/* Строки истории */
 .bs-row {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 8px 10px;
     border-radius: 8px;
-    background: #1F2630;
+    background: rgba(31, 38, 48, 0.6);
     margin-bottom: 6px;
 }
 .bs-grade-circle {
