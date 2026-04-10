@@ -4286,8 +4286,8 @@ body.learning-mode #bottom-nav {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
     z-index: 999;
     opacity: 0;
     transition: opacity 0.3s ease;
