@@ -4537,6 +4537,16 @@ window.openDiffInfoModal = (event) => {
      </div>
    `;
   document.body.appendChild(overlay);
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(0,0,0,0.5)';
+  overlay.style.zIndex = '2200';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.backdropFilter = 'blur(3px)';
+  overlay.style.webkitBackdropFilter = 'blur(3px)';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -4720,6 +4730,16 @@ window.openStatsInfoModal = (event) => {
     </div>
   `;
   document.body.appendChild(overlay);
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(0,0,0,0.5)';
+  overlay.style.zIndex = '2200';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.backdropFilter = 'blur(3px)';
+  overlay.style.webkitBackdropFilter = 'blur(3px)';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -4934,6 +4954,9 @@ window.openLevelInfoModal = () => {
   console.log('[OPENLEVELINFOMODAL] overlay.children[0].className:', overlay.children[0]?.className);
   console.log('[OPENLEVELINFOMODAL] getComputedStyle(modal):', overlay.children[0] ? window.getComputedStyle(overlay.children[0]) : 'N/A');
   console.log('========================================');
+
+  // Закрытие по клику на overlay
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -5525,6 +5548,9 @@ window.openDiffModal = (index) => {
   overlay.style.backdropFilter = 'blur(3px)';
   overlay.style.webkitBackdropFilter = 'blur(3px)';
 
+  // Закрытие по клику на overlay
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
   document.addEventListener('keydown', escHandler);
@@ -5616,6 +5642,9 @@ window.openCategoryModal = (categoryName) => {
   overlay.style.alignItems = 'center';
   overlay.style.backdropFilter = 'blur(3px)';
   overlay.style.webkitBackdropFilter = 'blur(3px)';
+
+  // Закрытие по клику на overlay
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
