@@ -1,8 +1,9 @@
 import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime, getMSKDate, getTotalHearts, getDailyHearts } from './stats-utils.js?v=6.67.0';
 import { syncFavorite } from './storage.js?v=6.61.0';
-import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.44.0';
-import { getTodaysSession, getTodaysSessionBreakdown } from './category-scheduler.js?v=6.68.0';
-import { startLearnSession } from './learn-ui.js?v=6.44.0';
+import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.68.0';
+import { getTodaysSession, getTodaysSessionBreakdown, get4DayForecast } from './category-scheduler.js?v=6.68.0';
+import { startLearnSession } from './learn-ui.js?v=6.68.0';
+import { getMarathonProgress, clearMarathonProgress, hasActiveMarathon } from './marathon-progress.js?v=1.0.0';
 import { applyFormatting } from './text-formatter.js';
 
 // Функция для получения актуальных данных (всегда из localStorage для авторизованных)
@@ -1718,6 +1719,42 @@ const STATS_STYLES = `
     min-width: 280px;
     background: transparent !important;
     box-shadow: none !important;
+    position: relative;
+    z-index: 1;
+  }
+  .st-block-1.expanded {
+    z-index: 100 !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    height: 180px !important;
+    min-height: 180px !important;
+  }
+  .st-block-1.expanded .st-compact-card {
+    overflow: visible !important;
+    position: relative !important;
+    opacity: 0.9 !important;
+    transition: opacity 0.2s ease !important;
+  }
+  .st-block-1:not(.expanded) .st-compact-card {
+    opacity: 1 !important;
+    transition: opacity 0.2s ease !important;
+  }
+  /* История поверх других блоков с полупрозрачной подложкой */
+  .st-block-1.expanded #st-history-timeline {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999 !important;
+    background: linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid var(--st-border) !important;
+    border-radius: 12px !important;
+    margin-top: 8px !important;
+    padding: 10px 10px 14px 10px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
   }
   .st-block-achievements { 
     grid-column: 2; 
@@ -1726,10 +1763,12 @@ const STATS_STYLES = `
     max-height: 600px;
     min-width: 280px;
   }
-  .st-block-2 { 
-    grid-column: 3; 
+  .st-block-2 {
+    grid-column: 3;
     grid-row: 1;
     min-width: 280px;
+    position: relative;
+    z-index: 0;
   }
   .st-block-3 { 
     grid-column: 1; 
@@ -1747,8 +1786,8 @@ const STATS_STYLES = `
     min-width: 280px;
   }
 
-  /* Фиксированная высота блоков */
-  .st-block-1,
+  /* Фиксированная высота блоков (кроме expanded состояния) */
+  .st-block-1:not(.expanded),
   .st-block-2 {
     height: 180px !important;
     min-height: 180px !important;
@@ -1936,11 +1975,44 @@ const STATS_STYLES = `
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: auto auto auto auto;
     }
-    .st-block-1 { 
-      grid-column: 1; 
+    .st-block-1 {
+      grid-column: 1;
       grid-row: 1;
+      position: relative;
+      z-index: 1;
     }
-    .st-block-achievements { 
+    .st-block-1.expanded {
+      z-index: 100 !important;
+      position: relative !important;
+      display: flex !important;
+      align-items: flex-start !important;
+      height: 180px !important;
+      min-height: 180px !important;
+    }
+    .st-block-1.expanded .st-compact-card {
+      overflow: visible !important;
+      position: relative !important;
+      opacity: 0.9 !important;
+      transition: opacity 0.2s ease !important;
+    }
+    .st-block-1:not(.expanded) .st-compact-card {
+      opacity: 1 !important;
+      transition: opacity 0.2s ease !important;
+    }
+    /* На мобильной версия timeline раздвигает блоки (не absolute) */
+    .st-block-1.expanded #st-history-timeline {
+      position: relative !important;
+      z-index: 10 !important;
+      background: linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      border: 1px solid var(--st-border) !important;
+      border-radius: 12px !important;
+      margin-top: 8px !important;
+      padding: 10px 10px 14px 10px !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    }
+    .st-block-achievements {
       grid-column: 1 / span 2; 
       grid-row: 2;
     }
@@ -2346,6 +2418,190 @@ const STATS_STYLES = `
     transition: width 0.5s;
   }
 }
+
+/* History Timeline */
+.st-history-toggle:hover {
+  background: var(--st-surf-h) !important;
+  color: var(--st-prim) !important;
+  border-color: var(--st-prim) !important;
+}
+.st-hist-filter-btn:hover {
+  background: var(--st-surf-h) !important;
+  color: var(--st-text) !important;
+}
+.st-hist-filter-btn.active {
+  background: var(--st-prim) !important;
+  color: #000 !important;
+  border-color: var(--st-prim) !important;
+}
+.st-hist-filter-btn[data-grade="1"].active {
+  background: #E5533D !important;
+  border-color: #E5533D !important;
+}
+.st-hist-filter-btn[data-grade="2"].active {
+  background: #FF9F1C !important;
+  border-color: #FF9F1C !important;
+}
+.st-hist-filter-btn[data-grade="3"].active {
+  background: #2EC4B6 !important;
+  border-color: #2EC4B6 !important;
+}
+.st-hist-filter-btn[data-grade="4"].active {
+  background: #06D6A0 !important;
+  border-color: #06D6A0 !important;
+}
+.st-timeline-item {
+  position: relative;
+  padding: 5px 0 5px 14px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.st-timeline-item:hover .st-timeline-q {
+  color: var(--st-prim) !important;
+}
+.st-timeline-dot {
+  position: absolute;
+  left: -15px;
+  top: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: currentColor;
+}
+.st-timeline-dot[data-grade="1"] { border-color: #E5533D; color: #E5533D; }
+.st-timeline-dot[data-grade="2"] { border-color: #FF9F1C; color: #FF9F1C; }
+.st-timeline-dot[data-grade="3"] { border-color: #2EC4B6; color: #2EC4B6; }
+.st-timeline-dot[data-grade="4"] { border-color: #06D6A0; color: #06D6A0; }
+.st-timeline-q {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--st-text);
+  transition: color 0.15s;
+}
+.st-timeline-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--st-text-sec);
+  margin-top: 2px;
+}
+.st-timeline-grade {
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #000;
+}
+.st-timeline-grade[data-grade="1"] { background: #E5533D; }
+.st-timeline-grade[data-grade="2"] { background: #FF9F1C; }
+.st-timeline-grade[data-grade="3"] { background: #2EC4B6; }
+.st-timeline-grade[data-grade="4"] { background: #06D6A0; }
+.st-timeline-line {
+  border-left: 3px solid var(--st-border);
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+}
+.st-timeline-sep {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--st-muted);
+  padding: 6px 0 2px;
+  border-top: 1px solid var(--st-border);
+  margin-top: 4px;
+}
+/* History modal */
+.st-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.st-modal-overlay.active {
+  display: flex;
+}
+.st-modal-box {
+  background: var(--st-surf);
+  border: 1px solid var(--st-border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 16px;
+}
+.st-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--st-border);
+}
+.st-modal-header h3 {
+  font-size: 13px;
+  font-weight: 700;
+}
+.st-modal-close {
+  background: none;
+  border: none;
+  color: var(--st-text-sec);
+  font-size: 18px;
+  cursor: pointer;
+}
+.st-modal-stats {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.st-modal-stat {
+  font-size: 10px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--st-surf-h);
+}
+.st-modal-stat .sv {
+  font-weight: 700;
+}
+.st-modal-stat[data-g="1"] .sv { color: #E5533D; }
+.st-modal-stat[data-g="2"] .sv { color: #FF9F1C; }
+.st-modal-stat[data-g="3"] .sv { color: #2EC4B6; }
+.st-modal-stat[data-g="4"] .sv { color: #06D6A0; }
+.st-modal-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  background: var(--st-surf-h);
+  border-left: 3px solid;
+  margin-bottom: 4px;
+}
+.st-modal-entry[data-grade="1"] { border-left-color: #E5533D; }
+.st-modal-entry[data-grade="2"] { border-left-color: #FF9F1C; }
+.st-modal-entry[data-grade="3"] { border-left-color: #2EC4B6; }
+.st-modal-entry[data-grade="4"] { border-left-color: #06D6A0; }
+.st-modal-entry .me-dt { font-size: 9px; color: var(--st-text-sec); min-width: 75px; }
+.st-modal-entry .me-grade {
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #000;
+}
+.st-modal-entry[data-grade="1"] .me-grade { background: #E5533D; }
+.st-modal-entry[data-grade="2"] .me-grade { background: #FF9F1C; }
+.st-modal-entry[data-grade="3"] .me-grade { background: #2EC4B6; }
+.st-modal-entry[data-grade="4"] .me-grade { background: #06D6A0; }
+.st-modal-entry .me-dur { font-size: 9px; color: var(--st-muted); margin-left: auto; }
 `;
 
 export function initStatsPage(appVersion) {
@@ -2706,15 +2962,21 @@ function renderStats() {
   let dueCount = 0;
   let newCount = 0;
   let todaysSession = [];
+  let fourDayForecast = null;
   const dataLoaded = uniqueQaData && uniqueQaData.length > 0;
   if (dataLoaded) {
     try {
+      // Размер сессии (лимит для одного запуска)
       todaysSession = getTodaysSession(uniqueQaData);
       sessionCount = todaysSession.length;
-      // Разбивка на повторения и новые
+
+      // РЕАЛЬНОЕ количество оставшихся вопросов (для кнопки)
       const breakdown = getTodaysSessionBreakdown(uniqueQaData);
       dueCount = breakdown.dueCount;
       newCount = breakdown.newCount;
+
+      // 4-дневный прогноз
+      fourDayForecast = get4DayForecast(uniqueQaData);
 
       // Расчёт времени на основе настроек пользователя
       const settings = window.appSettings || { dailyStudyTime: 60 };
@@ -2755,10 +3017,19 @@ function renderStats() {
   const studiedCards = metrics.studiedCount || 0;
   const remainingCards = Math.max(0, totalCards - studiedCards);
 
-  // Forecast
-  const activeDaysForSpeed = metrics.studiedCount > 0 ? (metrics.xp / 50) : 1; // Approx
-  const speed = 12; // Hardcoded fallback or calc
-  const daysToFinish = speed > 0 ? Math.ceil(remainingCards / speed) : 999;
+  // Forecast: Dynamic calculation based on settings and user speed
+  // Formula: Days = Remaining / ( (SettingsTime * 1.15) / AvgSpeed )
+  const settings = window.appSettings || { dailyStudyTime: 60 };
+  const dailyMinutes = settings.dailyStudyTime || 60;
+
+  // Get real user speed (min 30s per card)
+  const avgSecPerCard = getAverageCardTime(50);
+  const avgMinPerCard = Math.max(0.5, avgSecPerCard > 0 ? avgSecPerCard / 60 : 1.5); // Min 0.5 min
+
+  const buffer = 1.15; // +15% buffer
+  const dynamicSpeed = Math.floor((dailyMinutes * buffer) / avgMinPerCard);
+
+  const daysToFinish = dynamicSpeed > 0 ? Math.ceil(remainingCards / dynamicSpeed) : 999;
   const today = new Date();
   const finishDate = new Date();
   finishDate.setDate(today.getDate() + daysToFinish);
@@ -2873,6 +3144,10 @@ function renderStats() {
   const container = document.getElementById('stats-container');
   if (!container) return;
 
+  // Сохраняем состояние expanded перед рендером
+  const block1El = container.querySelector('.st-block-1');
+  const wasExpanded = block1El && block1El.classList.contains('expanded');
+
   container.innerHTML = `
     <div class="st-wrapper" style="position:relative;">
       <div class="st-mobile-username" id="st-mobile-username" style="${usernameStyle}">${usernameDisplay}</div>
@@ -2897,9 +3172,9 @@ function renderStats() {
           <button class="st-cta-btn" id="st-continue-top-btn" style="padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;white-space:nowrap;opacity:0.5;cursor:wait;" disabled>
             <span style="display:flex;align-items:center;line-height:1;">Загрузка...</span>
           </button>` : sessionCount > 0 ? `
-          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${dueCount} повторений + ${newCount} новых">
+          <button class="st-cta-btn" id="st-continue-top-btn" onclick="window.startDailySession()" style="padding:6px 14px;height:32px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:20px;white-space:nowrap;" title="${fourDayForecast ? fourDayForecast.today.dueCount + ' повт. + ' + fourDayForecast.today.newCount + ' новых' : ''}">
             <span style="display:flex;align-items:center;line-height:1;"><svg viewBox="0 0 24 24" fill="#000" style="width:16px;height:16px;margin-right:6px;"><path d="M8 5v14l11-7z"/></svg>Обучение</span>
-            <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${dueCount} повт. + ${newCount} новых</span>
+            <span style="font-size:12px;font-weight:500;color:#000;display:flex;align-items:center;line-height:1;">${fourDayForecast ? fourDayForecast.today.dueCount + ' повт. + ' + fourDayForecast.today.newCount + ' новых' : '...'}</span>
           </button>` : `
           <button class="st-cta-btn" id="st-continue-top-btn" style="padding:6px 14px;height:32px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;opacity:0.8;cursor:default;" title="Все карточки на сегодня пройдены">
             ${doneIcon}
@@ -2926,20 +3201,68 @@ function renderStats() {
 
 
       <div class="st-main">
-        <!-- Блок 1: Прогресс/статистика (левый верхний, 33%) -->
+        <!-- Блок 1: Прогресс + 4-дневный прогноз (левый верхний, 33%) -->
         <div class="st-block-1">
-          <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 12px!important;gap:8px!important;min-height:auto!important;">
+          <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 10px!important;gap:6px!important;min-height:auto!important;flex-direction:column!important;overflow:visible!important;">
+            <!-- Прогресс и прогноз даты -->
             <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:4px!important;align-items:center!important;overflow:hidden!important;">
               <span class="stc-block-title" style="font-size:10px!important;font-weight:600!important;white-space:nowrap!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:11px!important;">${understandingIndex}%</span></span>
               <span class="stc-forecast-text" style="font-size:8px!important;color:var(--st-text-sec);white-space:nowrap!important;display:flex!important;align-items:center!important;gap:2px!important;margin-left:auto!important;">Прогноз: <span class="date" style="font-size:9px!important;font-weight:600!important;">${finishDateStr}</span><button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:0!important;">i</button></span>
             </div>
+            <!-- 4-дневный прогноз -->
+            ${fourDayForecast ? `
+            <div class="stc-forecast-block" style="display:flex;flex-direction:column;gap:3px;width:100%;border-top:1px solid rgba(139,148,158,0.2);padding-top:6px;margin-top:2px;">
+              <!-- Вчера -->
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
+                <span style="font-weight:600;white-space:nowrap;color:#8B949E;min-width:60px;">${fourDayForecast.yesterday.label}:</span>
+                <span style="color:#06D6A0;font-weight:600;">${fourDayForecast.yesterday.completed} из ${fourDayForecast.yesterday.planned}</span>
+                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.yesterday.timeEstimate} мин</span>
+              </div>
+              <!-- Сегодня -->
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
+                <span style="font-weight:600;white-space:nowrap;color:#fff;min-width:60px;">${fourDayForecast.today.label}:</span>
+                <span style="color:#FF9F1C;font-weight:600;">${fourDayForecast.today.completed} из ${fourDayForecast.today.total}</span>
+                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.today.timeEstimate} мин</span>
+              </div>
+              <!-- Завтра -->
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
+                <span style="font-weight:600;white-space:nowrap;color:#8B949E;min-width:60px;">${fourDayForecast.tomorrow.label}:</span>
+                <span style="color:#58A6FF;font-weight:600;">~${fourDayForecast.tomorrow.forecast} карт.</span>
+                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.tomorrow.timeEstimate} мин</span>
+              </div>
+              <!-- Послезавтра -->
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
+                <span style="font-weight:600;white-space:nowrap;color:#8B949E;min-width:60px;">${fourDayForecast.dayAfter.label}:</span>
+                <span style="color:#58A6FF;font-weight:600;">~${fourDayForecast.dayAfter.forecast} карт.</span>
+                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.dayAfter.timeEstimate} мин</span>
+              </div>
+            </div>
+            ` : ''}
+            <!-- Кнопка истории -->
+            <button class="st-history-toggle" onclick="window.toggleHistoryTimeline()" id="st-history-toggle" style="display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:100%!important;padding:6px!important;margin-top:6px!important;background:transparent!important;border:1px solid rgba(139,148,158,0.2)!important;border-radius:8px!important;color:var(--st-text-sec)!important;font-size:11px!important;font-weight:600!important;cursor:pointer!important;transition:all 0.2s!important;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px!important;height:14px!important;transition:transform 0.2s!important;" id="st-history-arrow"><polyline points="6 9 12 15 18 9"/></svg>
+              Показать историю
+            </button>
+          </div>
+          <!-- Timeline панель (вынесена за пределы st-compact-card) -->
+          <div id="st-history-timeline" style="display:none!important;">
+            <!-- Фильтры -->
+            <div class="st-history-filters" style="display:flex!important;gap:4px!important;margin-bottom:6px!important;flex-wrap:wrap!important;padding-top:10px!important;border-top:1px solid rgba(139,148,158,0.2)!important;">
+              <button class="st-hist-filter-btn active" onclick="window.filterHistoryTimeline('all',this)" style="font-size:9px!important;padding:2px 7px!important;border-radius:10px!important;border:1px solid rgba(139,148,158,0.2)!important;background:transparent!important;color:var(--st-text-sec)!important;cursor:pointer!important;font-weight:600!important;">Все</button>
+              <button class="st-hist-filter-btn" onclick="window.filterHistoryTimeline('1',this)" style="font-size:9px!important;padding:2px 7px!important;border-radius:10px!important;border:1px solid rgba(139,148,158,0.2)!important;background:transparent!important;color:var(--st-text-sec)!important;cursor:pointer!important;font-weight:600!important;">Снова</button>
+              <button class="st-hist-filter-btn" onclick="window.filterHistoryTimeline('2',this)" style="font-size:9px!important;padding:2px 7px!important;border-radius:10px!important;border:1px solid rgba(139,148,158,0.2)!important;background:transparent!important;color:var(--st-text-sec)!important;cursor:pointer!important;font-weight:600!important;">Трудно</button>
+              <button class="st-hist-filter-btn" onclick="window.filterHistoryTimeline('3',this)" style="font-size:9px!important;padding:2px 7px!important;border-radius:10px!important;border:1px solid rgba(139,148,158,0.2)!important;background:transparent!important;color:var(--st-text-sec)!important;cursor:pointer!important;font-weight:600!important;">Хорошо</button>
+              <button class="st-hist-filter-btn" onclick="window.filterHistoryTimeline('4',this)" style="font-size:9px!important;padding:2px 7px!important;border-radius:10px!important;border:1px solid rgba(139,148,158,0.2)!important;background:transparent!important;color:var(--st-text-sec)!important;cursor:pointer!important;font-weight:600!important;">Легко</button>
+            </div>
+            <!-- Timeline контейнер -->
+            <div class="st-history-timeline-list" id="st-history-timeline-list" style="position:relative!important;padding-left:18px!important;max-height:280px!important;overflow-y:auto!important;"></div>
           </div>
         </div>
 
         <!-- Кнопка продолжить на всю ширину (мобильная версия) -->
         ${!dataLoaded ? `
         <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.5;cursor:wait;" disabled><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="font-size:15px;font-weight:700;">Загрузка...</div></div></button>` : sessionCount > 0 ? `
-        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${dueCount}</span> повторений + <span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${newCount}</span> новых</div></div></button>` : `
+        <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" onclick="window.startDailySession()"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;"><svg viewBox="0 0 24 24" fill="#000" style="width:20px;height:20px;"><path d="M8 5v14l11-7z"/></svg><span>Продолжить обучение</span></div><div style="font-size:11px;color:#000;font-weight:400;"><span class="stc-value stc-strong" style="font-size:13px!important;font-weight:600!important;">${fourDayForecast ? fourDayForecast.today.dueCount + ' повт. + ' + fourDayForecast.today.newCount + ' новых' : '...'}</span></div></div></button>` : `
         <button class="st-cta-btn st-continue-mobile" id="st-continue-btn" style="opacity:0.8;cursor:default;"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;">${doneIcon}<div style="font-size:15px;font-weight:700;">${doneMessage}</div></div></button>`}
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
@@ -2963,6 +3286,53 @@ function renderStats() {
                 <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Свежий материал</span>
               </div>
             </div>
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('fast_track')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;" title="⚡ Fast Track\n\nБыстрая тренировка.\n\nСлучайные 10 вопросов для быстрого повторения и закрепления материала.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#2196F3 0%,#00BCD4 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+                <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+              </span>
+              <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
+                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Fast Track</span>
+                ${(() => {
+      const avgSecPerCard = getAverageCardTime(50);
+      const fastTrackMinutes = Math.ceil((10 * avgSecPerCard) / 60);
+      return `<span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">10 вопросов (~${fastTrackMinutes}м)</span>`;
+    })()}
+              </div>
+            </div>
+            ${(() => {
+      const marathonCount = uniqueQaData ? uniqueQaData.filter(q => q && q.question && q.answer).length : 0;
+      const avgSecPerCard = getAverageCardTime(50);
+      const totalMinutes = Math.ceil((marathonCount * avgSecPerCard) / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      const timeStr = hours > 0 ? `${hours}ч ${minutes}м` : `${minutes}м`;
+
+      const marathonProgress = getMarathonProgress();
+      const completedCount = marathonProgress ? marathonProgress.currentIndex : 0;
+      const hasProgress = completedCount > 0;
+      const progressPercent = marathonCount > 0 ? Math.round((completedCount / marathonCount) * 100) : 0;
+
+      return `
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('marathon')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:auto!important;position:relative!important;" title="🏃 Марафон\n\nВсе карточки подряд.\n\nПройдите через все доступные карточки для максимального закрепления материала.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,rgba(156,39,176,0.6) 0%,rgba(233,30,99,0.6) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+                <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M14.4 6 14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+              </span>
+              <div style="display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;">
+                <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Марафон</span>
+                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">${marathonCount} вопросов (~${timeStr})</span>
+                <div style="width:100%!important;margin-top:6px!important;">
+                  <div style="display:flex!important;justify-content:space-between!important;font-size:8px!important;color:rgba(255,255,255,${hasProgress ? '0.7' : '0.35'})!important;margin-bottom:2px!important;">
+                    <span>${completedCount}/${marathonCount}</span>
+                    <span>${progressPercent}%</span>
+                  </div>
+                  <div style="width:100%!important;height:4px!important;background:rgba(255,255,255,0.1)!important;border-radius:2px!important;overflow:hidden!important;">
+                    <div style="width:${progressPercent}%!important;height:100%!important;background:linear-gradient(90deg,#9C27B0,#E91E63)!important;border-radius:2px!important;transition:width 0.3s ease!important;${!hasProgress ? 'opacity:0.4;' : ''}"></div>
+                  </div>
+                </div>
+              </div>
+              <button onclick="event.stopPropagation(); window.clearMarathonProgress && window.clearMarathonProgress();" style="position:absolute!important;top:6px!important;right:6px!important;width:20px!important;height:20px!important;border-radius:50%!important;border:none!important;background:rgba(255,255,255,${hasProgress ? '0.15' : '0.08'})!important;color:rgba(255,255,255,${hasProgress ? '0.7' : '0.3'})!important;cursor:${hasProgress ? 'pointer' : 'default'}!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:12px!important;line-height:1!important;padding:0!important;transition:all 0.2s ease!important;" title="${hasProgress ? 'Сбросить прогресс марафона' : 'Прогресса нет'}" ${!hasProgress ? 'disabled' : ''}>✕</button>
+            </div>`;
+    })()}
           </div>
         </div>
 
@@ -3170,6 +3540,14 @@ function renderStats() {
       window.addEventListener('xpUpdated', upd);
       window.addEventListener('statsClosed', upd);
     } catch { }
+  }
+
+  // Восстанавливаем класс expanded после рендера (если он был установлен до ререндера)
+  if (wasExpanded) {
+    const newBlock1 = container.querySelector('.st-block-1');
+    if (newBlock1) {
+      newBlock1.classList.add('expanded');
+    }
   }
 
   // Ensure "39 карточек ≈ 59 минут" stays on one line; reduce font-size by up to 2px if needed
@@ -3667,17 +4045,13 @@ function renderStats() {
   const continueBtnBottom = container.querySelector('#st-continue-btn');
   if (continueBtnBottom) {
     continueBtnBottom.addEventListener('click', () => {
-      const questions = (window.currentQuestions && window.currentQuestions.length > 0)
-        ? window.currentQuestions
-        : getCurrentCards();
-
-      if (!questions || questions.length === 0) {
+      if (!uniqueQaData || uniqueQaData.length === 0) {
         alert('Нет вопросов для изучения');
         return;
       }
 
       hideStatsPage();
-      startLearnSession(questions);
+      startLearnSession(uniqueQaData);
 
       const mainNav = document.getElementById('bottom-nav');
       if (mainNav) {
@@ -3689,17 +4063,14 @@ function renderStats() {
 
   // Функция для кнопки "Продолжить обучение" в шапке
   window.startDailySession = () => {
-    // Берём ТОЧНО те карточки, которые показали в счётчике
-    const todaysSession = getTodaysSession(uniqueQaData || []);
-    const questions = todaysSession.map(c => c.item || c);
-
-    if (!questions || questions.length === 0) {
+    // Передаём ВСЕ карточки, чтобы getTodaysSession в learn-ui.js сама отфильтровала
+    if (!uniqueQaData || uniqueQaData.length === 0) {
       alert('Нет вопросов для изучения');
       return;
     }
 
     hideStatsPage();
-    startLearnSession(questions);
+    startLearnSession(uniqueQaData);
 
     const mainNav = document.getElementById('bottom-nav');
     if (mainNav) {
@@ -3711,16 +4082,14 @@ function renderStats() {
   const startTodayLink = container.querySelector('#st-start-today');
   if (startTodayLink) {
     startTodayLink.addEventListener('click', () => {
-      const todaysSession = getTodaysSession(uniqueQaData || []);
-      const questions = todaysSession.map(c => c.item || c);
-
-      if (!questions || questions.length === 0) {
+      // Передаём ВСЕ карточки
+      if (!uniqueQaData || uniqueQaData.length === 0) {
         alert('Нет вопросов для изучения');
         return;
       }
 
       hideStatsPage();
-      startLearnSession(questions);
+      startLearnSession(uniqueQaData);
 
       const mainNav = document.getElementById('bottom-nav');
       if (mainNav) {
@@ -3756,11 +4125,9 @@ function renderStats() {
   const learnMainBtn = container.querySelector('.st-learn-btn');
   if (learnMainBtn) {
     learnMainBtn.addEventListener('click', () => {
-      const todaysSession = getTodaysSession(uniqueQaData || []);
-      const qs = todaysSession.map(c => c.item || c);
-      if (!qs || qs.length === 0) { alert('Нет вопросов для изучения'); return; }
+      if (!uniqueQaData || uniqueQaData.length === 0) { alert('Нет вопросов для изучения'); return; }
       hideStatsPage();
-      startLearnSession(qs);
+      startLearnSession(uniqueQaData);
       const mainNav = document.getElementById('bottom-nav');
       if (mainNav) {
         const learnNav = mainNav.querySelector('#bn-learn');
@@ -4205,7 +4572,7 @@ window.openStatsInfoModal = (event) => {
           </div>
           <div style="background:rgba(229,83,61,0.1);border-left:3px solid #E5533D;padding:12px;border-radius:8px;">
             <p style="margin:0 0 12px 0;font-size:14px;color:var(--st-text);">
-              Показывает, насколько хорошо материал усвоен (от 0% до 100%).
+              Показывает степень усвоения материала (от 0% до 100%) на основе интервальных повторений (SRS).
             </p>
             <div style="background:linear-gradient(90deg,#E5533D 0%,#FF9F1C 50%,#4CAF50 100%);height:24px;border-radius:12px;position:relative;margin-bottom:10px;">
               <div style="position:absolute;left:0%;top:50%;transform:translate(-50%,-50%);font-size:10px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.8);">0%</div>
@@ -4222,45 +4589,48 @@ window.openStatsInfoModal = (event) => {
               <div>💚<br>5❤️</div>
             </div>
             <p style="margin:10px 0 0 0;font-size:12px;color:var(--st-text-sec);">
-              Каждая карточка имеет от 1 до 5 сердечек. Прогресс рассчитывается как средний процент заполненности всех сердечек.
+              Каждая карточка получает от 1 до 5 сердечек в зависимости от Ease Factor. Прогресс — это средний процент заполнения сердечек по всем изученным карточкам.
             </p>
           </div>
         </div>
-        
-        <!-- Сегодня -->
+
+        <!-- Динамический план -->
         <div style="margin-bottom:24px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">⏱️</span>
-            <h3 style="margin:0;font-size:16px;color:#fff;">План на сегодня</h3>
+            <span style="font-size:24px;">📅</span>
+            <h3 style="margin:0;font-size:16px;color:#fff;">План обучения</h3>
           </div>
           <div style="background:rgba(46,196,182,0.1);border-left:3px solid var(--st-sec);padding:12px;border-radius:8px;">
             <p style="margin:0 0 10px 0;font-size:14px;color:var(--st-text);">
-              Система рассчитывает количество карточек для повторения на основе алгоритма интервальных повторений:
+              Система показывает план на 4 дня вперед. Лимит карточек на каждый день рассчитывается динамически:
             </p>
             <ul style="margin:0;padding-left:20px;font-size:13px;color:var(--st-text-sec);line-height:1.6;">
-              <li>Карточки, которые пора повторить сегодня</li>
-              <li>Новые карточки для изучения</li>
-              <li>Время рассчитывается как <strong style="color:#fff;">~1.5 минуты на карточку</strong></li>
+              <li>Берется ваше время из настроек (например, 60 мин)</li>
+              <li>Учитывается ваша реальная скорость прохождения (последние 50 карт)</li>
+              <li><strong style="color:#fff;">Лимит = Время / Скорость</strong></li>
             </ul>
+            <p style="margin:10px 0 0 0;font-size:12px;color:var(--st-text-sec);">
+              Если вы отвечаете быстрее, лимит растет. Если медленнее — уменьшается. Все планы пересчитываются мгновенно при изменении настроек.
+            </p>
           </div>
         </div>
-        
+
         <!-- Прогноз -->
         <div style="margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <span style="font-size:24px;">📅</span>
+            <span style="font-size:24px;">🏁</span>
             <h3 style="margin:0;font-size:16px;color:#fff;">Прогноз завершения</h3>
           </div>
           <div style="background:rgba(155,163,175,0.1);border-left:3px solid var(--st-muted);padding:12px;border-radius:8px;">
             <p style="margin:0;font-size:14px;color:var(--st-text);">
-              Дата, когда все карточки будут изучены и доведены до уровня "Легко".
+              Дата, когда вы пройдете все карточки.
             </p>
             <p style="margin:8px 0 0 0;font-size:12px;color:var(--st-text-sec);">
-              Рассчитывается на основе вашей текущей скорости обучения (в среднем 12 карточек в день).
+              Рассчитывается на основе динамического дневного лимита. Вы можете ускорить дату, увеличив время в настройках или повысив скорость ответов.
             </p>
           </div>
         </div>
-        
+
       </div>
     </div>
   `;
@@ -4958,15 +5328,20 @@ window.getXpSeriesForModal = (mode) => {
     const s = getMSKDate(d);
     const entry = daily.find(x => x.date === s) || { xp: 0, bonus: 0, dayBonus: 0 };
     const im = impMap.get(s);
+    const hearts = getDailyHearts(s);
 
     res.push({
       date: s,
       label: d.toLocaleDateString('ru-RU', { day: 'numeric' }),
       xp: entry.xp,
-      hearts: getDailyHearts(s),
+      hearts: hearts,
       cards: im ? im.reviewed : 0
     });
   }
+
+  console.log('[MODAL.DATA] 📊 CHART DATA (last 3 days):', res.slice(-3).map(r =>
+    `date=${r.date}, xp=${r.xp}, hearts=${r.hearts}, cards=${r.cards}`
+  ));
 
   console.log('[MODAL.DATA] Week/Month:', res.slice(0, 5));
   return res;
@@ -5294,6 +5669,26 @@ window.startMode = (modeId) => {
       return;
     }
     options.mode = 'cram';
+
+  } else if (modeId === 'marathon') {
+    // Марафон - все карточки подряд
+    const valid = uniqueQaData.filter(q => q && q.question && q.answer);
+    if (valid.length === 0) {
+      alert('Нет доступных карточек');
+      return;
+    }
+    candidates = [...valid];
+    options.mode = 'marathon';
+
+  } else if (modeId === 'fast_track') {
+    // Fast Track - случайные 10 вопросов
+    const valid = uniqueQaData.filter(q => q && q.question && q.answer);
+    if (valid.length === 0) {
+      alert('Нет доступных карточек');
+      return;
+    }
+    candidates = [...valid].sort(() => 0.5 - Math.random()).slice(0, 10);
+    options.mode = 'fast_track';
   }
 
   if (candidates.length > 0) {
@@ -5307,6 +5702,15 @@ window.startMode = (modeId) => {
     console.log('[startMode] Set __navigatingToHome = false');
     hideStatsPage();
     startLearnSession(candidates, options);
+  }
+};
+
+// Global function for clearing marathon progress with confirmation
+window.clearMarathonProgress = () => {
+  if (confirm('Сбросить прогресс марафона? Вы начнёте с начала.')) {
+    clearMarathonProgress();
+    // Re-render stats page to update UI
+    renderStats();
   }
 };
 
@@ -5517,9 +5921,18 @@ function getSettings() {
     const saved = localStorage.getItem('appSettings');
     if (saved) return JSON.parse(saved);
   } catch { }
+
+  // Определяем часовой пояс устройства
+  const offset = new Date().getTimezoneOffset();
+  const hours = -offset / 60;
+  const sign = hours >= 0 ? '+' : '-';
+  const absHours = Math.abs(hours);
+  const defaultTimezone = `UTC${sign}${absHours}`;
+
   return {
     language: 'ru',
     theme: 'dark',
+    timezone: defaultTimezone,
     dailyStudyTime: 60 // минуты по умолчанию
   };
 }
@@ -5582,6 +5995,30 @@ window.openSettingsModal = function () {
             <option value="light" ${settings.theme === 'light' ? 'selected' : ''}>☀️ Светлая (в разработке)</option>
           </select>
         </div>
+
+        <!-- Часовой пояс -->
+        <div style="margin-top:16px;">
+          <label style="display:block;font-size:14px;color:#fff;margin-bottom:8px;font-weight:500;">
+            Часовой пояс
+            <span style="color:#4361EE;font-size:11px;font-weight:400;">(для корректного отображения статистики)</span>
+          </label>
+          
+          <div id="timezone-dropdown" style="position:relative;width:100%;">
+            <!-- Кнопка dropdown -->
+            <button id="timezone-btn" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.2s;">
+              <span id="timezone-selected">🕐 ${settings.timezone || 'UTC+3'}</span>
+              <span style="font-size:12px;opacity:0.6;">▼</span>
+            </button>
+            
+            <!-- Список опций -->
+            <div id="timezone-list" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:300px;overflow-y:auto;background:rgba(30,30,40,0.98);border:1px solid rgba(255,255,255,0.2);border-radius:8px;margin-top:4px;z-index:1000;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+            </div>
+          </div>
+          
+          <p style="margin:8px 0 0 0;font-size:11px;color:rgba(255,255,255,0.4);line-height:1.4;">
+            🕐 Рекомендуется выбрать ваш часовой пояс для правильного подсчёта статистики по дням
+          </p>
+        </div>
       </div>
 
       <!-- 2. Настройки пользователя -->
@@ -5594,19 +6031,50 @@ window.openSettingsModal = function () {
             <span style="color:#FF9F1C;font-size:16px;font-weight:700;" id="settings-time-display">${settings.dailyStudyTime} мин</span>
           </label>
           <input type="range" id="settings-study-time" min="30" max="120" step="15" value="${settings.dailyStudyTime}" style="width:100%;margin-bottom:12px;accent-color:#FF9F1C;">
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.4);">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;">
             <span>30 мин</span>
             <span>60 мин</span>
             <span>90 мин</span>
             <span>120 мин</span>
           </div>
-          <p style="margin:12px 0 0 0;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.5;">
+          
+          <!-- Кнопка сохранения и уведомление -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <button id="settings-save-btn" style="flex:1;padding:10px;background:#FF9F1C;color:#000;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;">
+              Сохранить
+            </button>
+          </div>
+          <div id="settings-save-msg" style="font-size:12px;color:#06D6A0;text-align:center;min-height:18px;"></div>
+
+          <p style="margin:8px 0 0 0;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.5;">
             💡 Система адаптирует количество карточек под ваше время. Допускается +15% к выбранному времени.
           </p>
         </div>
       </div>
 
-      <!-- 3. Информация -->
+      <!-- 3. Управление бэкапами -->
+      <div style="margin-bottom:28px;">
+        <h3 style="margin:0 0 16px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">💾 Бэкапы и восстановление</h3>
+        
+        <!-- Кнопки действий -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+          <button id="backup-create-btn" style="padding:10px;background:#06D6A0;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">➕ Создать бэкап</button>
+          <button id="backup-import-btn" style="padding:10px;background:#4361EE;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">📥 Импорт</button>
+        </div>
+
+        <!-- Список бэкапов -->
+        <div id="backups-list-container" style="max-height:400px;overflow-y:auto;">
+          <div id="backups-loading" style="text-align:center;padding:20px;color:rgba(255,255,255,0.5);font-size:13px;">Загрузка...</div>
+          <div id="backups-list"></div>
+        </div>
+
+        <!-- Сброс прогресса -->
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
+          <button id="backup-reset-progress-btn" style="width:100%;padding:10px;background:rgba(255,107,107,0.2);color:#FF6B6B;border:1px solid rgba(255,107,107,0.3);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">🗑️ Сбросить прогресс</button>
+        </div>
+      </div>
+
+      <!-- 4. Информация -->
       <div>
         <h3 style="margin:0 0 16px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">ℹ️ Информация</h3>
         
@@ -5629,12 +6097,6 @@ window.openSettingsModal = function () {
           <p style="margin:0 0 0 0;">Ничего страшного! Карточки накопятся и будут показаны в следующей сессии. Рекомендуется заниматься регулярно для лучшего запоминания.</p>
         </div>
       </div>
-    </div>
-
-    <!-- Футер -->
-    <div style="display:flex;gap:12px;padding:20px 24px;border-top:1px solid rgba(255,255,255,0.1);">
-      <button onclick="document.getElementById('settings-modal-overlay').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">Отмена</button>
-      <button id="settings-save-btn" style="flex:1;padding:12px;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%);border:none;border-radius:8px;color:#000;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">Сохранить</button>
     </div>
   `;
 
@@ -5663,29 +6125,1035 @@ window.openSettingsModal = function () {
   });
 
   // Сохранение настроек
-  document.getElementById('settings-save-btn').addEventListener('click', () => {
+  document.getElementById('settings-save-btn').addEventListener('click', async () => {
+    const msgEl = document.getElementById('settings-save-msg');
+    const btnEl = document.getElementById('settings-save-btn');
+
+    btnEl.disabled = true;
+    btnEl.style.opacity = '0.6';
+    msgEl.textContent = 'Сохранение...';
+
     const newSettings = {
       language: document.getElementById('settings-language').value,
       theme: document.getElementById('settings-theme').value,
+      timezone: document.getElementById('timezone-selected').textContent.replace('🕐 ', ''),
       dailyStudyTime: parseInt(document.getElementById('settings-study-time').value)
     };
-    saveSettings(newSettings);
-    overlay.remove();
 
-    // Показываем уведомление
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#06D6A0;color:#000;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;z-index:10001;animation:slideUp 0.3s;';
-    toast.textContent = '✓ Настройки сохранены';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
+    // Сохраняем локально
+    saveSettings(newSettings);
+
+    // Синхронизируем с сервером
+    try {
+      const sessionUserRaw = localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser');
+      if (sessionUserRaw) {
+        const user = JSON.parse(sessionUserRaw);
+        if (user && user.username) {
+          const res = await fetch(`/api/settings?username=${encodeURIComponent(user.username)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newSettings)
+          });
+          if (!res.ok) throw new Error('Server error');
+        }
+      }
+    } catch (e) {
+      console.warn('[SETTINGS] Failed to sync with server:', e);
+      msgEl.style.color = '#FF6B6B';
+      msgEl.textContent = 'Ошибка синхронизации. Сохранено локально.';
+      setTimeout(() => overlay.remove(), 1500);
+      return;
+    }
+
+    // Успех
+    msgEl.style.color = '#06D6A0';
+    msgEl.textContent = '✓ Настройки сохранены и синхронизированы!';
+
+    setTimeout(() => {
+      overlay.remove();
+    }, 1000);
   });
+
+  // ============================================
+  // ЧАСОВОЙ ПОЯС - КАСТОМНЫЙ DROPDOWN
+  // ============================================
+
+  const timezones = [
+    { value: 'UTC-12', label: '🌍 UTC-12 (Бейкер)' },
+    { value: 'UTC-11', label: '🌍 UTC-11 (Паго-Паго)' },
+    { value: 'UTC-10', label: '🌍 UTC-10 (Гавайи)' },
+    { value: 'UTC-9', label: '🌍 UTC-9 (Аляска)' },
+    { value: 'UTC-8', label: '🌍 UTC-8 (Лос-Анджелес)' },
+    { value: 'UTC-7', label: '🌍 UTC-7 (Денвер)' },
+    { value: 'UTC-6', label: '🌍 UTC-6 (Чикаго)' },
+    { value: 'UTC-5', label: '🌍 UTC-5 (Нью-Йорк)' },
+    { value: 'UTC-4', label: '🌍 UTC-4 (Сантьяго)' },
+    { value: 'UTC-3', label: '🌍 UTC-3 (Буэнос-Айрес)' },
+    { value: 'UTC-2', label: '🌍 UTC-2 (Южная Джорджия)' },
+    { value: 'UTC-1', label: '🌍 UTC-1 (Азорские острова)' },
+    { value: 'UTC+0', label: '🌍 UTC+0 (Лондон)' },
+    { value: 'UTC+1', label: '🌍 UTC+1 (Берлин)' },
+    { value: 'UTC+2', label: '🌍 UTC+2 (Киев)' },
+    { value: 'UTC+3', label: '🇷 UTC+3 (Москва, СПб)' },
+    { value: 'UTC+4', label: '🌍 UTC+4 (Дубай, Баку)' },
+    { value: 'UTC+5', label: '🌍 UTC+5 (Екатеринбург)' },
+    { value: 'UTC+6', label: '🌍 UTC+6 (Алматы, Омск)' },
+    { value: 'UTC+7', label: '🌍 UTC+7 (Новосибирск, Бангкок)' },
+    { value: 'UTC+8', label: '🌍 UTC+8 (Пекин, Красноярск)' },
+    { value: 'UTC+9', label: '🌍 UTC+9 (Токио, Иркутск)' },
+    { value: 'UTC+10', label: '🌍 UTC+10 (Владивосток, Сидней)' },
+    { value: 'UTC+11', label: '🌍 UTC+11 (Магадан)' },
+    { value: 'UTC+12', label: '🌍 UTC+12 (Камчатка, Окленд)' },
+  ];
+
+  const timezoneBtn = document.getElementById('timezone-btn');
+  const timezoneList = document.getElementById('timezone-list');
+  const timezoneSelected = document.getElementById('timezone-selected');
+
+  // Заполняем список опций
+  const currentTz = settings.timezone || 'UTC+3';
+  timezoneSelected.textContent = '🕐 ' + currentTz;
+
+  timezones.forEach(tz => {
+    const item = document.createElement('div');
+    item.textContent = tz.label;
+    item.dataset.value = tz.value;
+    item.style.cssText = `
+      padding:10px 14px;
+      color:#fff;
+      font-size:14px;
+      cursor:pointer;
+      transition:background 0.15s;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+    `;
+
+    if (tz.value === currentTz) {
+      item.style.background = 'rgba(255,159,28,0.2)';
+      item.style.color = '#FF9F1C';
+    }
+
+    item.onmouseover = () => {
+      if (tz.value !== currentTz) {
+        item.style.background = 'rgba(255,255,255,0.1)';
+      }
+    };
+    item.onmouseout = () => {
+      if (tz.value !== currentTz) {
+        item.style.background = 'transparent';
+      }
+    };
+
+    item.onclick = () => {
+      timezoneSelected.textContent = '🕐 ' + tz.value;
+      timezoneList.style.display = 'none';
+      timezoneBtn.style.background = 'rgba(255,159,28,0.15)';
+      setTimeout(() => {
+        timezoneBtn.style.background = '';
+      }, 300);
+    };
+
+    timezoneList.appendChild(item);
+  });
+
+  // Открытие/закрытие списка
+  timezoneBtn.onclick = (e) => {
+    e.stopPropagation();
+    const isOpen = timezoneList.style.display === 'block';
+    timezoneList.style.display = isOpen ? 'none' : 'block';
+  };
+
+  // Закрытие при клике вне dropdown
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#timezone-dropdown')) {
+      timezoneList.style.display = 'none';
+    }
+  });
+
+  // ============================================
+  // ФУНКЦИИ ДЛЯ РАБОТЫ С БЭКАПАМИ
+  // ============================================
+
+  // Helper функция для получения username текущего пользователя
+  function getCurrentUsername() {
+    try {
+      const sessionUserRaw = localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser');
+      if (!sessionUserRaw) return null;
+      const user = JSON.parse(sessionUserRaw);
+      return user && user.username ? user.username : null;
+    } catch (e) {
+      console.error('[BACKUP] Failed to get username:', e);
+      return null;
+    }
+  }
+
+  const username = getCurrentUsername();
+
+  // Загрузка списка бэкапов
+  async function loadBackupsList() {
+    const loadingEl = document.getElementById('backups-loading');
+    const listEl = document.getElementById('backups-list');
+
+    if (!username) {
+      listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#FF6B6B;font-size:13px;">Необходима авторизация</div>';
+      loadingEl.style.display = 'none';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/backups/list?user=${encodeURIComponent(username)}`);
+      const data = await res.json();
+
+      loadingEl.style.display = 'none';
+
+      if (!data.ok || !data.backups || data.backups.length === 0) {
+        listEl.innerHTML = '<div style="padding:16px;text-align:center;color:rgba(255,255,255,0.5);font-size:13px;">Бэкапов пока нет</div>';
+        return;
+      }
+
+      listEl.innerHTML = data.backups.map(backup => `
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:4px;">
+                ${backup.isAuto ? '🔄' : '⭐'} ${backup.name}
+              </div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);">
+                ${new Date(backup.createdAt).toLocaleString('ru-RU')} • ${(backup.size / 1024).toFixed(1)} KB
+              </div>
+            </div>
+            <span style="padding:2px 8px;background:${backup.isAuto ? 'rgba(67,97,238,0.2)' : 'rgba(6,214,160,0.2)'};color:${backup.isAuto ? '#4361EE' : '#06D6A0'};border-radius:12px;font-size:11px;font-weight:600;">
+              ${backup.isAuto ? 'Авто' : 'Ручной'}
+            </span>
+          </div>
+          
+          <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:8px;">
+            ${backup.hasCards ? `<span>📝 ${backup.cardsCount} карт</span>` : ''}
+            ${backup.categoriesCount > 0 ? `<span>📁 ${backup.categoriesCount} кат</span>` : ''}
+            ${backup.achievementsCount > 0 ? `<span>🏆 ${backup.achievementsCount} дост</span>` : ''}
+          </div>
+          
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button onclick="restoreBackup('${backup.id}', 'full')" style="padding:6px 10px;background:#FF9F1C;color:#000;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Восстановить</button>
+            <button onclick="exportBackup('${backup.id}')" style="padding:6px 10px;background:#4361EE;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Скачать</button>
+            ${backup.canDelete ? `<button onclick="deleteBackup('${backup.filename}')" style="padding:6px 10px;background:rgba(255,107,107,0.2);color:#FF6B6B;border:1px solid rgba(255,107,107,0.3);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Удалить</button>` : ''}
+            ${backup.canRename ? `<button onclick="renameBackup('${backup.filename}')" style="padding:6px 10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">Переим.</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    } catch (e) {
+      console.error('[BACKUP] Failed to load backups:', e);
+      listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#FF6B6B;font-size:13px;">Ошибка загрузки</div>';
+    }
+  }
+
+  // Создание бэкапа
+  document.getElementById('backup-create-btn').addEventListener('click', async () => {
+    if (!confirm('Создать ручной бэкап всех данных?')) return;
+
+    const btn = document.getElementById('backup-create-btn');
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    btn.textContent = 'Создание...';
+
+    try {
+      const res = await fetch(`/api/backups/create?user=${encodeURIComponent(username)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'full' })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        btn.textContent = '✓ Создан';
+        btn.style.background = '#06D6A0';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.textContent = '➕ Создать бэкап';
+          btn.style.background = '#06D6A0';
+          loadBackupsList();
+        }, 1000);
+      } else {
+        alert('Ошибка: ' + data.error);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.textContent = '➕ Создать бэкап';
+      }
+    } catch (e) {
+      alert('Ошибка создания бэкапа');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.textContent = '➕ Создать бэкап';
+    }
+  });
+
+  // Импорт бэкапа
+  document.getElementById('backup-import-btn').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const backupData = JSON.parse(text);
+
+        const customName = prompt('Введите имя для бэкапа (или оставьте пустым для автоматического):', '');
+
+        const res = await fetch(`/api/backups/import?user=${encodeURIComponent(username)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            backupData,
+            name: customName || null
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert('✓ Бэкап импортирован!');
+          loadBackupsList();
+        } else {
+          alert('Ошибка: ' + data.error);
+        }
+      } catch (e) {
+        alert('Ошибка чтения файла');
+      }
+    };
+
+    input.click();
+  });
+
+  // Сброс прогресса
+  document.getElementById('backup-reset-progress-btn').addEventListener('click', async () => {
+    if (!confirm('⚠️ Вы уверены, что хотите сбросить ВЕСЬ прогресс обучения?\n\nЭто удалит:\n• Достижения\n• Сердечки карточек\n• Историю ответов\n• Уровни\n• Серию дней\n\nКарточки останутся на месте.')) return;
+
+    if (!confirm('🔴 ТОЧНО уверены? Прогресс будет удалён безвозвратно!')) return;
+
+    const btn = document.getElementById('backup-reset-progress-btn');
+    btn.disabled = true;
+    btn.textContent = 'Сброс...';
+
+    try {
+      // 1. Сначала сбрасываем на СЕРВЕРЕ
+      const res = await fetch(`/api/backups/reset-achievements?user=${encodeURIComponent(username)}`, {
+        method: 'POST'
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert('Ошибка сервера: ' + data.error);
+        btn.disabled = false;
+        btn.textContent = '🗑️ Сбросить прогресс';
+        return;
+      }
+
+      // 2. Потом очищаем localStorage
+      localStorage.removeItem('studyAchievements');
+      localStorage.removeItem('srsProgress');
+      localStorage.removeItem('dailyPoints');
+      localStorage.removeItem('dailyBonusPoints');
+      localStorage.removeItem('dailyDayBonusPoints');
+      localStorage.removeItem('studyStreak');
+      localStorage.removeItem('studyStats');
+      localStorage.removeItem('userLevel');
+      localStorage.removeItem('progressMap');
+      localStorage.removeItem('mskDate');
+      localStorage.removeItem('mskMigrated');
+      localStorage.removeItem('localDataTimestamp');
+      localStorage.removeItem('marathonProgress'); // Марафон
+
+      console.log('[BACKUP] LocalStorage очищен, перезагрузка...');
+
+      // 3. Перезагружаем
+      location.reload();
+    } catch (e) {
+      alert('Ошибка сброса прогресса: ' + e.message);
+      btn.disabled = false;
+      btn.textContent = '🗑️ Сбросить прогресс';
+    }
+  });
+
+  // Глобальные функции для кнопок бэкапов
+  window.restoreBackup = async function (backupId, restoreType) {
+    const typeMap = {
+      'full': 'все данные',
+      'cards': 'карточки и категории',
+      'progress': 'прогресс и достижения'
+    };
+
+    if (!confirm(`⚠️ Восстановить "${typeMap[restoreType]}" из бэкапа?\n\nТекущие данные будут заменены.`)) return;
+
+    try {
+      const res = await fetch(`/api/backups/restore?user=${encodeURIComponent(username)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ backupId, restoreType })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert('✓ Данные восстановлены! Страница будет перезагружена.');
+        location.reload();
+      } else {
+        alert('Ошибка: ' + data.error);
+      }
+    } catch (e) {
+      alert('Ошибка восстановления');
+    }
+  };
+
+  window.exportBackup = async function (backupId) {
+    try {
+      const res = await fetch(`/api/backups/export?user=${encodeURIComponent(username)}&backupId=${encodeURIComponent(backupId)}`);
+
+      if (!res.ok) {
+        alert('Ошибка экспорта');
+        return;
+      }
+
+      const content = await res.text();
+      const blob = new Blob([content], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = backupId.split('__')[1] || 'backup.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Ошибка экспорта');
+    }
+  };
+
+  window.deleteBackup = async function (filename) {
+    if (!confirm('Удалить этот бэкап?')) return;
+
+    try {
+      const res = await fetch(`/api/backups/delete?user=${encodeURIComponent(username)}&filename=${encodeURIComponent(filename)}`, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        loadBackupsList();
+      } else {
+        alert('Ошибка: ' + data.error);
+      }
+    } catch (e) {
+      alert('Ошибка удаления');
+    }
+  };
+
+  window.renameBackup = async function (filename) {
+    const newName = prompt('Введите новое имя для бэкапа (без .json):', filename.replace('.json', ''));
+
+    if (!newName || !newName.trim()) return;
+
+    try {
+      const res = await fetch(`/api/backups/rename?user=${encodeURIComponent(username)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          oldFilename: filename,
+          newFilename: newName.trim() + '.json'
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        loadBackupsList();
+      } else {
+        alert('Ошибка: ' + data.error);
+      }
+    } catch (e) {
+      alert('Ошибка переименования');
+    }
+  };
+
+  // Загружаем список бэкапов
+  loadBackupsList();
 };
 
 // Загружаем настройки при старте
-window.addEventListener('DOMContentLoaded', () => {
-  const settings = getSettings();
+window.addEventListener('DOMContentLoaded', async () => {
+  let settings = getSettings();
+
+  // Определяем часовой пояс устройства по умолчанию
+  if (!settings.timezone) {
+    const offset = new Date().getTimezoneOffset();
+    const hours = -offset / 60;
+    const sign = hours >= 0 ? '+' : '-';
+    const absHours = Math.abs(hours);
+    const formattedOffset = `UTC${sign}${absHours}`;
+    settings.timezone = formattedOffset;
+    saveSettings(settings);
+  }
+
+  // Пробуем загрузить с сервера
+  try {
+    const sessionUserRaw = localStorage.getItem('qaSessionUser') || sessionStorage.getItem('qaSessionUser');
+    if (sessionUserRaw) {
+      const user = JSON.parse(sessionUserRaw);
+      if (user && user.username) {
+        // Получаем полные данные пользователя (включая _appSettings)
+        const res = await fetch(`/api/progress?username=${encodeURIComponent(user.username)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data._appSettings) {
+            settings = { ...settings, ...data._appSettings };
+            saveSettings(settings); // Обновляем локальный кэш
+            console.log('[SETTINGS] Loaded from server:', settings);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[SETTINGS] Failed to load from server:', e);
+  }
+
   window.appSettings = settings;
   window.dispatchEvent(new Event('settingsLoaded'));
 });
+
+// Обновляем статистику при изменении настроек
+window.addEventListener('settingsChanged', () => {
+  window.appSettings = getSettings();
+  console.log('[STATS] Settings changed, re-rendering stats:', window.appSettings);
+  if (document.getElementById('stats-container')) {
+    renderStats();
+  }
+});
+
+/* =============================================
+   HISTORY TIMELINE (stats page)
+   ============================================= */
+const _GN = { 1: 'Снова', 2: 'Трудно', 3: 'Хорошо', 4: 'Легко' };
+let _allHistory = [];
+let _histFilter = 'all';
+
+function _buildAllHistory() {
+  const prog = getProgressMap();
+  const entries = [];
+  Object.values(prog).forEach(p => {
+    if (!p.historyArray || !Array.isArray(p.historyArray)) return;
+    p.historyArray.forEach(h => {
+      if (h.date && h.grade) {
+        entries.push({
+          date: h.date,
+          grade: h.grade,
+          duration: h.duration || 0,
+          question: p.question || ''
+        });
+      }
+    });
+  });
+  entries.sort((a, b) => b.date - a.date);
+  return entries;
+}
+
+function _fmtDate(ds) {
+  const d = new Date(ds);
+  const now = new Date();
+  const diff = now - d;
+  const days = Math.floor(diff / 864e5);
+  if (days === 0) return 'Сегодня';
+  if (days === 1) return 'Вчера';
+  if (days < 7) return days + 'дн.';
+  const M = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+  return d.getDate() + ' ' + M[d.getMonth()];
+}
+
+function _fmtTime(ds) {
+  const d = new Date(ds);
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+window.toggleHistoryTimeline = function () {
+  console.log('[HISTORY] ===== toggleHistoryTimeline START =====');
+  const panel = document.getElementById('st-history-timeline');
+  const btn = document.getElementById('st-history-toggle');
+  const arrow = document.getElementById('st-history-arrow');
+
+  console.log('[HISTORY] panel element:', panel ? 'FOUND' : 'NOT FOUND');
+  console.log('[HISTORY] btn element:', btn ? 'FOUND' : 'NOT FOUND');
+  console.log('[HISTORY] arrow element:', arrow ? 'FOUND' : 'NOT FOUND');
+
+  if (!panel || !btn) {
+    console.error('[HISTORY] Missing elements, aborting');
+    return;
+  }
+
+  const block1El = document.querySelector('.st-block-1');
+  const compactCard = block1El ? block1El.querySelector('.st-compact-card') : null;
+  const stcContent = compactCard ? compactCard.querySelector('.stc-content') : null;
+  const forecastBlock = compactCard ? compactCard.querySelector('[style*="border-top"]') : null;
+  console.log('====== [LAYOUT] ДО РАСКРЫТИЯ ======');
+  if (block1El) {
+    const b = window.getComputedStyle(block1El);
+    console.log(`[LAYOUT] .st-block-1 classes="${block1El.className}"`);
+    console.log(`[LAYOUT] .st-block-1 display=${b.display}, position=${b.position}, overflow=${b.overflow}`);
+    console.log(`[LAYOUT] .st-block-1 padding=${b.padding}, width=${b.width}, height=${b.height}`);
+    console.log(`[LAYOUT] .st-block-1 alignItems=${b.alignItems}, justifyContent=${b.justifyContent}, flexDirection=${b.flexDirection}`);
+    console.log(`[LAYOUT] .st-block-1 background=${b.background}`);
+    console.log(`[LAYOUT] .st-block-1 border=${b.border}`);
+    console.log(`[LAYOUT] .st-block-1 zIndex=${b.zIndex}`);
+    console.log(`[LAYOUT] .st-block-1 ::before =`, window.getComputedStyle(block1El, '::before').content);
+  }
+  if (compactCard) {
+    const c = window.getComputedStyle(compactCard);
+    console.log(`[LAYOUT] .st-compact-card classes="${compactCard.className}"`);
+    console.log(`[LAYOUT] .st-compact-card inlineStyle="${compactCard.getAttribute('style')}"`);
+    console.log(`[LAYOUT] .st-compact-card display=${c.display}, overflow=${c.overflow}, padding=${c.padding}`);
+    console.log(`[LAYOUT] .st-compact-card gap=${c.gap}, rowGap=${c.rowGap}, columnGap=${c.columnGap}, flexDirection=${c.flexDirection}`);
+    console.log(`[LAYOUT] .st-compact-card background=${c.background}, border=${c.border}`);
+    console.log(`[LAYOUT] .st-compact-card height=${c.height}, width=${c.width}`);
+    const r = compactCard.getBoundingClientRect();
+    console.log(`[LAYOUT] .st-compact-card rect: x=${r.x.toFixed(0)} y=${r.y.toFixed(0)} w=${r.width.toFixed(0)} h=${r.height.toFixed(0)}`);
+    // Check pseudo-elements
+    const beforeStyle = window.getComputedStyle(compactCard, '::before');
+    const afterStyle = window.getComputedStyle(compactCard, '::after');
+    console.log(`[LAYOUT] .st-compact-card::before content="${beforeStyle.content}" display=${beforeStyle.display} height=${beforeStyle.height}`);
+    console.log(`[LAYOUT] .st-compact-card::after content="${afterStyle.content}" display=${afterStyle.display} height=${afterStyle.height}`);
+
+    // Лог всех дочерних элементов
+    console.log('[LAYOUT] .st-compact-card children:');
+    for (const child of compactCard.children) {
+      const cs = window.getComputedStyle(child);
+      const cr = child.getBoundingClientRect();
+      const relY = cr.y - r.y;
+      console.log(`  ↳ <${child.tagName}>${child.className ? '.' + (child.className || '').split(' ')[0] : ''}: y=${cr.y.toFixed(0)} (rel:${relY.toFixed(0)}), h=${cr.height.toFixed(0)}, marginTop=${cs.marginTop}, marginBottom=${cs.marginBottom}, paddingTop=${cs.paddingTop}, position=${cs.position}, display=${cs.display}, flex=${cs.flex}`);
+    }
+  }
+  if (stcContent) {
+    const s = window.getComputedStyle(stcContent);
+    console.log(`[LAYOUT] .stc-content display=${s.display}, visibility=${s.visibility}, opacity=${s.opacity}`);
+    console.log(`[LAYOUT] .stc-content height=${s.height}, width=${s.width}, overflow=${s.overflow}`);
+    console.log(`[LAYOUT] .stc-content flex=${s.flex}, flexShrink=${s.flexShrink}, flexGrow=${s.flexGrow}`);
+    console.log(`[LAYOUT] .stc-content inlineStyle="${stcContent.getAttribute('style')}"`);
+    const r2 = stcContent.getBoundingClientRect();
+    console.log(`[LAYOUT] .stc-content rect: x=${r2.x.toFixed(0)} y=${r2.y.toFixed(0)} w=${r2.width.toFixed(0)} h=${r2.height.toFixed(0)}`);
+  }
+  if (forecastBlock) {
+    const f = window.getComputedStyle(forecastBlock);
+    console.log(`[LAYOUT] forecast-block display=${f.display}, height=${f.height}, width=${f.width}`);
+    console.log(`[LAYOUT] forecast-block marginTop=${f.marginTop}, paddingTop=${f.paddingTop}, flex=${f.flex}`);
+    console.log(`[LAYOUT] forecast-block inlineStyle="${forecastBlock.getAttribute('style')}"`);
+    const r3 = forecastBlock.getBoundingClientRect();
+    console.log(`[LAYOUT] forecast-block rect: x=${r3.x.toFixed(0)} y=${r3.y.toFixed(0)} w=${r3.width.toFixed(0)} h=${r3.height.toFixed(0)}`);
+    // Вычисляем gap между content и forecast
+    if (stcContent) {
+      const contentBottom = stcContent.getBoundingClientRect().bottom;
+      const forecastTop = r3.y;
+      console.log(`[LAYOUT] GAP между .stc-content и forecast: ${(forecastTop - contentBottom).toFixed(1)}px`);
+    }
+  }
+  console.log('====== [LAYOUT] КОНЕЦ ДО ======');
+
+  // Проверяем родительские элементы panel
+  let pnode = panel.parentElement;
+  let depth = 0;
+  while (pnode && depth < 6) {
+    const ps = window.getComputedStyle(pnode);
+    console.log(`[LAYOUT] parent[${depth}] ${pnode.tagName}.${(pnode.className || '').split(' ')[0]} display=${ps.display} overflow=${ps.overflow} padding=${ps.padding}`);
+    pnode = pnode.parentElement;
+    depth++;
+  }
+
+  const isOpen = panel.style.display !== 'none';
+  console.log('[HISTORY] isOpen:', isOpen);
+
+  if (isOpen) {
+    panel.style.display = 'none';
+    panel.style.position = '';
+    panel.style.top = '';
+    panel.style.left = '';
+    panel.style.right = '';
+    panel.style.zIndex = '';
+    panel.style.marginTop = '';
+    panel.style.background = '';
+    panel.style.backdropFilter = '';
+    panel.style.webkitBackdropFilter = '';
+    panel.style.border = '';
+    panel.style.borderRadius = '';
+    panel.style.padding = '';
+    panel.style.boxShadow = '';
+    if (compactCard) compactCard.style.height = '';
+    if (arrow) arrow.style.transform = 'rotate(0deg)';
+    btn.lastChild.textContent = ' Показать историю';
+    if (block1El) block1El.classList.remove('expanded');
+    console.log('[HISTORY] Panel HIDDEN, block1 collapsed');
+  } else {
+    _allHistory = _buildAllHistory();
+    console.log('[HISTORY] Built history, total entries:', _allHistory.length);
+    if (_allHistory.length > 0) {
+      console.log('[HISTORY] First 3 entries:', _allHistory.slice(0, 3).map(e => e.question.slice(0, 30)));
+    }
+    _renderTimeline();
+    if (arrow) arrow.style.transform = 'rotate(180deg)';
+    btn.lastChild.textContent = ' Скрыть историю';
+    if (block1El) {
+      block1El.classList.add('expanded');
+      console.log('[HISTORY] Block1 classes after add:', block1El.className);
+      console.log('[HISTORY] Block1 has expanded class:', block1El.classList.contains('expanded'));
+    } else {
+      console.error('[HISTORY] Block1 NOT FOUND!');
+    }
+    // Даём браузеру применить класс expanded, затем показываем панель
+    requestAnimationFrame(() => {
+      panel.style.setProperty('display', 'block', 'important');
+
+      // Проверяем мобильная ли версия (max-width: 1024px)
+      const isMobile = window.matchMedia('(max-width: 1024px)').matches;
+
+      if (isMobile) {
+        // Мобильная версия: timeline в потоке, раздвигает блоки
+        panel.style.setProperty('position', 'relative', 'important');
+        panel.style.setProperty('z-index', '10', 'important');
+        panel.style.setProperty('background', 'linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%)', 'important');
+        panel.style.setProperty('backdrop-filter', 'blur(8px)', 'important');
+        panel.style.setProperty('-webkit-backdrop-filter', 'blur(8px)', 'important');
+        panel.style.setProperty('border', '1px solid var(--st-border)', 'important');
+        panel.style.setProperty('border-radius', '12px', 'important');
+        panel.style.setProperty('padding', '10px 10px 14px 10px', 'important');
+        panel.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.4)', 'important');
+        panel.style.setProperty('margin-top', '8px', 'important');
+        console.log('[HISTORY] Mobile: timeline in flow, blocks will be pushed down');
+      } else {
+        // Desktop версия: timeline поверх остальных (absolute)
+        // Сбрасываем высоту .st-compact-card чтобы align-items: flex-start работал
+        if (compactCard) {
+          compactCard.style.setProperty('height', 'fit-content', 'important');
+          console.log('[HISTORY] Compact-card height set to fit-content');
+        }
+        panel.style.setProperty('position', 'absolute', 'important');
+        panel.style.setProperty('top', '100%', 'important');
+        panel.style.setProperty('left', '0', 'important');
+        panel.style.setProperty('right', '0', 'important');
+        panel.style.setProperty('z-index', '999', 'important');
+        panel.style.setProperty('margin-top', '8px', 'important');
+        panel.style.setProperty('background', 'linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%)', 'important');
+        panel.style.setProperty('backdrop-filter', 'blur(8px)', 'important');
+        panel.style.setProperty('-webkit-backdrop-filter', 'blur(8px)', 'important');
+        panel.style.setProperty('border', '1px solid var(--st-border)', 'important');
+        panel.style.setProperty('border-radius', '12px', 'important');
+        panel.style.setProperty('padding', '10px 10px 14px 10px', 'important');
+        panel.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.4)', 'important');
+        console.log('[HISTORY] Desktop: timeline absolute, blocks not moved');
+      }
+    });
+
+    // Проверяем что применилось через 300ms
+    setTimeout(() => {
+      console.log('====== [LAYOUT] ПОСЛЕ РАСКРЫТИЯ (через 300мс) ======');
+      const b1 = document.querySelector('.st-block-1');
+      if (b1) {
+        const bs = window.getComputedStyle(b1);
+        console.log(`[LAYOUT] .st-block-1 classes="${b1.className}"`);
+        console.log(`[LAYOUT] .st-block-1 display=${bs.display}, position=${bs.position}, overflow=${bs.overflow}`);
+        console.log(`[LAYOUT] .st-block-1 padding=${bs.padding}, width=${bs.width}, height=${bs.height}`);
+        console.log(`[LAYOUT] .st-block-1 alignItems=${bs.alignItems}, justifyContent=${bs.justifyContent}, flexDirection=${bs.flexDirection}`);
+        console.log(`[LAYOUT] .st-block-1 background=${bs.background}`);
+        console.log(`[LAYOUT] .st-block-1 border=${bs.border}`);
+        console.log(`[LAYOUT] .st-block-1 zIndex=${bs.zIndex}`);
+        const beforeStyle = window.getComputedStyle(b1, '::before');
+        console.log(`[LAYOUT] .st-block-1::before content="${beforeStyle.content}" position=${beforeStyle.position} inset=${beforeStyle.top || 'auto'}${beforeStyle.right ? ' r=' + beforeStyle.right : ''}${beforeStyle.bottom ? ' b=' + beforeStyle.bottom : ''}${beforeStyle.left ? ' l=' + beforeStyle.left : ''}`);
+        console.log(`[LAYOUT] .st-block-1::before background=${beforeStyle.background}`);
+        console.log(`[LAYOUT] .st-block-1::before zIndex=${beforeStyle.zIndex}`);
+        console.log(`[LAYOUT] .st-block-1 offsetHeight=${b1.offsetHeight}`);
+        const br = b1.getBoundingClientRect();
+        console.log(`[LAYOUT] .st-block-1 rect: x=${br.x.toFixed(0)} y=${br.y.toFixed(0)} w=${br.width.toFixed(0)} h=${br.height.toFixed(0)}`);
+      }
+      const cc = b1 ? b1.querySelector('.st-compact-card') : null;
+      if (cc) {
+        const cs = window.getComputedStyle(cc);
+        console.log(`[LAYOUT] .st-compact-card classes="${cc.className}"`);
+        console.log(`[LAYOUT] .st-compact-card inlineStyle="${cc.getAttribute('style')}"`);
+        console.log(`[LAYOUT] .st-compact-card display=${cs.display}, overflow=${cs.overflow}, padding=${cs.padding}`);
+        console.log(`[LAYOUT] .st-compact-card gap=${cs.gap || cs.rowGap}, flexDirection=${cs.flexDirection}`);
+        console.log(`[LAYOUT] .st-compact-card background=${cs.background}`);
+        console.log(`[LAYOUT] .st-compact-card height=${cs.height}, width=${cs.width}`);
+        console.log(`[LAYOUT] .st-compact-card minHeight=${cs.minHeight}, maxHeight=${cs.maxHeight}`);
+        console.log(`[LAYOUT] .st-compact-card alignSelf=${cs.alignSelf}, flexBasis=${cs.flexBasis}`);
+        // Лог align-items родителя
+        const b1cs = window.getComputedStyle(b1);
+        console.log(`[LAYOUT] .st-block-1 expanded alignItems=${b1cs.alignItems}, justifyContent=${b1cs.justifyContent}, flexDirection=${b1cs.flexDirection}`);
+        // Лог всех CSS правил которые применяются к .st-compact-card
+        console.log('[CSS] === Правила для .st-compact-card ===');
+        try {
+          for (let i = 0; i < document.styleSheets.length; i++) {
+            try {
+              const rules = document.styleSheets[i].cssRules;
+              for (let j = 0; j < rules.length; j++) {
+                const rule = rules[j];
+                if (rule.selectorText && (rule.selectorText.includes('st-compact-card') || rule.selectorText.includes('st-block-1.expanded'))) {
+                  console.log(`[CSS][${i}][${j}] ${rule.selectorText} -> height=${rule.style.height || 'auto'}, minHeight=${rule.style.minHeight || 'auto'}, alignItems=${rule.style.alignItems || 'inherit'}, display=${rule.style.display || 'inherit'}`);
+                }
+              }
+            } catch (e) { /* CORS */ }
+          }
+        } catch (e) {
+          console.log('[CSS] Cannot read stylesheets:', e.message);
+        }
+        console.log('[CSS] === КОНЕЦ ===');
+        const cr = cc.getBoundingClientRect();
+        console.log(`[LAYOUT] .st-compact-card rect: x=${cr.x.toFixed(0)} y=${cr.y.toFixed(0)} w=${cr.width.toFixed(0)} h=${cr.height.toFixed(0)}`);
+
+        // Лог всех дочерних элементов
+        console.log('[LAYOUT] .st-compact-card children:');
+        for (const child of cc.children) {
+          const chs = window.getComputedStyle(child);
+          const chr = child.getBoundingClientRect();
+          const relY = chr.y - cr.y;
+          console.log(`  ↳ <${child.tagName}>${child.className ? '.' + child.className.split(' ')[0] : ''}: y=${chr.y.toFixed(0)} (rel:${relY.toFixed(0)}), h=${chr.height.toFixed(0)}, marginTop=${chs.marginTop}, marginBottom=${chs.marginBottom}, paddingTop=${chs.paddingTop}, flex=${chs.flex}`);
+        }
+      }
+      const sc = cc ? cc.querySelector('.stc-content') : null;
+      if (sc) {
+        const ss = window.getComputedStyle(sc);
+        console.log(`[LAYOUT] .stc-content display=${ss.display}, visibility=${ss.visibility}, opacity=${ss.opacity}`);
+        console.log(`[LAYOUT] .stc-content height=${ss.height}, width=${ss.width}, overflow=${ss.overflow}`);
+        console.log(`[LAYOUT] .stc-content flex=${ss.flex}, flexShrink=${ss.flexShrink}, flexGrow=${ss.flexGrow}`);
+        console.log(`[LAYOUT] .stc-content inlineStyle="${sc.getAttribute('style')}"`);
+        const sr = sc.getBoundingClientRect();
+        console.log(`[LAYOUT] .stc-content rect: x=${sr.x.toFixed(0)} y=${sr.y.toFixed(0)} w=${sr.width.toFixed(0)} h=${sr.height.toFixed(0)}`);
+        // Проверка: виден ли элемент вообще
+        console.log(`[LAYOUT] .stc-content offsetParent=${sc.offsetParent ? sc.offsetParent.tagName + '.' + (sc.offsetParent.className || '') : 'NULL'}`);
+      }
+      const fb = cc ? cc.querySelector('.stc-forecast-block') || cc.querySelector('[style*="border-top"]') : null;
+      if (fb) {
+        const fs = window.getComputedStyle(fb);
+        console.log(`[LAYOUT] forecast-block display=${fs.display}, height=${fs.height}, width=${fs.width}, overflow=${fs.overflow}`);
+        console.log(`[LAYOUT] forecast-block marginTop=${fs.marginTop}, paddingTop=${fs.paddingTop}, flex=${fs.flex}`);
+        console.log(`[LAYOUT] forecast-block inlineStyle="${fb.getAttribute('style')}"`);
+        const fr = fb.getBoundingClientRect();
+        console.log(`[LAYOUT] forecast-block rect: x=${fr.x.toFixed(0)} y=${fr.y.toFixed(0)} w=${fr.width.toFixed(0)} h=${fr.height.toFixed(0)}`);
+        // Вычисляем gap между content и forecast
+        if (sc) {
+          const contentBottom = sc.getBoundingClientRect().bottom;
+          const forecastTop = fr.y;
+          console.log(`[LAYOUT] GAP между .stc-content и forecast: ${(forecastTop - contentBottom).toFixed(1)}px`);
+        }
+      }
+      const ht = document.getElementById('st-history-timeline');
+      if (ht) {
+        const hs = window.getComputedStyle(ht);
+        console.log(`[LAYOUT] #st-history-timeline display=${hs.display}, position=${hs.position}, height=${hs.height}, width=${hs.width}`);
+        console.log(`[LAYOUT] #st-history-timeline top=${hs.top}, left=${hs.left}, right=${hs.right}, zIndex=${hs.zIndex}`);
+        console.log(`[LAYOUT] #st-history-timeline background=${hs.background}`);
+        console.log(`[LAYOUT] #st-history-timeline margin=${hs.margin}, padding=${hs.padding}`);
+        console.log(`[LAYOUT] #st-history-timeline borderRadius=${hs.borderRadius}`);
+        console.log(`[LAYOUT] #st-history-timeline inlineStyle="${ht.getAttribute('style')}"`);
+        const hr = ht.getBoundingClientRect();
+        console.log(`[LAYOUT] #st-history-timeline rect: x=${hr.x.toFixed(0)} y=${hr.y.toFixed(0)} w=${hr.width.toFixed(0)} h=${hr.height.toFixed(0)}`);
+        // Check if CSS rule is being applied
+        console.log(`[LAYOUT] #st-history-timeline parent=${ht.parentElement ? ht.parentElement.tagName + '.' + (ht.parentElement.className || '').split(' ')[0] : 'NONE'}`);
+        // Check all matching CSS rules
+        try {
+          const rules = document.styleSheets;
+          for (let i = 0; i < rules.length; i++) {
+            try {
+              const cssRules = rules[i].cssRules;
+              for (let j = 0; j < cssRules.length; j++) {
+                if (cssRules[j].selectorText && cssRules[j].selectorText.includes('st-history-timeline')) {
+                  console.log(`[LAYOUT] CSS Rule[${i}][${j}]: ${cssRules[j].selectorText} -> position=${cssRules[j].style.position}`);
+                }
+              }
+            } catch (e) { /* CORS */ }
+          }
+        } catch (e) {
+          console.log('[LAYOUT] Cannot read stylesheets:', e.message);
+        }
+      }
+      const htl = document.getElementById('st-history-timeline-list');
+      if (htl) {
+        const hls = window.getComputedStyle(htl);
+        console.log(`[LAYOUT] .st-history-timeline-list background=${hls.background}`);
+        console.log(`[LAYOUT] .st-history-timeline-list margin=${hls.margin}, padding=${hls.padding}`);
+        console.log(`[LAYOUT] .st-history-timeline-list borderRadius=${hls.borderRadius}`);
+      }
+      console.log('====== [LAYOUT] КОНЕЦ ПОСЛЕ ======');
+    }, 300);
+  }
+};
+
+window.filterHistoryTimeline = function (grade, btnEl) {
+  _histFilter = grade;
+  document.querySelectorAll('.st-hist-filter-btn').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
+  _renderTimeline();
+};
+
+function _renderTimeline() {
+  const list = document.getElementById('st-history-timeline-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const data = _histFilter === 'all' ? _allHistory : _allHistory.filter(h => h.grade === +_histFilter);
+
+  // Vertical line
+  const line = document.createElement('div');
+  line.className = 'st-timeline-line';
+  list.appendChild(line);
+
+  let lastDay = '';
+  data.forEach(h => {
+    const day = new Date(h.date).toISOString().split('T')[0];
+    if (day !== lastDay) {
+      const sep = document.createElement('div');
+      sep.className = 'st-timeline-sep';
+      sep.textContent = _fmtDate(h.date);
+      list.appendChild(sep);
+      lastDay = day;
+    }
+
+    const item = document.createElement('div');
+    item.className = 'st-timeline-item';
+    item.onclick = () => window.openCardHistoryModal(h.question);
+
+    const dot = document.createElement('div');
+    dot.className = 'st-timeline-dot';
+    dot.setAttribute('data-grade', h.grade);
+
+    const q = document.createElement('div');
+    q.className = 'st-timeline-q';
+    q.textContent = h.question.length > 50 ? h.question.slice(0, 50) + '…' : h.question;
+
+    const meta = document.createElement('div');
+    meta.className = 'st-timeline-meta';
+
+    const timeSpan = document.createElement('span');
+    timeSpan.textContent = _fmtTime(h.date);
+    meta.appendChild(timeSpan);
+
+    const gradeSpan = document.createElement('span');
+    gradeSpan.className = 'st-timeline-grade';
+    gradeSpan.setAttribute('data-grade', h.grade);
+    gradeSpan.textContent = _GN[h.grade];
+    meta.appendChild(gradeSpan);
+
+    if (h.duration) {
+      const durSpan = document.createElement('span');
+      durSpan.textContent = '~' + h.duration + 'с';
+      meta.appendChild(durSpan);
+    }
+
+    item.appendChild(dot);
+    item.appendChild(q);
+    item.appendChild(meta);
+    list.appendChild(item);
+  });
+}
+
+window.openCardHistoryModal = function (question) {
+  const prog = getProgressMap();
+  const p = prog[question];
+  if (!p || !p.historyArray) return;
+  const entries = p.historyArray.filter(h => h.date && h.grade).sort((a, b) => b.date - a.date);
+
+  const cnts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  entries.forEach(e => cnts[e.grade]++);
+  const total = entries.length;
+  const avgS = total > 0 ? Math.round(entries.reduce((s, e) => s + (e.duration || 0), 0) / total) : 0;
+  const shortQ = question.length > 40 ? question.slice(0, 40) + '…' : question;
+
+  // Overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'st-modal-overlay';
+  overlay.onclick = (ev) => { if (ev.target === overlay) overlay.remove(); };
+
+  // Box
+  const box = document.createElement('div');
+  box.className = 'st-modal-box';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'st-modal-header';
+  const title = document.createElement('h3');
+  title.textContent = '📋 ' + shortQ;
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'st-modal-close';
+  closeBtn.textContent = '✕';
+  closeBtn.onclick = () => overlay.remove();
+  header.appendChild(title);
+  header.appendChild(closeBtn);
+  box.appendChild(header);
+
+  // Stats
+  const statsDiv = document.createElement('div');
+  statsDiv.className = 'st-modal-stats';
+  for (let g = 1; g <= 4; g++) {
+    const st = document.createElement('div');
+    st.className = 'st-modal-stat';
+    st.setAttribute('data-g', g);
+    const sv = document.createElement('span');
+    sv.className = 'sv';
+    sv.textContent = cnts[g];
+    st.appendChild(sv);
+    st.appendChild(document.createTextNode(' ' + _GN[g]));
+    statsDiv.appendChild(st);
+  }
+  // Total
+  const totalSt = document.createElement('div');
+  totalSt.className = 'st-modal-stat';
+  const totalSv = document.createElement('span');
+  totalSv.className = 'sv';
+  totalSv.style.color = '#fff';
+  totalSv.textContent = total;
+  totalSt.appendChild(totalSv);
+  totalSt.appendChild(document.createTextNode(' Всего'));
+  statsDiv.appendChild(totalSt);
+  // Avg time
+  const avgSt = document.createElement('div');
+  avgSt.className = 'st-modal-stat';
+  const avgSv = document.createElement('span');
+  avgSv.className = 'sv';
+  avgSv.style.color = 'var(--st-muted)';
+  avgSv.textContent = avgS + 'с';
+  avgSt.appendChild(avgSv);
+  avgSt.appendChild(document.createTextNode(' Ср. время'));
+  statsDiv.appendChild(avgSt);
+  box.appendChild(statsDiv);
+
+  // Entries list
+  entries.forEach(e => {
+    const entry = document.createElement('div');
+    entry.className = 'st-modal-entry';
+    entry.setAttribute('data-grade', e.grade);
+
+    const dt = document.createElement('span');
+    dt.className = 'me-dt';
+    dt.textContent = _fmtDate(e.date) + ' ' + _fmtTime(e.date);
+    entry.appendChild(dt);
+
+    const grade = document.createElement('span');
+    grade.className = 'me-grade';
+    grade.setAttribute('data-grade', e.grade);
+    grade.textContent = _GN[e.grade];
+    entry.appendChild(grade);
+
+    if (e.duration) {
+      const dur = document.createElement('span');
+      dur.className = 'me-dur';
+      dur.textContent = e.duration + 'с';
+      entry.appendChild(dur);
+    }
+
+    box.appendChild(entry);
+  });
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+};
 
 
