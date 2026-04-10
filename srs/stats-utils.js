@@ -1,9 +1,36 @@
 ﻿import { syncWithServer } from './storage.js?v=6.61.0';
 
-// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґР°С‚РѕР№ (Р»РѕРєР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°)
+// Вспомогательные функции для работы с датой (с учётом выбранного часового пояса)
+function getUserTimezone() {
+  try {
+    const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+    if (settings.timezone) {
+      return settings.timezone;
+    }
+  } catch { }
+  // Определяем часовой пояс устройства
+  const deviceOffset = new Date().getTimezoneOffset();
+  const hours = -deviceOffset / 60;
+  const sign = hours >= 0 ? '+' : '-';
+  return null;
+}
+
 function getLocalDate(date) {
-  // Р'РѕР·РІСЂР°С‰Р°РµС‚ РґР°С‚Сѓ РІ С„РѕСЂРјР°С‚Рµ YYYY-MM-DD РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РІСЂРµРјРµРЅРё СѓСЃС‚СЂРѕР№СЃС‚РІР°
+  // Возвращает дату в формате YYYY-MM-DD для выбранного часового пояса
   const now = date ? new Date(date) : new Date();
+  const tz = getUserTimezone();
+
+  if (tz) {
+    // Преобразуем в выбранный часовой пояс
+    const tzOffset = parseInt(tz.replace('UTC', ''));
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const adjusted = new Date(utc + (tzOffset * 3600000));
+    return adjusted.getFullYear() + '-' +
+      String(adjusted.getMonth() + 1).padStart(2, '0') + '-' +
+      String(adjusted.getDate()).padStart(2, '0');
+  }
+
+  // По умолчанию — локальное время устройства
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
@@ -16,9 +43,20 @@ function getLocalHours() {
 }
 
 function toLocalDate(date) {
-  // РљРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ Р»СЋР±СѓСЋ РґР°С‚Сѓ РІ Р»РѕРєР°Р»СЊРЅСѓСЋ РґР°С‚Сѓ YYYY-MM-DD
+  // Конвертирует любую дату в выбранную дату YYYY-MM-DD
   if (!date) return getLocalDate();
   const d = typeof date === 'string' ? new Date(date) : date;
+  const tz = getUserTimezone();
+
+  if (tz) {
+    const tzOffset = parseInt(tz.replace('UTC', ''));
+    const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    const adjusted = new Date(utc + (tzOffset * 3600000));
+    return adjusted.getFullYear() + '-' +
+      String(adjusted.getMonth() + 1).padStart(2, '0') + '-' +
+      String(adjusted.getDate()).padStart(2, '0');
+  }
+
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -115,32 +153,34 @@ export function getProgressMap() {
  * РЅР° РѕСЃРЅРѕРІРµ РїРѕСЃР»РµРґРЅРёС… 40 РїСЂРѕР№РґРµРЅРЅС‹С… РєР°СЂС‚РѕС‡РµРє
  * @returns {number} СЃСЂРµРґРЅРµРµ РІСЂРµРјСЏ РІ СЃРµРєСѓРЅРґР°С… (РѕРєСЂСѓРіР»РµРЅРѕ РґРѕ С†РµР»РѕРіРѕ)
  */
-export function getAverageCardTime(sampleSize = 40) {
+export function getAverageCardTime(sampleSize = 50) {
   const progressMap = getProgressMap();
   const cards = Object.values(progressMap);
 
-  // Р¤РёР»СЊС‚СЂСѓРµРј РєР°СЂС‚РѕС‡РєРё Сѓ РєРѕС‚РѕСЂС‹С… РµСЃС‚СЊ lastReviewedTime
-  const cardsWithTime = cards.filter(p => p && typeof p.lastReviewedTime === 'number');
+  // Фильтруем карточки у которых есть длительность lastReviewedDuration
+  const cardsWithDuration = cards.filter(p => p && typeof p.lastReviewedDuration === 'number' && p.lastReviewedDuration > 0);
 
-  if (cardsWithTime.length === 0) {
-    return 90; // Р—РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (1.5 РјРёРЅСѓС‚С‹) РµСЃР»Рё РЅРµС‚ РґР°РЅРЅС‹С…
+  if (cardsWithDuration.length === 0) {
+    return 90; // Значение по умолчанию (1.5 минуты) если нет данных
   }
 
-  // РЎРѕСЂС‚РёСЂСѓРµРј РїРѕ lastReviewed (РґР°С‚Рµ) С‡С‚РѕР±С‹ РІР·СЏС‚СЊ РїРѕСЃР»РµРґРЅРёРµ
-  cardsWithTime.sort((a, b) => {
+  // Сортируем по lastReviewed (дате) чтобы взять последние
+  cardsWithDuration.sort((a, b) => {
     const dateA = a.lastReviewed || '';
     const dateB = b.lastReviewed || '';
-    return dateB.localeCompare(dateA); // РџРѕ СѓР±С‹РІР°РЅРёСЋ (СЃРЅР°С‡Р°Р»Р° РЅРѕРІС‹Рµ)
+    return dateB.localeCompare(dateA);
   });
 
-  // Р‘РµСЂС‘Рј РїРѕСЃР»РµРґРЅРёРµ sampleSize РєР°СЂС‚РѕС‡РµРє
-  const recentCards = cardsWithTime.slice(0, sampleSize);
+  // Берём последние sampleSize карточек
+  const recentCards = cardsWithDuration.slice(0, sampleSize);
 
-  // РЎС‡РёС‚Р°РµРј СЃСЂРµРґРЅРµРµ РІСЂРµРјСЏ
-  const totalTime = recentCards.reduce((sum, card) => sum + (card.lastReviewedTime || 0), 0);
-  const avgTime = totalTime / recentCards.length;
+  // Считаем среднее время
+  const totalSeconds = recentCards.reduce((sum, card) => sum + card.lastReviewedDuration, 0);
+  const avgSeconds = totalSeconds / recentCards.length;
 
-  return Math.round(avgTime); // Р’РѕР·РІСЂР°С‰Р°РµРј РІ СЃРµРєСѓРЅРґР°С…
+  // Минимум 30 секунд (0.5 мин) на карту — защита от слишком быстрых кликов
+  const MIN_CARD_TIME = 30;
+  return Math.max(MIN_CARD_TIME, Math.round(avgSeconds));
 }
 
 export function getStudyStats() {
@@ -287,7 +327,12 @@ export function getDailyImprovements(days = 30) {
     if (!p.historyArray || !Array.isArray(p.historyArray)) return;
 
     p.historyArray.forEach(h => {
-      const date = new Date(h.date).toISOString().split('T')[0];
+      // ИСПОЛЬЗУЕМ ЛОКАЛЬНУЮ ДАТУ (не UTC!)
+      const hDate = new Date(h.date);
+      const date = hDate.getFullYear() + '-' +
+        String(hDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(hDate.getDate()).padStart(2, '0');
+
       if (!res[date]) res[date] = { improved: 0, regressed: 0, reviewed: 0 };
 
       res[date].reviewed++;
@@ -667,9 +712,13 @@ export function getDailyHearts(dateStr) {
   const prog = getProgressMap();
   let dailyHearts = 0;
   let answersToday = 0;
+  let checkedCards = 0;
+
+  console.log(`[getDailyHearts] 🔍 Ищу данные за ${dateStr}, всего карточек в прогрессе: ${Object.keys(prog).length}`);
 
   Object.values(prog).forEach(p => {
     if (!p.historyArray || !Array.isArray(p.historyArray)) return;
+    checkedCards++;
 
     p.historyArray.forEach(h => {
       if (!h.date) return;
@@ -680,32 +729,28 @@ export function getDailyHearts(dateStr) {
         String(hDate.getMonth() + 1).padStart(2, '0') + '-' +
         String(hDate.getDate()).padStart(2, '0');
 
-      if (hDateStr !== dateStr) return;
+      if (hDateStr === dateStr) {
+        const grade = h.grade;
+        let efChange = 0;
 
-      const grade = h.grade;
-      let efChange = 0;
+        switch (grade) {
+          case 1: efChange = -0.25; break;
+          case 2: efChange = -0.15; break;
+          case 3: efChange = 0.05; break;
+          case 4: efChange = 0.05; break;
+        }
 
-      switch (grade) {
-        case 1: // Снова
-          efChange = -0.25;
-          break;
-        case 2: // Трудно
-          efChange = -0.15;
-          break;
-        case 3: // Хорошо
-          efChange = 0.05;
-          break;
-        case 4: // Легко
-          efChange = 0.05;
-          break;
+        dailyHearts += efChange;
+        answersToday++;
+
+        if (answersToday <= 3) {
+          console.log(`[getDailyHearts]   ✅ MATCH: grade=${grade}, efChange=${efChange}, hDate=${hDateStr}, timestamp=${h.date}`);
+        }
       }
-
-      dailyHearts += efChange;
-      answersToday++;
     });
   });
 
-  console.log(`[getDailyHearts] ${dateStr}: ответов=${answersToday}, hearts=${dailyHearts}`);
+  console.log(`[getDailyHearts] 📊 ${dateStr}: проверено карточек=${checkedCards}, ответов=${answersToday}, hearts=${dailyHearts}`);
 
   return Math.round(dailyHearts * 100) / 100;
 }

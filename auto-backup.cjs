@@ -1,98 +1,185 @@
 const fs = require('fs');
 const path = require('path');
 
-const BACKUP_DIR = path.join(__dirname, 'data', '_backups');
 const DATA_DIR = path.join(__dirname, 'data');
-const MAX_BACKUPS = 7;
-const BACKUP_INTERVAL_HOURS = 6;
+const BACKUP_BASE_DIR = path.join(DATA_DIR, '_backups');
+const MAX_AUTO_BACKUPS = 7; // дней
+const BACKUP_INTERVAL_HOURS = 24; // раз в сутки
 
 function getTimestamp() {
   const now = new Date();
   return now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
 }
 
-function copyFolderSync(from, to) {
-  if (!fs.existsSync(to)) {
-    fs.mkdirSync(to, { recursive: true });
-  }
-
-  fs.readdirSync(from).forEach(element => {
-    if (element === '_backups') return;
-
-    const stat = fs.lstatSync(path.join(from, element));
-    const dest = path.join(to, element);
-    const src = path.join(from, element);
-
-    if (stat.isFile()) {
-      fs.copyFileSync(src, dest);
-    } else if (stat.isDirectory()) {
-      copyFolderSync(src, dest);
-    }
-  });
+function getTodayDateString() {
+  const now = new Date();
+  return now.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-function cleanupOldBackups() {
-  try {
-    const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(file => file.startsWith('backup_'))
-      .map(file => ({
-        name: file,
-        time: fs.statSync(path.join(BACKUP_DIR, file)).mtime.getTime()
-      }))
-      .sort((a, b) => b.time - a.time);
+function ensureUserBackupDir(username) {
+  const dir = path.join(BACKUP_BASE_DIR, username, 'auto');
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  return dir;
+}
 
-    if (backups.length > MAX_BACKUPS) {
-      const toDelete = backups.slice(MAX_BACKUPS);
-      toDelete.forEach(backup => {
-        const backupPath = path.join(BACKUP_DIR, backup.name);
-        fs.rmSync(backupPath, { recursive: true, force: true });
-        console.log(`[BACKUP] Удалён старый бэкап: ${backup.name}`);
+// Очистка: 1 бэкап на дату, максимум MAX_AUTO_BACKUPS дней
+function cleanupOldUserBackups(username) {
+  try {
+    const autoDir = path.join(BACKUP_BASE_DIR, username, 'auto');
+    if (!fs.existsSync(autoDir)) return;
+
+    const backupsByDate = {};
+
+    fs.readdirSync(autoDir)
+      .filter(f => f.endsWith('.json'))
+      .forEach(filename => {
+        const dateMatch = filename.match(/backup_(\d{4}-\d{2}-\d{2})/);
+        if (dateMatch) {
+          const date = dateMatch[1];
+          if (!backupsByDate[date]) backupsByDate[date] = [];
+          const filePath = path.join(autoDir, filename);
+          backupsByDate[date].push({ filename, time: fs.statSync(filePath).mtime.getTime(), path: filePath });
+        }
+      });
+
+    let deletedCount = 0;
+
+    // Для каждой даты оставляем только 1 бэкап (самый свежий)
+    Object.values(backupsByDate).forEach(dayBackups => {
+      if (dayBackups.length > 1) {
+        dayBackups.sort((a, b) => b.time - a.time);
+        dayBackups.slice(1).forEach(backup => {
+          if (fs.existsSync(backup.path)) {
+            fs.rmSync(backup.path, { force: true });
+            deletedCount++;
+          }
+        });
+      }
+    });
+
+    // Удаляем старые даты если больше MAX_AUTO_BACKUPS дней
+    const dates = Object.keys(backupsByDate).sort().reverse();
+    if (dates.length > MAX_AUTO_BACKUPS) {
+      dates.slice(MAX_AUTO_BACKUPS).forEach(oldDate => {
+        backupsByDate[oldDate].forEach(backup => {
+          if (fs.existsSync(backup.path)) {
+            fs.rmSync(backup.path, { force: true });
+            deletedCount++;
+          }
+        });
       });
     }
+
+    if (deletedCount > 0) {
+      console.log(`[BACKUP] 🧹 Удалено ${deletedCount} дубликатов/старых бэкапов для ${username}`);
+    }
   } catch (err) {
-    console.warn('[BACKUP] Warning: Failed to cleanup old backups:', err.message);
+    console.warn(`[BACKUP] Warning: Failed to cleanup for ${username}:`, err.message);
+  }
+}
+
+function createUserBackup(username, userData) {
+  try {
+    const autoDir = ensureUserBackupDir(username);
+    const timestamp = getTimestamp();
+    const filename = `backup_${timestamp}.json`;
+    const backupPath = path.join(autoDir, filename);
+
+    fs.writeFileSync(backupPath, JSON.stringify(userData, null, 2), 'utf-8');
+
+    const size = fs.statSync(backupPath).size;
+    console.log(`[BACKUP] ✅ ${username}: ${(size / 1024).toFixed(2)} KB`);
+
+    cleanupOldUserBackups(username);
+
+    return backupPath;
+  } catch (err) {
+    console.error(`[BACKUP] ❌ ${username}:`, err.message);
+    return null;
   }
 }
 
 function createBackup() {
-  const timestamp = getTimestamp();
-  const backupPath = path.join(BACKUP_DIR, `backup_${timestamp}`);
-
-  console.log(`[BACKUP] Starting backup to: ${backupPath}`);
+  console.log(`\n[BACKUP] === Запуск авто-бэкапа ===`);
+  console.log(`[BACKUP] Частота: раз в сутки, максимум ${MAX_AUTO_BACKUPS} дней`);
 
   try {
-    if (!fs.existsSync(BACKUP_DIR)) {
-      fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    if (!fs.existsSync(BACKUP_BASE_DIR)) {
+      fs.mkdirSync(BACKUP_BASE_DIR, { recursive: true });
     }
 
-    copyFolderSync(DATA_DIR, backupPath);
+    // Сначала чистим дубликаты у всех пользователей
+    const allUserDirs = fs.readdirSync(BACKUP_BASE_DIR)
+      .filter(d => !d.startsWith('.') && fs.statSync(path.join(BACKUP_BASE_DIR, d)).isDirectory());
 
-    const size = fs.readdirSync(backupPath)
-      .reduce((acc, file) => {
-        const stat = fs.statSync(path.join(backupPath, file));
-        return acc + (stat.isFile() ? stat.size : 0);
-      }, 0);
+    allUserDirs.forEach(username => {
+      cleanupOldUserBackups(username);
+    });
 
-    console.log(`[BACKUP] ✅ Backup completed: ${(size / 1024).toFixed(2)} KB`);
+    const userFiles = fs.readdirSync(DATA_DIR)
+      .filter(file => file.startsWith('user_') && file.endsWith('.json') &&
+        !file.includes('_metadata') &&
+        !file.includes('_trash') &&
+        !file.includes('_marathon') &&
+        !file.includes('_progress'));
 
-    cleanupOldBackups();
+    if (userFiles.length === 0) {
+      console.log('[BACKUP] Файлы пользователей не найдены');
+      return null;
+    }
 
-    return backupPath;
+    const results = [];
+    const todayString = getTodayDateString();
+
+    userFiles.forEach(userFile => {
+      try {
+        const username = userFile.replace('user_', '').replace('.json', '');
+        const userFilePath = path.join(DATA_DIR, userFile);
+
+        // Проверяем есть ли уже бэкап за сегодня
+        const autoDir = path.join(BACKUP_BASE_DIR, username, 'auto');
+        if (fs.existsSync(autoDir)) {
+          const todayBackups = fs.readdirSync(autoDir)
+            .filter(f => f.endsWith('.json') && f.includes(todayString));
+
+          if (todayBackups.length > 0) {
+            console.log(`[BACKUP] ⏭️ ${username}: уже есть за ${todayString}`);
+            results.push({ username, success: true, skipped: true });
+            return;
+          }
+        }
+
+        const userData = JSON.parse(fs.readFileSync(userFilePath, 'utf-8'));
+        const backupPath = createUserBackup(username, userData);
+
+        results.push({ username, success: !!backupPath, path: backupPath });
+      } catch (err) {
+        console.error(`[BACKUP] ❌ Ошибка ${userFile}:`, err.message);
+        results.push({ username: userFile, success: false, error: err.message });
+      }
+    });
+
+    const created = results.filter(r => r.success && !r.skipped).length;
+    const skipped = results.filter(r => r.skipped).length;
+    console.log(`[BACKUP] === Создано: ${created}, пропущено: ${skipped} ===\n`);
+
+    return results;
   } catch (err) {
-    console.error('[BACKUP] ❌ Backup failed:', err);
+    console.error('[BACKUP] ❌ Критическая ошибка:', err);
     return null;
   }
 }
 
 if (require.main === module) {
-  console.log(`[BACKUP] Auto-backup every ${BACKUP_INTERVAL_HOURS} hours`);
-  console.log(`[BACKUP] Max backups: ${MAX_BACKUPS}`);
-  console.log(`[BACKUP] First backup starting now...\n`);
+  console.log(`[BACKUP] Auto-backup: каждые ${BACKUP_INTERVAL_HOURS}ч, храним ${MAX_AUTO_BACKUPS} дней`);
+  console.log(`[BACKUP] Первый бэкап сейчас...\n`);
 
   createBackup();
 
   setInterval(() => {
-    console.log(`\n[BACKUP] Scheduled backup starting...`);
+    console.log(`\n[BACKUP] Scheduled backup...`);
     createBackup();
   }, BACKUP_INTERVAL_HOURS * 60 * 60 * 1000);
 } else {

@@ -194,7 +194,12 @@ export class LearningSession {
         this.recentGrades.push(grade);
         if (this.recentGrades.length > 15) this.recentGrades.shift();
 
-        const newProgress = calculateNextReview(this.currentCard.progress, grade);
+        // Track time spent (cap at 5 mins per card to avoid idle time)
+        const elapsed = Date.now() - (this.cardStartTime || Date.now());
+        const safeElapsed = elapsed > 0 && elapsed < 300000 ? elapsed : 0;
+        const safeElapsedSec = Math.round(safeElapsed / 1000);
+
+        const newProgress = calculateNextReview(this.currentCard.progress, grade, safeElapsedSec);
         const now = new Date();
         // Сохраняем дату и время локального времени устройства
         const localDate = getLocalDate(now);
@@ -203,16 +208,17 @@ export class LearningSession {
         newProgress.lastReviewed = localDate;
         newProgress.lastReviewedTime = localHours;
 
+        // Сохраняем длительность прохождения карточки (в секундах)
+        newProgress.lastReviewedDuration = safeElapsedSec;
+
         updateCardProgress(this.currentCard.item.question, newProgress);
 
         const statsRaw = localStorage.getItem('studyStats') || '{}';
         const stats = (() => { try { return JSON.parse(statsRaw); } catch { return {}; } })();
         stats.total = (stats.total || 0) + 1;
 
-        // Track time spent (cap at 5 mins per card to avoid idle time)
-        const elapsed = Date.now() - (this.cardStartTime || Date.now());
-        if (elapsed > 0 && elapsed < 300000) {
-            stats.timeSpent = (stats.timeSpent || 0) + elapsed;
+        if (safeElapsed > 0) {
+            stats.timeSpent = (stats.timeSpent || 0) + safeElapsed;
         }
 
         if (grade >= 2) stats.correct = (stats.correct || 0) + 1;
@@ -229,6 +235,8 @@ export class LearningSession {
         const daily = (() => { try { return JSON.parse(dpRaw); } catch { return {}; } })();
         daily[todayKey] = (daily[todayKey] || 0) + points;
         localStorage.setItem('dailyPoints', JSON.stringify(daily));
+
+        console.log(`[SESSION] ✅ Rate: grade=${grade}, points=${points}, date=${todayKey}, dailyPoints now:`, daily);
         // Track bonus separately for histogram breakdown (added later in overlay)
         const dbRaw = localStorage.getItem('dailyBonusPoints') || '{}';
         const dailyBonus = (() => { try { return JSON.parse(dbRaw); } catch { return {}; } })();

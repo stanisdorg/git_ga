@@ -19,16 +19,16 @@ export const EF_MAX = 2.9;
 
 export const LEVEL_RANGES = {
     VERY_HARD: { min: EF_MIN, max: 1.7 },
-    HARD:      { min: 1.7,    max: 2.1 },
-    STANDARD:  { min: 2.1,    max: 2.4 },
-    EASY:      { min: 2.4,    max: EF_MAX }
+    HARD: { min: 1.7, max: 2.1 },
+    STANDARD: { min: 2.1, max: 2.4 },
+    EASY: { min: 2.4, max: EF_MAX }
 };
 
 const EF_DELTAS = {
     AGAIN: -0.25, // Снова (1)
-    HARD:  -0.15, // Трудно (2)
-    GOOD:   0.05, // Хорошо (3)
-    EASY:  +0.05  // Легко (4)
+    HARD: -0.15, // Трудно (2)
+    GOOD: 0.05, // Хорошо (3)
+    EASY: +0.05  // Легко (4)
 };
 
 export function getDifficultyLevel(ef) {
@@ -57,9 +57,15 @@ export function canUseEasy(card) {
  * @param {number} grade - 1 (Again), 2 (Hard), 3 (Good), 4 (Easy)
  * @returns {SRSProgress} Updated card
  */
-export function calculateNextInterval(card, grade) {
+export function calculateNextInterval(card, grade, durationSec) {
     const now = Date.now();
-    
+    const nowDate = new Date(now);
+    const nowDateStr = nowDate.getFullYear() + '-' +
+        String(nowDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(nowDate.getDate()).padStart(2, '0');
+
+    console.log(`[ALGORITHM] 📝 calculateNextInterval: grade=${grade}, now=${now}, date=${nowDateStr}`);
+
     // Initialize defaults if missing
     if (card.easeFactor === undefined) card.easeFactor = 2.3; // Default to Standard (was 2.5 Easy)
     if (!card.streak) card.streak = 0;
@@ -73,8 +79,10 @@ export function calculateNextInterval(card, grade) {
     }
 
     // Update history
-    card.history.push({ date: now, grade });
+    card.history.push({ date: now, grade, duration: typeof durationSec === 'number' ? durationSec : undefined });
     card.lastReviewDate = now;
+
+    console.log(`[ALGORITHM] 📊 History entry: date=${now}, grade=${grade}, historyLen=${card.history.length}`);
     const prevCount = card.repetitionCount;
     card.repetitionCount++;
 
@@ -100,19 +108,19 @@ export function calculateNextInterval(card, grade) {
             break;
         default:
             // Fallback if 0 passed
-             if (grade === 0) {
-                 efChange = EF_DELTAS.AGAIN;
-                 card.streak = 0;
-             }
-             break;
+            if (grade === 0) {
+                efChange = EF_DELTAS.AGAIN;
+                card.streak = 0;
+            }
+            break;
     }
 
     // Apply EF change
     card.easeFactor += efChange;
-    
+
     // Clamp EF
     card.easeFactor = Math.max(EF_MIN, Math.min(EF_MAX, card.easeFactor));
-    
+
     // Calculate Interval
     if (grade === 1) {
         card.interval = 1;
@@ -125,16 +133,16 @@ export function calculateNextInterval(card, grade) {
             card.interval = Math.round(card.interval * card.easeFactor);
         }
     }
-    
+
     // Cap interval at 180 days
     card.interval = Math.min(card.interval, 180);
-    
+
     // Calculate next review date (start of day)
     const nextDate = new Date(now);
     nextDate.setDate(nextDate.getDate() + card.interval);
     nextDate.setHours(4, 0, 0, 0); // 4 AM next day
     card.nextReviewDate = nextDate.getTime();
-    
+
     return card;
 }
 
@@ -145,7 +153,7 @@ export function calculateNextInterval(card, grade) {
  * @param {Object} currentProgress 
  * @param {number} grade 0=Again, 1=Hard, 2=Good, 3=Easy
  */
-export function calculateNextReview(currentProgress, grade) {
+export function calculateNextReview(currentProgress, grade, durationSec) {
     // Map grade 0-3 (UI) to 1-4 (Logic)
     // 0 (Again) -> 1
     // 1 (Hard) -> 2
@@ -166,10 +174,10 @@ export function calculateNextReview(currentProgress, grade) {
         easeFactor: currentProgress?.easeFactor !== undefined ? currentProgress.easeFactor : 2.3,
         streak: currentProgress?.streak || (currentProgress?.repetitions || 0),
         repetitionCount: currentProgress?.repetitionCount || (currentProgress?.history || 0),
-        history: Array.isArray(currentProgress?.historyArray) ? currentProgress.historyArray : [] 
+        history: Array.isArray(currentProgress?.historyArray) ? currentProgress.historyArray : []
     };
 
-    const updated = calculateNextInterval(card, logicGrade);
+    const updated = calculateNextInterval(card, logicGrade, durationSec);
 
     // Return object compatible with existing storage expecting 'dueDate' ISO string
     return {

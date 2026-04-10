@@ -1,4 +1,4 @@
-﻿import { getProgressMap } from './stats-utils.js?v=6.49.0';
+﻿import { getProgressMap, getAverageCardTime } from './stats-utils.js?v=6.49.0';
 import { getStudyStats } from './stats-utils.js?v=6.49.0';
 
 /**
@@ -147,10 +147,9 @@ export function getTodaysSession(allQuestions) {
     // Limit new cards per day
 
     // Determine limits based on user's daily study time preference
-    // Default: 60 minutes → ~15-20 new cards + reviews
-    // Formula: ~1.5 min per card (average), +15% buffer
-    const settings = (typeof window !== 'undefined' && window.appSettings) || { dailyStudyTime: 60 };
-    const dailyMinutes = settings.dailyStudyTime || 60;
+    // Default: 20 cards per session
+    const settings = (typeof window !== 'undefined' && window.appSettings) || { dailyStudyTime: 25 };
+    const dailyMinutes = settings.dailyStudyTime || 25;
     const avgTimePerCard = 1.5; // minutes per card (average)
     const buffer = 1.15; // +15% buffer
     const totalCardsAllowed = Math.floor((dailyMinutes * buffer) / avgTimePerCard);
@@ -159,21 +158,17 @@ export function getTodaysSession(allQuestions) {
     const reviewCount = sessionCards.filter(c => !c.isNew).length;
 
     // New cards limit: remaining capacity after reviews
-    let DAILY_NEW_LIMIT = Math.max(5, Math.min(30, totalCardsAllowed - reviewCount));
+    let DAILY_NEW_LIMIT = Math.max(5, Math.min(20, totalCardsAllowed - reviewCount));
 
-    // Max session: total capacity
-    let MAX_SESSION = Math.max(15, Math.min(60, totalCardsAllowed));
+    // Max session: total capacity (default 20)
+    let MAX_SESSION = Math.max(15, Math.min(20, totalCardsAllowed));
 
     // Phase-based adjustments (for users without settings yet)
     const studiedCount = Object.values(progressMap).filter(p => (p.repetitionCount || p.repetitions || 0) > 0).length;
-    if (studiedCount < 40 && dailyMinutes >= 60) {
-        // Day 1 with 60+ min → allow up to 20 new
-        DAILY_NEW_LIMIT = Math.min(DAILY_NEW_LIMIT, 20);
-        MAX_SESSION = Math.max(MAX_SESSION, 25);
-    } else if (studiedCount < 40 && dailyMinutes < 60) {
-        // Day 1 with 30-45 min → gentle start
-        DAILY_NEW_LIMIT = Math.min(DAILY_NEW_LIMIT, 12);
-        MAX_SESSION = Math.max(MAX_SESSION, 15);
+    if (studiedCount < 40) {
+        // Начинающим: мягкий старт 15-20 карточек
+        DAILY_NEW_LIMIT = Math.min(DAILY_NEW_LIMIT, 15);
+        MAX_SESSION = Math.max(MAX_SESSION, 20);
     }
 
     let addedNew = 0;
@@ -326,4 +321,151 @@ export function getTodaysSessionBreakdown(allQuestions) {
     console.log('[getTodaysSessionBreakdown] =========================================');
 
     return { dueCount, newCount, totalCount: dueCount + newCount };
+}
+
+/**
+ * Возвращает прогноз на 4 дня: вчера, сегодня, завтра, послезавтра
+ * @param {Array} allQuestions - Полный список вопросов
+ * @returns {{ yesterday: Object, today: Object, tomorrow: Object, dayAfter: Object }}
+ */
+export function get4DayForecast(allQuestions) {
+    const progressMap = getProgressMap();
+    const now = Date.now();
+    const today = new Date();
+
+    // Helper: дата в формате YYYY-MM-DD со сдвигом в днях
+    function getDateStr(dayOffset) {
+        const d = new Date(today);
+        d.setDate(d.getDate() + dayOffset);
+        return d.getFullYear() + '-' +
+            String(d.getMonth() + 1).padStart(2, '0') + '-' +
+            String(d.getDate()).padStart(2, '0');
+    }
+
+    // Helper: название дня
+    function getDayName(dayOffset) {
+        if (dayOffset === -1) return 'Вчера';
+        if (dayOffset === 0) return 'Сегодня';
+        if (dayOffset === 1) return 'Завтра';
+        if (dayOffset === 2) return 'Послезавтра';
+        return '';
+    }
+
+    // Helper: подсчёт карточек для конкретной даты
+    // Для "сегодня" — как в getTodaysSessionBreakdown: исключаем только lastReviewed === todayStr
+    // Для "завтра/послезавтра" — исключаем lastReviewed <= referenceDateStr
+    function countCardsForDate(dateStr, referenceDateStr, isToday = false) {
+        let dueCount = 0;
+        let newCount = 0;
+        let skippedCount = 0;
+        // Для "сегодня" используем текущее время, для будущих дат — начало дня
+        const targetTime = isToday ? Date.now() : new Date(dateStr).getTime();
+
+        allQuestions.forEach(q => {
+            const progress = progressMap[q.question];
+            if (progress) {
+                if (isToday) {
+                    // Для "сегодня" — исключаем ТОЛЬКО пройденные сегодня (как в breakdown)
+                    if (progress.lastReviewed === referenceDateStr) {
+                        skippedCount++;
+                        return;
+                    }
+                } else {
+                    // Для будущих дат — исключаем пройденные к referenceDateStr
+                    if (progress.lastReviewed && progress.lastReviewed <= referenceDateStr) {
+                        skippedCount++;
+                        return;
+                    }
+                }
+
+                // Проверяем due
+                let dueDate = progress.nextReviewDate;
+                if (!dueDate && progress.dueDate) {
+                    dueDate = new Date(progress.dueDate).getTime();
+                }
+
+                if (dueDate && dueDate <= targetTime) {
+                    dueCount++;
+                }
+            } else {
+                // Новая карточка (нет прогресса)
+                newCount++;
+            }
+        });
+
+        return { dueCount, newCount, totalCount: dueCount + newCount, skippedCount };
+    }
+
+    // Вчера: сколько реально пройдено
+    const yesterdayStr = getDateStr(-1);
+    const yesterdayCards = Object.values(progressMap).filter(p => p.lastReviewed === yesterdayStr);
+    const yesterdayCount = yesterdayCards.length;
+
+    // Сегодня: считаем как getTodaysSessionBreakdown — все except lastReviewed === todayStr
+    const todayStr = getDateStr(0);
+    const todayBreakdown = countCardsForDate(todayStr, todayStr, true);
+    const todayCompleted = Object.values(progressMap).filter(p => p.lastReviewed === todayStr).length;
+
+    // Завтра: прогноз (учитывая что сегодня всё пройдено)
+    const tomorrowStr = getDateStr(1);
+    const tomorrowBreakdown = countCardsForDate(tomorrowStr, todayStr, false);
+
+    // Послезавтра: прогноз (учитывая что сегодня и завтра всё пройдено)
+    const dayAfterStr = getDateStr(2);
+    const dayAfterBreakdown = countCardsForDate(dayAfterStr, tomorrowStr, false);
+
+    // Динамическое среднее время на карточку (в минутах) на основе последних 50 карточек
+    const avgSecPerCard = getAverageCardTime(50);
+    const avgMinPerCard = avgSecPerCard > 0 ? avgSecPerCard / 60 : 1.5;
+
+    // Динамический лимит на день на основе настроек пользователя и его скорости
+    // Лимит = (Время из настроек) / (Время на 1 карту)
+    const settings = (typeof window !== 'undefined' && window.appSettings) || { dailyStudyTime: 60 };
+    const dailyMinutes = settings.dailyStudyTime || 60;
+    const buffer = 1.15; // +15% буфер
+    const DAILY_LIMIT = Math.floor((dailyMinutes * buffer) / avgMinPerCard);
+
+    // todayTotal — это план на день (лимит), а не все доступные карты
+    const todayTotal = DAILY_LIMIT;
+
+    return {
+        yesterday: {
+            label: getDayName(-1),
+            dateStr: yesterdayStr,
+            completed: yesterdayCount,
+            planned: yesterdayCount, // Вчера всё что было запланировано - пройдено
+            timeEstimate: Math.ceil(yesterdayCount * avgMinPerCard)
+        },
+        today: {
+            label: getDayName(0),
+            dateStr: todayStr,
+            completed: todayCompleted,
+            total: todayTotal,
+            remaining: Math.max(0, DAILY_LIMIT - todayCompleted),
+            // Логика: сначала вписываем повторения в лимит, остаток — новые
+            dueCount: Math.min(todayBreakdown.dueCount, Math.max(0, DAILY_LIMIT - todayCompleted)),
+            newCount: Math.max(0, Math.max(0, DAILY_LIMIT - todayCompleted) - Math.min(todayBreakdown.dueCount, Math.max(0, DAILY_LIMIT - todayCompleted))),
+            // Время: показываем сколько потрачено на уже пройденные, или осталось на оставшиеся (что больше)
+            timeEstimate: Math.max(
+                Math.ceil(todayCompleted * avgMinPerCard),
+                Math.ceil(Math.max(0, DAILY_LIMIT - todayCompleted) * avgMinPerCard)
+            )
+        },
+        tomorrow: {
+            label: getDayName(1),
+            dateStr: tomorrowStr,
+            forecast: Math.min(tomorrowBreakdown.totalCount, DAILY_LIMIT),
+            newCount: tomorrowBreakdown.newCount,
+            dueCount: tomorrowBreakdown.dueCount,
+            timeEstimate: Math.ceil(Math.min(tomorrowBreakdown.totalCount, DAILY_LIMIT) * avgMinPerCard)
+        },
+        dayAfter: {
+            label: getDayName(2),
+            dateStr: dayAfterStr,
+            forecast: Math.min(dayAfterBreakdown.totalCount, DAILY_LIMIT),
+            newCount: dayAfterBreakdown.newCount,
+            dueCount: dayAfterBreakdown.dueCount,
+            timeEstimate: Math.ceil(Math.min(dayAfterBreakdown.totalCount, DAILY_LIMIT) * avgMinPerCard)
+        }
+    };
 }

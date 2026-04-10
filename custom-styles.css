@@ -757,7 +757,7 @@
 }
 
 /* Ensure tab has space for button in edit mode?
-   User said: "don't make blocks wider". 
+   User said: don't make blocks wider. 
    So we overlay it. But text might overlap.
    We'll rely on transparency.
 */
@@ -2151,8 +2151,8 @@ body.learning-mode #bottom-nav {
         padding-right: 8px !important;
         margin-left: 8px !important;
     }
-    /* Скрываем кнопку "Режим редактирования" на мобильных */
-    .top-actions-bar button[title="Режим редактирования"] {
+    /* Скрываем кнопку Режим редактирования на мобильных */
+    .top-actions-bar button[title=Режим редактирования] {
         display: none !important;
     }
 }
@@ -2594,7 +2594,7 @@ body.learning-mode #bottom-nav {
     position: relative;
 }
 .stc-top::after {
-    content: "";
+    content: ;
     position: absolute;
     left: 50%;
     top: 10px;
@@ -3244,8 +3244,8 @@ body.learning-mode #bottom-nav {
 }
 
 /* Форматированный текст в карточках */
-.flashcard-content span[style*="color"],
-.flashcard-content span[style*="background"] {
+.flashcard-content span[style*=color],
+.flashcard-content span[style*=background] {
     display: inline;
     padding: 0;  /* Убраны отступы чтобы не было разрывов внутри слов */
     margin: 0;   /* На всякий случай убираем margin */
@@ -3482,7 +3482,7 @@ body.learning-mode #bottom-nav {
         color: #70a1ff !important;
     }
     /* Замок для заблокированной кнопки в мобильной версии */
-    .rate-btn.rate-easy[data-locked="true"]::after {
+    .rate-btn.rate-easy[data-locked=true]::after {
         content: 'Легко 🔒';
     }
 }
@@ -4221,93 +4221,150 @@ body.learning-mode #bottom-nav {
     }
 }
 
-""  
-"/* =================================================================== */"  
-"/* iOS PWA SAFE AREAS - ������ ��� 祫��, ��㣫����, ����᪨ Home */"  
-"/* =================================================================== */"  
-""  
-"/* ������ ������ ��� body � ��⮬ safe areas */"  
-"@supports (padding: max(0px)) {"  
-"    body {"  
-"        padding-top: max(50px, env(safe-area-inset-top)) !important;"  
-"        padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;"  
-"        padding-left: max(0px, env(safe-area-inset-left)) !important;"  
-"        padding-right: max(0px, env(safe-area-inset-right)) !important;"  
-"    }"  
-"    "  
-"    /* ��� ��࠭��� ����⨪� */"  
-"    body:has(#stats-container) {"  
-"        padding-top: max(50px, env(safe-area-inset-top)) !important;"  
-"    }"  
-"}"  
-""  
-"/* ����஢����� 蠯�� - ����� ᢥ��� ��� safe area */"  
-"@supports (padding: max(0px)) {"  
-"    .top-actions-bar {"  
-"        padding-top: env(safe-area-inset-top, 0px) !important;"  
-"    }"  
-"}"  
-""  
-"/* Bottom sheet - ����� ᭨�� ��� ����᪨ Home */"  
-"@supports (padding: max(0px)) {"  
-"    .sheet-footer {"  
-"        padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;"  
-"    }"  
-"    "  
-"    .bottom-sheet {"  
-"        padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;"  
-"    }"  
-"}"  
-""  
-"/* ������� - ������ ��� safe areas */"  
-"@supports (padding: max(0px)) {"  
-"    .sidebar {"  
-"        padding-top: env(safe-area-inset-top, 0px) !important;"  
-"        padding-bottom: env(safe-area-inset-bottom, 0px) !important;"  
-"    }"  
-"}"  
-""  
-"/* ���⥩��� �ਫ������ - ��࠭�稢��� �� ���� */"  
-".app-wrapper {"  
-"    min-height: 100vh;"  
-"    min-height: 100dvh;"  
-"    max-width: 100%;"  
-"    overflow-x: hidden;"  
-"}" 
-""  
-"/* =================================================================== */"  
-"/* iOS FIX - ����஢���� ������ ��� iPhone � 祫���/Dynamic Island */"  
-"/* =================================================================== */"  
-""  
-"/* ��������� ������ ��� ��� iPhone � notch */"  
-"@supports (padding: max(0px)) {"  
-"    body {"  
-"        padding-top: max(60px, env(safe-area-inset-top, 60px)) !important;"  
-"        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;"  
-"    }"  
-""  
-"    .top-actions-bar {"  
-"        padding-top: max(10px, env(safe-area-inset-top, 10px)) !important;"  
-"    }"  
-""  
-"    .bottom-sheet,"  
-"    .sheet-footer {"  
-"        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;"  
-"    }"  
-"}" 
-""  
-"/* iOS Bottom Safe Area Fix */"  
-"@supports (padding: max(0px)) {"  
-"    body {"  
-"        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;"  
-"    }"  
-"    .app-wrapper {"  
-"        padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;"  
-"    }"  
-"    .container {"  
-"        padding-bottom: max(40px, env(safe-area-inset-bottom, 40px)) !important;"  
-"    }"  
-"}" 
-""  
-"/* CARD ZOOM MODAL - �����쭮� ���� 㢥��祭�� ����窨 */"  
-".card-zoom-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:10000;opacity:0;animation:cardZoomFadeIn .3s ease forwards;cursor:zoom-out}.card-zoom-overlay.closing{animation:cardZoomFadeOut .2s ease forwards}@keyframes cardZoomFadeIn{from{opacity:0}to{opacity:1}}@keyframes cardZoomFadeOut{from{opacity:1}to{opacity:0}}.card-zoom-modal{position:relative;max-width:90%;max-height:90%;background:rgba(30,30,36,.85);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:32px;box-shadow:0 25px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.05) inset;transform:scale(.8);animation:cardZoomIn .3s cubic-bezier(.34,1.56,.64,1) forwards;cursor:default}.card-zoom-modal.closing{animation:cardZoomOut .2s ease forwards}@keyframes cardZoomIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}@keyframes cardZoomOut{from{transform:scale(1);opacity:1}to{transform:scale(.8);opacity:0}}.card-zoom-modal .zoom-category-badge{display:inline-block;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:6px 12px;border-radius:6px;font-size:14px;font-weight:500;margin-bottom:8px}.card-zoom-modal .zoom-subcategory-badge{display:inline-block;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);padding:4px 10px;border-radius:4px;font-size:12px;margin-left:8px;margin-bottom:8px}.card-zoom-modal .zoom-hearts-container{display:flex;gap:4px;margin:16px 0;justify-content:flex-end}.card-zoom-modal .zoom-question,.card-zoom-modal .zoom-answer{white-space:pre-wrap;display:block;text-align:left;cursor:text}.card-zoom-modal .zoom-question{font-size:28px;font-weight:700;color:#fff;margin:20px 0;line-height:1.4}.card-zoom-modal .zoom-answer{font-size:22px;color:rgba(255,255,255,.8);margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);line-height:1.5}.card-zoom-modal .zoom-question strong,.card-zoom-modal .zoom-answer strong{font-weight:700!important}.card-zoom-modal .zoom-question em,.card-zoom-modal .zoom-answer em{font-style:italic!important}.card-zoom-modal .zoom-question u,.card-zoom-modal .zoom-answer u{text-decoration:underline!important}.card-zoom-modal .zoom-question code,.card-zoom-modal .zoom-answer code{font-family:monospace;background:rgba(0,0,0,0.3);padding:2px 4px;border-radius:3px;display:inline}.card-zoom-modal .zoom-question span[style],.card-zoom-modal .zoom-answer span[style]{display:inline!important}.card-zoom-modal .zoom-close-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,.3);text-align:center}.card-zoom-modal::-webkit-scrollbar{width:8px}.card-zoom-modal::-webkit-scrollbar-track{background:rgba(0,0,0,0.2);border-radius:4px}.card-zoom-modal::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);border-radius:4px}.card-zoom-modal::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.5)}.card-zoom-modal{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.3) rgba(0,0,0,0.2)}@media(max-width:768px){.card-zoom-modal{max-width:95%;padding:24px 20px}.card-zoom-modal .zoom-question{font-size:22px}.card-zoom-modal .zoom-answer{font-size:18px}}" 
+  
+/* =================================================================== */
+
+/* =============================================
+   HISTORY BADGE & BOTTOM SHEET
+   ============================================= */
+.history-badge-btn {
+    position: absolute;
+    top: 10px;
+    left: 60px;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px;
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.history-badge-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #FF9F1C;
+}
+.history-badge-btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
+}
+.history-badge-btn .badge-trend {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    margin-left: 1px;
+}
+.history-badge-btn .badge-trend svg {
+    display: block;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .history-badge-btn {
+        top: 10px;
+        left: 38px;
+        padding: 4px;
+    }
+    .history-badge-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Bottom Sheet Overlay */
+.history-bottom-sheet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+}
+.history-bottom-sheet-overlay.active {
+    display: block;
+}
+
+/* Bottom Sheet */
+.history-bottom-sheet {
+    position: fixed;
+    bottom: -500px;
+    left: 0;
+    right: 0;
+    background: #161B22;
+    border-top: 1px solid #222938;
+    border-radius: 16px 16px 0 0;
+    padding: 12px 16px 24px;
+    z-index: 1000;
+    transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.history-bottom-sheet.active {
+    bottom: 0;
+}
+.bs-handle {
+    width: 40px;
+    height: 4px;
+    background: #222938;
+    border-radius: 4px;
+    margin: 0 auto 10px;
+}
+.bs-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #E6EDF3;
+}
+.bs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #1F2630;
+    margin-bottom: 6px;
+}
+.bs-grade-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+.bs-grade-circle.g-again { background: #E5533D; }
+.bs-grade-circle.g-hard { background: #FF9F1C; }
+.bs-grade-circle.g-good { background: #2EC4B6; }
+.bs-grade-circle.g-easy { background: #06D6A0; }
+.bs-info { flex: 1; }
+.bs-date { font-size: 10px; color: #9BA3AF; }
+.bs-dur { font-size: 9px; color: #8B949E; }
+.bs-grade-text { font-size: 11px; font-weight: 600; color: #E6EDF3; }
+
+/* Мобильная адаптация бейджа */
+@media (max-width: 768px) {
+    .history-badge-btn {
+        left: 45px;
+        padding: 2px 6px;
+        gap: 2px;
+        font-size: 9px;
+    }
+    .history-badge-btn .badge-icon {
+        font-size: 10px;
+    }
+    .history-badge-btn .badge-count {
+        font-size: 10px;
+    }
+}

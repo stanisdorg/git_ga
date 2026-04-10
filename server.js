@@ -10,6 +10,7 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const { createBackup } = require('./auto-backup.cjs');
+const backupApi = require('./backup-api.cjs');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2029,6 +2030,120 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    // API: Сохранение пользовательских настроек
+    if (req.method === 'POST' && pathname === '/api/settings') {
+      const username = urlObj.searchParams.get('username');
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const settings = JSON.parse(body);
+          const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
+
+          let userData = {};
+          if (fs.existsSync(userFilePath)) {
+            userData = JSON.parse(fs.readFileSync(userFilePath, 'utf-8'));
+          }
+
+          // Сохраняем настройки
+          userData._appSettings = settings;
+          fs.writeFileSync(userFilePath, JSON.stringify(userData, null, 2), 'utf-8');
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
+    // API: Marathon Progress - GET, POST, DELETE
+    if (pathname === '/api/marathon-progress') {
+      const username = urlObj.searchParams.get('username');
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      const marathonFilePath = path.join(__dirname, 'data', `user_${username}_marathon.json`);
+
+      // GET - Load marathon progress
+      if (req.method === 'GET') {
+        if (fs.existsSync(marathonFilePath)) {
+          fs.readFile(marathonFilePath, 'utf-8', (err, content) => {
+            if (err) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, error: 'read_error' }));
+              return;
+            }
+            try {
+              const progress = JSON.parse(content);
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: true, progress }));
+            } catch (e) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, error: 'parse_error' }));
+            }
+          });
+        } else {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true, progress: null }));
+        }
+        return;
+      }
+
+      // POST - Save marathon progress
+      if (req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+          try {
+            const data = JSON.parse(body);
+            if (!data.progress) {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, error: 'progress required' }));
+              return;
+            }
+
+            const dir = path.dirname(marathonFilePath);
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(marathonFilePath, JSON.stringify(data.progress, null, 2), 'utf-8');
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: true }));
+          } catch (e) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: e.message }));
+          }
+        });
+        return;
+      }
+
+      // DELETE - Clear marathon progress
+      if (req.method === 'DELETE') {
+        try {
+          if (fs.existsSync(marathonFilePath)) {
+            fs.unlinkSync(marathonFilePath);
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+        return;
+      }
+    }
+
     // Helper for Trash (персональная для пользователя)
     const getUserTrash = (username) => {
       const p = path.join(__dirname, 'data', `user_${username}_trash.json`);
@@ -2206,6 +2321,229 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ ok: false, error: e.message }));
         }
       });
+      return;
+    }
+
+    // ============================================
+    // BACKUP API ENDPOINTS
+    // ============================================
+
+    // GET /api/backups/list - Получить список бэкапов пользователя
+    if (req.method === 'GET' && pathname === '/api/backups/list') {
+      const username = urlObj.searchParams.get('user');
+
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      const backups = backupApi.listUserBackups(username);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, backups }));
+      return;
+    }
+
+    // POST /api/backups/create - Создать ручной бэкап
+    if (req.method === 'POST' && pathname === '/api/backups/create') {
+      const username = urlObj.searchParams.get('user');
+
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          const backupType = data.type || 'full'; // full, cards, progress
+          const customName = data.name || null;
+
+          // Загружаем данные пользователя
+          const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
+          if (!fs.existsSync(userFilePath)) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'User data not found' }));
+            return;
+          }
+
+          const userData = JSON.parse(fs.readFileSync(userFilePath, 'utf-8'));
+          const result = backupApi.createManualBackup(username, userData, backupType, customName);
+
+          res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
+    // POST /api/backups/restore - Восстановить из бэкапа
+    if (req.method === 'POST' && pathname === '/api/backups/restore') {
+      const username = urlObj.searchParams.get('user');
+
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          const backupId = data.backupId;
+          const restoreType = data.restoreType || 'full'; // full, cards, progress
+
+          if (!backupId) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'backupId required' }));
+            return;
+          }
+
+          const result = backupApi.restoreFromBackup(username, backupId, restoreType);
+          res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
+    // DELETE /api/backups/delete - Удалить ручной бэкап
+    if (req.method === 'DELETE' && pathname === '/api/backups/delete') {
+      const username = urlObj.searchParams.get('user');
+      const filename = urlObj.searchParams.get('filename');
+
+      if (!username || !filename) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username and filename required' }));
+        return;
+      }
+
+      const result = backupApi.deleteManualBackup(username, filename);
+      res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+      return;
+    }
+
+    // POST /api/backups/rename - Переименовать ручной бэкап
+    if (req.method === 'POST' && pathname === '/api/backups/rename') {
+      const username = urlObj.searchParams.get('user');
+
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          const oldFilename = data.oldFilename;
+          const newFilename = data.newFilename;
+
+          if (!oldFilename || !newFilename) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'oldFilename and newFilename required' }));
+            return;
+          }
+
+          const result = backupApi.renameManualBackup(username, oldFilename, newFilename);
+          res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
+    // GET /api/backups/export - Получить содержимое бэкапа для скачивания
+    if (req.method === 'GET' && pathname === '/api/backups/export') {
+      const username = urlObj.searchParams.get('user');
+      const backupId = urlObj.searchParams.get('backupId');
+
+      if (!username || !backupId) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'user and backupId required' }));
+        return;
+      }
+
+      const result = backupApi.getBackupContent(username, backupId);
+      if (!result.success) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+        return;
+      }
+
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Content-Disposition': `attachment; filename="${result.filename}"`
+      });
+      res.end(result.content);
+      return;
+    }
+
+    // POST /api/backups/import - Импорт бэкапа из JSON файла
+    if (req.method === 'POST' && pathname === '/api/backups/import') {
+      const username = urlObj.searchParams.get('user');
+
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body);
+          const backupData = data.backupData;
+          const customName = data.name || null;
+
+          if (!backupData) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ ok: false, error: 'backupData required' }));
+            return;
+          }
+
+          const result = backupApi.importBackup(username, backupData, customName);
+          res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+        } catch (e) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: false, error: e.message }));
+        }
+      });
+      return;
+    }
+
+    // POST /api/backups/reset-achievements - Сбросить прогресс
+    if (req.method === 'POST' && pathname === '/api/backups/reset-achievements') {
+      const username = urlObj.searchParams.get('user');
+
+      if (!username) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: 'username required' }));
+        return;
+      }
+
+      const result = backupApi.resetProgress(username);
+      res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
       return;
     }
 

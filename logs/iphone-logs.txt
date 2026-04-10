@@ -42,3 +42,7 @@
 
 ========== 2026-04-02T15:08:44.034Z ==========
 {"userAgent":"Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36","url":"https://bytecards.ru/","timestamp":"2026-04-02T15:08:41.941Z","logs":["[Google Auth] === RESPONSE RECEIVED ===","[Google Auth] User: stasdoroganov@gmail.com","[Google Auth] Name: Ð¡ÑÐ°Ð½Ð¸ÑÐ»Ð°Ð² ÐÐ¾ÑÐ¾Ð³Ð°Ð½Ð¾Ð²","[Google Auth] Google ID: 110673495880130752127"]}
+
+
+========== 2026-04-07T15:17:12.342Z ==========
+{"userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36","url":"https://bytecards.ru/#/stats","timestamp":"2026-04-07T15:16:52.868Z","logs":["[Google Auth] User: stasdoroganov@gmail.com","[Google Auth] Name: Ð¡ÑÐ°Ð½Ð¸ÑÐ»Ð°Ð² ÐÐ¾ÑÐ¾Ð³Ð°Ð½Ð¾Ð²","[Google Auth] Google ID: 110673495880130752127"]}

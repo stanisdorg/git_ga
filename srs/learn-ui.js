@@ -1,13 +1,14 @@
-import { LearningSession } from './session.js?v=6.44.0';
-import { getDueCards, syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.61.0';
-import { getProgressMap } from './stats-utils.js?v=6.67.0';
+import { LearningSession } from './session.js?v=6.68.0';
+import { syncFavorite, syncDailyStats, syncWithServer } from './storage.js?v=6.61.0';
+import { getProgressMap, getAverageCardTime } from './stats-utils.js?v=6.67.0';
 import { checkAchievements } from './stats-utils.js?v=6.67.0';
 import { Scheduler } from './scheduler.js?v=6.44.0';
 import { getTodaysSession } from './category-scheduler.js?v=6.67.0';
-import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.44.0';
+import { getDifficultyLevel, canUseEasy } from './algorithm.js?v=6.68.0';
 import { createFormatToolbar, initFormatToolbar } from './format-toolbar.js?v=6.44.0';
 import { applyFormatting, createEmptyFormatting, convertHtmlToTextAndFormatting, renderFormattingInEditor } from './text-formatter.js?v=6.44.0';
 import { buildCategoriesFromData } from '../computed-categories.js?v=6.44.0';
+import { getMarathonProgress, saveMarathonProgress, createMarathonSession, updateMarathonProgress, clearMarathonProgress, hasActiveMarathon } from './marathon-progress.js?v=1.0.0';
 
 // Helper function to get runtime data (similar to tabs-navigation.js)
 function getRuntimeData() {
@@ -300,6 +301,13 @@ export function initLearnUI() {
                         </button>
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
+                        <button class="history-badge-btn" id="learn-history-badge" title="История ответов" style="position:absolute;top:10px;left:45px;z-index:10;display:none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span class="badge-trend" style="display:none;"></span>
+                        </button>
                         <div class="flashcard-content" id="learn-question"></div>
                         <div class="flashcard-hint">Нажмите Пробел, чтобы увидеть ответ</div>
                     </div>
@@ -312,6 +320,13 @@ export function initLearnUI() {
                         </button>
                         <button class="favorite-btn learn-fav-btn" title="В избранное" style="top:10px;right:10px;z-index:10"></button>
                         <div class="learn-hearts" style="position:absolute; top:12px; right:45px; display:flex; gap:2px; z-index:9"></div>
+                        <button class="history-badge-btn" id="learn-history-badge-back" title="История ответов" style="position:absolute;top:10px;left:45px;z-index:10;display:none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span class="badge-trend" style="display:none;"></span>
+                        </button>
                         <div class="flashcard-back-question" id="learn-back-question"></div>
                         <div class="flashcard-content" id="learn-answer"></div>
                         <div class="flashcard-actions">
@@ -325,6 +340,14 @@ export function initLearnUI() {
                         <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </button>
                 </div>
+            </div>
+
+            <!-- Bottom Sheet для истории карточки -->
+            <div class="history-bottom-sheet-overlay" id="history-bs-overlay" onclick="window.closeHistoryBottomSheet()"></div>
+            <div class="history-bottom-sheet" id="history-bottom-sheet">
+                <div class="bs-handle"></div>
+                <div class="bs-title" id="history-bs-title">📋 Последние ответы</div>
+                <div class="bs-content" id="history-bs-content"></div>
             </div>
 
             <div id="learn-stats" style="display:none">
@@ -417,6 +440,15 @@ export function initLearnUI() {
                 userScrolled = false;
 
                 if (session) {
+                    // Save marathon progress BEFORE rating (currentIndex will increment after rate)
+                    if (session.options && session.options.mode === 'marathon') {
+                        const globalIndex = (window.__marathonStartIndex || 0) + session.currentIndex;
+                        const question = session.currentCard?.question || session.currentCard?.item?.question;
+                        if (question) {
+                            updateMarathonProgress(globalIndex, question, grade);
+                        }
+                    }
+
                     await session.rate(grade);
                 }
 
@@ -1450,10 +1482,22 @@ async function handleKeydown(e) {
         }
     } else if (session.isFlipped) {
         // Rating keys
-        if (e.key === '1') { userScrolled = false; await session.rate(0); }
-        if (e.key === '2') { userScrolled = false; await session.rate(1); }
-        if (e.key === '3') { userScrolled = false; await session.rate(2); }
-        if (e.key === '4') { userScrolled = false; await session.rate(3); }
+        const handleMarathonSave = async (grade) => {
+            // Save marathon progress BEFORE rating
+            if (session.options && session.options.mode === 'marathon') {
+                const globalIndex = (window.__marathonStartIndex || 0) + session.currentIndex;
+                const question = session.currentCard?.question || session.currentCard?.item?.question;
+                if (question) {
+                    updateMarathonProgress(globalIndex, question, grade);
+                }
+            }
+            await session.rate(grade);
+        };
+
+        if (e.key === '1') { userScrolled = false; await handleMarathonSave(0); }
+        if (e.key === '2') { userScrolled = false; await handleMarathonSave(1); }
+        if (e.key === '3') { userScrolled = false; await handleMarathonSave(2); }
+        if (e.key === '4') { userScrolled = false; await handleMarathonSave(3); }
     }
 
     // Navigation arrows (Left/Right)
@@ -1607,6 +1651,15 @@ export function startLearnSession(candidateQuestions, options = {}) {
                 userScrolled = false;
 
                 if (session) {
+                    // Save marathon progress BEFORE rating (currentIndex will increment after rate)
+                    if (session.options && session.options.mode === 'marathon') {
+                        const globalIndex = (window.__marathonStartIndex || 0) + session.currentIndex;
+                        const question = session.currentCard?.question || session.currentCard?.item?.question;
+                        if (question) {
+                            updateMarathonProgress(globalIndex, question, grade);
+                        }
+                    }
+
                     await session.rate(grade);
                 }
 
@@ -1676,6 +1729,12 @@ export function startLearnSession(candidateQuestions, options = {}) {
     if (infoEl) {
         if (options.mode === 'cram') {
             // В режиме углубленного обучения скрываем этот блок
+            infoEl.style.display = 'none';
+        } else if (options.mode === 'marathon') {
+            // В режиме марафона скрываем описание
+            infoEl.style.display = 'none';
+        } else if (options.mode === 'fast_track') {
+            // В режиме fast track скрываем описание
             infoEl.style.display = 'none';
         } else {
             // Убираем День X/Y и Прогресс - не нужно в режиме обучения
@@ -1779,31 +1838,99 @@ export function startLearnSession(candidateQuestions, options = {}) {
         });
         // Shuffle
         sessionCards.sort(() => Math.random() - 0.5);
+    } else if (options.mode === 'marathon') {
+        // Марафон - все карточки подряд без перемешивания
+        const progMap = getProgressMap();
+        sessionCards = candidateQuestions.map(q => {
+            const p = progMap[q.question];
+            return {
+                question: q.question,
+                answer: q.answer,
+                item: q,
+                progress: p || null,
+                isNew: !p
+            };
+        });
+
+        // Check for existing marathon progress
+        const existingProgress = getMarathonProgress();
+        if (existingProgress && existingProgress.sessionId && existingProgress.currentIndex > 0) {
+            // Resume from saved progress
+            sessionCards = existingProgress.questions.map(q => {
+                const p = progMap[q.question];
+                return {
+                    question: q.question,
+                    answer: q.answer,
+                    item: q,
+                    progress: p || null,
+                    isNew: !p
+                };
+            }).slice(existingProgress.currentIndex);
+
+            // Prepend completed cards for proper indexing
+            const completedQuestions = existingProgress.questions.slice(0, existingProgress.currentIndex);
+            window.__marathonCompletedQuestions = completedQuestions;
+            window.__marathonStartIndex = existingProgress.currentIndex;
+        } else {
+            // Create new marathon session
+            createMarathonSession(sessionCards.length, candidateQuestions);
+            window.__marathonCompletedQuestions = [];
+            window.__marathonStartIndex = 0;
+        }
+    } else if (options.mode === 'fast_track') {
+        // Fast Track - уже отобрано 10 случайных вопросов
+        const progMap = getProgressMap();
+        sessionCards = candidateQuestions.map(q => {
+            const p = progMap[q.question];
+            return {
+                question: q.question,
+                answer: q.answer,
+                item: q,
+                progress: p || null,
+                isNew: !p
+            };
+        });
     } else {
-        const dueCards = getDueCards(candidateQuestions);
-        const reviews = dueCards.filter(c => !c.isNew);
-        let newCards = dueCards.filter(c => c.isNew);
-        sessionCards = [...reviews, ...newCards];
+        // Используем умный планировщик с лимитами и приоритетами
+        const scheduledSession = getTodaysSession(candidateQuestions);
+
+        sessionCards = scheduledSession.map(card => {
+            // Приводим к формату ожидаемому LearningSession
+            return {
+                question: card.item.question,
+                answer: card.item.answer,
+                item: card.item,
+                progress: card.progress,
+                isNew: card.isNew
+            };
+        });
     }
 
-    // Safety cap for session length (except cram?)
-    // Read user settings for daily study time
+    // Safety cap for session length (except cram, marathon, fast_track, time_attack, sudden_death)
+    // Используем динамическую скорость и время из настроек
     const settings = (typeof window !== 'undefined' && window.appSettings) || { dailyStudyTime: 60 };
     const dailyMinutes = settings.dailyStudyTime || 60;
-    const avgTimePerCard = 1.5; // minutes
-    const buffer = 1.15; // +15%
-    const calculatedMax = Math.floor((dailyMinutes * buffer) / avgTimePerCard);
 
-    const MAX_SESSION = (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death')
-        ? 100
-        : Math.max(15, Math.min(60, calculatedMax));
+    // Получаем реальную скорость пользователя
+    const avgSecPerCard = getAverageCardTime(50);
+    const avgMinPerCard = avgSecPerCard > 0 ? avgSecPerCard / 60 : 1.5;
+
+    const buffer = 1.15; // +15%
+    const calculatedMax = Math.floor((dailyMinutes * buffer) / avgMinPerCard);
+
+    // Marathon gets all cards (no limit), others have caps
+    const MAX_SESSION = (options.mode === 'marathon')
+        ? 9999  // No limit for marathon - show all cards
+        : (options.mode === 'cram' || options.mode === 'time_attack' || options.mode === 'sudden_death' || options.mode === 'fast_track')
+            ? 100
+            : Math.max(15, calculatedMax); // Без верхнего лимита 20, чтобы работала динамика
 
     if (sessionCards.length > MAX_SESSION) {
         sessionCards = sessionCards.slice(0, MAX_SESSION);
     }
 
     if (sessionCards.length === 0) {
-        if (candidateQuestions && candidateQuestions.length > 0 && options.mode !== 'cram' && options.mode !== 'time_attack' && options.mode !== 'sudden_death') {
+        if (candidateQuestions && candidateQuestions.length > 0 && options.mode !== 'cram' && options.mode !== 'time_attack' && options.mode !== 'sudden_death' && options.mode !== 'marathon' && options.mode !== 'fast_track') {
             startLearnSession(candidateQuestions, { mode: 'cram' });
             return;
         }
@@ -1860,6 +1987,12 @@ export function startLearnSession(candidateQuestions, options = {}) {
 
 function stopLearnSession() {
     const wasOnStats = location.hash === '#/stats';
+
+    // Clear marathon progress on exit (don't save if user exits early)
+    if (session && session.options && session.options.mode === 'marathon') {
+        // Only clear if user manually exits - progress is saved on card rating
+        // Keep progress for resume functionality
+    }
 
     if (wasOnStats) {
         location.hash = '#/learning-exit';
@@ -2161,6 +2294,9 @@ function renderCardState(state) {
                 }
             });
         }
+
+        // Render history badge
+        renderHistoryBadge(state.card);
 
         // Update "Easy" button state
         const easyBtn = container.querySelector('.rate-easy');
@@ -2633,6 +2769,13 @@ function wireSegmentsInteractions(sess) {
 }
 
 function showStats(stats, results, total) {
+
+    // Clear marathon progress if marathon session completed
+    if (session && session.options && session.options.mode === 'marathon') {
+        clearMarathonProgress();
+        window.__marathonCompletedQuestions = [];
+        window.__marathonStartIndex = 0;
+    }
 
     // Update segments one last time to show the final card's result
     if (results && total && session) {
@@ -3371,3 +3514,141 @@ window.debugSegments = () => {
 window.openCreateModal = openCreateModal;
 window.saveCreateChanges = saveCreateChanges;
 window.closeCreateModal = closeCreateModal;
+
+/* =============================================
+   HISTORY BADGE & BOTTOM SHEET
+   ============================================= */
+const GRADE_NAMES = { 1: 'Снова', 2: 'Трудно', 3: 'Хорошо', 4: 'Легко' };
+const GRADE_COLORS = { 1: '#E5533D', 2: '#FF9F1C', 3: '#2EC4B6', 4: '#06D6A0' };
+const GRADE_CLASSES = { 1: 'g-again', 2: 'g-hard', 3: 'g-good', 4: 'g-easy' };
+
+function getCardHistory(question) {
+    const progMap = getProgressMap();
+    const prog = progMap[question];
+    if (!prog || !prog.historyArray || !Array.isArray(prog.historyArray)) return [];
+    return prog.historyArray
+        .filter(h => h.date && h.grade)
+        .sort((a, b) => b.date - a.date); // Newest first
+}
+
+function getTrend(history) {
+    if (history.length < 3) return { icon: '', color: '', label: '' };
+    const last3 = history.slice(0, 3).map(h => h.grade);
+    const avg = last3.reduce((s, g) => s + g, 0) / last3.length;
+    if (avg >= 3.3) return { icon: 'trend-up', color: '#06D6A0', label: 'trend-up' };
+    if (avg <= 1.7) return { icon: 'trend-down', color: '#E5533D', label: 'trend-down' };
+    return { icon: 'trend-tilde', color: '#FF9F1C', label: 'trend-tilde' };
+}
+
+function formatDateShort(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = now - d;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return 'Сегодня';
+    if (days === 1) return 'Вчера';
+    if (days < 7) return `${days} дн. назад`;
+
+    const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function formatTimeStr(ts) {
+    const d = new Date(ts);
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+function renderHistoryBadge(card) {
+    if (!card || !card.question) return;
+
+    const history = getCardHistory(card.question);
+    const badge = document.getElementById('learn-history-badge');
+    const badgeBack = document.getElementById('learn-history-badge-back');
+
+    if (!badge) return;
+
+    if (history.length === 0) {
+        // Нет истории — скрываем бейдж
+        badge.style.display = 'none';
+        if (badgeBack) badgeBack.style.display = 'none';
+        return;
+    }
+
+    const trend = getTrend(history);
+
+    [badge, badgeBack].forEach(b => {
+        if (!b) return;
+        b.style.display = 'flex';
+        const trendEl = b.querySelector('.badge-trend');
+        if (trendEl) {
+            if (trend.icon) {
+                const svgMap = {
+                    'trend-up': '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="18" x2="12" y2="6"/><polyline points="8 10 12 6 16 10"/></svg>',
+                    'trend-down': '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="6" x2="12" y2="18"/><polyline points="8 14 12 18 16 14"/></svg>',
+                    'trend-tilde': '<svg viewBox="0 0 24 24" width="6" height="6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 14 Q12 8 12 14 Q12 20 18 14"/></svg>'
+                };
+                trendEl.innerHTML = svgMap[trend.icon] || '';
+                trendEl.style.color = trend.color;
+                trendEl.style.display = 'inline-flex';
+                trendEl.style.alignItems = 'center';
+                trendEl.style.lineHeight = '1';
+            } else {
+                trendEl.innerHTML = '';
+                trendEl.style.display = 'none';
+            }
+        }
+        // Update onclick
+        b.onclick = (e) => {
+            e.stopPropagation();
+            openHistoryBottomSheet(card.question, history);
+        };
+    });
+}
+
+function openHistoryBottomSheet(question, history) {
+    const overlay = document.getElementById('history-bs-overlay');
+    const sheet = document.getElementById('history-bottom-sheet');
+    const title = document.getElementById('history-bs-title');
+    const content = document.getElementById('history-bs-content');
+
+    if (!overlay || !sheet || !title || !content) return;
+
+    const shortQ = question.length > 40 ? question.slice(0, 40) + '…' : question;
+    title.textContent = `📋 Последние ответы — «${shortQ}»`;
+
+    const last5 = history.slice(0, 5);
+
+    let html = '';
+    last5.forEach(h => {
+        const dateStr = formatDateShort(h.date);
+        const timeStr = formatTimeStr(h.date);
+        const gradeName = GRADE_NAMES[h.grade] || '?';
+        const gradeCls = GRADE_CLASSES[h.grade] || '';
+        const gradeInitial = gradeName.charAt(0);
+        const dur = h.duration ? `${Math.round(h.duration)}с` : '';
+
+        html += `
+            <div class="bs-row" data-grade="${h.grade}">
+                <div class="bs-grade-circle ${gradeCls}">${gradeInitial}</div>
+                <div class="bs-info">
+                    <div class="bs-date">${dateStr}, ${timeStr}</div>
+                    ${dur ? `<div class="bs-dur">${dur}</div>` : ''}
+                </div>
+                <div class="bs-grade-text">${gradeName}</div>
+            </div>
+        `;
+    });
+
+    content.innerHTML = html;
+
+    overlay.classList.add('active');
+    sheet.classList.add('active');
+}
+
+window.closeHistoryBottomSheet = function () {
+    const overlay = document.getElementById('history-bs-overlay');
+    const sheet = document.getElementById('history-bottom-sheet');
+    if (overlay) overlay.classList.remove('active');
+    if (sheet) sheet.classList.remove('active');
+};

@@ -215,10 +215,67 @@ export async function loadFromServer(forceReload = false) {
                 console.warn('[loadFromServer] Не удалось обновить uniqueQaData:', e.message);
             }
         }
-        if (data.srsProgress) localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
+
+        // ОБЪЕДИНЯЕМ srsProgress (не перезаписываем!)
+        if (data.srsProgress) {
+            try {
+                const localProgress = JSON.parse(localStorage.getItem('srsProgress') || '{}');
+                const serverProgress = data.srsProgress;
+
+                // Объединяем: для каждой карточки берём более новую версию
+                const merged = { ...serverProgress };
+                Object.entries(localProgress).forEach(([question, localData]) => {
+                    const serverData = serverProgress[question];
+
+                    // Если нет на сервере — берём локальную
+                    if (!serverData) {
+                        merged[question] = localData;
+                        return;
+                    }
+
+                    // Если есть и там и там — берём с более свежим lastReviewedDate или большей history
+                    const localHistoryLen = Array.isArray(localData.historyArray) ? localData.historyArray.length : 0;
+                    const serverHistoryLen = Array.isArray(serverData.historyArray) ? serverData.historyArray.length : 0;
+
+                    if (localHistoryLen > serverHistoryLen) {
+                        merged[question] = localData; // Локальная новее
+                    } else if (serverHistoryLen > localHistoryLen) {
+                        merged[question] = serverData; // Серверная новее
+                    } else {
+                        // Одинаковая длина истории — берём с более поздним lastReviewDate
+                        const localDate = localData.lastReviewDate || 0;
+                        const serverDate = serverData.lastReviewDate || 0;
+                        merged[question] = localDate >= serverDate ? localData : serverData;
+                    }
+                });
+
+                localStorage.setItem('srsProgress', JSON.stringify(merged));
+                console.log('[loadFromServer] srsProgress объединён:', Object.keys(merged).length, 'карточек');
+            } catch (e) {
+                console.warn('[loadFromServer] Ошибка объединения srsProgress:', e);
+                // Fallback: просто сохраняем серверные данные
+                localStorage.setItem('srsProgress', JSON.stringify(data.srsProgress));
+            }
+        }
         if (data.studyStats) localStorage.setItem('studyStats', JSON.stringify(data.studyStats));
         if (data.studyStreak) localStorage.setItem('studyStreak', JSON.stringify(data.studyStreak));
-        if (data.dailyPoints) localStorage.setItem('dailyPoints', JSON.stringify(data.dailyPoints));
+        if (data.dailyPoints) {
+            // ОБЪЕДИНЯЕМ dailyPoints (суммируем значения)
+            try {
+                const localDP = JSON.parse(localStorage.getItem('dailyPoints') || '{}');
+                const serverDP = data.dailyPoints;
+
+                const merged = { ...serverDP };
+                Object.entries(localDP).forEach(([date, value]) => {
+                    merged[date] = (merged[date] || 0) + value;
+                });
+
+                localStorage.setItem('dailyPoints', JSON.stringify(merged));
+            } catch (e) {
+                console.warn('[loadFromServer] Ошибка объединения dailyPoints:', e);
+                localStorage.setItem('dailyPoints', JSON.stringify(data.dailyPoints));
+            }
+        }
         if (data.dailyBonusPoints) localStorage.setItem('dailyBonusPoints', JSON.stringify(data.dailyBonusPoints));
         if (data.dailyDayBonusPoints) localStorage.setItem('dailyDayBonusPoints', JSON.stringify(data.dailyDayBonusPoints));
         if (data.qaFavorites) {
