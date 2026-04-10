@@ -3760,6 +3760,7 @@ function openCardZoomModal(item, ef) {
                     transparent);
             "></div>
             ${renderHeartsForZoom(ef)}
+            ${ef !== null && ef !== undefined ? `<button class="zoom-history-btn" onclick="window.openZoomCardHistory('${item.question.replace(/'/g, "\\'").replace(/\\/g, '\\\\')}')" title="История ответов" style="position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>` : ''}
             <div class="zoom-question" style="font-size: 20px; font-weight: 700; color: #ffffff; margin: 12px 0 16px 0; line-height: 1.4; letter-spacing: -0.3px; white-space: pre-wrap; word-break: break-word; cursor: text;">${questionHTML}</div>
             <div class="zoom-answer" style="font-size: 16px; color: rgba(255, 255, 255, 0.75); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.5; white-space: pre-wrap; word-break: break-word; cursor: text;">${answerHTML}</div>
             <div class="zoom-close-hint" style="position: sticky; bottom: 0; left: 0; right: 0; background: transparent; font-size: 10px; color: rgba(255, 255, 255, 0.3); text-align: center; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 10px;">ESC или клик</div>
@@ -3830,6 +3831,120 @@ function renderHeartsForZoom(ef) {
     html += '</div>';
     return html;
 }
+
+// История карточки в zoom-модалке (glassmorphism modal, как в обучении)
+window.openZoomCardHistory = function (question) {
+    const progMap = getProgressMap();
+    const prog = progMap[question];
+    if (!prog || !prog.historyArray || !Array.isArray(prog.historyArray)) return;
+
+    const history = prog.historyArray
+        .filter(h => h.date && h.grade)
+        .sort((a, b) => b.date - a.date)
+        .slice(0, 5);
+
+    if (history.length === 0) return;
+
+    const gradeNames = { 1: 'Снова', 2: 'Трудно', 3: 'Хорошо', 4: 'Легко' };
+    const gradeColors = { 1: '#E5533D', 2: '#FF9F1C', 3: '#2EC4B6', 4: '#06D6A0' };
+    const gradeInitials = { 1: 'С', 2: 'Т', 3: 'Х', 4: 'Л' };
+
+    function formatDateShort(ts) {
+        const d = new Date(ts);
+        const now = new Date();
+        const diff = now - d;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        if (days === 0) return 'Сегодня';
+        if (days === 1) return 'Вчера';
+        if (days < 7) return `${days} дн. назад`;
+        const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+        return `${d.getDate()} ${months[d.getMonth()]}`;
+    }
+    function formatTimeStr(ts) {
+        const d = new Date(ts);
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+
+    let rowsHtml = '';
+    history.forEach(h => {
+        const dateStr = formatDateShort(h.date);
+        const timeStr = formatTimeStr(h.date);
+        const gradeName = gradeNames[h.grade] || '?';
+        const gradeColor = gradeColors[h.grade] || '#888';
+        const gradeInitial = gradeInitials[h.grade] || '?';
+        const dur = h.duration ? `${Math.round(h.duration)}с` : '';
+
+        rowsHtml += `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);margin-bottom:6px;">
+                <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.2);background:${gradeColor};">${gradeInitial}</div>
+                <div style="flex:1;">
+                    <div style="font-size:11px;color:rgba(255,255,255,0.55);">${dateStr}, ${timeStr}</div>
+                    ${dur ? `<div style="font-size:10px;color:rgba(255,255,255,0.35);">${dur}</div>` : ''}
+                </div>
+                <div style="font-size:12px;font-weight:600;color:#E6EDF3;">${gradeName}</div>
+            </div>
+        `;
+    });
+
+    // Закрываем zoom-модалку перед открытием истории
+    const zoomOverlay = document.querySelector('.card-zoom-overlay');
+    if (zoomOverlay) closeCardZoomModal(zoomOverlay);
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.15);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);z-index:999;display:block;opacity:0;transition:opacity 0.3s ease;';
+    overlay.onclick = () => {
+        overlay.style.opacity = '0';
+        sheet.style.opacity = '0';
+        sheet.style.transform = 'translate(-50%,-50%) scale(0.9)';
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    const sheet = document.createElement('div');
+    sheet.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);width:450px;max-width:90%;max-height:85vh;background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.02) 100%);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2),inset 0 -1px 0 rgba(0,0,0,0.1);z-index:1000;opacity:0;visibility:hidden;transition:opacity 0.3s ease,transform 0.3s ease,visibility 0.3s;overflow:hidden;cursor:default;';
+
+    sheet.innerHTML = `
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);pointer-events:none;z-index:1;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:14px;font-weight:700;color:#fff;">История ответов</div>
+            <button onclick="this.closest('.card-zoom-overlay')?.querySelector('.history-modal-close')?.click() || (function(){var o=this.closest('.card-zoom-overlay')||arguments[0];o.style.opacity='0';o.querySelector('.history-modal-sheet').style.opacity='0';o.querySelector('.history-modal-sheet').style.transform='translate(-50%,-50%) scale(0.9)';setTimeout(()=>o.remove(),300);}).call(this,document.querySelector('.card-zoom-overlay'))" style="width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s,color 0.2s;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div style="padding:10px 16px 14px;max-height:calc(85vh - 50px);overflow-y:auto;">
+            ${rowsHtml}
+        </div>
+    `;
+
+    // Fix close button
+    const closeBtn = sheet.querySelector('button');
+    closeBtn.onclick = () => {
+        overlay.style.opacity = '0';
+        sheet.style.opacity = '0';
+        sheet.style.transform = 'translate(-50%,-50%) scale(0.9)';
+        setTimeout(() => overlay.remove(), 300);
+    };
+    closeBtn.onmouseenter = () => { closeBtn.style.background = 'rgba(255,255,255,0.15)'; closeBtn.style.color = '#fff'; };
+    closeBtn.onmouseleave = () => { closeBtn.style.background = 'rgba(255,255,255,0.08)'; closeBtn.style.color = 'rgba(255,255,255,0.5)'; };
+
+    overlay.className = 'card-zoom-overlay';
+    sheet.className = 'history-modal-sheet';
+
+    document.body.appendChild(overlay);
+    overlay.appendChild(sheet);
+
+    requestAnimationFrame(() => {
+        overlay.style.opacity = '1';
+        sheet.style.opacity = '1';
+        sheet.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+
+    // Custom scrollbar
+    const content = sheet.querySelector('div[style*="overflow-y"]');
+    if (content) {
+        content.style.scrollbarWidth = 'thin';
+        content.style.scrollbarColor = 'rgba(255,255,255,0.2) rgba(255,255,255,0.05)';
+    }
+};
 
 // Функция для отображения вопросов
 export function displayQuestions(questions, title) {
