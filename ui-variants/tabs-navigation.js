@@ -3787,6 +3787,20 @@ function openCardZoomModal(item, ef) {
 }
 
 function closeCardZoomModal(overlay) {
+    // Закрываем также историю если открыта
+    const histOverlays = document.querySelectorAll('.card-zoom-overlay');
+    histOverlays.forEach(h => {
+        if (h !== overlay && h.style.zIndex === '10001') {
+            h.style.opacity = '0';
+            const histSheet = h.querySelector('[style*="max-height"]');
+            if (histSheet) {
+                histSheet.style.opacity = '0';
+                histSheet.style.transform = 'scale(0.9)';
+            }
+            setTimeout(() => h.remove(), 300);
+        }
+    });
+
     // Восстанавливаем прокрутку
     document.body.style.overflow = '';
 
@@ -3889,18 +3903,24 @@ window.openZoomCardHistory = function (question) {
     // НЕ закрываем zoom-модалку, история откроется поверх
 
     const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.15);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);z-index:9999;display:flex;justify-content:center;align-items:center;opacity:0;transition:opacity 0.3s ease;';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:10001;display:flex;justify-content:center;align-items:center;opacity:0;transition:opacity 0.3s ease;';
     overlay.onclick = (e) => {
         if (e.target === overlay) {
+            // Закрываем ОБА окна при клике на свободную область
+            const zoomOvl = document.querySelector('.card-zoom-overlay');
+            if (zoomOvl) {
+                document.body.style.overflow = '';
+                zoomOvl.remove();
+            }
             overlay.style.opacity = '0';
             sheet.style.opacity = '0';
-            sheet.style.transform = 'translate(-50%,-50%) scale(0.9)';
+            sheet.style.transform = 'scale(0.9)';
             setTimeout(() => overlay.remove(), 300);
         }
     };
 
     const sheet = document.createElement('div');
-    sheet.style.cssText = 'position:relative;width:450px;max-width:90%;max-height:85vh;background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.02) 100%);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2),inset 0 -1px 0 rgba(0,0,0,0.1);overflow:hidden;cursor:default;opacity:0;transform:scale(0.9);transition:opacity 0.3s ease,transform 0.3s ease;';
+    sheet.style.cssText = 'position:relative;width:450px;max-width:90%;max-height:85vh;background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 100%);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,0.25);border-top:1px solid rgba(255,255,255,0.4);border-left:1px solid rgba(255,255,255,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.3),inset 0 -1px 0 rgba(0,0,0,0.1);overflow:hidden;cursor:default;opacity:0;transform:scale(0.9);transition:opacity 0.3s ease,transform 0.3s ease;';
 
     sheet.innerHTML = `
         <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);pointer-events:none;z-index:1;"></div>
