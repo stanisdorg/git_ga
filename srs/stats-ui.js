@@ -5035,8 +5035,18 @@ function renderHeartsSvg(fillPercentages, prefix) {
 
 // Модальное окно для графика активности
 window.openChartModal = () => {
+  console.log('[CHART MODAL] openChartModal called!');
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(0,0,0,0.5)';
+  overlay.style.zIndex = '2200';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.backdropFilter = 'blur(3px)';
+  overlay.style.webkitBackdropFilter = 'blur(3px)';
   overlay.style.opacity = '0';
   overlay.style.transition = 'opacity 0.3s ease';
   overlay.innerHTML = `
