@@ -1389,29 +1389,29 @@ const STATS_STYLES = `
 /* Modal - Glassmorphism */
 .st-modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.4);
   z-index: 2200;
   display: flex; justify-content: center; align-items: center;
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 .st-modal {
   width: 90%; max-width: 500px;
   max-height: 80vh;
   display: flex; flex-direction: column;
   background: linear-gradient(135deg,
-    rgba(255,255,255,0.1) 0%,
-    rgba(255,255,255,0.05) 50%,
-    rgba(255,255,255,0.02) 100%);
+    rgba(255,255,255,0.3) 0%,
+    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0.06) 100%);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.3),
     inset 0 -1px 0 rgba(0,0,0,0.1);
   overflow: hidden;
   position: relative;
@@ -5517,13 +5517,13 @@ window.openDiffModal = (index) => {
   document.body.appendChild(overlay);
   overlay.style.position = 'fixed';
   overlay.style.inset = '0';
-  overlay.style.background = 'rgba(0,0,0,0.15)';
+  overlay.style.background = 'rgba(0,0,0,0.4)';
   overlay.style.zIndex = '2200';
   overlay.style.display = 'flex';
   overlay.style.justifyContent = 'center';
   overlay.style.alignItems = 'center';
-  overlay.style.backdropFilter = 'blur(1px)';
-  overlay.style.webkitBackdropFilter = 'blur(1px)';
+  overlay.style.backdropFilter = 'blur(2px)';
+  overlay.style.webkitBackdropFilter = 'blur(2px)';
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -5609,13 +5609,13 @@ window.openCategoryModal = (categoryName) => {
   document.body.appendChild(overlay);
   overlay.style.position = 'fixed';
   overlay.style.inset = '0';
-  overlay.style.background = 'rgba(0,0,0,0.15)';
+  overlay.style.background = 'rgba(0,0,0,0.4)';
   overlay.style.zIndex = '2200';
   overlay.style.display = 'flex';
   overlay.style.justifyContent = 'center';
   overlay.style.alignItems = 'center';
-  overlay.style.backdropFilter = 'blur(1px)';
-  overlay.style.webkitBackdropFilter = 'blur(1px)';
+  overlay.style.backdropFilter = 'blur(2px)';
+  overlay.style.webkitBackdropFilter = 'blur(2px)';
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
