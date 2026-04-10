@@ -1969,6 +1969,26 @@ const STATS_STYLES = `
     scrollbar-color: rgba(255,255,255,0.2) rgba(0,0,0,0.3);
   }
 
+  /* Кастомный скроллбар для истории */
+  #st-history-timeline-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  #st-history-timeline-list::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+  }
+  #st-history-timeline-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+  }
+  #st-history-timeline-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4);
+  }
+  #st-history-timeline-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.05);
+  }
+
   /* Tablet: 2 колонки */
   @media (max-width: 1024px) {
     .st-main {
@@ -2028,9 +2048,24 @@ const STATS_STYLES = `
       grid-column: 2; 
       grid-row: 3;
     }
-    .st-block-5 { 
-      grid-column: 1 / span 2; 
+    .st-block-5 {
+      grid-column: 1 / span 2;
       grid-row: 4;
+    }
+    /* Кастомный скроллбар для истории на мобильных */
+    #st-history-timeline-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    #st-history-timeline-list::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+    #st-history-timeline-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    #st-history-timeline-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.4);
     }
   }
 
@@ -5348,6 +5383,7 @@ window.getXpSeriesForModal = (mode) => {
 };
 
 window.openDiffModal = (index) => {
+  console.log('[openDiffModal] Called with index:', index);
   let list = [];
   let label = '';
   const prog = getProgressMap();
@@ -5429,6 +5465,14 @@ window.openDiffModal = (index) => {
     </div>
   `;
   document.body.appendChild(overlay);
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(0,0,0,0.8)';
+  overlay.style.zIndex = '2200';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.backdropFilter = 'blur(4px)';
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -5512,6 +5556,14 @@ window.openCategoryModal = (categoryName) => {
     </div>
   `;
   document.body.appendChild(overlay);
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(0,0,0,0.8)';
+  overlay.style.zIndex = '2200';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.backdropFilter = 'blur(4px)';
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
