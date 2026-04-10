@@ -2259,23 +2259,8 @@ function renderCardState(state) {
             container.querySelectorAll('.learn-hearts').forEach(el => {
                 el.innerHTML = `<span class="level-label" style="font-size:12px;color:var(--color-text-secondary);font-weight:600;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">НОВАЯ</span>`;
                 el.title = 'Карточка еще не изучалась';
-
-                // Remove old label if exists
-                const oldLabel = el.nextElementSibling;
-                if (oldLabel && oldLabel.classList.contains('level-label')) oldLabel.remove();
             });
         } else {
-            const level = getDifficultyLevel(ef);
-            // const progress = getLevelProgress(ef, level); // No longer needed for hearts
-
-            // Map level to Russian text
-            const levelNames = {
-                'VERY_HARD': 'Очень трудные',
-                'HARD': 'Трудные',
-                'STANDARD': 'Стандарт',
-                'EASY': 'Легкие'
-            };
-
             // Recalculate hearts count for title
             let heartsCount = 0;
             if (ef < 1.7) heartsCount = 1 + (ef - 1.3) / 0.4;
@@ -2285,17 +2270,8 @@ function renderCardState(state) {
             heartsCount = Math.max(1, Math.min(5, heartsCount));
 
             container.querySelectorAll('.learn-hearts').forEach(el => {
-                // Label for the level
-                const labelHtml = `<span class="level-label" style="font-size:12px;color:#aaa;margin-right:6px;align-self:center;font-weight:500">${levelNames[level]}</span>`;
-
-                el.innerHTML = labelHtml + renderHearts(ef);
-                el.title = `Уровень: ${levelNames[level]}\nEF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
-
-                // Cleanup old sibling label if it exists (from previous version)
-                const oldLabel = el.nextElementSibling;
-                if (oldLabel && oldLabel.classList.contains('level-label')) {
-                    oldLabel.remove();
-                }
+                el.innerHTML = renderHearts(ef);
+                el.title = `EF: ${ef.toFixed(2)}\nСердечек: ${heartsCount.toFixed(2)}`;
             });
         }
 
