@@ -4580,21 +4580,26 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     position:fixed;
     bottom:80px;
     left:50%;
-    transform:translateX(-50%);
-    background:var(--st-surf);
-    border:1px solid var(--st-border);
-    border-left:3px solid ${isUnlocked ? 'var(--st-sec)' : 'var(--st-prim)'};
-    border-radius:8px;
-    padding:12px 16px;
-    max-width:280px;
+    transform:translateX(-50%) translateY(10px);
+    background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.06) 50%,rgba(255,255,255,0.03) 100%);
+    backdrop-filter:blur(40px) saturate(180%);
+    -webkit-backdrop-filter:blur(40px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.15);
+    border-top:1px solid rgba(255,255,255,0.25);
+    border-left:1px solid rgba(255,255,255,0.18);
+    border-radius:16px;
+    padding:14px 18px;
+    max-width:300px;
     z-index:10000;
-    box-shadow:0 4px 12px rgba(0,0,0,0.5);
-    animation:toastFadeIn 0.3s ease;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.15);
+    animation:toastSlideUp 0.3s ease forwards;
+    cursor:pointer;
+    transition:opacity 0.3s ease,transform 0.3s ease;
   `;
   toast.innerHTML = `
-    <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
-    <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:6px;">${desc}</div>
-    <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
+    <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:8px;line-height:1.4;">${desc}</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);">Прогресс: <strong style="color:rgba(255,255,255,0.8);">${progress}</strong></div>
   `;
 
   // Добавляем стили для анимации
@@ -4602,13 +4607,13 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     const style = document.createElement('style');
     style.id = 'toast-styles';
     style.textContent = `
-      @keyframes toastFadeIn {
-        from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      @keyframes toastSlideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
         to { opacity: 1; transform: translateX(-50%) translateY(0); }
       }
-      @keyframes toastFadeOut {
+      @keyframes toastSlideDown {
         from { opacity: 1; transform: translateX(-50%) translateY(0); }
-        to { opacity: 0; transform: translateX(-50%) translateY(10px); }
+        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
       }
     `;
     document.head.appendChild(style);
@@ -4617,34 +4622,18 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
   document.body.appendChild(toast);
 
   // Автозакрытие через 4 секунды
-  let closeTimeout = setTimeout(() => closeToast(), 4000);
-
-  // Закрытие по клику в любом месте (кроме самого toast)
   const closeToast = () => {
     if (toast && toast.parentNode) {
-      toast.style.animation = 'toastFadeOut 0.3s ease';
+      toast.style.animation = 'toastSlideDown 0.3s ease forwards';
       setTimeout(() => {
         if (toast && toast.parentNode) toast.remove();
       }, 300);
     }
-    clearTimeout(closeTimeout);
-    document.removeEventListener('click', handleClick);
-    document.removeEventListener('touchstart', handleClick);
   };
+  let closeTimeout = setTimeout(() => closeToast(), 4000);
 
-  const handleClick = (e) => {
-    // Не закрываем если клик по toast
-    if (toast.contains(e.target)) {
-      return;
-    }
-    closeToast();
-  };
-
-  // Добавляем обработчик с задержкой 100мс чтобы избежать срабатывания от клика по иконке
-  setTimeout(() => {
-    document.addEventListener('click', handleClick);
-    document.addEventListener('touchstart', handleClick);
-  }, 100);
+  // Закрытие по клику на toast
+  toast.onclick = (e) => { e.stopPropagation(); closeToast(); };
 };
 
 window.openStatsInfoModal = (event) => {
