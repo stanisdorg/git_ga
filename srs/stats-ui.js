@@ -1386,30 +1386,72 @@ const STATS_STYLES = `
 }
 .st-info-btn:hover { background: var(--st-sec); color: #fff; transform: scale(1.1); }
 
-/* Modal */
+/* Modal - Glassmorphism */
 .st-modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.15);
   z-index: 2200;
   display: flex; justify-content: center; align-items: center;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
 }
 .st-modal {
-  background: var(--st-bg);
-  border: 1px solid var(--st-border);
-  border-radius: 16px;
   width: 90%; max-width: 500px;
   max-height: 80vh;
   display: flex; flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.1) 0%,
+    rgba(255,255,255,0.05) 50%,
+    rgba(255,255,255,0.02) 100%);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+}
+/* Блик сверху */
+.st-modal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 .st-modal-header {
   padding: 16px;
-  border-bottom: 1px solid var(--st-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex; justify-content: space-between; align-items: center;
 }
-.st-modal-title { font-size: 18px; font-weight: 600; color: #fff; }
-.st-modal-close { background: none; border: none; color: var(--st-muted); cursor: pointer; font-size: 24px; }
+.st-modal-title { font-size: 16px; font-weight: 700; color: #fff; }
+.st-modal-close {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.2s, color 0.2s;
+}
+.st-modal-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
 .st-modal-body {
   padding: 0;
   overflow-y: auto;
@@ -1419,29 +1461,37 @@ const STATS_STYLES = `
   width: 6px;
 }
 .st-modal-body::-webkit-scrollbar-track {
-  background: var(--st-surf-h);
+  background: rgba(255,255,255,0.05);
   border-radius: 3px;
 }
 .st-modal-body::-webkit-scrollbar-thumb {
-  background: var(--st-muted);
+  background: rgba(255,255,255,0.2);
   border-radius: 3px;
 }
 .st-modal-body::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+  background: rgba(255,255,255,0.4);
+}
+.st-modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.05);
 }
 .st-modal-list { list-style: none; padding: 0; margin: 0; }
 .st-modal-item {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--st-border);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   font-size: 14px;
-  color: var(--st-text);
+  color: #E6EDF3;
   display: block;
+  transition: background 0.15s;
+}
+.st-modal-item:hover {
+  background: rgba(255,255,255,0.04);
 }
 .st-modal-q { font-weight: 600; color: #fff; margin-bottom: 4px; display: block; }
-.st-modal-a { color: var(--st-text-sec); font-size: 13px; display: block; margin-top: 4px; }
+.st-modal-a { color: rgba(255,255,255,0.55); font-size: 13px; display: block; margin-top: 4px; }
 .st-modal-footer {
   padding: 16px;
-  border-top: 1px solid var(--st-border);
+  border-top: 1px solid rgba(255,255,255,0.08);
   display: flex; justify-content: center;
 }
 .st-modal-btn {
@@ -5467,12 +5517,13 @@ window.openDiffModal = (index) => {
   document.body.appendChild(overlay);
   overlay.style.position = 'fixed';
   overlay.style.inset = '0';
-  overlay.style.background = 'rgba(0,0,0,0.8)';
+  overlay.style.background = 'rgba(0,0,0,0.15)';
   overlay.style.zIndex = '2200';
   overlay.style.display = 'flex';
   overlay.style.justifyContent = 'center';
   overlay.style.alignItems = 'center';
-  overlay.style.backdropFilter = 'blur(4px)';
+  overlay.style.backdropFilter = 'blur(1px)';
+  overlay.style.webkitBackdropFilter = 'blur(1px)';
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
@@ -5558,12 +5609,13 @@ window.openCategoryModal = (categoryName) => {
   document.body.appendChild(overlay);
   overlay.style.position = 'fixed';
   overlay.style.inset = '0';
-  overlay.style.background = 'rgba(0,0,0,0.8)';
+  overlay.style.background = 'rgba(0,0,0,0.15)';
   overlay.style.zIndex = '2200';
   overlay.style.display = 'flex';
   overlay.style.justifyContent = 'center';
   overlay.style.alignItems = 'center';
-  overlay.style.backdropFilter = 'blur(4px)';
+  overlay.style.backdropFilter = 'blur(1px)';
+  overlay.style.webkitBackdropFilter = 'blur(1px)';
 
   // Закрытие по ESC
   const escHandler = () => { overlay.remove(); document.removeEventListener('keydown', escHandler); };
