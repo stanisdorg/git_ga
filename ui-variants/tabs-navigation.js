@@ -3889,7 +3889,7 @@ window.openZoomCardHistory = function (question) {
         const dur = h.duration ? `${Math.round(h.duration)}с` : '';
 
         rowsHtml += `
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);margin-bottom:6px;">
+            <div class="history-row" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);margin-bottom:6px;transition:background 0.15s,border-color 0.15s;cursor:default;">
                 <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.2);background:${gradeColor};">${gradeInitial}</div>
                 <div style="flex:1;">
                     <div style="font-size:11px;color:rgba(255,255,255,0.55);">${dateStr}, ${timeStr}</div>
@@ -3949,6 +3949,19 @@ window.openZoomCardHistory = function (question) {
 
     document.body.appendChild(overlay);
     overlay.appendChild(sheet);
+
+    // Hover эффекты для строк истории
+    const historyRows = sheet.querySelectorAll('.history-row');
+    historyRows.forEach(row => {
+        row.addEventListener('mouseenter', () => {
+            row.style.background = 'rgba(255,255,255,0.08)';
+            row.style.borderColor = 'rgba(255,255,255,0.12)';
+        });
+        row.addEventListener('mouseleave', () => {
+            row.style.background = 'rgba(255,255,255,0.04)';
+            row.style.borderColor = 'rgba(255,255,255,0.06)';
+        });
+    });
 
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
