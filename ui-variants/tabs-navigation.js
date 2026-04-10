@@ -3886,27 +3886,27 @@ window.openZoomCardHistory = function (question) {
         `;
     });
 
-    // Закрываем zoom-модалку перед открытием истории
-    const zoomOverlay = document.querySelector('.card-zoom-overlay');
-    if (zoomOverlay) closeCardZoomModal(zoomOverlay);
+    // НЕ закрываем zoom-модалку, история откроется поверх
 
     const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.15);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);z-index:999;display:block;opacity:0;transition:opacity 0.3s ease;';
-    overlay.onclick = () => {
-        overlay.style.opacity = '0';
-        sheet.style.opacity = '0';
-        sheet.style.transform = 'translate(-50%,-50%) scale(0.9)';
-        setTimeout(() => overlay.remove(), 300);
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.15);backdrop-filter:blur(1px);-webkit-backdrop-filter:blur(1px);z-index:9999;display:flex;justify-content:center;align-items:center;opacity:0;transition:opacity 0.3s ease;';
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.style.opacity = '0';
+            sheet.style.opacity = '0';
+            sheet.style.transform = 'translate(-50%,-50%) scale(0.9)';
+            setTimeout(() => overlay.remove(), 300);
+        }
     };
 
     const sheet = document.createElement('div');
-    sheet.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.9);width:450px;max-width:90%;max-height:85vh;background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.02) 100%);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2),inset 0 -1px 0 rgba(0,0,0,0.1);z-index:1000;opacity:0;visibility:hidden;transition:opacity 0.3s ease,transform 0.3s ease,visibility 0.3s;overflow:hidden;cursor:default;';
+    sheet.style.cssText = 'position:relative;width:450px;max-width:90%;max-height:85vh;background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0.02) 100%);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.3);border-left:1px solid rgba(255,255,255,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2),inset 0 -1px 0 rgba(0,0,0,0.1);overflow:hidden;cursor:default;opacity:0;transform:scale(0.9);transition:opacity 0.3s ease,transform 0.3s ease;';
 
     sheet.innerHTML = `
         <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);pointer-events:none;z-index:1;"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);">
             <div style="font-size:14px;font-weight:700;color:#fff;">История ответов</div>
-            <button onclick="this.closest('.card-zoom-overlay')?.querySelector('.history-modal-close')?.click() || (function(){var o=this.closest('.card-zoom-overlay')||arguments[0];o.style.opacity='0';o.querySelector('.history-modal-sheet').style.opacity='0';o.querySelector('.history-modal-sheet').style.transform='translate(-50%,-50%) scale(0.9)';setTimeout(()=>o.remove(),300);}).call(this,document.querySelector('.card-zoom-overlay'))" style="width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s,color 0.2s;">
+            <button class="history-close-btn" style="width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s,color 0.2s;">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
@@ -3915,19 +3915,17 @@ window.openZoomCardHistory = function (question) {
         </div>
     `;
 
-    // Fix close button
-    const closeBtn = sheet.querySelector('button');
-    closeBtn.onclick = () => {
+    // Close button handler
+    const closeBtn = sheet.querySelector('.history-close-btn');
+    const closeHistory = () => {
         overlay.style.opacity = '0';
         sheet.style.opacity = '0';
-        sheet.style.transform = 'translate(-50%,-50%) scale(0.9)';
+        sheet.style.transform = 'scale(0.9)';
         setTimeout(() => overlay.remove(), 300);
     };
+    closeBtn.onclick = closeHistory;
     closeBtn.onmouseenter = () => { closeBtn.style.background = 'rgba(255,255,255,0.15)'; closeBtn.style.color = '#fff'; };
     closeBtn.onmouseleave = () => { closeBtn.style.background = 'rgba(255,255,255,0.08)'; closeBtn.style.color = 'rgba(255,255,255,0.5)'; };
-
-    overlay.className = 'card-zoom-overlay';
-    sheet.className = 'history-modal-sheet';
 
     document.body.appendChild(overlay);
     overlay.appendChild(sheet);
@@ -3935,15 +3933,8 @@ window.openZoomCardHistory = function (question) {
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
         sheet.style.opacity = '1';
-        sheet.style.transform = 'translate(-50%,-50%) scale(1)';
+        sheet.style.transform = 'scale(1)';
     });
-
-    // Custom scrollbar
-    const content = sheet.querySelector('div[style*="overflow-y"]');
-    if (content) {
-        content.style.scrollbarWidth = 'thin';
-        content.style.scrollbarColor = 'rgba(255,255,255,0.2) rgba(255,255,255,0.05)';
-    }
 };
 
 // Функция для отображения вопросов
