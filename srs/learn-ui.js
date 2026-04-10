@@ -345,6 +345,12 @@ export function initLearnUI() {
             <!-- Модальное окно истории (glassmorphism) -->
             <div class="history-modal-overlay" id="history-bs-overlay" onclick="window.closeHistoryBottomSheet()"></div>
             <div class="history-modal" id="history-bottom-sheet">
+                <div class="history-modal-header">
+                    <div class="history-modal-title">История ответов</div>
+                    <button class="history-modal-close" onclick="window.closeHistoryBottomSheet()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
                 <div class="history-modal-content" id="history-bs-content"></div>
             </div>
 
@@ -3613,9 +3619,7 @@ function openHistoryBottomSheet(question, history) {
 
     const last5 = history.slice(0, 5);
 
-    let html = `<button class="history-modal-close" onclick="window.closeHistoryBottomSheet()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>`;
+    let html = '';
     last5.forEach(h => {
         const dateStr = formatDateShort(h.date);
         const timeStr = formatTimeStr(h.date);
