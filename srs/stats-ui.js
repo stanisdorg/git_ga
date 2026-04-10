@@ -4581,25 +4581,24 @@ window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
     bottom:80px;
     left:50%;
     transform:translateX(-50%) translateY(10px);
-    background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,rgba(255,255,255,0.06) 50%,rgba(255,255,255,0.03) 100%);
-    backdrop-filter:blur(40px) saturate(180%);
-    -webkit-backdrop-filter:blur(40px) saturate(180%);
-    border:1px solid rgba(255,255,255,0.15);
-    border-top:1px solid rgba(255,255,255,0.25);
-    border-left:1px solid rgba(255,255,255,0.18);
-    border-radius:16px;
-    padding:14px 18px;
-    max-width:300px;
+    background:rgba(37,37,43,0.05);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,0.05);
+    border-radius:8px;
+    padding:8px 10px;
+    max-width:160px;
     z-index:10000;
-    box-shadow:0 20px 60px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);
     animation:toastSlideUp 0.3s ease forwards;
     cursor:pointer;
     transition:opacity 0.3s ease,transform 0.3s ease;
+    color:#E6EDF3;
   `;
   toast.innerHTML = `
-    <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:8px;line-height:1.4;">${desc}</div>
-    <div style="font-size:10px;color:rgba(255,255,255,0.4);">Прогресс: <strong style="color:rgba(255,255,255,0.8);">${progress}</strong></div>
+    <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
+    <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:2px;">${desc}</div>
+    <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
   `;
 
   // Добавляем стили для анимации
