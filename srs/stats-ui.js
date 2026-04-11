@@ -4653,6 +4653,21 @@ window.showAchTooltip = (el, title, desc, isUnlocked, progress) => {
   document.body.appendChild(tip);
 };
 
+// Закрытие тултипов при прокрутке (мобильные)
+window.addEventListener('scroll', () => {
+  const tooltip = document.getElementById('ach-tooltip');
+  if (tooltip) tooltip.remove();
+  const chartTooltip = document.querySelector('.tooltip');
+  if (chartTooltip) chartTooltip.style.display = 'none';
+}, { passive: true });
+
+window.addEventListener('touchstart', (e) => {
+  const tooltip = document.getElementById('ach-tooltip');
+  if (tooltip) tooltip.remove();
+  const chartTooltip = document.querySelector('.tooltip');
+  if (chartTooltip && !chartTooltip.contains(e.target)) chartTooltip.style.display = 'none';
+}, { passive: true });
+
 window.openStatsInfoModal = (event) => {
   if (event) event.stopPropagation();
   const overlay = document.createElement('div');
