@@ -2882,7 +2882,7 @@ function renderAchCard(key, icon, title, current, target, rarity, description) {
   const desc = description || '';
 
   return `
-    <div class="st-ach-card ${lockedClass} ${rarityClass}" onclick="window.showAchievementDesc('${title}', '${desc}', ${isUnlocked}, '${current}/${target}')" style="cursor:pointer;" title="${title}: ${current}/${target}${desc ? ' — ' + desc : ''}">
+    <div class="st-ach-card ${lockedClass} ${rarityClass}" onmouseenter="window.showAchTooltip(this,'${title}','${desc}',${isUnlocked},'${current}/${target}')" onmouseleave="window.hideAchTooltip()" style="cursor:pointer;" title="${title}: ${current}/${target}${desc ? ' — ' + desc : ''}">
       <div class="st-ach-icon">${icon}</div>
       <div class="st-ach-title">${title}</div>
       <div class="st-ach-progress-wrap">
@@ -4567,72 +4567,49 @@ window.openDiffInfoModal = (event) => {
 // ============================================
 
 // Показать описание достижения (toast)
-window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
+window.showAchTooltip = (el, title, desc, isUnlocked, progress) => {
   if (!desc) return;
 
-  // Удаляем существующий toast если есть
-  const existing = document.getElementById('ach-toast');
+  // Удаляем существующий tooltip
+  const existing = document.getElementById('ach-tooltip');
   if (existing) existing.remove();
 
-  const toast = document.createElement('div');
-  toast.id = 'ach-toast';
-  toast.style.cssText = `
-    position:fixed;
-    bottom:80px;
+  const tip = document.createElement('div');
+  tip.id = 'ach-tooltip';
+  tip.style.cssText = `
+    position:absolute;
+    bottom:calc(100% + 8px);
     left:50%;
-    transform:translateX(-50%) translateY(10px);
+    transform:translateX(-50%);
     background:rgba(37,37,43,0.05);
     backdrop-filter:blur(4px);
     -webkit-backdrop-filter:blur(4px);
     border:1px solid rgba(255,255,255,0.05);
     border-radius:8px;
     padding:8px 10px;
-    max-width:160px;
-    z-index:10000;
+    width:160px;
+    z-index:3000;
     box-shadow:0 4px 12px rgba(0,0,0,0.5);
-    animation:toastSlideUp 0.3s ease forwards;
-    cursor:pointer;
-    transition:opacity 0.3s ease,transform 0.3s ease;
-    color:#E6EDF3;
+    pointer-events:none;
   `;
-  toast.innerHTML = `
+  tip.innerHTML = `
     <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
     <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:2px;">${desc}</div>
     <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
+    <div style="position:absolute;top:-6px;left:calc(50% - 6px);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid var(--st-surf-h);"></div>
   `;
 
-  // Добавляем стили для анимации
-  if (!document.getElementById('toast-styles')) {
-    const style = document.createElement('style');
-    style.id = 'toast-styles';
-    style.textContent = `
-      @keyframes toastSlideUp {
-        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-        to { opacity: 1; transform: translateX(-50%) translateY(0); }
-      }
-      @keyframes toastSlideDown {
-        from { opacity: 1; transform: translateX(-50%) translateY(0); }
-        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-      }
-    `;
-    document.head.appendChild(style);
-  }
+  el.style.position = 'relative';
+  el.appendChild(tip);
+};
 
-  document.body.appendChild(toast);
+window.hideAchTooltip = () => {
+  const tip = document.getElementById('ach-tooltip');
+  if (tip) tip.remove();
+};
 
-  // Автозакрытие через 4 секунды
-  const closeToast = () => {
-    if (toast && toast.parentNode) {
-      toast.style.animation = 'toastSlideDown 0.3s ease forwards';
-      setTimeout(() => {
-        if (toast && toast.parentNode) toast.remove();
-      }, 300);
-    }
-  };
-  let closeTimeout = setTimeout(() => closeToast(), 4000);
-
-  // Закрытие по клику на toast
-  toast.onclick = (e) => { e.stopPropagation(); closeToast(); };
+window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
+  window.showAchTooltip(document.querySelector('.st-ach-card'), title, desc, isUnlocked, progress);
 };
 
 window.openStatsInfoModal = (event) => {
