@@ -1797,14 +1797,18 @@ const STATS_STYLES = `
     left: 0 !important;
     right: 0 !important;
     z-index: 999 !important;
-    background: linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    border: 1px solid var(--st-border) !important;
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.1) 0%,
+      rgba(255,255,255,0.05) 50%,
+      rgba(255,255,255,0.02) 100%) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
     border-radius: 12px !important;
     margin-top: 8px !important;
     padding: 10px 10px 14px 10px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
   }
   .st-block-achievements { 
     grid-column: 2; 
@@ -2073,14 +2077,18 @@ const STATS_STYLES = `
     .st-block-1.expanded #st-history-timeline {
       position: relative !important;
       z-index: 10 !important;
-      background: linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-      border: 1px solid var(--st-border) !important;
+      background: linear-gradient(135deg,
+        rgba(255,255,255,0.1) 0%,
+        rgba(255,255,255,0.05) 50%,
+        rgba(255,255,255,0.02) 100%) !important;
+      backdrop-filter: blur(40px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
       border-radius: 12px !important;
       margin-top: 8px !important;
       padding: 10px 10px 14px 10px !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
     }
     .st-block-achievements {
       grid-column: 1 / span 2; 
@@ -6929,13 +6937,13 @@ window.toggleHistoryTimeline = function () {
         // Мобильная версия: timeline в потоке, раздвигает блоки
         panel.style.setProperty('position', 'relative', 'important');
         panel.style.setProperty('z-index', '10', 'important');
-        panel.style.setProperty('background', 'linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%)', 'important');
-        panel.style.setProperty('backdrop-filter', 'blur(8px)', 'important');
-        panel.style.setProperty('-webkit-backdrop-filter', 'blur(8px)', 'important');
-        panel.style.setProperty('border', '1px solid var(--st-border)', 'important');
+        panel.style.setProperty('background', 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)', 'important');
+        panel.style.setProperty('backdrop-filter', 'blur(40px) saturate(180%)', 'important');
+        panel.style.setProperty('-webkit-backdrop-filter', 'blur(40px) saturate(180%)', 'important');
+        panel.style.setProperty('border', '1px solid rgba(255,255,255,0.15)', 'important');
         panel.style.setProperty('border-radius', '12px', 'important');
         panel.style.setProperty('padding', '10px 10px 14px 10px', 'important');
-        panel.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.4)', 'important');
+        panel.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15)', 'important');
         panel.style.setProperty('margin-top', '8px', 'important');
         console.log('[HISTORY] Mobile: timeline in flow, blocks will be pushed down');
       } else {
@@ -6951,13 +6959,13 @@ window.toggleHistoryTimeline = function () {
         panel.style.setProperty('right', '0', 'important');
         panel.style.setProperty('z-index', '999', 'important');
         panel.style.setProperty('margin-top', '8px', 'important');
-        panel.style.setProperty('background', 'linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, rgba(31, 38, 48, 0.95) 100%)', 'important');
-        panel.style.setProperty('backdrop-filter', 'blur(8px)', 'important');
-        panel.style.setProperty('-webkit-backdrop-filter', 'blur(8px)', 'important');
-        panel.style.setProperty('border', '1px solid var(--st-border)', 'important');
+        panel.style.setProperty('background', 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%)', 'important');
+        panel.style.setProperty('backdrop-filter', 'blur(40px) saturate(180%)', 'important');
+        panel.style.setProperty('-webkit-backdrop-filter', 'blur(40px) saturate(180%)', 'important');
+        panel.style.setProperty('border', '1px solid rgba(255,255,255,0.15)', 'important');
         panel.style.setProperty('border-radius', '12px', 'important');
         panel.style.setProperty('padding', '10px 10px 14px 10px', 'important');
-        panel.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.4)', 'important');
+        panel.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15)', 'important');
         console.log('[HISTORY] Desktop: timeline absolute, blocks not moved');
       }
     });
