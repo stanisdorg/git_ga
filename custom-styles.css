@@ -459,6 +459,92 @@
     flex-direction: column;
 }
 
+/* 🔥 Табы корзины */
+.trash-tab {
+    transition: all 0.2s ease !important;
+    position: relative;
+}
+
+.trash-tab:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.trash-tab.active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    border-bottom: 2px solid #00d9ff !important;
+    font-weight: 500;
+}
+
+/* Сетка карточек в корзине */
+.trash-cards-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* Мини-карточка в корзине */
+.trash-mini {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.trash-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.trash-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.trash-actions button {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.trash-actions .restore-btn {
+    background: #1b5e20 !important;
+    color: #fff;
+}
+
+.trash-actions .restore-btn:hover {
+    background: #2e7d32 !important;
+}
+
+.trash-actions .restore-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.trash-actions .purge-btn {
+    background: #8b1a1a !important;
+    color: #fff;
+}
+
+.trash-actions .purge-btn:hover {
+    background: #a52a2a !important;
+}
+
+.trash-actions .purge-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Контейнер результатов */
 #results-list {
     display: grid;
@@ -639,6 +725,16 @@
 .nav-icon-btn:hover {
     color: #fff !important;
     background: rgba(255,255,255,0.1) !important;
+}
+
+/* 🔥 Активная иконка корзины */
+#trash-mode-button.active {
+    color: #00d9ff !important;
+    background: rgba(0, 217, 255, 0.15) !important;
+}
+
+#trash-mode-button.active:hover {
+    background: rgba(0, 217, 255, 0.25) !important;
 }
 
 /* ========== РЕЖИМ РЕДАКТИРОВАНИЯ - кнопка карандаша ========== */

@@ -1327,7 +1327,75 @@ export function initTabsNavigation(appVersion) {
         // Включаем прокрутку независимо от режима
         trashPanel.style.overflowY = 'auto';
         // trashPanel.style.maxHeight удален, управляется CSS
-        trashPanel.innerHTML = '<div id="trash-categories" style="margin-top:6px"></div><div id="trash-cards" style="margin-top:6px"></div>';
+        trashPanel.innerHTML = `
+            <div id="trash-tabs" style="display:flex;gap:4px;margin-bottom:8px;border-bottom:1px solid #444;padding-bottom:4px;">
+                <button id="trash-tab-cards" class="trash-tab active" data-tab="cards" style="flex:1;padding:6px 12px;border:none;background:transparent;color:#fff;cursor:pointer;border-radius:4px 4px 0 0;font-size:13px;">Карточки</button>
+                <button id="trash-tab-categories" class="trash-tab" data-tab="categories" style="flex:1;padding:6px 12px;border:none;background:transparent;color:#aaa;cursor:pointer;border-radius:4px 4px 0 0;font-size:13px;">Категории</button>
+                <button id="trash-tab-subcategories" class="trash-tab" data-tab="subcategories" style="flex:1;padding:6px 12px;border:none;background:transparent;color:#aaa;cursor:pointer;border-radius:4px 4px 0 0;font-size:13px;">Подкатегории</button>
+            </div>
+            <div id="trash-tab-content">
+                <div id="trash-cards" style="display:none;"></div>
+                <div id="trash-categories" style="display:none;"></div>
+                <div id="trash-subcategories" style="display:none;"></div>
+            </div>
+        `;
+
+        // 🔥 Обработчик кликов для табов корзины (делегирование событий)
+        let activeTrashTab = 'cards';
+        try { activeTrashTab = localStorage.getItem('qaActiveTrashTab') || 'cards'; } catch { }
+
+        // 🔥 Подсветка иконки корзины когда она активна
+        function updateTrashIconHighlight() {
+            const trashBtn = document.getElementById('trash-mode-button');
+            if (trashBtn) {
+                trashBtn.classList.add('active');
+            }
+        }
+
+        function switchTrashTab(tabName) {
+            activeTrashTab = tabName;
+            try { localStorage.setItem('qaActiveTrashTab', tabName); } catch { }
+
+            // Обновляем стили табов
+            const allTabs = trashPanel.querySelectorAll('.trash-tab');
+            allTabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.color = '#aaa';
+                tab.style.background = 'transparent';
+                tab.style.borderBottom = 'none';
+            });
+            const activeTab = trashPanel.querySelector(`#trash-tab-${tabName}`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.color = '#fff';
+                activeTab.style.background = 'rgba(255,255,255,0.1)';
+            }
+
+            // Показываем только активный контент
+            ['cards', 'categories', 'subcategories'].forEach(t => {
+                const el = trashPanel.querySelector(`#trash-${t}`);
+                if (el) el.style.display = t === tabName ? 'block' : 'none';
+            });
+
+            // Подсвечиваем иконку корзины
+            updateTrashIconHighlight();
+
+            // Рендерим контент после переключения
+            renderTrashPanel();
+        }
+
+        // Делегирование событий для табов
+        trashPanel.addEventListener('click', (e) => {
+            const tab = e.target.closest('.trash-tab');
+            if (tab) {
+                e.preventDefault();
+                const tabName = tab.dataset.tab;
+                switchTrashTab(tabName);
+            }
+        });
+
+        // Активируем сохранённый таб при инициализации
+        setTimeout(() => switchTrashTab(activeTrashTab), 0);
 
         // Добавляем элементы в контейнер навигации
         navigationContainer.appendChild(topActions);
@@ -2589,8 +2657,355 @@ export function initTabsNavigation(appVersion) {
         function renderTrashPanel() {
             if (!editMode) return;
             const catDiv = trashPanel.querySelector('#trash-categories');
+            const subDiv = trashPanel.querySelector('#trash-subcategories');
             const cardDiv = trashPanel.querySelector('#trash-cards');
-            catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
+
+            // 🔥 Группируем карточки по категориям
+            const categoryGroups = {};
+            serverTrashItems.forEach(entry => {
+                const cat = entry.item?.category || 'Без категории';
+                if (!categoryGroups[cat]) categoryGroups[cat] = [];
+                categoryGroups[cat].push(entry);
+            });
+
+            // 🔥 Группируем карточки по подкатегориям
+            const subcategoryGroups = {};
+            serverTrashItems.forEach(entry => {
+                const sub = entry.item?.subcategory || 'Без подкатегории';
+                if (!subcategoryGroups[sub]) subcategoryGroups[sub] = [];
+                subcategoryGroups[sub].push(entry);
+            });
+
+            // 🔥 Обновляем бейджи на табах
+            const catTab = document.getElementById('trash-tab-categories');
+            const subTab = document.getElementById('trash-tab-subcategories');
+            const cardsTab = document.getElementById('trash-tab-cards');
+
+            if (catTab) {
+                const catCount = Object.keys(categoryGroups).length;
+                catTab.innerHTML = `Категории${catCount > 0 ? ` <span style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:10px;font-size:11px;">${catCount}</span>` : ''}`;
+            }
+            if (subTab) {
+                const subCount = Object.keys(subcategoryGroups).length;
+                subTab.innerHTML = `Подкатегории${subCount > 0 ? ` <span style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:10px;font-size:11px;">${subCount}</span>` : ''}`;
+            }
+            if (cardsTab) {
+                const cardsCount = serverTrashItems.length;
+                cardsTab.innerHTML = `Карточки${cardsCount > 0 ? ` <span style="background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:10px;font-size:11px;">${cardsCount}</span>` : ''}`;
+            }
+
+            // 🔥 Рендерим блок "Категории"
+            catDiv.innerHTML = '';
+
+            if (Object.keys(categoryGroups).length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.textContent = 'Пусто';
+                emptyMsg.style.color = '#888';
+                emptyMsg.style.fontSize = '13px';
+                emptyMsg.style.marginTop = '4px';
+                catDiv.appendChild(emptyMsg);
+            } else {
+                const catList = document.createElement('div');
+                catList.style.marginTop = '6px';
+                catList.style.display = 'flex';
+                catList.style.flexDirection = 'column';
+                catList.style.gap = '8px';
+
+                Object.entries(categoryGroups).forEach(([cat, entries]) => {
+                    const catCard = document.createElement('div');
+                    catCard.style.display = 'flex';
+                    catCard.style.flexDirection = 'column';
+                    catCard.style.gap = '8px';
+                    catCard.style.padding = '10px 12px';
+                    catCard.style.background = 'rgba(255,255,255,0.05)';
+                    catCard.style.borderRadius = '6px';
+
+                    // Верхняя часть: название и количество
+                    const catInfo = document.createElement('div');
+                    catInfo.innerHTML = `<strong style="font-size:14px;">${cat}</strong> <span style="color:#888;font-size:13px;">(${entries.length} карточек)</span>`;
+
+                    // Нижняя часть: кнопки действий
+                    const catActions = document.createElement('div');
+                    catActions.style.display = 'flex';
+                    catActions.style.gap = '6px';
+
+                    const restoreAllBtn = document.createElement('button');
+                    restoreAllBtn.className = 'restore-btn';
+                    restoreAllBtn.textContent = 'Восстановить всё';
+                    restoreAllBtn.style.fontSize = '12px';
+                    restoreAllBtn.style.padding = '6px 12px';
+                    restoreAllBtn.style.flex = '1';
+
+                    const purgeAllBtn = document.createElement('button');
+                    purgeAllBtn.className = 'purge-btn';
+                    purgeAllBtn.textContent = 'Удалить всё';
+                    purgeAllBtn.style.fontSize = '12px';
+                    purgeAllBtn.style.padding = '6px 12px';
+                    purgeAllBtn.style.flex = '1';
+
+                    // Восстановить всю категорию
+                    restoreAllBtn.addEventListener('click', async () => {
+                        if (!confirm(`Восстановить все ${entries.length} карточки из категории "${cat}"?`)) return;
+                        restoreAllBtn.textContent = '...'; restoreAllBtn.disabled = true;
+                        purgeAllBtn.disabled = true;
+
+                        const questions = entries.map(e => e.item?.question).filter(Boolean);
+                        let restoredCount = 0;
+
+                        for (const q of questions) {
+                            serverTrashSet.delete(q);
+                            serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
+                            const delMap = getDeletedItems();
+                            if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
+
+                            const trashItem = entries.find(e => e.item?.question === q);
+                            const itemData = trashItem?.item;
+                            const isInUnique = !!uniqueQaData.find(i => i.question === q);
+                            if (!isInUnique && itemData) {
+                                const newItems = getNewItems();
+                                if (!newItems.some(n => n.question === q)) {
+                                    newItems.push(itemData);
+                                    localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+                                }
+                            }
+
+                            const userCards = getQaUserCards();
+                            if (userCards && !userCards.some(c => c.question === q) && itemData) {
+                                userCards.push(itemData);
+                                setQaUserCards(userCards);
+                            }
+                            restoredCount++;
+                        }
+
+                        renderTrashPanel();
+                        refreshCurrentContext();
+
+                        try { await restoreFromServerTrash(questions); } catch (_) { }
+                        setSaveStatus('success', `Восстановлено ${restoredCount} карточек из "${cat}"`);
+                    });
+
+                    // Удалить всю категорию навсегда
+                    purgeAllBtn.addEventListener('click', async () => {
+                        if (!confirm(`УДАЛИТЬ НАВСЕГДА все ${entries.length} карточки из категории "${cat}"? Это действие нельзя отменить!`)) return;
+                        purgeAllBtn.textContent = '...'; purgeAllBtn.disabled = true;
+                        restoreAllBtn.disabled = true;
+
+                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                        let username = 'guest';
+                        try {
+                            const u = JSON.parse(sessionUserRaw);
+                            if (u && u.username) username = u.username;
+                        } catch { }
+
+                        const questions = entries.map(e => e.item?.question).filter(Boolean);
+                        let deletedCount = 0;
+
+                        try {
+                            const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ questions })
+                            });
+
+                            if (resp.ok) {
+                                for (const q of questions) {
+                                    serverTrashSet.delete(q);
+                                    serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
+                                    const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
+                                    const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
+                                    deletedCount++;
+                                }
+
+                                const localTrash = localStorage.getItem('qaUserTrash');
+                                if (localTrash) {
+                                    const trash = JSON.parse(localTrash);
+                                    const newTrash = trash.filter(t => !questions.includes(t.item?.question));
+                                    localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
+                                }
+
+                                renderTrashPanel();
+                                refreshCurrentContext();
+                                try { await saveMergedToServer(); } catch { }
+                                setSaveStatus('success', `Удалено ${deletedCount} карточек из "${cat}"`);
+                            } else {
+                                const error = await resp.text();
+                                console.error('[delete-permanent] Ошибка:', resp.status, error);
+                                setSaveStatus('error', 'Ошибка: ' + error);
+                            }
+                        } catch (e) {
+                            console.error('[delete-permanent] Ошибка:', e);
+                            setSaveStatus('error', 'Сервер удаления недоступен');
+                        }
+                        purgeAllBtn.textContent = 'Удалить всё'; purgeAllBtn.disabled = false;
+                        restoreAllBtn.disabled = false;
+                    });
+
+                    catActions.appendChild(restoreAllBtn);
+                    catActions.appendChild(purgeAllBtn);
+                    catCard.appendChild(catInfo);
+                    catCard.appendChild(catActions);
+                    catList.appendChild(catCard);
+                });
+
+                catDiv.appendChild(catList);
+            }
+
+            // 🔥 Рендерим блок "Подкатегории"
+            subDiv.innerHTML = '';
+
+            if (Object.keys(subcategoryGroups).length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.textContent = 'Пусто';
+                emptyMsg.style.color = '#888';
+                emptyMsg.style.fontSize = '13px';
+                emptyMsg.style.marginTop = '4px';
+                subDiv.appendChild(emptyMsg);
+            } else {
+                const subList = document.createElement('div');
+                subList.style.marginTop = '6px';
+                subList.style.display = 'flex';
+                subList.style.flexDirection = 'column';
+                subList.style.gap = '8px';
+
+                Object.entries(subcategoryGroups).forEach(([sub, entries]) => {
+                    const subCard = document.createElement('div');
+                    subCard.style.display = 'flex';
+                    subCard.style.flexDirection = 'column';
+                    subCard.style.gap = '8px';
+                    subCard.style.padding = '10px 12px';
+                    subCard.style.background = 'rgba(255,255,255,0.05)';
+                    subCard.style.borderRadius = '6px';
+
+                    // Верхняя часть: название и количество
+                    const subInfo = document.createElement('div');
+                    subInfo.innerHTML = `<strong style="font-size:14px;">${sub}</strong> <span style="color:#888;font-size:13px;">(${entries.length} карточек)</span>`;
+
+                    // Нижняя часть: кнопки действий
+                    const subActions = document.createElement('div');
+                    subActions.style.display = 'flex';
+                    subActions.style.gap = '6px';
+
+                    const subRestoreAllBtn = document.createElement('button');
+                    subRestoreAllBtn.className = 'restore-btn';
+                    subRestoreAllBtn.textContent = 'Восстановить всё';
+                    subRestoreAllBtn.style.fontSize = '12px';
+                    subRestoreAllBtn.style.padding = '6px 12px';
+                    subRestoreAllBtn.style.flex = '1';
+
+                    const subPurgeAllBtn = document.createElement('button');
+                    subPurgeAllBtn.className = 'purge-btn';
+                    subPurgeAllBtn.textContent = 'Удалить всё';
+                    subPurgeAllBtn.style.fontSize = '12px';
+                    subPurgeAllBtn.style.padding = '6px 12px';
+                    subPurgeAllBtn.style.flex = '1';
+
+                    // Восстановить всю подкатегорию
+                    subRestoreAllBtn.addEventListener('click', async () => {
+                        if (!confirm(`Восстановить все ${entries.length} карточки из подкатегории "${sub}"?`)) return;
+                        subRestoreAllBtn.textContent = '...'; subRestoreAllBtn.disabled = true;
+                        subPurgeAllBtn.disabled = true;
+
+                        const questions = entries.map(e => e.item?.question).filter(Boolean);
+                        let restoredCount = 0;
+
+                        for (const q of questions) {
+                            serverTrashSet.delete(q);
+                            serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
+                            const delMap = getDeletedItems();
+                            if (delMap && delMap[q]) { delete delMap[q]; setDeletedItems(delMap); }
+
+                            const trashItem = entries.find(e => e.item?.question === q);
+                            const itemData = trashItem?.item;
+                            const isInUnique = !!uniqueQaData.find(i => i.question === q);
+                            if (!isInUnique && itemData) {
+                                const newItems = getNewItems();
+                                if (!newItems.some(n => n.question === q)) {
+                                    newItems.push(itemData);
+                                    localStorage.setItem('qaNewItems', JSON.stringify(newItems));
+                                }
+                            }
+
+                            const userCards = getQaUserCards();
+                            if (userCards && !userCards.some(c => c.question === q) && itemData) {
+                                userCards.push(itemData);
+                                setQaUserCards(userCards);
+                            }
+                            restoredCount++;
+                        }
+
+                        renderTrashPanel();
+                        refreshCurrentContext();
+
+                        try { await restoreFromServerTrash(questions); } catch (_) { }
+                        setSaveStatus('success', `Восстановлено ${restoredCount} карточек из "${sub}"`);
+                    });
+
+                    // Удалить всю подкатегорию навсегда
+                    subPurgeAllBtn.addEventListener('click', async () => {
+                        if (!confirm(`УДАЛИТЬ НАВСЕГДА все ${entries.length} карточки из подкатегории "${sub}"? Это действие нельзя отменить!`)) return;
+                        subPurgeAllBtn.textContent = '...'; subPurgeAllBtn.disabled = true;
+                        subRestoreAllBtn.disabled = true;
+
+                        const sessionUserRaw = localStorage.getItem('qaSessionUser');
+                        let username = 'guest';
+                        try {
+                            const u = JSON.parse(sessionUserRaw);
+                            if (u && u.username) username = u.username;
+                        } catch { }
+
+                        const questions = entries.map(e => e.item?.question).filter(Boolean);
+                        let deletedCount = 0;
+
+                        try {
+                            const resp = await fetch(`${BACKEND_URL}/delete-permanent?user=${encodeURIComponent(username)}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ questions })
+                            });
+
+                            if (resp.ok) {
+                                for (const q of questions) {
+                                    serverTrashSet.delete(q);
+                                    serverTrashItems = serverTrashItems.filter(t => t.item?.question !== q);
+                                    const delMap = getDeletedItems(); delMap[q] = true; setDeletedItems(delMap);
+                                    const newArr = getNewItems().filter(i => i.question !== q); setLS('qaNewItems', newArr);
+                                    deletedCount++;
+                                }
+
+                                const localTrash = localStorage.getItem('qaUserTrash');
+                                if (localTrash) {
+                                    const trash = JSON.parse(localTrash);
+                                    const newTrash = trash.filter(t => !questions.includes(t.item?.question));
+                                    localStorage.setItem('qaUserTrash', JSON.stringify(newTrash));
+                                }
+
+                                renderTrashPanel();
+                                refreshCurrentContext();
+                                try { await saveMergedToServer(); } catch { }
+                                setSaveStatus('success', `Удалено ${deletedCount} карточек из "${sub}"`);
+                            } else {
+                                const error = await resp.text();
+                                console.error('[delete-permanent] Ошибка:', resp.status, error);
+                                setSaveStatus('error', 'Ошибка: ' + error);
+                            }
+                        } catch (e) {
+                            console.error('[delete-permanent] Ошибка:', e);
+                            setSaveStatus('error', 'Сервер удаления недоступен');
+                        }
+                        subPurgeAllBtn.textContent = 'Удалить всё'; subPurgeAllBtn.disabled = false;
+                        subRestoreAllBtn.disabled = false;
+                    });
+
+                    subActions.appendChild(subRestoreAllBtn);
+                    subActions.appendChild(subPurgeAllBtn);
+                    subCard.appendChild(subInfo);
+                    subCard.appendChild(subActions);
+                    subList.appendChild(subCard);
+                });
+
+                subDiv.appendChild(subList);
+            }
+
             // Список удалённых вопросов + сортировка по оригинальному порядку ("Все вопросы")
             const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
             const baseOrder = getOrderForContext('all') || getRuntimeData().map(i => i.question);
@@ -2598,11 +3013,8 @@ export function initTabsNavigation(appVersion) {
             const sortedTrash = [...serverTrashItems].sort((a, b) =>
                 (idxMap.get(a.item?.question) ?? 1e9) - (idxMap.get(b.item?.question) ?? 1e9)
             );
-            // Header + grid container
+            // Grid container
             cardDiv.innerHTML = '';
-            const header = document.createElement('div');
-            header.innerHTML = '<strong>Карточки:</strong>' + (deletedCards.length ? '' : ' <span>Пусто</span>');
-            cardDiv.appendChild(header);
             const grid = document.createElement('div');
             grid.className = 'trash-cards-grid';
             cardDiv.appendChild(grid);
@@ -2817,6 +3229,9 @@ export function initTabsNavigation(appVersion) {
                 // убрать индикатор корзины из заголовка боковой панели
                 const existingTrashBtn = sidebarButtons ? sidebarButtons.querySelector('#trash-mode-button') : null;
                 if (existingTrashBtn) existingTrashBtn.remove();
+                // Убираем подсветку иконки корзины
+                const trashIcon = document.getElementById('trash-mode-button');
+                if (trashIcon) trashIcon.classList.remove('active');
                 container.classList.remove('edit-mode');
             }
             try { localStorage.setItem('qaEditMode', editMode ? 'true' : 'false'); } catch { }
