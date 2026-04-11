@@ -4616,8 +4616,40 @@ window.hideAchTooltip = () => {
   if (tip) tip.remove();
 };
 
-window.showAchievementDesc = (title, desc, isUnlocked, progress) => {
-  window.showAchTooltip(document.querySelector('.st-ach-card'), title, desc, isUnlocked, progress);
+window.showAchTooltip = (el, title, desc, isUnlocked, progress) => {
+  if (!desc) return;
+
+  // Удаляем существующий tooltip
+  const existing = document.getElementById('ach-tooltip');
+  if (existing) existing.remove();
+
+  const rect = el.getBoundingClientRect();
+
+  const tip = document.createElement('div');
+  tip.id = 'ach-tooltip';
+  tip.style.cssText = `
+    position:fixed;
+    bottom:${rect.top - 8}px;
+    left:${rect.left + rect.width / 2}px;
+    transform:translateX(-50%);
+    background:rgba(37,37,43,0.85);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:8px;
+    padding:8px 10px;
+    width:160px;
+    z-index:10000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.5);
+    pointer-events:none;
+  `;
+  tip.innerHTML = `
+    <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:2px;">${desc}</div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
+  `;
+
+  document.body.appendChild(tip);
 };
 
 window.openStatsInfoModal = (event) => {
