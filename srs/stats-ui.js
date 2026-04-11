@@ -4629,9 +4629,9 @@ window.showAchTooltip = (el, title, desc, isUnlocked, progress) => {
   tip.id = 'ach-tooltip';
   tip.style.cssText = `
     position:fixed;
-    bottom:calc(${rect.top - 10}px - 100%);
+    top:${rect.top - 10}px;
     left:${rect.left + rect.width / 2}px;
-    transform:translateX(-50%);
+    transform:translateY(-100%) translateX(-50%);
     background:rgba(37,37,43,0.05);
     backdrop-filter:blur(4px);
     -webkit-backdrop-filter:blur(4px);
@@ -4647,7 +4647,7 @@ window.showAchTooltip = (el, title, desc, isUnlocked, progress) => {
     <div style="font-size:12px;font-weight:600;color:#fff;margin-bottom:4px;">${isUnlocked ? '✅ ' : '🔒 '}${title}</div>
     <div style="font-size:11px;color:var(--st-text-sec);margin-bottom:2px;">${desc}</div>
     <div style="font-size:10px;color:var(--st-muted);">Прогресс: <strong style="color:#fff;">${progress}</strong></div>
-    <div style="position:absolute;bottom:-6px;left:calc(50% - 6px);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--st-surf-h);"></div>
+    <div style="position:absolute;top:100%;left:calc(50% - 6px);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--st-surf-h);"></div>
   `;
 
   document.body.appendChild(tip);
