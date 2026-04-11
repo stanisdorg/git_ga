@@ -65,6 +65,19 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // 🔥 Не кэшируем внешние ресурсы (Telegram, Google, Sentry и т.д.)
+    const allowedHosts = [
+        self.location.hostname,
+        'localhost',
+        '127.0.0.1',
+        'bytecards.ru'
+    ];
+    const isExternal = !allowedHosts.includes(url.hostname) && url.hostname !== '';
+    if (isExternal) {
+        // Разрешаем загрузку без кэширования
+        return;
+    }
+
     // Не кэшируем данные пользователя (JSON файлы в data/)
     if (url.pathname.includes('/data/')) {
         event.respondWith(

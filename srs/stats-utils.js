@@ -1,4 +1,4 @@
-﻿import { syncWithServer } from './storage.js?v=6.61.0';
+﻿import { syncWithServer } from './storage.js?v=6.70.0';
 
 // Вспомогательные функции для работы с датой (с учётом выбранного часового пояса)
 function getUserTimezone() {

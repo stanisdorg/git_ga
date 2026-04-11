@@ -97,6 +97,10 @@ function getRuntimeData() {
     const overrides = getOverrides();
     const newItems = getNewItems();
     const deleted = getDeletedItems();
+
+    // 🔥 Отладка: логируем что внутри getRuntimeData
+    console.log('🔍 [getRuntimeData] base:', base.length, 'newItems:', newItems.length, 'deleted:', Object.keys(deleted).length);
+
     // Применяем overrides (категория/подкатегория/вопрос/ответ/форматирование)
     const byQuestion = new Map(base.map(i => [i.question, i]));
     Object.keys(overrides).forEach(origQ => {
@@ -109,8 +113,7 @@ function getRuntimeData() {
             if (ov.subcategory) updated.subcategory = ov.subcategory;
             if (ov.question) updated.question = ov.question;
             if (ov.answer) updated.answer = ov.answer;
-            if (ov.formatting) updated.formatting = ov.formatting;  // 🔥 Применяем форматирование
-            // Если изменилось ключевое поле вопроса — обновляем ключ в Map
+            if (ov.formatting) updated.formatting = ov.formatting;
             if (ov.question && ov.question !== origQ) {
                 byQuestion.delete(origQ);
                 byQuestion.set(updated.question, updated);
@@ -118,21 +121,20 @@ function getRuntimeData() {
                 byQuestion.set(origQ, updated);
             }
         } else {
-            // Если исходного вопроса нет в базе, рассматриваем как новый элемент
             byQuestion.set(ov.question || origQ, {
                 question: ov.question || origQ,
                 answer: ov.answer || '',
                 category: ov.category || 'Без категории',
                 subcategory: ov.subcategory || 'Общее',
-                formatting: ov.formatting || createEmptyFormatting()  // 🔥 Форматирование для новых карточек
+                formatting: ov.formatting || createEmptyFormatting()
             });
         }
     });
-    // Добавляем новые элементы
+
     newItems.forEach(ni => {
         if (!byQuestion.has(ni.question)) byQuestion.set(ni.question, { ...ni });
     });
-    // Исключаем удалённые
+
     const merged = Array.from(byQuestion.values()).filter(i => !deleted[i.question] && !serverTrashSet.has(i.question));
     return merged;
 }
@@ -298,7 +300,7 @@ async function autoLoadUserData() {
     // Загружаем данные через srs/storage.js
     // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.61.0');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.70.0');
         await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
@@ -334,7 +336,6 @@ function hideLoading() {
 // ===========================================================
 
 export function initTabsNavigation(appVersion) {
-    // Проверяем, не открыта ли страница статистики
     const isStatsPage = location.hash === '#/stats';
 
     // 🔥 ПРОВЕРЯЕМ ФЛАГ изменений карточек (для отложенного обновления после редактирования)
@@ -469,6 +470,21 @@ export function initTabsNavigation(appVersion) {
         // Вызываем после loadFromServer, когда данные уже в localStorage
         window.addEventListener('qaDataLoadedFromServer', () => {
             fixEncodingIssues();
+            refreshCategoriesTabs();
+            refreshCurrentContext();
+        });
+
+        // 🔥 ОБНОВЛЕНИЕ ДАННЫХ после дублирования/удаления категории
+        window.addEventListener('forceReloadData', async () => {
+            try {
+                const freshCards = getQaUserCards();
+                const { setUniqueQaData } = await import('../all-data.js');
+                if (typeof setUniqueQaData === 'function') {
+                    setUniqueQaData(freshCards);
+                }
+            } catch (e) {
+                console.warn('[forceReloadData] Ошибка:', e);
+            }
             refreshCategoriesTabs();
             refreshCurrentContext();
         });
@@ -694,7 +710,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.50.0');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.70.0');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -711,7 +727,7 @@ export function initTabsNavigation(appVersion) {
                 console.log('[HASHCHANGE #/stats] Переход на статистику, обновляем данные');
 
                 // ВСЕГДА обновляем статистику при переходе на #/stats
-                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.50.0');
+                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.70.0');
                 initStatsPage(appVersion);
 
                 // Скрываем главный контейнер и sidebar
@@ -2205,7 +2221,8 @@ export function initTabsNavigation(appVersion) {
             favTab.textContent = '★';
             tabsContainer.appendChild(favTab);
             const cats = buildCategoriesFromData(getRuntimeData());
-            // Применяем сохранённый порядок категорий, если он есть
+
+            // Применяем сохранённый порядок категорий
             try {
                 const order = getCategoryOrder();
                 if (order && order.length) {
@@ -2281,14 +2298,14 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            < button data - act="rename" > Переименовать</button >
+            <button data-act="rename">Переименовать</button>
             <button data-act="duplicate">Дублировать</button>
             <button data-act="delete">Удалить</button>
         `;
             document.body.appendChild(menu);
             const rect = tabEl.getBoundingClientRect();
-            menu.style.left = `${rect.right + 6} px`;
-            menu.style.top = `${rect.top} px`;
+            menu.style.left = `${rect.right + 6}px`;
+            menu.style.top = `${rect.top}px`;
             const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
             document.addEventListener('click', onDocClick);
             menu.addEventListener('click', async (e) => {
@@ -2302,7 +2319,19 @@ export function initTabsNavigation(appVersion) {
                         uniqueQaData.forEach(it => { if (it.category === catObj.name) { ov[it.question] = { ...ov[it.question], category: newName }; } });
                         setLS('qaAdminOverrides', ov);
                         // Автосохранение
-                        saveMergedToServer();
+                        await saveMergedToServer();
+                        // Обновляем данные для мгновенного отображения
+                        try {
+                            const { setUniqueQaData } = await import('../all-data.js');
+                            const merged = getRuntimeData();
+                            setQaUserCards(merged);
+                            if (typeof setUniqueQaData === 'function') {
+                                setUniqueQaData(merged);
+                            }
+                            window.dispatchEvent(new Event('forceReloadData'));
+                        } catch (e) {
+                            console.warn('[rename] Не удалось обновить данные:', e);
+                        }
                         // Перерисовываем табы, чтобы сразу увидеть новое имя
                         refreshCategoriesTabs(catObj.name, newName);
                         setSaveStatus('success', 'Категория переименована');
@@ -2310,6 +2339,7 @@ export function initTabsNavigation(appVersion) {
                 } else if (act === 'duplicate') {
                     const dupName = prompt('Название копии категории:', `${catObj.name} (копия)`);
                     if (!dupName) return;
+
                     const placeholders = getCategoryPlaceholders();
                     if (!placeholders[dupName]) placeholders[dupName] = { _cid: Date.now(), sub: [] };
                     const newItemsArr = getNewItems();
@@ -2319,9 +2349,21 @@ export function initTabsNavigation(appVersion) {
                     });
                     setLS('qaNewItems', newItemsArr);
                     setCategoryPlaceholders(placeholders);
-                    saveMergedToServer();
-                    // Перерисовываем табы, чтобы сразу появилась новая категория
+
                     refreshCategoriesTabs();
+                    const mergedBeforeSave = getRuntimeData();
+                    await saveMergedToServer();
+                    setQaUserCards(mergedBeforeSave);
+
+                    try {
+                        const { setUniqueQaData } = await import('../all-data.js');
+                        if (typeof setUniqueQaData === 'function') {
+                            setUniqueQaData(mergedBeforeSave);
+                        }
+                        window.dispatchEvent(new Event('forceReloadData'));
+                    } catch (e) {
+                        console.warn('[duplicate] Не удалось обновить данные:', e);
+                    }
                     setSaveStatus('success', 'Категория дублирована');
                 } else if (act === 'delete') {
                     if (!confirm('Удалить категорию в корзину?')) return;
@@ -2340,7 +2382,19 @@ export function initTabsNavigation(appVersion) {
                         }
                     } catch { }
                     renderTrashPanel();
-                    saveMergedToServer();
+                    await saveMergedToServer();
+                    // Обновляем данные для мгновенного отображения
+                    try {
+                        const { setUniqueQaData } = await import('../all-data.js');
+                        const merged = getRuntimeData();
+                        setQaUserCards(merged);
+                        if (typeof setUniqueQaData === 'function') {
+                            setUniqueQaData(merged);
+                        }
+                        window.dispatchEvent(new Event('forceReloadData'));
+                    } catch (e) {
+                        console.warn('[delete] Не удалось обновить данные:', e);
+                    }
                     refreshCategoriesTabs();
                     setSaveStatus('success', 'Категория удалена в корзину');
                 }
@@ -2389,14 +2443,14 @@ export function initTabsNavigation(appVersion) {
             menu.style.padding = '6px';
             menu.style.zIndex = '1000';
             menu.innerHTML = `
-            < button data - act="rename" > Переименовать</button >
+            <button data-act="rename">Переименовать</button>
             <button data-act="duplicate">Дублировать</button>
             <button data-act="delete">Удалить</button>
         `;
             document.body.appendChild(menu);
             const rect = cardEl.getBoundingClientRect();
-            menu.style.left = `${rect.right + 6} px`;
-            menu.style.top = `${rect.top} px`;
+            menu.style.left = `${rect.right + 6}px`;
+            menu.style.top = `${rect.top}px`;
             const onDocClick = (e) => { if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', onDocClick); } };
             document.addEventListener('click', onDocClick);
             menu.addEventListener('click', async (e) => {

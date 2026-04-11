@@ -1,53 +1,42 @@
 import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime, getMSKDate, getTotalHearts, getDailyHearts } from './stats-utils.js?v=6.67.0';
-import { syncFavorite } from './storage.js?v=6.61.0';
+import { syncFavorite } from './storage.js?v=6.70.0';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.68.0';
 import { getTodaysSession, getTodaysSessionBreakdown, get4DayForecast } from './category-scheduler.js?v=6.68.0';
 import { startLearnSession } from './learn-ui.js?v=6.68.0';
 import { getMarathonProgress, clearMarathonProgress, hasActiveMarathon } from './marathon-progress.js?v=1.0.0';
 import { applyFormatting } from './text-formatter.js';
 
-// Функция для получения актуальных данных (всегда из localStorage для авторизованных)
+// Функция для получения актуальных данных
 function getCurrentCards() {
   try {
     const sessionUserRaw = localStorage.getItem('qaSessionUser');
     if (sessionUserRaw) {
       const userCardsRaw = localStorage.getItem('qaUserCards');
-      if (userCardsRaw) {
-        const userCards = JSON.parse(userCardsRaw);
-        if (Array.isArray(userCards) && userCards.length > 0) {
-          /* DEBUG
-          console.log('[getCurrentCards] Используем qaUserCards:', userCards.length, 'карточек');
-          */
+      const localCards = userCardsRaw ? JSON.parse(userCardsRaw) : [];
+      const uniqueCards = window.uniqueQaData || [];
 
-          // 🔧 Исправляем кодировку на лету
-          userCards.forEach(card => {
-            if (card.category === 'Документация' || card.category === 'Дкументация') {
-              card.category = 'Документация';
-            }
-            if (card.subcategory === 'Типы требований' || card.subcategory === 'Типы треований') {
-              card.subcategory = 'Типы требований';
-            }
-          });
+      let bestCards;
+      if (uniqueCards.length >= localCards.length && localCards.length > 0) {
+        bestCards = uniqueCards;
+      } else if (localCards.length > 0) {
+        bestCards = localCards;
+      } else {
+        bestCards = uniqueCards;
+      }
 
-          return userCards;
-        }
+      if (Array.isArray(bestCards) && bestCards.length > 0) {
+        // Исправляем кодировку
+        bestCards.forEach(card => {
+          if (card.category === 'Дкументация') card.category = 'Документация';
+          if (card.subcategory === 'Типы треований') card.subcategory = 'Типы требований';
+        });
+        return bestCards;
       }
     }
   } catch (e) {
-    console.warn('[stats-ui] Ошибка загрузки userCards:', e);
+    console.warn('[getCurrentCards] Ошибка:', e);
   }
-
-  // Fallback: читаем из all-data.js через window
-  if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) {
-    /* DEBUG
-    console.log('[getCurrentCards] Используем window.uniqueQaData:', window.uniqueQaData.length, 'карточек');
-    */
-    return window.uniqueQaData;
-  }
-
-  /* DEBUG
-  console.log('[getCurrentCards] Нет данных');
-  */
+  if (window.uniqueQaData && Array.isArray(window.uniqueQaData)) return window.uniqueQaData;
   return [];
 }
 
@@ -461,7 +450,7 @@ const STATS_STYLES = `
 .st-cat-progress-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
   overflow-y: auto;
   flex: 1;
   padding-right: 4px;
@@ -496,8 +485,8 @@ const STATS_STYLES = `
 .st-cat-progress-item {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Уменьшено с 6px */
-  padding: 4px 12px !important; /* Уменьшено с 2px 12px 5px */
+  gap: 2px;
+  padding: 2px 12px !important;
   background: linear-gradient(135deg, rgba(15,52,96,0.6) 0%, rgba(15,52,96,0.4) 100%);
   border-radius: 8px;
   border: 1px solid rgba(26,58,92,0.5);
@@ -2329,7 +2318,19 @@ const STATS_STYLES = `
   #stats-container .st-block-2 .modes-grid .st-mode-card-large .st-mode-desc {
     display: none !important;
   }
-  
+
+  /* Десктоп: смещение иконки и заголовка марафона вниз */
+  @media (min-width: 769px) {
+    #stats-container .st-block-2 .modes-grid .st-mode-card-large[onclick*="marathon"] .st-mode-icon {
+      transform: translateY(4px) !important;
+      margin-top: 4px !important;
+    }
+    #stats-container .st-block-2 .modes-grid .st-mode-card-large[onclick*="marathon"] .st-mode-title {
+      transform: translateY(4px) !important;
+      margin-top: 4px !important;
+    }
+  }
+
   .st-block-2 .modes-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -2812,6 +2813,17 @@ export function initStatsPage(appVersion) {
     };
     window.addEventListener('xpUpdated', window._statsXpListener);
     window.addEventListener('dataLoaded', window._statsXpListener);
+  }
+
+  // 🔥 Слушаем событие принудительной перезагрузки данных (после дублирования/создания карточек)
+  if (!window._statsForceReloadListener) {
+    window._statsForceReloadListener = () => {
+      if (document.getElementById('stats-container')) {
+        console.log('[stats-ui] Получено forceReloadData, обновляем статистику...');
+        renderStats();
+      }
+    };
+    window.addEventListener('forceReloadData', window._statsForceReloadListener);
   }
 
   if (!location.hash || !location.hash.includes('stats')) {
@@ -3360,7 +3372,7 @@ function renderStats() {
 
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
-          <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; grid-template-rows: repeat(2, 1fr) !important; gap: 8px !important; align-items: stretch !important; height: 110px !important;">
+          <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; grid-template-rows: 1fr 1fr !important; min-height: 200px !important; gap: 8px !important;">
             <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="📝 Работа над ошибками\n\nНизкая точность.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
               <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>

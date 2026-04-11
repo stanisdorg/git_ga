@@ -42,8 +42,54 @@ export async function syncWithServer() {
         // Collect all data
         let data;
         try {
+            // 🔥 Собираем карточки из ВСЕХ источников: base + newItems - deleted + overrides
+            const baseCards = JSON.parse(localStorage.getItem('qaUserCards') || '[]');
+            const newItems = JSON.parse(localStorage.getItem('qaNewItems') || '[]');
+            const deletedMap = JSON.parse(localStorage.getItem('qaDeletedItems') || '{}');
+            const overrides = JSON.parse(localStorage.getItem('qaAdminOverrides') || '{}');
+            const trashCats = JSON.parse(localStorage.getItem('qaTrashCategories') || '{}');
+
+            // Создаём Map из базовых карточек
+            const cardsMap = new Map();
+            baseCards.forEach(card => {
+                if (!deletedMap[card.question] && !trashCats[card.category]) {
+                    cardsMap.set(card.question, { ...card });
+                }
+            });
+
+            // Применяем overrides
+            Object.entries(overrides).forEach(([origQ, ov]) => {
+                if (cardsMap.has(origQ)) {
+                    const card = cardsMap.get(origQ);
+                    Object.assign(card, ov);
+                    // Если вопрос изменился — обновляем ключ
+                    if (ov.question && ov.question !== origQ) {
+                        cardsMap.delete(origQ);
+                        cardsMap.set(ov.question, card);
+                    }
+                } else {
+                    // Новый вопрос через override
+                    cardsMap.set(ov.question || origQ, {
+                        question: ov.question || origQ,
+                        answer: ov.answer || '',
+                        category: ov.category || 'Без категории',
+                        subcategory: ov.subcategory || 'Общее',
+                        ...ov
+                    });
+                }
+            });
+
+            // Добавляем newItems (дубликаты, созданные пользователем)
+            newItems.forEach(ni => {
+                if (!deletedMap[ni.question] && !trashCats[ni.category] && !cardsMap.has(ni.question)) {
+                    cardsMap.set(ni.question, { ...ni });
+                }
+            });
+
+            const mergedCards = Array.from(cardsMap.values());
+
             data = {
-                _cards: JSON.parse(localStorage.getItem('qaUserCards') || '[]'),
+                _cards: mergedCards,
                 srsProgress: JSON.parse(localStorage.getItem('srsProgress') || '{}'),
                 studyStats: JSON.parse(localStorage.getItem('studyStats') || '{}'),
                 studyStreak: JSON.parse(localStorage.getItem('studyStreak') || '{}'),
@@ -52,6 +98,11 @@ export async function syncWithServer() {
                 dailyDayBonusPoints: JSON.parse(localStorage.getItem('dailyDayBonusPoints') || '{}'),
                 qaFavorites: JSON.parse(localStorage.getItem('qaFavorites') || '[]'),
                 studyAchievements: JSON.parse(localStorage.getItem('studyAchievements') || '{}'),
+                // 🔥 Синхронизация плейсхолдеров категорий и подкатегорий
+                qaCategoryPlaceholders: JSON.parse(localStorage.getItem('qaCategoryPlaceholders') || '{}'),
+                qaSubcategoryPlaceholders: JSON.parse(localStorage.getItem('qaSubcategoryPlaceholders') || '{}'),
+                // qaNewItems отправляем для обратной совместимости
+                qaNewItems: [], // Очищаем, т.к. все уже в _cards
                 updatedAt: Date.now()
             };
             console.log('[syncWithServer] Данные собраны:', {
@@ -202,17 +253,40 @@ export async function loadFromServer(forceReload = false) {
         }
         if (data.updatedAt) localStorage.setItem('localDataTimestamp', data.updatedAt);
 
-        // Restore keys
-        if (data._cards && data._cards.length > 0) {
-            localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
+        // 🔥 ВАЖНО: Не перезаписываем qaUserCards если локальные данные новее или содержат удаления
+        const localCards = JSON.parse(localStorage.getItem('qaUserCards') || '[]');
+        const localCardsCount = Array.isArray(localCards) ? localCards.length : 0;
+        const serverCardsCount = Array.isArray(data._cards) ? data._cards.length : 0;
 
-            try {
-                const { setUniqueQaData } = await import('../all-data.js');
-                if (typeof setUniqueQaData === 'function') {
-                    setUniqueQaData(data._cards);
+        // Проверяем есть ли локально категории которых нет на сервере (новые дубликаты)
+        const localCatNames = new Set(localCards.map(c => c.category));
+        const serverCatNames = new Set((data._cards || []).map(c => c.category));
+        const hasLocalOnlyCats = [...localCatNames].some(cat => !serverCatNames.has(cat));
+        // Проверяем есть ли на сервере категории которых нет локально (локальные удаления)
+        const hasServerOnlyCats = [...serverCatNames].some(cat => !localCatNames.has(cat));
+
+        if (hasLocalOnlyCats) {
+            // Локально есть новые категории (дубликаты) — не перезаписываем
+            console.log(`[loadFromServer] Пропускаем перезапись: есть локальные категории которых нет на сервере`);
+        } else if (localCardsCount > 0 && serverCardsCount > 0 && localCardsCount < serverCardsCount && !hasServerOnlyCats) {
+            // Локально меньше карточек, но все категории совпадают — значит локально что-то удалено, не перезаписываем
+            console.log(`[loadFromServer] Пропускаем перезапись: локальные удаления (${localCardsCount} < ${serverCardsCount})`);
+        } else if (localCardsCount >= serverCardsCount && localCardsCount > 0) {
+            console.log(`[loadFromServer] Пропускаем перезапись qaUserCards: локальных=${localCardsCount}, серверных=${serverCardsCount}`);
+        } else {
+            // Серверные данные новее или локально пусто — загружаем
+            if (data._cards && data._cards.length > 0) {
+                localStorage.setItem('qaUserCards', JSON.stringify(data._cards));
+                console.log(`[loadFromServer] Загружаем qaUserCards с сервера: ${data._cards.length} карточек`);
+
+                try {
+                    const { setUniqueQaData } = await import('../all-data.js');
+                    if (typeof setUniqueQaData === 'function') {
+                        setUniqueQaData(data._cards);
+                    }
+                } catch (e) {
+                    console.warn('[loadFromServer] Не удалось обновить uniqueQaData:', e.message);
                 }
-            } catch (e) {
-                console.warn('[loadFromServer] Не удалось обновить uniqueQaData:', e.message);
             }
         }
 
@@ -286,6 +360,20 @@ export async function loadFromServer(forceReload = false) {
         // 🔒 Сохраняем корзину
         if (data.userTrash) {
             localStorage.setItem('qaUserTrash', JSON.stringify(data.userTrash));
+        }
+
+        // 🔥 Загружаем плейсхолдеры категорий и подкатегорий
+        if (data.qaCategoryPlaceholders) {
+            localStorage.setItem('qaCategoryPlaceholders', JSON.stringify(data.qaCategoryPlaceholders));
+            console.log('[loadFromServer] qaCategoryPlaceholders загружены:', Object.keys(data.qaCategoryPlaceholders).length, 'категорий');
+        }
+        if (data.qaSubcategoryPlaceholders) {
+            localStorage.setItem('qaSubcategoryPlaceholders', JSON.stringify(data.qaSubcategoryPlaceholders));
+            console.log('[loadFromServer] qaSubcategoryPlaceholders загружены');
+        }
+        if (data.qaNewItems) {
+            localStorage.setItem('qaNewItems', JSON.stringify(data.qaNewItems));
+            console.log('[loadFromServer] qaNewItems загружены:', data.qaNewItems.length, 'новых карточек');
         }
 
         // Dispatch events to update UI

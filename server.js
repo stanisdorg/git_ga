@@ -674,6 +674,10 @@ const server = http.createServer((req, res) => {
             _favorites: [],
             _srsProgress: {},
             _stats: {},
+            // 🔥 Инициализируем пустые плейсхолдеры категорий для пользователя
+            qaCategoryPlaceholders: {},
+            qaSubcategoryPlaceholders: {},
+            qaNewItems: [],
             _meta: {
               username: user.username,
               role: user.role,
@@ -1123,7 +1127,11 @@ const server = http.createServer((req, res) => {
             _achievements: {},
             _stats: {},
             _srsProgress: {},
-            _favorites: []
+            _favorites: [],
+            // 🔥 Инициализируем пустые плейсхолдеры категорий для пользователя
+            qaCategoryPlaceholders: {},
+            qaSubcategoryPlaceholders: {},
+            qaNewItems: []
           };
 
           const userFilePath = path.join(__dirname, 'data', `user_${username}.json`);
@@ -1416,6 +1424,10 @@ const server = http.createServer((req, res) => {
               if (decompressedData.dailyDayBonusPoints) userData.dailyDayBonusPoints = decompressedData.dailyDayBonusPoints;
               if (decompressedData.qaFavorites) userData.qaFavorites = decompressedData.qaFavorites;
               if (decompressedData.studyAchievements) userData.studyAchievements = decompressedData.studyAchievements;
+              // 🔥 Сохраняем плейсхолдеры категорий из сжатых данных
+              if (decompressedData.qaCategoryPlaceholders) userData.qaCategoryPlaceholders = decompressedData.qaCategoryPlaceholders;
+              if (decompressedData.qaSubcategoryPlaceholders) userData.qaSubcategoryPlaceholders = decompressedData.qaSubcategoryPlaceholders;
+              if (decompressedData.qaNewItems) userData.qaNewItems = decompressedData.qaNewItems;
             } catch (decompressError) {
               console.error('[api/progress] Ошибка распаковки:', decompressError);
               // Возвращаем ошибку чтобы клиент попробовал без сжатия
@@ -1440,6 +1452,10 @@ const server = http.createServer((req, res) => {
             if (data.dailyPoints) userData.dailyPoints = data.dailyPoints;
             if (data.dailyBonusPoints) userData.dailyBonusPoints = data.dailyBonusPoints;
             if (data.dailyDayBonusPoints) userData.dailyDayBonusPoints = data.dailyDayBonusPoints;
+            // 🔥 Сохраняем плейсхолдеры категорий и новые карточки
+            if (data.qaCategoryPlaceholders) userData.qaCategoryPlaceholders = data.qaCategoryPlaceholders;
+            if (data.qaSubcategoryPlaceholders) userData.qaSubcategoryPlaceholders = data.qaSubcategoryPlaceholders;
+            if (data.qaNewItems) userData.qaNewItems = data.qaNewItems;
           }
 
           fs.writeFile(targetPath, JSON.stringify(userData, null, 2), 'utf-8', (err) => {
