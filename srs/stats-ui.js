@@ -4629,7 +4629,7 @@ window.showAchTooltip = (el, title, desc, isUnlocked, progress) => {
   tip.id = 'ach-tooltip';
   tip.style.cssText = `
     position:fixed;
-    bottom:${rect.top + 4}px;
+    bottom:calc(${rect.top - 10}px - 100%);
     left:${rect.left + rect.width / 2}px;
     transform:translateX(-50%);
     background:rgba(37,37,43,0.05);
