@@ -3412,7 +3412,6 @@ function renderStats() {
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;">
                 <span class="st-mode-title" style="font-size:12px!important;font-weight:700!important;margin:0!important;text-align:center!important;display:block!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">Марафон</span>
-                <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">${marathonCount} вопросов</span>
                 <div style="width:100%!important;margin-top:6px!important;">
                   <div style="display:flex!important;justify-content:space-between!important;font-size:8px!important;color:rgba(255,255,255,${hasProgress ? '0.7' : '0.35'})!important;margin-bottom:2px!important;">
                     <span>${completedCount}/${marathonCount}</span>
