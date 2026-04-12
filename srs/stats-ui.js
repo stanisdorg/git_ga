@@ -283,7 +283,7 @@ const STATS_STYLES = `
 .activity-card {
   background: var(--st-surf);
   border: 1px solid var(--st-border);
-  border-radius: 16px;
+  border-radius: 10px;
   padding: 8px 0 4px;
   grid-column: span 8;
   height: 320px;
@@ -323,7 +323,7 @@ const STATS_STYLES = `
 }
 .month-switch { font-size: 11px; color: rgba(255,255,255,0.35); font-weight: 400; letter-spacing: 0.02em; margin-left: auto; margin-right: 10px; }
 .chart-wrapper { display: block; height: 270px; position: relative; }
-.chart { width: 100%; height: 100%; overflow: visible; }
+.chart { width: 100%; height: 100%; overflow: visible; padding: 0 5px; box-sizing: border-box; }
 .chart-label { font-size: 11px; opacity: 0.45; fill: var(--st-text); }
 .bar-xp { display: none; }
 .bar-hearts { opacity: 1; }
@@ -406,7 +406,7 @@ const STATS_STYLES = `
 .st-cat-progress-wrap {
   background: var(--st-surf);
   border: 1px solid var(--st-border);
-  border-radius: 16px;
+  border-radius: 10px;
   padding: 12px 16px 12px 16px; /* Увеличенные боковые отступы для теней */
   overflow-y: auto; /* Скролл на обёртке */
   max-height: 70vh;
@@ -963,7 +963,7 @@ const STATS_STYLES = `
     margin-bottom: 24px; /* Отступ после блока достижений */
   }
   .st-diff-section {
-    margin-top: 24px !important; /* Отступ перед блоком сложности */
+    margin-top: 0 !important;
   }
   .st-block-4 {
     margin-bottom: 24px !important; /* Отступ после блока сложности (перед достижениями) */
@@ -1240,7 +1240,7 @@ const STATS_STYLES = `
 .st-ach-section {
   background: var(--st-surf);
   padding: 16px;
-  border-radius: 16px;
+  border-radius: 10px;
   border: 1px solid var(--st-border);
   margin-top: 0;
 }
@@ -1543,10 +1543,13 @@ const STATS_STYLES = `
 /* Desktop Adaptation */
 @media (min-width: 1024px) {
   #stats-container { overflow-y: auto; }
+  .st-timeline-line {
+    left: 6.5px !important;
+  }
   .st-wrapper {
     max-width: 1400px;
     min-height: 100vh;
-    padding: 0 0 80px; /* Отступ только снизу */
+    padding: 0 0 20px; /* Отступ только снизу */
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: 24px;
@@ -1585,7 +1588,7 @@ const STATS_STYLES = `
     min-height: 200px;
     background: linear-gradient(135deg, var(--st-surf) 0%, var(--st-surf-h) 100%) !important;
     border: 1px solid var(--st-border);
-    border-radius: 16px;
+    border-radius: 10px;
     padding: 10px 20px;
     display: flex;
     flex-direction: column;
@@ -2007,6 +2010,16 @@ const STATS_STYLES = `
   }
   .st-cat-progress-wrap {
     overflow-y: auto !important;
+    max-height: 70vh !important;
+  }
+  /* На десктопе список колод ведет себя как на мобильном */
+  .st-cat-progress-list.collapsed {
+    max-height: 120px !important;
+    overflow: hidden !important;
+  }
+  .st-cat-progress-list.expanded {
+    max-height: none !important;
+    overflow: auto !important;
   }
   /* Кастомный скроллбар для колод */
   .st-cat-progress-wrap::-webkit-scrollbar {
@@ -2224,7 +2237,7 @@ const STATS_STYLES = `
   .st-col-title { font-size: 16px; }
 
   /* Right Column Stack */
-  .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
+  .st-diff-section { background: var(--st-surf); padding: 16px; border-radius: 10px; border: 1px solid var(--st-border); }
   .st-risk-section { background: var(--st-surf); padding: 16px; border-radius: 16px; border: 1px solid var(--st-border); }
 
   /* Primary Stats */
@@ -2233,6 +2246,25 @@ const STATS_STYLES = `
 
   /* Mobile: компактные карточки режимов - вертикальные с жирным заголовком */
   @media (max-width: 768px) {
+    .stc-forecast-block {
+      gap: 3px !important;
+    }
+    .stc-forecast-block > div {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      padding: 4px 3px !important;
+    }
+    .stc-forecast-block > div > span {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    .stc-forecast-block > div > span:not(:first-child) {
+      font-size: 8px !important;
+    }
+    .st-compact-card {
+      gap: 8px !important;
+    }
     .modes-grid {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
@@ -2377,7 +2409,7 @@ const STATS_STYLES = `
   }
 
   /* Achievements: Full Width at Bottom */
-  .st-ach-section { background: var(--st-surf); padding: 0; border-radius: 16px; border: 1px solid var(--st-border); margin-top: 0; }
+  .st-ach-section { background: var(--st-surf); padding: 0; border-radius: 10px; border: 1px solid var(--st-border); margin-top: 0; }
   .st-ach-scroll-wrap { display: flex; gap: 12px; padding: 20px; overflow-x: auto; overflow-y: hidden; justify-content: space-between; scrollbar-width: thin; scrollbar-color: var(--st-prim) var(--st-surf-h); }
   .st-ach-scroll-wrap::-webkit-scrollbar { height: 8px; }
   .st-ach-scroll-wrap::-webkit-scrollbar-track { background: var(--st-surf-h); border-radius: 4px; }
@@ -2614,11 +2646,24 @@ const STATS_STYLES = `
 .st-timeline-grade[data-grade="3"] { background: #2EC4B6; }
 .st-timeline-grade[data-grade="4"] { background: #06D6A0; }
 .st-timeline-line {
-  border-left: 3px solid var(--st-border);
   position: absolute;
-  left: 5px;
+  left: 5.5px;
   top: 0;
-  bottom: 0;
+  width: 3px;
+  background: var(--st-border);
+  z-index: 0;
+  min-height: 100%;
+}
+.st-timeline-dot {
+  position: absolute;
+  left: -15px;
+  top: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: currentColor;
+  z-index: 2;
 }
 .st-timeline-sep {
   font-size: 9px;
@@ -3329,38 +3374,39 @@ function renderStats() {
       <div class="st-main">
         <!-- Блок 1: Прогресс + 4-дневный прогноз (левый верхний, 33%) -->
         <div class="st-block-1">
-          <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 10px!important;gap:6px!important;min-height:auto!important;flex-direction:column!important;overflow:visible!important;">
+          <div class="st-compact-card" role="group" aria-label="Краткая статистика" style="padding:8px 10px!important;gap:8px!important;min-height:auto!important;flex-direction:column!important;overflow:visible!important;">
             <!-- Прогресс и прогноз даты -->
-            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:4px!important;align-items:center!important;overflow:hidden!important;">
-              <span class="stc-block-title" style="font-size:10px!important;font-weight:600!important;white-space:nowrap!important;">Прогресс: <span class="index-value stc-red stc-strong" style="font-size:11px!important;">${understandingIndex}%</span></span>
-              <span class="stc-forecast-text" style="font-size:8px!important;color:var(--st-text-sec);white-space:nowrap!important;display:flex!important;align-items:center!important;gap:2px!important;margin-left:auto!important;">Прогноз: <span class="date" style="font-size:9px!important;font-weight:600!important;">${finishDateStr}</span><button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:0!important;">i</button></span>
+            <div class="stc-content" style="display:flex!important;flex-direction:row!important;gap:8px!important;align-items:center!important;overflow:hidden!important;">
+              <span class="stc-block-title" style="font-size:20px!important;font-weight:700!important;color:#A855F7!important;text-shadow:0 0 10px rgba(168,85,247,0.5)!important;white-space:nowrap!important;flex-shrink:0!important;">${understandingIndex}%</span>
+              <div style="flex:1!important;height:1px!important;background:rgba(139,148,158,0.2)!important;"></div>
+              <span class="stc-forecast-text" style="font-size:10px!important;color:var(--st-text-sec);white-space:nowrap!important;display:flex!important;align-items:center!important;gap:4px!important;flex-shrink:0!important;">Прогноз: <span class="date" style="font-size:11px!important;font-weight:600!important;color:#fff!important;">${finishDateStr}</span><button class="st-info-btn" onclick="window.openStatsInfoModal(event)" title="Как рассчитывается статистика?" style="flex-shrink:0;margin-left:0!important;background:transparent;border:1px solid var(--st-border);border-radius:4px;color:var(--st-text-sec);width:18px;height:18px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;">i</button></span>
             </div>
             <!-- 4-дневный прогноз -->
             ${fourDayForecast ? `
-            <div class="stc-forecast-block" style="display:flex;flex-direction:column;gap:3px;width:100%;border-top:1px solid rgba(139,148,158,0.2);padding-top:6px;margin-top:2px;">
+            <div class="stc-forecast-block" style="display:flex!important;flex-direction:row!important;gap:8px!important;margin-top:5px!important;width:100%!important;">
               <!-- Вчера -->
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
-                <span style="font-weight:600;white-space:nowrap;color:#8B949E;min-width:60px;">${fourDayForecast.yesterday.label}:</span>
-                <span style="color:#06D6A0;font-weight:600;">${fourDayForecast.yesterday.completed} из ${fourDayForecast.yesterday.planned}</span>
-                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.yesterday.timeEstimate} мин</span>
+              <div style="flex:1 1 25%!important;min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important;padding:6px 4px!important;background:var(--st-surf-h)!important;border-radius:6px!important;overflow:hidden!important;">
+                <span style="font-weight:600;font-size:9px!important;color:#8B949E!important;white-space:nowrap!important;text-transform:uppercase!important;letter-spacing:0.5px!important;">Вчера</span>
+                <span style="color:#06D6A0!important;font-weight:600!important;font-size:9px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">${fourDayForecast.yesterday.completed} из ${fourDayForecast.yesterday.planned}</span>
+                <span style="color:#8B949E!important;font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">~${fourDayForecast.yesterday.timeEstimate} мин</span>
               </div>
               <!-- Сегодня -->
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
-                <span style="font-weight:600;white-space:nowrap;color:#fff;min-width:60px;">${fourDayForecast.today.label}:</span>
-                <span style="color:#FF9F1C;font-weight:600;">${fourDayForecast.today.completed} из ${fourDayForecast.today.total}</span>
-                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.today.timeEstimate} мин</span>
+              <div style="flex:1 1 25%!important;min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important;padding:6px 4px!important;background:var(--st-surf-h)!important;border-radius:6px!important;overflow:hidden!important;">
+                <span style="font-weight:600;font-size:9px!important;color:#8B949E!important;white-space:nowrap!important;text-transform:uppercase!important;letter-spacing:0.5px!important;">Сегодня</span>
+                <span style="color:#FF9F1C!important;font-weight:600!important;font-size:9px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">${fourDayForecast.today.completed} из ${fourDayForecast.today.total}</span>
+                <span style="color:#8B949E!important;font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">~${fourDayForecast.today.timeEstimate} мин</span>
               </div>
               <!-- Завтра -->
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
-                <span style="font-weight:600;white-space:nowrap;color:#8B949E;min-width:60px;">${fourDayForecast.tomorrow.label}:</span>
-                <span style="color:#58A6FF;font-weight:600;">~${fourDayForecast.tomorrow.forecast} карт.</span>
-                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.tomorrow.timeEstimate} мин</span>
+              <div style="flex:1 1 25%!important;min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important;padding:6px 4px!important;background:var(--st-surf-h)!important;border-radius:6px!important;overflow:hidden!important;">
+                <span style="font-weight:600;font-size:9px!important;color:#8B949E!important;white-space:nowrap!important;text-transform:uppercase!important;letter-spacing:0.5px!important;">Завтра</span>
+                <span style="color:#58A6FF!important;font-weight:600!important;font-size:9px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">~${fourDayForecast.tomorrow.forecast} карт.</span>
+                <span style="color:#8B949E!important;font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">~${fourDayForecast.tomorrow.timeEstimate} мин</span>
               </div>
               <!-- Послезавтра -->
-              <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px!important;gap:4px;">
-                <span style="font-weight:600;white-space:nowrap;color:#8B949E;min-width:60px;">${fourDayForecast.dayAfter.label}:</span>
-                <span style="color:#58A6FF;font-weight:600;">~${fourDayForecast.dayAfter.forecast} карт.</span>
-                <span style="color:#8B949E;font-size:9px;">~${fourDayForecast.dayAfter.timeEstimate} мин</span>
+              <div style="flex:1 1 25%!important;min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important;padding:6px 4px!important;background:var(--st-surf-h)!important;border-radius:6px!important;overflow:hidden!important;">
+                <span style="font-weight:600;font-size:9px!important;color:#8B949E!important;white-space:nowrap!important;text-transform:uppercase!important;letter-spacing:0.5px!important;transform:scaleX(0.90);transform-origin:left center;display:inline-block!important;">Послезавтра</span>
+                <span style="color:#58A6FF!important;font-weight:600!important;font-size:9px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">~${fourDayForecast.dayAfter.forecast} карт.</span>
+                <span style="color:#8B949E!important;font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;">~${fourDayForecast.dayAfter.timeEstimate} мин</span>
               </div>
             </div>
             ` : ''}
@@ -3394,8 +3440,8 @@ function renderStats() {
         <!-- Блок 2: Режимы тренировки (правый верхний, 33%) -->
         <div class="st-block-2 st-modes-section">
           <div class="modes-grid" style="display: grid !important; grid-template-columns: repeat(2, 1fr) !important; grid-template-rows: 1fr 1fr !important; min-height: 200px !important; gap: 8px !important;">
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="📝 Работа над ошибками\n\nНизкая точность.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
-              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('cram_hard')" style="padding:12px 8px!important;border-radius:10px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="📝 Работа над ошибками\n\nНизкая точность.\n\nСфокусируйтесь на слабых местах — система покажет только те карточки, которые вызывают у вас трудности.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:10px!important;background:linear-gradient(135deg,#FF9F1C 0%,#FF6B35 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
@@ -3403,8 +3449,8 @@ function renderStats() {
                 <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Низкая точность</span>
               </div>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
-              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#2EC4B6 0%,#00d9ff 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('new_cards')" style="padding:12px 8px!important;border-radius:10px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="🌱 Только новые\n\nИзучение свежего материала.\n\nПоказываются только карточки, которые вы ещё не начинали учить.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:10px!important;background:linear-gradient(135deg,#2EC4B6 0%,#00d9ff 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
@@ -3412,8 +3458,8 @@ function renderStats() {
                 <span class="st-mode-desc" style="font-size:9px!important;color:rgba(255,255,255,0.45)!important;margin:2px 0 0 0!important;text-align:center!important;display:block!important;line-height:1.2!important;white-space:nowrap!important;">Свежий материал</span>
               </div>
             </div>
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('fast_track')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="⚡ Fast Track\n\nБыстрая тренировка.\n\nСлучайные 10 вопросов для быстрого повторения и закрепления материала.">
-              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,#2196F3 0%,#00BCD4 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('fast_track')" style="padding:12px 8px!important;border-radius:10px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;" title="⚡ Fast Track\n\nБыстрая тренировка.\n\nСлучайные 10 вопросов для быстрого повторения и закрепления материала.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:10px!important;background:linear-gradient(135deg,#2196F3 0%,#00BCD4 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;">
@@ -3439,8 +3485,8 @@ function renderStats() {
       const progressPercent = marathonCount > 0 ? Math.round((completedCount / marathonCount) * 100) : 0;
 
       return `
-            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('marathon')" style="padding:12px 8px!important;border-radius:8px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;position:relative!important;" title="🏃 Марафон\n\nВсе карточки подряд.\n\nПройдите через все доступные карточки для максимального закрепления материала.">
-              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:8px!important;background:linear-gradient(135deg,rgba(156,39,176,0.6) 0%,rgba(233,30,99,0.6) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
+            <div class="st-mode-card st-mode-card-large" onclick="window.startMode('marathon')" style="padding:12px 8px!important;border-radius:10px!important;border:none!important;background:linear-gradient(135deg,rgba(255,159,28,0.15) 0%,rgba(46,196,182,0.1) 100%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px!important;height:100%!important;box-sizing:border-box!important;position:relative!important;" title="🏃 Марафон\n\nВсе карточки подряд.\n\nПройдите через все доступные карточки для максимального закрепления материала.">
+              <span class="st-mode-icon" style="width:40px!important;height:40px!important;margin:0!important;border-radius:10px!important;background:linear-gradient(135deg,rgba(156,39,176,0.6) 0%,rgba(233,30,99,0.6) 100%)!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;">
                 <svg viewBox="0 0 24 24" fill="#000" style="width:24px;height:24px;"><path d="M14.4 6 14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
               </span>
               <div style="display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;">
@@ -7255,6 +7301,22 @@ function _renderTimeline() {
     item.appendChild(meta);
     list.appendChild(item);
   });
+
+  // Update line height to match content
+  requestAnimationFrame(() => {
+    const line = list.querySelector('.st-timeline-line');
+    if (line) {
+      line.style.height = list.scrollHeight + 'px';
+    }
+  });
+
+  // Update line height on scroll
+  list.onscroll = () => {
+    const line = list.querySelector('.st-timeline-line');
+    if (line) {
+      line.style.height = list.scrollHeight + 'px';
+    }
+  };
 }
 
 window.openCardHistoryModal = function (question) {
