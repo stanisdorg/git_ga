@@ -2004,7 +2004,7 @@ function stopLearnSession() {
 
     location.hash = '#/stats';
 
-    import('./stats-ui.js?v=6.73.0').then(({ initStatsPage }) => {
+    import('./stats-ui.js?v=6.78.0').then(({ initStatsPage }) => {
         // Обновляем uniqueQaData через setUniqueQaData (не напрямую!)
         try {
             const userCardsRaw = localStorage.getItem('qaUserCards');
@@ -2857,7 +2857,7 @@ function showStats(stats, results, total) {
             document.body.appendChild(skeletonPlaceholder);
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=6.73.0').then(({ initStatsPage }) => {
+            import('./stats-ui.js?v=6.78.0').then(({ initStatsPage }) => {
                 initStatsPage(window.currentAppVersion || '6.73');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);

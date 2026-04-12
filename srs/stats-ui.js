@@ -407,22 +407,35 @@ const STATS_STYLES = `
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 16px;
-  padding: 10px 10px 10px 10px;
-  overflow: hidden;
+  padding: 12px 16px 12px 16px; /* Увеличенные боковые отступы для теней */
+  overflow-y: auto; /* Скролл на обёртке */
+  max-height: 70vh;
   display: flex !important;
   flex-direction: column !important;
   height: 100% !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.05);
+}
+.st-cat-progress-wrap::-webkit-scrollbar {
+  width: 6px !important;
+}
+.st-cat-progress-wrap::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05) !important;
+  border-radius: 3px;
+}
+.st-cat-progress-wrap::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2) !important;
+  border-radius: 3px;
+}
+.st-cat-progress-wrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.4) !important;
 }
 .st-cat-progress-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  flex-shrink: 0; /* Заголовок не сжимается */
-  position: sticky;
-  top: 0;
-  background: var(--st-surf);
-  z-index: 1;
+  flex-shrink: 0;
   padding-top: 5px;
 }
 .st-cat-progress-title {
@@ -458,11 +471,9 @@ const STATS_STYLES = `
   display: flex;
   flex-direction: column;
   gap: 4px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   flex: 1;
-  min-height: 0; /* Критично для скролла во flex-контейнере */
-  max-height: 70vh; /* Ограничиваем высоту для появления скролла */
+  min-height: 0;
   padding-right: 0;
   transition: max-height 0.3s ease;
   position: relative;
@@ -483,20 +494,6 @@ const STATS_STYLES = `
   background: linear-gradient(to bottom, rgba(22,27,34,0), var(--st-surf));
   pointer-events: none;
 }
-.st-cat-progress-list::-webkit-scrollbar {
-  width: 6px !important;
-}
-.st-cat-progress-list::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05) !important;
-  border-radius: 3px;
-}
-.st-cat-progress-list::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.2) !important;
-  border-radius: 3px;
-}
-.st-cat-progress-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.4) !important;
-}
 .st-cat-progress-item {
   display: flex;
   flex-direction: column;
@@ -504,20 +501,24 @@ const STATS_STYLES = `
   padding: 6px 8px !important;
   max-width: 100%;
   box-sizing: border-box;
-  background: linear-gradient(135deg, rgba(15,52,96,0.6) 0%, rgba(15,52,96,0.4) 100%);
+  background: rgba(37, 37, 43, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 8px;
-  border: 1px solid rgba(26,58,92,0.5);
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  position: relative;
+  overflow: visible;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 .st-cat-progress-item:hover {
-  background: linear-gradient(135deg, rgba(255,159,28,0.15) 0%, rgba(15,52,96,0.6) 100%);
-  border-color: var(--st-prim);
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(255,159,28,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: rgba(42, 42, 50, 0.65);
+  border-color: rgba(0, 217, 255, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
 }
 .st-cat-progress-item:active {
-  transform: translateX(2px) scale(0.98);
+  transform: scale(0.98);
 }
 .st-cat-progress-header {
   display: flex;
@@ -543,7 +544,7 @@ const STATS_STYLES = `
 }
 .st-cat-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #ffffff);
+  background: linear-gradient(90deg, rgba(0, 217, 255, 0.8), rgba(0, 217, 255, 0.4));
   border-radius: 3px;
   transition: width 0.5s ease;
 }
@@ -2005,25 +2006,21 @@ const STATS_STYLES = `
     overflow-y: auto !important;
   }
   .st-cat-progress-wrap {
-    overflow: visible !important;
+    overflow-y: auto !important;
   }
   /* Кастомный скроллбар для колод */
-  .st-block-achievements::-webkit-scrollbar,
-  .st-cat-progress-list::-webkit-scrollbar {
+  .st-cat-progress-wrap::-webkit-scrollbar {
     width: 6px !important;
   }
-  .st-block-achievements::-webkit-scrollbar-track,
-  .st-cat-progress-list::-webkit-scrollbar-track {
+  .st-cat-progress-wrap::-webkit-scrollbar-track {
     background: rgba(255,255,255,0.05) !important;
     border-radius: 3px;
   }
-  .st-block-achievements::-webkit-scrollbar-thumb,
-  .st-cat-progress-list::-webkit-scrollbar-thumb {
+  .st-cat-progress-wrap::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.2) !important;
     border-radius: 3px;
   }
-  .st-block-achievements::-webkit-scrollbar-thumb:hover,
-  .st-cat-progress-list::-webkit-scrollbar-thumb:hover {
+  .st-cat-progress-wrap::-webkit-scrollbar-thumb:hover {
     background: rgba(255,255,255,0.4) !important;
   }
   .st-block-achievements,

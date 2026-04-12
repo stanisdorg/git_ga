@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест колод — Glass + скролл</title>
+    <style>
+        :root {
+            --color-bg: #1e1e24;
+            --st-surf: #1a1a2e;
+            --st-border: #2d2d35;
+            --st-muted: rgba(255, 255, 255, 0.5);
+            --st-text: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: var(--color-bg);
+            color: var(--st-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh
+        }
+
+        .st-block-achievements {
+            width: 400px
+        }
+
+        .st-cat-progress-wrap {
+            background: var(--st-surf);
+            border: 1px solid var(--st-border);
+            border-radius: 16px;
+            padding: 10px 16px 10px 16px;
+            display: flex !important;
+            flex-direction: column !important;
+            height: 100% !important;
+            max-height: 700px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05)
+        }
+
+        .st-cat-progress-wrap::-webkit-scrollbar {
+            width: 6px
+        }
+
+        .st-cat-progress-wrap::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px
+        }
+
+        .st-cat-progress-wrap::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px
+        }
+
+        .st-cat-progress-wrap::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4)
+        }
+
+        .st-cat-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+            padding-top: 5px;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            background: var(--st-surf);
+            z-index: 10
+        }
+
+        .st-cat-progress-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--st-text)
+        }
+
+        .st-cat-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: visible;
+            flex: 1;
+            min-height: 0;
+            padding: 4px 0 8px 0
+        }
+
+        .st-cat-progress-item {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: visible;
+            transition: all 0.3s ease
+        }
+
+        .st-cat-progress-item:hover {
+            background: rgba(37, 37, 43, 0.6);
+            border-color: rgba(0, 217, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.1)
+        }
+
+        .st-cat-progress-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #ddd
+        }
+
+        .st-cat-progress-value {
+            font-size: 12px;
+            color: var(--st-muted);
+            font-weight: 600
+        }
+
+        .st-cat-progress-track {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden
+        }
+
+        .st-cat-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 217, 255, 0.7) 0%, rgba(0, 217, 255, 0.3) 100%);
+            border-radius: 2px;
+            transition: width 0.5s ease
+        }
+    </style>
+</head>
+
+<body>
+    <div class="st-block-achievements">
+        <div class="st-cat-progress-wrap">
+            <div class="st-cat-progress-header">
+                <div class="st-cat-progress-title">Колоды <span
+                        style="font-size:12px;color:var(--st-muted);font-weight:400;">(17)</span></div>
+            </div>
+            <div class="st-cat-progress-list">
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Безопасность</span><span
+                            class="st-cat-progress-value">100% (1)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:100%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Graphql, grpc</span><span
+                            class="st-cat-progress-value">90% (2)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:90%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">DevOps</span><span
+                            class="st-cat-progress-value">72% (29)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:72%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Архитектура</span><span
+                            class="st-cat-progress-value">68% (10)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:68%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">MindMap</span><span
+                            class="st-cat-progress-value">64% (54)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:64%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Взаимодействие</span><span
+                            class="st-cat-progress-value">61% (30)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:61%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Документация</span><span
+                            class="st-cat-progress-value">60% (19)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:60%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Опыт</span><span
+                            class="st-cat-progress-value">50% (6)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:50%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Процессы</span><span
+                            class="st-cat-progress-value">48% (5)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:48%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Тестирование</span><span
+                            class="st-cat-progress-value">33% (58)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:33%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Типы, виды
+                            тестирования</span><span class="st-cat-progress-value">30% (14)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:30%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Технические</span><span
+                            class="st-cat-progress-value">25% (82)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:25%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Техники тест
+                            дизайна</span><span class="st-cat-progress-value">20% (6)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:20%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Graphql, grpc
+                            (копия)</span><span class="st-cat-progress-value">0% (2)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Взаимодействие
+                            (копия)</span><span class="st-cat-progress-value">0% (30)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">Документация
+                            (копия)</span><span class="st-cat-progress-value">0% (19)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="st-cat-progress-item">
+                    <div class="st-cat-progress-header"><span class="st-cat-progress-name">DevOps (копия)</span><span
+                            class="st-cat-progress-value">0% (29)</span></div>
+                    <div class="st-cat-progress-track">
+                        <div class="st-cat-progress-fill" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -710,7 +710,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.73.0');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.78.0');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -727,7 +727,7 @@ export function initTabsNavigation(appVersion) {
                 console.log('[HASHCHANGE #/stats] Переход на статистику, обновляем данные');
 
                 // ВСЕГДА обновляем статистику при переходе на #/stats
-                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.73.0');
+                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.78.0');
                 initStatsPage(appVersion);
 
                 // Скрываем главный контейнер и sidebar
@@ -1206,7 +1206,7 @@ export function initTabsNavigation(appVersion) {
                     window.openLevelInfoModal();
                 } else {
                     // Иначе загружаем stats-ui
-                    import('../srs/stats-ui.js?v=6.50.0').then(() => {
+                    import('../srs/stats-ui.js?v=6.78.0').then(() => {
                         if (window.openLevelInfoModal) {
                             window.openLevelInfoModal();
                         } else {

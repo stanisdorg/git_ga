@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест оформления категорий - Glass Style</title>
+    <style>
+        :root {
+            --color-bg: #1e1e24;
+            --color-card: #25252b;
+            --color-border: #2d2d35;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --color-muted: rgba(255, 255, 255, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--color-bg);
+            color: var(--color-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .variant-section {
+            margin-bottom: 60px;
+        }
+
+        .variant-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #a855f7;
+        }
+
+        .st-block-achievements {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ВАРИАНТОВ
+           ============================================ */
+        .st-cat-progress-wrap {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .st-cat-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .st-cat-progress-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .st-cat-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--color-text-secondary);
+        }
+
+        .st-cat-toggle-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .st-cat-progress-list.expanded .st-cat-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .st-cat-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .st-cat-progress-item {
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .st-cat-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .st-cat-progress-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .st-cat-progress-value {
+            font-size: 12px;
+            color: var(--color-muted);
+        }
+
+        .st-cat-progress-track {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .st-cat-progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* ============================================
+           ВАРИАНТ 1: Glass с подсветкой как при hover
+           ============================================ */
+        .v1 .st-cat-progress-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .v1 .st-cat-progress-item:hover {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.06) 0%,
+                    rgba(255, 255, 255, 0.03) 100%);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .v1 .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    rgba(168, 85, 247, 0.8) 0%,
+                    rgba(168, 85, 247, 0.4) 100%);
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+
+        .v1 .st-cat-progress-item:hover .st-cat-progress-fill {
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+        }
+
+        /* ============================================
+           ВАРИАНТ 2: Glass с тонким бордером и мягким свечением
+           ============================================ */
+        .v2 .st-cat-progress-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .v2 .st-cat-progress-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .v2 .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.5) 0%,
+                    rgba(255, 255, 255, 0.2) 100%);
+        }
+
+        .v2 .st-cat-progress-item:hover .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.7) 0%,
+                    rgba(255, 255, 255, 0.3) 100%);
+        }
+
+        /* ============================================
+           ВАРИАНТ 3: Минималистичный glass без бордеров
+           ============================================ */
+        .v3 .st-cat-progress-item {
+            background: transparent;
+            padding: 10px 0;
+        }
+
+        .v3 .st-cat-progress-item:hover {
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.04) 0%,
+                    transparent 100%);
+            border-radius: 8px;
+            padding-left: 12px;
+            margin-left: -12px;
+        }
+
+        .v3 .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    rgba(168, 85, 247, 0.6) 0%,
+                    rgba(168, 85, 247, 0.2) 100%);
+        }
+
+        /* ============================================
+           ВАРИАНТ 4: Темный glass с цветными акцентами
+           ============================================ */
+        .v4 .st-cat-progress-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .v4 .st-cat-progress-item:hover {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+        }
+
+        .v4 .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    #a855f7 0%,
+                    #7c3aed 100%);
+        }
+
+        /* ============================================
+           ВАРИАНТ 5: Apple-style glass + hover как у result-item
+           ============================================ */
+        .v5 .st-cat-progress-item {
+            background: rgba(37, 37, 43, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .v5 .st-cat-progress-item:hover {
+            background: rgba(42, 42, 50, 0.65);
+            border-color: rgba(0, 217, 255, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        .v5 .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    rgba(0, 217, 255, 0.7) 0%,
+                    rgba(0, 217, 255, 0.3) 100%);
+            box-shadow: 0 0 6px rgba(0, 217, 255, 0.2);
+        }
+
+        .v5 .st-cat-progress-item:hover .st-cat-progress-fill {
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
+        }
+
+        /* ============================================
+           ВАРИАНТ 6: Carbon/Neon стиль
+           ============================================ */
+        .v6 .st-cat-progress-item {
+            background: rgba(30, 30, 36, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .v6 .st-cat-progress-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(168, 85, 247, 0.1),
+                    transparent);
+            transition: left 0.5s ease;
+        }
+
+        .v6 .st-cat-progress-item:hover::after {
+            left: 100%;
+        }
+
+        .v6 .st-cat-progress-item:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow:
+                0 0 20px rgba(168, 85, 247, 0.15),
+                inset 0 0 20px rgba(168, 85, 247, 0.05);
+        }
+
+        .v6 .st-cat-progress-fill {
+            background: linear-gradient(90deg,
+                    #a855f7 0%,
+                    #ec4899 100%);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎨 Тест оформления блока категорий</h1>
+
+    <!-- ВАРИАНТ 1 -->
+    <div class="variant-section">
+        <div class="variant-title">Вариант 1: Glass с подсветкой как при hover на главной</div>
+        <div class="st-block-achievements v1">
+            <div class="st-cat-progress-wrap">
+                <div class="st-cat-progress-header">
+                    <div class="st-cat-progress-title">Колоды <span
+                            style="font-size:12px;color:var(--color-muted);font-weight:400;">(17)</span></div>
+                </div>
+                <div class="st-cat-progress-list">
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Безопасность</span>
+                            <span class="st-cat-progress-value">100% (1)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Graphql, grpc</span>
+                            <span class="st-cat-progress-value">90% (2)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">DevOps</span>
+                            <span class="st-cat-progress-value">72% (29)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Тестирование</span>
+                            <span class="st-cat-progress-value">33% (58)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВАРИАНТ 2 -->
+    <div class="variant-section">
+        <div class="variant-title">Вариант 2: Glass с тонким бордером и мягким свечением</div>
+        <div class="st-block-achievements v2">
+            <div class="st-cat-progress-wrap">
+                <div class="st-cat-progress-header">
+                    <div class="st-cat-progress-title">Колоды <span
+                            style="font-size:12px;color:var(--color-muted);font-weight:400;">(17)</span></div>
+                </div>
+                <div class="st-cat-progress-list">
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Безопасность</span>
+                            <span class="st-cat-progress-value">100% (1)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Graphql, grpc</span>
+                            <span class="st-cat-progress-value">90% (2)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">DevOps</span>
+                            <span class="st-cat-progress-value">72% (29)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Тестирование</span>
+                            <span class="st-cat-progress-value">33% (58)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВАРИАНТ 3 -->
+    <div class="variant-section">
+        <div class="variant-title">Вариант 3: Минималистичный glass без бордеров</div>
+        <div class="st-block-achievements v3">
+            <div class="st-cat-progress-wrap">
+                <div class="st-cat-progress-header">
+                    <div class="st-cat-progress-title">Колоды <span
+                            style="font-size:12px;color:var(--color-muted);font-weight:400;">(17)</span></div>
+                </div>
+                <div class="st-cat-progress-list">
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Безопасность</span>
+                            <span class="st-cat-progress-value">100% (1)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Graphql, grpc</span>
+                            <span class="st-cat-progress-value">90% (2)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">DevOps</span>
+                            <span class="st-cat-progress-value">72% (29)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Тестирование</span>
+                            <span class="st-cat-progress-value">33% (58)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВАРИАНТ 4 -->
+    <div class="variant-section">
+        <div class="variant-title">Вариант 4: Темный glass с цветными акцентами</div>
+        <div class="st-block-achievements v4">
+            <div class="st-cat-progress-wrap">
+                <div class="st-cat-progress-header">
+                    <div class="st-cat-progress-title">Колоды <span
+                            style="font-size:12px;color:var(--color-muted);font-weight:400;">(17)</span></div>
+                </div>
+                <div class="st-cat-progress-list">
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Безопасность</span>
+                            <span class="st-cat-progress-value">100% (1)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Graphql, grpc</span>
+                            <span class="st-cat-progress-value">90% (2)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">DevOps</span>
+                            <span class="st-cat-progress-value">72% (29)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Тестирование</span>
+                            <span class="st-cat-progress-value">33% (58)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВАРИАНТ 5 -->
+    <div class="variant-section">
+        <div class="variant-title">Вариант 5: Apple-style glass (как history-modal)</div>
+        <div class="st-block-achievements v5">
+            <div class="st-cat-progress-wrap">
+                <div class="st-cat-progress-header">
+                    <div class="st-cat-progress-title">Колоды <span
+                            style="font-size:12px;color:var(--color-muted);font-weight:400;">(17)</span></div>
+                </div>
+                <div class="st-cat-progress-list">
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Безопасность</span>
+                            <span class="st-cat-progress-value">100% (1)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Graphql, grpc</span>
+                            <span class="st-cat-progress-value">90% (2)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">DevOps</span>
+                            <span class="st-cat-progress-value">72% (29)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Тестирование</span>
+                            <span class="st-cat-progress-value">33% (58)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВАРИАНТ 6 -->
+    <div class="variant-section">
+        <div class="variant-title">Вариант 6: Carbon/Neon стиль с эффектом свечения</div>
+        <div class="st-block-achievements v6">
+            <div class="st-cat-progress-wrap">
+                <div class="st-cat-progress-header">
+                    <div class="st-cat-progress-title">Колоды <span
+                            style="font-size:12px;color:var(--color-muted);font-weight:400;">(17)</span></div>
+                </div>
+                <div class="st-cat-progress-list">
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Безопасность</span>
+                            <span class="st-cat-progress-value">100% (1)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Graphql, grpc</span>
+                            <span class="st-cat-progress-value">90% (2)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">DevOps</span>
+                            <span class="st-cat-progress-value">72% (29)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="st-cat-progress-item">
+                        <div class="st-cat-progress-header">
+                            <span class="st-cat-progress-name">Тестирование</span>
+                            <span class="st-cat-progress-value">33% (58)</span>
+                        </div>
+                        <div class="st-cat-progress-track">
+                            <div class="st-cat-progress-fill" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
