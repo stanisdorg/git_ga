@@ -458,7 +458,7 @@ const STATS_STYLES = `
   position: relative;
 }
 .st-cat-progress-list.collapsed {
-  max-height: 120px; /* Показываем ~1-2 категории */
+  max-height: 120px; /* Показываем ~1-2 колоды */
   overflow: hidden;
 }
 .st-cat-progress-list.collapsed::after {
@@ -923,7 +923,7 @@ const STATS_STYLES = `
     gap: 5px !important; /* Уменьшено с 24px до 5px для компактности */
     padding-bottom: 120px !important;
   }
-  /* На мобильных список категорий свёрнут по умолчанию */
+  /* На мобильных список колод свёрнут по умолчанию */
   .st-cat-progress-list.collapsed {
     max-height: 120px !important;
     overflow: hidden !important;
@@ -933,7 +933,7 @@ const STATS_STYLES = `
     overflow: auto !important;
   }
   .st-cat-progress-wrap {
-    margin-bottom: 24px; /* Отступ после блока категорий */
+    margin-bottom: 24px; /* Отступ после блока колод */
   }
   .activity-card {
     margin-bottom: 24px; /* Отступ после графика активности */
@@ -1987,7 +1987,7 @@ const STATS_STYLES = `
   .st-cat-progress-wrap {
     overflow-y: auto !important;
   }
-  /* Кастомный скроллбар для категорий */
+  /* Кастомный скроллбар для колод */
   .st-block-achievements::-webkit-scrollbar,
   .st-cat-progress-wrap::-webkit-scrollbar {
     width: 6px;
@@ -2131,7 +2131,7 @@ const STATS_STYLES = `
       grid-column: 1;
       grid-row: auto;
       max-height: none;
-      order: 6; /* Категории */
+      order: 6; /* Колоды */
     }
     .st-block-2 {
       grid-column: 1;
@@ -3468,11 +3468,11 @@ function renderStats() {
           </div>
         </div>
 
-        <!-- Блок достижений по категориям (центральный, span 2 ряда, 33%) -->
+        <!-- Блок достижений по колодам (центральный, span 2 ряда, 33%) -->
         <div class="st-block-achievements">
           <div class="st-cat-progress-wrap">
             <div class="st-cat-progress-header" onclick="window.toggleCategoryList()" style="cursor: pointer;">
-              <div class="st-cat-progress-title">Категории <span id="st-cat-count" style="font-size:12px;color:var(--st-muted);font-weight:400;"></span></div>
+              <div class="st-cat-progress-title">Колоды <span id="st-cat-count" style="font-size:12px;color:var(--st-muted);font-weight:400;"></span></div>
               <button class="st-cat-toggle-btn" title="Свернуть/развернуть" style="pointer-events: none;">
                 <svg class="st-cat-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -3921,7 +3921,7 @@ function renderStats() {
     '.st-block-1': 'Прогресс',
     '.st-block-2': 'Режимы (2 карточки)',
     '.st-block-4': 'Сложность + Избранное',
-    '.st-block-achievements': 'Категории',
+    '.st-block-achievements': 'Колоды',
     '.st-block-3': 'Графики',
     '.st-block-5': 'Достижения'
   };
@@ -4243,7 +4243,7 @@ function renderStats() {
   const chartEl = container.querySelector('#st-activity-chart');
   const monthLabel = container.querySelector('#st-month-label');
 
-  // Рендерим прогресс по категориям
+  // Рендерим прогресс по колодам
   renderCategoryProgress();
 
   if (chartEl) {
@@ -5599,13 +5599,13 @@ window.openDiffModal = (index) => {
   document.addEventListener('keydown', escHandler);
 };
 
-// Модальное окно для категории
+// Модальное окно для колоды
 window.openCategoryModal = (categoryName) => {
   const currentCards = getCurrentCards();
   const progress = getProgressMap();
   const favorites = new Set(JSON.parse(localStorage.getItem('qaFavorites') || '[]'));
 
-  // Фильтруем карточки по категории
+  // Фильтруем карточки по колоде
   let list = currentCards.filter(q => q.category === categoryName);
 
   // Сортируем по прогрессу (сначала трудные/сначала лёгкие) - по возрастанию EF
@@ -5629,7 +5629,7 @@ window.openCategoryModal = (categoryName) => {
   const maxHearts = total * 5;
   const percentage = maxHearts > 0 ? Math.round((heartsFilled / maxHearts) * 100) : 0;
 
-  console.log('[openCategoryModal] Категория:', categoryName, 'Карточек:', list.length);
+  console.log('[openCategoryModal] Колода:', categoryName, 'Карточек:', list.length);
 
   const overlay = document.createElement('div');
   overlay.className = 'st-modal-overlay';
@@ -5671,7 +5671,7 @@ window.openCategoryModal = (categoryName) => {
           </ul>
        </div>
        <div class="st-modal-footer">
-          <button class="st-modal-btn" onclick="window.startCategorySession('${categoryName.replace(/'/g, "\\'")}')">Тренировать эту категорию</button>
+          <button class="st-modal-btn" onclick="window.startCategorySession('${categoryName.replace(/'/g, "\\'")}')">Тренировать эту колоду</button>
        </div>
     </div>
   `;
@@ -5694,7 +5694,7 @@ window.openCategoryModal = (categoryName) => {
   document.addEventListener('keydown', escHandler);
 };
 
-// Сворачивание/разворачивание списка категорий
+// Сворачивание/разворачивание списка колод
 window.toggleCategoryList = () => {
   const list = document.getElementById('st-cat-progress-list');
   const icon = document.querySelector('.st-cat-toggle-icon');
@@ -5723,10 +5723,10 @@ window.startCategorySession = (categoryName) => {
   const currentCards = getCurrentCards();
   const cards = currentCards.filter(q => q.category === categoryName);
 
-  console.log('[startCategorySession] Категория:', categoryName, 'Карточек:', cards.length);
+  console.log('[startCategorySession] Колода:', categoryName, 'Карточек:', cards.length);
 
   if (cards.length === 0) {
-    alert('Нет карт в этой категории');
+    alert('Нет карт в этой колоде');
     return;
   }
 
@@ -5763,7 +5763,7 @@ window.startFilteredSession = (index) => {
   console.log('[startFilteredSession] Карточек:', cards.length);
 
   if (cards.length === 0) {
-    alert('Нет карт в ��той категории');
+    alert('Нет карт в этой колоде');
     return;
   }
 
@@ -5890,7 +5890,7 @@ window.clearMarathonProgress = () => {
   }
 };
 
-// ========== Функция для рендеринга прогресса по категориям ==========
+// ========== Функция для рендеринга прогресса по колодам ==========
 function renderCategoryProgress() {
   const currentCards = getCurrentCards();
   if (!currentCards || currentCards.length === 0) return;
@@ -5905,10 +5905,10 @@ function renderCategoryProgress() {
     return 1;                      // VERY HARD
   };
 
-  // Группируем по категориям
+  // Группируем по колодам
   const categoryStats = {};
   currentCards.forEach(card => {
-    const cat = card.category || 'Без категории';
+    const cat = card.category || 'Без колоды';
     if (!categoryStats[cat]) {
       categoryStats[cat] = { total: 0, heartsFilled: 0 };
     }
@@ -5936,7 +5936,7 @@ function renderCategoryProgress() {
   const countSpan = document.getElementById('st-cat-count');
   if (!container) return;
 
-  // Показываем счётчик категорий
+  // Показываем счётчик колод
   if (countSpan) {
     countSpan.textContent = `(${categoryProgress.length})`;
   }
@@ -6660,7 +6660,7 @@ window.openSettingsModal = function () {
   window.restoreBackup = async function (backupId, restoreType) {
     const typeMap = {
       'full': 'все данные',
-      'cards': 'карточки и категории',
+      'cards': 'карточки и колоды',
       'progress': 'прогресс и достижения'
     };
 

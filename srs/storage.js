@@ -72,7 +72,7 @@ export async function syncWithServer() {
                     cardsMap.set(ov.question || origQ, {
                         question: ov.question || origQ,
                         answer: ov.answer || '',
-                        category: ov.category || 'Без категории',
+                        category: ov.category || 'Без колоды',
                         subcategory: ov.subcategory || 'Общее',
                         ...ov
                     });
@@ -98,7 +98,7 @@ export async function syncWithServer() {
                 dailyDayBonusPoints: JSON.parse(localStorage.getItem('dailyDayBonusPoints') || '{}'),
                 qaFavorites: JSON.parse(localStorage.getItem('qaFavorites') || '[]'),
                 studyAchievements: JSON.parse(localStorage.getItem('studyAchievements') || '{}'),
-                // 🔥 Синхронизация плейсхолдеров категорий и подкатегорий
+                // 🔥 Синхронизация плейсхолдеров колод и тем
                 qaCategoryPlaceholders: JSON.parse(localStorage.getItem('qaCategoryPlaceholders') || '{}'),
                 qaSubcategoryPlaceholders: JSON.parse(localStorage.getItem('qaSubcategoryPlaceholders') || '{}'),
                 // qaNewItems отправляем для обратной совместимости
@@ -258,18 +258,18 @@ export async function loadFromServer(forceReload = false) {
         const localCardsCount = Array.isArray(localCards) ? localCards.length : 0;
         const serverCardsCount = Array.isArray(data._cards) ? data._cards.length : 0;
 
-        // Проверяем есть ли локально категории которых нет на сервере (новые дубликаты)
+        // Проверяем есть ли локально колоды которых нет на сервере (новые дубликаты)
         const localCatNames = new Set(localCards.map(c => c.category));
         const serverCatNames = new Set((data._cards || []).map(c => c.category));
         const hasLocalOnlyCats = [...localCatNames].some(cat => !serverCatNames.has(cat));
-        // Проверяем есть ли на сервере категории которых нет локально (локальные удаления)
+        // Проверяем есть ли на сервере колоды которых нет локально (локальные удаления)
         const hasServerOnlyCats = [...serverCatNames].some(cat => !localCatNames.has(cat));
 
         if (hasLocalOnlyCats) {
-            // Локально есть новые категории (дубликаты) — не перезаписываем
-            console.log(`[loadFromServer] Пропускаем перезапись: есть локальные категории которых нет на сервере`);
+            // Локально есть новые колоды (дубликаты) — не перезаписываем
+            console.log(`[loadFromServer] Пропускаем перезапись: есть локальные колоды которых нет на сервере`);
         } else if (localCardsCount > 0 && serverCardsCount > 0 && localCardsCount < serverCardsCount && !hasServerOnlyCats) {
-            // Локально меньше карточек, но все категории совпадают — значит локально что-то удалено, не перезаписываем
+            // Локально меньше карточек, но все колоды совпадают — значит локально что-то удалено, не перезаписываем
             console.log(`[loadFromServer] Пропускаем перезапись: локальные удаления (${localCardsCount} < ${serverCardsCount})`);
         } else if (localCardsCount >= serverCardsCount && localCardsCount > 0) {
             console.log(`[loadFromServer] Пропускаем перезапись qaUserCards: локальных=${localCardsCount}, серверных=${serverCardsCount}`);
@@ -362,10 +362,10 @@ export async function loadFromServer(forceReload = false) {
             localStorage.setItem('qaUserTrash', JSON.stringify(data.userTrash));
         }
 
-        // 🔥 Загружаем плейсхолдеры категорий и подкатегорий
+        // 🔥 Загружаем плейсхолдеры колод и тем
         if (data.qaCategoryPlaceholders) {
             localStorage.setItem('qaCategoryPlaceholders', JSON.stringify(data.qaCategoryPlaceholders));
-            console.log('[loadFromServer] qaCategoryPlaceholders загружены:', Object.keys(data.qaCategoryPlaceholders).length, 'категорий');
+            console.log('[loadFromServer] qaCategoryPlaceholders загружены:', Object.keys(data.qaCategoryPlaceholders).length, 'колод');
         }
         if (data.qaSubcategoryPlaceholders) {
             localStorage.setItem('qaSubcategoryPlaceholders', JSON.stringify(data.qaSubcategoryPlaceholders));

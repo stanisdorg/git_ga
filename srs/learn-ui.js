@@ -824,7 +824,7 @@ async function saveEditChanges() {
                         allCards = session.queue.map(q => ({
                             question: q.question || q.item?.question,
                             answer: q.answer || q.item?.answer,
-                            category: q.category || q.item?.category || 'Без категории',
+                            category: q.category || q.item?.category || 'Без колоды',
                             subcategory: q.subcategory || q.item?.subcategory || 'Общее',
                             formatting: q.formatting || q.item?.formatting || createEmptyFormatting()
                         }));
@@ -968,11 +968,11 @@ function openCreateModal() {
     // Создаём пустой formatting
     const formatting = createEmptyFormatting();
 
-    // Получаем данные о категориях
+    // Получаем данные о колодах
     const categoriesData = buildCategoriesFromData(getRuntimeData());
     const categoryOptions = categoriesData.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
 
-    // По умолчанию выбираем первую категорию и её подкатегории
+    // По умолчанию выбираем первую колоду и её темы
     const defaultCategory = categoriesData[0];
     const subcategoryOptions = defaultCategory
         ? defaultCategory.subcategories.map(sub => `<option value="${sub.name}">${sub.name}</option>`).join('')
@@ -998,19 +998,19 @@ function openCreateModal() {
     }
 
     // Создаем модальное окно с ОДНОЙ панелью форматирования и выпадающими списками
-    // Порядок блоков КАК В РЕДАКТИРОВАНИИ: категории, форматирование, вопрос, ответ
+    // Порядок блоков КАК В РЕДАКТИРОВАНИИ: колоды, форматирование, вопрос, ответ
     const modalHTML = `
         <div class="edit-modal-overlay" id="create-modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 10px;">
             <div class="edit-modal" style="background: #1e1e1e; border-radius: 12px; padding: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); box-sizing: border-box;">
 
-                <!-- Категория и подкатегория в 2 колонки -->
+                <!-- Колода и тема в 2 колонки -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                     <div>
-                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Категория</label>
+                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Колода</label>
                         <select id="create-category-select" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${categoryOptions}</select>
                     </div>
                     <div>
-                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Подкатегория</label>
+                        <label style="display: block; color: #aaa; font-size: 12px; margin-bottom: 4px;">Тема</label>
                         <select id="create-subcategory-select" style="width: 100%; padding: 10px 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; box-sizing: border-box;">${subcategoryOptions}</select>
                     </div>
                 </div>
@@ -1122,7 +1122,7 @@ function openCreateModal() {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    // Обработчик изменения категории
+    // Обработчик изменения колоды
     const categorySelect = document.getElementById('create-category-select');
     const subcategorySelect = document.getElementById('create-subcategory-select');
 
@@ -1271,8 +1271,8 @@ async function saveCreateChanges() {
     const newQuestion = questionData.text.trim();
     const newAnswer = answerData.text.trim();
 
-    // Получаем категорию и подкатегорию
-    const newCategory = categorySelect?.value || 'Без категории';
+    // Получаем колоду и тему
+    const newCategory = categorySelect?.value || 'Без колоды';
     const newSubcategory = subcategorySelect?.value || 'Общее';
 
     // Получаем formatting из createModalState
@@ -1327,7 +1327,7 @@ async function saveCreateChanges() {
 
         const requestUrl = `/api/card/create?username=${encodeURIComponent(username)}&_t=${Date.now()}`;
 
-        // Отправляем на сервер с категорией и подкатегорией
+        // Отправляем на сервер с колодой и темой
         const response = await fetch(requestUrl, {
             method: 'POST',
             headers: {

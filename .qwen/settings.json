@@ -18,7 +18,9 @@
       "Bash(timeout *)",
       "Bash(curl *)",
       "Bash(start *)",
-      "Bash(del *)"
+      "Bash(del *)",
+      "Bash(git checkout *)",
+      "Bash(sed *)"
     ]
   },
   "$version": 3

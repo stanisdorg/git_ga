@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8085;
 const IP = '0.0.0.0'; // Слушаем на всех интерфейсах
-const VERSION = '6.34.0';
+const VERSION = '6.72.0';
 const BACKEND_URL = process.env.BACKEND_URL || 'https://bytecards.ru';
 
 // ============================================
@@ -674,7 +674,7 @@ const server = http.createServer((req, res) => {
             _favorites: [],
             _srsProgress: {},
             _stats: {},
-            // 🔥 Инициализируем пустые плейсхолдеры категорий для пользователя
+            // 🔥 Инициализируем пустые плейсхолдеры колод для пользователя
             qaCategoryPlaceholders: {},
             qaSubcategoryPlaceholders: {},
             qaNewItems: [],
@@ -1128,7 +1128,7 @@ const server = http.createServer((req, res) => {
             _stats: {},
             _srsProgress: {},
             _favorites: [],
-            // 🔥 Инициализируем пустые плейсхолдеры категорий для пользователя
+            // 🔥 Инициализируем пустые плейсхолдеры колод для пользователя
             qaCategoryPlaceholders: {},
             qaSubcategoryPlaceholders: {},
             qaNewItems: []
@@ -1424,7 +1424,7 @@ const server = http.createServer((req, res) => {
               if (decompressedData.dailyDayBonusPoints) userData.dailyDayBonusPoints = decompressedData.dailyDayBonusPoints;
               if (decompressedData.qaFavorites) userData.qaFavorites = decompressedData.qaFavorites;
               if (decompressedData.studyAchievements) userData.studyAchievements = decompressedData.studyAchievements;
-              // 🔥 Сохраняем плейсхолдеры категорий из сжатых данных
+              // 🔥 Сохраняем плейсхолдеры колод из сжатых данных
               if (decompressedData.qaCategoryPlaceholders) userData.qaCategoryPlaceholders = decompressedData.qaCategoryPlaceholders;
               if (decompressedData.qaSubcategoryPlaceholders) userData.qaSubcategoryPlaceholders = decompressedData.qaSubcategoryPlaceholders;
               if (decompressedData.qaNewItems) userData.qaNewItems = decompressedData.qaNewItems;
@@ -1452,7 +1452,7 @@ const server = http.createServer((req, res) => {
             if (data.dailyPoints) userData.dailyPoints = data.dailyPoints;
             if (data.dailyBonusPoints) userData.dailyBonusPoints = data.dailyBonusPoints;
             if (data.dailyDayBonusPoints) userData.dailyDayBonusPoints = data.dailyDayBonusPoints;
-            // 🔥 Сохраняем плейсхолдеры категорий и новые карточки
+            // 🔥 Сохраняем плейсхолдеры колод и новые карточки
             if (data.qaCategoryPlaceholders) userData.qaCategoryPlaceholders = data.qaCategoryPlaceholders;
             if (data.qaSubcategoryPlaceholders) userData.qaSubcategoryPlaceholders = data.qaSubcategoryPlaceholders;
             if (data.qaNewItems) userData.qaNewItems = data.qaNewItems;
@@ -1694,9 +1694,9 @@ const server = http.createServer((req, res) => {
             console.log('[SERVER /api/card/create] Файл не существует, создаём новый:', targetPath);
           }
 
-          // Создаём новую карточку с переданными категорией и подкатегорией
+          // Создаём новую карточку с переданными колодой и темой
           const newCard = {
-            category: category || 'Без категории',
+            category: category || 'Без колоды',
             subcategory: subcategory || 'Общее',
             question: question,
             answer: answer,

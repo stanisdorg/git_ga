@@ -779,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
 
-                // Формируем бейджи категорий
+                // Формируем бейджи колод
                 const badges = [];
                 if (item.category) {
                     badges.push(`<span class="category-badge">${item.category}</span>`);

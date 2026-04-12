@@ -33,8 +33,8 @@ export function initAdminPanel() {
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;">
       <input type="text" id="ap-question" placeholder="Вопрос" style="flex:1;min-width:200px;" />
       <input type="text" id="ap-answer" placeholder="Ответ" style="flex:1;min-width:200px;" />
-      <input type="text" id="ap-category" placeholder="Категория" style="width:160px;" />
-      <input type="text" id="ap-subcategory" placeholder="Подкатегория" style="width:160px;" />
+      <input type="text" id="ap-category" placeholder="Колода" style="width:160px;" />
+      <input type="text" id="ap-subcategory" placeholder="Тема" style="width:160px;" />
       <button id="ap-add" title="Добавить карточку">Добавить</button>
     </div>
     <div style="display:flex;gap:6px;margin-top:6px;">
@@ -68,7 +68,7 @@ export function initAdminPanel() {
       id: Date.now(),
       question,
       answer,
-      category: category || 'Без категории',
+      category: category || 'Без колоды',
       subcategory: subcategory || 'Общее'
     };
     try {

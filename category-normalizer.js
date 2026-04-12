@@ -1,6 +1,6 @@
-// Утилита нормализации категорий и подкатегорий
+// Утилита нормализации колод и тем
 
-// Карта преобразований категорий к более логичным, близким к copy.json
+// Карта преобразований колод к более логичным, близким к copy.json
 const categoryMap = {
   'Архитектура клиент-серверная': 'Технические вопросы',
   'HTTP и методы': 'Технические вопросы',
@@ -8,7 +8,7 @@ const categoryMap = {
   'Жизненный цикл': 'Процесс тестирования'
 };
 
-// Ключевые слова для подкатегорий, если нужно уточнить по тексту
+// Ключевые слова для тем, если нужно уточнить по тексту
 const subcategoryKeywords = [
   { match: ['REST'], subcategory: 'REST' },
   { match: ['HTTP', 'хэдер', 'метод', 'коды ошибок'], subcategory: 'HTTP' },
@@ -35,13 +35,13 @@ function inferSubcategoryFromText(question, answer) {
 export function normalizeEntry(entry) {
   const normalized = { ...entry };
 
-  // Нормализуем категорию
+  // Нормализуем колоду
   if (normalized.category && categoryMap[normalized.category]) {
     normalized.category = categoryMap[normalized.category];
   }
 
-  // Не перезаписываем явную подкатегорию из данных сервера.
-  // Инференс по ключевым словам применяем ТОЛЬКО если подкатегория отсутствует или пуста.
+  // Не перезаписываем явную тему из данных сервера.
+  // Инференс по ключевым словам применяем ТОЛЬКО если тема отсутствует или пуста.
   const hasExplicitSubcategory = typeof normalized.subcategory === 'string' && normalized.subcategory.trim().length > 0;
   if (!hasExplicitSubcategory) {
     const inferred = inferSubcategoryFromText(entry.question || '', entry.answer || '');

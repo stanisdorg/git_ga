@@ -34,8 +34,8 @@ GET /metadata?user=jeff
     "id": 0,
     "question": "Вопрос",
     "answer": "Ответ",
-    "category": "Категория",
-    "subcategory": "Подкатегория"
+    "category": "Колода",
+    "subcategory": "Тема"
   }
 ]
 ```
@@ -81,7 +81,7 @@ GET /metadata?user=jeff
     {
       "question": "Текст вопроса",
       "answer": "Ответ",
-      "category": "Категория"
+      "category": "Колода"
     }
   ]
 }
@@ -171,7 +171,7 @@ GET /metadata?user=jeff
 
 **POST** `/metadata?user={username}`
 
-Обновляет метаданные пользователя (порядок категорий, карточек).
+Обновляет метаданные пользователя (порядок колод, карточек).
 
 **Тело запроса:**
 ```json
@@ -284,8 +284,8 @@ GET /metadata?user=jeff
   "id": 0,
   "question": "Текст вопроса",
   "answer": "Текст ответа",
-  "category": "Название категории",
-  "subcategory": "Название подкатегории"
+  "category": "Название колоды",
+  "subcategory": "Название темы"
 }
 ```
 
@@ -296,8 +296,8 @@ GET /metadata?user=jeff
   "item": {
     "question": "Текст вопроса",
     "answer": "Текст ответа",
-    "category": "Категория",
-    "subcategory": "Подкатегория"
+    "category": "Колода",
+    "subcategory": "Тема"
   },
   "deleted_at": "2026-03-10T16:00:00.000Z",
   "deleted_by": "jeff"
@@ -313,7 +313,7 @@ GET /metadata?user=jeff
 | Файл | Описание |
 |------|----------|
 | `user_{username}.json` | Основные данные пользователя (карточки, прогресс, избранное) |
-| `user_{username}_metadata.json` | Метаданные (порядок категорий, карточек) |
+| `user_{username}_metadata.json` | Метаданные (порядок колод, карточек) |
 | `user_{username}_trash.json` | Корзина пользователя |
 | `questions_no_anki.json` | Базовый набор карточек (global) |
 

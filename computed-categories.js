@@ -1,4 +1,4 @@
-// Построение списка категорий/подкатегорий по данным
+// Построение списка колод/тем по данным
 
 function slugify(text) {
   return String(text)
@@ -11,7 +11,7 @@ function slugify(text) {
 export function buildCategoriesFromData(data) {
   const map = new Map();
   data.forEach(item => {
-    const cat = item.category || 'Без категории';
+    const cat = item.category || 'Без колоды';
     const sub = item.subcategory || 'Общее';
     if (!map.has(cat)) {
       map.set(cat, new Set());
@@ -19,7 +19,7 @@ export function buildCategoriesFromData(data) {
     map.get(cat).add(sub);
   });
 
-  // Добавляем плейсхолдеры из localStorage, чтобы можно было создавать категории/подкатегории до наличия карточек
+  // Добавляем плейсхолдеры из localStorage, чтобы можно было создавать колоды/темы до наличия карточек
   try {
     const catPlaceholders = JSON.parse(localStorage.getItem('qaCategoryPlaceholders') || '{}');
     const subPlaceholders = JSON.parse(localStorage.getItem('qaSubcategoryPlaceholders') || '{}');
@@ -27,7 +27,7 @@ export function buildCategoriesFromData(data) {
     for (const catName of Object.keys(catPlaceholders)) {
       if (!map.has(catName)) map.set(catName, new Set());
       const catData = catPlaceholders[catName];
-      // Добавляем подкатегории из плейсхолдеров
+      // Добавляем темы из плейсхолдеров
       if (catData && Array.isArray(catData.sub)) {
         catData.sub.forEach(subItem => {
           // sub может быть строкой или объектом { name: '...', _sid: 1 }
@@ -35,7 +35,7 @@ export function buildCategoriesFromData(data) {
           map.get(catName).add(subName);
         });
       } else {
-        // Если нет подкатегорий-плейсхолдеров, гарантируем хотя бы 'Общее'
+        // Если нет тем-плейсхолдеров, гарантируем хотя бы 'Общее'
         map.get(catName).add('Общее');
       }
     }
@@ -64,7 +64,7 @@ export function buildCategoriesFromData(data) {
     }
     categories.push({ id: catId++, name: catName, displayName: catName, slug: slugify(catName), subcategories });
   }
-  // Сортируем категории по имени для стабильности
+  // Сортируем колоды по имени для стабильности
   categories.sort((a, b) => a.name.localeCompare(b.name));
   // Перепризначаем id после сортировки
   categories.forEach((c, idx) => (c.id = idx + 1));

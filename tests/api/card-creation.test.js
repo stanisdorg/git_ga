@@ -70,10 +70,10 @@ describe('API Integration Tests - Card Creation', () => {
       // Проверим что карточка действительно сохранена в файле
       const updatedData = readUserData(TEST_USERNAME);
       const createdCard = updatedData?._cards?.find(c => c.question === NEW_QUESTION);
-      
+
       expect(createdCard).toBeDefined();
       expect(createdCard.answer).toBe(NEW_ANSWER);
-      expect(createdCard.category).toBe('Без категории');
+      expect(createdCard.category).toBe('Без колоды');
       expect(createdCard.subcategory).toBe('Общее');
 
       testLog('Карточка найдена в файле после создания', {
@@ -161,7 +161,7 @@ describe('API Integration Tests - Card Creation', () => {
       // Проверим что formatting сохранился
       const updatedData = readUserData(TEST_USERNAME);
       const createdCard = updatedData?._cards?.find(c => c.question === questionWithFormatting);
-      
+
       expect(createdCard).toBeDefined();
       expect(createdCard.formatting).toBeDefined();
       expect(createdCard.formatting.question).toEqual([

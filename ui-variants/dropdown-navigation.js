@@ -1,6 +1,6 @@
-// Вариант 2: Выпадающие списки для категорий и подкатегорий
+// Вариант 2: Выпадающие списки для колод и тем
 
-// Импортируем данные и генератор категорий
+// Импортируем данные и генератор колод
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { applyFormatting } from '../srs/text-formatter.js';
@@ -9,130 +9,130 @@ import { applyFormatting } from '../srs/text-formatter.js';
 export function initDropdownNavigation() {
     const container = document.querySelector('.container');
     const searchContainer = document.querySelector('.search-container');
-    
+
     // Создаем контейнер для навигации
     const navigationContainer = document.createElement('div');
     navigationContainer.className = 'dropdown-navigation';
-    
-    // Создаем селект для категорий
+
+    // Создаем селект для колод
     const categorySelect = document.createElement('select');
     categorySelect.id = 'category-select';
     categorySelect.className = 'category-select';
-    
-    // Добавляем опцию "Все вопросы"
+
+    // Добавляем опцию "Все колоды"
     const allOption = document.createElement('option');
     allOption.value = 'all';
-    allOption.textContent = 'Все вопросы';
+    allOption.textContent = 'Все колоды';
     categorySelect.appendChild(allOption);
-    
-    // Добавляем опции для всех категорий
+
+    // Добавляем опции для всех колод
     categories.forEach(category => {
         const option = document.createElement('option');
         option.value = category.id;
         option.textContent = category.displayName || category.name;
         categorySelect.appendChild(option);
     });
-    
-    // Создаем селект для подкатегорий
+
+    // Создаем селект для тем
     const subcategorySelect = document.createElement('select');
     subcategorySelect.id = 'subcategory-select';
     subcategorySelect.className = 'subcategory-select';
     subcategorySelect.disabled = true;
-    
-    // Добавляем опцию "Все подкатегории"
+
+    // Добавляем опцию "Все темы"
     const allSubcategoryOption = document.createElement('option');
     allSubcategoryOption.value = 'all';
-    allSubcategoryOption.textContent = 'Все подкатегории';
+    allSubcategoryOption.textContent = 'Все темы';
     subcategorySelect.appendChild(allSubcategoryOption);
-    
-    // Добавляем обработчик изменения категории
-    categorySelect.addEventListener('change', function() {
-        // Очищаем селект подкатегорий
+
+    // Добавляем обработчик изменения колоды
+    categorySelect.addEventListener('change', function () {
+        // Очищаем селект тем
         subcategorySelect.innerHTML = '';
         subcategorySelect.appendChild(allSubcategoryOption);
-        
+
         if (categorySelect.value === 'all') {
-            // Если выбраны все вопросы, отключаем селект подкатегорий
+            // Если выбраны все вопросы, отключаем селект тем
             subcategorySelect.disabled = true;
             showAllQuestions();
         } else {
-            // Если выбрана конкретная категория, включаем селект подкатегорий
+            // Если выбрана конкретная колода, включаем селект тем
             subcategorySelect.disabled = false;
-            
-            // Находим выбранную категорию
+
+            // Находим выбранную колоду
             const selectedCategory = categories.find(cat => cat.id == categorySelect.value);
-            
-            // Добавляем опции для подкатегорий выбранной категории
+
+            // Добавляем опции для тем выбранной колоды
             selectedCategory.subcategories.forEach(subcategory => {
                 const option = document.createElement('option');
                 option.value = subcategory.id;
                 option.textContent = subcategory.name;
                 subcategorySelect.appendChild(option);
             });
-            
-            // Фильтруем и отображаем вопросы по категории
+
+            // Фильтруем и отображаем вопросы по колоде
             filterQuestionsByCategory(selectedCategory.name);
         }
     });
-    
-    // Добавляем обработчик изменения подкатегории
-    subcategorySelect.addEventListener('change', function() {
+
+    // Добавляем обработчик изменения темы
+    subcategorySelect.addEventListener('change', function () {
         if (subcategorySelect.value === 'all') {
-            // Если выбраны все подкатегории, фильтруем только по категории
+            // Если выбраны все темы, фильтруем только по колоде
             const selectedCategory = categories.find(cat => cat.id == categorySelect.value);
             filterQuestionsByCategory(selectedCategory.name);
         } else {
-            // Если выбрана конкретная подкатегория, фильтруем по категории и подкатегории
+            // Если выбрана конкретная тема, фильтруем по колоде и теме
             const selectedCategory = categories.find(cat => cat.id == categorySelect.value);
             const selectedSubcategory = selectedCategory.subcategories.find(
                 subcat => subcat.id == subcategorySelect.value
             );
-            
+
             filterQuestionsBySubcategory(selectedCategory.name, selectedSubcategory.name);
         }
     });
-    
+
     // Кнопка сброса фильтров удалена по требованиям — оставляем навигацию без неё
-    
+
     // Добавляем элементы в контейнер навигации
     navigationContainer.appendChild(categorySelect);
     navigationContainer.appendChild(subcategorySelect);
-    
+
     // Вставляем контейнер навигации перед контейнером поиска
     container.insertBefore(navigationContainer, searchContainer);
 }
 
-// Функция для фильтрации вопросов по категории
+// Функция для фильтрации вопросов по колоде
 function filterQuestionsByCategory(categoryName) {
     const filteredData = uniqueQaData.filter(item => item.category === categoryName);
-    displayQuestions(filteredData, `Категория: ${categoryName}`);
+    displayQuestions(filteredData, `Колода: ${categoryName}`);
 }
 
-// Функция для фильтрации вопросов по подкатегории
+// Функция для фильтрации вопросов по теме
 function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     const filteredData = uniqueQaData.filter(
         item => item.category === categoryName && item.subcategory === subcategoryName
     );
-    displayQuestions(filteredData, `Подкатегория: ${subcategoryName}`);
+    displayQuestions(filteredData, `Тема: ${subcategoryName}`);
 }
 
 // Функция для отображения всех вопросов
 function showAllQuestions() {
-    displayQuestions(uniqueQaData, 'Все вопросы');
+    displayQuestions(uniqueQaData, 'Все колоды');
 }
 
 // Функция для отображения вопросов
 function displayQuestions(questions, title) {
     const resultsList = document.getElementById('results-list');
     resultsList.innerHTML = '';
-    
+
     // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
-    // Без заголовка категории — только счётчик
+    // Без заголовка колоды — только счётчик
     resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
-    
+
     // Добавляем вопросы
     questions.forEach(item => {
         const resultItem = document.createElement('div');
@@ -185,8 +185,8 @@ function displayQuestions(questions, title) {
         const editBtn = resultItem.querySelector('.edit-btn');
         if (editBtn) {
             editBtn.addEventListener('click', () => {
-                const newCategory = prompt('Новая категория:', item.category || '');
-                const newSubcategory = prompt('Новая подкатегория:', item.subcategory || '');
+                const newCategory = prompt('Новая колода:', item.category || '');
+                const newSubcategory = prompt('Новая тема:', item.subcategory || '');
                 if (newCategory) {
                     const overrides = JSON.parse(localStorage.getItem('qaAdminOverrides') || '{}');
                     overrides[item.question] = { category: newCategory, subcategory: newSubcategory || '' };
@@ -202,4 +202,4 @@ function displayQuestions(questions, title) {
         resultsList.appendChild(resultItem);
     });
 }
-    const categories = buildCategoriesFromData(uniqueQaData);
+const categories = buildCategoriesFromData(uniqueQaData);

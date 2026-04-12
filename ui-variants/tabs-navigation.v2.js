@@ -1,6 +1,6 @@
-// Вариант 3: Табы для категорий и карточки для подкатегорий
+// Вариант 3: Табы для колод и карточки для тем
 
-// Импортируем данные и генератор категорий
+// Импортируем данные и генератор колод
 import { uniqueQaData } from '../all-data.js';
 import { buildCategoriesFromData } from '../computed-categories.js';
 import { setNormalizationDisabled } from '../load-json-data.js';
@@ -34,10 +34,10 @@ function getDeletedItems() { return getLS('qaDeletedItems', '{}'); }
 function setDeletedItems(map) { setLS('qaDeletedItems', map); }
 function getCategoryPlaceholders() { return getLS('qaCategoryPlaceholders', '{}'); }
 function setCategoryPlaceholders(obj) { setLS('qaCategoryPlaceholders', obj); }
-// Порядок категорий: хранится как массив имён категорий
+// Порядок колод: хранится как массив имён колод
 function getCategoryOrder() { return getLS('qaCategoryOrder', '[]'); }
 function setCategoryOrder(arr) { setLS('qaCategoryOrder', Array.isArray(arr) ? arr : []); }
-// Порядок подкатегорий по категориям
+// Порядок тем по колодам
 function getSubcategoryOrderMap() { return getLS('qaSubcategoryOrder', '{}'); }
 function setSubcategoryOrderMap(map) { setLS('qaSubcategoryOrder', map); }
 function getSubcategoryOrderFor(categoryName) { const m = getSubcategoryOrderMap(); return m[categoryName] || []; }
@@ -74,7 +74,7 @@ function genUniqueQuestionGlobal(baseQ) {
     while (exists(candidate)) { candidate = `${baseQ} (копия ${i++})`; }
     return candidate;
 }
-// Плейсхолдеры для отображаемых названий подкатегорий (по категориям)
+// Плейсхолдеры для отображаемых названий тем (по колодам)
 function getSubcategoryPlaceholders() { return getLS('qaSubcategoryPlaceholders', '{}'); }
 function setSubcategoryPlaceholders(obj) { setLS('qaSubcategoryPlaceholders', obj); }
 
@@ -106,18 +106,18 @@ export function initTabsNavigation() {
     const navigationContainer = document.createElement('div');
     navigationContainer.className = 'tabs-navigation';
 
-    // Строим категории по данным (с учётом локальных правок/новых элементов/удалений)
+    // Строим колоды по данным (с учётом локальных правок/новых элементов/удалений)
     const categories = buildCategoriesFromData(getRuntimeData());
 
     // Создаем контейнер для табов
     const tabsContainer = document.createElement('div');
     tabsContainer.className = 'tabs-container';
 
-    // Создаем таб "Все вопросы"
+    // Создаем таб "Все колоды"
     const allTab = document.createElement('div');
     allTab.className = 'tab';
     allTab.dataset.category = 'all';
-    allTab.textContent = 'Все вопросы';
+    allTab.textContent = 'Все колоды';
     tabsContainer.appendChild(allTab);
     // Создаем таб "Избранное"
     const favTab = document.createElement('div');
@@ -127,7 +127,7 @@ export function initTabsNavigation() {
     favTab.textContent = '★';
     tabsContainer.appendChild(favTab);
 
-    // Добавляем табы для всех категорий
+    // Добавляем табы для всех колод
     categories.forEach(category => {
         const tab = document.createElement('div');
         tab.className = 'tab';
@@ -136,7 +136,7 @@ export function initTabsNavigation() {
         tabsContainer.appendChild(tab);
     });
 
-    // Создаем контейнер для подкатегорий
+    // Создаем контейнер для тем
     const subcategoriesContainer = document.createElement('div');
     subcategoriesContainer.className = 'subcategories-container';
     subcategoriesContainer.style.display = 'none';
@@ -158,7 +158,7 @@ export function initTabsNavigation() {
                 const tabEl = tabsContainer.querySelector(`.tab[data-category="${selectedCategory.id}"]`);
                 if (tabEl) tabEl.classList.add('active');
                 subcategoriesContainer.style.display = 'flex';
-                // Подкатегории будут перестроены при render/refresh; здесь только визуально показываем блок
+                // Темы будут перестроены при render/refresh; здесь только визуально показываем блок
             } else {
                 allTab.classList.add('active');
                 subcategoriesContainer.style.display = 'none';
@@ -185,11 +185,11 @@ export function initTabsNavigation() {
             const categoryId = e.target.dataset.category;
 
             if (categoryId === 'all') {
-                // Если выбраны все вопросы, скрываем контейнер подкатегорий
+                // Если выбраны все вопросы, скрываем контейнер тем
                 subcategoriesContainer.style.display = 'none';
                 showAllQuestions();
             } else if (categoryId === 'favorites') {
-                // Избранное без подкатегорий
+                // Избранное без тем
                 subcategoriesContainer.style.display = 'none';
                 showFavorites();
             } else {
@@ -202,7 +202,7 @@ export function initTabsNavigation() {
         }
     });
 
-    // Добавляем обработчики клика по карточкам подкатегорий
+    // Добавляем обработчики клика по карточкам тем
     subcategoriesContainer.addEventListener('click', function (e) {
         if (e.target.classList.contains('subcategory-card')) {
             // Удаляем класс active у всех карточек
@@ -216,11 +216,11 @@ export function initTabsNavigation() {
             const categoryId = e.target.dataset.category || tabsContainer.querySelector('.tab.active').dataset.category;
 
             if (subcategoryId === 'all') {
-                // Если выбраны все подкатегории, фильтруем только по категории
+                // Если выбраны все темы, фильтруем только по колоде
                 const selectedCategory = categories.find(cat => cat.id == categoryId);
                 filterQuestionsByCategory(selectedCategory.name);
             } else {
-                // Если выбрана конкретная подкатегория, фильтруем по категории и подкатегории
+                // Если выбрана конкретная тема, фильтруем по колоде и теме
                 const selectedCategory = categories.find(cat => cat.id == categoryId);
                 const selectedSubcategory = selectedCategory.subcategories.find(
                     subcat => subcat.id == subcategoryId
@@ -236,7 +236,7 @@ export function initTabsNavigation() {
     tabsHeader.className = 'tabs-header';
     tabsHeader.appendChild(tabsContainer);
 
-    // Панель управления справа: Редактировать / Сохранить / Отмена / Вход / Категории/Подкатегории
+    // Панель управления справа: Редактировать / Сохранить / Отмена / Вход / Колоды/Темы
     const controls = document.createElement('div');
     controls.className = 'tabs-controls';
     controls.style.display = 'flex';
@@ -268,20 +268,20 @@ export function initTabsNavigation() {
     loginBtnTop.style.padding = '4px 8px';
 
     const addCatBtnTop = document.createElement('button');
-    addCatBtnTop.textContent = 'Добавить категорию';
-    addCatBtnTop.title = 'Создать пустую категорию';
+    addCatBtnTop.textContent = 'Добавить колоду';
+    addCatBtnTop.title = 'Создать пустую колоду';
 
     const delCatBtnTop = document.createElement('button');
-    delCatBtnTop.textContent = 'Удалить категорию';
-    delCatBtnTop.title = 'Удалить категорию и её карточки';
+    delCatBtnTop.textContent = 'Удалить колоду';
+    delCatBtnTop.title = 'Удалить колоду и её карточки';
 
     const addSubBtnTop = document.createElement('button');
-    addSubBtnTop.textContent = 'Добавить подкатегорию';
-    addSubBtnTop.title = 'Создать пустую подкатегорию';
+    addSubBtnTop.textContent = 'Добавить тему';
+    addSubBtnTop.title = 'Создать пустую тему';
 
     const delSubBtnTop = document.createElement('button');
-    delSubBtnTop.textContent = 'Удалить подкатегорию';
-    delSubBtnTop.title = 'Удалить подкатегорию и её карточки';
+    delSubBtnTop.textContent = 'Удалить тему';
+    delSubBtnTop.title = 'Удалить тему и её карточки';
 
     controls.appendChild(editBtnTop);
     controls.appendChild(saveBtnTop);
@@ -295,7 +295,7 @@ export function initTabsNavigation() {
     controls.style.display = 'none';
     // tabsHeader.appendChild(controls);
 
-    // Верхняя панель (над категориями): ✎ и Вход
+    // Верхняя панель (над колодами): ✎ и Вход
     const topControls = document.createElement('div');
     topControls.className = 'top-controls';
     topControls.style.display = 'flex';
@@ -323,7 +323,7 @@ export function initTabsNavigation() {
     const loginMainBtn = document.createElement('button');
     loginMainBtn.textContent = loggedInUser ? 'Выход' : 'Вход';
     loginMainBtn.title = loggedInUser ? 'Выйти из личного кабинета' : 'Войти в личный кабинет';
-    // Тёмно-серый стиль кнопки вход/выход (верхняя панель над категориями)
+    // Тёмно-серый стиль кнопки вход/выход (верхняя панель над колодами)
     loginMainBtn.style.background = '#444';
     loginMainBtn.style.color = '#eee';
     loginMainBtn.style.border = '1px solid #333';
@@ -370,7 +370,7 @@ export function initTabsNavigation() {
         } catch { }
     })();
 
-    // Функции меню категорий в режиме редактирования
+    // Функции меню колод в режиме редактирования
     function refreshCategoryEditMenus() {
         const tabs = tabsContainer.querySelectorAll('.tab');
         tabs.forEach(tab => {
@@ -381,7 +381,7 @@ export function initTabsNavigation() {
             if (!editMode) return;
             const btn = document.createElement('button');
             btn.className = 'cat-menu-btn';
-            btn.title = 'Меню категории';
+            btn.title = 'Меню колоды';
             btn.textContent = '⋮';
             btn.style.marginLeft = '8px';
             // Тёмно-серый стиль
@@ -398,7 +398,7 @@ export function initTabsNavigation() {
         });
     }
 
-    // Перерисовка табов категорий
+    // Перерисовка табов колод
     function refreshCategoriesTabs(oldName = null, newName = null) {
         const active = tabsContainer.querySelector('.tab.active');
         const activeId = active?.dataset?.category || 'all';
@@ -406,7 +406,7 @@ export function initTabsNavigation() {
         const allTab = document.createElement('div');
         allTab.className = 'tab';
         allTab.dataset.category = 'all';
-        allTab.textContent = 'Все вопросы';
+        allTab.textContent = 'Все колоды';
         tabsContainer.appendChild(allTab);
         const favTab = document.createElement('div');
         favTab.className = 'tab';
@@ -414,7 +414,7 @@ export function initTabsNavigation() {
         favTab.textContent = '★';
         tabsContainer.appendChild(favTab);
         const cats = buildCategoriesFromData(getRuntimeData());
-        // Применяем сохранённый порядок категорий, если он есть
+        // Применяем сохранённый порядок колод, если он есть
         try {
             const order = getCategoryOrder();
             if (order && order.length) {
@@ -434,7 +434,7 @@ export function initTabsNavigation() {
         toActivate.classList.add('active');
         // Обновляем меню редактирования
         refreshCategoryEditMenus();
-        // Включаем перетаскивание категорий в режиме редактирования
+        // Включаем перетаскивание колод в режиме редактирования
         if (editMode) {
             const catsNow = Array.from(tabsContainer.querySelectorAll('.tab'))
                 .filter(el => el.dataset.category !== 'all' && el.dataset.category !== 'favorites');
@@ -463,7 +463,7 @@ export function initTabsNavigation() {
                     names.splice(toIdx, 0, moved);
                     setCategoryOrder(names);
                     (async () => {
-                        setSaveStatus('saving', 'Сохранение порядка категорий...');
+                        setSaveStatus('saving', 'Сохранение порядка колод...');
                         const meta = await getServerMetadata();
                         meta.categoryOrder = names;
                         const ok = await updateServerMetadata(meta);
@@ -505,7 +505,7 @@ export function initTabsNavigation() {
             if (!act) return;
             e.stopPropagation();
             if (act === 'rename') {
-                const newName = prompt('Новое название категории:', catObj.name);
+                const newName = prompt('Новое название колоды:', catObj.name);
                 if (newName && newName !== catObj.name) {
                     const ov = getOverrides();
                     uniqueQaData.forEach(it => { if (it.category === catObj.name) { ov[it.question] = { ...ov[it.question], category: newName }; } });
@@ -514,10 +514,10 @@ export function initTabsNavigation() {
                     saveMergedToServer();
                     // Перерисовываем табы, чтобы сразу увидеть новое имя
                     refreshCategoriesTabs(catObj.name, newName);
-                    alert('Категория переименована и сохранена в проект.');
+                    alert('Колода переименована и сохранена в проект.');
                 }
             } else if (act === 'duplicate') {
-                const dupName = prompt('Название копии категории:', `${catObj.name} (копия)`);
+                const dupName = prompt('Название копии колоды:', `${catObj.name} (копия)`);
                 if (!dupName) return;
                 const placeholders = getCategoryPlaceholders();
                 if (!placeholders[dupName]) placeholders[dupName] = { _cid: Date.now(), sub: [] };
@@ -529,11 +529,11 @@ export function initTabsNavigation() {
                 setLS('qaNewItems', newItemsArr);
                 setCategoryPlaceholders(placeholders);
                 saveMergedToServer();
-                // Перерисовываем табы, чтобы сразу появилась новая категория
+                // Перерисовываем табы, чтобы сразу появилась новая колода
                 refreshCategoriesTabs();
-                alert('Категория дублирована и сохранена в проект.');
+                alert('Колода дублирована и сохранена в проект.');
             } else if (act === 'delete') {
-                if (!confirm('Удалить категорию в корзину?')) return;
+                if (!confirm('Удалить колоду в корзину?')) return;
                 const trashCats = getLS('qaTrashCategories', '{}');
                 trashCats[catObj.name] = true;
                 setLS('qaTrashCategories', trashCats);
@@ -551,13 +551,13 @@ export function initTabsNavigation() {
                 renderTrashPanel();
                 saveMergedToServer();
                 refreshCategoriesTabs();
-                alert('Категория перемещена в корзину и сохранена.');
+                alert('Колода перемещена в корзину и сохранена.');
             }
             menu.remove();
         });
     }
 
-    // Меню подкатегорий в режиме редактирования
+    // Меню тем в режиме редактирования
     function refreshSubcategoryEditMenus(categoryName) {
         const cards = subcategoriesContainer.querySelectorAll('.subcategory-card');
         cards.forEach(card => {
@@ -568,7 +568,7 @@ export function initTabsNavigation() {
             if (!editMode) return;
             const btn = document.createElement('button');
             btn.className = 'subcat-menu-btn';
-            btn.title = 'Меню подкатегории';
+            btn.title = 'Меню темы';
             btn.textContent = '⋮';
             btn.style.marginLeft = '8px';
             // Тёмно-серый стиль
@@ -612,13 +612,13 @@ export function initTabsNavigation() {
             const act = e.target?.dataset?.act; if (!act) return;
             e.stopPropagation();
             if (act === 'rename') {
-                const newName = prompt('Новое название подкатегории:', subcatName);
+                const newName = prompt('Новое название темы:', subcatName);
                 if (newName && newName !== subcatName) {
                     const scPlaceholders = getSubcategoryPlaceholders();
                     if (!scPlaceholders[categoryName]) scPlaceholders[categoryName] = {};
                     scPlaceholders[categoryName][subcatName] = { displayName: newName };
                     setSubcategoryPlaceholders(scPlaceholders);
-                    // Обновляем все карточки этой подкатегории через overrides
+                    // Обновляем все карточки этой темы через overrides
                     const ov = getOverrides();
                     getRuntimeData().forEach(it => {
                         if (it.category === categoryName && it.subcategory === subcatName) {
@@ -628,10 +628,10 @@ export function initTabsNavigation() {
                     setLS('qaAdminOverrides', ov);
                     rebuildSubcategoriesForCategory(categoryName);
                     saveMergedToServer();
-                    alert('Подкатегория переименована и сохранена в проект.');
+                    alert('Тема переименована и сохранена в проект.');
                 }
             } else if (act === 'duplicate') {
-                const dupName = prompt('Название копии подкатегории:', `${subcatName} (копия)`);
+                const dupName = prompt('Название копии темы:', `${subcatName} (копия)`);
                 if (!dupName) return;
                 const newItemsArr = getNewItems();
                 getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName)
@@ -647,9 +647,9 @@ export function initTabsNavigation() {
                 setSubcategoryPlaceholders(scPlaceholders);
                 rebuildSubcategoriesForCategory(categoryName);
                 saveMergedToServer();
-                alert('Подкатегория дублирована и сохранена.');
+                alert('Тема дублирована и сохранена.');
             } else if (act === 'delete') {
-                if (!confirm('Удалить подкатегорию в корзину?')) { menu.remove(); return; }
+                if (!confirm('Удалить тему в корзину?')) { menu.remove(); return; }
                 const delMap = getDeletedItems();
                 const itemsToTrash = getRuntimeData().filter(it => it.category === categoryName && it.subcategory === subcatName);
                 itemsToTrash.forEach(it => { delMap[it.question] = true; });
@@ -664,13 +664,13 @@ export function initTabsNavigation() {
                 renderTrashPanel();
                 saveMergedToServer();
                 rebuildSubcategoriesForCategory(categoryName);
-                alert('Подкатегория перемещена в корзину и сохранена.');
+                alert('Тема перемещена в корзину и сохранена.');
             }
             menu.remove();
         });
     }
 
-    // Перестроить список подкатегорий для выбранной категории
+    // Перестроить список тем для выбранной колоды
     function rebuildSubcategoriesForCategory(categoryName) {
         const allCats = buildCategoriesFromData(getRuntimeData());
         const catObj = allCats.find(c => c.name === categoryName);
@@ -680,7 +680,7 @@ export function initTabsNavigation() {
         const allCard = document.createElement('div');
         allCard.className = 'subcategory-card active';
         allCard.dataset.subcategory = 'all';
-        allCard.textContent = 'Все подкатегории';
+        allCard.textContent = 'Все темы';
         subcategoriesContainer.appendChild(allCard);
         const scPlaceholders = getSubcategoryPlaceholders();
         try {
@@ -724,7 +724,7 @@ export function initTabsNavigation() {
                     names.splice(toIdx, 0, moved);
                     setSubcategoryOrderFor(categoryName, names);
                     (async () => {
-                        setSaveStatus('saving', 'Сохранение порядка подкатегорий...');
+                        setSaveStatus('saving', 'Сохранение порядка тем...');
                         const meta = await getServerMetadata();
                         meta.subcategoryOrder = meta.subcategoryOrder || {};
                         meta.subcategoryOrder[categoryName] = names;
@@ -743,7 +743,7 @@ export function initTabsNavigation() {
         if (!panel) return;
         const catDiv = panel.querySelector('#trash-categories');
         const cardDiv = panel.querySelector('#trash-cards');
-        catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
+        catDiv.innerHTML = '<div><strong>Колоды:</strong></div><div>Пусто</div>';
         // Список удалённых вопросов + сортировка по оригинальному порядку ("Все вопросы")
         const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
         const baseOrder = getOrderForContext('all') || getRuntimeData().map(i => i.question);
@@ -766,7 +766,7 @@ export function initTabsNavigation() {
             const mini = document.createElement('div');
             mini.className = 'result-item trash-mini';
 
-            // Верхняя зона: теги (категория, подкатегория)
+            // Верхняя зона: теги (колода, тема)
             const meta = document.createElement('div');
             meta.className = 'trash-meta';
             meta.style.display = 'flex';
@@ -931,9 +931,9 @@ export function initTabsNavigation() {
 
     editToggleBtn.addEventListener('click', () => {
         editMode = !editMode;
-        // В режиме редактирования отключаем авто-нормализацию категорий при загрузке
+        // В режиме редактирования отключаем авто-нормализацию колод при загрузке
         try { setNormalizationDisabled(editMode); } catch { }
-        // Позиция кнопок ✎ и Вход НЕ меняется — остаются над категориями
+        // Позиция кнопок ✎ и Вход НЕ меняется — остаются над колодами
         // Показать/скрыть панель корзины и перенести её в левую боковую панель
         const sidebar = document.querySelector('.sidebar');
         const sidebarButtons = sidebar ? sidebar.querySelector('.sidebar-mode-buttons') : null;
@@ -969,7 +969,7 @@ export function initTabsNavigation() {
             if (existingTrashBtn) existingTrashBtn.remove();
         }
         refreshCategoryEditMenus();
-        // Обновляем вкладки категорий, чтобы включить/отключить перетаскивание
+        // Обновляем вкладки колод, чтобы включить/отключить перетаскивание
         refreshCategoriesTabs();
         renderTrashPanel();
         refreshCurrentContext();
@@ -991,7 +991,7 @@ export function initTabsNavigation() {
         saveBtnTop.disabled = true;
         cancelBtnTop.disabled = true;
         editBtnTop.disabled = false;
-        // Снимаем draggable с вкладок категорий
+        // Снимаем draggable с вкладок колод
         refreshCategoriesTabs();
         const activeTab = tabsContainer.querySelector('.tab.active');
         if (activeTab) {
@@ -1139,18 +1139,18 @@ export function initTabsNavigation() {
     saveBtnTop.addEventListener('click', () => { saveMergedToServer(); });
 
     function addCategoryPlaceholderFlow() {
-        const name = prompt('Название новой категории:');
+        const name = prompt('Название новой колоды:');
         if (!name) return;
         const placeholders = getCategoryPlaceholders();
         const id = Math.max(0, ...Object.values(placeholders).map(v => v._cid || 0)) + 1;
         if (!placeholders[name]) placeholders[name] = { _cid: id, sub: [] };
         setCategoryPlaceholders(placeholders);
-        alert('Категория добавлена. Появится в меню.');
+        alert('Колода добавлена. Появится в меню.');
     }
     function deleteCategoryFlow() {
-        const name = prompt('Название категории для удаления:');
+        const name = prompt('Название колоды для удаления:');
         if (!name) return;
-        if (!confirm(`Удалить категорию "${name}" и все её карточки?`)) return;
+        if (!confirm(`Удалить колоду "${name}" и все её карточки?`)) return;
         const placeholders = getCategoryPlaceholders();
         delete placeholders[name];
         setCategoryPlaceholders(placeholders);
@@ -1159,24 +1159,24 @@ export function initTabsNavigation() {
             if (item.category === name) del[item.question] = true;
         });
         setDeletedItems(del);
-        alert('Категория отмечена как удалённая. Сохраните, чтобы применить.');
+        alert('Колода отмечена как удалённая. Сохраните, чтобы применить.');
     }
     function addSubcategoryFlow() {
-        const cat = prompt('Категория:');
+        const cat = prompt('Колода:');
         if (!cat) return;
-        const sub = prompt('Название новой подкатегории:');
+        const sub = prompt('Название новой темы:');
         if (!sub) return;
         const placeholders = getCategoryPlaceholders();
         if (!placeholders[cat]) placeholders[cat] = { _cid: Date.now(), sub: [] };
         const id = Math.max(0, ...placeholders[cat].sub.map(s => s._sid || 0)) + 1;
         placeholders[cat].sub.push({ name: sub, _sid: id });
         setCategoryPlaceholders(placeholders);
-        alert('Подкатегория добавлена. Появится в меню.');
+        alert('Тема добавлена. Появится в меню.');
     }
     function deleteSubcategoryFlow() {
-        const cat = prompt('Категория:');
+        const cat = prompt('Колода:');
         if (!cat) return;
-        const sub = prompt('Подкатегория для удаления:');
+        const sub = prompt('Тема для удаления:');
         if (!sub) return;
         const placeholders = getCategoryPlaceholders();
         if (placeholders[cat]) {
@@ -1188,7 +1188,7 @@ export function initTabsNavigation() {
             if (item.category === cat && item.subcategory === sub) del[item.question] = true;
         });
         setDeletedItems(del);
-        alert('Подкатегория отмечена как удалённая. Сохраните, чтобы применить.');
+        alert('Тема отмечена как удалённая. Сохраните, чтобы применить.');
     }
 
     addCatBtnTop.addEventListener('click', addCategoryPlaceholderFlow);
@@ -1460,7 +1460,7 @@ function renderTrashPanel() {
     if (!trashPanel) return;
     const catDiv = trashPanel.querySelector('#trash-categories');
     const cardDiv = trashPanel.querySelector('#trash-cards');
-    if (catDiv) catDiv.innerHTML = '<div><strong>Категории:</strong></div><div>Пусто</div>';
+    if (catDiv) catDiv.innerHTML = '<div><strong>Колоды:</strong></div><div>Пусто</div>';
     const deletedCards = serverTrashItems.map(t => t.item?.question).filter(Boolean);
     if (cardDiv) {
         cardDiv.innerHTML = '';
@@ -1599,18 +1599,18 @@ function renderTrashPanel() {
     }
 }
 
-// Функция для фильтрации вопросов по категории
+// Функция для фильтрации вопросов по колоде
 function filterQuestionsByCategory(categoryName) {
     currentContextKey = `category:${categoryName}`;
     const data = getRuntimeData();
-    // Если имя категории — отображаемое, найдем исходное имя
+    // Если имя колоды — отображаемое, найдем исходное имя
     const catPlaceholders = getCategoryPlaceholders();
     const canonicalCategory = Object.entries(catPlaceholders).find(([, v]) => v?.displayName === categoryName)?.[0] || categoryName;
     const filteredData = data.filter(item => item.category === canonicalCategory || item.category === categoryName);
-    displayQuestions(filteredData, `Категория: ${categoryName}`);
+    displayQuestions(filteredData, `Колода: ${categoryName}`);
 }
 
-// Функция для фильтрации вопросов по подкатегории
+// Функция для фильтрации вопросов по теме
 function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     currentContextKey = `subcategory:${categoryName}#${subcategoryName}`;
     const data = getRuntimeData();
@@ -1620,13 +1620,13 @@ function filterQuestionsBySubcategory(categoryName, subcategoryName) {
     const scMap = scPlaceholders[canonicalCategory] || scPlaceholders[categoryName] || {};
     const canonicalSub = Object.entries(scMap).find(([, v]) => v?.displayName === subcategoryName)?.[0] || subcategoryName;
     const filteredData = data.filter(item => (item.category === canonicalCategory || item.category === categoryName) && (item.subcategory === canonicalSub || item.subcategory === subcategoryName));
-    displayQuestions(filteredData, `Подкатегория: ${subcategoryName}`);
+    displayQuestions(filteredData, `Тема: ${subcategoryName}`);
 }
 
 // Функция для отображения всех вопросов
 function showAllQuestions() {
     currentContextKey = 'all';
-    displayQuestions(getRuntimeData(), 'Все вопросы');
+    displayQuestions(getRuntimeData(), 'Все колоды');
 }
 
 // Функция для отображения избранных вопросов
@@ -1637,7 +1637,7 @@ function showFavorites() {
     displayQuestions(favData, 'Избранное');
 }
 
-// Универсальная перерисовка текущего контекста без сброса на «Все вопросы»
+// Универсальная перерисовка текущего контекста без сброса на «Все колоды»
 function refreshCurrentContext() {
     try {
         const key = currentContextKey || 'all';
@@ -1680,7 +1680,7 @@ function displayQuestions(questions, title) {
     // Добавляем заголовок
     const resultsHeader = document.createElement('div');
     resultsHeader.className = 'results-header';
-    // Без заголовка категории — только счётчик
+    // Без заголовка колоды — только счётчик
     resultsHeader.innerHTML = `<p class="results-count">Найдено: ${questions.length}</p>`;
     resultsList.appendChild(resultsHeader);
 
@@ -1782,8 +1782,8 @@ function displayQuestions(questions, title) {
                 const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
                 resultItem.innerHTML = `
                     <div class="question-row">
-                        <label>Категория: <select class="edit-category">${categoryOptions}</select></label>
-                        <label>Подкатегория: <select class="edit-subcategory">${subcategoryOptions}</select></label>
+                        <label>Колода: <select class="edit-category">${categoryOptions}</select></label>
+                        <label>Тема: <select class="edit-subcategory">${subcategoryOptions}</select></label>
                         <button class="save-inline" title="Сохранить">✓</button>
                     </div>
                     <div><label>Вопрос:<br><textarea class="edit-question" style="width:100%">${item.question}</textarea></label></div>
@@ -1925,7 +1925,7 @@ function displayQuestions(questions, title) {
                                 newItems.push(duplicatedItem);
                                 setLS('qaNewItems', newItems);
 
-                                // Update UI, сохраняя текущую категорию
+                                // Update UI, сохраняя текущую колоду
                                 const activeTab = tabsContainer.querySelector('.tab.active');
                                 if (activeTab) {
                                     if (activeTab.dataset.category === 'all') {
@@ -1962,8 +1962,8 @@ function displayQuestions(questions, title) {
                         const subcategoryOptions = selectedCategory ? selectedCategory.subcategories.map(sub => `<option value="${sub.name}" ${item.subcategory === sub.name ? 'selected' : ''}>${sub.name}</option>`).join('') : '';
                         resultItem.innerHTML = `
                             <div class="question-row">
-                                <label>Категория: <select class="edit-category">${categoryOptions}</select></label>
-                                <label>Подкатегория: <select class="edit-subcategory">${subcategoryOptions}</select></label>
+                                <label>Колода: <select class="edit-category">${categoryOptions}</select></label>
+                                <label>Тема: <select class="edit-subcategory">${subcategoryOptions}</select></label>
                                 <button class="save-inline" title="Сохранить">✓</button>
                             </div>
                             <div><label>Вопрос:<br><textarea class="edit-question" style="width:100%">${item.question}</textarea></label></div>
@@ -2015,7 +2015,7 @@ function getRuntimeData() {
     const overrides = getOverrides();
     const newItems = getNewItems();
     const deleted = getDeletedItems();
-    // Применяем overrides (категория/подкатегория/вопрос/ответ)
+    // Применяем overrides (колода/тема/вопрос/ответ)
     const byQuestion = new Map(base.map(i => [i.question, i]));
     Object.keys(overrides).forEach(origQ => {
         const ov = overrides[origQ];
@@ -2039,7 +2039,7 @@ function getRuntimeData() {
             byQuestion.set(ov.question || origQ, {
                 question: ov.question || origQ,
                 answer: ov.answer || '',
-                category: ov.category || 'Без категории',
+                category: ov.category || 'Без колоды',
                 subcategory: ov.subcategory || 'Общее',
             });
         }
