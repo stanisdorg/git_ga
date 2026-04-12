@@ -1,5 +1,5 @@
 import { getMetrics, calculateActivity, getCategoryProgress, checkAchievements, getCurrentLevel, getDailyPoints, getDailyPointsAll, getDailyStreakSeries, getHeartsDistribution, getLearningStage, getUnderstandingIndex, getRiskZones, getDailyImprovements, getProgressMap, getStudyStats, getStudyStreak, getAverageCardTime, getMSKDate, getTotalHearts, getDailyHearts } from './stats-utils.js?v=6.67.0';
-import { syncFavorite } from './storage.js?v=6.70.0';
+import { syncFavorite } from './storage.js?v=6.73.0';
 import { getDifficultyLevel, getLevelProgress } from './algorithm.js?v=6.68.0';
 import { getTodaysSession, getTodaysSessionBreakdown, get4DayForecast } from './category-scheduler.js?v=6.68.0';
 import { startLearnSession } from './learn-ui.js?v=6.68.0';
@@ -407,16 +407,23 @@ const STATS_STYLES = `
   background: var(--st-surf);
   border: 1px solid var(--st-border);
   border-radius: 16px;
-  padding: 20px;
+  padding: 10px 10px 10px 10px;
   overflow: hidden;
   display: flex !important;
   flex-direction: column !important;
+  height: 100% !important;
 }
 .st-cat-progress-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  flex-shrink: 0; /* Заголовок не сжимается */
+  position: sticky;
+  top: 0;
+  background: var(--st-surf);
+  z-index: 1;
+  padding-top: 5px;
 }
 .st-cat-progress-title {
   font-size: 16px;
@@ -452,10 +459,15 @@ const STATS_STYLES = `
   flex-direction: column;
   gap: 4px;
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
-  padding-right: 4px;
+  min-height: 0; /* Критично для скролла во flex-контейнере */
+  max-height: 70vh; /* Ограничиваем высоту для появления скролла */
+  padding-right: 0;
   transition: max-height 0.3s ease;
   position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.05);
 }
 .st-cat-progress-list.collapsed {
   max-height: 120px; /* Показываем ~1-2 колоды */
@@ -472,21 +484,26 @@ const STATS_STYLES = `
   pointer-events: none;
 }
 .st-cat-progress-list::-webkit-scrollbar {
-  width: 6px;
+  width: 6px !important;
 }
 .st-cat-progress-list::-webkit-scrollbar-track {
-  background: var(--st-surf-h);
+  background: rgba(255,255,255,0.05) !important;
   border-radius: 3px;
 }
 .st-cat-progress-list::-webkit-scrollbar-thumb {
-  background: var(--st-muted);
+  background: rgba(255,255,255,0.2) !important;
   border-radius: 3px;
+}
+.st-cat-progress-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.4) !important;
 }
 .st-cat-progress-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 2px 12px !important;
+  padding: 6px 8px !important;
+  max-width: 100%;
+  box-sizing: border-box;
   background: linear-gradient(135deg, rgba(15,52,96,0.6) 0%, rgba(15,52,96,0.4) 100%);
   border-radius: 8px;
   border: 1px solid rgba(26,58,92,0.5);
@@ -1799,12 +1816,13 @@ const STATS_STYLES = `
     padding: 10px 10px 14px 10px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
   }
-  .st-block-achievements { 
-    grid-column: 2; 
+  .st-block-achievements {
+    grid-column: 2;
     grid-row: 1 / span 2;
-    overflow-y: auto;
-    max-height: 600px;
+    overflow: visible;
     min-width: 280px;
+    display: flex !important;
+    flex-direction: column !important;
   }
   .st-block-2 {
     grid-column: 3;
@@ -1983,28 +2001,30 @@ const STATS_STYLES = `
   }
   
   /* Центральный блок — КРИТИЧНО! */
-  .st-block-achievements,
-  .st-cat-progress-wrap {
+  .st-block-achievements {
     overflow-y: auto !important;
+  }
+  .st-cat-progress-wrap {
+    overflow: visible !important;
   }
   /* Кастомный скроллбар для колод */
   .st-block-achievements::-webkit-scrollbar,
-  .st-cat-progress-wrap::-webkit-scrollbar {
-    width: 6px;
+  .st-cat-progress-list::-webkit-scrollbar {
+    width: 6px !important;
   }
   .st-block-achievements::-webkit-scrollbar-track,
-  .st-cat-progress-wrap::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.3);
+  .st-cat-progress-list::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05) !important;
     border-radius: 3px;
   }
   .st-block-achievements::-webkit-scrollbar-thumb,
-  .st-cat-progress-wrap::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.2);
+  .st-cat-progress-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2) !important;
     border-radius: 3px;
   }
   .st-block-achievements::-webkit-scrollbar-thumb:hover,
-  .st-cat-progress-wrap::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.4);
+  .st-cat-progress-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4) !important;
   }
   .st-block-achievements,
   .st-cat-progress-wrap {
@@ -2080,8 +2100,10 @@ const STATS_STYLES = `
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
     }
     .st-block-achievements {
-      grid-column: 1 / span 2; 
+      grid-column: 1 / span 2;
       grid-row: 2;
+      display: flex !important;
+      flex-direction: column !important;
     }
     .st-block-2 { 
       grid-column: 2; 
@@ -2132,6 +2154,8 @@ const STATS_STYLES = `
       grid-row: auto;
       max-height: none;
       order: 6; /* Колоды */
+      display: flex !important;
+      flex-direction: column !important;
     }
     .st-block-2 {
       grid-column: 1;
@@ -5244,7 +5268,7 @@ window.renderModalChart = () => {
 
       // Cards (оранжевый, широкий)
       if (cardsVal > 0) {
-        const cardsH = Math.max(minBarH, (innerHeight / maxValue) * cardsVal);
+        const cardsH = Math.min(innerHeight, Math.max(minBarH, (innerHeight / maxValue) * cardsVal));
         const yCards = padding.top + innerHeight - cardsH;
         const tCards = Math.max(0, Math.min(1, cardsVal / maxValue));
         const topOrange = lerpHex(orangeDark, orangeBright, tCards);
@@ -5260,7 +5284,7 @@ window.renderModalChart = () => {
 
       // Hearts (красный, узкий, по центру) — narrowBarW и heartsX уже объявлены выше
       if (heartsVal > 0) {
-        const heartsH = Math.max(minBarH, (innerHeight / maxValue) * heartsVal);
+        const heartsH = Math.min(innerHeight, Math.max(minBarH, (innerHeight / maxValue) * heartsVal));
         const yHearts = padding.top + innerHeight - heartsH;
         const tHearts = Math.max(0, Math.min(1, heartsVal / maxValue));
         const topRed = lerpHex(redDark, redBright, tHearts);
@@ -5288,6 +5312,11 @@ window.renderModalChart = () => {
     defs += `<linearGradient id="ghost-grad" gradientUnits="userSpaceOnUse" x1="0" y1="${padding.top + innerHeight}" x2="0" y2="${padding.top}"><stop offset="0%" stop-color="rgba(255,255,255,0.12)"/><stop offset="100%" stop-color="rgba(255,255,255,0.06)"/></linearGradient>`;
     const ghostRx = Math.round(barWidth / 2);
     const ghostBarSVG = `<path class="ghost-bar" d="M 0 ${padding.top + innerHeight} L 0 ${padding.top + ghostRx} Q 0 ${padding.top} ${ghostRx} ${padding.top} L ${barWidth - ghostRx} ${padding.top} Q ${barWidth} ${padding.top} ${barWidth} ${padding.top + ghostRx} L ${barWidth} ${padding.top + innerHeight} Z" fill="url(#ghost-grad)" opacity="0" style="pointer-events:none;"/>`;
+
+    // Устанавливаем viewBox для правильного масштабирования SVG
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
     svg.innerHTML = `<defs>${defs}</defs>${content}${bars}${ghostBarSVG}`;
 
     // Tooltip — рядом с курсором

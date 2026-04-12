@@ -300,7 +300,7 @@ async function autoLoadUserData() {
     // Загружаем данные через srs/storage.js
     // 🔥 forceReload=true для гарантированной синхронизации между устройствами
     try {
-        const { loadFromServer } = await import('../srs/storage.js?v=6.70.0');
+        const { loadFromServer } = await import('../srs/storage.js?v=6.73.0');
         await loadFromServer(true);
     } catch (e) {
         console.error('[AutoLoad] Ошибка автозагрузки:', e);
@@ -710,7 +710,7 @@ export function initTabsNavigation(appVersion) {
             if (window.__lastCandidates) {
                 window.__lastCandidates = null;
             }
-            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.70.0');
+            const { initStatsPage } = await import('../srs/stats-ui.js?v=6.73.0');
             location.hash = '#/stats';
             initStatsPage(appVersion);
         });
@@ -727,7 +727,7 @@ export function initTabsNavigation(appVersion) {
                 console.log('[HASHCHANGE #/stats] Переход на статистику, обновляем данные');
 
                 // ВСЕГДА обновляем статистику при переходе на #/stats
-                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.70.0');
+                const { initStatsPage } = await import('../srs/stats-ui.js?v=6.73.0');
                 initStatsPage(appVersion);
 
                 // Скрываем главный контейнер и sidebar

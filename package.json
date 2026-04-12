@@ -1,6 +1,6 @@
 {
   "name": "git_ga",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "QA Voice Assistant UI with Electron prototype",
   "main": "electron/main.js",
   "type": "module",
