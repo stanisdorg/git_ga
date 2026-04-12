@@ -2022,7 +2022,7 @@ function stopLearnSession() {
             syncWithServer(true); // forceSync = true
         });
 
-        initStatsPage(window.currentAppVersion || '6.73');
+        initStatsPage(window.currentAppVersion || '6.79');
 
         // Теперь восстанавливаем UI ПОСЛЕ инициализации статистики
         // 1. Очищаем таймер
@@ -2857,8 +2857,8 @@ function showStats(stats, results, total) {
             document.body.appendChild(skeletonPlaceholder);
 
             // Импортируем и вызываем initStatsPage
-            import('./stats-ui.js?v=6.78.0').then(({ initStatsPage }) => {
-                initStatsPage(window.currentAppVersion || '6.73');
+            import('./stats-ui.js?v=6.79.0').then(({ initStatsPage }) => {
+                initStatsPage(window.currentAppVersion || '6.79');
             }).catch(err => {
                 console.error('[STATS BUTTON] Failed to load stats-ui:', err);
                 skeletonPlaceholder.remove();
