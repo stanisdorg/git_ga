@@ -1548,16 +1548,16 @@ const STATS_STYLES = `
   }
   .st-wrapper {
     max-width: 1400px;
-    min-height: 100vh;
-    padding: 0 0 20px; /* Отступ только снизу */
+    height: calc(100vh - 15px);
+    padding-bottom: 0;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: 24px;
-    row-gap: 8px;
+    row-gap: 15px;
     align-items: start;
+    grid-template-rows: auto 1fr;
     grid-template-areas:
       "top top top top top top top top top top top top"
-      "progress progress progress progress progress progress sidebar sidebar sidebar sidebar sidebar sidebar"
       "main main main main main main main main main main main main";
   }
 
@@ -1768,10 +1768,12 @@ const STATS_STYLES = `
     grid-area: main;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto auto;
-    gap: clamp(12px, 2vw, 24px);
+    grid-template-rows: 1fr 1fr auto;
+    gap: 15px;
+    padding: 0;
     height: 100%;
-    min-height: calc(100vh - 200px);
+    min-height: 0;
+    overflow: hidden;
   }
   .st-block-1 {
     grid-column: 1;
@@ -1823,10 +1825,11 @@ const STATS_STYLES = `
   .st-block-achievements {
     grid-column: 2;
     grid-row: 1 / span 2;
-    overflow: visible;
+    overflow: hidden;
     min-width: 280px;
     display: flex !important;
     flex-direction: column !important;
+    height: 100% !important;
   }
   .st-block-2 {
     grid-column: 3;
@@ -1845,10 +1848,11 @@ const STATS_STYLES = `
     grid-row: 2;
     min-width: 280px;
   }
-  .st-block-5 { 
-    grid-column: 1 / span 3; 
+  .st-block-5 {
+    grid-column: 1 / span 3;
     grid-row: 3;
     min-width: 280px;
+    margin-top: 0;
   }
 
   /* Фиксированная высота блоков (кроме expanded состояния) */
@@ -2006,11 +2010,14 @@ const STATS_STYLES = `
   
   /* Центральный блок — КРИТИЧНО! */
   .st-block-achievements {
-    overflow-y: auto !important;
+    overflow: hidden !important;
+    height: 100% !important;
   }
   .st-cat-progress-wrap {
     overflow-y: auto !important;
-    max-height: 70vh !important;
+    max-height: none !important;
+    height: 100% !important;
+    flex: 1 !important;
   }
   /* На десктопе список колод ведет себя как на мобильном */
   .st-cat-progress-list.collapsed {

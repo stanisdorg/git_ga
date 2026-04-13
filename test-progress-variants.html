@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест вариантов блока прогресса</title>
+  <style>
+    :root {
+      --bg: #0E1117;
+      --surf: #161B22;
+      --surf-h: #1F2630;
+      --border: #222938;
+      --text: #E6EDF3;
+      --text-sec: #9BA3AF;
+      --prim: #FF9F1C;
+      --accent: #A855F7;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 24px;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .demo-item {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .demo-item h2 {
+      font-size: 16px;
+      margin: 0 0 16px 0;
+      color: var(--text-sec);
+      text-align: center;
+    }
+
+    /* Вариант 1 - Текущий: горизонтальный ряд */
+    .v1-header {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      align-items: center;
+      overflow: hidden;
+    }
+    .v1-title {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .v1-percent {
+      font-size: 16px;
+      color: #A855F7;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+    }
+    .v1-forecast {
+      font-size: 8px;
+      color: var(--text-sec);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto;
+    }
+    .v1-forecast .date {
+      font-size: 9px;
+      font-weight: 600;
+    }
+    .v1-info-btn {
+      flex-shrink: 0;
+      margin-left: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-sec);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .v1-block {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      width: auto;
+      margin-left: auto;
+      border-top: 1px solid rgba(139,148,158,0.2);
+      padding-top: 6px;
+      margin-top: 2px;
+    }
+    .v1-day {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .v1-day-label {
+      font-weight: 600;
+      font-size: 9px;
+      color: #8B949E;
+      white-space: nowrap;
+    }
+    .v1-day-value {
+      font-weight: 600;
+      font-size: 9px;
+    }
+    .v1-day-time {
+      color: #8B949E;
+      font-size: 8px;
+    }
+    .v1-history-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 6px;
+      margin-top: 6px;
+      background: transparent;
+      border: 1px solid rgba(139,148,158,0.2);
+      border-radius: 8px;
+      color: var(--text-sec);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    /* Вариант 2 - Вертикальный: всё друг под другом */
+    .v2-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .v2-percent {
+      font-size: 28px;
+      color: #A855F7;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+      margin-bottom: 2px;
+    }
+    .v2-forecast {
+      font-size: 10px;
+      color: var(--text-sec);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .v2-forecast .date {
+      color: #fff;
+      font-weight: 600;
+    }
+    .v2-block {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      border-top: 1px solid rgba(139,148,158,0.2);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+    .v2-day {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .v2-day-label {
+      font-weight: 600;
+      font-size: 11px;
+      color: #8B949E;
+    }
+    .v2-day-value {
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .v2-day-time {
+      color: #8B949E;
+      font-size: 10px;
+    }
+
+    /* Вариант 3 - Процент слева, прогноз справа */
+    .v3-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .v3-left {
+      flex-shrink: 0;
+    }
+    .v3-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .v3-percent {
+      font-size: 32px;
+      color: #A855F7;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+      line-height: 1;
+    }
+    .v3-right {
+      flex: 1;
+      min-width: 0;
+    }
+    .v3-forecast-date {
+      font-size: 11px;
+      color: var(--text-sec);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .v3-forecast-date .date {
+      color: #fff;
+      font-weight: 600;
+    }
+    .v3-block {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 12px;
+    }
+    .v3-day {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .v3-day-label {
+      font-weight: 600;
+      font-size: 10px;
+      color: #8B949E;
+    }
+    .v3-day-value {
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .v3-day-time {
+      color: #8B949E;
+      font-size: 9px;
+    }
+
+    /* Вариант 4 - Процент большой сверху, дни в ряд снизу */
+    .v4-percent {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .v4-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+    .v4-value {
+      font-size: 36px;
+      color: #A855F7;
+      font-weight: 800;
+      text-shadow: 0 0 15px rgba(168,85,247,0.6);
+      line-height: 1;
+    }
+    .v4-forecast {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-sec);
+      margin-bottom: 8px;
+    }
+    .v4-forecast .date {
+      color: #fff;
+      font-weight: 600;
+    }
+    .v4-block {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      border-top: 1px solid rgba(139,148,158,0.2);
+      padding-top: 8px;
+    }
+    .v4-day {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: center;
+    }
+    .v4-day-label {
+      font-weight: 600;
+      font-size: 9px;
+      color: #8B949E;
+    }
+    .v4-day-value {
+      font-weight: 600;
+      font-size: 10px;
+    }
+    .v4-day-time {
+      color: #8B949E;
+      font-size: 8px;
+    }
+
+    /* Вариант 5 - Процент слева, блоки 2x2 справа */
+    .v5-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .v5-left {
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .v5-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .v5-value {
+      font-size: 28px;
+      color: #A855F7;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+      line-height: 1;
+    }
+    .v5-right {
+      flex: 1;
+      min-width: 0;
+    }
+    .v5-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px 12px;
+    }
+    .v5-day {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .v5-day-label {
+      font-weight: 600;
+      font-size: 9px;
+      color: #8B949E;
+    }
+    .v5-day-value {
+      font-weight: 600;
+      font-size: 10px;
+    }
+    .v5-day-time {
+      color: #8B949E;
+      font-size: 8px;
+    }
+    .v5-forecast {
+      font-size: 9px;
+      color: var(--text-sec);
+      margin-bottom: 4px;
+    }
+    .v5-forecast .date {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Вариант 6 - Горизонтальный с иконками */
+    .v6-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .v6-percent {
+      font-size: 24px;
+      color: #A855F7;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+    }
+    .v6-divider {
+      flex: 1;
+      height: 1px;
+      background: rgba(139,148,158,0.2);
+    }
+    .v6-forecast {
+      font-size: 10px;
+      color: var(--text-sec);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .v6-forecast .date {
+      color: #fff;
+      font-weight: 600;
+    }
+    .v6-block {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+    }
+    .v6-day {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 8px;
+      background: var(--surf-h);
+      border-radius: 6px;
+    }
+    .v6-day-label {
+      font-weight: 600;
+      font-size: 9px;
+      color: #8B949E;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .v6-day-value {
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .v6-day-time {
+      color: #8B949E;
+      font-size: 9px;
+    }
+
+    /* Вариант 7 - Процент как бейдж, дни в ряд */
+    .v7-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .v7-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .v7-label {
+      font-size: 8px;
+      font-weight: 600;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .v7-value {
+      font-size: 22px;
+      color: #A855F7;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .v7-right {
+      flex: 1;
+    }
+    .v7-forecast {
+      font-size: 10px;
+      color: var(--text-sec);
+      margin-bottom: 4px;
+    }
+    .v7-forecast .date {
+      color: #fff;
+      font-weight: 600;
+    }
+    .v7-block {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .v7-day {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .v7-day-label {
+      font-weight: 600;
+      font-size: 9px;
+      color: #8B949E;
+    }
+    .v7-day-value {
+      font-weight: 600;
+      font-size: 10px;
+    }
+    .v7-day-time {
+      color: #8B949E;
+      font-size: 8px;
+    }
+
+    /* Вариант 8 - Минимализм: всё в одну строку */
+    .v8-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .v8-percent {
+      font-size: 18px;
+      color: #A855F7;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+    }
+    .v8-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(139,148,158,0.3);
+    }
+    .v8-day {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+    }
+    .v8-day-label {
+      color: #8B949E;
+      font-weight: 600;
+    }
+    .v8-day-value {
+      color: #fff;
+      font-weight: 600;
+    }
+    .v8-day-time {
+      color: #8B949E;
+      font-size: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Варианты блока прогресса</h1>
+
+  <div class="demo-grid">
+
+    <!-- Вариант 1 - Текущий -->
+    <div class="demo-item">
+      <h2>1. Текущий (горизонтальный)</h2>
+      <div class="v1-header">
+        <span class="v1-title">Прогресс: <span class="v1-percent">23%</span></span>
+        <span class="v1-forecast">Прогноз: <span class="date">14 апр. 2026 г.</span> <button class="v1-info-btn">i</button></span>
+      </div>
+      <div class="v1-block">
+        <div class="v1-day">
+          <span class="v1-day-label">Вчера:</span>
+          <span class="v1-day-value" style="color:#06D6A0;">25 из 25</span>
+          <span class="v1-day-time">~13 мин</span>
+        </div>
+        <div class="v1-day">
+          <span class="v1-day-label" style="color:#fff;">Сегодня:</span>
+          <span class="v1-day-value" style="color:#FF9F1C;">0 из 138</span>
+          <span class="v1-day-time">~69 мин</span>
+        </div>
+        <div class="v1-day">
+          <span class="v1-day-label">Завтра:</span>
+          <span class="v1-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v1-day-time">~69 мин</span>
+        </div>
+        <div class="v1-day">
+          <span class="v1-day-label">Послезавтра:</span>
+          <span class="v1-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v1-day-time">~69 мин</span>
+        </div>
+      </div>
+      <button class="v1-history-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 2 - Вертикальный -->
+    <div class="demo-item">
+      <h2>2. Вертикальный</h2>
+      <div class="v2-title">Прогресс</div>
+      <div class="v2-percent">23%</div>
+      <div class="v2-forecast">Прогноз: <span class="date">14 апр. 2026 г.</span> <button class="v1-info-btn">i</button></div>
+      <div class="v2-block">
+        <div class="v2-day">
+          <span class="v2-day-label">Вчера:</span>
+          <span class="v2-day-value" style="color:#06D6A0;">25 из 25</span>
+          <span class="v2-day-time">~13 мин</span>
+        </div>
+        <div class="v2-day">
+          <span class="v2-day-label" style="color:#fff;">Сегодня:</span>
+          <span class="v2-day-value" style="color:#FF9F1C;">0 из 138</span>
+          <span class="v2-day-time">~69 мин</span>
+        </div>
+        <div class="v2-day">
+          <span class="v2-day-label">Завтра:</span>
+          <span class="v2-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v2-day-time">~69 мин</span>
+        </div>
+        <div class="v2-day">
+          <span class="v2-day-label">Послезавтра:</span>
+          <span class="v2-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v2-day-time">~69 мин</span>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 3 - Процент слева, прогноз справа -->
+    <div class="demo-item">
+      <h2>3. Процент слева, прогноз справа</h2>
+      <div class="v3-row">
+        <div class="v3-left">
+          <div class="v3-label">Прогресс</div>
+          <div class="v3-percent">23%</div>
+        </div>
+        <div class="v3-right">
+          <div class="v3-forecast-date">Прогноз: <span class="date">14 апр. 2026 г.</span> <button class="v1-info-btn">i</button></div>
+          <div class="v3-block">
+            <div class="v3-day">
+              <span class="v3-day-label">Вчера:</span>
+              <span class="v3-day-value" style="color:#06D6A0;">25 из 25</span>
+              <span class="v3-day-time">~13 мин</span>
+            </div>
+            <div class="v3-day">
+              <span class="v3-day-label" style="color:#fff;">Сегодня:</span>
+              <span class="v3-day-value" style="color:#FF9F1C;">0 из 138</span>
+              <span class="v3-day-time">~69 мин</span>
+            </div>
+            <div class="v3-day">
+              <span class="v3-day-label">Завтра:</span>
+              <span class="v3-day-value" style="color:#58A6FF;">~138 карт.</span>
+              <span class="v3-day-time">~69 мин</span>
+            </div>
+            <div class="v3-day">
+              <span class="v3-day-label">Послезавтра:</span>
+              <span class="v3-day-value" style="color:#58A6FF;">~138 карт.</span>
+              <span class="v3-day-time">~69 мин</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 4 - Процент большой сверху -->
+    <div class="demo-item">
+      <h2>4. Процент большой сверху</h2>
+      <div class="v4-percent">
+        <div class="v4-label">Прогресс</div>
+        <div class="v4-value">23%</div>
+      </div>
+      <div class="v4-forecast">Прогноз: <span class="date">14 апр. 2026 г.</span></div>
+      <div class="v4-block">
+        <div class="v4-day">
+          <span class="v4-day-label">Вчера:</span>
+          <span class="v4-day-value" style="color:#06D6A0;">25 из 25</span>
+          <span class="v4-day-time">~13 мин</span>
+        </div>
+        <div class="v4-day">
+          <span class="v4-day-label" style="color:#fff;">Сегодня:</span>
+          <span class="v4-day-value" style="color:#FF9F1C;">0 из 138</span>
+          <span class="v4-day-time">~69 мин</span>
+        </div>
+        <div class="v4-day">
+          <span class="v4-day-label">Завтра:</span>
+          <span class="v4-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v4-day-time">~69 мин</span>
+        </div>
+        <div class="v4-day">
+          <span class="v4-day-label">Послезавтра:</span>
+          <span class="v4-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v4-day-time">~69 мин</span>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 5 - Процент слева, блоки 2x2 справа -->
+    <div class="demo-item">
+      <h2>5. Процент слева, блоки 2x2</h2>
+      <div class="v5-row">
+        <div class="v5-left">
+          <div class="v5-label">Прогресс</div>
+          <div class="v5-value">23%</div>
+        </div>
+        <div class="v5-right">
+          <div class="v5-forecast">Прогноз: <span class="date">14 апр. 2026 г.</span></div>
+          <div class="v5-grid">
+            <div class="v5-day">
+              <span class="v5-day-label">Вчера:</span>
+              <span class="v5-day-value" style="color:#06D6A0;">25 из 25</span>
+              <span class="v5-day-time">~13 мин</span>
+            </div>
+            <div class="v5-day">
+              <span class="v5-day-label" style="color:#fff;">Сегодня:</span>
+              <span class="v5-day-value" style="color:#FF9F1C;">0 из 138</span>
+              <span class="v5-day-time">~69 мин</span>
+            </div>
+            <div class="v5-day">
+              <span class="v5-day-label">Завтра:</span>
+              <span class="v5-day-value" style="color:#58A6FF;">~138 карт.</span>
+              <span class="v5-day-time">~69 мин</span>
+            </div>
+            <div class="v5-day">
+              <span class="v5-day-label">Послезавтра:</span>
+              <span class="v5-day-value" style="color:#58A6FF;">~138 карт.</span>
+              <span class="v5-day-time">~69 мин</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 6 - Горизонтальный с иконками -->
+    <div class="demo-item">
+      <h2>6. Горизонтальный с карточками</h2>
+      <div class="v6-header">
+        <span class="v6-percent">23%</span>
+        <span class="v6-divider"></span>
+        <span class="v6-forecast">Прогноз: <span class="date">14 апр. 2026 г.</span></span>
+      </div>
+      <div class="v6-block">
+        <div class="v6-day">
+          <span class="v6-day-label">Вчера</span>
+          <span class="v6-day-value" style="color:#06D6A0;">25 из 25</span>
+          <span class="v6-day-time">~13 мин</span>
+        </div>
+        <div class="v6-day">
+          <span class="v6-day-label" style="color:#fff;">Сегодня</span>
+          <span class="v6-day-value" style="color:#FF9F1C;">0 из 138</span>
+          <span class="v6-day-time">~69 мин</span>
+        </div>
+        <div class="v6-day">
+          <span class="v6-day-label">Завтра</span>
+          <span class="v6-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v6-day-time">~69 мин</span>
+        </div>
+        <div class="v6-day">
+          <span class="v6-day-label">Послезавтра</span>
+          <span class="v6-day-value" style="color:#58A6FF;">~138 карт.</span>
+          <span class="v6-day-time">~69 мин</span>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 7 - Процент как бейдж -->
+    <div class="demo-item">
+      <h2>7. Процент как бейдж</h2>
+      <div class="v7-header">
+        <div class="v7-badge">
+          <span class="v7-label">Прогресс</span>
+          <span class="v7-value">23%</span>
+        </div>
+        <div class="v7-right">
+          <div class="v7-forecast">Прогноз: <span class="date">14 апр. 2026 г.</span></div>
+          <div class="v7-block">
+            <div class="v7-day">
+              <span class="v7-day-label">Вчера:</span>
+              <span class="v7-day-value" style="color:#06D6A0;">25 из 25</span>
+              <span class="v7-day-time">~13 мин</span>
+            </div>
+            <div class="v7-day">
+              <span class="v7-day-label" style="color:#fff;">Сегодня:</span>
+              <span class="v7-day-value" style="color:#FF9F1C;">0 из 138</span>
+              <span class="v7-day-time">~69 мин</span>
+            </div>
+            <div class="v7-day">
+              <span class="v7-day-label">Завтра:</span>
+              <span class="v7-day-value" style="color:#58A6FF;">~138 карт.</span>
+              <span class="v7-day-time">~69 мин</span>
+            </div>
+            <div class="v7-day">
+              <span class="v7-day-label">Послезавтра:</span>
+              <span class="v7-day-value" style="color:#58A6FF;">~138 карт.</span>
+              <span class="v7-day-time">~69 мин</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+    <!-- Вариант 8 - Минимализм -->
+    <div class="demo-item">
+      <h2>8. Минимализм (в одну строку)</h2>
+      <div class="v8-row">
+        <span class="v8-percent">23%</span>
+        <span class="v8-divider"></span>
+        <div class="v8-day">
+          <span class="v8-day-label">Вчера:</span>
+          <span class="v8-day-value" style="color:#06D6A0;">25/25</span>
+          <span class="v8-day-time">13м</span>
+        </div>
+        <div class="v8-day">
+          <span class="v8-day-label" style="color:#fff;">Сегодня:</span>
+          <span class="v8-day-value" style="color:#FF9F1C;">0/138</span>
+          <span class="v8-day-time">69м</span>
+        </div>
+        <div class="v8-day">
+          <span class="v8-day-label">Завтра:</span>
+          <span class="v8-day-value" style="color:#58A6FF;">138</span>
+          <span class="v8-day-time">69м</span>
+        </div>
+        <div class="v8-day">
+          <span class="v8-day-label">Послезавтра:</span>
+          <span class="v8-day-value" style="color:#58A6FF;">138</span>
+          <span class="v8-day-time">69м</span>
+        </div>
+      </div>
+      <button class="v1-history-btn" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="6 9 12 15 18 9"/></svg>
+        Показать историю
+      </button>
+    </div>
+
+  </div>
+</body>
+</html>
