@@ -1768,7 +1768,7 @@ const STATS_STYLES = `
     grid-area: main;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 1fr 1fr auto;
+    grid-template-rows: auto 1fr auto;
     gap: 15px;
     padding: 0;
     height: 100%;
@@ -1838,15 +1838,17 @@ const STATS_STYLES = `
     position: relative;
     z-index: 0;
   }
-  .st-block-3 { 
-    grid-column: 1; 
+  .st-block-3 {
+    grid-column: 1;
     grid-row: 2;
     min-width: 280px;
+    align-self: end;
   }
-  .st-block-4 { 
-    grid-column: 3; 
+  .st-block-4 {
+    grid-column: 3;
     grid-row: 2;
     min-width: 280px;
+    align-self: end;
   }
   .st-block-5 {
     grid-column: 1 / span 3;
